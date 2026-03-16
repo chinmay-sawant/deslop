@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use anyhow::Result;
 
 use crate::model::{BenchmarkReport, BenchmarkRun, StageStats};
-use crate::{scan_repository, ScanOptions};
+use crate::{ScanOptions, scan_repository};
 
 #[derive(Debug, Clone)]
 pub struct BenchmarkOptions {

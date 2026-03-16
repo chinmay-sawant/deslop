@@ -1,8 +1,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::analysis::{ImportSpec, ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::{Finding, Severity};
-use crate::parser::{ImportSpec, ParsedFile, ParsedFunction};
 
 const SUSPICIOUS_GENERIC_NAMES: &[&str] = &[
     "processdata",

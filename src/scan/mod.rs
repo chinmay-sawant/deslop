@@ -1,14 +1,16 @@
+mod walker;
+
 use std::fs;
 use std::time::Instant;
 
 use anyhow::{Context, Result};
 use rayon::prelude::*;
 
+use crate::analysis::{ParsedFile, parse_go_file};
 use crate::heuristics::evaluate_findings;
 use crate::index::build_repository_index;
 use crate::model::{ParseFailure, ScanOptions, ScanReport, TimingBreakdown};
-use crate::parser::{parse_go_file, ParsedFile};
-use crate::walker::discover_go_files;
+use crate::scan::walker::discover_go_files;
 
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let total_start = Instant::now();

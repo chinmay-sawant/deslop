@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::analysis::{DeclaredSymbol, ParsedFile};
 use crate::model::{IndexSummary, SymbolKind};
-use crate::parser::{DeclaredSymbol, ParsedFile};
 
 #[derive(Debug, Clone)]
 pub(crate) struct PackageIndex {
@@ -103,8 +103,8 @@ pub(crate) fn build_repository_index(files: &[ParsedFile]) -> RepositoryIndex {
 #[cfg(test)]
 mod tests {
     use super::build_repository_index;
+    use crate::analysis::{DeclaredSymbol, ParsedFile, ParsedFunction};
     use crate::model::{FunctionFingerprint, SymbolKind};
-    use crate::parser::{DeclaredSymbol, ParsedFile, ParsedFunction};
 
     #[test]
     fn builds_package_lookup() {

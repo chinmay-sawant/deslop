@@ -1,9 +1,9 @@
 use std::path::{Path, PathBuf};
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use tree_sitter::{Node, Parser};
 
-use crate::fingerprint::build_function_fingerprint;
+use crate::analysis::fingerprint::build_function_fingerprint;
 use crate::model::{FileReport, FunctionFingerprint, SymbolKind};
 
 #[derive(Debug, Clone)]
@@ -60,7 +60,7 @@ impl ParsedFile {
     }
 }
 
-pub fn parse_go_file(path: &Path, source: &str) -> Result<ParsedFile> {
+pub(crate) fn parse_go_file(path: &Path, source: &str) -> Result<ParsedFile> {
     let mut parser = Parser::new();
     parser
         .set_language(&tree_sitter_go::LANGUAGE.into())
