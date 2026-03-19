@@ -39,7 +39,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let parse_ms = parse_start.elapsed().as_millis();
 
     let index_start = Instant::now();
-    let index = build_repository_index(&parsed_files);
+    let index = build_repository_index(&options.root, &parsed_files);
     let index_summary = index.summary();
     let index_ms = index_start.elapsed().as_millis();
 

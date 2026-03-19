@@ -1,0 +1,18 @@
+package sample
+
+type SourceValue struct {
+	DocumentID string
+	PageCount  int
+}
+
+type ViewModel struct {
+	ID    string
+	Pages int
+}
+
+func ConvertValue(source SourceValue) ViewModel {
+	return ViewModel{
+		ID:    source.DocumentID,
+		Pages: source.PageCount,
+	}
+}

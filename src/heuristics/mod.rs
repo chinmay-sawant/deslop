@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::analysis::{ImportSpec, ParsedFile, ParsedFunction};
-use crate::index::RepositoryIndex;
+use crate::index::{ImportResolution, RepositoryIndex};
 use crate::model::{Finding, Severity};
 
 const SUSPICIOUS_GENERIC_NAMES: &[&str] = &[
@@ -54,26 +54,33 @@ fn generic_name_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<
     }
 
     let mut evidence = Vec::new();
+    let has_weak_typing =
+        function.fingerprint.contains_any_type || function.fingerprint.contains_empty_interface;
+    let has_high_symmetry = function.fingerprint.symmetry_score >= 0.5;
+    let has_low_comment_specificity =
+        function.fingerprint.comment_to_code_ratio <= 0.15 && function.fingerprint.line_count >= 5;
 
-    if function.fingerprint.contains_any_type || function.fingerprint.contains_empty_interface {
+    if has_weak_typing {
         evidence.push("uses vague signature types".to_string());
     }
-    if function.fingerprint.symmetry_score >= 0.5 {
+    if has_high_symmetry {
         evidence.push(format!(
             "high structural symmetry ({:.2})",
             function.fingerprint.symmetry_score
         ));
     }
-    if function.fingerprint.comment_to_code_ratio <= 0.15 && function.fingerprint.line_count >= 5 {
+    if has_low_comment_specificity {
         evidence.push(format!(
             "low comment specificity ({:.2})",
             function.fingerprint.comment_to_code_ratio
         ));
     }
-    if function.fingerprint.type_assertion_count == 0
-        && (function.fingerprint.contains_any_type || function.fingerprint.contains_empty_interface)
-    {
+    if function.fingerprint.type_assertion_count == 0 && has_weak_typing {
         evidence.push("no narrowing type assertions found".to_string());
+    }
+
+    if !has_weak_typing && !has_high_symmetry {
+        return None;
     }
 
     if evidence.is_empty() {
@@ -143,7 +150,7 @@ fn local_hallucination_findings(
         Some(package_name) => package_name,
         None => return findings,
     };
-    let Some(current_package) = index.package(package_name) else {
+    let Some(current_package) = index.package_for_file(&file.path, package_name) else {
         return findings;
     };
 
@@ -153,27 +160,42 @@ fn local_hallucination_findings(
         match &call.receiver {
             Some(receiver) => {
                 if let Some(import_path) = import_aliases.get(receiver) {
-                    let Some(target_package) = index.resolve_import_alias(receiver) else {
-                        continue;
-                    };
-
-                    if !target_package.has_function(&call.name) {
-                        findings.push(Finding {
-                            rule_id: "hallucinated_import_call".to_string(),
-                            severity: Severity::Warning,
-                            path: file.path.clone(),
-                            function_name: Some(function.fingerprint.name.clone()),
-                            start_line: call.line,
-                            end_line: call.line,
-                            message: format!(
-                                "call to {}.{} has no matching symbol in locally indexed package {}",
-                                receiver, call.name, import_path
-                            ),
-                            evidence: vec![
-                                format!("import alias {} resolves to {}", receiver, import_path),
-                                format!("locally indexed package {} does not expose {}", target_package.package_name, call.name),
-                            ],
-                        });
+                    match index.resolve_import_path(import_path) {
+                        ImportResolution::Resolved(target_package) => {
+                            if !target_package.has_function(&call.name) {
+                                findings.push(Finding {
+                                    rule_id: "hallucinated_import_call".to_string(),
+                                    severity: Severity::Warning,
+                                    path: file.path.clone(),
+                                    function_name: Some(function.fingerprint.name.clone()),
+                                    start_line: call.line,
+                                    end_line: call.line,
+                                    message: format!(
+                                        "call to {}.{} has no matching symbol in locally indexed package {}",
+                                        receiver, call.name, import_path
+                                    ),
+                                    evidence: vec![
+                                        format!("import alias {} resolves to {}", receiver, import_path),
+                                        format!(
+                                            "matched local package {} in directory {}",
+                                            target_package.package_name,
+                                            target_package.directory_display()
+                                        ),
+                                        format!(
+                                            "locally indexed package {} in {} does not expose {}",
+                                            target_package.package_name,
+                                            target_package.directory_display(),
+                                            call.name
+                                        ),
+                                    ],
+                                });
+                            }
+                        }
+                        ImportResolution::Ambiguous(candidates) => {
+                            let _candidate_count = candidates.len();
+                            continue;
+                        }
+                        ImportResolution::Unresolved => continue,
                     }
                 } else if current_package.has_method(receiver, &call.name) {
                     continue;
@@ -197,8 +219,10 @@ fn local_hallucination_findings(
                             call.name, package_name
                         ),
                         evidence: vec![format!(
-                            "package {} was indexed locally but {} was not found",
-                            package_name, call.name
+                            "package {} in directory {} was indexed locally but {} was not found",
+                            package_name,
+                            current_package.directory_display(),
+                            call.name
                         )],
                     });
                 }
