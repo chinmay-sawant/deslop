@@ -6,10 +6,14 @@ mod cli;
 use std::path::PathBuf;
 
 use crate::cli::{format_scan_report, format_scan_report_json, print_benchmark_report};
-use goslop::{benchmark_repository, scan_repository, BenchmarkOptions, ScanOptions};
+use goslop::{BenchmarkOptions, ScanOptions, benchmark_repository, scan_repository};
 
 #[derive(Debug, Parser)]
-#[command(author, version, about = "Scan Go repositories for likely AI slop patterns")]
+#[command(
+    author,
+    version,
+    about = "Scan Go repositories for likely AI slop patterns"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Command,

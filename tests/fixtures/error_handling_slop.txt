@@ -1,0 +1,14 @@
+package sample
+
+import (
+	"fmt"
+)
+
+func Run(err error) error {
+	_ = err
+	if err != nil {
+		panic(err)
+	}
+
+	return fmt.Errorf("wrap: %v", err)
+}

@@ -22,7 +22,10 @@ pub fn discover_go_files(root: &Path, respect_ignore: bool) -> Result<Vec<PathBu
         let entry = entry?;
         let path = entry.path();
 
-        if !entry.file_type().is_some_and(|file_type| file_type.is_file()) {
+        if !entry
+            .file_type()
+            .is_some_and(|file_type| file_type.is_file())
+        {
             continue;
         }
 
@@ -42,5 +45,6 @@ pub fn discover_go_files(root: &Path, respect_ignore: bool) -> Result<Vec<PathBu
 }
 
 fn is_excluded_path(path: &Path) -> bool {
-    path.components().any(|component| matches!(component, Component::Normal(name) if name == "vendor"))
+    path.components()
+        .any(|component| matches!(component, Component::Normal(name) if name == "vendor"))
 }

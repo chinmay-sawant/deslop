@@ -1,0 +1,9 @@
+package sample
+
+func Build(parts []string) string {
+	out := ""
+	for _, part := range parts {
+		out += part
+	}
+	return out
+}

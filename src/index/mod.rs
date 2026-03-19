@@ -224,6 +224,14 @@ mod tests {
                         call_count: 0,
                     },
                     calls: Vec::new(),
+                    has_context_parameter: false,
+                    doc_comment: None,
+                    dropped_error_lines: Vec::new(),
+                    panic_on_error_lines: Vec::new(),
+                    errorf_calls: Vec::new(),
+                    goroutine_launch_lines: Vec::new(),
+                    sleep_in_loop_lines: Vec::new(),
+                    string_concat_in_loop_lines: Vec::new(),
                 })
                 .collect(),
             imports: Vec::new(),
@@ -244,9 +252,11 @@ mod tests {
         let files = vec![sample_file("/repo/utils/sample.go", "utils", &["Trim"])];
 
         let index = build_repository_index(Path::new("/repo"), &files);
-        assert!(index
-            .package_for_file(Path::new("/repo/utils/sample.go"), "utils")
-            .is_some_and(|package| package.has_function("Trim")));
+        assert!(
+            index
+                .package_for_file(Path::new("/repo/utils/sample.go"), "utils")
+                .is_some_and(|package| package.has_function("Trim"))
+        );
     }
 
     #[test]
@@ -258,12 +268,18 @@ mod tests {
 
         let index = build_repository_index(Path::new("/repo"), &files);
 
-        assert!(index
-            .package_for_file(Path::new("/repo/pkg/render/main.go"), "render")
-            .is_some_and(|package| package.has_function("Normalize") && !package.has_function("Sanitize")));
-        assert!(index
-            .package_for_file(Path::new("/repo/internal/render/main.go"), "render")
-            .is_some_and(|package| package.has_function("Sanitize") && !package.has_function("Normalize")));
+        assert!(
+            index
+                .package_for_file(Path::new("/repo/pkg/render/main.go"), "render")
+                .is_some_and(|package| package.has_function("Normalize")
+                    && !package.has_function("Sanitize"))
+        );
+        assert!(
+            index
+                .package_for_file(Path::new("/repo/internal/render/main.go"), "render")
+                .is_some_and(|package| package.has_function("Sanitize")
+                    && !package.has_function("Normalize"))
+        );
     }
 
     #[test]

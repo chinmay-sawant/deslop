@@ -1,0 +1,10 @@
+package sample
+
+import (
+	"context"
+	"net/http"
+)
+
+func Fetch(ctx context.Context, url string) (*http.Request, error) {
+	return http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+}

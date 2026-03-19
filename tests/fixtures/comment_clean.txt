@@ -1,0 +1,6 @@
+package sample
+
+// Run validates the invoice payload.
+func Run(value string) string {
+	return value
+}

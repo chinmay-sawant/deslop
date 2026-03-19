@@ -10,7 +10,7 @@ The current implementation is optimized around a fast full-repository pass:
 - skip common generated-code inputs and `vendor/` paths
 - parse Go files with tree-sitter-go
 - fingerprint functions and methods with lightweight structural metrics
-- flag generic naming and weak typing patterns
+- flag generic naming, overlong naming, weak typing, comment-style slop, weak crypto usage, early error-handling anti-patterns, conservative missing-context cases, looped string concatenation, and raw goroutine coordination gaps
 - use a local package index to catch some unresolved repository-local calls
 - benchmark discovery, parse, index, heuristic, and total runtime stages
 
@@ -22,7 +22,7 @@ Run a scan against a target path:
 cargo run -- scan /path/to/go-repo
 ```
 
-By default, scan output lists each discovered function with its line range only.
+By default, scan output prints the scan summary plus findings only.
 
 Run the same scan with JSON output:
 
@@ -35,6 +35,14 @@ Show full per-function fingerprint details in either text or JSON output:
 ```bash
 cargo run -- scan --details /path/to/go-repo
 cargo run -- scan --json --details /path/to/go-repo
+```
+
+Write scan output directly to a file:
+
+```bash
+cargo run -- scan /path/to/go-repo > results.txt
+cargo run -- scan /home/chinmay/ChinmayPersonalProjects/gopdfsuit > results.txt
+cargo run -- scan --json /path/to/go-repo > results.txt
 ```
 
 Run a scan without `.gitignore` filtering:
@@ -69,4 +77,22 @@ Run the test suite:
 cargo test
 ```
 
+Build release executables for your current platform or cross-compile for other supported platforms:
+
+```bash
+cargo build --release
+cargo build --release --target x86_64-pc-windows-gnu
+cargo build --release --target x86_64-apple-darwin
+cargo build --release --target x86_64-unknown-linux-gnu
+```
+
+If you are cross-compiling, make sure the matching Rust target is installed first. Adjust the target triple to match the architecture you want to ship:
+
+```bash
+rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin x86_64-unknown-linux-gnu
+```
+
+The native release binary is written to `target/release/`. Cross-compiled binaries are written under `target/<target-triple>/release/` and are named `goslop` on Unix-like systems and `goslop.exe` on Windows.
+
 For a detailed architecture and roadmap guide, see `guides/implementation-guide.md`.
+For a detector-oriented overview, see `guides/features-and-detections.md`.

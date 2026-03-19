@@ -159,7 +159,10 @@ fn count_code_lines(text: &str) -> usize {
         if in_block_comment {
             if trimmed.contains("*/") {
                 in_block_comment = false;
-                let suffix = trimmed.split_once("*/").map(|(_, rest)| rest.trim()).unwrap_or("");
+                let suffix = trimmed
+                    .split_once("*/")
+                    .map(|(_, rest)| rest.trim())
+                    .unwrap_or("");
                 if !suffix.is_empty() {
                     count += 1;
                 }
@@ -173,7 +176,10 @@ fn count_code_lines(text: &str) -> usize {
 
         if trimmed.starts_with("/*") {
             if trimmed.contains("*/") {
-                let suffix = trimmed.split_once("*/").map(|(_, rest)| rest.trim()).unwrap_or("");
+                let suffix = trimmed
+                    .split_once("*/")
+                    .map(|(_, rest)| rest.trim())
+                    .unwrap_or("");
                 if !suffix.is_empty() {
                     count += 1;
                 }

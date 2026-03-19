@@ -1,0 +1,7 @@
+package sample
+
+import "os/exec"
+
+func Build() *exec.Cmd {
+	return exec.Command("echo", "hello")
+}

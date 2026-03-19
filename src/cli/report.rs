@@ -8,9 +8,19 @@ pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> 
     let mut output = String::new();
 
     writeln!(&mut output, "goslop scan root: {}", report.root.display()).expect("write to string");
-    writeln!(&mut output, "Go files discovered: {}", report.files_discovered).expect("write to string");
+    writeln!(
+        &mut output,
+        "Go files discovered: {}",
+        report.files_discovered
+    )
+    .expect("write to string");
     writeln!(&mut output, "Go files analyzed: {}", report.files_analyzed).expect("write to string");
-    writeln!(&mut output, "Functions fingerprinted: {}", report.functions_found).expect("write to string");
+    writeln!(
+        &mut output,
+        "Functions fingerprinted: {}",
+        report.functions_found
+    )
+    .expect("write to string");
     writeln!(&mut output, "Findings: {}", report.findings.len()).expect("write to string");
     writeln!(
         &mut output,
@@ -20,7 +30,12 @@ pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> 
         report.index_summary.import_count
     )
     .expect("write to string");
-    writeln!(&mut output, "Parse failures: {}", report.parse_failures.len()).expect("write to string");
+    writeln!(
+        &mut output,
+        "Parse failures: {}",
+        report.parse_failures.len()
+    )
+    .expect("write to string");
     writeln!(
         &mut output,
         "Timings: discover={}ms parse={}ms index={}ms heuristics={}ms total={}ms",
@@ -32,20 +47,20 @@ pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> 
     )
     .expect("write to string");
 
-    for file in &report.files {
-        writeln!(&mut output).expect("write to string");
-        writeln!(&mut output, "{}", file.path.display()).expect("write to string");
-        writeln!(
-            &mut output,
-            "  package={} syntax_error={} functions={}",
-            file.package_name.as_deref().unwrap_or("<unknown>"),
-            file.syntax_error,
-            file.functions.len()
-        )
-        .expect("write to string");
+    if details {
+        for file in &report.files {
+            writeln!(&mut output).expect("write to string");
+            writeln!(&mut output, "{}", file.path.display()).expect("write to string");
+            writeln!(
+                &mut output,
+                "  package={} syntax_error={} functions={}",
+                file.package_name.as_deref().unwrap_or("<unknown>"),
+                file.syntax_error,
+                file.functions.len()
+            )
+            .expect("write to string");
 
-        for function in &file.functions {
-            if details {
+            for function in &file.functions {
                 writeln!(
                     &mut output,
                     "  - {} [{}:{}] complexity={} comment_ratio={:.2} symmetry={:.2} any={} iface={} calls={}",
@@ -58,15 +73,6 @@ pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> 
                     function.contains_any_type,
                     function.contains_empty_interface,
                     function.call_count
-                )
-                .expect("write to string");
-            } else {
-                writeln!(
-                    &mut output,
-                    "  - {} [{}:{}]",
-                    function.name,
-                    function.start_line,
-                    function.end_line
                 )
                 .expect("write to string");
             }
@@ -93,19 +99,29 @@ pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> 
         writeln!(&mut output).expect("write to string");
         writeln!(&mut output, "Parse failures:").expect("write to string");
         for failure in &report.parse_failures {
-            writeln!(&mut output, "  - {}: {}", failure.path.display(), failure.message)
-                .expect("write to string");
+            writeln!(
+                &mut output,
+                "  - {}: {}",
+                failure.path.display(),
+                failure.message
+            )
+            .expect("write to string");
         }
     }
 
     output
 }
 
-pub(crate) fn format_scan_report_json(report: &goslop::ScanReport, details: bool) -> Result<String> {
+pub(crate) fn format_scan_report_json(
+    report: &goslop::ScanReport,
+    details: bool,
+) -> Result<String> {
     if details {
         Ok(serde_json::to_string_pretty(report)?)
     } else {
-        Ok(serde_json::to_string_pretty(&ScanReportSummary::from(report))?)
+        Ok(serde_json::to_string_pretty(&ScanReportSummary::from(
+            report,
+        ))?)
     }
 }
 
@@ -121,24 +137,15 @@ pub(crate) fn print_benchmark_report(report: &goslop::BenchmarkReport) {
     );
     println!(
         "Total ms: min={} max={} mean={:.2} median={:.2}",
-        report.total.min_ms,
-        report.total.max_ms,
-        report.total.mean_ms,
-        report.total.median_ms
+        report.total.min_ms, report.total.max_ms, report.total.mean_ms, report.total.median_ms
     );
     println!(
         "Parse ms: min={} max={} mean={:.2} median={:.2}",
-        report.parse.min_ms,
-        report.parse.max_ms,
-        report.parse.mean_ms,
-        report.parse.median_ms
+        report.parse.min_ms, report.parse.max_ms, report.parse.mean_ms, report.parse.median_ms
     );
     println!(
         "Index ms: min={} max={} mean={:.2} median={:.2}",
-        report.index.min_ms,
-        report.index.max_ms,
-        report.index.mean_ms,
-        report.index.median_ms
+        report.index.min_ms, report.index.max_ms, report.index.mean_ms, report.index.median_ms
     );
     println!(
         "Heuristics ms: min={} max={} mean={:.2} median={:.2}",
@@ -274,12 +281,22 @@ mod tests {
     }
 
     #[test]
-    fn default_text_output_lists_functions_without_metrics() {
+    fn default_text_output_shows_findings_without_function_listing() {
         let output = format_scan_report(&sample_report(), false);
 
-        assert!(output.contains("  - Run [10:24]"));
+        assert!(output.contains("Findings: 0"));
+        assert!(!output.contains("package=main syntax_error=false functions=1"));
+        assert!(!output.contains("  - Run [10:24]"));
         assert!(!output.contains("complexity="));
         assert!(!output.contains("calls="));
+    }
+
+    #[test]
+    fn detailed_text_output_keeps_per_file_function_listing() {
+        let output = format_scan_report(&sample_report(), true);
+
+        assert!(output.contains("package=main syntax_error=false functions=1"));
+        assert!(output.contains("  - Run [10:24] complexity=4"));
     }
 
     #[test]

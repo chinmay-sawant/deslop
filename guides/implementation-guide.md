@@ -37,6 +37,10 @@ This stage is responsible only for file selection. It does not parse or classify
 - imports and effective aliases
 - declared symbols such as functions, methods, structs, interfaces, and types
 - per-function call sites
+- context parameter presence for imported `context` aliases
+- raw goroutine launch sites
+- `time.Sleep` calls inside loops
+- string concatenation sites inside loops when the target variable is clearly string-like
 - per-function fingerprints
 
 Parsing remains syntax-tolerant. Files with syntax errors still participate in the report when tree-sitter can recover enough structure.
@@ -71,15 +75,30 @@ This index is deliberately lightweight. It is useful for local-context checks, b
 
 ### Heuristic layer
 
-`src/heuristics/mod.rs` currently implements three rule families:
+`src/heuristics/mod.rs` currently implements several early rule families:
 
 1. `generic_name`
    Flags functions whose names are unusually generic, but only when the function also lacks stronger contextual signals such as specific typing or commentary.
 
-2. `weak_typing`
+2. `overlong_name`
+   Flags unusually long identifiers with many tokens, which is a common low-context AI smell when names describe every step instead of the domain concept.
+
+3. `weak_typing`
    Flags functions whose signatures use `any` or `interface{}`. The severity is reduced when the function includes type assertions that indicate at least some local narrowing.
 
-3. `hallucinated_import_call` and `hallucinated_local_call`
+4. `dropped_error`, `panic_on_error`, and `error_wrapping_misuse`
+   Uses parser-level evidence to flag blank-identifier error drops, panic-or-fatal handling in `err != nil` branches, and `fmt.Errorf` calls that reference `err` without `%w` wrapping.
+
+5. `comment_style_title_case` and `comment_style_tutorial`
+   Flags doc comments that read like headings or tutorial narration instead of concise Go documentation.
+
+6. `weak_crypto`
+   Flags calls into weak standard-library crypto packages such as `crypto/md5`, `crypto/sha1`, `crypto/des`, and `crypto/rc4`.
+
+7. `missing_context`, `sleep_polling`, `string_concat_in_loop`, and `goroutine_without_coordination`
+   Flags a small conservative set of context-aware standard-library calls made from functions that do not accept `context.Context`, flags `time.Sleep` inside loops as a polling-style signal, flags obvious looped string concatenation, and flags raw goroutine launches when no obvious coordination signal is present.
+
+8. `hallucinated_import_call` and `hallucinated_local_call`
    Uses the local package index to flag calls that appear to reference symbols not present in the scanned repository context. Import calls are matched against local package-plus-directory candidates derived from import paths, and ambiguous matches are handled conservatively. This is intentionally local-only and should be described as a heuristic, not as proof of broken code.
 
 ### Benchmark layer
@@ -100,11 +119,13 @@ The scan report currently includes:
 - root path
 - discovered and analyzed file counts
 - function count
-- per-file function summaries by default, or full function fingerprints with `--details`
+- findings by default, or per-file function fingerprints with `--details`
 - structured findings
 - index summary counts
 - parse failures
 - per-stage timing breakdown
+
+The CLI continues to write reports to stdout. The intended workflow for saving results is shell redirection, for example `cargo run -- scan /absolute/path/to/go-repo > results.txt`.
 
 The benchmark report includes:
 
@@ -123,7 +144,7 @@ The benchmark report includes:
 cargo run -- scan /absolute/path/to/go-repo
 ```
 
-This default output lists only function names and line ranges for each file.
+This default output prints the summary plus findings only.
 
 ### Scan with JSON output
 
@@ -136,6 +157,13 @@ cargo run -- scan --json /absolute/path/to/go-repo
 ```bash
 cargo run -- scan --details /absolute/path/to/go-repo
 cargo run -- scan --json --details /absolute/path/to/go-repo
+```
+
+### Write findings to a file
+
+```bash
+cargo run -- scan /absolute/path/to/go-repo > results.txt
+cargo run -- scan --json /absolute/path/to/go-repo > results.txt
 ```
 
 ### Ignore `.gitignore` rules

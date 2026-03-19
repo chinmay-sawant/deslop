@@ -1,0 +1,10 @@
+package sample
+
+import (
+	"context"
+	"os/exec"
+)
+
+func Build(ctx context.Context) *exec.Cmd {
+	return exec.CommandContext(ctx, "echo", "hello")
+}

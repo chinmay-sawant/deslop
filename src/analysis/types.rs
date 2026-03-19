@@ -17,6 +17,22 @@ pub(crate) struct ParsedFile {
 pub(crate) struct ParsedFunction {
     pub fingerprint: FunctionFingerprint,
     pub calls: Vec<CallSite>,
+    pub has_context_parameter: bool,
+    pub doc_comment: Option<String>,
+    pub dropped_error_lines: Vec<usize>,
+    pub panic_on_error_lines: Vec<usize>,
+    pub errorf_calls: Vec<FormattedErrorCall>,
+    pub goroutine_launch_lines: Vec<usize>,
+    pub sleep_in_loop_lines: Vec<usize>,
+    pub string_concat_in_loop_lines: Vec<usize>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct FormattedErrorCall {
+    pub line: usize,
+    pub format_string: Option<String>,
+    pub mentions_err: bool,
+    pub uses_percent_w: bool,
 }
 
 #[derive(Debug, Clone)]
