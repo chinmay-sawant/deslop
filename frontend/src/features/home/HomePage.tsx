@@ -85,7 +85,7 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
         </section>
 
         <section id="principles" className="section-anchor py-18 sm:py-22 lg:py-28">
-          <Container className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+          <Container className="grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start xl:gap-10">
             <div>
               <SectionIntro
                 eyebrow="Principles"
@@ -103,17 +103,17 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
               </div>
             </div>
 
-            <div className="glass-panel rounded-[2.2rem] p-7 sm:p-9 lg:p-10">
+            <div className="glass-panel rounded-[2.4rem] p-8 sm:p-10 lg:p-11 xl:p-12">
               <p className="eyebrow">Benchmark reference</p>
-              <h3 className="mt-6 max-w-3xl text-4xl leading-tight font-bold sm:text-[3rem]">Enough proof to feel real, without making the page feel crowded.</h3>
-              <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--muted)] sm:text-lg">
+              <h3 className="mt-6 max-w-none text-[clamp(3rem,4.2vw,4.35rem)] leading-[0.95] font-bold">Enough proof to feel real, without making the page feel crowded.</h3>
+              <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
                 The implementation guide documents a preferred baseline against a realistic local Go repository. The numbers belong here as evidence,
                 not as a universal promise for every codebase shape.
               </p>
 
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {metrics.map((metric) => (
-                  <article key={metric.label} className="grid-panel rounded-[1.7rem] p-6">
+                  <article key={metric.label} className="grid-panel rounded-[1.7rem] p-6 sm:p-7">
                     <p className="font-['IBM_Plex_Mono'] text-xs uppercase tracking-[0.2em] text-[var(--muted)]">{metric.label}</p>
                     <p className="mt-4 text-2xl font-bold text-[var(--text)]">{metric.value}</p>
                     <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{metric.note}</p>
@@ -121,7 +121,7 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
                 ))}
               </div>
 
-              <div className="surface-inset mt-10 rounded-[1.8rem] p-6 sm:p-7">
+              <div className="surface-inset mt-8 rounded-[1.8rem] p-6 sm:p-7">
                 <p className="font-['IBM_Plex_Mono'] text-xs uppercase tracking-[0.2em] text-[var(--text)]">What this page will not claim</p>
                 <p className="mt-4 max-w-2xl text-sm leading-8 sm:text-base">
                   No authoritative Go type checking. No interprocedural proof. No guarantee that every flagged issue is wrong. The value is in the speed,

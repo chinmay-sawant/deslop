@@ -79,21 +79,21 @@ export const navigation: NavItem[] = [
 export const trustPillars = [
   'Explainable findings instead of opaque scoring',
   'Structured output for local workflows and automation',
-  'Compliments existings lints and linters instead of replacing them',
+  'Complements existing lints and linters instead of replacing them',
 ]
 
 export const terminalFlow = [
   {
-    prompt: 'cargo run -- scan /path/to/go-repo',
-    output: 'Compact findings and scan summary for fast review loops.',
+    prompt: './deslop scan . > results.txt',
+    output: 'Scan the current repository and write a readable report to disk for a fast review loop.',
   },
   {
-    prompt: 'cargo run -- scan --json /path/to/go-repo',
-    output: 'Structured output for CI, dashboards, and internal tooling.',
+    prompt: './deslop scan --json . > results.json',
+    output: 'Emit structured output when the same findings need to flow into scripts, CI, or dashboards.',
   },
   {
-    prompt: 'cargo run -- bench --warmups 2 --repeats 5 /path/to/go-repo',
-    output: 'Repeatable discovery, parse, index, heuristic, and total timings.',
+    prompt: './deslop bench --warmups 2 --repeats 5 .',
+    output: 'Measure repeatable discovery, parse, index, heuristic, and total timings against the current repo.',
   },
 ]
 
@@ -218,19 +218,19 @@ export const useCases: UseCase[] = [
 
 export const quickStartItems: QuickStartItem[] = [
   {
-    label: 'Build the binary',
-    description: 'Create a native release binary for your current platform before scanning real repositories.',
-    command: 'cargo build --release',
+    label: 'Scan the current repository',
+    description: 'Run deslop from the repository root and save a readable text report you can review or share.',
+    command: './deslop scan . > results.txt',
   },
   {
-    label: 'Scan a repository',
-    description: 'Run the default scan for a compact summary plus the main finding set.',
-    command: 'cargo run -- scan /path/to/go-repo',
+    label: 'Export structured output',
+    description: 'Use JSON when the same scan needs to flow into scripts, CI, or internal tooling.',
+    command: './deslop scan --json . > results.json',
   },
   {
-    label: 'Integrate with tooling',
-    description: 'Use structured JSON when you need machine-readable output inside scripts or CI.',
-    command: 'cargo run -- scan --json /path/to/go-repo',
+    label: 'Measure the pipeline',
+    description: 'Benchmark the full local pass when you want repeatable timings for discovery, parsing, indexing, and heuristics.',
+    command: './deslop bench --warmups 2 --repeats 5 .',
   },
 ]
 

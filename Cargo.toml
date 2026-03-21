@@ -2,6 +2,12 @@
 name = "deslop"
 version = "0.1.0"
 edition = "2024"
+description = "A static analyzer that spots low-context and AI-assisted code patterns across naming, concurrency, security, performance, and test quality."
+repository = "https://github.com/chinmay-sawant/deslop"
+license = "MIT" 
+readme = "README.md"
+keywords = ["cli", "utility", "tool","slop-detector","code-quality"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1.0.102"

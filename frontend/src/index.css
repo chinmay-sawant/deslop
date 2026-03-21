@@ -133,6 +133,15 @@ textarea {
   overflow-x: clip;
 }
 
+.page-viewport {
+  min-height: 100svh;
+  overflow-x: clip;
+}
+
+.page-shell {
+  min-height: 100svh;
+}
+
 h1,
 h2,
 h3,
@@ -315,6 +324,15 @@ button:focus-visible {
 
 .terminal-copy {
   color: var(--text-strong);
+}
+
+@media (min-width: 1200px) {
+  @supports (zoom: 1) {
+    .page-shell {
+      zoom: 0.8;
+      width: 125%;
+    }
+  }
 }
 
 @media (max-width: 768px) {
