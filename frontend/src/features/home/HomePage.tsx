@@ -161,6 +161,19 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
               Static analysis for low-context code, focused on readable findings across Go repositories today.
             </p>
 
+            <p className="mt-5 text-sm leading-7 text-[var(--text-strong)] sm:text-base">
+             Built & Vibecoded by{' '}
+              <a
+                href="https://github.com/chinmay-sawant/deslop"
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-[var(--text)] underline decoration-[var(--border)] underline-offset-4 transition hover:decoration-[var(--text)]"
+              >
+                Chinmay Sawant
+              </a>{' '}
+              with ❤️
+            </p>
+
             <div className="mt-6 flex flex-wrap gap-2">
               {footerLinks.map((link) => (
                 <a key={link.href} href={link.href} className="stat-pill rounded-full px-4 py-2 text-sm hover:text-white">
