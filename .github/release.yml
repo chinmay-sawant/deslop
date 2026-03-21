@@ -15,21 +15,21 @@ jobs:
       matrix:
         platform:
           - os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-            bin: rusize
-            name: rusize-linux-x86_64.tar.gz
+            target: x86_64-unknown-linux-gnu
+            bin: deslop
+            name: deslop-linux-x86_64.tar.gz
           - os: macos-latest
             target: x86_64-apple-darwin
-            bin: rusize
-            name: rusize-macos-x86_64.tar.gz
+            bin: deslop
+            name: deslop-macos-x86_64.tar.gz
           - os: macos-latest
             target: aarch64-apple-darwin
-            bin: rusize
-            name: rusize-macos-arm64.tar.gz
+            bin: deslop
+            name: deslop-macos-arm64.tar.gz
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            bin: rusize.exe
-            name: rusize-windows-x86_64.zip
+            bin: deslop.exe
+            name: deslop-windows-x86_64.zip
 
     runs-on: ${{ matrix.platform.os }}
 
@@ -43,7 +43,7 @@ jobs:
           targets: ${{ matrix.platform.target }}
 
       - name: Build
-        run: cargo build --release --target ${{ matrix.platform.target }}
+        run: cargo build --release --locked --target ${{ matrix.platform.target }}
 
       - name: Package (Unix)
         if: matrix.platform.os != 'windows-latest'
@@ -70,9 +70,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -81,6 +78,6 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/**/*
+          files: artifacts/*/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
