@@ -20,6 +20,7 @@ fn flags_goroutines_without_coordination() {
     .expect("scan should succeed");
 
     assert!(report.findings.iter().any(|finding| finding.rule_id == "goroutine_without_coordination"));
+    assert!(report.findings.iter().any(|finding| finding.rule_id == "goroutine_spawn_in_loop"));
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -40,6 +41,7 @@ fn does_not_flag_goroutines_with_waitgroup_coordination() {
     .expect("scan should succeed");
 
     assert!(!report.findings.iter().any(|finding| finding.rule_id == "goroutine_without_coordination"));
+    assert!(!report.findings.iter().any(|finding| finding.rule_id == "goroutine_spawn_in_loop"));
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

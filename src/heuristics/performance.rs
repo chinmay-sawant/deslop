@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+use super::common::import_alias_lookup;
+
 pub(super) fn allocation_churn_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
@@ -204,4 +206,46 @@ pub(super) fn database_query_findings(
     }
 
     findings
+}
+
+pub(super) fn full_dataset_load_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    let import_aliases = import_alias_lookup(&file.imports);
+
+    function
+        .calls
+        .iter()
+        .filter_map(|call| {
+            let receiver = call.receiver.as_deref()?;
+            let import_path = import_aliases.get(receiver)?;
+            let evidence = match (import_path.as_str(), call.name.as_str()) {
+                ("io", "ReadAll") | ("io/ioutil", "ReadAll") => {
+                    Some(format!("{receiver}.{} reads the full stream into memory", call.name))
+                }
+                ("os", "ReadFile") => {
+                    Some(format!("{receiver}.ReadFile loads the whole file before processing"))
+                }
+                _ => None,
+            }?;
+
+            Some(Finding {
+                rule_id: "full_dataset_load".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: call.line,
+                end_line: call.line,
+                message: format!(
+                    "function {} loads an entire payload into memory",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("import alias {receiver} resolves to {import_path}"),
+                    evidence,
+                ],
+            })
+        })
+        .collect()
 }

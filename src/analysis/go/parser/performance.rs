@@ -298,13 +298,22 @@ fn visit_for_db_query_calls(
         if let Some(function_node) = function_node {
             if let Some((receiver, name)) = extract_call_target(function_node, source) {
                 if is_database_query_method(&name) {
-                    let query_text =
-                        arguments_node.and_then(|arguments| first_string_literal(arguments, source));
+                    let query_argument_text = arguments_node
+                        .and_then(|arguments| query_argument_node(arguments, &name))
+                        .and_then(|query_node| source.get(query_node.byte_range()).map(ToOwned::to_owned));
+                    let query_text = arguments_node
+                        .and_then(|arguments| query_argument_node(arguments, &name))
+                        .and_then(|query_node| first_string_literal(query_node, source));
+                    let query_uses_dynamic_construction = query_argument_text
+                        .as_deref()
+                        .is_some_and(is_dynamic_query_expression);
                     calls.push(DbQueryCall {
                         line: node.start_position().row + 1,
                         receiver,
                         method_name: name,
                         query_text,
+                        query_argument_text,
+                        query_uses_dynamic_construction,
                         in_loop: next_inside_loop,
                     });
                 }
@@ -335,4 +344,25 @@ fn is_database_query_method(name: &str) -> bool {
             | "Take"
             | "Preload"
     )
+}
+
+fn query_argument_node<'tree>(arguments_node: Node<'tree>, method_name: &str) -> Option<Node<'tree>> {
+    let mut cursor = arguments_node.walk();
+    let arguments = arguments_node.named_children(&mut cursor).collect::<Vec<_>>();
+    let index = match method_name {
+        "Query" | "QueryRow" | "Exec" | "Raw" | "Prepare" => Some(0),
+        "QueryContext" | "QueryRowContext" | "ExecContext" | "PrepareContext" => Some(1),
+        "Get" | "Select" => Some(1),
+        _ => None,
+    }?;
+
+    arguments.get(index).copied()
+}
+
+fn is_dynamic_query_expression(expression: &str) -> bool {
+    let compact = expression.split_whitespace().collect::<String>();
+    compact.contains('+')
+        || compact.contains("fmt.Sprintf(")
+        || compact.contains("fmt.Sprint(")
+        || compact.contains("strings.Join(")
 }

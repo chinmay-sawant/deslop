@@ -8,6 +8,6 @@ mod scan;
 pub use benchmark::{BenchmarkOptions, benchmark_repository};
 pub use model::{
     BenchmarkReport, FileReport, Finding, FunctionFingerprint, IndexSummary, ParseFailure,
-    ScanOptions, ScanReport, StageStats, TimingBreakdown,
+    ScanOptions, ScanReport, Severity, StageStats, TimingBreakdown,
 };
 pub use scan::scan_repository;

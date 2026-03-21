@@ -112,7 +112,7 @@ pub(super) fn goroutine_coordination_findings(
         return Vec::new();
     }
 
-    function
+    let mut findings = function
         .goroutine_launch_lines
         .iter()
         .map(|line| Finding {
@@ -132,7 +132,27 @@ pub(super) fn goroutine_coordination_findings(
                     .to_string(),
             ],
         })
-        .collect()
+        .collect::<Vec<_>>();
+
+    findings.extend(function.goroutine_in_loop_lines.iter().map(|line| Finding {
+        rule_id: "goroutine_spawn_in_loop".to_string(),
+        severity: Severity::Warning,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: *line,
+        end_line: *line,
+        message: format!(
+            "function {} launches goroutines inside a loop without an obvious coordination signal",
+            function.fingerprint.name
+        ),
+        evidence: vec![
+            "raw go statement appears inside a loop".to_string(),
+            "loop-local goroutine fan-out without context or WaitGroup-like coordination can grow unexpectedly"
+                .to_string(),
+        ],
+    }));
+
+    findings
 }
 
 fn has_obvious_coordination_signal(function: &ParsedFunction) -> bool {

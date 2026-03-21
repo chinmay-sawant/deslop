@@ -130,3 +130,49 @@ fn does_not_flag_hot_path_rules_for_one_off_calls() {
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn flags_full_dataset_load_patterns() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "full_dataset.go",
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/generic/full_dataset_load_slop.txt"
+        )),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(report.findings.iter().any(|finding| finding.rule_id == "full_dataset_load"));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn does_not_flag_streaming_reads_as_full_dataset_loads() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "full_dataset.go",
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/generic/full_dataset_load_clean.txt"
+        )),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(!report.findings.iter().any(|finding| finding.rule_id == "full_dataset_load"));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

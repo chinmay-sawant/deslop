@@ -16,16 +16,18 @@ use crate::analysis::{ParsedFile, ParsedFunction};
 
 use self::comments::extract_doc_comment;
 use self::context::{
-    collect_busy_wait_lines, collect_context_factory_calls, collect_goroutine_launch_lines,
-    collect_goroutine_without_shutdown_lines, collect_mutex_lock_in_loop_lines,
-    collect_sleep_in_loop_lines, function_has_context_parameter,
+    collect_busy_wait_lines, collect_context_factory_calls, collect_goroutine_in_loop_lines,
+    collect_goroutine_launch_lines, collect_goroutine_without_shutdown_lines,
+    collect_mutex_lock_in_loop_lines, collect_sleep_in_loop_lines,
+    function_has_context_parameter,
 };
 use self::errors::{
     collect_dropped_error_lines, collect_errorf_calls, collect_panic_on_error_lines,
 };
 use self::general::{
-    collect_calls, collect_imports, collect_symbols, count_descendants, extract_receiver_type,
-    find_package_name,
+    build_test_function_summary, collect_calls, collect_imports, collect_local_string_literals,
+    collect_package_string_literals, collect_struct_tags, collect_symbols, count_descendants,
+    extract_receiver_type, find_package_name,
 };
 use self::performance::{
     collect_allocation_in_loop_lines, collect_db_query_calls, collect_fmt_in_loop_lines,
@@ -46,24 +48,38 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
 
     let root = tree.root_node();
     let package_name = find_package_name(root, source);
+    let is_test_file = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .is_some_and(|name| name.ends_with("_test.go"));
     let imports = collect_imports(root, source);
+    let package_string_literals = collect_package_string_literals(root, source);
+    let struct_tags = collect_struct_tags(root, source);
     let symbols = collect_symbols(root, source);
-    let functions = collect_functions(root, source, &imports);
+    let functions = collect_functions(root, source, &imports, is_test_file);
 
     Ok(ParsedFile {
         path: path.to_path_buf(),
         package_name,
+        is_test_file,
         syntax_error: root.has_error(),
         byte_size: source.len(),
+        package_string_literals,
+        struct_tags,
         functions,
         imports,
         symbols,
     })
 }
 
-fn collect_functions(root: Node<'_>, source: &str, imports: &[crate::analysis::ImportSpec]) -> Vec<ParsedFunction> {
+fn collect_functions(
+    root: Node<'_>,
+    source: &str,
+    imports: &[crate::analysis::ImportSpec],
+    is_test_file: bool,
+) -> Vec<ParsedFunction> {
     let mut functions = Vec::new();
-    visit_for_functions(root, source, imports, &mut functions);
+    visit_for_functions(root, source, imports, is_test_file, &mut functions);
     functions.sort_by(|left, right| {
         left.fingerprint
             .start_line
@@ -77,17 +93,18 @@ fn visit_for_functions(
     node: Node<'_>,
     source: &str,
     imports: &[crate::analysis::ImportSpec],
+    is_test_file: bool,
     functions: &mut Vec<ParsedFunction>,
 ) {
     if matches!(node.kind(), "function_declaration" | "method_declaration") {
-        if let Some(parsed_function) = parse_function_node(node, source, imports) {
+        if let Some(parsed_function) = parse_function_node(node, source, imports, is_test_file) {
             functions.push(parsed_function);
         }
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_functions(child, source, imports, functions);
+        visit_for_functions(child, source, imports, is_test_file, functions);
     }
 }
 
@@ -95,17 +112,28 @@ fn parse_function_node(
     node: Node<'_>,
     source: &str,
     imports: &[crate::analysis::ImportSpec],
+    is_test_file: bool,
 ) -> Option<ParsedFunction> {
     let body_node = node.child_by_field_name("body")?;
     let calls = collect_calls(body_node, source);
+    let local_string_literals = collect_local_string_literals(body_node, source);
     let type_assertion_count = count_descendants(body_node, "type_assertion_expression");
     let has_context_parameter = function_has_context_parameter(node, source, imports);
     let doc_comment = extract_doc_comment(source, node.start_position().row);
+    let function_name = source.get(node.child_by_field_name("name")?.byte_range())?.to_string();
+    let test_summary = build_test_function_summary(
+        &function_name,
+        body_node,
+        source,
+        &calls,
+        is_test_file,
+    );
     let dropped_error_lines = collect_dropped_error_lines(body_node, source);
     let panic_on_error_lines = collect_panic_on_error_lines(body_node, source);
     let errorf_calls = collect_errorf_calls(body_node, source);
     let context_factory_calls = collect_context_factory_calls(body_node, source, imports);
     let goroutine_launch_lines = collect_goroutine_launch_lines(body_node);
+    let goroutine_in_loop_lines = collect_goroutine_in_loop_lines(body_node);
     let goroutine_without_shutdown_lines =
         collect_goroutine_without_shutdown_lines(body_node, source);
     let sleep_in_loop_lines = collect_sleep_in_loop_lines(body_node, source, imports);
@@ -134,11 +162,14 @@ fn parse_function_node(
         calls,
         has_context_parameter,
         doc_comment,
+        local_string_literals,
+        test_summary,
         dropped_error_lines,
         panic_on_error_lines,
         errorf_calls,
         context_factory_calls,
         goroutine_launch_lines,
+        goroutine_in_loop_lines,
         goroutine_without_shutdown_lines,
         sleep_in_loop_lines,
         busy_wait_lines,

@@ -1,5 +1,7 @@
 #[path = "integration_scan/benchmarking.rs"]
 mod benchmarking;
+#[path = "integration_scan/consistency.rs"]
+mod consistency;
 #[path = "integration_scan/concurrency.rs"]
 mod concurrency;
 #[path = "integration_scan/context.rs"]
@@ -16,6 +18,8 @@ mod naming;
 mod performance;
 #[path = "integration_scan/security.rs"]
 mod security;
+#[path = "integration_scan/test_quality.rs"]
+mod test_quality;
 
 use std::fs;
 use std::path::{Path, PathBuf};

@@ -163,6 +163,12 @@ pub(super) fn collect_goroutine_launch_lines(body_node: Node<'_>) -> Vec<usize> 
     lines
 }
 
+pub(super) fn collect_goroutine_in_loop_lines(body_node: Node<'_>) -> Vec<usize> {
+    let mut lines = Vec::new();
+    visit_for_goroutine_in_loop(body_node, false, &mut lines);
+    lines
+}
+
 fn visit_for_goroutine_launches(node: Node<'_>, lines: &mut Vec<usize>) {
     if node.kind() == "go_statement" {
         lines.push(node.start_position().row + 1);
@@ -171,6 +177,19 @@ fn visit_for_goroutine_launches(node: Node<'_>, lines: &mut Vec<usize>) {
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
         visit_for_goroutine_launches(child, lines);
+    }
+}
+
+fn visit_for_goroutine_in_loop(node: Node<'_>, inside_loop: bool, lines: &mut Vec<usize>) {
+    let next_inside_loop = inside_loop || node.kind() == "for_statement";
+
+    if next_inside_loop && node.kind() == "go_statement" {
+        lines.push(node.start_position().row + 1);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_goroutine_in_loop(child, next_inside_loop, lines);
     }
 }
 

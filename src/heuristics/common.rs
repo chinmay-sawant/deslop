@@ -71,18 +71,32 @@ pub(super) fn looks_like_global_symbol(name: &str) -> bool {
 }
 
 pub(super) fn identifier_token_count(name: &str) -> usize {
+    identifier_tokens(name).len()
+}
+
+pub(super) fn identifier_tokens(name: &str) -> Vec<String> {
     let mut count = 0usize;
+    let mut tokens = Vec::new();
+    let mut current = String::new();
     let mut previous_was_separator = true;
     let mut previous_is_lower = false;
 
     for character in name.chars() {
         if character == '_' || character == '-' {
+            if !current.is_empty() {
+                tokens.push(current.clone());
+                current.clear();
+            }
             previous_was_separator = true;
             previous_is_lower = false;
             continue;
         }
 
         if !character.is_ascii_alphanumeric() {
+            if !current.is_empty() {
+                tokens.push(current.clone());
+                current.clear();
+            }
             previous_was_separator = true;
             previous_is_lower = false;
             continue;
@@ -92,14 +106,23 @@ pub(super) fn identifier_token_count(name: &str) -> usize {
             || previous_was_separator
             || character.is_ascii_uppercase() && previous_is_lower
         {
+            if !current.is_empty() {
+                tokens.push(current.clone());
+                current.clear();
+            }
             count += 1;
         }
 
+        current.push(character.to_ascii_lowercase());
         previous_was_separator = false;
         previous_is_lower = character.is_ascii_lowercase();
     }
 
-    count
+    if !current.is_empty() {
+        tokens.push(current);
+    }
+
+    tokens
 }
 
 pub(super) fn is_title_case_comment(line: &str) -> bool {

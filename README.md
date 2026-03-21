@@ -10,7 +10,7 @@ The current implementation is optimized around a fast full-repository pass:
 - skip common generated-code inputs and `vendor/` paths
 - parse Go files with tree-sitter-go
 - fingerprint functions and methods with lightweight structural metrics
-- flag generic naming, overlong naming, weak typing, comment-style slop, weak crypto usage, early error-handling anti-patterns, conservative missing-context cases, missing derived-context cancellation, looped sleep and select-default busy waiting, looped JSON marshaling, looped string concatenation, looping goroutines without shutdown paths, mutex pressure signals, allocation churn, fmt or reflect hot-path calls, and looped database query-shape issues
+- flag generic naming, overlong naming, weak typing, comment-style slop, weak crypto usage, hardcoded secret literals, dynamically constructed SQL queries, conservative missing-context cases, missing derived-context cancellation, looped sleep and select-default busy waiting, looped JSON marshaling, looped string concatenation, goroutine fan-out inside loops, looping goroutines without shutdown paths, mutex pressure signals, allocation churn, fmt or reflect hot-path calls, full-memory read patterns, looped database query-shape issues, mixed receiver styles, suspicious struct tags, and low-signal test bodies
 - use a local package index to catch some unresolved repository-local calls
 - benchmark discovery, parse, index, heuristic, and total runtime stages
 
@@ -22,7 +22,7 @@ Run a scan against a target path:
 cargo run -- scan /path/to/go-repo
 ```
 
-By default, scan output prints the scan summary plus findings only.
+By default, scan output prints the scan summary plus the standard finding set. Detail-only diagnostics such as `full_dataset_load` are held back unless you pass `--details`.
 
 Run the same scan with JSON output:
 
@@ -30,7 +30,7 @@ Run the same scan with JSON output:
 cargo run -- scan --json /path/to/go-repo
 ```
 
-Show full per-function fingerprint details in either text or JSON output:
+Show full per-function fingerprint details and detail-only findings in either text or JSON output:
 
 ```bash
 cargo run -- scan --details /path/to/go-repo

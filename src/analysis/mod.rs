@@ -7,7 +7,7 @@ use anyhow::Result;
 
 pub(crate) use types::{
     CallSite, ContextFactoryCall, DbQueryCall, DeclaredSymbol, FormattedErrorCall, ImportSpec,
-    ParsedFile, ParsedFunction,
+    NamedLiteral, ParsedFile, ParsedFunction, StructTag, TestFunctionSummary,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

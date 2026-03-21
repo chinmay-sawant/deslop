@@ -249,4 +249,63 @@ func notify(value string) {}
 
     assert_eq!(build.string_concat_in_loop_lines, vec![6]);
     assert_eq!(build.goroutine_launch_lines, vec![7]);
+    assert_eq!(build.goroutine_in_loop_lines, vec![7]);
+}
+
+#[test]
+fn collects_package_literals_struct_tags_and_test_summaries() {
+    let source = r#"package sample
+
+const apiToken = "sk_test_1234567890"
+
+type User struct {
+    Name string `json:"name" db:"users.name" db:"duplicate"`
+}
+
+func (u User) NameValue() string {
+    return u.Name
+}
+
+func (u *User) SetName(value string) {
+    u.Name = value
+}
+
+func TestUser(t *testing.T) {
+    token := "super-secret-value"
+    _ = token
+    got := buildUser()
+    if err := got.Validate(); err != nil {
+        t.Fatal(err)
+    }
+}
+
+func buildUser() *User { return &User{} }
+"#;
+
+    let parsed = parse_file(Path::new("sample_test.go"), source).expect("parse should work");
+    let test_fn = parsed
+        .functions
+        .iter()
+        .find(|function| function.fingerprint.name == "TestUser")
+        .expect("TestUser should be parsed");
+
+    assert!(parsed.is_test_file);
+    assert_eq!(parsed.package_string_literals.len(), 1);
+    assert_eq!(parsed.package_string_literals[0].name, "apiToken");
+    assert_eq!(parsed.struct_tags.len(), 1);
+    assert_eq!(parsed.struct_tags[0].field_name, "Name");
+    assert!(parsed.symbols.iter().any(|symbol| {
+        symbol.name == "NameValue"
+            && symbol.receiver_type.as_deref() == Some("User")
+            && symbol.receiver_is_pointer == Some(false)
+    }));
+    assert!(parsed.symbols.iter().any(|symbol| {
+        symbol.name == "SetName"
+            && symbol.receiver_type.as_deref() == Some("User")
+            && symbol.receiver_is_pointer == Some(true)
+    }));
+    assert_eq!(test_fn.local_string_literals.len(), 1);
+    assert_eq!(test_fn.local_string_literals[0].name, "token");
+    assert!(test_fn.test_summary.is_some());
+    assert_eq!(test_fn.test_summary.as_ref().map(|summary| summary.production_calls), Some(2));
 }

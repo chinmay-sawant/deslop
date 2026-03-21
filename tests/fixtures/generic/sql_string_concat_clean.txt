@@ -1,0 +1,15 @@
+package sample
+
+import (
+	"context"
+	"database/sql"
+)
+
+func Lookup(ctx context.Context, db *sql.DB, userID string) error {
+	rows, err := db.QueryContext(ctx, "SELECT * FROM users WHERE id = ?", userID)
+	if err != nil {
+		return err
+	}
+	_ = rows
+	return nil
+}

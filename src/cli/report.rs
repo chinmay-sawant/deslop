@@ -6,6 +6,7 @@ use serde::Serialize;
 
 pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> String {
     let mut output = String::new();
+    let findings = visible_findings(report, details);
 
     writeln!(&mut output, "goslop scan root: {}", report.root.display()).expect("write to string");
     writeln!(
@@ -21,7 +22,7 @@ pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> 
         report.functions_found
     )
     .expect("write to string");
-    writeln!(&mut output, "Findings: {}", report.findings.len()).expect("write to string");
+    writeln!(&mut output, "Findings: {}", findings.len()).expect("write to string");
     writeln!(
         &mut output,
         "Index summary: packages={} symbols={} imports={}",
@@ -79,10 +80,10 @@ pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> 
         }
     }
 
-    if !report.findings.is_empty() {
+    if !findings.is_empty() {
         writeln!(&mut output).expect("write to string");
         writeln!(&mut output, "Findings:").expect("write to string");
-        for finding in &report.findings {
+        for finding in findings {
             writeln!(
                 &mut output,
                 "  - {}:{} {} [{}]",
@@ -125,6 +126,18 @@ pub(crate) fn format_scan_report_json(
     }
 }
 
+fn visible_findings<'a>(report: &'a goslop::ScanReport, details: bool) -> Vec<&'a goslop::Finding> {
+    report
+        .findings
+        .iter()
+        .filter(|finding| details || !is_detail_only_finding(finding.rule_id.as_str()))
+        .collect()
+}
+
+fn is_detail_only_finding(rule_id: &str) -> bool {
+    matches!(rule_id, "full_dataset_load")
+}
+
 pub(crate) fn print_benchmark_report(report: &goslop::BenchmarkReport) {
     println!("goslop bench root: {}", report.root.display());
     println!(
@@ -163,7 +176,7 @@ struct ScanReportSummary<'a> {
     files_analyzed: usize,
     functions_found: usize,
     files: Vec<FileReportSummary<'a>>,
-    findings: &'a [goslop::Finding],
+    findings: Vec<&'a goslop::Finding>,
     index_summary: &'a goslop::IndexSummary,
     parse_failures: &'a [goslop::ParseFailure],
     timings: &'a goslop::TimingBreakdown,
@@ -177,7 +190,7 @@ impl<'a> From<&'a goslop::ScanReport> for ScanReportSummary<'a> {
             files_analyzed: report.files_analyzed,
             functions_found: report.functions_found,
             files: report.files.iter().map(FileReportSummary::from).collect(),
-            findings: &report.findings,
+            findings: visible_findings(report, false),
             index_summary: &report.index_summary,
             parse_failures: &report.parse_failures,
             timings: &report.timings,
@@ -263,7 +276,29 @@ mod tests {
                     call_count: 7,
                 }],
             }],
-            findings: Vec::new(),
+            findings: vec![
+                goslop::Finding {
+                    rule_id: "full_dataset_load".to_string(),
+                    severity: goslop::Severity::Info,
+                    path: PathBuf::from("/tmp/sample/main.go"),
+                    function_name: Some("Run".to_string()),
+                    start_line: 12,
+                    end_line: 12,
+                    message: "function Run loads an entire payload into memory".to_string(),
+                    evidence: Vec::new(),
+                },
+                goslop::Finding {
+                    rule_id: "placeholder_test_body".to_string(),
+                    severity: goslop::Severity::Info,
+                    path: PathBuf::from("/tmp/sample/main_test.go"),
+                    function_name: Some("TestRun".to_string()),
+                    start_line: 20,
+                    end_line: 20,
+                    message: "test TestRun looks like a placeholder rather than a validating test"
+                        .to_string(),
+                    evidence: Vec::new(),
+                },
+            ],
             index_summary: goslop::IndexSummary {
                 package_count: 1,
                 symbol_count: 2,
@@ -284,7 +319,9 @@ mod tests {
     fn default_text_output_shows_findings_without_function_listing() {
         let output = format_scan_report(&sample_report(), false);
 
-        assert!(output.contains("Findings: 0"));
+        assert!(output.contains("Findings: 1"));
+        assert!(!output.contains("full_dataset_load"));
+        assert!(output.contains("placeholder_test_body"));
         assert!(!output.contains("package=main syntax_error=false functions=1"));
         assert!(!output.contains("  - Run [10:24]"));
         assert!(!output.contains("complexity="));
@@ -295,6 +332,8 @@ mod tests {
     fn detailed_text_output_keeps_per_file_function_listing() {
         let output = format_scan_report(&sample_report(), true);
 
+        assert!(output.contains("Findings: 2"));
+        assert!(output.contains("full_dataset_load"));
         assert!(output.contains("package=main syntax_error=false functions=1"));
         assert!(output.contains("  - Run [10:24] complexity=4"));
     }
@@ -305,6 +344,8 @@ mod tests {
 
         assert!(output.contains("\"name\": \"Run\""));
         assert!(output.contains("\"function_count\": 1"));
+        assert!(!output.contains("full_dataset_load"));
+        assert!(output.contains("placeholder_test_body"));
         assert!(!output.contains("complexity_score"));
         assert!(!output.contains("call_count"));
     }
@@ -313,6 +354,7 @@ mod tests {
     fn detailed_json_output_keeps_full_fingerprint_metrics() {
         let output = format_scan_report_json(&sample_report(), true).expect("json should render");
 
+        assert!(output.contains("full_dataset_load"));
         assert!(output.contains("complexity_score"));
         assert!(output.contains("call_count"));
     }

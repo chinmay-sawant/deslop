@@ -1,0 +1,13 @@
+package sample
+
+type User struct {
+	ID string `json:"id" db:"id"`
+}
+
+func (u *User) IDValue() string {
+	return u.ID
+}
+
+func (u *User) SetID(id string) {
+	u.ID = id
+}

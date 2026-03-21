@@ -1,5 +1,7 @@
 package sample
 
-func Run(task func()) {
-	go task()
+func Run(tasks []func()) {
+	for _, task := range tasks {
+		go task()
+	}
 }

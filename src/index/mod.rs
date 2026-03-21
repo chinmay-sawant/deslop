@@ -200,8 +200,11 @@ mod tests {
         ParsedFile {
             path: PathBuf::from(path),
             package_name: Some(package_name.to_string()),
+            is_test_file: false,
             syntax_error: false,
             byte_size: 10,
+            package_string_literals: Vec::new(),
+            struct_tags: Vec::new(),
             functions: function_names
                 .iter()
                 .map(|name| ParsedFunction {
@@ -226,11 +229,14 @@ mod tests {
                     calls: Vec::new(),
                     has_context_parameter: false,
                     doc_comment: None,
+                    local_string_literals: Vec::new(),
+                    test_summary: None,
                     dropped_error_lines: Vec::new(),
                     panic_on_error_lines: Vec::new(),
                     errorf_calls: Vec::new(),
                     context_factory_calls: Vec::new(),
                     goroutine_launch_lines: Vec::new(),
+                    goroutine_in_loop_lines: Vec::new(),
                     goroutine_without_shutdown_lines: Vec::new(),
                     sleep_in_loop_lines: Vec::new(),
                     busy_wait_lines: Vec::new(),
@@ -250,6 +256,7 @@ mod tests {
                     name: (*name).to_string(),
                     kind: SymbolKind::Function,
                     receiver_type: None,
+                    receiver_is_pointer: None,
                     line: 1,
                 })
                 .collect(),

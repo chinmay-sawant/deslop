@@ -1,0 +1,20 @@
+package sample
+
+import (
+	"io"
+	"os"
+)
+
+func ReadEverything(path string, reader io.Reader) ([]byte, []byte, error) {
+	fromFile, err := os.ReadFile(path)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fromStream, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return fromFile, fromStream, nil
+}
