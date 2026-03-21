@@ -1,4 +1,4 @@
-# deslop
+# AI is flooding your Go code with slop. Deslop finds it in seconds.
 
 deslop is a Rust-based static analyzer for Go repositories that focuses on signals commonly associated with low-context AI-generated code. It currently scans a repository, parses Go files with tree-sitter-go, extracts structural fingerprints for each function, builds a lightweight local package index, runs early heuristic checks, and can benchmark the pipeline against real Go repositories.
 
@@ -68,6 +68,65 @@ Benchmark with JSON output:
 ```bash
 cargo run -- bench --json /path/to/go-repo
 ```
+
+## GitHub Action
+
+Use deslop directly in GitHub Actions without installing Rust. The action downloads the matching release binary for the current runner, adds it to the PATH, and runs either `deslop scan` or `deslop bench`.
+
+Scan the checked out repository with the defaults:
+
+```yaml
+name: Deslop
+
+on:
+	pull_request:
+	push:
+		branches:
+			- main
+
+jobs:
+	scan:
+		runs-on: ubuntu-latest
+		steps:
+			- uses: actions/checkout@v4
+			- uses: chinmay-sawant/deslop@v0.1.0
+				with:
+					path: .
+```
+
+Emit JSON and include detail-only findings:
+
+```yaml
+- uses: actions/checkout@v4
+- uses: chinmay-sawant/deslop@v0.1.0
+	with:
+		path: .
+		json: 'true'
+		details: 'true'
+```
+
+Run a benchmark job instead of a scan:
+
+```yaml
+- uses: actions/checkout@v4
+- uses: chinmay-sawant/deslop@v0.1.0
+	with:
+		command: bench
+		path: .
+		repeats: '10'
+		warmups: '2'
+```
+
+Inputs:
+
+- `version`: Release tag to install, for example `v0.1.0`. When omitted, deslop uses the action ref if it is a full release tag such as `v0.1.0`; otherwise it downloads the latest release binary.
+- `command`: `scan` or `bench`. Defaults to `scan`.
+- `path`: Path to the Go repository you want to analyze. Defaults to `.`.
+- `json`: Set to `true` to emit JSON output.
+- `details`: Set to `true` to include detail-only findings for `scan`.
+- `no-ignore`: Set to `true` to ignore `.gitignore` filtering.
+- `repeats`: Benchmark repeat count for `bench`. Defaults to `5`.
+- `warmups`: Benchmark warmup count for `bench`. Defaults to `1`.
 
 ## Development
 

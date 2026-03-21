@@ -1,0 +1,173 @@
+name: deslop
+description: Scan Go repositories for likely AI-generated slop patterns.
+author: chinmay-sawant
+
+inputs:
+  version:
+    description: Release tag to install, for example v0.1.0. Defaults to the current action ref when it is a full release tag, otherwise latest.
+    required: false
+    default: ''
+  command:
+    description: Subcommand to run. Supported values are scan and bench.
+    required: false
+    default: scan
+  path:
+    description: Path to the Go repository to analyze.
+    required: false
+    default: .
+  json:
+    description: Emit JSON output.
+    required: false
+    default: 'false'
+  details:
+    description: Include detail-only scan findings. Applies only to the scan command.
+    required: false
+    default: 'false'
+  no-ignore:
+    description: Scan without respecting .gitignore.
+    required: false
+    default: 'false'
+  repeats:
+    description: Benchmark repeat count. Applies only to the bench command.
+    required: false
+    default: '5'
+  warmups:
+    description: Benchmark warmup count. Applies only to the bench command.
+    required: false
+    default: '1'
+
+runs:
+  using: composite
+  steps:
+    - name: Install deslop
+      if: runner.os != 'Windows'
+      shell: bash
+      env:
+        DESLOP_VERSION: ${{ inputs.version }}
+        DESLOP_ACTION_REF: ${{ github.action_ref }}
+        DESLOP_REPOSITORY: ${{ github.action_repository }}
+      run: |
+        set -euo pipefail
+        bash "${{ github.action_path }}/scripts/install-deslop.sh"
+
+    - name: Install deslop
+      if: runner.os == 'Windows'
+      shell: pwsh
+      env:
+        DESLOP_VERSION: ${{ inputs.version }}
+        DESLOP_ACTION_REF: ${{ github.action_ref }}
+        DESLOP_REPOSITORY: ${{ github.action_repository }}
+      run: |
+        & "${{ github.action_path }}/scripts/install-deslop.ps1"
+
+    - name: Run deslop
+      if: runner.os != 'Windows'
+      shell: bash
+      env:
+        DESLOP_COMMAND: ${{ inputs.command }}
+        DESLOP_PATH: ${{ inputs.path }}
+        DESLOP_JSON: ${{ inputs.json }}
+        DESLOP_DETAILS: ${{ inputs.details }}
+        DESLOP_NO_IGNORE: ${{ inputs.no-ignore }}
+        DESLOP_REPEATS: ${{ inputs.repeats }}
+        DESLOP_WARMUPS: ${{ inputs.warmups }}
+      run: |
+        set -euo pipefail
+
+        command="${DESLOP_COMMAND}"
+        args=("$command")
+
+        case "$command" in
+          scan)
+            if [[ "$DESLOP_JSON" == 'true' ]]; then
+              args+=(--json)
+            fi
+
+            if [[ "$DESLOP_DETAILS" == 'true' ]]; then
+              args+=(--details)
+            fi
+
+            if [[ "$DESLOP_NO_IGNORE" == 'true' ]]; then
+              args+=(--no-ignore)
+            fi
+
+            args+=("$DESLOP_PATH")
+            ;;
+          bench)
+            if [[ "$DESLOP_JSON" == 'true' ]]; then
+              args+=(--json)
+            fi
+
+            if [[ "$DESLOP_NO_IGNORE" == 'true' ]]; then
+              args+=(--no-ignore)
+            fi
+
+            args+=(--repeats "$DESLOP_REPEATS" --warmups "$DESLOP_WARMUPS")
+            args+=("$DESLOP_PATH")
+            ;;
+          *)
+            echo "Unsupported command: $command" >&2
+            exit 1
+            ;;
+        esac
+
+        deslop "${args[@]}"
+
+    - name: Run deslop
+      if: runner.os == 'Windows'
+      shell: pwsh
+      env:
+        DESLOP_COMMAND: ${{ inputs.command }}
+        DESLOP_PATH: ${{ inputs.path }}
+        DESLOP_JSON: ${{ inputs.json }}
+        DESLOP_DETAILS: ${{ inputs.details }}
+        DESLOP_NO_IGNORE: ${{ inputs.no-ignore }}
+        DESLOP_REPEATS: ${{ inputs.repeats }}
+        DESLOP_WARMUPS: ${{ inputs.warmups }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+
+        $command = $env:DESLOP_COMMAND
+        $args = @($command)
+
+        switch ($command) {
+          'scan' {
+            if ($env:DESLOP_JSON -eq 'true') {
+              $args += '--json'
+            }
+
+            if ($env:DESLOP_DETAILS -eq 'true') {
+              $args += '--details'
+            }
+
+            if ($env:DESLOP_NO_IGNORE -eq 'true') {
+              $args += '--no-ignore'
+            }
+
+            $args += $env:DESLOP_PATH
+          }
+          'bench' {
+            if ($env:DESLOP_JSON -eq 'true') {
+              $args += '--json'
+            }
+
+            if ($env:DESLOP_NO_IGNORE -eq 'true') {
+              $args += '--no-ignore'
+            }
+
+            $args += '--repeats'
+            $args += $env:DESLOP_REPEATS
+            $args += '--warmups'
+            $args += $env:DESLOP_WARMUPS
+            $args += $env:DESLOP_PATH
+          }
+          default {
+            throw "Unsupported command: $command"
+          }
+        }
+
+        & deslop @args
+
+branding:
+  icon: search
+  color: blue
