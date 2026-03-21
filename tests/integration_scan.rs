@@ -25,7 +25,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use goslop::{scan_repository, ScanOptions};
+use deslop::{scan_repository, ScanOptions};
 
 #[test]
 fn flags_error_handling_slop_patterns() {
@@ -82,7 +82,7 @@ fn create_temp_workspace() -> PathBuf {
         .duration_since(UNIX_EPOCH)
         .expect("clock should be after unix epoch")
         .as_nanos();
-    let dir = std::env::temp_dir().join(format!("goslop-test-{nonce}"));
+    let dir = std::env::temp_dir().join(format!("deslop-test-{nonce}"));
     fs::create_dir_all(&dir).expect("temp dir creation should succeed");
     dir
 }

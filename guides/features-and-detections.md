@@ -1,8 +1,8 @@
-# goslop Features and Detections
+# deslop Features and Detections
 
 ## Purpose
 
-goslop is a static analyzer for Go repositories that looks for signals commonly associated with low-context or AI-assisted code. The goal is not to prove correctness. The goal is to surface suspicious patterns quickly, explain why they were flagged, and let a reviewer decide whether the code is actually a problem.
+deslop is a static analyzer for Go repositories that looks for signals commonly associated with low-context or AI-assisted code. The goal is not to prove correctness. The goal is to surface suspicious patterns quickly, explain why they were flagged, and let a reviewer decide whether the code is actually a problem.
 
 ## Current feature set
 
@@ -27,7 +27,7 @@ goslop is a static analyzer for Go repositories that looks for signals commonly 
 - Runs explainable heuristics that emit rule IDs, messages, and evidence.
 - Produces compact text output by default, or detailed text/JSON with `--details`.
 
-## What goslop detects today
+## What deslop detects today
 
 ### Naming and abstraction signals
 
@@ -64,7 +64,7 @@ goslop is a static analyzer for Go repositories that looks for signals commonly 
 ### Context and blocking signals
 
 - `missing_context`: obvious standard-library context-aware calls such as `http.Get`, `http.NewRequest`, `exec.Command`, or `net.Dial` made from functions that do not accept `context.Context`.
-- `missing_cancel_call`: derived contexts created with `context.WithCancel`, `context.WithTimeout`, or `context.WithDeadline` where goslop cannot find a local `cancel()` or `defer cancel()` call.
+- `missing_cancel_call`: derived contexts created with `context.WithCancel`, `context.WithTimeout`, or `context.WithDeadline` where deslop cannot find a local `cancel()` or `defer cancel()` call.
 - `sleep_polling`: `time.Sleep` inside loops, which often indicates polling or busy-wait style code.
 - `busy_waiting`: `select { default: ... }` inside loops, which often spins instead of blocking on a channel, timer, or context.
 
@@ -79,7 +79,7 @@ goslop is a static analyzer for Go repositories that looks for signals commonly 
 
 ### Concurrency signals
 
-- `goroutine_without_coordination`: raw `go` statements where goslop cannot find an obvious context or WaitGroup-like coordination signal in the same function.
+- `goroutine_without_coordination`: raw `go` statements where deslop cannot find an obvious context or WaitGroup-like coordination signal in the same function.
 - `goroutine_spawn_in_loop`: raw `go` statements launched from inside loops without an obvious context or WaitGroup-like coordination signal.
 - `goroutine_without_shutdown_path`: looping goroutine literals that do not show an obvious `ctx.Done()` or done-channel shutdown path.
 - `mutex_in_loop`: repeated `Lock` or `RLock` acquisition inside loops.
@@ -107,7 +107,7 @@ goslop is a static analyzer for Go repositories that looks for signals commonly 
 - Findings are heuristics, not compile-time proof.
 - The analyzer is intentionally conservative where full type information is missing.
 - Rules are designed to produce readable evidence so humans can validate them quickly.
-- Local repository context is used where possible, but goslop does not replace `go/types`.
+- Local repository context is used where possible, but deslop does not replace `go/types`.
 
 ## Current limitations
 

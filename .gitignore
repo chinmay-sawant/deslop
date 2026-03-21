@@ -1,1 +1,5 @@
 /target
+
+/frontend/node_modules
+/frontend/.vite
+/frontend/.DS_Store

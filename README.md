@@ -1,6 +1,6 @@
-# goslop
+# deslop
 
-goslop is a Rust-based static analyzer for Go repositories that focuses on signals commonly associated with low-context AI-generated code. It currently scans a repository, parses Go files with tree-sitter-go, extracts structural fingerprints for each function, builds a lightweight local package index, runs early heuristic checks, and can benchmark the pipeline against real Go repositories.
+deslop is a Rust-based static analyzer for Go repositories that focuses on signals commonly associated with low-context AI-generated code. It currently scans a repository, parses Go files with tree-sitter-go, extracts structural fingerprints for each function, builds a lightweight local package index, runs early heuristic checks, and can benchmark the pipeline against real Go repositories.
 
 ## Overview
 
@@ -92,7 +92,7 @@ If you are cross-compiling, make sure the matching Rust target is installed firs
 rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin x86_64-unknown-linux-gnu
 ```
 
-The native release binary is written to `target/release/`. Cross-compiled binaries are written under `target/<target-triple>/release/` and are named `goslop` on Unix-like systems and `goslop.exe` on Windows.
+The native release binary is written to `target/release/`. Cross-compiled binaries are written under `target/<target-triple>/release/` and are named `deslop` on Unix-like systems and `deslop.exe` on Windows.
 
 For a detailed architecture and roadmap guide, see `guides/implementation-guide.md`.
 For a detector-oriented overview, see `guides/features-and-detections.md`.

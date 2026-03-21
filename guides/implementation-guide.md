@@ -1,8 +1,8 @@
-# goslop Implementation Guide
+# deslop Implementation Guide
 
 ## Overview
 
-goslop is structured as a multi-stage Rust analysis pipeline for Go repositories. The current implementation focuses on fast full-repository ingestion, lightweight structural fingerprints, a repository-local symbol index, first-pass heuristic findings, and repeatable benchmark measurements.
+deslop is structured as a multi-stage Rust analysis pipeline for Go repositories. The current implementation focuses on fast full-repository ingestion, lightweight structural fingerprints, a repository-local symbol index, first-pass heuristic findings, and repeatable benchmark measurements.
 
 The code is intentionally split so later phases such as copypasta detection, control-flow analysis, taint tracking, and auto-fix generation can consume stable intermediate results instead of reparsing source files or embedding analysis logic inside the CLI.
 

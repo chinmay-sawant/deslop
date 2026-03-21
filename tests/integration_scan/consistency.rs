@@ -1,6 +1,6 @@
 use std::fs;
 
-use goslop::{scan_repository, ScanOptions};
+use deslop::{scan_repository, ScanOptions};
 
 use super::{create_temp_workspace, write_fixture};
 

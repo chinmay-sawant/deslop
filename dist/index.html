@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="deslop is a Go static analyzer that spots low-context and AI-assisted code patterns across naming, concurrency, security, performance, and test quality."
+    />
+    <meta
+      name="keywords"
+      content="deslop, go static analysis, ai generated code, code quality, rust cli, golang tooling"
+    />
+    <meta name="theme-color" content="#07110d" />
+    <script>
+      const storedTheme = window.localStorage.getItem('deslop-theme')
+      const theme = storedTheme === 'light' ? 'light' : 'dark'
+      document.documentElement.dataset.theme = theme
+      document.documentElement.classList.toggle('light', theme === 'light')
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f3f5f8' : '#07110d')
+    </script>
+    <title>deslop | Static analysis for low-context Go code</title>
+    <script type="module" crossorigin src="/assets/index-CFE7Hdpo.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cvh5cJqm.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+*.js linguist-vendored
+*.jsx linguist-vendored
+*.ts linguist-vendored
+*.tsx linguist-vendored
+*.css linguist-vendored
+*.html linguist-vendored
+*.json linguist-vendored
+*.py linguist-vendored
+
+/docs/ linguist-vendored
+/docs/ linguist-vendored

@@ -6,7 +6,7 @@ mod cli;
 use std::path::PathBuf;
 
 use crate::cli::{format_scan_report, format_scan_report_json, print_benchmark_report};
-use goslop::{BenchmarkOptions, ScanOptions, benchmark_repository, scan_repository};
+use deslop::{BenchmarkOptions, ScanOptions, benchmark_repository, scan_repository};
 
 #[derive(Debug, Parser)]
 #[command(

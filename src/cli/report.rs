@@ -4,11 +4,11 @@ use std::path::PathBuf;
 use anyhow::Result;
 use serde::Serialize;
 
-pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> String {
+pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> String {
     let mut output = String::new();
     let findings = visible_findings(report, details);
 
-    writeln!(&mut output, "goslop scan root: {}", report.root.display()).expect("write to string");
+    writeln!(&mut output, "deslop scan root: {}", report.root.display()).expect("write to string");
     writeln!(
         &mut output,
         "Go files discovered: {}",
@@ -114,7 +114,7 @@ pub(crate) fn format_scan_report(report: &goslop::ScanReport, details: bool) -> 
 }
 
 pub(crate) fn format_scan_report_json(
-    report: &goslop::ScanReport,
+    report: &deslop::ScanReport,
     details: bool,
 ) -> Result<String> {
     if details {
@@ -126,7 +126,7 @@ pub(crate) fn format_scan_report_json(
     }
 }
 
-fn visible_findings<'a>(report: &'a goslop::ScanReport, details: bool) -> Vec<&'a goslop::Finding> {
+fn visible_findings<'a>(report: &'a deslop::ScanReport, details: bool) -> Vec<&'a deslop::Finding> {
     report
         .findings
         .iter()
@@ -138,8 +138,8 @@ fn is_detail_only_finding(rule_id: &str) -> bool {
     matches!(rule_id, "full_dataset_load")
 }
 
-pub(crate) fn print_benchmark_report(report: &goslop::BenchmarkReport) {
-    println!("goslop bench root: {}", report.root.display());
+pub(crate) fn print_benchmark_report(report: &deslop::BenchmarkReport) {
+    println!("deslop bench root: {}", report.root.display());
     println!(
         "Warmups={} Repeats={} Files={} Functions={} Findings={}",
         report.warmups,
@@ -176,14 +176,14 @@ struct ScanReportSummary<'a> {
     files_analyzed: usize,
     functions_found: usize,
     files: Vec<FileReportSummary<'a>>,
-    findings: Vec<&'a goslop::Finding>,
-    index_summary: &'a goslop::IndexSummary,
-    parse_failures: &'a [goslop::ParseFailure],
-    timings: &'a goslop::TimingBreakdown,
+    findings: Vec<&'a deslop::Finding>,
+    index_summary: &'a deslop::IndexSummary,
+    parse_failures: &'a [deslop::ParseFailure],
+    timings: &'a deslop::TimingBreakdown,
 }
 
-impl<'a> From<&'a goslop::ScanReport> for ScanReportSummary<'a> {
-    fn from(report: &'a goslop::ScanReport) -> Self {
+impl<'a> From<&'a deslop::ScanReport> for ScanReportSummary<'a> {
+    fn from(report: &'a deslop::ScanReport) -> Self {
         Self {
             root: &report.root,
             files_discovered: report.files_discovered,
@@ -207,8 +207,8 @@ struct FileReportSummary<'a> {
     functions: Vec<FunctionSummary<'a>>,
 }
 
-impl<'a> From<&'a goslop::FileReport> for FileReportSummary<'a> {
-    fn from(file: &'a goslop::FileReport) -> Self {
+impl<'a> From<&'a deslop::FileReport> for FileReportSummary<'a> {
+    fn from(file: &'a deslop::FileReport) -> Self {
         Self {
             path: &file.path,
             package_name: file.package_name.as_deref(),
@@ -228,8 +228,8 @@ struct FunctionSummary<'a> {
     end_line: usize,
 }
 
-impl<'a> From<&'a goslop::FunctionFingerprint> for FunctionSummary<'a> {
-    fn from(function: &'a goslop::FunctionFingerprint) -> Self {
+impl<'a> From<&'a deslop::FunctionFingerprint> for FunctionSummary<'a> {
+    fn from(function: &'a deslop::FunctionFingerprint) -> Self {
         Self {
             name: &function.name,
             kind: &function.kind,
@@ -246,18 +246,18 @@ mod tests {
 
     use super::{format_scan_report, format_scan_report_json};
 
-    fn sample_report() -> goslop::ScanReport {
-        goslop::ScanReport {
+    fn sample_report() -> deslop::ScanReport {
+        deslop::ScanReport {
             root: PathBuf::from("/tmp/sample"),
             files_discovered: 1,
             files_analyzed: 1,
             functions_found: 1,
-            files: vec![goslop::FileReport {
+            files: vec![deslop::FileReport {
                 path: PathBuf::from("/tmp/sample/main.go"),
                 package_name: Some("main".to_string()),
                 syntax_error: false,
                 byte_size: 128,
-                functions: vec![goslop::FunctionFingerprint {
+                functions: vec![deslop::FunctionFingerprint {
                     name: "Run".to_string(),
                     kind: "function".to_string(),
                     receiver_type: None,
@@ -277,9 +277,9 @@ mod tests {
                 }],
             }],
             findings: vec![
-                goslop::Finding {
+                deslop::Finding {
                     rule_id: "full_dataset_load".to_string(),
-                    severity: goslop::Severity::Info,
+                    severity: deslop::Severity::Info,
                     path: PathBuf::from("/tmp/sample/main.go"),
                     function_name: Some("Run".to_string()),
                     start_line: 12,
@@ -287,9 +287,9 @@ mod tests {
                     message: "function Run loads an entire payload into memory".to_string(),
                     evidence: Vec::new(),
                 },
-                goslop::Finding {
+                deslop::Finding {
                     rule_id: "placeholder_test_body".to_string(),
-                    severity: goslop::Severity::Info,
+                    severity: deslop::Severity::Info,
                     path: PathBuf::from("/tmp/sample/main_test.go"),
                     function_name: Some("TestRun".to_string()),
                     start_line: 20,
@@ -299,13 +299,13 @@ mod tests {
                     evidence: Vec::new(),
                 },
             ],
-            index_summary: goslop::IndexSummary {
+            index_summary: deslop::IndexSummary {
                 package_count: 1,
                 symbol_count: 2,
                 import_count: 1,
             },
             parse_failures: Vec::new(),
-            timings: goslop::TimingBreakdown {
+            timings: deslop::TimingBreakdown {
                 discover_ms: 1,
                 parse_ms: 2,
                 index_ms: 3,

@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-use goslop::{benchmark_repository, scan_repository, BenchmarkOptions, ScanOptions};
+use deslop::{benchmark_repository, scan_repository, BenchmarkOptions, ScanOptions};
 
 use super::{create_temp_workspace, write_fixture};
 
