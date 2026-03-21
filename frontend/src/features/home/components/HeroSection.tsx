@@ -36,12 +36,6 @@ export function HeroSection() {
         </div>
 
         <div className="glass-panel rounded-[2.2rem] p-6 sm:p-7 xl:p-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <span className="eyebrow">Review loop examples</span>
-            <p className="max-w-sm text-sm leading-7 text-[var(--muted)] sm:text-right">
-              Direct CLI examples for the current repository workflow.
-            </p>
-          </div>
 
           <div className="mt-6 space-y-4 text-sm sm:text-[0.95rem]">
             {terminalFlow.map((item) => (

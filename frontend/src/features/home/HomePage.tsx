@@ -33,8 +33,8 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
           <Container>
             <SectionIntro
               eyebrow="Detection families"
-              title="The homepage should feel broader than the current parser target"
-              description="The product can be presented as a static-analysis layer for low-context code while still being honest about the current implementation. These categories keep the framing generic, with implementation detail left to the guides and CLI docs."
+              title="Signals across clarity, reliability, and risk"
+              description="deslop groups findings into readable families so teams can scan naming, error handling, security, performance, and thin tests without digging through opaque scoring."
             />
             <FeatureGrid />
           </Container>
@@ -44,8 +44,8 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
           <Container>
             <SectionIntro
               eyebrow="Pipeline"
-              title="A staged pipeline designed for clarity, speed, and future extension"
-              description="deslop is still intentionally simple at the product surface: discover, parse, index, and evaluate. That structure makes the implementation feel credible, and it gives the website a cleaner story than dumping every rule on the page."
+              title="A local analysis pipeline built for speed and readable output"
+              description="deslop discovers files, parses structure, builds a lightweight index, and runs explainable heuristics so scans stay quick and review output stays useful."
             />
             <PipelineTabs />
           </Container>
@@ -77,8 +77,8 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
           <Container>
             <SectionIntro
               eyebrow="Quick start"
-              title="The public framing can stay broad while the commands stay exact"
-              description="Everything in this section stays tied to the README and implementation guide. That keeps the marketing cleaner while avoiding the usual trap of inventing features the repository does not actually expose."
+              title="Run deslop locally in a few commands"
+              description="Scan the current repository, export JSON when you need automation, and benchmark the pipeline against real project code."
             />
             <QuickStart />
           </Container>
@@ -90,7 +90,7 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
               <SectionIntro
                 eyebrow="Principles"
                 title="Less visual noise, fewer promises, stronger positioning"
-                description="The docs are already careful about scope and limitations. The site should match that tone: calm, sharp, and comfortable leaving some detail to the guides instead of shouting every capability at once."
+                description="deslop favors readable evidence, repository-local context, and conservative signals so teams can review findings quickly and make the final call with confidence."
               />
 
               <div className="mt-10 space-y-5">
@@ -105,10 +105,9 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
 
             <div className="glass-panel rounded-[2.4rem] p-8 sm:p-10 lg:p-11 xl:p-12">
               <p className="eyebrow">Benchmark reference</p>
-              <h3 className="mt-6 max-w-none text-[clamp(3rem,4.2vw,4.35rem)] leading-[0.95] font-bold">Enough proof to feel real, without making the page feel crowded.</h3>
+              <h3 className="mt-6 max-w-none text-[clamp(3rem,4.2vw,4.35rem)] leading-[0.95] font-bold">Benchmarks grounded in a real local repository.</h3>
               <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
-                The implementation guide documents a preferred baseline against a realistic local Go repository. The numbers belong here as evidence,
-                not as a universal promise for every codebase shape.
+                The implementation guide includes a representative Go repository baseline so teams can understand scan cost and coverage at practical project scale.
               </p>
 
               <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -121,13 +120,6 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
                 ))}
               </div>
 
-              <div className="surface-inset mt-8 rounded-[1.8rem] p-6 sm:p-7">
-                <p className="font-['IBM_Plex_Mono'] text-xs uppercase tracking-[0.2em] text-[var(--text)]">What this page will not claim</p>
-                <p className="mt-4 max-w-2xl text-sm leading-8 sm:text-base">
-                  No authoritative Go type checking. No interprocedural proof. No guarantee that every flagged issue is wrong. The value is in the speed,
-                  coverage, and clarity of the evidence you get back.
-                </p>
-              </div>
             </div>
           </Container>
         </section>
@@ -139,11 +131,10 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
                 <div>
                   <span className="eyebrow">Open source from day one</span>
                   <h2 className="mt-6 max-w-4xl text-4xl leading-tight font-bold sm:text-6xl">
-                    Keep the workflow local. Keep the findings readable. Keep the homepage restrained.
+                    Keep the workflow local. Keep the findings readable.
                   </h2>
                   <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
-                    deslop is already structured for extension, but the current landing page stays faithful to what the repo actually ships today:
-                    a Rust CLI for Go repositories with explainable static signals and repeatable benchmarks.
+                    deslop ships as a Rust CLI for Go repositories with explainable static signals, readable output, and repeatable benchmarks for local review loops.
                   </p>
                 </div>
 
@@ -167,7 +158,7 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
           <div>
             <p className="font-['Space_Grotesk'] text-2xl font-bold tracking-[-0.05em] text-[var(--text)]">deslop</p>
             <p className="mt-4 max-w-2xl text-sm leading-8 text-[var(--muted)] sm:text-base">
-              A static-analysis product story for low-context code, anchored to a current implementation that targets Go repositories and keeps the evidence readable.
+              Static analysis for low-context code, focused on readable findings across Go repositories today.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">

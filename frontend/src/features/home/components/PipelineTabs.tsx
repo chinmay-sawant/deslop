@@ -29,6 +29,7 @@ export function PipelineTabs() {
 
               <div className="grid-panel rounded-[1.8rem] p-6 sm:p-7">
                 <p className="font-['IBM_Plex_Mono'] text-xs uppercase tracking-[0.2em] text-[var(--muted)]">Stage details</p>
+                <br />
                 <ul className="mt-5 space-y-5">
                   {stage.bullets.map((bullet) => (
                     <li key={bullet} className="flex items-start gap-3 text-sm leading-7 text-[var(--text-strong)] sm:text-base">

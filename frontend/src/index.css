@@ -331,6 +331,7 @@ button:focus-visible {
     .page-shell {
       zoom: 0.8;
       width: 125%;
+      margin-inline: calc((100% - 125%) / 2);
     }
   }
 }

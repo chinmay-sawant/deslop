@@ -261,7 +261,7 @@ export const metrics: Metric[] = [
   {
     label: 'Current implementation',
     value: 'Go repositories first',
-    note: 'The public site stays broader, but the shipped analyzer currently targets Go.',
+    note: 'The shipped analyzer currently targets Go repositories.',
   },
   {
     label: 'Benchmark repository scale',
