@@ -107,6 +107,15 @@ deslop is a static analyzer for Go and Rust repositories that looks for signals 
 - `hallucinated_import_call`: package-qualified calls that do not match locally indexed symbols for the imported package.
 - `hallucinated_local_call`: same-package calls to symbols that are not present in the scanned local package context.
 
+For Rust, `hallucinated_import_call` currently covers conservative local-module imports built from `crate::`, `self::`, and `super::` paths when deslop can map them back to locally indexed Rust modules, plus direct calls through locally imported Rust function aliases.
+
+For Rust, `hallucinated_local_call` now also covers direct same-module calls when the callee name is not locally bound and does not exist in the indexed Rust module.
+
+### Rust-specific comment-leftover signals
+
+- `todo_doc_comment_leftover`: Rust doc comments that still contain a `TODO` marker in non-test code.
+- `fixme_doc_comment_leftover`: Rust doc comments that still contain a `FIXME` marker in non-test code.
+
 ### Test-quality signals
 
 - `test_without_assertion_signal`: tests that call production code without any obvious assertion or failure signal.
@@ -136,6 +145,7 @@ deslop is a static analyzer for Go and Rust repositories that looks for signals 
 - Phase 2 parser enrichment: context-parameter detection, derived-context factory tracking, raw goroutine launch tracking, goroutine-in-loop tracking, goroutine shutdown-path tracking, looped `time.Sleep` detection, looped `select default` detection, looped JSON marshal detection, mutex lock-in-loop tracking, allocation tracking, fmt and reflect hot-path tracking, looped database query extraction, and string-concatenation-in-loop tracking.
 - Phase 2 heuristic additions: broader `missing_context`, `missing_cancel_call`, `sleep_polling`, `busy_waiting`, `repeated_json_marshaling`, `string_concat_in_loop`, `goroutine_spawn_in_loop`, `goroutine_without_shutdown_path`, `mutex_in_loop`, `blocking_call_while_locked`, `allocation_churn_in_loop`, `fmt_hot_path`, `reflection_hot_path`, `full_dataset_load`, `n_plus_one_query`, `wide_select_query`, `likely_unindexed_query`, and the first conservative goroutine-coordination pass.
 - Phase 3 heuristic additions: `hardcoded_secret`, `sql_string_concat`, `mixed_receiver_kinds`, `malformed_struct_tag`, `duplicate_struct_tag_key`, `test_without_assertion_signal`, `happy_path_only_test`, and `placeholder_test_body`.
+- Rust heuristic additions so far: `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, and Rust-local `hallucinated_import_call` coverage for `crate::`, `self::`, and `super::` module imports.
 
 ### Still pending
 

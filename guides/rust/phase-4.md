@@ -32,6 +32,7 @@ This phase makes Rust support shippable. By the time this phase starts, deslop s
 - `guides/features-and-detections.md`
 - `README.md`
 - `guides/rust/index.md`
+- `guides/rust/release-checklist.md`
 
 ## Implementation Checkpoints
 
@@ -43,6 +44,9 @@ This phase makes Rust support shippable. By the time this phase starts, deslop s
 	- mixed Rust and Go repository scan
 	- recoverable parse-failure behavior for malformed Rust files
 	- rule-positive and rule-negative Rust fixtures
+	- Rust-local imported-call hallucination checks for `crate::`, `self::`, and `super::`
+	- Rust direct-call hallucination checks for imported function aliases and same-module calls
+	- mixed-language same-directory package separation in the local index
 	- no regression in existing Go integration tests
 
 2. Define the benchmark sanity-check policy.
@@ -53,6 +57,12 @@ This phase makes Rust support shippable. By the time this phase starts, deslop s
 	- Record whether Rust support materially changes parse-stage or total runtime.
 	- Treat this as a sanity check, not a hard release gate, unless the team later establishes stable benchmark environments.
 
+	Current rollout convention:
+
+	- keep the existing Go baseline and add one Rust-only baseline using the same warmup and repeat counts
+	- keep the benchmark note attached to file, function, finding, package, symbol, and import counts so timing shifts can be interpreted
+	- do not treat benchmark differences as release blockers until the repository set and machine-noise expectations are stable
+
 3. Update the public documentation set.
 
 	Required outcomes:
@@ -60,6 +70,7 @@ This phase makes Rust support shippable. By the time this phase starts, deslop s
 	- `guides/implementation-guide.md` must state that deslop supports Go and Rust backends.
 	- `guides/features-and-detections.md` must document the first Rust rule pack.
 	- `README.md` must reflect Rust support once the feature is user-visible.
+	- `guides/rust/release-checklist.md` must stay aligned with the shipped verification matrix.
 
 4. Capture deferred backlog explicitly.
 
@@ -78,6 +89,7 @@ This phase makes Rust support shippable. By the time this phase starts, deslop s
 	- the Rust backend is wired and tested
 	- the first rule pack is documented and covered
 	- mixed-language scans behave predictably
+	- Rust-local imported-call checks and mixed-language index separation are covered by regression tests
 	- the standard validation commands pass
 
 ## Acceptance Criteria
@@ -94,6 +106,13 @@ This phase makes Rust support shippable. By the time this phase starts, deslop s
 - Re-check Rust-only and mixed-language fixture repositories after any backend or rule-pack changes.
 - Review `guides/implementation-guide.md`, `guides/features-and-detections.md`, and `README.md` for documentation sync before calling the phase complete.
 
+Current matrix notes:
+
+- Rust-only scan coverage lives in `tests/integration_scan/rust.rs` with positive, negative, and malformed fixtures.
+- Mixed-language scan coverage includes both shared repository discovery and same-directory Go/Rust index separation regressions.
+- Rust-local imported-call coverage currently validates `crate::`, `self::`, and `super::` imports against locally indexed Rust modules.
+- Rust direct-call coverage currently validates imported function aliases, same-module calls, local closures, and constructor-like symbols.
+
 ## Document Update Obligations
 
 - Update this file whenever the verification matrix or rollout criteria change.
@@ -105,3 +124,4 @@ This phase makes Rust support shippable. By the time this phase starts, deslop s
 - Mixed-language repositories can expose assumptions that are invisible in language-isolated tests.
 - Rust support may tempt the codebase toward per-language duplication; rollout should keep that tradeoff visible rather than hiding it.
 - Benchmark differences between Go-heavy and Rust-heavy repositories may be large enough that one baseline is not representative.
+- Rust module resolution is still intentionally local and path-based; crate-graph-aware rollout work remains deferred.

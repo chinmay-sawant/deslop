@@ -290,6 +290,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     let body_node = node.child_by_field_name("body")?;
     let calls = collect_calls(body_node, source);
     let local_string_literals = collect_local_string_literals(body_node, source);
+    let local_binding_names = collect_local_binding_names(node, source);
     let doc_comment = extract_doc_comment(source, node.start_position().row);
     let kind = function_kind(node, source);
     let receiver_type = if kind == "method" {
@@ -307,6 +308,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         calls,
         has_context_parameter: false,
         is_test_function,
+        local_binding_names,
         doc_comment,
         local_string_literals,
         test_summary: None,
@@ -661,6 +663,63 @@ fn collect_local_string_literals(node: Node<'_>, source: &str) -> Vec<NamedLiter
     literals
 }
 
+fn collect_local_binding_names(function_node: Node<'_>, source: &str) -> Vec<String> {
+    let mut names = Vec::new();
+
+    if let Some(parameters) = function_node.child_by_field_name("parameters") {
+        collect_parameter_binding_names(parameters, source, &mut names);
+    }
+
+    if let Some(body_node) = function_node.child_by_field_name("body") {
+        visit_for_local_binding_names(body_node, source, &mut names);
+    }
+
+    names.sort();
+    names.dedup();
+    names
+}
+
+fn collect_parameter_binding_names(node: Node<'_>, source: &str, names: &mut Vec<String>) {
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        match child.kind() {
+            "parameter" => {
+                if let Some(pattern) = child.child_by_field_name("pattern") {
+                    collect_identifier_pattern_names(pattern, source, names);
+                }
+            }
+            "self_parameter" => names.push("self".to_string()),
+            _ => {}
+        }
+    }
+}
+
+fn visit_for_local_binding_names(node: Node<'_>, source: &str, names: &mut Vec<String>) {
+    if node.kind() == "let_declaration"
+        && let Some(pattern_node) = node.child_by_field_name("pattern")
+    {
+        collect_identifier_pattern_names(pattern_node, source, names);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_local_binding_names(child, source, names);
+    }
+}
+
+fn collect_identifier_pattern_names(node: Node<'_>, source: &str, names: &mut Vec<String>) {
+    if matches!(node.kind(), "identifier" | "self")
+        && let Some(name) = source.get(node.byte_range())
+    {
+        names.push(name.trim().to_string());
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        collect_identifier_pattern_names(child, source, names);
+    }
+}
+
 fn visit_for_local_string_literals(
     node: Node<'_>,
     source: &str,
@@ -1010,8 +1069,10 @@ mod tests {
             .find(|function| function.fingerprint.name == "execute")
             .expect("execute should be parsed");
         assert!(!execute.is_test_function);
+        assert!(execute.local_binding_names.iter().any(|name| name == "self"));
         assert_eq!(execute.local_string_literals.len(), 1);
         assert_eq!(execute.local_string_literals[0].name, "password");
+        assert!(execute.local_binding_names.iter().any(|name| name == "password"));
         assert!(execute.calls.iter().any(|call| call.name == "dbg!"));
         assert!(execute.calls.iter().any(|call| call.name == "todo!"));
         assert!(execute.calls.iter().any(|call| {

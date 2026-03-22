@@ -119,8 +119,8 @@ This index is deliberately lightweight. It is useful for local-context checks, b
 8. `hallucinated_import_call` and `hallucinated_local_call`
    Uses the local package index to flag calls that appear to reference symbols not present in the scanned repository context. Import calls are matched against local package-plus-directory candidates derived from import paths, and ambiguous matches are handled conservatively. This is intentionally local-only and should be described as a heuristic, not as proof of broken code.
 
-9. `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, and `unsafe_without_safety_comment`
-   The Rust backend uses parser-level call, test-classification, and unsafe-comment evidence to flag obvious leftover macros, `.unwrap()` and `.expect(...)` in non-test Rust code, and `unsafe` usage that lacks a nearby `SAFETY:` comment.
+9. `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, Rust-local `hallucinated_import_call`, and Rust-local `hallucinated_local_call`
+   The Rust backend uses parser-level call, local-binding, doc-comment, test-classification, import-alias, and unsafe-comment evidence to flag obvious leftover macros, leftover TODO or FIXME doc comments, `.unwrap()` and `.expect(...)` in non-test Rust code, local imported calls that do not match indexed Rust modules, direct same-module calls that do not match indexed Rust symbols, and `unsafe` usage that lacks a nearby `SAFETY:` comment.
 
 ### Benchmark layer
 
@@ -232,6 +232,12 @@ Interpretation notes:
 - these numbers measure full-repository static analysis latency, not request latency inside the target application
 - use the same warmup and repeat convention when comparing future runs
 - if the target repository changes materially, refresh both the counts and timings together
+
+Rust rollout convention:
+
+- keep one repeatable Rust-only benchmark target in addition to the Go baseline, using the same `cargo run -- bench --warmups 2 --repeats 5 <path>` command shape
+- record discovered files, analyzed files, functions, findings, parse failures, and stage timings together when refreshing a Rust benchmark note
+- keep at least one mixed-language verification workspace in the integration suite so benchmark or index changes do not silently reintroduce Go/Rust symbol bleed
 
 ## Detailed plan for the next extension phase
 

@@ -24,6 +24,7 @@ pub(crate) struct ParsedFunction {
     pub calls: Vec<CallSite>,
     pub has_context_parameter: bool,
     pub is_test_function: bool,
+    pub local_binding_names: Vec<String>,
     pub doc_comment: Option<String>,
     pub local_string_literals: Vec<NamedLiteral>,
     pub test_summary: Option<TestFunctionSummary>,

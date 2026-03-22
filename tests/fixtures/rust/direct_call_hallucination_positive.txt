@@ -1,0 +1,9 @@
+use crate::config::render::missing_formatter as render_missing;
+
+pub fn run_direct_import() {
+    render_missing();
+}
+
+pub fn run_same_module() {
+    missing_local();
+}

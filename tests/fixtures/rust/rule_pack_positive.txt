@@ -11,6 +11,16 @@ pub fn leaves_dbg() {
     dbg!(value);
 }
 
+/// TODO: replace this placeholder documentation with real behavior notes.
+pub fn documented_todo_leftover() {
+    println!("todo-doc");
+}
+
+/// FIXME: tighten this contract once the real implementation lands.
+pub fn documented_fixme_leftover() {
+    println!("fixme-doc");
+}
+
 pub fn leaves_panic() {
     panic!("boom");
 }

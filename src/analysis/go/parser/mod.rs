@@ -159,6 +159,7 @@ fn parse_function_node(
         calls,
         has_context_parameter,
         is_test_function,
+        local_binding_names: Vec::new(),
         doc_comment,
         local_string_literals,
         test_summary,

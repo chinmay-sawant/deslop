@@ -1,0 +1,10 @@
+use crate::config::render;
+use crate::missing::helpers;
+
+pub fn run_render() {
+    render::missing_formatter();
+}
+
+pub fn run_missing_module() {
+    helpers::load();
+}

@@ -2,6 +2,11 @@ pub fn clean_function() {
     println!("clean");
 }
 
+/// Returns a stable answer for callers that need a simple default path.
+pub fn documented_function() {
+    println!("documented");
+}
+
 /// SAFETY: the caller guarantees the pointer is valid for the duration of the call.
 pub unsafe fn documented_unsafe_fn() {
     dangerous();
@@ -16,6 +21,7 @@ pub fn documented_unsafe_block() {
 
 #[cfg(test)]
 mod tests {
+    /// TODO: expand this test once the fixture grows.
     #[test]
     fn test_only_macros_are_suppressed() {
         let value = Some("ready");

@@ -14,7 +14,7 @@ The current implementation is optimized around a fast full-repository pass:
 - use a local package index to catch some unresolved repository-local calls
 - benchmark discovery, parse, index, heuristic, and total runtime stages
 
-Rust support now includes the Phase 2 parser contract and an initial Rust rule pack. deslop auto-detects `.rs` files, extracts Rust imports, declared symbols, call sites, test-only functions, string literals, and unsafe usage markers, and emits conservative Rust findings for `todo!`, `unimplemented!`, `dbg!`, `panic!`, `unreachable!`, `.unwrap()`, `.expect(...)`, and unsafe usage without a nearby `SAFETY:` comment. The local index is also language-scoped so mixed Go/Rust repositories do not merge symbols across backends. Go still has the broader heuristic surface area.
+Rust support now includes the Phase 2 parser contract and a growing Rust rule pack. deslop auto-detects `.rs` files, extracts Rust imports, declared symbols, call sites, test-only functions, local binding names, string literals, and unsafe usage markers, and emits conservative Rust findings for leftover macros, TODO or FIXME doc comments, local imported-call hallucinations, direct-call local hallucinations, `.unwrap()`, `.expect(...)`, and unsafe usage without a nearby `SAFETY:` comment. The local index is also language-scoped so mixed Go/Rust repositories do not merge symbols across backends. Go still has the broader heuristic surface area.
 
 ## Commands
 

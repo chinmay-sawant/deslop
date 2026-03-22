@@ -68,6 +68,45 @@ impl RepositoryIndex {
         }
     }
 
+    pub fn resolve_rust_module_import(
+        &self,
+        current_file_path: &Path,
+        import_path: &str,
+    ) -> ImportResolution<'_> {
+        let Some((crate_root, current_module_segments)) =
+            rust_module_context(&self.root, current_file_path)
+        else {
+            return ImportResolution::Unresolved;
+        };
+        let Some(target_segments) =
+            normalize_rust_import_path(import_path, &current_module_segments)
+        else {
+            return ImportResolution::Unresolved;
+        };
+        let Some(module_name) = target_segments.last() else {
+            return ImportResolution::Unresolved;
+        };
+
+        let file_module_directory = rust_file_module_directory(&crate_root, &target_segments);
+        let mod_module_directory = rust_mod_module_directory(&crate_root, &target_segments);
+        let mut candidates = self
+            .packages
+            .values()
+            .filter(|package| {
+                package.language == Language::Rust
+                    && package.package_name == *module_name
+                    && (package.directory == file_module_directory
+                        || package.directory == mod_module_directory)
+            })
+            .collect::<Vec<_>>();
+
+        match candidates.len() {
+            0 => ImportResolution::Unresolved,
+            1 => ImportResolution::Resolved(candidates.remove(0)),
+            _ => ImportResolution::Ambiguous(candidates),
+        }
+    }
+
     pub fn summary(&self) -> IndexSummary {
         let package_count = self.packages.len();
         let symbol_count = self
@@ -106,6 +145,10 @@ impl PackageIndex {
         self.methods_by_receiver
             .get(receiver)
             .is_some_and(|methods| methods.contains(name))
+    }
+
+    pub fn has_symbol(&self, name: &str) -> bool {
+        self.symbols.iter().any(|symbol| symbol.name == name)
     }
 }
 
@@ -201,6 +244,94 @@ fn import_path_matches_directory(import_path: &str, directory: &Path) -> bool {
         .all(|(left, right)| *left == right)
 }
 
+fn rust_module_context(root: &Path, file_path: &Path) -> Option<(PathBuf, Vec<String>)> {
+    let relative_path = file_path.strip_prefix(root).ok()?;
+    let components = relative_path
+        .components()
+        .map(|component| component.as_os_str().to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+    let crate_root = components.first()?.as_str();
+
+    if crate_root != "src" && crate_root != "tests" {
+        return None;
+    }
+
+    let file_name = components.last()?.as_str();
+    let directory_segments = if components.len() > 2 {
+        components[1..components.len() - 1].to_vec()
+    } else {
+        Vec::new()
+    };
+    let mut module_segments = directory_segments;
+
+    match file_name {
+        "lib.rs" | "main.rs" | "mod.rs" => {}
+        _ => {
+            let stem = file_name.strip_suffix(".rs")?;
+            if !stem.is_empty() {
+                module_segments.push(stem.to_string());
+            }
+        }
+    }
+
+    Some((PathBuf::from(crate_root), module_segments))
+}
+
+fn normalize_rust_import_path(
+    import_path: &str,
+    current_module_segments: &[String],
+) -> Option<Vec<String>> {
+    let segments = import_path
+        .split("::")
+        .filter(|segment| !segment.is_empty())
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+    let head = segments.first()?.as_str();
+
+    match head {
+        "crate" => Some(segments.into_iter().skip(1).collect()),
+        "self" => Some(
+            current_module_segments
+                .iter()
+                .cloned()
+                .chain(segments.into_iter().skip(1))
+                .collect(),
+        ),
+        "super" => {
+            let super_count = segments.iter().take_while(|segment| segment == &&"super".to_string()).count();
+            if super_count > current_module_segments.len() {
+                return None;
+            }
+
+            let mut resolved = current_module_segments[..current_module_segments.len() - super_count]
+                .to_vec();
+            resolved.extend(segments.into_iter().skip(super_count));
+            Some(resolved)
+        }
+        _ => None,
+    }
+}
+
+fn rust_file_module_directory(crate_root: &Path, target_segments: &[String]) -> PathBuf {
+    if target_segments.len() <= 1 {
+        return crate_root.to_path_buf();
+    }
+
+    let mut directory = crate_root.to_path_buf();
+    for segment in &target_segments[..target_segments.len() - 1] {
+        directory.push(segment);
+    }
+    directory
+}
+
+fn rust_mod_module_directory(crate_root: &Path, target_segments: &[String]) -> PathBuf {
+    let mut directory = crate_root.to_path_buf();
+    for segment in target_segments {
+        directory.push(segment);
+    }
+    directory
+}
+
 #[cfg(test)]
 mod tests {
     use std::path::{Path, PathBuf};
@@ -248,6 +379,7 @@ mod tests {
                     calls: Vec::new(),
                     has_context_parameter: false,
                     is_test_function: false,
+                    local_binding_names: Vec::new(),
                     doc_comment: None,
                     local_string_literals: Vec::new(),
                     test_summary: None,
@@ -362,6 +494,50 @@ mod tests {
                 assert!(!package.has_function("NormalizeRust"));
             }
             other => panic!("expected go package resolution, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn resolves_rust_module_imports_for_crate_self_and_super_paths() {
+        let files = vec![
+            sample_file(Language::Rust, "/repo/src/config/mod.rs", "config", &["shared"]),
+            sample_file(Language::Rust, "/repo/src/config/render.rs", "render", &["normalize"]),
+            sample_file(Language::Rust, "/repo/src/config/sub/helpers.rs", "helpers", &["load"]),
+        ];
+
+        let index = build_repository_index(Path::new("/repo"), &files);
+
+        match index.resolve_rust_module_import(
+            Path::new("/repo/src/lib.rs"),
+            "crate::config::render",
+        ) {
+            ImportResolution::Resolved(package) => {
+                assert_eq!(package.directory, PathBuf::from("src/config"));
+                assert!(package.has_function("normalize"));
+            }
+            other => panic!("expected crate import to resolve, got {other:?}"),
+        }
+
+        match index.resolve_rust_module_import(
+            Path::new("/repo/src/config/mod.rs"),
+            "self::render",
+        ) {
+            ImportResolution::Resolved(package) => {
+                assert_eq!(package.directory, PathBuf::from("src/config"));
+                assert!(package.has_function("normalize"));
+            }
+            other => panic!("expected self import to resolve, got {other:?}"),
+        }
+
+        match index.resolve_rust_module_import(
+            Path::new("/repo/src/config/sub/helpers.rs"),
+            "super::super::render",
+        ) {
+            ImportResolution::Resolved(package) => {
+                assert_eq!(package.directory, PathBuf::from("src/config"));
+                assert!(package.has_function("normalize"));
+            }
+            other => panic!("expected super import to resolve, got {other:?}"),
         }
     }
 }

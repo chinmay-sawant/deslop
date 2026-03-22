@@ -91,3 +91,4 @@ When implementation starts, the default expectation is to work phase by phase an
 
 - `guides/implementation-guide.md`
 - `guides/features-and-detections.md`
+- `guides/rust/release-checklist.md`

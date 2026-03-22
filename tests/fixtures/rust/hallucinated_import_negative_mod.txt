@@ -1,0 +1,5 @@
+use self::render;
+
+pub fn run_render() {
+    render::normalize();
+}
