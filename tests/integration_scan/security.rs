@@ -1,17 +1,13 @@
 use std::fs;
 
-use deslop::{scan_repository, ScanOptions};
+use deslop::{ScanOptions, scan_repository};
 
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
 fn flags_weak_crypto_usage() {
     let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "crypto.go",
-        go_fixture!("weak_crypto.txt"),
-    );
+    write_fixture(&temp_dir, "crypto.go", go_fixture!("weak_crypto.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -19,7 +15,12 @@ fn flags_weak_crypto_usage() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "weak_crypto"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "weak_crypto")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -39,7 +40,12 @@ fn flags_hardcoded_secret_patterns() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "hardcoded_secret"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hardcoded_secret")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -59,7 +65,12 @@ fn does_not_flag_environment_loaded_secrets() {
     })
     .expect("scan should succeed");
 
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "hardcoded_secret"));
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hardcoded_secret")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -79,7 +90,12 @@ fn flags_dynamic_sql_query_construction() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "sql_string_concat"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "sql_string_concat")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -99,7 +115,12 @@ fn does_not_flag_parameterized_sql_queries() {
     })
     .expect("scan should succeed");
 
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "sql_string_concat"));
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "sql_string_concat")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

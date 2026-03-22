@@ -1,6 +1,6 @@
 use std::fs;
 
-use deslop::{scan_repository, ScanOptions};
+use deslop::{ScanOptions, scan_repository};
 
 use super::{create_temp_workspace, write_fixture};
 
@@ -19,9 +19,24 @@ fn flags_mixed_receiver_kinds_and_bad_struct_tags() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "mixed_receiver_kinds"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "malformed_struct_tag"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "duplicate_struct_tag_key"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "mixed_receiver_kinds")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "malformed_struct_tag")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "duplicate_struct_tag_key")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -41,9 +56,24 @@ fn does_not_flag_consistent_receivers_or_clean_tags() {
     })
     .expect("scan should succeed");
 
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "mixed_receiver_kinds"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "malformed_struct_tag"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "duplicate_struct_tag_key"));
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "mixed_receiver_kinds")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "malformed_struct_tag")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "duplicate_struct_tag_key")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

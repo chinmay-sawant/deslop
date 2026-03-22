@@ -1,6 +1,6 @@
 use std::fs;
 
-use deslop::{scan_repository, ScanOptions};
+use deslop::{ScanOptions, scan_repository};
 
 use super::{create_temp_workspace, write_fixture};
 
@@ -19,9 +19,24 @@ fn flags_placeholder_and_low_signal_tests() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "test_without_assertion_signal"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "happy_path_only_test"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "placeholder_test_body"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "test_without_assertion_signal")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "happy_path_only_test")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "placeholder_test_body")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -41,9 +56,24 @@ fn does_not_flag_tests_with_positive_and_negative_signals() {
     })
     .expect("scan should succeed");
 
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "test_without_assertion_signal"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "happy_path_only_test"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "placeholder_test_body"));
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "test_without_assertion_signal")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "happy_path_only_test")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "placeholder_test_body")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

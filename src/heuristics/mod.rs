@@ -1,7 +1,7 @@
 mod comments;
 mod common;
-mod consistency;
 mod concurrency;
+mod consistency;
 mod context;
 mod errors;
 mod hallucination;
@@ -17,10 +17,10 @@ use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
 use self::comments::comment_style_findings;
-use self::consistency::{mixed_receiver_kind_findings, struct_tag_findings};
 use self::concurrency::{
     goroutine_coordination_findings, goroutine_shutdown_findings, mutex_contention_findings,
 };
+use self::consistency::{mixed_receiver_kind_findings, struct_tag_findings};
 use self::context::{
     busy_waiting_findings, missing_cancel_call_findings, missing_context_findings,
     sleep_polling_findings,
@@ -30,8 +30,8 @@ use self::hallucination::local_hallucination_findings;
 use self::naming::{generic_name_finding, overlong_name_finding, weak_typing_finding};
 use self::performance::{
     allocation_churn_findings, database_query_findings, fmt_hot_path_findings,
-    full_dataset_load_findings, reflection_hot_path_findings,
-    repeated_json_marshaling_findings, string_concat_in_loop_findings,
+    full_dataset_load_findings, reflection_hot_path_findings, repeated_json_marshaling_findings,
+    string_concat_in_loop_findings,
 };
 use self::security::{
     hardcoded_secret_findings, package_hardcoded_secret_findings, sql_string_concat_findings,
@@ -39,7 +39,10 @@ use self::security::{
 };
 use self::test_quality::test_quality_findings;
 
-pub(crate) fn evaluate_shared_findings(files: &[ParsedFile], _index: &RepositoryIndex) -> Vec<Finding> {
+pub(crate) fn evaluate_shared_findings(
+    files: &[ParsedFile],
+    _index: &RepositoryIndex,
+) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for file in files {
@@ -67,7 +70,10 @@ pub(crate) fn evaluate_shared_findings(files: &[ParsedFile], _index: &Repository
     findings
 }
 
-pub(crate) fn evaluate_go_file_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
+pub(crate) fn evaluate_go_file_findings(
+    file: &ParsedFile,
+    index: &RepositoryIndex,
+) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     findings.extend(struct_tag_findings(file));

@@ -1,6 +1,6 @@
 use std::fs;
 
-use deslop::{scan_repository, ScanOptions};
+use deslop::{ScanOptions, scan_repository};
 
 use super::{create_temp_workspace, write_fixture};
 
@@ -19,8 +19,18 @@ fn flags_goroutines_without_coordination() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "goroutine_without_coordination"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "goroutine_spawn_in_loop"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "goroutine_without_coordination")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "goroutine_spawn_in_loop")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -40,8 +50,18 @@ fn does_not_flag_goroutines_with_waitgroup_coordination() {
     })
     .expect("scan should succeed");
 
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "goroutine_without_coordination"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "goroutine_spawn_in_loop"));
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "goroutine_without_coordination")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "goroutine_spawn_in_loop")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -61,9 +81,24 @@ fn flags_goroutine_shutdown_and_mutex_contention_patterns() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "goroutine_without_shutdown_path"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "mutex_in_loop"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "blocking_call_while_locked"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "goroutine_without_shutdown_path")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "mutex_in_loop")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "blocking_call_while_locked")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -83,8 +118,18 @@ fn does_not_flag_shutdown_and_mutex_patterns_when_signals_are_absent() {
     })
     .expect("scan should succeed");
 
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "goroutine_without_shutdown_path"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "blocking_call_while_locked"));
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "goroutine_without_shutdown_path")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "blocking_call_while_locked")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

@@ -5,7 +5,8 @@ use crate::analysis::ParsedFile;
 use crate::model::{Finding, Severity};
 
 pub(super) fn mixed_receiver_kind_findings(files: &[&ParsedFile]) -> Vec<Finding> {
-    let mut methods_by_receiver = BTreeMap::<(Option<String>, PathBuf, String), Vec<MethodRecord>>::new();
+    let mut methods_by_receiver =
+        BTreeMap::<(Option<String>, PathBuf, String), Vec<MethodRecord>>::new();
 
     for file in files {
         let directory = file
@@ -22,7 +23,11 @@ pub(super) fn mixed_receiver_kind_findings(files: &[&ParsedFile]) -> Vec<Finding
             };
 
             methods_by_receiver
-                .entry((file.package_name.clone(), directory.clone(), receiver_type.clone()))
+                .entry((
+                    file.package_name.clone(),
+                    directory.clone(),
+                    receiver_type.clone(),
+                ))
                 .or_default()
                 .push(MethodRecord {
                     path: file.path.clone(),
@@ -156,7 +161,9 @@ fn parse_struct_tag_keys(raw_tag: &str) -> Option<Vec<String>> {
         }
 
         let key_start = index;
-        while index < bytes.len() && bytes[index].is_ascii_alphanumeric() || index < bytes.len() && bytes[index] == b'_' {
+        while index < bytes.len() && bytes[index].is_ascii_alphanumeric()
+            || index < bytes.len() && bytes[index] == b'_'
+        {
             index += 1;
         }
         if key_start == index || index >= bytes.len() || bytes[index] != b':' {

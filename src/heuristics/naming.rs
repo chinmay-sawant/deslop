@@ -91,10 +91,7 @@ pub(super) fn generic_name_finding(
     })
 }
 
-pub(super) fn weak_typing_finding(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Option<Finding> {
+pub(super) fn weak_typing_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<Finding> {
     if !function.fingerprint.contains_any_type && !function.fingerprint.contains_empty_interface {
         return None;
     }

@@ -126,7 +126,7 @@ pub(crate) fn format_scan_report_json(
     }
 }
 
-fn visible_findings<'a>(report: &'a deslop::ScanReport, details: bool) -> Vec<&'a deslop::Finding> {
+fn visible_findings(report: &deslop::ScanReport, details: bool) -> Vec<&deslop::Finding> {
     report
         .findings
         .iter()

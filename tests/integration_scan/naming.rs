@@ -1,17 +1,13 @@
 use std::fs;
 
-use deslop::{scan_repository, ScanOptions};
+use deslop::{ScanOptions, scan_repository};
 
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
 fn flags_generic_names_and_weak_typing() {
     let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "sloppy.go",
-        go_fixture!("generic_weak.txt"),
-    );
+    write_fixture(&temp_dir, "sloppy.go", go_fixture!("generic_weak.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -19,8 +15,18 @@ fn flags_generic_names_and_weak_typing() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "generic_name"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "weak_typing"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "generic_name")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "weak_typing")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -28,11 +34,7 @@ fn flags_generic_names_and_weak_typing() {
 #[test]
 fn flags_comment_style_and_overlong_names() {
     let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "comments.go",
-        go_fixture!("comment_slop.txt"),
-    );
+    write_fixture(&temp_dir, "comments.go", go_fixture!("comment_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -40,9 +42,24 @@ fn flags_comment_style_and_overlong_names() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "comment_style_title_case"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "comment_style_tutorial"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "overlong_name"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "comment_style_title_case")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "comment_style_tutorial")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "overlong_name")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -50,11 +67,7 @@ fn flags_comment_style_and_overlong_names() {
 #[test]
 fn does_not_flag_concise_comments() {
     let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "comments.go",
-        go_fixture!("comment_clean.txt"),
-    );
+    write_fixture(&temp_dir, "comments.go", go_fixture!("comment_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -62,8 +75,18 @@ fn does_not_flag_concise_comments() {
     })
     .expect("scan should succeed");
 
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "comment_style_title_case"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "comment_style_tutorial"));
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "comment_style_title_case")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "comment_style_tutorial")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

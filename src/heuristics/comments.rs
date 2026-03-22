@@ -3,10 +3,7 @@ use crate::model::{Finding, Severity};
 
 use super::common::{is_title_case_comment, is_tutorial_style_comment};
 
-pub(super) fn comment_style_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn comment_style_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let mut findings = Vec::new();
     let Some(doc_comment) = &function.doc_comment else {
         return findings;
@@ -46,7 +43,10 @@ pub(super) fn comment_style_findings(
                 "function {} has a verbose tutorial-style doc comment",
                 function.fingerprint.name
             ),
-            evidence: vec![format!("doc comment spans {} lines", doc_comment.lines().count())],
+            evidence: vec![format!(
+                "doc comment spans {} lines",
+                doc_comment.lines().count()
+            )],
         });
     }
 

@@ -215,12 +215,12 @@ fn count_boilerplate_err_guards(text: &str) -> usize {
                 continue;
             }
 
-            if let Some(next_line) = relevant_lines.get(index + 1) {
-                if next_line.starts_with("return ") {
-                    count += 1;
-                    index += 2;
-                    continue;
-                }
+            if let Some(next_line) = relevant_lines.get(index + 1)
+                && next_line.starts_with("return ")
+            {
+                count += 1;
+                index += 2;
+                continue;
             }
         }
 

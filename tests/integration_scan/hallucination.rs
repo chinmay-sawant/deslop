@@ -1,17 +1,13 @@
 use std::fs;
 
-use deslop::{scan_repository, ScanOptions};
+use deslop::{ScanOptions, scan_repository};
 
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
 fn flags_hallucinated_import_calls() {
     let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "main.go",
-        go_fixture!("hallucinated_import.txt"),
-    );
+    write_fixture(&temp_dir, "main.go", go_fixture!("hallucinated_import.txt"));
     write_fixture(
         &temp_dir,
         "utils/utils.go",
@@ -24,7 +20,12 @@ fn flags_hallucinated_import_calls() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "hallucinated_import_call"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hallucinated_import_call")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
