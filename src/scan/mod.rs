@@ -6,17 +6,22 @@ use std::time::Instant;
 use anyhow::{Context, Result};
 use rayon::prelude::*;
 
-use crate::analysis::{ParsedFile, analyzer_for_path};
-use crate::heuristics::evaluate_findings;
+use crate::analysis::{ParsedFile, backend_for_language, backend_for_path, supported_extensions};
+use crate::heuristics::evaluate_shared_findings;
 use crate::index::build_repository_index;
-use crate::model::{ParseFailure, ScanOptions, ScanReport, TimingBreakdown};
-use crate::scan::walker::discover_go_files;
+use crate::model::{Finding, ParseFailure, ScanOptions, ScanReport, TimingBreakdown};
+use crate::scan::walker::discover_source_files;
 
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let total_start = Instant::now();
 
     let discover_start = Instant::now();
-    let discovered_files = discover_go_files(&options.root, options.respect_ignore)
+    let supported_extensions = supported_extensions();
+    let discovered_files = discover_source_files(
+        &options.root,
+        options.respect_ignore,
+        &supported_extensions,
+    )
         .with_context(|| format!("failed to walk {}", options.root.display()))?;
     let discover_ms = discover_start.elapsed().as_millis();
 
@@ -70,6 +75,32 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     })
 }
 
+fn evaluate_findings(files: &[ParsedFile], index: &crate::index::RepositoryIndex) -> Vec<Finding> {
+    let mut findings = evaluate_shared_findings(files, index);
+
+    for file in files {
+        if let Some(backend) = backend_for_language(file.language) {
+            findings.extend(backend.evaluate_file_findings(file, index));
+        }
+    }
+
+    for backend in crate::analysis::registered_backends() {
+        let backend_files = files
+            .iter()
+            .filter(|file| file.language == backend.language())
+            .collect::<Vec<_>>();
+        findings.extend(backend.evaluate_repository_findings(&backend_files, index));
+    }
+
+    findings.sort_by(|left, right| {
+        left.path
+            .cmp(&right.path)
+            .then(left.start_line.cmp(&right.start_line))
+            .then(left.rule_id.cmp(&right.rule_id))
+    });
+    findings
+}
+
 enum FileOutcome {
     Parsed(ParsedFile),
     Generated(std::path::PathBuf),
@@ -93,7 +124,7 @@ fn analyze_file(path: &std::path::Path) -> FileOutcome {
                 return FileOutcome::Generated(path.to_path_buf());
             }
 
-            let Some(analyzer) = analyzer_for_path(path) else {
+            let Some(analyzer) = backend_for_path(path) else {
                 return FileOutcome::Failed(ParseFailure {
                     path: path.to_path_buf(),
                     message: format!("no analyzer registered for {}", path.display()),

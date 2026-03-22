@@ -1,9 +1,11 @@
 use std::path::PathBuf;
 
+use crate::analysis::Language;
 use crate::model::{FileReport, FunctionFingerprint, SymbolKind};
 
 #[derive(Debug, Clone)]
 pub(crate) struct ParsedFile {
+    pub language: Language,
     pub path: PathBuf,
     pub package_name: Option<String>,
     pub is_test_file: bool,
