@@ -78,6 +78,11 @@ Checkpoints must describe observable outcomes, not vague intent. Acceptance crit
 - [phase-3.md](phase-3.md): Rust bad-practice heuristics and fixtures
 - [phase-4.md](phase-4.md): verification, benchmark, documentation, and rollout
 
+## Rollout artifacts
+
+- [release-checklist.md](release-checklist.md): release validation checklist for shipped Rust support
+- [benchmark-note.md](benchmark-note.md): recorded Rust-only benchmark and scan snapshot for the current rollout baseline
+
 ## Execution policy
 
 When implementation starts, the default expectation is to work phase by phase and keep changes reviewable.

@@ -241,6 +241,22 @@ fn doc_comment_marker_findings(file: &ParsedFile, function: &ParsedFunction) -> 
         });
     }
 
+    if normalized.contains("HACK") {
+        findings.push(Finding {
+            rule_id: "hack_doc_comment_leftover".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: function.fingerprint.start_line,
+            end_line: function.fingerprint.start_line,
+            message: format!(
+                "function {} has a HACK marker in its Rust doc comment",
+                function.fingerprint.name
+            ),
+            evidence: vec![first_doc_comment_line(doc_comment)],
+        });
+    }
+
     findings
 }
 
@@ -258,7 +274,7 @@ fn rust_local_import_hallucination_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     index: &RepositoryIndex,
-    import_aliases: &BTreeMap<String, String>,
+    import_aliases: &BTreeMap<String, ImportSpec>,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
 
@@ -266,7 +282,7 @@ fn rust_local_import_hallucination_findings(
         let Some(receiver) = &call.receiver else {
             continue;
         };
-        let Some(import_path) = local_rust_import_path_for_receiver(receiver, import_aliases) else {
+        let Some(import_path) = local_rust_module_path_for_receiver(receiver, import_aliases) else {
             continue;
         };
 
@@ -329,7 +345,7 @@ fn rust_direct_call_hallucination_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     index: &RepositoryIndex,
-    import_aliases: &BTreeMap<String, String>,
+    import_aliases: &BTreeMap<String, ImportSpec>,
 ) -> Vec<Finding> {
     let Some(package_name) = &file.package_name else {
         return Vec::new();
@@ -348,12 +364,12 @@ fn rust_direct_call_hallucination_findings(
             continue;
         }
 
-        if let Some(import_path) = import_aliases.get(&call.name) {
-            if !is_local_rust_import_path(import_path) {
+        if let Some(import_spec) = import_aliases.get(&call.name) {
+            if !is_local_rust_import_path(import_spec.path.as_str()) {
                 continue;
             }
 
-            if direct_call_matches_local_import(index, &file.path, import_path) {
+            if direct_call_matches_local_import(index, &file.path, import_spec) {
                 continue;
             }
 
@@ -366,7 +382,7 @@ fn rust_direct_call_hallucination_findings(
                 end_line: call.line,
                 message: format!(
                     "direct call to {} resolves to local Rust import path {}, but no matching callable symbol was indexed",
-                    call.name, import_path
+                    call.name, import_spec.path
                 ),
                 evidence: vec![format!(
                     "direct call name {} matches local import alias {}",
@@ -408,30 +424,24 @@ fn rust_direct_call_hallucination_findings(
 fn direct_call_matches_local_import(
     index: &RepositoryIndex,
     file_path: &Path,
-    import_path: &str,
+    import_spec: &ImportSpec,
 ) -> bool {
-    if let ImportResolution::Resolved(module_package) = index.resolve_rust_module_import(file_path, import_path) {
-        return module_package.has_symbol(module_package.package_name.as_str());
-    }
-
-    let Some((module_path, item_name)) = split_rust_import_item(import_path) else {
+    let Some(module_path) = import_spec.namespace_path.as_deref() else {
         return false;
     };
+    let Some(item_name) = import_spec.imported_name.as_deref() else {
+        return false;
+    };
+    if item_name == "*" {
+        return false;
+    }
 
-    match index.resolve_rust_module_import(file_path, &module_path) {
+    match index.resolve_rust_module_import(file_path, module_path) {
         ImportResolution::Resolved(module_package) => {
-            module_package.has_function(&item_name) || module_package.has_symbol(&item_name)
+            module_package.has_function(item_name) || module_package.has_symbol(item_name)
         }
         ImportResolution::Ambiguous(_) | ImportResolution::Unresolved => false,
     }
-}
-
-fn split_rust_import_item(import_path: &str) -> Option<(String, String)> {
-    let (module_path, item_name) = import_path.rsplit_once("::")?;
-    if module_path.is_empty() || item_name.is_empty() {
-        return None;
-    }
-    Some((module_path.to_string(), item_name.to_string()))
 }
 
 fn looks_like_rust_local_symbol(name: &str) -> bool {
@@ -444,15 +454,15 @@ fn looks_like_rust_local_symbol(name: &str) -> bool {
         && characters.all(|character| character.is_ascii_lowercase() || character.is_ascii_digit() || character == '_')
 }
 
-fn local_rust_import_path_for_receiver(
+fn local_rust_module_path_for_receiver(
     receiver: &str,
-    import_aliases: &BTreeMap<String, String>,
+    import_aliases: &BTreeMap<String, ImportSpec>,
 ) -> Option<String> {
-    let (alias, import_path) = import_aliases
+    let (alias, import_spec) = import_aliases
         .iter()
-        .filter(|(alias, path)| {
+        .filter(|(alias, import_spec)| {
             alias.as_str() != "*"
-                && is_local_rust_import_path(path)
+                && is_local_rust_import_path(import_spec.path.as_str())
                 && (receiver == alias.as_str()
                     || receiver
                         .strip_prefix(alias.as_str())
@@ -465,8 +475,8 @@ fn local_rust_import_path_for_receiver(
         .and_then(|value| value.strip_prefix("::"));
 
     Some(match suffix {
-        Some(suffix) if !suffix.is_empty() => format!("{import_path}::{suffix}"),
-        _ => import_path.clone(),
+        Some(suffix) if !suffix.is_empty() => format!("{}::{suffix}", import_spec.path),
+        _ => import_spec.path.clone(),
     })
 }
 
@@ -476,9 +486,9 @@ fn is_local_rust_import_path(import_path: &str) -> bool {
         || import_path.starts_with("super::")
 }
 
-fn import_alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, String> {
+fn import_alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, ImportSpec> {
     imports
         .iter()
-        .map(|import| (import.alias.clone(), import.path.clone()))
+    .map(|import| (import.alias.clone(), import.clone()))
         .collect()
 }

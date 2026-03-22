@@ -33,6 +33,7 @@ This checklist is the concrete Phase 4 release artifact for deslop's Rust backen
 - Keep one repeatable Rust-only benchmark target in addition to the existing Go baseline.
 - Use `cargo run -- bench --warmups 2 --repeats 5 <path>` for recorded notes.
 - Record discovered files, analyzed files, functions, findings, parse failures, and stage timings together.
+- Keep the current recorded rollout snapshot in `guides/rust/benchmark-note.md`.
 - Do not treat benchmark differences as hard release blockers until the benchmark target set is stable.
 
 ## Deferred Backlog To Recheck

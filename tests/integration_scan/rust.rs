@@ -100,6 +100,7 @@ fn flags_the_initial_rust_rule_pack() {
     assert!(report.findings.iter().any(|finding| finding.rule_id == "unreachable_macro_leftover"));
     assert!(report.findings.iter().any(|finding| finding.rule_id == "todo_doc_comment_leftover"));
     assert!(report.findings.iter().any(|finding| finding.rule_id == "fixme_doc_comment_leftover"));
+    assert!(report.findings.iter().any(|finding| finding.rule_id == "hack_doc_comment_leftover"));
     assert!(report.findings.iter().any(|finding| finding.rule_id == "unwrap_in_non_test_code"));
     assert!(report.findings.iter().any(|finding| finding.rule_id == "expect_in_non_test_code"));
     assert!(report.findings.iter().any(|finding| finding.rule_id == "unsafe_without_safety_comment"));
@@ -125,6 +126,7 @@ fn suppresses_test_only_rust_rule_hits_and_accepts_documented_unsafe() {
     assert!(!report.findings.iter().any(|finding| finding.rule_id == "unreachable_macro_leftover"));
     assert!(!report.findings.iter().any(|finding| finding.rule_id == "todo_doc_comment_leftover"));
     assert!(!report.findings.iter().any(|finding| finding.rule_id == "fixme_doc_comment_leftover"));
+    assert!(!report.findings.iter().any(|finding| finding.rule_id == "hack_doc_comment_leftover"));
     assert!(!report.findings.iter().any(|finding| finding.rule_id == "unwrap_in_non_test_code"));
     assert!(!report.findings.iter().any(|finding| finding.rule_id == "expect_in_non_test_code"));
     assert!(!report.findings.iter().any(|finding| finding.rule_id == "unsafe_without_safety_comment"));

@@ -109,6 +109,8 @@ pub(crate) struct CallSite {
 pub(crate) struct ImportSpec {
     pub alias: String,
     pub path: String,
+    pub namespace_path: Option<String>,
+    pub imported_name: Option<String>,
 }
 
 #[derive(Debug, Clone)]

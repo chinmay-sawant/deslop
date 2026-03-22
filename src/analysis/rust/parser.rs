@@ -80,7 +80,7 @@ fn flatten_use_tree(
                 .to_string();
             let path = combine_path_prefix(prefix.as_deref(), &render_use_path(path_node, source));
 
-            imports.push(ImportSpec { alias, path });
+            imports.push(build_rust_import_spec(alias, path));
         }
         "scoped_use_list" => {
             let next_prefix = node
@@ -109,6 +109,8 @@ fn flatten_use_tree(
             imports.push(ImportSpec {
                 alias: "*".to_string(),
                 path: wildcard_path,
+                namespace_path: prefix,
+                imported_name: Some("*".to_string()),
             });
         }
         _ => {
@@ -119,12 +121,31 @@ fn flatten_use_tree(
                 let path = combine_path_prefix(prefix.as_deref(), &render_use_path(node, source));
                 (import_alias(&path), path)
             };
-            imports.push(ImportSpec {
-                alias,
-                path,
-            });
+            imports.push(build_rust_import_spec(alias, path));
         }
     }
+}
+
+fn build_rust_import_spec(alias: String, path: String) -> ImportSpec {
+    let (namespace_path, imported_name) = rust_import_segments(&path);
+
+    ImportSpec {
+        alias,
+        path,
+        namespace_path,
+        imported_name,
+    }
+}
+
+fn rust_import_segments(path: &str) -> (Option<String>, Option<String>) {
+    if let Some((namespace_path, imported_name)) = path.rsplit_once("::") {
+        return (
+            Some(namespace_path.to_string()),
+            Some(imported_name.to_string()),
+        );
+    }
+
+    (None, None)
 }
 
 fn render_use_path(node: Node<'_>, source: &str) -> String {
@@ -1042,6 +1063,8 @@ mod tests {
         }));
         assert!(parsed.imports.iter().any(|import| {
             import.alias == "FmtDisplay" && import.path == "std::fmt::Display"
+                && import.namespace_path.as_deref() == Some("std::fmt")
+                && import.imported_name.as_deref() == Some("Display")
         }));
         assert!(parsed.imports.iter().any(|import| {
             import.alias == "*" && import.path.contains("crate::config")

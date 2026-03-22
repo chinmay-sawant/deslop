@@ -61,6 +61,7 @@ This phase makes Rust support shippable. By the time this phase starts, deslop s
 
 	- keep the existing Go baseline and add one Rust-only baseline using the same warmup and repeat counts
 	- keep the benchmark note attached to file, function, finding, package, symbol, and import counts so timing shifts can be interpreted
+	- store the current recorded Rust-only baseline in `guides/rust/benchmark-note.md`
 	- do not treat benchmark differences as release blockers until the repository set and machine-noise expectations are stable
 
 3. Update the public documentation set.
@@ -104,6 +105,7 @@ This phase makes Rust support shippable. By the time this phase starts, deslop s
 
 - Run `cargo test --test integration_scan`, full `cargo test`, and `cargo build --release`.
 - Re-check Rust-only and mixed-language fixture repositories after any backend or rule-pack changes.
+- Re-record `guides/rust/benchmark-note.md` after material Rust parser, index, or heuristic changes.
 - Review `guides/implementation-guide.md`, `guides/features-and-detections.md`, and `README.md` for documentation sync before calling the phase complete.
 
 Current matrix notes:
@@ -117,6 +119,7 @@ Current matrix notes:
 
 - Update this file whenever the verification matrix or rollout criteria change.
 - Keep the phase cross-links in `guides/rust/index.md` accurate.
+- Keep `guides/rust/benchmark-note.md` aligned with the current benchmark target and recorded rollout snapshot.
 - Update `guides/implementation-guide.md`, `guides/features-and-detections.md`, and `README.md` whenever shipped Rust support changes observable behavior.
 
 ## Risks And Open Questions

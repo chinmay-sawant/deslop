@@ -21,6 +21,11 @@ pub fn documented_fixme_leftover() {
     println!("fixme-doc");
 }
 
+/// HACK: keep this temporary branch until the migration is complete.
+pub fn documented_hack_leftover() {
+    println!("hack-doc");
+}
+
 pub fn leaves_panic() {
     panic!("boom");
 }
