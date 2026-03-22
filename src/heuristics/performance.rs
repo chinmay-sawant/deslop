@@ -29,10 +29,7 @@ pub(super) fn allocation_churn_findings(
         .collect()
 }
 
-pub(super) fn fmt_hot_path_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn fmt_hot_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .fmt_in_loop_lines
         .iter()
@@ -155,8 +152,7 @@ pub(super) fn database_query_findings(
                 ),
                 evidence: vec![
                     format!("looped query method: {receiver}.{}", query_call.method_name),
-                    "query execution inside loops often turns into N+1 access patterns"
-                        .to_string(),
+                    "query execution inside loops often turns into N+1 access patterns".to_string(),
                 ],
             });
         }
@@ -221,12 +217,13 @@ pub(super) fn full_dataset_load_findings(
             let receiver = call.receiver.as_deref()?;
             let import_path = import_aliases.get(receiver)?;
             let evidence = match (import_path.as_str(), call.name.as_str()) {
-                ("io", "ReadAll") | ("io/ioutil", "ReadAll") => {
-                    Some(format!("{receiver}.{} reads the full stream into memory", call.name))
-                }
-                ("os", "ReadFile") => {
-                    Some(format!("{receiver}.ReadFile loads the whole file before processing"))
-                }
+                ("io", "ReadAll") | ("io/ioutil", "ReadAll") => Some(format!(
+                    "{receiver}.{} reads the full stream into memory",
+                    call.name
+                )),
+                ("os", "ReadFile") => Some(format!(
+                    "{receiver}.ReadFile loads the whole file before processing"
+                )),
                 _ => None,
             }?;
 

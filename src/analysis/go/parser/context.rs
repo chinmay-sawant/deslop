@@ -41,12 +41,13 @@ fn visit_for_sleep_in_loop(
 ) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
-    if next_inside_loop && node.kind() == "call_expression" {
-        if let Some(function_node) = node.child_by_field_name("function") {
-            let target = source.get(function_node.byte_range()).unwrap_or("").trim();
-            if is_time_sleep_call(target, imports) {
-                lines.push(node.start_position().row + 1);
-            }
+    if next_inside_loop
+        && node.kind() == "call_expression"
+        && let Some(function_node) = node.child_by_field_name("function")
+    {
+        let target = source.get(function_node.byte_range()).unwrap_or("").trim();
+        if is_time_sleep_call(target, imports) {
+            lines.push(node.start_position().row + 1);
         }
     }
 
@@ -103,10 +104,12 @@ fn visit_for_context_factory_calls(
     imports: &[ImportSpec],
     calls: &mut Vec<ContextFactoryCall>,
 ) {
-    if matches!(node.kind(), "assignment_statement" | "short_var_declaration" | "var_spec") {
-        if let Some(call) = parse_context_factory_call(node, source, imports) {
-            calls.push(call);
-        }
+    if matches!(
+        node.kind(),
+        "assignment_statement" | "short_var_declaration" | "var_spec"
+    ) && let Some(call) = parse_context_factory_call(node, source, imports)
+    {
+        calls.push(call);
     }
 
     let mut cursor = node.walk();
@@ -240,12 +243,13 @@ fn visit_for_mutex_lock_in_loop(
 ) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
-    if next_inside_loop && node.kind() == "call_expression" {
-        if let Some(function_node) = node.child_by_field_name("function") {
-            let target = source.get(function_node.byte_range()).unwrap_or("").trim();
-            if is_mutex_lock_call(target) {
-                lines.push(node.start_position().row + 1);
-            }
+    if next_inside_loop
+        && node.kind() == "call_expression"
+        && let Some(function_node) = node.child_by_field_name("function")
+    {
+        let target = source.get(function_node.byte_range()).unwrap_or("").trim();
+        if is_mutex_lock_call(target) {
+            lines.push(node.start_position().row + 1);
         }
     }
 

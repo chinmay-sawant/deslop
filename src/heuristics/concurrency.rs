@@ -160,7 +160,10 @@ fn has_obvious_coordination_signal(function: &ParsedFunction) -> bool {
         || function.calls.iter().any(|call| {
             call.receiver.as_ref().is_some_and(|receiver| {
                 COORDINATION_METHODS.contains(&call.name.as_str())
-                    && matches!(receiver.as_str(), "wg" | "group" | "g" | "errGroup" | "errgroup")
+                    && matches!(
+                        receiver.as_str(),
+                        "wg" | "group" | "g" | "errGroup" | "errgroup"
+                    )
             })
         })
 }

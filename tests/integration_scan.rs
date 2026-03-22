@@ -1,15 +1,19 @@
 macro_rules! go_fixture {
     ($path:literal) => {
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/go/", $path))
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/go/",
+            $path
+        ))
     };
 }
 
 #[path = "integration_scan/benchmarking.rs"]
 mod benchmarking;
-#[path = "integration_scan/consistency.rs"]
-mod consistency;
 #[path = "integration_scan/concurrency.rs"]
 mod concurrency;
+#[path = "integration_scan/consistency.rs"]
+mod consistency;
 #[path = "integration_scan/context.rs"]
 mod context;
 #[path = "integration_scan/core.rs"]
@@ -31,7 +35,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use deslop::{scan_repository, ScanOptions};
+use deslop::{ScanOptions, scan_repository};
 
 #[test]
 fn flags_error_handling_slop_patterns() {
@@ -48,9 +52,24 @@ fn flags_error_handling_slop_patterns() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "dropped_error"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "panic_on_error"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "error_wrapping_misuse"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "dropped_error")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "panic_on_error")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "error_wrapping_misuse")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -70,9 +89,24 @@ fn does_not_flag_wrapped_error_handling_as_misuse() {
     })
     .expect("scan should succeed");
 
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "error_wrapping_misuse"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "dropped_error"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "panic_on_error"));
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "error_wrapping_misuse")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "dropped_error")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "panic_on_error")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

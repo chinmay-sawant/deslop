@@ -73,7 +73,7 @@ fn build_stage_stats(mut samples: Vec<u128>) -> StageStats {
     let max_ms = *samples.last().unwrap_or(&0);
     let sum: u128 = samples.iter().copied().sum();
     let mean_ms = sum as f64 / samples.len() as f64;
-    let median_ms = if samples.len() % 2 == 0 {
+    let median_ms = if samples.len().is_multiple_of(2) {
         let upper = samples[samples.len() / 2];
         let lower = samples[(samples.len() / 2) - 1];
         (lower + upper) as f64 / 2.0

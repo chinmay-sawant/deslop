@@ -44,7 +44,9 @@ pub(super) fn weak_crypto_findings(file: &ParsedFile, function: &ParsedFunction)
 pub(super) fn package_hardcoded_secret_findings(file: &ParsedFile) -> Vec<Finding> {
     file.package_string_literals
         .iter()
-        .filter(|literal| is_secret_like_name(&literal.name) && looks_like_secret_value(&literal.value))
+        .filter(|literal| {
+            is_secret_like_name(&literal.name) && looks_like_secret_value(&literal.value)
+        })
         .map(|literal| Finding {
             rule_id: "hardcoded_secret".to_string(),
             severity: Severity::Warning,
@@ -64,11 +66,16 @@ pub(super) fn package_hardcoded_secret_findings(file: &ParsedFile) -> Vec<Findin
         .collect()
 }
 
-pub(super) fn hardcoded_secret_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn hardcoded_secret_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     function
         .local_string_literals
         .iter()
-        .filter(|literal| is_secret_like_name(&literal.name) && looks_like_secret_value(&literal.value))
+        .filter(|literal| {
+            is_secret_like_name(&literal.name) && looks_like_secret_value(&literal.value)
+        })
         .map(|literal| Finding {
             rule_id: "hardcoded_secret".to_string(),
             severity: Severity::Warning,
@@ -88,7 +95,10 @@ pub(super) fn hardcoded_secret_findings(file: &ParsedFile, function: &ParsedFunc
         .collect()
 }
 
-pub(super) fn sql_string_concat_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn sql_string_concat_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     function
         .db_query_calls
         .iter()
@@ -108,7 +118,10 @@ pub(super) fn sql_string_concat_findings(file: &ParsedFile, function: &ParsedFun
                 format!("query method: {}", query_call.method_name),
                 format!(
                     "query expression: {}",
-                    query_call.query_argument_text.as_deref().unwrap_or("<unknown>")
+                    query_call
+                        .query_argument_text
+                        .as_deref()
+                        .unwrap_or("<unknown>")
                 ),
             ],
         })
@@ -140,7 +153,12 @@ fn is_secret_like_name(name: &str) -> bool {
         || tokens.contains(&"apikey".to_string())
         || tokens.contains(&"private".to_string()) && tokens.contains(&"key".to_string())
         || tokens.contains(&"token".to_string())
-            && tokens.iter().any(|token| matches!(token.as_str(), "api" | "auth" | "access" | "refresh" | "client"))
+            && tokens.iter().any(|token| {
+                matches!(
+                    token.as_str(),
+                    "api" | "auth" | "access" | "refresh" | "client"
+                )
+            })
 }
 
 fn looks_like_secret_value(value: &str) -> bool {
@@ -148,6 +166,9 @@ fn looks_like_secret_value(value: &str) -> bool {
     let normalized = trimmed.to_ascii_lowercase();
 
     trimmed.len() >= 8
-        && !matches!(normalized.as_str(), "placeholder" | "example" | "sample" | "changeme" | "your-api-key" | "your-secret")
+        && !matches!(
+            normalized.as_str(),
+            "placeholder" | "example" | "sample" | "changeme" | "your-api-key" | "your-secret"
+        )
         && normalized != "bearer"
 }

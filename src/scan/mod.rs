@@ -17,12 +17,9 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
 
     let discover_start = Instant::now();
     let supported_extensions = supported_extensions();
-    let discovered_files = discover_source_files(
-        &options.root,
-        options.respect_ignore,
-        &supported_extensions,
-    )
-        .with_context(|| format!("failed to walk {}", options.root.display()))?;
+    let discovered_files =
+        discover_source_files(&options.root, options.respect_ignore, &supported_extensions)
+            .with_context(|| format!("failed to walk {}", options.root.display()))?;
     let discover_ms = discover_start.elapsed().as_millis();
 
     let parse_start = Instant::now();

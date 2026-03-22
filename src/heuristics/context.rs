@@ -47,7 +47,10 @@ pub(super) fn missing_context_findings(
                     function.fingerprint.name
                 ),
                 evidence: vec![
-                    format!("context-free API call: {receiver}.{} from {import_path}", call.name),
+                    format!(
+                        "context-free API call: {receiver}.{} from {import_path}",
+                        call.name
+                    ),
                     "function signature does not accept context.Context".to_string(),
                 ],
             })
@@ -63,9 +66,10 @@ pub(super) fn missing_cancel_call_findings(
         .context_factory_calls
         .iter()
         .filter(|factory_call| {
-            !function.calls.iter().any(|call| {
-                call.receiver.is_none() && call.name == factory_call.cancel_name
-            })
+            !function
+                .calls
+                .iter()
+                .any(|call| call.receiver.is_none() && call.name == factory_call.cancel_name)
         })
         .map(|factory_call| Finding {
             rule_id: "missing_cancel_call".to_string(),
@@ -89,10 +93,7 @@ pub(super) fn missing_cancel_call_findings(
         .collect()
 }
 
-pub(super) fn sleep_polling_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn sleep_polling_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .sleep_in_loop_lines
         .iter()
@@ -114,10 +115,7 @@ pub(super) fn sleep_polling_findings(
         .collect()
 }
 
-pub(super) fn busy_waiting_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn busy_waiting_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .busy_wait_lines
         .iter()

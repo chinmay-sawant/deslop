@@ -1,17 +1,13 @@
 use std::fs;
 
-use deslop::{scan_repository, ScanOptions};
+use deslop::{ScanOptions, scan_repository};
 
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
 fn scans_go_files_and_extracts_fingerprints() {
     let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "main.go",
-        go_fixture!("simple.go"),
-    );
+    write_fixture(&temp_dir, "main.go", go_fixture!("simple.go"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -40,16 +36,8 @@ fn scans_go_files_and_extracts_fingerprints() {
 fn respects_gitignore() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, ".gitignore", "ignored.go\n");
-    write_fixture(
-        &temp_dir,
-        "main.go",
-        go_fixture!("simple.go"),
-    );
-    write_fixture(
-        &temp_dir,
-        "ignored.go",
-        go_fixture!("simple.go"),
-    );
+    write_fixture(&temp_dir, "main.go", go_fixture!("simple.go"));
+    write_fixture(&temp_dir, "ignored.go", go_fixture!("simple.go"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -66,16 +54,8 @@ fn respects_gitignore() {
 #[test]
 fn skips_generated_files_and_keeps_syntax_error_flag() {
     let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "generated.go",
-        go_fixture!("generated.go"),
-    );
-    write_fixture(
-        &temp_dir,
-        "broken.go",
-        go_fixture!("malformed.txt"),
-    );
+    write_fixture(&temp_dir, "generated.go", go_fixture!("generated.go"));
+    write_fixture(&temp_dir, "broken.go", go_fixture!("malformed.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -86,7 +66,10 @@ fn skips_generated_files_and_keeps_syntax_error_flag() {
     assert_eq!(report.files_discovered, 2);
     assert_eq!(report.files_analyzed, 1);
     assert_eq!(
-        report.files[0].path.file_name().and_then(|name| name.to_str()),
+        report.files[0]
+            .path
+            .file_name()
+            .and_then(|name| name.to_str()),
         Some("broken.go")
     );
     assert!(report.files[0].syntax_error);

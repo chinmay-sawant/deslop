@@ -12,7 +12,8 @@ pub(super) fn test_quality_findings(file: &ParsedFile, function: &ParsedFunction
 
     let mut findings = Vec::new();
 
-    if summary.assertion_like_calls == 0 && summary.skip_calls == 0 && summary.production_calls > 0 {
+    if summary.assertion_like_calls == 0 && summary.skip_calls == 0 && summary.production_calls > 0
+    {
         findings.push(Finding {
             rule_id: "test_without_assertion_signal".to_string(),
             severity: Severity::Warning,
@@ -48,7 +49,10 @@ pub(super) fn test_quality_findings(file: &ParsedFile, function: &ParsedFunction
                 function.fingerprint.name
             ),
             evidence: vec![
-                format!("assertion-like calls observed: {}", summary.assertion_like_calls),
+                format!(
+                    "assertion-like calls observed: {}",
+                    summary.assertion_like_calls
+                ),
                 "no negative-path or error assertion signals were observed".to_string(),
             ],
         });
@@ -56,7 +60,9 @@ pub(super) fn test_quality_findings(file: &ParsedFile, function: &ParsedFunction
 
     if summary.has_todo_marker
         || summary.skip_calls > 0 && summary.production_calls == 0
-        || summary.assertion_like_calls == 0 && summary.production_calls == 0 && function.fingerprint.line_count <= 6
+        || summary.assertion_like_calls == 0
+            && summary.production_calls == 0
+            && function.fingerprint.line_count <= 6
     {
         findings.push(Finding {
             rule_id: "placeholder_test_body".to_string(),

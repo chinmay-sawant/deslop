@@ -2,11 +2,7 @@ use std::path::Path;
 
 use crate::model::SymbolKind;
 
-use super::{
-    comments::extract_doc_comment,
-    general::package_alias_from_import_path,
-    parse_file,
-};
+use super::{comments::extract_doc_comment, general::package_alias_from_import_path, parse_file};
 
 #[test]
 fn derives_import_alias_from_path() {
@@ -36,12 +32,18 @@ func collectAllStandardFontsInTemplate() {
     assert!(parsed.symbols.iter().any(|symbol| {
         symbol.name == "IsCustomFont" && matches!(symbol.kind, SymbolKind::Function)
     }));
-    assert!(!parsed.symbols.iter().any(|symbol| symbol.name == "PlainValue"));
+    assert!(
+        !parsed
+            .symbols
+            .iter()
+            .any(|symbol| symbol.name == "PlainValue")
+    );
 }
 
 #[test]
 fn extracts_doc_comment_text() {
-    let source = "// Run Processes The Input\n// This function does X by doing Y because Z\nfunc Run() {}\n";
+    let source =
+        "// Run Processes The Input\n// This function does X by doing Y because Z\nfunc Run() {}\n";
 
     let comment = extract_doc_comment(source, 2).expect("doc comment should exist");
     assert_eq!(
@@ -307,5 +309,11 @@ func buildUser() *User { return &User{} }
     assert_eq!(test_fn.local_string_literals.len(), 1);
     assert_eq!(test_fn.local_string_literals[0].name, "token");
     assert!(test_fn.test_summary.is_some());
-    assert_eq!(test_fn.test_summary.as_ref().map(|summary| summary.production_calls), Some(2));
+    assert_eq!(
+        test_fn
+            .test_summary
+            .as_ref()
+            .map(|summary| summary.production_calls),
+        Some(2)
+    );
 }

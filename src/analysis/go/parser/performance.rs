@@ -31,21 +31,20 @@ fn visit_for_string_variables(node: Node<'_>, source: &str, names: &mut BTreeSet
             if source
                 .get(type_node.byte_range())
                 .is_some_and(|text| text.trim() == "string")
+                && let Some(name_node) = find_var_name_node(node)
             {
-                if let Some(name_node) = find_var_name_node(node) {
-                    for (name, _) in collect_identifiers(name_node, source) {
-                        names.insert(name);
-                    }
+                for (name, _) in collect_identifiers(name_node, source) {
+                    names.insert(name);
                 }
             }
         }
         "short_var_declaration" | "assignment_statement" => {
-            if let Some(text) = source.get(node.byte_range()) {
-                if let Some((left, right)) = split_assignment(text) {
-                    let left = left.trim();
-                    if is_identifier_name(left) && contains_string_literal(right) {
-                        names.insert(left.to_string());
-                    }
+            if let Some(text) = source.get(node.byte_range())
+                && let Some((left, right)) = split_assignment(text)
+            {
+                let left = left.trim();
+                if is_identifier_name(left) && contains_string_literal(right) {
+                    names.insert(left.to_string());
                 }
             }
         }
@@ -67,12 +66,12 @@ fn visit_for_string_concat_in_loop(
 ) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
-    if next_inside_loop && node.kind() == "assignment_statement" {
-        if let Some(text) = source.get(node.byte_range()) {
-            if is_string_concat_assignment(text, string_variables) {
-                lines.push(node.start_position().row + 1);
-            }
-        }
+    if next_inside_loop
+        && node.kind() == "assignment_statement"
+        && let Some(text) = source.get(node.byte_range())
+        && is_string_concat_assignment(text, string_variables)
+    {
+        lines.push(node.start_position().row + 1);
     }
 
     let mut cursor = node.walk();
@@ -96,7 +95,9 @@ fn is_string_concat_assignment(text: &str, string_variables: &BTreeSet<String>) 
         return false;
     }
 
-    right.starts_with(&format!("{left}+")) || right.contains(&format!("+\"")) || right.contains("+`")
+    right.starts_with(&format!("{left}+"))
+        || right.contains(&"+\"".to_string())
+        || right.contains("+`")
 }
 
 fn contains_string_literal(text: &str) -> bool {
@@ -122,12 +123,13 @@ fn visit_for_allocation_in_loop(
 ) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
-    if next_inside_loop && node.kind() == "call_expression" {
-        if let Some(function_node) = node.child_by_field_name("function") {
-            let target = source.get(function_node.byte_range()).unwrap_or("").trim();
-            if is_allocation_call(target, imports) {
-                lines.push(node.start_position().row + 1);
-            }
+    if next_inside_loop
+        && node.kind() == "call_expression"
+        && let Some(function_node) = node.child_by_field_name("function")
+    {
+        let target = source.get(function_node.byte_range()).unwrap_or("").trim();
+        if is_allocation_call(target, imports) {
+            lines.push(node.start_position().row + 1);
         }
     }
 
@@ -168,12 +170,13 @@ fn visit_for_fmt_in_loop(
 ) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
-    if next_inside_loop && node.kind() == "call_expression" {
-        if let Some(function_node) = node.child_by_field_name("function") {
-            let target = source.get(function_node.byte_range()).unwrap_or("").trim();
-            if is_fmt_hot_path_call(target, imports) {
-                lines.push(node.start_position().row + 1);
-            }
+    if next_inside_loop
+        && node.kind() == "call_expression"
+        && let Some(function_node) = node.child_by_field_name("function")
+    {
+        let target = source.get(function_node.byte_range()).unwrap_or("").trim();
+        if is_fmt_hot_path_call(target, imports) {
+            lines.push(node.start_position().row + 1);
         }
     }
 
@@ -186,9 +189,11 @@ fn visit_for_fmt_in_loop(
 fn is_fmt_hot_path_call(target: &str, imports: &[ImportSpec]) -> bool {
     imports.iter().any(|import| {
         import.path == "fmt"
-            && ["Sprintf", "Sprint", "Sprintln", "Fprintf", "Fprint", "Fprintln"]
-                .iter()
-                .any(|name| target == format!("{}.{}", import.alias, name))
+            && [
+                "Sprintf", "Sprint", "Sprintln", "Fprintf", "Fprint", "Fprintln",
+            ]
+            .iter()
+            .any(|name| target == format!("{}.{}", import.alias, name))
     })
 }
 
@@ -211,12 +216,13 @@ fn visit_for_reflection_in_loop(
 ) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
-    if next_inside_loop && node.kind() == "call_expression" {
-        if let Some(function_node) = node.child_by_field_name("function") {
-            let target = source.get(function_node.byte_range()).unwrap_or("").trim();
-            if is_reflection_call(target, imports) {
-                lines.push(node.start_position().row + 1);
-            }
+    if next_inside_loop
+        && node.kind() == "call_expression"
+        && let Some(function_node) = node.child_by_field_name("function")
+    {
+        let target = source.get(function_node.byte_range()).unwrap_or("").trim();
+        if is_reflection_call(target, imports) {
+            lines.push(node.start_position().row + 1);
         }
     }
 
@@ -252,12 +258,13 @@ fn visit_for_json_marshal_in_loop(
 ) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
-    if next_inside_loop && node.kind() == "call_expression" {
-        if let Some(function_node) = node.child_by_field_name("function") {
-            let target = source.get(function_node.byte_range()).unwrap_or("").trim();
-            if is_json_marshal_call(target, imports) {
-                lines.push(node.start_position().row + 1);
-            }
+    if next_inside_loop
+        && node.kind() == "call_expression"
+        && let Some(function_node) = node.child_by_field_name("function")
+    {
+        let target = source.get(function_node.byte_range()).unwrap_or("").trim();
+        if is_json_marshal_call(target, imports) {
+            lines.push(node.start_position().row + 1);
         }
     }
 
@@ -295,29 +302,28 @@ fn visit_for_db_query_calls(
         let function_node = node.child_by_field_name("function");
         let arguments_node = node.child_by_field_name("arguments");
 
-        if let Some(function_node) = function_node {
-            if let Some((receiver, name)) = extract_call_target(function_node, source) {
-                if is_database_query_method(&name) {
-                    let query_argument_text = arguments_node
-                        .and_then(|arguments| query_argument_node(arguments, &name))
-                        .and_then(|query_node| source.get(query_node.byte_range()).map(ToOwned::to_owned));
-                    let query_text = arguments_node
-                        .and_then(|arguments| query_argument_node(arguments, &name))
-                        .and_then(|query_node| first_string_literal(query_node, source));
-                    let query_uses_dynamic_construction = query_argument_text
-                        .as_deref()
-                        .is_some_and(is_dynamic_query_expression);
-                    calls.push(DbQueryCall {
-                        line: node.start_position().row + 1,
-                        receiver,
-                        method_name: name,
-                        query_text,
-                        query_argument_text,
-                        query_uses_dynamic_construction,
-                        in_loop: next_inside_loop,
-                    });
-                }
-            }
+        if let Some(function_node) = function_node
+            && let Some((receiver, name)) = extract_call_target(function_node, source)
+            && is_database_query_method(&name)
+        {
+            let query_argument_text = arguments_node
+                .and_then(|arguments| query_argument_node(arguments, &name))
+                .and_then(|query_node| source.get(query_node.byte_range()).map(ToOwned::to_owned));
+            let query_text = arguments_node
+                .and_then(|arguments| query_argument_node(arguments, &name))
+                .and_then(|query_node| first_string_literal(query_node, source));
+            let query_uses_dynamic_construction = query_argument_text
+                .as_deref()
+                .is_some_and(is_dynamic_query_expression);
+            calls.push(DbQueryCall {
+                line: node.start_position().row + 1,
+                receiver,
+                method_name: name,
+                query_text,
+                query_argument_text,
+                query_uses_dynamic_construction,
+                in_loop: next_inside_loop,
+            });
         }
     }
 
@@ -346,9 +352,14 @@ fn is_database_query_method(name: &str) -> bool {
     )
 }
 
-fn query_argument_node<'tree>(arguments_node: Node<'tree>, method_name: &str) -> Option<Node<'tree>> {
+fn query_argument_node<'tree>(
+    arguments_node: Node<'tree>,
+    method_name: &str,
+) -> Option<Node<'tree>> {
     let mut cursor = arguments_node.walk();
-    let arguments = arguments_node.named_children(&mut cursor).collect::<Vec<_>>();
+    let arguments = arguments_node
+        .named_children(&mut cursor)
+        .collect::<Vec<_>>();
     let index = match method_name {
         "Query" | "QueryRow" | "Exec" | "Raw" | "Prepare" => Some(0),
         "QueryContext" | "QueryRowContext" | "ExecContext" | "PrepareContext" => Some(1),

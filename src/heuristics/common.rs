@@ -15,8 +15,8 @@ const SUSPICIOUS_GENERIC_NAMES: &[&str] = &[
 ];
 
 const GO_BUILTINS: &[&str] = &[
-    "append", "cap", "clear", "close", "complex", "copy", "delete", "imag", "len",
-    "make", "max", "min", "new", "panic", "print", "println", "real", "recover",
+    "append", "cap", "clear", "close", "complex", "copy", "delete", "imag", "len", "make", "max",
+    "min", "new", "panic", "print", "println", "real", "recover",
 ];
 
 pub(super) fn import_alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, String> {
@@ -167,11 +167,17 @@ pub(super) fn is_potentially_blocking_call(
 
     matches!(import_path.as_str(), "time") && call.name == "Sleep"
         || matches!(import_path.as_str(), "net/http")
-            && matches!(call.name.as_str(), "Get" | "Head" | "Post" | "PostForm" | "Do")
+            && matches!(
+                call.name.as_str(),
+                "Get" | "Head" | "Post" | "PostForm" | "Do"
+            )
         || matches!(import_path.as_str(), "net")
             && matches!(call.name.as_str(), "Dial" | "DialTimeout" | "Listen")
         || matches!(import_path.as_str(), "os")
-            && matches!(call.name.as_str(), "ReadFile" | "WriteFile" | "Open" | "OpenFile" | "Create")
+            && matches!(
+                call.name.as_str(),
+                "ReadFile" | "WriteFile" | "Open" | "OpenFile" | "Create"
+            )
         || matches!(import_path.as_str(), "io") && call.name == "ReadAll"
 }
 

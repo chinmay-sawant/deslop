@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-use deslop::{benchmark_repository, scan_repository, BenchmarkOptions, ScanOptions};
+use deslop::{BenchmarkOptions, ScanOptions, benchmark_repository, scan_repository};
 
 use super::{create_temp_workspace, write_fixture};
 
@@ -20,7 +20,11 @@ fn scans_real_projects_and_prints_reports() {
         })
         .unwrap_or_else(|error| panic!("scan should succeed for {}: {error}", root.display()));
 
-        assert!(report.files_discovered > 0, "{} should contain Go files", root.display());
+        assert!(
+            report.files_discovered > 0,
+            "{} should contain Go files",
+            root.display()
+        );
         assert!(
             report.files_analyzed > 0,
             "{} should contain analyzable Go files",
@@ -56,7 +60,10 @@ fn benchmarks_a_real_scan_path() {
     write_fixture(
         &temp_dir,
         "main.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/go/simple.go")),
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/go/simple.go"
+        )),
     );
 
     let report = benchmark_repository(&BenchmarkOptions {

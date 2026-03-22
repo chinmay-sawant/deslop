@@ -12,16 +12,15 @@ pub(super) fn collect_calls(body_node: Node<'_>, source: &str) -> Vec<CallSite> 
 }
 
 fn visit_for_calls(node: Node<'_>, source: &str, calls: &mut Vec<CallSite>) {
-    if node.kind() == "call_expression" {
-        if let Some(function_node) = node.child_by_field_name("function") {
-            if let Some((receiver, name)) = extract_call_target(function_node, source) {
-                calls.push(CallSite {
-                    receiver,
-                    name,
-                    line: node.start_position().row + 1,
-                });
-            }
-        }
+    if node.kind() == "call_expression"
+        && let Some(function_node) = node.child_by_field_name("function")
+        && let Some((receiver, name)) = extract_call_target(function_node, source)
+    {
+        calls.push(CallSite {
+            receiver,
+            name,
+            line: node.start_position().row + 1,
+        });
     }
 
     let mut cursor = node.walk();
@@ -49,15 +48,19 @@ pub(super) fn extract_call_target(
 pub(super) fn collect_imports(root: Node<'_>, source: &str) -> Vec<ImportSpec> {
     let mut imports = Vec::new();
     visit_for_imports(root, source, &mut imports);
-    imports.sort_by(|left, right| left.alias.cmp(&right.alias).then(left.path.cmp(&right.path)));
+    imports.sort_by(|left, right| {
+        left.alias
+            .cmp(&right.alias)
+            .then(left.path.cmp(&right.path))
+    });
     imports
 }
 
 fn visit_for_imports(node: Node<'_>, source: &str, imports: &mut Vec<ImportSpec>) {
-    if node.kind() == "import_spec" {
-        if let Some(import_spec) = parse_import_spec(node, source) {
-            imports.push(import_spec);
-        }
+    if node.kind() == "import_spec"
+        && let Some(import_spec) = parse_import_spec(node, source)
+    {
+        imports.push(import_spec);
     }
 
     let mut cursor = node.walk();
@@ -193,7 +196,10 @@ pub(super) fn find_var_value_node(node: Node<'_>) -> Option<Node<'_>> {
         })
 }
 
-pub(super) fn first_named_child_of_kind<'tree>(node: Node<'tree>, kind: &str) -> Option<Node<'tree>> {
+pub(super) fn first_named_child_of_kind<'tree>(
+    node: Node<'tree>,
+    kind: &str,
+) -> Option<Node<'tree>> {
     let mut cursor = node.walk();
     node.named_children(&mut cursor)
         .find(|child| child.kind() == kind)
@@ -315,7 +321,8 @@ pub(super) fn find_package_name(root: Node<'_>, source: &str) -> Option<String> 
 
         let mut package_cursor = child.walk();
         for package_child in child.named_children(&mut package_cursor) {
-            if package_child.kind() == "package_identifier" || package_child.kind() == "identifier" {
+            if package_child.kind() == "package_identifier" || package_child.kind() == "identifier"
+            {
                 return source
                     .get(package_child.byte_range())
                     .map(ToOwned::to_owned);
@@ -381,7 +388,11 @@ pub(super) fn collect_package_string_literals(root: Node<'_>, source: &str) -> V
     literals
 }
 
-fn visit_for_package_string_literals(node: Node<'_>, source: &str, literals: &mut Vec<NamedLiteral>) {
+fn visit_for_package_string_literals(
+    node: Node<'_>,
+    source: &str,
+    literals: &mut Vec<NamedLiteral>,
+) {
     if matches!(node.kind(), "var_spec" | "const_spec") && is_package_scope(node) {
         literals.extend(extract_named_string_literals(node, source));
     }
@@ -392,7 +403,10 @@ fn visit_for_package_string_literals(node: Node<'_>, source: &str, literals: &mu
     }
 }
 
-pub(super) fn collect_local_string_literals(body_node: Node<'_>, source: &str) -> Vec<NamedLiteral> {
+pub(super) fn collect_local_string_literals(
+    body_node: Node<'_>,
+    source: &str,
+) -> Vec<NamedLiteral> {
     let mut literals = Vec::new();
     visit_for_local_string_literals(body_node, source, &mut literals);
     literals.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
@@ -400,7 +414,10 @@ pub(super) fn collect_local_string_literals(body_node: Node<'_>, source: &str) -
 }
 
 fn visit_for_local_string_literals(node: Node<'_>, source: &str, literals: &mut Vec<NamedLiteral>) {
-    if matches!(node.kind(), "var_spec" | "const_spec" | "assignment_statement" | "short_var_declaration") {
+    if matches!(
+        node.kind(),
+        "var_spec" | "const_spec" | "assignment_statement" | "short_var_declaration"
+    ) {
         literals.extend(extract_named_string_literals(node, source));
     }
 
@@ -412,10 +429,14 @@ fn visit_for_local_string_literals(node: Node<'_>, source: &str, literals: &mut 
 
 fn extract_named_string_literals(node: Node<'_>, source: &str) -> Vec<NamedLiteral> {
     let Some(name_node) = find_var_name_node(node) else {
-        return fallback_named_string_literal(node, source).into_iter().collect();
+        return fallback_named_string_literal(node, source)
+            .into_iter()
+            .collect();
     };
     let Some(value_node) = find_var_value_node(node) else {
-        return fallback_named_string_literal(node, source).into_iter().collect();
+        return fallback_named_string_literal(node, source)
+            .into_iter()
+            .collect();
     };
 
     let names = collect_identifiers(name_node, source);
@@ -432,7 +453,9 @@ fn extract_named_string_literals(node: Node<'_>, source: &str) -> Vec<NamedLiter
         .collect::<Vec<_>>();
 
     if literals.is_empty() {
-        fallback_named_string_literal(node, source).into_iter().collect()
+        fallback_named_string_literal(node, source)
+            .into_iter()
+            .collect()
     } else {
         literals
     }
@@ -459,7 +482,11 @@ fn fallback_named_string_literal(node: Node<'_>, source: &str) -> Option<NamedLi
     let value = value
         .strip_prefix('"')
         .and_then(|trimmed| trimmed.strip_suffix('"'))
-        .or_else(|| value.strip_prefix('`').and_then(|trimmed| trimmed.strip_suffix('`')))?;
+        .or_else(|| {
+            value
+                .strip_prefix('`')
+                .and_then(|trimmed| trimmed.strip_suffix('`'))
+        })?;
 
     Some(NamedLiteral {
         line: node.start_position().row + 1,
@@ -471,7 +498,11 @@ fn fallback_named_string_literal(node: Node<'_>, source: &str) -> Option<NamedLi
 pub(super) fn collect_struct_tags(root: Node<'_>, source: &str) -> Vec<StructTag> {
     let mut tags = Vec::new();
     visit_for_struct_tags(root, source, &mut tags);
-    tags.sort_by(|left, right| left.line.cmp(&right.line).then(left.field_name.cmp(&right.field_name)));
+    tags.sort_by(|left, right| {
+        left.line
+            .cmp(&right.line)
+            .then(left.field_name.cmp(&right.field_name))
+    });
     tags
 }
 
@@ -528,10 +559,10 @@ fn extract_struct_tags(node: Node<'_>, source: &str) -> Vec<StructTag> {
         }
 
         tags.push(StructTag {
-                line: base_line + offset,
-                struct_name: struct_name.to_string(),
-                field_name,
-                raw_tag: raw_tag.to_string(),
+            line: base_line + offset,
+            struct_name: struct_name.to_string(),
+            field_name,
+            raw_tag: raw_tag.to_string(),
         });
     }
 
@@ -550,8 +581,14 @@ pub(super) fn build_test_function_summary(
     }
 
     let body_text = source.get(body_node.byte_range()).unwrap_or("");
-    let assertion_like_calls = calls.iter().filter(|call| is_assertion_like_call(call)).count();
-    let error_assertion_calls = calls.iter().filter(|call| is_error_assertion_call(call)).count()
+    let assertion_like_calls = calls
+        .iter()
+        .filter(|call| is_assertion_like_call(call))
+        .count();
+    let error_assertion_calls = calls
+        .iter()
+        .filter(|call| is_error_assertion_call(call))
+        .count()
         + usize::from(body_text.contains("err == nil") || body_text.contains("err==nil"));
     let skip_calls = calls.iter().filter(|call| is_skip_call(call)).count();
     let production_calls = calls
@@ -570,42 +607,67 @@ pub(super) fn build_test_function_summary(
 }
 
 fn is_assertion_like_call(call: &CallSite) -> bool {
-    match (call.receiver.as_deref(), call.name.as_str()) {
-        (Some("t"), "Error" | "Errorf" | "Fatal" | "Fatalf" | "Fail" | "FailNow") => true,
-        (Some("assert" | "require"), _) => true,
-        _ => false,
-    }
+    matches!(
+        (call.receiver.as_deref(), call.name.as_str()),
+        (
+            Some("t"),
+            "Error" | "Errorf" | "Fatal" | "Fatalf" | "Fail" | "FailNow"
+        ) | (Some("assert" | "require"), _)
+    )
 }
 
 fn is_error_assertion_call(call: &CallSite) -> bool {
-    match (call.receiver.as_deref(), call.name.as_str()) {
-        (Some("assert" | "require"), "Error" | "Errorf" | "ErrorIs" | "ErrorContains" | "Panics" | "PanicsWithValue") => true,
-        (Some("t"), "Fatal" | "Fatalf" | "Error" | "Errorf") => true,
-        _ => false,
-    }
+    matches!(
+        (call.receiver.as_deref(), call.name.as_str()),
+        (
+            Some("assert" | "require"),
+            "Error" | "Errorf" | "ErrorIs" | "ErrorContains" | "Panics" | "PanicsWithValue"
+        ) | (Some("t"), "Fatal" | "Fatalf" | "Error" | "Errorf")
+    )
 }
 
 fn is_skip_call(call: &CallSite) -> bool {
-    matches!((call.receiver.as_deref(), call.name.as_str()), (Some("t"), "Skip" | "SkipNow" | "Skipf"))
+    matches!(
+        (call.receiver.as_deref(), call.name.as_str()),
+        (Some("t"), "Skip" | "SkipNow" | "Skipf")
+    )
 }
 
 fn is_test_infra_call(call: &CallSite) -> bool {
     matches!(
         (call.receiver.as_deref(), call.name.as_str()),
-        (Some("t"), "Helper" | "Run" | "Parallel" | "Cleanup" | "TempDir" | "Setenv" | "Skip" | "SkipNow" | "Skipf" | "Log" | "Logf")
-            | (Some("assert" | "require"), _)
+        (
+            Some("t"),
+            "Helper"
+                | "Run"
+                | "Parallel"
+                | "Cleanup"
+                | "TempDir"
+                | "Setenv"
+                | "Skip"
+                | "SkipNow"
+                | "Skipf"
+                | "Log"
+                | "Logf"
+        ) | (Some("assert" | "require"), _)
     )
 }
 
 pub(super) fn first_string_literal(node: Node<'_>, source: &str) -> Option<String> {
-    if matches!(node.kind(), "interpreted_string_literal" | "raw_string_literal") {
+    if matches!(
+        node.kind(),
+        "interpreted_string_literal" | "raw_string_literal"
+    ) {
         let literal = source.get(node.byte_range())?;
         return Some(literal.trim_matches('"').trim_matches('`').to_string());
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        if matches!(child.kind(), "interpreted_string_literal" | "raw_string_literal") {
+        if matches!(
+            child.kind(),
+            "interpreted_string_literal" | "raw_string_literal"
+        ) {
             let literal = source.get(child.byte_range())?;
             return Some(literal.trim_matches('"').trim_matches('`').to_string());
         }

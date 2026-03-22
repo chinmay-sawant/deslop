@@ -11,16 +11,18 @@ pub(super) fn collect_dropped_error_lines(body_node: Node<'_>, source: &str) -> 
 }
 
 fn visit_for_dropped_errors(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
-    if matches!(node.kind(), "assignment_statement" | "short_var_declaration") {
-        if let Some(text) = source.get(node.byte_range()) {
-            let compact = text.split_whitespace().collect::<String>();
-            let drops_named_err = compact.starts_with("_=err")
-                || compact.starts_with("_=ctx.Err()")
-                || compact.contains(",_=err")
-                || compact.contains(",_=ctx.Err()");
-            if drops_named_err {
-                lines.push(node.start_position().row + 1);
-            }
+    if matches!(
+        node.kind(),
+        "assignment_statement" | "short_var_declaration"
+    ) && let Some(text) = source.get(node.byte_range())
+    {
+        let compact = text.split_whitespace().collect::<String>();
+        let drops_named_err = compact.starts_with("_=err")
+            || compact.starts_with("_=ctx.Err()")
+            || compact.contains(",_=err")
+            || compact.contains(",_=ctx.Err()");
+        if drops_named_err {
+            lines.push(node.start_position().row + 1);
         }
     }
 
