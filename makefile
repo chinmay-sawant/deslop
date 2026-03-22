@@ -25,8 +25,10 @@ fmt:
 	cargo fmt
 
 # Run the analyzer on the target path
+# deslop exits with a non-zero status code (1) whenever it detects an issue
 scan:
-	cargo run -- scan $(PATH_TO_SCAN)
+	cargo run -- scan $(PATH_TO_SCAN) > results.txt
+
 
 # Clean build artifacts and temporary files
 clean:
