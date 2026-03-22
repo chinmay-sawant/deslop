@@ -111,6 +111,7 @@ pub(crate) struct ImportSpec {
     pub path: String,
     pub namespace_path: Option<String>,
     pub imported_name: Option<String>,
+    pub is_public: bool,
 }
 
 #[derive(Debug, Clone)]

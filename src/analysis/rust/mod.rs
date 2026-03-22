@@ -6,7 +6,7 @@ use std::path::Path;
 use anyhow::Result;
 
 use crate::analysis::{ImportSpec, ParsedFunction};
-use crate::index::{ImportResolution, RepositoryIndex};
+use crate::index::{ImportResolution, PackageIndex, RepositoryIndex};
 use crate::model::{Finding, Severity};
 use crate::analysis::{Language, LanguageBackend, ParsedFile};
 
@@ -91,11 +91,19 @@ fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Fin
         ));
         findings.extend(unsafe_findings(file, function));
         findings.extend(doc_marker_findings(file, function));
+        let Some(package_name) = &file.package_name else {
+            continue;
+        };
+        let Some(current_package) = index.package_for_file(Language::Rust, &file.path, package_name) else {
+            continue;
+        };
+
         findings.extend(rust_import_findings(
             file,
             function,
             index,
             &import_aliases,
+            current_package,
         ));
         findings.extend(rust_call_findings(
             file,
@@ -275,6 +283,7 @@ fn rust_import_findings(
     function: &ParsedFunction,
     index: &RepositoryIndex,
     import_aliases: &BTreeMap<String, ImportSpec>,
+    current_package: &PackageIndex,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
 
@@ -282,6 +291,12 @@ fn rust_import_findings(
         let Some(receiver) = &call.receiver else {
             continue;
         };
+
+        // If receiver is a local symbol, assume it's not a module/import call
+        if current_package.has_symbol(receiver) {
+            continue;
+        }
+
         let Some(import_path) = rust_mod_for_receiver(receiver, import_aliases) else {
             continue;
         };
@@ -364,6 +379,10 @@ fn rust_call_findings(
             continue;
         }
 
+        if current_package.has_function(&call.name) || current_package.has_symbol(&call.name) {
+            continue;
+        }
+
         if let Some(import_spec) = import_aliases.get(&call.name) {
             if !is_rust_import(import_spec.path.as_str()) {
                 continue;
@@ -389,10 +408,6 @@ fn rust_call_findings(
                     call.name, call.name
                 )],
             });
-            continue;
-        }
-
-        if current_package.has_function(&call.name) || current_package.has_symbol(&call.name) {
             continue;
         }
 
@@ -440,7 +455,8 @@ fn call_matches_import(
         ImportResolution::Resolved(module_package) => {
             module_package.has_function(item_name) || module_package.has_symbol(item_name)
         }
-        ImportResolution::Ambiguous(_) | ImportResolution::Unresolved => false,
+        ImportResolution::Ambiguous(_) => true,
+        ImportResolution::Unresolved => false,
     }
 }
 

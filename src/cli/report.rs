@@ -45,19 +45,19 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
 
     if details {
         for file in &report.files {
-            let _ = writeln!(&mut output) ;
-            let _ = writeln!(&mut output, "{}", file.path.display()) ;
-            let _ = writeln!(
+            writeln!(&mut output).ok();
+            writeln!(&mut output, "{}", file.path.display()).ok();
+            writeln!(
                 &mut output,
                 "  package={} syntax_error={} functions={}",
                 file.package_name.as_deref().unwrap_or("<unknown>"),
                 file.syntax_error,
                 file.functions.len()
             )
-            .expect("write to string");
+            .ok();
 
             for function in &file.functions {
-                let _ = writeln!(
+                writeln!(
                     &mut output,
                     "  - {} [{}:{}] complexity={} comment_ratio={:.2} symmetry={:.2} any={} iface={} calls={}",
                     function.name,
@@ -69,16 +69,16 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
                     function.contains_any_type,
                     function.contains_empty_interface,
                     function.call_count
-                ) ;
+                ).ok();
             }
         }
     }
 
     if !findings.is_empty() {
-        let _ = writeln!(&mut output) ;
-        let _ = writeln!(&mut output, "Findings:") ;
+        writeln!(&mut output).ok();
+        writeln!(&mut output, "Findings:").ok();
         for finding in findings {
-            let _ = writeln!(
+            writeln!(
                 &mut output,
                 "  - {}:{} {} [{}]",
                 finding.path.display(),
@@ -86,21 +86,21 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
                 finding.message,
                 finding.rule_id
             )
-            .expect("write to string");
+            .ok();
         }
     }
 
     if !report.parse_failures.is_empty() {
-        let _ = writeln!(&mut output) ;
-        let _ = writeln!(&mut output, "Parse failures:") ;
+        writeln!(&mut output).ok();
+        writeln!(&mut output, "Parse failures:").ok();
         for failure in &report.parse_failures {
-            let _ = writeln!(
+            writeln!(
                 &mut output,
                 "  - {}: {}",
                 failure.path.display(),
                 failure.message
             )
-            .expect("write to string");
+            .ok();
         }
     }
 
@@ -263,7 +263,7 @@ mod tests {
                     comment_to_code_ratio: 0.15,
                     complexity_score: 4,
                     symmetry_score: 0.25,
-                    err_guards: 1,
+                    boilerplate_err_guards: 1,
                     contains_any_type: false,
                     contains_empty_interface: false,
                     type_assertion_count: 0,

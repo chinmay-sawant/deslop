@@ -24,7 +24,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
     let imports = collect_imports(root, source);
     let package_string_literals = collect_pkg_strings(root, source);
     let functions = collect_functions(root, source, is_test_file);
-    let symbols = collect_symbols(root, source, &functions);
+    let symbols = collect_symbols(root, source, &functions, &imports);
 
     Ok(ParsedFile {
         language: Language::Rust,
@@ -51,7 +51,8 @@ fn visit_for_imports(node: Node<'_>, source: &str, imports: &mut Vec<ImportSpec>
     if node.kind() == "use_declaration"
         && let Some(argument) = node.child_by_field_name("argument")
     {
-        flatten_use_tree(argument, source, None, imports);
+        let is_public = source.get(node.byte_range()).is_some_and(|text| text.starts_with("pub"));
+        flatten_use_tree(argument, source, None, imports, is_public);
     }
 
     let mut cursor = node.walk();
@@ -65,6 +66,7 @@ fn flatten_use_tree(
     source: &str,
     prefix: Option<String>,
     imports: &mut Vec<ImportSpec>,
+    is_public: bool,
 ) {
     match node.kind() {
         "use_as_clause" => {
@@ -80,7 +82,7 @@ fn flatten_use_tree(
                 .to_string();
             let path = combine_path_prefix(prefix.as_deref(), &render_use_path(path_node, source));
 
-            imports.push(build_rust_import_spec(alias, path));
+            imports.push(build_rust_import_spec(alias, path, is_public));
         }
         "scoped_use_list" => {
             let next_prefix = node
@@ -91,13 +93,13 @@ fn flatten_use_tree(
                 .or(prefix);
 
             if let Some(list_node) = node.child_by_field_name("list") {
-                flatten_use_tree(list_node, source, next_prefix, imports);
+                flatten_use_tree(list_node, source, next_prefix, imports, is_public);
             }
         }
         "use_list" => {
             let mut cursor = node.walk();
             for child in node.named_children(&mut cursor) {
-                flatten_use_tree(child, source, prefix.clone(), imports);
+                flatten_use_tree(child, source, prefix.clone(), imports, is_public);
             }
         }
         "use_wildcard" => {
@@ -111,6 +113,7 @@ fn flatten_use_tree(
                 path: wildcard_path,
                 namespace_path: prefix,
                 imported_name: Some("*".to_string()),
+                is_public,
             });
         }
         _ => {
@@ -121,12 +124,12 @@ fn flatten_use_tree(
                 let path = combine_path_prefix(prefix.as_deref(), &render_use_path(node, source));
                 (import_alias(&path), path)
             };
-            imports.push(build_rust_import_spec(alias, path));
+            imports.push(build_rust_import_spec(alias, path, is_public));
         }
     }
 }
 
-fn build_rust_import_spec(alias: String, path: String) -> ImportSpec {
+fn build_rust_import_spec(alias: String, path: String, is_public: bool) -> ImportSpec {
     let (namespace_path, imported_name) = rust_import_segments(&path);
 
     ImportSpec {
@@ -134,6 +137,7 @@ fn build_rust_import_spec(alias: String, path: String) -> ImportSpec {
         path,
         namespace_path,
         imported_name,
+        is_public,
     }
 }
 
@@ -189,6 +193,7 @@ fn collect_symbols(
     root: Node<'_>,
     source: &str,
     functions: &[ParsedFunction],
+    imports: &[ImportSpec],
 ) -> Vec<DeclaredSymbol> {
     let mut symbols = functions
         .iter()
@@ -204,6 +209,19 @@ fn collect_symbols(
             line: function.fingerprint.start_line,
         })
         .collect::<Vec<_>>();
+
+    // Add re-exports as symbols to allow resolution of public imports
+    for import in imports {
+        if import.is_public && import.alias != "*" {
+            symbols.push(DeclaredSymbol {
+                name: import.alias.clone(),
+                kind: SymbolKind::Function, // Treat re-exports as functions for resolution
+                receiver_type: None,
+                receiver_is_pointer: None,
+                line: 1, // Metadata only
+            });
+        }
+    }
 
     visit_for_symbols(root, source, &mut symbols);
     symbols.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
@@ -424,7 +442,7 @@ fn build_function_fingerprint(
         comment_to_code_ratio,
         complexity_score,
         symmetry_score,
-        err_guards: 0,
+        boilerplate_err_guards: 0,
         contains_any_type: false,
         contains_empty_interface: false,
         type_assertion_count: 0,
@@ -658,8 +676,8 @@ fn collect_safety_comments(source: &str, function_node: Node<'_>) -> Vec<usize> 
     let end = function_node.end_position().row.min(lines.len().saturating_sub(1));
     let mut safety_lines = Vec::new();
 
-    for index in start..=end {
-        if lines[index].contains("SAFETY:") {
+    for (index, line) in lines.iter().enumerate().take(end + 1).skip(start) {
+        if line.contains("SAFETY:") {
             safety_lines.push(index + 1);
         }
     }

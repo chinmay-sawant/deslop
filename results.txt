@@ -2,38 +2,7 @@ deslop scan root: .
 Source files discovered: 50
 Source files analyzed: 49
 Functions fingerprinted: 362
-Findings: 29
-Index summary: packages=49 symbols=403 imports=398
+Findings: 0
+Index summary: packages=49 symbols=431 imports=399
 Parse failures: 0
-Timings: discover=29ms parse=130ms index=0ms heuristics=22ms total=183ms
-
-Findings:
-  - ./src/analysis/go/fingerprint.rs:24 direct call to count_comment_lines resolves to local Rust import path super::count_comment_lines, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/analysis/go/fingerprint.rs:25 direct call to count_doc_lines resolves to local Rust import path super::count_doc_lines, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/analysis/go/fingerprint.rs:26 direct call to count_code_lines resolves to local Rust import path super::count_code_lines, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/analysis/go/fingerprint.rs:27 direct call to count_err_guards resolves to local Rust import path super::count_err_guards, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/analysis/go/fingerprint.rs:51 direct call to contains_token resolves to local Rust import path super::contains_token, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/analysis/mod.rs:89 direct call to backend_for_path resolves to local Rust import path super::backend_for_path, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/benchmark/mod.rs:18 direct call to scan_repository resolves to local Rust import path crate::scan_repository, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/benchmark/mod.rs:27 direct call to scan_repository resolves to local Rust import path crate::scan_repository, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/benchmark/mod.rs:52 direct call to calculate_stats resolves to local Rust import path super::calculate_stats, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/benchmark/mod.rs:53 direct call to calculate_stats resolves to local Rust import path super::calculate_stats, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/benchmark/mod.rs:54 direct call to calculate_stats resolves to local Rust import path super::calculate_stats, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/benchmark/mod.rs:55 direct call to calculate_stats resolves to local Rust import path super::calculate_stats, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/benchmark/mod.rs:56 direct call to calculate_stats resolves to local Rust import path super::calculate_stats, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/benchmark/mod.rs:98 direct call to calculate_stats resolves to local Rust import path super::calculate_stats, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/cli/report.rs:314 direct call to format_scan_report resolves to local Rust import path super::format_scan_report, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/cli/report.rs:327 direct call to format_scan_report resolves to local Rust import path super::format_scan_report, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/cli/report.rs:337 direct call to format_scan_report_json resolves to local Rust import path super::format_scan_report_json, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/cli/report.rs:349 direct call to format_scan_report_json resolves to local Rust import path super::format_scan_report_json, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/index/mod.rs:66 call to ImportResolution::Resolved resolves to local Rust module path super::ImportResolution, but no matching module was indexed [hallucinated_import_call]
-  - ./src/index/mod.rs:67 call to ImportResolution::Ambiguous resolves to local Rust module path super::ImportResolution, but no matching module was indexed [hallucinated_import_call]
-  - ./src/index/mod.rs:105 call to ImportResolution::Resolved resolves to local Rust module path super::ImportResolution, but no matching module was indexed [hallucinated_import_call]
-  - ./src/index/mod.rs:106 call to ImportResolution::Ambiguous resolves to local Rust module path super::ImportResolution, but no matching module was indexed [hallucinated_import_call]
-  - ./src/index/mod.rs:424 direct call to build_repository_index resolves to local Rust import path super::build_repository_index, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/index/mod.rs:439 direct call to build_repository_index resolves to local Rust import path super::build_repository_index, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/index/mod.rs:462 direct call to build_repository_index resolves to local Rust import path super::build_repository_index, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/index/mod.rs:481 direct call to build_repository_index resolves to local Rust import path super::build_repository_index, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/index/mod.rs:508 direct call to build_repository_index resolves to local Rust import path super::build_repository_index, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/main.rs:99 direct call to print_benchmark_report resolves to local Rust import path crate::cli::print_benchmark_report, but no matching callable symbol was indexed [hallucinated_import_call]
-  - ./src/scan/mod.rs:120 direct call to is_generated resolves to local Rust import path super::is_generated, but no matching callable symbol was indexed [hallucinated_import_call]
+Timings: discover=13ms parse=120ms index=0ms heuristics=16ms total=150ms

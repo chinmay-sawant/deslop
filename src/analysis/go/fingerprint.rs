@@ -21,12 +21,12 @@ pub(super) fn build_function_fingerprint(
     }
     .to_string();
 
-    let comment_lines = count_comment_lines(function_text)
-        + count_doc_lines(source, node.start_position().row);
+    let comment_lines =
+        count_comment_lines(function_text) + count_doc_lines(source, node.start_position().row);
     let code_lines = count_code_lines(function_text);
-    let err_guards = count_err_guards(function_text);
+    let boilerplate_err_guards = count_err_guards(function_text);
     let complexity_raw = count_control_nodes(body_node);
-    let complexity_score = 1 + complexity_raw.saturating_sub(err_guards);
+    let complexity_score = 1 + complexity_raw.saturating_sub(boilerplate_err_guards);
     let symmetry_score = compute_symmetry_score(body_node);
     let line_count = node.end_position().row - node.start_position().row + 1;
     let comment_to_code_ratio = if code_lines == 0 {
@@ -47,7 +47,7 @@ pub(super) fn build_function_fingerprint(
         comment_to_code_ratio,
         complexity_score,
         symmetry_score,
-        err_guards,
+        boilerplate_err_guards,
         contains_any_type: contains_token(signature_text, "any"),
         contains_empty_interface: signature_text.contains("interface{}"),
         type_assertion_count,

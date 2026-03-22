@@ -84,6 +84,7 @@ fn parse_import_spec(node: Node<'_>, source: &str) -> Option<ImportSpec> {
         path,
         namespace_path: None,
         imported_name: None,
+        is_public: false,
     })
 }
 

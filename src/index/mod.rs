@@ -83,10 +83,23 @@ impl RepositoryIndex {
         else {
             return ImportResolution::Unresolved;
         };
-        let Some(module_name) = target_segments.last() else {
-            return ImportResolution::Unresolved;
-        };
+        if target_segments.is_empty() {
+            let candidates = self
+                .packages
+                .values()
+                .filter(|package| {
+                    package.language == Language::Rust && package.directory == crate_root
+                })
+                .collect::<Vec<_>>();
 
+            return match candidates.len() {
+                0 => ImportResolution::Unresolved,
+                1 => ImportResolution::Resolved(candidates[0]),
+                _ => ImportResolution::Ambiguous(candidates),
+            };
+        }
+
+        let module_name = target_segments.last().unwrap();
         let file_module_directory = rust_file_mod_dir(&crate_root, &target_segments);
         let mod_module_directory = rust_mod_mod_dir(&crate_root, &target_segments);
         let mut candidates = self
@@ -353,7 +366,7 @@ mod tests {
             is_test_file: false,
             syntax_error: false,
             byte_size: 10,
-            package_string_literals: Vec::new(),
+            pkg_strings: Vec::new(),
             struct_tags: Vec::new(),
             functions: function_names
                 .iter()
@@ -370,7 +383,7 @@ mod tests {
                         comment_to_code_ratio: 0.0,
                         complexity_score: 1,
                         symmetry_score: 0.0,
-                        err_guards: 0,
+                        boilerplate_err_guards: 0,
                         contains_any_type: false,
                         contains_empty_interface: false,
                         type_assertion_count: 0,
@@ -381,25 +394,25 @@ mod tests {
                     is_test_function: false,
                     local_binding_names: Vec::new(),
                     doc_comment: None,
-                    local_string_literals: Vec::new(),
+                    local_strings: Vec::new(),
                     test_summary: None,
                     safety_comment_lines: Vec::new(),
                     unsafe_lines: Vec::new(),
-                    dropped_error_lines: Vec::new(),
-                    panic_on_error_lines: Vec::new(),
+                    dropped_errors: Vec::new(),
+                    panic_errors: Vec::new(),
                     errorf_calls: Vec::new(),
                     context_factory_calls: Vec::new(),
-                    goroutine_launch_lines: Vec::new(),
-                    goroutine_in_loop_lines: Vec::new(),
-                    goroutine_without_shutdown_lines: Vec::new(),
-                    sleep_in_loop_lines: Vec::new(),
+                    goroutines: Vec::new(),
+                    loop_goroutines: Vec::new(),
+                    unmanaged_goroutines: Vec::new(),
+                    sleep_loops: Vec::new(),
                     busy_wait_lines: Vec::new(),
-                    mutex_lock_in_loop_lines: Vec::new(),
-                    allocation_in_loop_lines: Vec::new(),
-                    fmt_in_loop_lines: Vec::new(),
-                    reflection_in_loop_lines: Vec::new(),
-                    string_concat_in_loop_lines: Vec::new(),
-                    json_marshal_in_loop_lines: Vec::new(),
+                    mutex_loops: Vec::new(),
+                    alloc_loops: Vec::new(),
+                    fmt_loops: Vec::new(),
+                    reflect_loops: Vec::new(),
+                    concat_loops: Vec::new(),
+                    json_loops: Vec::new(),
                     db_query_calls: Vec::new(),
                 })
                 .collect(),

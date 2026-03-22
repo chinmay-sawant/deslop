@@ -54,7 +54,7 @@ pub struct FunctionFingerprint {
     pub comment_to_code_ratio: f64,
     pub complexity_score: usize,
     pub symmetry_score: f64,
-    pub err_guards: usize,
+    pub boilerplate_err_guards: usize,
     pub contains_any_type: bool,
     pub contains_empty_interface: bool,
     pub type_assertion_count: usize,

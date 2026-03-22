@@ -2,12 +2,12 @@ use std::path::Path;
 
 use crate::model::SymbolKind;
 
-use super::{comments::extract_doc_comment, general::package_alias_from_import_path, parse_file};
+use super::{comments::extract_doc_comment, general::alias_from_path, parse_file};
 
 #[test]
 fn test_import_alias() {
     assert_eq!(
-        package_alias_from_import_path("github.com/acme/utils"),
+        alias_from_path("github.com/acme/utils"),
         "utils"
     );
 }
