@@ -11,11 +11,12 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
     writeln!(&mut output, "deslop scan root: {}", report.root.display()).expect("write to string");
     writeln!(
         &mut output,
-        "Go files discovered: {}",
+        "Source files discovered: {}",
         report.files_discovered
     )
     .expect("write to string");
-    writeln!(&mut output, "Go files analyzed: {}", report.files_analyzed).expect("write to string");
+    writeln!(&mut output, "Source files analyzed: {}", report.files_analyzed)
+        .expect("write to string");
     writeln!(
         &mut output,
         "Functions fingerprinted: {}",

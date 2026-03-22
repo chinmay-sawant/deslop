@@ -12,7 +12,7 @@ use deslop::{BenchmarkOptions, ScanOptions, benchmark_repository, scan_repositor
 #[command(
     author,
     version,
-    about = "Scan Go repositories for likely AI slop patterns"
+    about = "Scan Go and Rust repositories for likely AI slop patterns"
 )]
 struct Cli {
     #[command(subcommand)]

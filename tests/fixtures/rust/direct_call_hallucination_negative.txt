@@ -1,0 +1,24 @@
+use crate::config::render::normalize as normalize_fn;
+
+struct Builder();
+
+fn local_helper() {
+    println!("helper");
+}
+
+pub fn run_direct_import() {
+    normalize_fn();
+}
+
+pub fn run_same_module() {
+    local_helper();
+}
+
+pub fn run_local_closure() {
+    let callback = || println!("callback");
+    callback();
+}
+
+pub fn run_constructor() {
+    Builder();
+}

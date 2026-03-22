@@ -23,9 +23,13 @@ pub(crate) struct ParsedFunction {
     pub fingerprint: FunctionFingerprint,
     pub calls: Vec<CallSite>,
     pub has_context_parameter: bool,
+    pub is_test_function: bool,
+    pub local_binding_names: Vec<String>,
     pub doc_comment: Option<String>,
     pub local_string_literals: Vec<NamedLiteral>,
     pub test_summary: Option<TestFunctionSummary>,
+    pub safety_comment_lines: Vec<usize>,
+    pub unsafe_lines: Vec<usize>,
     pub dropped_error_lines: Vec<usize>,
     pub panic_on_error_lines: Vec<usize>,
     pub errorf_calls: Vec<FormattedErrorCall>,
@@ -105,6 +109,8 @@ pub(crate) struct CallSite {
 pub(crate) struct ImportSpec {
     pub alias: String,
     pub path: String,
+    pub namespace_path: Option<String>,
+    pub imported_name: Option<String>,
 }
 
 #[derive(Debug, Clone)]

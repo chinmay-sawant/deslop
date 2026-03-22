@@ -79,7 +79,12 @@ fn parse_import_spec(node: Node<'_>, source: &str) -> Option<ImportSpec> {
         .map(|alias| alias.to_string())
         .unwrap_or_else(|| package_alias_from_import_path(&path));
 
-    Some(ImportSpec { alias, path })
+    Some(ImportSpec {
+        alias,
+        path,
+        namespace_path: None,
+        imported_name: None,
+    })
 }
 
 pub(super) fn collect_symbols(root: Node<'_>, source: &str) -> Vec<DeclaredSymbol> {

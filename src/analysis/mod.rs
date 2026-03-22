@@ -1,4 +1,5 @@
 mod go;
+mod rust;
 mod types;
 
 use std::path::Path;
@@ -14,7 +15,7 @@ pub(crate) use types::{
 };
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum Language {
     Go,
     Python,
@@ -43,10 +44,11 @@ pub(crate) trait LanguageBackend: Send + Sync {
     }
 }
 
-pub(crate) fn registered_backends() -> [&'static dyn LanguageBackend; 1] {
+pub(crate) fn registered_backends() -> [&'static dyn LanguageBackend; 2] {
     static GO_BACKEND: go::GoAnalyzer = go::GoAnalyzer;
+    static RUST_BACKEND: rust::RustAnalyzer = rust::RustAnalyzer;
 
-    [&GO_BACKEND]
+    [&GO_BACKEND, &RUST_BACKEND]
 }
 
 pub(crate) fn backend_for_path(path: &Path) -> Option<&'static dyn LanguageBackend> {
@@ -74,4 +76,24 @@ pub(crate) fn supported_extensions() -> Vec<&'static str> {
 
     extensions.sort_unstable();
     extensions
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use super::{Language, backend_for_path, supported_extensions};
+
+    #[test]
+    fn routes_rust_paths_to_rust_backend() {
+        let backend = backend_for_path(Path::new("src/main.rs"))
+            .expect("rust files should resolve to a backend");
+
+        assert_eq!(backend.language(), Language::Rust);
+    }
+
+    #[test]
+    fn advertises_go_and_rust_extensions() {
+        assert_eq!(supported_extensions(), vec!["go", "rs"]);
+    }
 }

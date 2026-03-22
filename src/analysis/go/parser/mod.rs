@@ -125,6 +125,7 @@ fn parse_function_node(
         .to_string();
     let test_summary =
         build_test_function_summary(&function_name, body_node, source, &calls, is_test_file);
+    let is_test_function = test_summary.is_some();
     let dropped_error_lines = collect_dropped_error_lines(body_node, source);
     let panic_on_error_lines = collect_panic_on_error_lines(body_node, source);
     let errorf_calls = collect_errorf_calls(body_node, source);
@@ -157,9 +158,13 @@ fn parse_function_node(
         fingerprint,
         calls,
         has_context_parameter,
+        is_test_function,
+        local_binding_names: Vec::new(),
         doc_comment,
         local_string_literals,
         test_summary,
+        safety_comment_lines: Vec::new(),
+        unsafe_lines: Vec::new(),
         dropped_error_lines,
         panic_on_error_lines,
         errorf_calls,

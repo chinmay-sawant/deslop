@@ -1,0 +1,69 @@
+pub fn leaves_todo() {
+    todo!();
+}
+
+pub fn leaves_unimplemented() {
+    unimplemented!();
+}
+
+pub fn leaves_dbg() {
+    let value = 41;
+    dbg!(value);
+}
+
+/// TODO: replace this placeholder documentation with real behavior notes.
+pub fn documented_todo_leftover() {
+    println!("todo-doc");
+}
+
+/// FIXME: tighten this contract once the real implementation lands.
+pub fn documented_fixme_leftover() {
+    println!("fixme-doc");
+}
+
+/// HACK: keep this temporary branch until the migration is complete.
+pub fn documented_hack_leftover() {
+    println!("hack-doc");
+}
+
+pub fn leaves_panic() {
+    panic!("boom");
+}
+
+pub fn leaves_unreachable() {
+    unreachable!("not implemented");
+}
+
+pub fn leaves_unwrap() -> String {
+    let value = Some("ready".to_string());
+    value.unwrap()
+}
+
+pub fn leaves_expect() -> String {
+    let value = Some("ready".to_string());
+    value.expect("missing value")
+}
+
+pub unsafe fn missing_safety_comment() {
+    dangerous();
+}
+
+pub fn missing_block_safety_comment() {
+    unsafe {
+        dangerous();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn suppressed_in_test_code() {
+        let value = Some("ready");
+        todo!();
+        dbg!(value);
+        panic!("boom");
+        unreachable!("not implemented");
+        value.unwrap();
+        value.expect("missing value");
+    }
+}

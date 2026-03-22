@@ -14,7 +14,7 @@ pub(super) fn local_hallucination_findings(
         Some(package_name) => package_name,
         None => return findings,
     };
-    let Some(current_package) = index.package_for_file(&file.path, package_name) else {
+    let Some(current_package) = index.package_for_file(file.language, &file.path, package_name) else {
         return findings;
     };
 
@@ -24,7 +24,7 @@ pub(super) fn local_hallucination_findings(
         match &call.receiver {
             Some(receiver) => {
                 if let Some(import_path) = import_aliases.get(receiver) {
-                    match index.resolve_import_path(import_path) {
+                    match index.resolve_import_path(file.language, import_path) {
                         ImportResolution::Resolved(target_package) => {
                             if !target_package.has_function(&call.name) {
                                 findings.push(Finding {

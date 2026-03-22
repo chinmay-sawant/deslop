@@ -8,6 +8,16 @@ macro_rules! go_fixture {
     };
 }
 
+macro_rules! rust_fixture {
+    ($path:literal) => {
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/rust/",
+            $path
+        ))
+    };
+}
+
 #[path = "integration_scan/benchmarking.rs"]
 mod benchmarking;
 #[path = "integration_scan/concurrency.rs"]
@@ -30,6 +40,8 @@ mod performance;
 mod security;
 #[path = "integration_scan/test_quality.rs"]
 mod test_quality;
+#[path = "integration_scan/rust.rs"]
+mod rust;
 
 use std::fs;
 use std::path::{Path, PathBuf};

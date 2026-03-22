@@ -115,3 +115,52 @@ func collectAllStandardFontsInTemplate() {
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn keeps_rust_symbols_from_satisfying_go_package_lookups() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "main.go",
+        r#"package sample
+
+import render "github.com/acme/project/pkg/render"
+
+func Run(address string) string {
+    return render.Normalize(address)
+}
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/render/render.go",
+        r#"package render
+
+func Sanitize(address string) string {
+    return address
+}
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/render/lib.rs",
+        r#"pub fn Normalize(address: &str) -> String {
+    address.to_string()
+}
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "hallucinated_import_call"
+            && finding.function_name.as_deref() == Some("Run")
+            && finding.message.contains("render.Normalize")
+    }));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

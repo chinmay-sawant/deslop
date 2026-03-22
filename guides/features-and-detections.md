@@ -2,7 +2,7 @@
 
 ## Purpose
 
-deslop is a static analyzer for Go repositories that looks for signals commonly associated with low-context or AI-assisted code. The goal is not to prove correctness. The goal is to surface suspicious patterns quickly, explain why they were flagged, and let a reviewer decide whether the code is actually a problem.
+deslop is a static analyzer for Go and Rust repositories that looks for signals commonly associated with low-context or AI-assisted code. The goal is not to prove correctness. The goal is to surface suspicious patterns quickly, explain why they were flagged, and let a reviewer decide whether the code is actually a problem.
 
 ## Current feature set
 
@@ -17,7 +17,7 @@ deslop is a static analyzer for Go repositories that looks for signals commonly 
 
 - Walks a repository with `.gitignore` awareness by default.
 - Skips `vendor/` and generated Go files.
-- Parses Go syntax with `tree-sitter-go`.
+- Parses Go syntax with `tree-sitter-go` and Rust syntax with `tree-sitter-rust`.
 - Continues scanning even when some files contain syntax errors.
 
 ### Analysis pipeline
@@ -54,6 +54,17 @@ deslop is a static analyzer for Go repositories that looks for signals commonly 
 - `weak_crypto`: direct use of weak standard-library crypto packages such as `crypto/md5`, `crypto/sha1`, `crypto/des`, and `crypto/rc4`.
 - `hardcoded_secret`: secret-like identifiers assigned direct string literals instead of environment or secret-manager lookups.
 - `sql_string_concat`: query execution calls where SQL is constructed dynamically with concatenation or `fmt.Sprintf`.
+
+### Rust-specific signals
+
+- `todo_macro_leftover`: `todo!()` left in non-test Rust code.
+- `unimplemented_macro_leftover`: `unimplemented!()` left in non-test Rust code.
+- `dbg_macro_leftover`: `dbg!()` left in non-test Rust code.
+- `panic_macro_leftover`: `panic!()` left in non-test Rust code.
+- `unreachable_macro_leftover`: `unreachable!()` left in non-test Rust code.
+- `unwrap_in_non_test_code`: `.unwrap()` used in non-test Rust code.
+- `expect_in_non_test_code`: `.expect(...)` used in non-test Rust code.
+- `unsafe_without_safety_comment`: `unsafe fn` or `unsafe` block without a nearby `SAFETY:` comment. The current nearby-comment policy accepts a `SAFETY:` comment on the same line or within the previous two lines.
 
 ### Consistency and tag signals
 
@@ -96,6 +107,15 @@ deslop is a static analyzer for Go repositories that looks for signals commonly 
 - `hallucinated_import_call`: package-qualified calls that do not match locally indexed symbols for the imported package.
 - `hallucinated_local_call`: same-package calls to symbols that are not present in the scanned local package context.
 
+For Rust, `hallucinated_import_call` currently covers conservative local-module imports built from `crate::`, `self::`, and `super::` paths when deslop can map them back to locally indexed Rust modules, plus direct calls through locally imported Rust function aliases.
+
+For Rust, `hallucinated_local_call` now also covers direct same-module calls when the callee name is not locally bound and does not exist in the indexed Rust module.
+
+### Rust-specific comment-leftover signals
+
+- `todo_doc_comment_leftover`: Rust doc comments that still contain a `TODO` marker in non-test code.
+- `fixme_doc_comment_leftover`: Rust doc comments that still contain a `FIXME` marker in non-test code.
+
 ### Test-quality signals
 
 - `test_without_assertion_signal`: tests that call production code without any obvious assertion or failure signal.
@@ -111,10 +131,11 @@ deslop is a static analyzer for Go repositories that looks for signals commonly 
 
 ## Current limitations
 
-- No authoritative Go type checking yet.
+- No authoritative Go or Rust type checking yet.
 - No interprocedural context propagation.
 - No proof of goroutine leaks, N+1 queries, or runtime performance regressions.
-- Package-method and local-symbol checks are repository-local only.
+- Package-method and local-symbol checks are repository-local and now language-scoped for mixed-language repositories.
+- No Rust trait resolution, cargo workspace modeling, or macro expansion yet.
 
 ## Phase status
 
@@ -124,6 +145,7 @@ deslop is a static analyzer for Go repositories that looks for signals commonly 
 - Phase 2 parser enrichment: context-parameter detection, derived-context factory tracking, raw goroutine launch tracking, goroutine-in-loop tracking, goroutine shutdown-path tracking, looped `time.Sleep` detection, looped `select default` detection, looped JSON marshal detection, mutex lock-in-loop tracking, allocation tracking, fmt and reflect hot-path tracking, looped database query extraction, and string-concatenation-in-loop tracking.
 - Phase 2 heuristic additions: broader `missing_context`, `missing_cancel_call`, `sleep_polling`, `busy_waiting`, `repeated_json_marshaling`, `string_concat_in_loop`, `goroutine_spawn_in_loop`, `goroutine_without_shutdown_path`, `mutex_in_loop`, `blocking_call_while_locked`, `allocation_churn_in_loop`, `fmt_hot_path`, `reflection_hot_path`, `full_dataset_load`, `n_plus_one_query`, `wide_select_query`, `likely_unindexed_query`, and the first conservative goroutine-coordination pass.
 - Phase 3 heuristic additions: `hardcoded_secret`, `sql_string_concat`, `mixed_receiver_kinds`, `malformed_struct_tag`, `duplicate_struct_tag_key`, `test_without_assertion_signal`, `happy_path_only_test`, and `placeholder_test_body`.
+- Rust heuristic additions so far: `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, and Rust-local `hallucinated_import_call` coverage for `crate::`, `self::`, and `super::` module imports.
 
 ### Still pending
 
