@@ -10,7 +10,7 @@ fn flags_weak_crypto_usage() {
     write_fixture(
         &temp_dir,
         "crypto.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/weak_crypto.txt")),
+        go_fixture!("weak_crypto.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -30,10 +30,7 @@ fn flags_hardcoded_secret_patterns() {
     write_fixture(
         &temp_dir,
         "secrets.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/hardcoded_secret_slop.txt"
-        )),
+        go_fixture!("hardcoded_secret_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -53,10 +50,7 @@ fn does_not_flag_environment_loaded_secrets() {
     write_fixture(
         &temp_dir,
         "secrets.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/hardcoded_secret_clean.txt"
-        )),
+        go_fixture!("hardcoded_secret_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -76,10 +70,7 @@ fn flags_dynamic_sql_query_construction() {
     write_fixture(
         &temp_dir,
         "query.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/sql_string_concat_slop.txt"
-        )),
+        go_fixture!("sql_string_concat_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -99,10 +90,7 @@ fn does_not_flag_parameterized_sql_queries() {
     write_fixture(
         &temp_dir,
         "query.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/sql_string_concat_clean.txt"
-        )),
+        go_fixture!("sql_string_concat_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

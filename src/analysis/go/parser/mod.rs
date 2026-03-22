@@ -12,7 +12,7 @@ use anyhow::{Context, Result, anyhow};
 use tree_sitter::{Node, Parser};
 
 use crate::analysis::go::fingerprint::build_function_fingerprint;
-use crate::analysis::{ParsedFile, ParsedFunction};
+use crate::analysis::{Language, ParsedFile, ParsedFunction};
 
 use self::comments::extract_doc_comment;
 use self::context::{
@@ -59,6 +59,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
     let functions = collect_functions(root, source, &imports, is_test_file);
 
     Ok(ParsedFile {
+        language: Language::Go,
         path: path.to_path_buf(),
         package_name,
         is_test_file,

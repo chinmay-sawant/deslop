@@ -10,7 +10,7 @@ fn scans_go_files_and_extracts_fingerprints() {
     write_fixture(
         &temp_dir,
         "main.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/go/simple.go")),
+        go_fixture!("simple.go"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -43,12 +43,12 @@ fn respects_gitignore() {
     write_fixture(
         &temp_dir,
         "main.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/go/simple.go")),
+        go_fixture!("simple.go"),
     );
     write_fixture(
         &temp_dir,
         "ignored.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/go/simple.go")),
+        go_fixture!("simple.go"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -69,12 +69,12 @@ fn skips_generated_files_and_keeps_syntax_error_flag() {
     write_fixture(
         &temp_dir,
         "generated.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/go/generated.go")),
+        go_fixture!("generated.go"),
     );
     write_fixture(
         &temp_dir,
         "broken.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/malformed.txt")),
+        go_fixture!("malformed.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

@@ -10,10 +10,7 @@ fn flags_placeholder_and_low_signal_tests() {
     write_fixture(
         &temp_dir,
         "quality_test.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/test_quality_slop.txt"
-        )),
+        go_fixture!("test_quality_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -35,10 +32,7 @@ fn does_not_flag_tests_with_positive_and_negative_signals() {
     write_fixture(
         &temp_dir,
         "quality_test.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/test_quality_clean.txt"
-        )),
+        go_fixture!("test_quality_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

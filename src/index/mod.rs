@@ -193,11 +193,12 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     use super::{ImportResolution, build_repository_index};
-    use crate::analysis::{DeclaredSymbol, ParsedFile, ParsedFunction};
+    use crate::analysis::{DeclaredSymbol, Language, ParsedFile, ParsedFunction};
     use crate::model::{FunctionFingerprint, SymbolKind};
 
     fn sample_file(path: &str, package_name: &str, function_names: &[&str]) -> ParsedFile {
         ParsedFile {
+            language: Language::Go,
             path: PathBuf::from(path),
             package_name: Some(package_name.to_string()),
             is_test_file: false,

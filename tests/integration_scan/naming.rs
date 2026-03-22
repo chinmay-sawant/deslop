@@ -10,7 +10,7 @@ fn flags_generic_names_and_weak_typing() {
     write_fixture(
         &temp_dir,
         "sloppy.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/generic_weak.txt")),
+        go_fixture!("generic_weak.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -31,7 +31,7 @@ fn flags_comment_style_and_overlong_names() {
     write_fixture(
         &temp_dir,
         "comments.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/comment_slop.txt")),
+        go_fixture!("comment_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -53,7 +53,7 @@ fn does_not_flag_concise_comments() {
     write_fixture(
         &temp_dir,
         "comments.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/comment_clean.txt")),
+        go_fixture!("comment_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -74,7 +74,7 @@ fn does_not_flag_legitimate_handler_names() {
     write_fixture(
         &temp_dir,
         "handler.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/legitimate_handler.txt")),
+        go_fixture!("legitimate_handler.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -97,7 +97,7 @@ fn does_not_flag_legitimate_adapter_names() {
     write_fixture(
         &temp_dir,
         "adapter.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/legitimate_adapter.txt")),
+        go_fixture!("legitimate_adapter.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

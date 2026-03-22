@@ -10,7 +10,7 @@ fn flags_looped_db_access_and_query_shape_patterns() {
     write_fixture(
         &temp_dir,
         "db.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/db_query_slop.txt")),
+        go_fixture!("db_query_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -32,7 +32,7 @@ fn does_not_flag_clean_db_access_patterns() {
     write_fixture(
         &temp_dir,
         "db.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/db_query_clean.txt")),
+        go_fixture!("db_query_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

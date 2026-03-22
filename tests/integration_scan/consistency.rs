@@ -10,10 +10,7 @@ fn flags_mixed_receiver_kinds_and_bad_struct_tags() {
     write_fixture(
         &temp_dir,
         "model.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/receiver_struct_slop.txt"
-        )),
+        go_fixture!("receiver_struct_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -35,10 +32,7 @@ fn does_not_flag_consistent_receivers_or_clean_tags() {
     write_fixture(
         &temp_dir,
         "model.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/receiver_struct_clean.txt"
-        )),
+        go_fixture!("receiver_struct_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

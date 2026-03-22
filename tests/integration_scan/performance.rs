@@ -10,7 +10,7 @@ fn flags_string_concat_in_loops() {
     write_fixture(
         &temp_dir,
         "concat.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/string_concat_loop.txt")),
+        go_fixture!("string_concat_loop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -30,7 +30,7 @@ fn does_not_flag_numeric_plus_equals_in_loops() {
     write_fixture(
         &temp_dir,
         "concat.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/string_concat_clean.txt")),
+        go_fixture!("string_concat_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -50,7 +50,7 @@ fn flags_repeated_json_marshaling_inside_loops() {
     write_fixture(
         &temp_dir,
         "json.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/json_marshal_loop.txt")),
+        go_fixture!("json_marshal_loop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -73,7 +73,7 @@ fn does_not_flag_single_json_marshaling_calls() {
     write_fixture(
         &temp_dir,
         "json.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/json_marshal_clean.txt")),
+        go_fixture!("json_marshal_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -93,7 +93,7 @@ fn flags_hot_path_allocation_fmt_and_reflection_patterns() {
     write_fixture(
         &temp_dir,
         "hot_path.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/hot_path_slop.txt")),
+        go_fixture!("hot_path_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -115,7 +115,7 @@ fn does_not_flag_hot_path_rules_for_one_off_calls() {
     write_fixture(
         &temp_dir,
         "hot_path.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/hot_path_clean.txt")),
+        go_fixture!("hot_path_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -137,10 +137,7 @@ fn flags_full_dataset_load_patterns() {
     write_fixture(
         &temp_dir,
         "full_dataset.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/full_dataset_load_slop.txt"
-        )),
+        go_fixture!("full_dataset_load_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -160,10 +157,7 @@ fn does_not_flag_streaming_reads_as_full_dataset_loads() {
     write_fixture(
         &temp_dir,
         "full_dataset.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/full_dataset_load_clean.txt"
-        )),
+        go_fixture!("full_dataset_load_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

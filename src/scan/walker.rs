@@ -3,7 +3,11 @@ use std::path::{Component, Path, PathBuf};
 use anyhow::Result;
 use ignore::WalkBuilder;
 
-pub fn discover_go_files(root: &Path, respect_ignore: bool) -> Result<Vec<PathBuf>> {
+pub fn discover_source_files(
+    root: &Path,
+    respect_ignore: bool,
+    supported_extensions: &[&str],
+) -> Result<Vec<PathBuf>> {
     let mut builder = WalkBuilder::new(root);
     builder.require_git(false);
 
@@ -29,7 +33,12 @@ pub fn discover_go_files(root: &Path, respect_ignore: bool) -> Result<Vec<PathBu
             continue;
         }
 
-        if path.extension().and_then(|ext| ext.to_str()) != Some("go") {
+        if !supported_extensions.contains(
+            &path
+                .extension()
+                .and_then(|ext| ext.to_str())
+                .unwrap_or_default(),
+        ) {
             continue;
         }
 

@@ -10,7 +10,7 @@ fn flags_goroutines_without_coordination() {
     write_fixture(
         &temp_dir,
         "go_routine.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/goroutine_slop.txt")),
+        go_fixture!("goroutine_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -31,7 +31,7 @@ fn does_not_flag_goroutines_with_waitgroup_coordination() {
     write_fixture(
         &temp_dir,
         "go_routine.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/goroutine_clean.txt")),
+        go_fixture!("goroutine_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -52,7 +52,7 @@ fn flags_goroutine_shutdown_and_mutex_contention_patterns() {
     write_fixture(
         &temp_dir,
         "concurrency.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/concurrency_slop.txt")),
+        go_fixture!("concurrency_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -74,7 +74,7 @@ fn does_not_flag_shutdown_and_mutex_patterns_when_signals_are_absent() {
     write_fixture(
         &temp_dir,
         "concurrency.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/concurrency_clean.txt")),
+        go_fixture!("concurrency_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

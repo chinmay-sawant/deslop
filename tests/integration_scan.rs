@@ -1,3 +1,9 @@
+macro_rules! go_fixture {
+    ($path:literal) => {
+        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/go/", $path))
+    };
+}
+
 #[path = "integration_scan/benchmarking.rs"]
 mod benchmarking;
 #[path = "integration_scan/consistency.rs"]
@@ -33,10 +39,7 @@ fn flags_error_handling_slop_patterns() {
     write_fixture(
         &temp_dir,
         "error_handling.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/error_handling_slop.txt"
-        )),
+        go_fixture!("error_handling_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -58,10 +61,7 @@ fn does_not_flag_wrapped_error_handling_as_misuse() {
     write_fixture(
         &temp_dir,
         "error_handling.go",
-        include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/generic/error_handling_clean.txt"
-        )),
+        go_fixture!("error_handling_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

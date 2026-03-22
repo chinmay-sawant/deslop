@@ -39,12 +39,11 @@ use self::security::{
 };
 use self::test_quality::test_quality_findings;
 
-pub(crate) fn evaluate_findings(files: &[ParsedFile], index: &RepositoryIndex) -> Vec<Finding> {
+pub(crate) fn evaluate_shared_findings(files: &[ParsedFile], _index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for file in files {
         findings.extend(package_hardcoded_secret_findings(file));
-        findings.extend(struct_tag_findings(file));
 
         for function in &file.functions {
             if let Some(finding) = generic_name_finding(file, function) {
@@ -59,37 +58,47 @@ pub(crate) fn evaluate_findings(files: &[ParsedFile], index: &RepositoryIndex) -
                 findings.push(finding);
             }
 
-            findings.extend(error_handling_findings(file, function));
             findings.extend(comment_style_findings(file, function));
-            findings.extend(weak_crypto_findings(file, function));
             findings.extend(hardcoded_secret_findings(file, function));
-            findings.extend(sql_string_concat_findings(file, function));
-            findings.extend(missing_context_findings(file, function));
-            findings.extend(missing_cancel_call_findings(file, function));
-            findings.extend(sleep_polling_findings(file, function));
-            findings.extend(busy_waiting_findings(file, function));
-            findings.extend(goroutine_shutdown_findings(file, function));
-            findings.extend(mutex_contention_findings(file, function, &file.imports));
-            findings.extend(allocation_churn_findings(file, function));
-            findings.extend(fmt_hot_path_findings(file, function));
-            findings.extend(reflection_hot_path_findings(file, function));
-            findings.extend(string_concat_in_loop_findings(file, function));
-            findings.extend(repeated_json_marshaling_findings(file, function));
-            findings.extend(database_query_findings(file, function));
-            findings.extend(full_dataset_load_findings(file, function));
-            findings.extend(goroutine_coordination_findings(file, function));
             findings.extend(test_quality_findings(file, function));
-            findings.extend(local_hallucination_findings(file, function, index));
         }
     }
 
-    findings.extend(mixed_receiver_kind_findings(files));
-
-    findings.sort_by(|left, right| {
-        left.path
-            .cmp(&right.path)
-            .then(left.start_line.cmp(&right.start_line))
-            .then(left.rule_id.cmp(&right.rule_id))
-    });
     findings
+}
+
+pub(crate) fn evaluate_go_file_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    findings.extend(struct_tag_findings(file));
+
+    for function in &file.functions {
+        findings.extend(error_handling_findings(file, function));
+        findings.extend(weak_crypto_findings(file, function));
+        findings.extend(sql_string_concat_findings(file, function));
+        findings.extend(missing_context_findings(file, function));
+        findings.extend(missing_cancel_call_findings(file, function));
+        findings.extend(sleep_polling_findings(file, function));
+        findings.extend(busy_waiting_findings(file, function));
+        findings.extend(goroutine_shutdown_findings(file, function));
+        findings.extend(mutex_contention_findings(file, function, &file.imports));
+        findings.extend(allocation_churn_findings(file, function));
+        findings.extend(fmt_hot_path_findings(file, function));
+        findings.extend(reflection_hot_path_findings(file, function));
+        findings.extend(string_concat_in_loop_findings(file, function));
+        findings.extend(repeated_json_marshaling_findings(file, function));
+        findings.extend(database_query_findings(file, function));
+        findings.extend(full_dataset_load_findings(file, function));
+        findings.extend(goroutine_coordination_findings(file, function));
+        findings.extend(local_hallucination_findings(file, function, index));
+    }
+
+    findings
+}
+
+pub(crate) fn evaluate_go_repository_findings(
+    files: &[&ParsedFile],
+    _index: &RepositoryIndex,
+) -> Vec<Finding> {
+    mixed_receiver_kind_findings(files)
 }

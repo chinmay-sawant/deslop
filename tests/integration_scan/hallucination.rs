@@ -10,12 +10,12 @@ fn flags_hallucinated_import_calls() {
     write_fixture(
         &temp_dir,
         "main.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/hallucinated_import.txt")),
+        go_fixture!("hallucinated_import.txt"),
     );
     write_fixture(
         &temp_dir,
         "utils/utils.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/utils_package.txt")),
+        go_fixture!("utils_package.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

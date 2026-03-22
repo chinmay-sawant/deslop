@@ -10,7 +10,7 @@ fn flags_missing_context_for_http_calls() {
     write_fixture(
         &temp_dir,
         "http.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/missing_context.txt")),
+        go_fixture!("missing_context.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -30,7 +30,7 @@ fn does_not_flag_context_aware_http_calls() {
     write_fixture(
         &temp_dir,
         "http.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/context_aware_http.txt")),
+        go_fixture!("context_aware_http.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -50,7 +50,7 @@ fn flags_missing_cancel_calls_for_derived_contexts() {
     write_fixture(
         &temp_dir,
         "cancel.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/context_cancel_slop.txt")),
+        go_fixture!("context_cancel_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -72,7 +72,7 @@ fn does_not_flag_derived_contexts_with_cancel_calls() {
     write_fixture(
         &temp_dir,
         "cancel.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/context_cancel_clean.txt")),
+        go_fixture!("context_cancel_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -92,7 +92,7 @@ fn flags_sleep_polling_patterns() {
     write_fixture(
         &temp_dir,
         "poll.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/sleep_polling.txt")),
+        go_fixture!("sleep_polling.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -112,7 +112,7 @@ fn does_not_flag_sleep_outside_loops() {
     write_fixture(
         &temp_dir,
         "poll.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/sleep_clean.txt")),
+        go_fixture!("sleep_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -132,7 +132,7 @@ fn flags_busy_waiting_select_defaults() {
     write_fixture(
         &temp_dir,
         "wait.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/busy_waiting_slop.txt")),
+        go_fixture!("busy_waiting_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -152,7 +152,7 @@ fn does_not_flag_blocking_select_loops_without_default() {
     write_fixture(
         &temp_dir,
         "wait.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/busy_waiting_clean.txt")),
+        go_fixture!("busy_waiting_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -172,7 +172,7 @@ fn flags_missing_context_for_exec_calls() {
     write_fixture(
         &temp_dir,
         "exec.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/missing_context_exec.txt")),
+        go_fixture!("missing_context_exec.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -194,7 +194,7 @@ fn does_not_flag_context_aware_exec_calls() {
     write_fixture(
         &temp_dir,
         "exec.go",
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/generic/context_aware_exec.txt")),
+        go_fixture!("context_aware_exec.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
