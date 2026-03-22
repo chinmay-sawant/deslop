@@ -96,7 +96,7 @@ runs:
               args+=(--no-ignore)
             fi
 
-            if [[ "$DESLOP_FAIL_ON_FINDINGS" != 'true' ]]; then
+            if [[ "${DESLOP_FAIL_ON_FINDINGS:-true}" != 'true' ]]; then
               args+=(--no-fail)
             fi
 
@@ -154,7 +154,8 @@ runs:
               $args += '--no-ignore'
             }
 
-            if ($env:DESLOP_FAIL_ON_FINDINGS -ne 'true') {
+            $failOnFindings = if ($env:DESLOP_FAIL_ON_FINDINGS) { $env:DESLOP_FAIL_ON_FINDINGS } else { 'true' }
+            if ($failOnFindings -ne 'true') {
               $args += '--no-fail'
             }
 
