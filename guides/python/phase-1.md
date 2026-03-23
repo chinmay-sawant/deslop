@@ -13,16 +13,16 @@ This phase should not try to model the whole Python language. The goal is to sup
 
 ## In Scope
 
-- Registering a Python backend in `src/analysis/mod.rs`
-- Adding the parser runtime dependency needed for Python source parsing
-- Creating `src/analysis/python/mod.rs`
-- Filling `src/analysis/python/parser/` with the first parser implementation
-- Routing `.py` files through the existing scan pipeline
-- Extracting the minimum normalized evidence needed for shared heuristics and first Python-specific heuristics
-- Defining conservative Python test-file and test-function classification
-- Deciding which evidence belongs in shared analysis types versus Python-local helper structures
-- Ensuring parse failures and syntax errors remain recoverable in the existing report model
-- Establishing the initial Python package and module naming policy used by reports and any future local index resolution
+- [x] Register a Python backend in `src/analysis/mod.rs`
+- [x] Add the parser runtime dependency needed for Python source parsing
+- [x] Create `src/analysis/python/mod.rs`
+- [x] Fill `src/analysis/python/parser/` with the first parser implementation
+- [x] Route `.py` files through the existing scan pipeline
+- [x] Extract the minimum normalized evidence needed for shared heuristics and first Python-specific heuristics
+- [x] Define conservative Python test-file and test-function classification
+- [x] Decide which evidence belongs in shared analysis types versus Python-local helper structures
+- [x] Ensure parse failures and syntax errors remain recoverable in the existing report model
+- [x] Establish the initial Python package and module naming policy used by reports and any future local index resolution
 
 ## Out Of Scope
 
@@ -61,67 +61,67 @@ This phase should not try to model the whole Python language. The goal is to sup
 
 	Required outcomes:
 
-	- `registered_backends()` includes Python alongside Go and Rust.
-	- `supported_extensions()` includes `py`.
-	- `.py` files are discovered and routed without changing the existing walker policy.
-	- The CLI and report flow stay language-agnostic.
+	- [x] `registered_backends()` includes Python alongside Go and Rust.
+	- [x] `supported_extensions()` includes `py`.
+	- [x] `.py` files are discovered and routed without changing the existing walker policy.
+	- [x] The CLI and report flow stay language-agnostic.
 
 2. Choose and wire the parser runtime.
 
 	Required outcomes:
 
-	- Add the Python tree-sitter dependency in the same spirit as the Go and Rust parser dependencies.
-	- Parser configuration failures surface as ordinary per-file errors where possible.
-	- Syntax-tolerant parsing is preferred so malformed Python files can still contribute partial structure when safe.
+	- [x] Add the Python tree-sitter dependency in the same spirit as the Go and Rust parser dependencies.
+	- [x] Parser configuration failures surface as ordinary per-file errors where possible.
+	- [x] Syntax-tolerant parsing is preferred so malformed Python files can still contribute partial structure when safe.
 
 3. Define the Python parser module boundaries.
 
 	Recommended starting split:
 
-	- `general.rs`: imports, declared symbols, class and function discovery, decorators, module naming
-	- `comments.rs`: docstring extraction, TODO or FIXME comment capture if needed later, nearby comment helpers
-	- `performance.rs`: loop-local string concatenation, obvious full-dataset loading calls, sync I/O inside async functions
-	- `tests.rs`: parser-focused unit coverage
+	- [x] `general.rs`: imports, declared symbols, class and function discovery, decorators, module naming
+	- [x] `comments.rs`: docstring extraction, TODO or FIXME comment capture if needed later, nearby comment helpers
+	- [x] `performance.rs`: loop-local string concatenation, obvious full-dataset loading calls, sync I/O inside async functions
+	- [x] `tests.rs`: parser-focused unit coverage
 
 	Rule:
 
-	- Do not create extra parser files until the split is helping readability.
+	- [x] Keep the parser split limited to boundaries that help readability.
 
 4. Define the minimum file-level evidence contract.
 
 	The parser should extract at least:
 
-	- language and path
-	- conservative module or package name for reporting
-	- whether the file appears to be test code
-	- syntax error state
-	- imports with useful aliases
-	- declared symbols such as module-level functions, classes, methods, and assignments that matter to the index or heuristics
-	- package-level named string literals when they support secret or hardcoded-value heuristics
+	- [x] language and path
+	- [x] conservative module or package name for reporting
+	- [x] whether the file appears to be test code
+	- [x] syntax error state
+	- [x] imports with useful aliases
+	- [x] declared symbols such as module-level functions, classes, methods, and assignments that matter to the index or heuristics
+	- [x] package-level named string literals when they support secret or hardcoded-value heuristics
 
 	Python-specific note:
 
-	- For package naming, prefer a repository-relative module path policy that can represent both `package/module.py` and `package/__init__.py` cleanly.
+	- [x] Use a package naming policy that can represent both `package/module.py` and `package/__init__.py` cleanly.
 
 5. Define the minimum function-level evidence contract.
 
 	The parser should capture at least:
 
-	- function and method names
-	- line span and fingerprint basics
-	- direct call sites and attribute-style call targets where syntax makes that practical
-	- `async def` classification
-	- test-function classification
-	- local binding names
-	- docstring content when it is available at function scope
-	- local string literals used by shared secret-style heuristics
-	- evidence for loop-based string concatenation
-	- evidence for obvious sync-I/O calls inside async functions
-	- evidence for broad or swallowed exception handling if it belongs to the first rule pack
+	- [x] function and method names
+	- [x] line span and fingerprint basics
+	- [x] direct call sites and attribute-style call targets where syntax makes that practical
+	- [x] `async def` classification
+	- [x] test-function classification
+	- [x] local binding names
+	- [x] docstring content when it is available at function scope
+	- [x] local string literals used by shared secret-style heuristics
+	- [x] evidence for loop-based string concatenation
+	- [x] evidence for obvious sync-I/O calls inside async functions
+	- [x] evidence for broad or swallowed exception handling if it belongs to the first rule pack
 
 	Shared-model rule:
 
-	- If a Python signal is only consumed by Python heuristics and would distort existing shared fields, keep it in a Python-local evidence helper first.
+	- [x] Keep Python-only signals out of shared fields when they would distort the cross-language model.
 
 6. Define Python test detection policy.
 
@@ -129,10 +129,10 @@ This phase should not try to model the whole Python language. The goal is to sup
 
 	Preferred sources:
 
-	- files under `tests/`
-	- filenames matching `test_*.py` or `*_test.py`
-	- functions named `test_*`
-	- methods inside classes whose names or bases make test usage obvious
+	- [x] files under `tests/`
+	- [x] filenames matching `test_*.py` or `*_test.py`
+	- [x] functions named `test_*`
+	- [x] methods inside classes whose names or bases make test usage obvious
 
 	The first pass should stay conservative. If certainty is low, prefer not to over-classify production code as tests.
 
@@ -140,10 +140,10 @@ This phase should not try to model the whole Python language. The goal is to sup
 
 	At the end of this phase it should be explicit whether Python parser evidence is sufficient to enable these shared rule families:
 
-	- generic and overlong naming
-	- hardcoded secret detection from named string literals
-	- tutorial-style or heading-style comment detection if docstrings are normalized as comments
-	- test-quality findings if Python test summaries are populated reliably
+	- [x] generic and overlong naming
+	- [x] hardcoded secret detection from named string literals
+	- [x] tutorial-style or heading-style comment detection if docstrings are normalized as comments
+	- [x] test-quality findings if Python test summaries are populated reliably
 
 	If a shared rule cannot be enabled honestly, leave it off and document the gap.
 
@@ -151,43 +151,43 @@ This phase should not try to model the whole Python language. The goal is to sup
 
 	Required outcomes:
 
-	- malformed Python files should not abort the entire scan
-	- per-file parse failures should flow through the existing parse-failure reporting path
-	- `syntax_error` behavior should remain consistent with current language backends where tree-sitter recovers enough structure
+	- [x] malformed Python files do not abort the entire scan
+	- [x] per-file parse failures flow through the existing parse-failure reporting path
+	- [x] `syntax_error` behavior remains consistent with current language backends where tree-sitter recovers enough structure
 
 9. Add Python parser and routing coverage.
 
 	Required tests:
 
-	- backend registration and extension routing
-	- module-level function extraction
-	- class and method extraction
-	- import alias capture
-	- async-function classification
-	- test detection
-	- syntax-error tolerance or recoverable failure behavior
+	- [x] backend registration and extension routing
+	- [x] module-level function extraction
+	- [x] class and method extraction
+	- [x] import alias capture
+	- [x] async-function classification
+	- [x] test detection
+	- [x] syntax-error tolerance or recoverable failure behavior
 
 ## Acceptance Criteria
 
-- Python files are discoverable and analyzable through the existing scan pipeline.
-- The Python backend produces `ParsedFile` output with the minimum file and function evidence needed by Phase 2.
-- Shared analysis-model changes are deliberate and minimal.
-- Parse failures remain recoverable and visible through the current reporting model.
-- Parser-focused tests exist for Python routing, extraction, test classification, and syntax tolerance.
-- The code layout uses the existing Python directories instead of creating a separate side-channel implementation.
+- [x] Python files are discoverable and analyzable through the existing scan pipeline.
+- [x] The Python backend produces `ParsedFile` output with the minimum file and function evidence needed by Phase 2.
+- [x] Shared analysis-model changes are deliberate and minimal.
+- [x] Parse failures remain recoverable and visible through the current reporting model.
+- [x] Parser-focused tests exist for Python routing, extraction, test classification, and syntax tolerance.
+- [x] The code layout uses the existing Python directories instead of creating a separate side-channel implementation.
 
 ## Verification
 
-- Review `src/analysis/mod.rs`, `src/analysis/python/mod.rs`, and `src/analysis/python/parser/` against the evidence contract defined here.
-- Run `cargo test` after parser and shared-model changes.
-- Add or extend `tests/integration_scan/python.rs` to prove `.py` discovery and scan execution.
-- Verify that mixed-language scans still only route files to the matching backend.
+- [x] Review `src/analysis/mod.rs`, `src/analysis/python/mod.rs`, and `src/analysis/python/parser/` against the evidence contract defined here.
+- [x] Run `cargo test` after parser and shared-model changes.
+- [x] Add or extend `tests/integration_scan/python.rs` to prove `.py` discovery and scan execution.
+- [x] Verify that mixed-language scans still only route files to the matching backend.
 
 ## Document Update Obligations
 
-- Update this file whenever the Python parser contract changes materially.
-- Update `guides/implementation-guide.md` once Python becomes a real backend.
-- Update `guides/features-and-detections.md` only after Python findings become user-visible.
+- [x] Keep this file updated when the Python parser contract changes materially.
+- [x] Update `guides/implementation-guide.md` once Python becomes a real backend.
+- [x] Update `guides/features-and-detections.md` after Python findings become user-visible.
 
 ## Risks And Open Questions
 
