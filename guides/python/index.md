@@ -35,7 +35,7 @@ The current shipped Python rule pack is intentionally small and syntactic:
 
 Python also reuses existing shared heuristics where the parser evidence supports them, including comment-style findings, hardcoded secret detection, and some naming and test-quality signals.
 
-## Why This Roadmap Uses 3 Phases
+## Why This Roadmap Uses 4 Phases
 
 Rust support needed a separate scaffold phase before parser enrichment. Python can move a little faster because the repository already has Python placeholder directories and the shared analysis model has already been generalized enough to host another language.
 
@@ -44,8 +44,9 @@ Because of that, the Python roadmap combines backend registration and first pars
 1. backend plus parser plus evidence contract
 2. heuristics and first Python rule pack
 3. verification, mixed-language hardening, documentation sync, and rollout
+4. advanced Python rule families for the broader backlog from `python.md`
 
-This keeps the plan compact without collapsing important acceptance boundaries.
+The first three phases cover the current shipped baseline. The fourth phase exists because the attached Python backlog is materially broader than the current conservative release and needs a separate contract instead of being left as vague future intent.
 
 ## Planned Code Layout
 
@@ -90,13 +91,16 @@ The roadmap intentionally separates them into three buckets:
 - god functions and oversized classes
 - tight coupling and over-abstraction signals
 - Python-local hallucinated import or local-call checks if module resolution becomes stable enough
+- duplication detection with explicit evidence policies
+- maintainability and AI-smell signals that can be defined conservatively
 
 3. Explicitly deferred for now:
 
 - profiling-only performance claims
-- duplication detection
 - deep architectural judgments that need data flow or repository-wide semantic understanding
 - "looks AI-generated" rules that cannot be defined with a low-noise evidence policy
+
+Some of the attached ideas have now grown large enough to warrant a dedicated follow-on phase instead of living only as backlog bullets. That work is defined in [Phase 4](phase-4.md).
 
 The roadmap should not pretend that static analysis can prove runtime performance claims that the attached notes explicitly describe as profile-driven.
 
@@ -131,12 +135,14 @@ Checkpoints must describe observable implementation outcomes, not vague intentio
 1. [Phase 1](phase-1.md): Python backend, parser, and evidence contract
 2. [Phase 2](phase-2.md): Python heuristics and first rule pack
 3. [Phase 3](phase-3.md): verification, mixed-language hardening, and rollout
+4. [Phase 4](phase-4.md): advanced Python rule families and backlog expansion
 
 ## Current Completion State
 
 - [Phase 1](phase-1.md): implemented
 - [Phase 2](phase-2.md): implemented for the first Python rule pack
 - [Phase 3](phase-3.md): implemented for the current rollout baseline
+- [Phase 4](phase-4.md): planned, not implemented
 
 ## Rollout Artifacts
 
