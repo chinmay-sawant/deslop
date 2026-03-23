@@ -395,6 +395,7 @@ mod tests {
                         call_count: 0,
                     },
                     calls: Vec::new(),
+                    exception_handlers: Vec::new(),
                     has_context_parameter: false,
                     is_test_function: false,
                     local_binding_names: Vec::new(),
@@ -537,6 +538,12 @@ mod tests {
                 "render",
                 &["NormalizeRust"],
             ),
+            sample_file(
+                Language::Python,
+                "/repo/pkg/render/__init__.py",
+                "render",
+                &["normalize_python"],
+            ),
         ];
 
         let index = build_repository_index(Path::new("/repo"), &files);
@@ -561,12 +568,24 @@ mod tests {
                 .is_some_and(|package| package.has_function("NormalizeRust")
                     && !package.has_function("Normalize"))
         );
+        assert!(
+            index
+                .package_for_file(
+                    Language::Python,
+                    Path::new("/repo/pkg/render/__init__.py"),
+                    "render"
+                )
+                .is_some_and(|package| package.has_function("normalize_python")
+                    && !package.has_function("Normalize")
+                    && !package.has_function("NormalizeRust"))
+        );
 
         match index.resolve_import_path(Language::Go, "github.com/acme/project/pkg/render") {
             ImportResolution::Resolved(package) => {
                 assert_eq!(package.language, Language::Go);
                 assert!(package.has_function("Normalize"));
                 assert!(!package.has_function("NormalizeRust"));
+                assert!(!package.has_function("normalize_python"));
             }
             other => panic!("expected go package resolution, got {other:?}"),
         }

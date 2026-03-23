@@ -22,6 +22,7 @@ pub(crate) struct ParsedFile {
 pub(crate) struct ParsedFunction {
     pub fingerprint: FunctionFingerprint,
     pub calls: Vec<CallSite>,
+    pub exception_handlers: Vec<ExceptionHandler>,
     pub has_context_parameter: bool,
     pub is_test_function: bool,
     pub local_binding_names: Vec<String>,
@@ -103,6 +104,15 @@ pub(crate) struct CallSite {
     pub receiver: Option<String>,
     pub name: String,
     pub line: usize,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct ExceptionHandler {
+    pub line: usize,
+    pub clause: String,
+    pub action: Option<String>,
+    pub is_broad: bool,
+    pub suppresses: bool,
 }
 
 #[derive(Debug, Clone)]

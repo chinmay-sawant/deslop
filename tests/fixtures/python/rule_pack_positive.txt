@@ -7,6 +7,11 @@ async def fetch_data(url: str, parts: list[str]) -> str:
     for part in parts:
         result += part
 
+    try:
+        risky_call()
+    except Exception:
+        pass
+
     print("debug", url)
     response = requests.get(url)
     time.sleep(1)

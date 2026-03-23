@@ -69,10 +69,11 @@ deslop is a static analyzer for Go, Python, and Rust repositories that looks for
 ### Python-specific signals
 
 - `blocking_sync_io_in_async`: obvious synchronous network, subprocess, sleep, or file I/O calls made from `async def` functions.
+- `exception_swallowed`: broad exception handlers such as `except:` or `except Exception:` that immediately suppress the error with `pass`, `continue`, `break`, or `return`.
 - `eval_exec_usage`: direct `eval()` or `exec()` usage in non-test Python code.
 - `print_debugging_leftover`: `print()` calls left in non-test Python functions when they do not look like obvious `main`-entrypoint output.
 
-Python also reuses shared signals when the parser evidence supports them, including `hardcoded_secret`, comment-style findings based on docstrings, `full_dataset_load`, and `string_concat_in_loop` when those patterns are syntactically clear.
+Python also reuses shared signals when the parser evidence supports them, including `hardcoded_secret`, comment-style findings based on docstrings, `full_dataset_load`, `string_concat_in_loop`, and conservative test-quality findings.
 
 ### Consistency and tag signals
 
@@ -139,10 +140,11 @@ For Rust, `hallucinated_local_call` now also covers direct same-module calls whe
 
 ## Current limitations
 
-- No authoritative Go or Rust type checking yet.
+- No authoritative Go, Python, or Rust type checking yet.
 - No interprocedural context propagation.
 - No proof of goroutine leaks, N+1 queries, or runtime performance regressions.
 - Package-method and local-symbol checks are repository-local and now language-scoped for mixed-language repositories.
+- No Python module graph resolution or installed-package awareness yet.
 - No Rust trait resolution, cargo workspace modeling, or macro expansion yet.
 
 ## Phase status
@@ -153,6 +155,8 @@ For Rust, `hallucinated_local_call` now also covers direct same-module calls whe
 - Phase 2 parser enrichment: context-parameter detection, derived-context factory tracking, raw goroutine launch tracking, goroutine-in-loop tracking, goroutine shutdown-path tracking, looped `time.Sleep` detection, looped `select default` detection, looped JSON marshal detection, mutex lock-in-loop tracking, allocation tracking, fmt and reflect hot-path tracking, looped database query extraction, and string-concatenation-in-loop tracking.
 - Phase 2 heuristic additions: broader `missing_context`, `missing_cancel_call`, `sleep_polling`, `busy_waiting`, `repeated_json_marshaling`, `string_concat_in_loop`, `goroutine_spawn_in_loop`, `goroutine_without_shutdown_path`, `mutex_in_loop`, `blocking_call_while_locked`, `allocation_churn_in_loop`, `fmt_hot_path`, `reflection_hot_path`, `full_dataset_load`, `n_plus_one_query`, `wide_select_query`, `likely_unindexed_query`, and the first conservative goroutine-coordination pass.
 - Phase 3 heuristic additions: `hardcoded_secret`, `sql_string_concat`, `mixed_receiver_kinds`, `malformed_struct_tag`, `duplicate_struct_tag_key`, `test_without_assertion_signal`, `happy_path_only_test`, and `placeholder_test_body`.
+- Python backend additions so far: `.py` routing, Python parser coverage for imports, symbols, call sites, docstrings, test classification, loop concatenation, and conservative exception-handler evidence.
+- Python heuristic additions so far: `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, Python reuse of `full_dataset_load`, and Python reuse of `string_concat_in_loop`.
 - Rust heuristic additions so far: `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, and Rust-local `hallucinated_import_call` coverage for `crate::`, `self::`, and `super::` module imports.
 
 ### Still pending
@@ -160,4 +164,5 @@ For Rust, `hallucinated_local_call` now also covers direct same-module calls whe
 - Stronger repo-wide style checks.
 - Deeper goroutine lifetime analysis beyond local shutdown-path heuristics.
 - Better context propagation through wrappers and helper functions.
+- Python local-module hallucination checks and stronger asyncio-specific reasoning.
 - Optional deeper semantic analysis for harder cases such as true index awareness, struct layout analysis, and O(n²) detection.

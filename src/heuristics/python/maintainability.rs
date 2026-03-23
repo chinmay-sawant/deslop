@@ -1,6 +1,40 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(super) fn exception_swallowed_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    function
+        .exception_handlers
+        .iter()
+        .filter(|handler| handler.is_broad && handler.suppresses)
+        .map(|handler| Finding {
+            rule_id: "exception_swallowed".to_string(),
+            severity: Severity::Warning,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: handler.line,
+            end_line: handler.line,
+            message: format!(
+                "function {} swallows a broad exception handler",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("handler clause: {}", handler.clause),
+                format!(
+                    "handler action: {}",
+                    handler.action.as_deref().unwrap_or("<unknown>")
+                ),
+            ],
+        })
+        .collect()
+}
+
 pub(super) fn eval_exec_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();

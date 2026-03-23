@@ -345,6 +345,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     Some(ParsedFunction {
         fingerprint,
         calls,
+        exception_handlers: Vec::new(),
         has_context_parameter: false,
         is_test_function,
         local_binding_names,

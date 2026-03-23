@@ -16,16 +16,24 @@ These documents are not a plan for linting deslop's own Python tooling. They are
 
 ## Current State Summary
 
-The codebase already has several Python-facing hooks, but they are incomplete:
+Python support is now implemented through the existing architecture:
 
-- `Language::Python` already exists in `src/analysis/mod.rs`.
-- `src/analysis/python/parser/` already exists as an empty placeholder.
-- `src/heuristics/python/` already exists as an empty placeholder.
-- The active registered backends are still only Go and Rust.
-- The shared `ParsedFile` and `ParsedFunction` model already carries many reusable pieces such as imports, symbols, doc comments, string literals, call sites, and test summaries.
-- The repository-local index is already language-scoped, which is important for future mixed Go, Python, and Rust scans.
+- `Language::Python` is registered in `src/analysis/mod.rs`.
+- `src/analysis/python/parser/` now extracts Python imports, symbols, call sites, docstrings, test classification, loop concatenation evidence, and conservative exception-handler evidence.
+- `src/heuristics/python/` now hosts the first Python-specific rule pack.
+- The shared `ParsedFile` and `ParsedFunction` model carries the cross-language evidence Python currently needs.
+- The repository-local index remains language-scoped, so mixed Go, Python, and Rust scans stay isolated by backend.
 
-That means Python support should be added as a new backend using the current architecture, not by forking the scan flow or duplicating the CLI, index, or reporting layers.
+The current shipped Python rule pack is intentionally small and syntactic:
+
+- `string_concat_in_loop`
+- `blocking_sync_io_in_async`
+- `exception_swallowed`
+- `eval_exec_usage`
+- `print_debugging_leftover`
+- shared `full_dataset_load`
+
+Python also reuses existing shared heuristics where the parser evidence supports them, including comment-style findings, hardcoded secret detection, and some naming and test-quality signals.
 
 ## Why This Roadmap Uses 3 Phases
 
@@ -123,6 +131,17 @@ Checkpoints must describe observable implementation outcomes, not vague intentio
 1. [Phase 1](phase-1.md): Python backend, parser, and evidence contract
 2. [Phase 2](phase-2.md): Python heuristics and first rule pack
 3. [Phase 3](phase-3.md): verification, mixed-language hardening, and rollout
+
+## Current Completion State
+
+- [Phase 1](phase-1.md): implemented
+- [Phase 2](phase-2.md): implemented for the first Python rule pack
+- [Phase 3](phase-3.md): implemented for the current rollout baseline
+
+## Rollout Artifacts
+
+- [benchmark-note.md](benchmark-note.md): current Python fixture benchmark snapshot
+- [release-checklist.md](release-checklist.md): release validation checklist for Python support
 
 ## Parallel Work Policy
 

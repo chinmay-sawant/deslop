@@ -1,0 +1,15 @@
+import requests
+
+
+def test_fetch_data():
+    result = ""
+    for part in ["a", "b"]:
+        result += part
+
+    try:
+        requests.get("https://example.com")
+    except Exception:
+        pass
+
+    print(result)
+    assert result == "ab"

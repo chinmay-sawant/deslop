@@ -8,7 +8,11 @@ async def fetch_data(client: httpx.AsyncClient, url: str, parts: list[str]) -> s
     for part in parts:
         pieces.append(part)
 
-    response = await client.get(url)
+    try:
+        response = await client.get(url)
+    except ValueError:
+        raise
+
     await asyncio.sleep(0)
     return "".join(pieces) + response.text
 

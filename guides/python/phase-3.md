@@ -124,6 +124,14 @@ This phase is also where deferred decisions become explicit. If some Python idea
 - Run at least one Python-only benchmark and one mixed-language verification scan before calling the phase complete.
 - Review `README.md`, `guides/implementation-guide.md`, and `guides/features-and-detections.md` for documentation sync.
 
+## Current Rollout Snapshot
+
+- `cargo test --test integration_scan`: passed with `65` integration tests and `1` ignored real-repository benchmark test.
+- `cargo test`: passed.
+- `cargo build --release`: passed.
+- Python-only benchmark snapshot: `2` files, `3` functions, `11` findings, `0` parse failures. See `guides/python/benchmark-note.md`.
+- Mixed-language verification scan snapshot: `3` discovered files, `3` analyzed files, `6` functions, `1` finding, `0` parse failures, `packages=3`, `symbols=8`, `imports=2`.
+
 ## Document Update Obligations
 
 - Update this file whenever the rollout matrix or backlog changes materially.

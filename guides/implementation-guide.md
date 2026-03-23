@@ -55,7 +55,8 @@ For Python files, the current parser extracts:
 - per-function call sites using direct and attribute-style call targets
 - async function classification through function-kind metadata
 - module-level and local string literals that can support shared secret-style heuristics
-- function docstrings, local binding names, and conservative test-file and test-function classification
+- function docstrings, local binding names, conservative exception-handler evidence, and conservative test-file and test-function classification
+- loop-local string concatenation evidence for the shared performance rule
 - syntax error state
 
 Python support remains syntax-oriented. It does not execute imports, resolve installed packages, or attempt mypy-style semantic understanding.
@@ -135,8 +136,8 @@ This index is deliberately lightweight. It is useful for local-context checks, b
 9. `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, Rust-local `hallucinated_import_call`, and Rust-local `hallucinated_local_call`
    The Rust backend uses parser-level call, local-binding, doc-comment, test-classification, import-alias, and unsafe-comment evidence to flag obvious leftover macros, leftover TODO or FIXME doc comments, `.unwrap()` and `.expect(...)` in non-test Rust code, local imported calls that do not match indexed Rust modules, direct same-module calls that do not match indexed Rust symbols, and `unsafe` usage that lacks a nearby `SAFETY:` comment.
 
-10. `blocking_sync_io_in_async`, `eval_exec_usage`, `print_debugging_leftover`, Python `full_dataset_load`, and Python `string_concat_in_loop`
-   The Python heuristic layer uses parser-level async function kind, import aliases, call sites, and loop-concatenation evidence to flag blocking sync I/O inside `async def`, direct `eval()` and `exec()` usage, debug-style `print()` leftovers, full-file materialization patterns such as `open(...).read()` or `Path(...).read_text()`, and repeated string concatenation inside loops.
+10. `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, Python `full_dataset_load`, and Python `string_concat_in_loop`
+   The Python heuristic layer uses parser-level async function kind, import aliases, call sites, exception-handler evidence, and loop-concatenation evidence to flag blocking sync I/O inside `async def`, broad exception handlers that immediately suppress failures, direct `eval()` and `exec()` usage, debug-style `print()` leftovers, full-file materialization patterns such as `open(...).read()` or `Path(...).read_text()`, and repeated string concatenation inside loops.
 
 ### Benchmark layer
 
@@ -181,7 +182,7 @@ The benchmark report includes:
 cargo run -- scan /absolute/path/to/repo
 ```
 
-The scan command auto-detects supported languages from the files present under the target root, so the same command works for Go-only repositories, Rust-only repositories, and mixed repositories.
+The scan command auto-detects supported languages from the files present under the target root, so the same command works for Go-only repositories, Python-only repositories, Rust-only repositories, and mixed repositories.
 
 This default output prints the summary plus findings only.
 

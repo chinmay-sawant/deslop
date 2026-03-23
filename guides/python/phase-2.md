@@ -75,7 +75,7 @@ This phase must use the abstractions already present in the repository:
 
 3. Define the first Python-specific rule pack explicitly.
 
-	Recommended first-release rule pack:
+	Current shipped first-release rule pack:
 
 	- `string_concat_in_loop`: repeated `+=` or equivalent concatenation on clearly string-like values inside loops
 	- `blocking_sync_io_in_async`: obvious synchronous I/O or blocking calls inside `async def`
@@ -83,6 +83,11 @@ This phase must use the abstractions already present in the repository:
 	- `eval_exec_usage`: direct use of `eval()` or `exec()`
 	- `print_debugging_leftover`: `print()` calls that look like debug leftovers in non-test code
 	- `full_dataset_load`: obvious full-file or full-payload read patterns that load everything into memory when streaming would be more appropriate
+
+	Current implementation note:
+
+	- `full_dataset_load` and `string_concat_in_loop` reuse shared rule IDs because their user-facing meaning remains the same across languages.
+	- `exception_swallowed`, `blocking_sync_io_in_async`, `eval_exec_usage`, and `print_debugging_leftover` remain Python-specific rule IDs.
 
 	Naming rule:
 
@@ -151,6 +156,14 @@ This phase must use the abstractions already present in the repository:
 	- "looks AI-generated" signals without a precise false-positive policy
 
 	Those ideas should be recorded as backlog, not smuggled into the initial rule pack.
+
+	Current deferred backlog after implementation:
+
+	- module-aware hallucinated import and local-call checks for Python
+	- monolithic `__init__.py` detection
+	- god function and oversized class heuristics
+	- duplication detection
+	- lower-noise AI-smell detection with a defensible evidence policy
 
 ## Acceptance Criteria
 

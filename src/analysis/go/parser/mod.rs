@@ -151,6 +151,7 @@ fn parse_function_node(
     Some(ParsedFunction {
         fingerprint,
         calls,
+        exception_handlers: Vec::new(),
         has_context_parameter,
         is_test_function,
         local_binding_names: Vec::new(),

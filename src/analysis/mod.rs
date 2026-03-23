@@ -11,8 +11,9 @@ use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
 pub(crate) use types::{
-    CallSite, ContextFactoryCall, DbQueryCall, DeclaredSymbol, FormattedErrorCall, ImportSpec,
-    NamedLiteral, ParsedFile, ParsedFunction, StructTag, TestFunctionSummary,
+    CallSite, ContextFactoryCall, DbQueryCall, DeclaredSymbol, ExceptionHandler,
+    FormattedErrorCall, ImportSpec, NamedLiteral, ParsedFile, ParsedFunction, StructTag,
+    TestFunctionSummary,
 };
 
 #[allow(dead_code)]

@@ -4,7 +4,8 @@ use std::path::Path;
 use tree_sitter::Node;
 
 use crate::analysis::{
-    CallSite, DeclaredSymbol, ImportSpec, NamedLiteral, ParsedFunction, TestFunctionSummary,
+    CallSite, DeclaredSymbol, ExceptionHandler, ImportSpec, NamedLiteral, ParsedFunction,
+    TestFunctionSummary,
 };
 use crate::model::{FunctionFingerprint, SymbolKind};
 
@@ -103,6 +104,15 @@ pub(super) fn collect_local_strings(body_node: Node<'_>, source: &str) -> Vec<Na
     visit_local_strings(body_node, source, &mut literals);
     literals.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
     literals
+}
+
+pub(super) fn collect_exception_handlers(
+    body_node: Node<'_>,
+    source: &str,
+) -> Vec<ExceptionHandler> {
+    let mut handlers = Vec::new();
+    visit_exception_handlers(body_node, source, &mut handlers);
+    handlers
 }
 
 pub(super) fn collect_local_bindings(function_node: Node<'_>, source: &str) -> Vec<String> {
@@ -302,6 +312,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         (false, false) => "function",
     };
     let calls = collect_calls(body_node, source);
+    let exception_handlers = collect_exception_handlers(body_node, source);
     let local_string_literals = collect_local_strings(body_node, source);
     let local_binding_names = collect_local_bindings(node, source);
     let doc_comment = extract_docstring(body_node, source);
@@ -325,6 +336,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     Some(ParsedFunction {
         fingerprint,
         calls,
+        exception_handlers,
         has_context_parameter: false,
         is_test_function,
         local_binding_names,
@@ -500,6 +512,24 @@ fn visit_assignment_bindings(node: Node<'_>, source: &str, names: &mut BTreeSet<
     }
 }
 
+fn visit_exception_handlers(node: Node<'_>, source: &str, handlers: &mut Vec<ExceptionHandler>) {
+    if should_skip_nested_scope(node) {
+        return;
+    }
+
+    if node.kind() == "except_clause"
+        && let Some(text) = source.get(node.byte_range())
+        && let Some(handler) = exception_handler_from_text(text, node.start_position().row + 1)
+    {
+        handlers.push(handler);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_exception_handlers(child, source, handlers);
+    }
+}
+
 fn parse_call_target(callee_text: &str) -> Option<(Option<String>, String)> {
     let normalized = callee_text.trim();
     if normalized.is_empty() {
@@ -511,6 +541,59 @@ fn parse_call_target(callee_text: &str) -> Option<(Option<String>, String)> {
     }
 
     Some((None, normalized.to_string()))
+}
+
+fn exception_handler_from_text(text: &str, line: usize) -> Option<ExceptionHandler> {
+    let trimmed_lines = text
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .collect::<Vec<_>>();
+    let clause_line = *trimmed_lines.first()?;
+    if !clause_line.starts_with("except") {
+        return None;
+    }
+
+    let action = handler_action(&trimmed_lines);
+    let normalized_clause = clause_line.to_ascii_lowercase();
+    let is_broad = normalized_clause == "except:"
+        || normalized_clause.starts_with("except exception")
+        || normalized_clause.starts_with("except baseexception")
+        || normalized_clause.starts_with("except (exception")
+        || normalized_clause.starts_with("except (baseexception");
+    let suppresses = action.as_deref().is_some_and(is_suppression_action);
+
+    Some(ExceptionHandler {
+        line,
+        clause: clause_line.to_string(),
+        action,
+        is_broad,
+        suppresses,
+    })
+}
+
+fn handler_action(trimmed_lines: &[&str]) -> Option<String> {
+    if trimmed_lines.is_empty() {
+        return None;
+    }
+
+    let clause_line = trimmed_lines[0];
+    if let Some((_, inline_action)) = clause_line.split_once(':') {
+        let inline_action = inline_action.trim();
+        if !inline_action.is_empty() {
+            return Some(inline_action.to_string());
+        }
+    }
+
+    trimmed_lines.get(1).map(|line| (*line).to_string())
+}
+
+fn is_suppression_action(action: &str) -> bool {
+    let normalized = action.trim().to_ascii_lowercase();
+    normalized == "pass"
+        || normalized == "continue"
+        || normalized == "break"
+        || normalized.starts_with("return")
 }
 
 fn named_literal_from_assignment_text(text: &str, line: usize) -> Option<NamedLiteral> {

@@ -46,6 +46,7 @@ def helper():
     assert_eq!(fetch.fingerprint.kind, "async_function");
     assert_eq!(fetch.local_strings.len(), 2);
     assert_eq!(fetch.concat_loops, vec![15]);
+    assert!(fetch.exception_handlers.is_empty());
     assert!(fetch.doc_comment.is_some());
     assert!(
         fetch
@@ -93,4 +94,36 @@ class TestClient:
     assert!(parsed.is_test_file);
     assert!(parsed.functions[0].is_test_function);
     assert!(parsed.functions[0].test_summary.is_some());
+}
+
+#[test]
+fn test_python_exception_handler_evidence() {
+    let source = r#"
+def load_config():
+    try:
+        return read_config()
+    except Exception:
+        pass
+
+def recover_config():
+    try:
+        return read_config()
+    except ValueError:
+        return default_config()
+"#;
+
+    let parsed = parse_file(Path::new("config.py"), source).expect("python parsing should succeed");
+
+    let load_config = &parsed.functions[0];
+    assert_eq!(load_config.exception_handlers.len(), 1);
+    assert!(load_config.exception_handlers[0].is_broad);
+    assert!(load_config.exception_handlers[0].suppresses);
+    assert_eq!(
+        load_config.exception_handlers[0].action.as_deref(),
+        Some("pass")
+    );
+
+    let recover_config = &parsed.functions[1];
+    assert_eq!(recover_config.exception_handlers.len(), 1);
+    assert!(!recover_config.exception_handlers[0].is_broad);
 }
