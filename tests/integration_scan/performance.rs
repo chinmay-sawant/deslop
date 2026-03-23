@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn flags_string_concat_in_loops() {
+fn test_concat_loops() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -30,7 +30,7 @@ fn flags_string_concat_in_loops() {
 }
 
 #[test]
-fn does_not_flag_numeric_plus_equals_in_loops() {
+fn test_numeric_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -55,7 +55,7 @@ fn does_not_flag_numeric_plus_equals_in_loops() {
 }
 
 #[test]
-fn flags_repeated_json_marshaling_inside_loops() {
+fn test_json_loops() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "json.go", go_fixture!("json_marshal_loop.txt"));
 
@@ -74,7 +74,7 @@ fn flags_repeated_json_marshaling_inside_loops() {
 }
 
 #[test]
-fn does_not_flag_single_json_marshaling_calls() {
+fn test_json_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "json.go", go_fixture!("json_marshal_clean.txt"));
 
@@ -95,7 +95,7 @@ fn does_not_flag_single_json_marshaling_calls() {
 }
 
 #[test]
-fn flags_hot_path_allocation_fmt_and_reflection_patterns() {
+fn test_hot_path() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "hot_path.go", go_fixture!("hot_path_slop.txt"));
 
@@ -128,7 +128,7 @@ fn flags_hot_path_allocation_fmt_and_reflection_patterns() {
 }
 
 #[test]
-fn does_not_flag_hot_path_rules_for_one_off_calls() {
+fn test_hot_path_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "hot_path.go", go_fixture!("hot_path_clean.txt"));
 
@@ -161,7 +161,7 @@ fn does_not_flag_hot_path_rules_for_one_off_calls() {
 }
 
 #[test]
-fn flags_full_dataset_load_patterns() {
+fn test_dataset_load() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -186,7 +186,7 @@ fn flags_full_dataset_load_patterns() {
 }
 
 #[test]
-fn does_not_flag_streaming_reads_as_full_dataset_loads() {
+fn test_streaming_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn flags_mixed_receiver_kinds_and_bad_struct_tags() {
+fn test_mixed_receivers() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -42,7 +42,7 @@ fn flags_mixed_receiver_kinds_and_bad_struct_tags() {
 }
 
 #[test]
-fn does_not_flag_consistent_receivers_or_clean_tags() {
+fn test_clean_consistency() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

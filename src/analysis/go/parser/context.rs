@@ -4,7 +4,7 @@ use crate::analysis::{ContextFactoryCall, ImportSpec};
 
 use super::general::{count_descendants, is_identifier_name, split_assignment};
 
-pub(super) fn function_has_context_parameter(
+pub(super) fn has_ctx_param(
     node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
@@ -22,7 +22,7 @@ pub(super) fn function_has_context_parameter(
         .any(|import| parameters_text.contains(&format!("{}.Context", import.alias)))
 }
 
-pub(super) fn collect_sleep_in_loop_lines(
+pub(super) fn collect_sleep_loops(
     body_node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
@@ -88,17 +88,17 @@ fn visit_for_busy_wait(node: Node<'_>, source: &str, inside_loop: bool, lines: &
     }
 }
 
-pub(super) fn collect_context_factory_calls(
+pub(super) fn collect_ctx_factories(
     body_node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
 ) -> Vec<ContextFactoryCall> {
     let mut calls = Vec::new();
-    visit_for_context_factory_calls(body_node, source, imports, &mut calls);
+    visit_ctx_factories(body_node, source, imports, &mut calls);
     calls
 }
 
-fn visit_for_context_factory_calls(
+fn visit_ctx_factories(
     node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
@@ -107,18 +107,18 @@ fn visit_for_context_factory_calls(
     if matches!(
         node.kind(),
         "assignment_statement" | "short_var_declaration" | "var_spec"
-    ) && let Some(call) = parse_context_factory_call(node, source, imports)
+    ) && let Some(call) = parse_ctx_factory(node, source, imports)
     {
         calls.push(call);
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_context_factory_calls(child, source, imports, calls);
+        visit_ctx_factories(child, source, imports, calls);
     }
 }
 
-fn parse_context_factory_call(
+fn parse_ctx_factory(
     node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
@@ -160,30 +160,30 @@ fn extract_cancel_name(left: &str) -> Option<String> {
     Some(cancel_name.to_string())
 }
 
-pub(super) fn collect_goroutine_launch_lines(body_node: Node<'_>) -> Vec<usize> {
+pub(super) fn collect_goroutines(body_node: Node<'_>) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_goroutine_launches(body_node, &mut lines);
+    visit_goroutines(body_node, &mut lines);
     lines
 }
 
-pub(super) fn collect_goroutine_in_loop_lines(body_node: Node<'_>) -> Vec<usize> {
+pub(super) fn collect_loop_goroutines(body_node: Node<'_>) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_goroutine_in_loop(body_node, false, &mut lines);
+    visit_loop_goroutines(body_node, false, &mut lines);
     lines
 }
 
-fn visit_for_goroutine_launches(node: Node<'_>, lines: &mut Vec<usize>) {
+fn visit_goroutines(node: Node<'_>, lines: &mut Vec<usize>) {
     if node.kind() == "go_statement" {
         lines.push(node.start_position().row + 1);
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_goroutine_launches(child, lines);
+        visit_goroutines(child, lines);
     }
 }
 
-fn visit_for_goroutine_in_loop(node: Node<'_>, inside_loop: bool, lines: &mut Vec<usize>) {
+fn visit_loop_goroutines(node: Node<'_>, inside_loop: bool, lines: &mut Vec<usize>) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
     if next_inside_loop && node.kind() == "go_statement" {
@@ -192,20 +192,20 @@ fn visit_for_goroutine_in_loop(node: Node<'_>, inside_loop: bool, lines: &mut Ve
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_goroutine_in_loop(child, next_inside_loop, lines);
+        visit_loop_goroutines(child, next_inside_loop, lines);
     }
 }
 
-pub(super) fn collect_goroutine_without_shutdown_lines(
+pub(super) fn collect_unmanaged_goroutines(
     body_node: Node<'_>,
     source: &str,
 ) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_goroutines_without_shutdown(body_node, source, &mut lines);
+    visit_unmanaged_goroutines(body_node, source, &mut lines);
     lines
 }
 
-fn visit_for_goroutines_without_shutdown(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
+fn visit_unmanaged_goroutines(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
     if node.kind() == "go_statement"
         && source.get(node.byte_range()).is_some_and(|text| {
             let compact = text.split_whitespace().collect::<String>();
@@ -225,17 +225,17 @@ fn visit_for_goroutines_without_shutdown(node: Node<'_>, source: &str, lines: &m
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_goroutines_without_shutdown(child, source, lines);
+        visit_unmanaged_goroutines(child, source, lines);
     }
 }
 
-pub(super) fn collect_mutex_lock_in_loop_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
+pub(super) fn collect_mutex_loops(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_mutex_lock_in_loop(body_node, source, false, &mut lines);
+    visit_mutex_loops(body_node, source, false, &mut lines);
     lines
 }
 
-fn visit_for_mutex_lock_in_loop(
+fn visit_mutex_loops(
     node: Node<'_>,
     source: &str,
     inside_loop: bool,
@@ -255,7 +255,7 @@ fn visit_for_mutex_lock_in_loop(
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_mutex_lock_in_loop(child, source, next_inside_loop, lines);
+        visit_mutex_loops(child, source, next_inside_loop, lines);
     }
 }
 

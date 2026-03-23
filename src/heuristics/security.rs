@@ -5,7 +5,7 @@ use super::common::{identifier_tokens, import_alias_lookup};
 
 const WEAK_CRYPTO_IMPORTS: &[&str] = &["crypto/md5", "crypto/sha1", "crypto/des", "crypto/rc4"];
 
-pub(super) fn weak_crypto_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn crypto_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let import_aliases = import_alias_lookup(&file.imports);
     let mut findings = Vec::new();
 
@@ -41,8 +41,8 @@ pub(super) fn weak_crypto_findings(file: &ParsedFile, function: &ParsedFunction)
     findings
 }
 
-pub(super) fn package_hardcoded_secret_findings(file: &ParsedFile) -> Vec<Finding> {
-    file.package_string_literals
+pub(super) fn pkg_secret_findings(file: &ParsedFile) -> Vec<Finding> {
+    file.pkg_strings
         .iter()
         .filter(|literal| {
             is_secret_like_name(&literal.name) && looks_like_secret_value(&literal.value)
@@ -66,12 +66,12 @@ pub(super) fn package_hardcoded_secret_findings(file: &ParsedFile) -> Vec<Findin
         .collect()
 }
 
-pub(super) fn hardcoded_secret_findings(
+pub(super) fn secret_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     function
-        .local_string_literals
+        .local_strings
         .iter()
         .filter(|literal| {
             is_secret_like_name(&literal.name) && looks_like_secret_value(&literal.value)
@@ -95,7 +95,7 @@ pub(super) fn hardcoded_secret_findings(
         .collect()
 }
 
-pub(super) fn sql_string_concat_findings(
+pub(super) fn sql_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {

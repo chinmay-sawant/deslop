@@ -3,16 +3,16 @@ use std::collections::BTreeSet;
 use crate::analysis::{ImportSpec, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-use super::common::{import_alias_lookup, is_potentially_blocking_call};
+use super::common::{import_alias_lookup, is_blocking_call};
 
 const COORDINATION_METHODS: &[&str] = &["Add", "Done", "Wait", "Go"];
 
-pub(super) fn goroutine_shutdown_findings(
+pub(super) fn shutdown_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     function
-        .goroutine_without_shutdown_lines
+        .unmanaged_goroutines
         .iter()
         .map(|line| Finding {
             rule_id: "goroutine_without_shutdown_path".to_string(),
@@ -34,13 +34,13 @@ pub(super) fn goroutine_shutdown_findings(
         .collect()
 }
 
-pub(super) fn mutex_contention_findings(
+pub(super) fn mutex_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     imports: &[ImportSpec],
 ) -> Vec<Finding> {
     let mut findings = function
-        .mutex_lock_in_loop_lines
+        .mutex_loops
         .iter()
         .map(|line| Finding {
             rule_id: "mutex_in_loop".to_string(),
@@ -79,7 +79,7 @@ pub(super) fn mutex_contention_findings(
             }
         }
 
-        if !active_locks.is_empty() && is_potentially_blocking_call(&call, &import_aliases) {
+        if !active_locks.is_empty() && is_blocking_call(&call, &import_aliases) {
             blocking_lines.insert(call.line);
         }
     }
@@ -104,16 +104,16 @@ pub(super) fn mutex_contention_findings(
     findings
 }
 
-pub(super) fn goroutine_coordination_findings(
+pub(super) fn coordination_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.goroutine_launch_lines.is_empty() || has_obvious_coordination_signal(function) {
+    if function.goroutines.is_empty() || has_coordination(function) {
         return Vec::new();
     }
 
     let mut findings = function
-        .goroutine_launch_lines
+        .goroutines
         .iter()
         .map(|line| Finding {
             rule_id: "goroutine_without_coordination".to_string(),
@@ -134,7 +134,7 @@ pub(super) fn goroutine_coordination_findings(
         })
         .collect::<Vec<_>>();
 
-    findings.extend(function.goroutine_in_loop_lines.iter().map(|line| Finding {
+    findings.extend(function.loop_goroutines.iter().map(|line| Finding {
         rule_id: "goroutine_spawn_in_loop".to_string(),
         severity: Severity::Warning,
         path: file.path.clone(),
@@ -155,7 +155,7 @@ pub(super) fn goroutine_coordination_findings(
     findings
 }
 
-fn has_obvious_coordination_signal(function: &ParsedFunction) -> bool {
+fn has_coordination(function: &ParsedFunction) -> bool {
     function.has_context_parameter
         || function.calls.iter().any(|call| {
             call.receiver.as_ref().is_some_and(|receiver| {

@@ -9,20 +9,20 @@ use super::general::{
     is_identifier_name, split_assignment,
 };
 
-pub(super) fn collect_string_concat_in_loop_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
-    let string_variables = collect_explicit_string_variables(body_node, source);
+pub(super) fn collect_concat_loops(body_node: Node<'_>, source: &str) -> Vec<usize> {
+    let string_variables = collect_string_vars(body_node, source);
     let mut lines = Vec::new();
-    visit_for_string_concat_in_loop(body_node, source, &string_variables, false, &mut lines);
+    visit_concat_loops(body_node, source, &string_variables, false, &mut lines);
     lines
 }
 
-fn collect_explicit_string_variables(body_node: Node<'_>, source: &str) -> BTreeSet<String> {
+fn collect_string_vars(body_node: Node<'_>, source: &str) -> BTreeSet<String> {
     let mut names = BTreeSet::new();
-    visit_for_string_variables(body_node, source, &mut names);
+    visit_string_vars(body_node, source, &mut names);
     names
 }
 
-fn visit_for_string_variables(node: Node<'_>, source: &str, names: &mut BTreeSet<String>) {
+fn visit_string_vars(node: Node<'_>, source: &str, names: &mut BTreeSet<String>) {
     match node.kind() {
         "var_spec" => {
             let Some(type_node) = node.child_by_field_name("type") else {
@@ -53,11 +53,11 @@ fn visit_for_string_variables(node: Node<'_>, source: &str, names: &mut BTreeSet
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_string_variables(child, source, names);
+        visit_string_vars(child, source, names);
     }
 }
 
-fn visit_for_string_concat_in_loop(
+fn visit_concat_loops(
     node: Node<'_>,
     source: &str,
     string_variables: &BTreeSet<String>,
@@ -69,18 +69,18 @@ fn visit_for_string_concat_in_loop(
     if next_inside_loop
         && node.kind() == "assignment_statement"
         && let Some(text) = source.get(node.byte_range())
-        && is_string_concat_assignment(text, string_variables)
+        && is_concat_assign(text, string_variables)
     {
         lines.push(node.start_position().row + 1);
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_string_concat_in_loop(child, source, string_variables, next_inside_loop, lines);
+        visit_concat_loops(child, source, string_variables, next_inside_loop, lines);
     }
 }
 
-fn is_string_concat_assignment(text: &str, string_variables: &BTreeSet<String>) -> bool {
+fn is_concat_assign(text: &str, string_variables: &BTreeSet<String>) -> bool {
     let compact = text.split_whitespace().collect::<String>();
 
     if let Some((left, right)) = compact.split_once("+=") {
@@ -104,17 +104,17 @@ fn contains_string_literal(text: &str) -> bool {
     text.contains('"') || text.contains('`')
 }
 
-pub(super) fn collect_allocation_in_loop_lines(
+pub(super) fn collect_alloc_loops(
     body_node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
 ) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_allocation_in_loop(body_node, source, imports, false, &mut lines);
+    visit_alloc_loops(body_node, source, imports, false, &mut lines);
     lines
 }
 
-fn visit_for_allocation_in_loop(
+fn visit_alloc_loops(
     node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
@@ -135,7 +135,7 @@ fn visit_for_allocation_in_loop(
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_allocation_in_loop(child, source, imports, next_inside_loop, lines);
+        visit_alloc_loops(child, source, imports, next_inside_loop, lines);
     }
 }
 
@@ -151,17 +151,17 @@ fn is_allocation_call(target: &str, imports: &[ImportSpec]) -> bool {
     })
 }
 
-pub(super) fn collect_fmt_in_loop_lines(
+pub(super) fn collect_fmt_loops(
     body_node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
 ) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_fmt_in_loop(body_node, source, imports, false, &mut lines);
+    visit_fmt_loops(body_node, source, imports, false, &mut lines);
     lines
 }
 
-fn visit_for_fmt_in_loop(
+fn visit_fmt_loops(
     node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
@@ -182,7 +182,7 @@ fn visit_for_fmt_in_loop(
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_fmt_in_loop(child, source, imports, next_inside_loop, lines);
+        visit_fmt_loops(child, source, imports, next_inside_loop, lines);
     }
 }
 
@@ -197,17 +197,17 @@ fn is_fmt_hot_path_call(target: &str, imports: &[ImportSpec]) -> bool {
     })
 }
 
-pub(super) fn collect_reflection_in_loop_lines(
+pub(super) fn collect_reflect_loops(
     body_node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
 ) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_reflection_in_loop(body_node, source, imports, false, &mut lines);
+    visit_reflect_loops(body_node, source, imports, false, &mut lines);
     lines
 }
 
-fn visit_for_reflection_in_loop(
+fn visit_reflect_loops(
     node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
@@ -228,7 +228,7 @@ fn visit_for_reflection_in_loop(
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_reflection_in_loop(child, source, imports, next_inside_loop, lines);
+        visit_reflect_loops(child, source, imports, next_inside_loop, lines);
     }
 }
 
@@ -239,17 +239,17 @@ fn is_reflection_call(target: &str, imports: &[ImportSpec]) -> bool {
         .any(|import| target.starts_with(&format!("{}.", import.alias)))
 }
 
-pub(super) fn collect_json_marshal_in_loop_lines(
+pub(super) fn collect_json_loops(
     body_node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
 ) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_json_marshal_in_loop(body_node, source, imports, false, &mut lines);
+    visit_json_loops(body_node, source, imports, false, &mut lines);
     lines
 }
 
-fn visit_for_json_marshal_in_loop(
+fn visit_json_loops(
     node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
@@ -270,7 +270,7 @@ fn visit_for_json_marshal_in_loop(
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_json_marshal_in_loop(child, source, imports, next_inside_loop, lines);
+        visit_json_loops(child, source, imports, next_inside_loop, lines);
     }
 }
 
@@ -286,11 +286,11 @@ fn is_json_marshal_call(target: &str, imports: &[ImportSpec]) -> bool {
 
 pub(super) fn collect_db_query_calls(body_node: Node<'_>, source: &str) -> Vec<DbQueryCall> {
     let mut calls = Vec::new();
-    visit_for_db_query_calls(body_node, source, false, &mut calls);
+    visit_db_queries(body_node, source, false, &mut calls);
     calls
 }
 
-fn visit_for_db_query_calls(
+fn visit_db_queries(
     node: Node<'_>,
     source: &str,
     inside_loop: bool,
@@ -304,7 +304,7 @@ fn visit_for_db_query_calls(
 
         if let Some(function_node) = function_node
             && let Some((receiver, name)) = extract_call_target(function_node, source)
-            && is_database_query_method(&name)
+            && is_db_query_method(&name)
         {
             let query_argument_text = arguments_node
                 .and_then(|arguments| query_argument_node(arguments, &name))
@@ -314,7 +314,7 @@ fn visit_for_db_query_calls(
                 .and_then(|query_node| first_string_literal(query_node, source));
             let query_uses_dynamic_construction = query_argument_text
                 .as_deref()
-                .is_some_and(is_dynamic_query_expression);
+                .is_some_and(is_dynamic_query);
             calls.push(DbQueryCall {
                 line: node.start_position().row + 1,
                 receiver,
@@ -329,11 +329,11 @@ fn visit_for_db_query_calls(
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_db_query_calls(child, source, next_inside_loop, calls);
+        visit_db_queries(child, source, next_inside_loop, calls);
     }
 }
 
-fn is_database_query_method(name: &str) -> bool {
+fn is_db_query_method(name: &str) -> bool {
     matches!(
         name,
         "Query"
@@ -370,7 +370,7 @@ fn query_argument_node<'tree>(
     arguments.get(index).copied()
 }
 
-fn is_dynamic_query_expression(expression: &str) -> bool {
+fn is_dynamic_query(expression: &str) -> bool {
     let compact = expression.split_whitespace().collect::<String>();
     compact.contains('+')
         || compact.contains("fmt.Sprintf(")

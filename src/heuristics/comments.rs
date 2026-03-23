@@ -1,9 +1,9 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-use super::common::{is_title_case_comment, is_tutorial_style_comment};
+use super::common::{is_title_doc, is_tutorial_doc};
 
-pub(super) fn comment_style_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn comment_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let mut findings = Vec::new();
     let Some(doc_comment) = &function.doc_comment else {
         return findings;
@@ -15,7 +15,7 @@ pub(super) fn comment_style_findings(file: &ParsedFile, function: &ParsedFunctio
         .find(|line| !line.is_empty())
         .unwrap_or("");
 
-    if is_title_case_comment(first_line) {
+    if is_title_doc(first_line) {
         findings.push(Finding {
             rule_id: "comment_style_title_case".to_string(),
             severity: Severity::Info,
@@ -31,7 +31,7 @@ pub(super) fn comment_style_findings(file: &ParsedFile, function: &ParsedFunctio
         });
     }
 
-    if is_tutorial_style_comment(doc_comment) {
+    if is_tutorial_doc(doc_comment) {
         findings.push(Finding {
             rule_id: "comment_style_tutorial".to_string(),
             severity: Severity::Info,

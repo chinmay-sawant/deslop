@@ -16,95 +16,92 @@ use crate::analysis::ParsedFile;
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
-use self::comments::comment_style_findings;
+use self::comments::comment_findings;
 use self::concurrency::{
-    goroutine_coordination_findings, goroutine_shutdown_findings, mutex_contention_findings,
+    coordination_findings, shutdown_findings, mutex_findings,
 };
-use self::consistency::{mixed_receiver_kind_findings, struct_tag_findings};
+use self::consistency::{receiver_findings, tag_findings};
 use self::context::{
-    busy_waiting_findings, missing_cancel_call_findings, missing_context_findings,
-    sleep_polling_findings,
+    busy_findings, cancel_findings, ctx_findings,
+    sleep_findings,
 };
-use self::errors::error_handling_findings;
-use self::hallucination::local_hallucination_findings;
-use self::naming::{generic_name_finding, overlong_name_finding, weak_typing_finding};
+use self::errors::error_findings;
+use self::hallucination::hallucination_findings;
+use self::naming::{generic_finding, overlong_finding, weak_finding};
 use self::performance::{
-    allocation_churn_findings, database_query_findings, fmt_hot_path_findings,
-    full_dataset_load_findings, reflection_hot_path_findings, repeated_json_marshaling_findings,
-    string_concat_in_loop_findings,
+    alloc_findings, db_findings, fmt_findings,
+    load_findings, reflect_findings, json_findings,
+    concat_findings,
 };
-use self::security::{
-    hardcoded_secret_findings, package_hardcoded_secret_findings, sql_string_concat_findings,
-    weak_crypto_findings,
-};
-use self::test_quality::test_quality_findings;
+use self::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};
+use self::test_quality::test_findings;
 
-pub(crate) fn evaluate_shared_findings(
+pub(crate) fn evaluate_shared(
     files: &[ParsedFile],
     _index: &RepositoryIndex,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for file in files {
-        findings.extend(package_hardcoded_secret_findings(file));
+        findings.extend(pkg_secret_findings(file));
 
         for function in &file.functions {
-            if let Some(finding) = generic_name_finding(file, function) {
+            if let Some(finding) = generic_finding(file, function) {
                 findings.push(finding);
             }
 
-            if let Some(finding) = overlong_name_finding(file, function) {
+            if let Some(finding) = overlong_finding(file, function) {
                 findings.push(finding);
             }
 
-            if let Some(finding) = weak_typing_finding(file, function) {
+            if let Some(finding) = weak_finding(file, function) {
                 findings.push(finding);
             }
 
-            findings.extend(comment_style_findings(file, function));
-            findings.extend(hardcoded_secret_findings(file, function));
-            findings.extend(test_quality_findings(file, function));
+            findings.extend(comment_findings(file, function));
+            findings.extend(secret_findings(file, function));
+            findings.extend(test_findings(file, function));
         }
     }
 
     findings
 }
 
-pub(crate) fn evaluate_go_file_findings(
+pub(crate) fn evaluate_go_file(
     file: &ParsedFile,
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    findings.extend(struct_tag_findings(file));
+    findings.extend(tag_findings(file));
 
     for function in &file.functions {
-        findings.extend(error_handling_findings(file, function));
-        findings.extend(weak_crypto_findings(file, function));
-        findings.extend(sql_string_concat_findings(file, function));
-        findings.extend(missing_context_findings(file, function));
-        findings.extend(missing_cancel_call_findings(file, function));
-        findings.extend(sleep_polling_findings(file, function));
-        findings.extend(busy_waiting_findings(file, function));
-        findings.extend(goroutine_shutdown_findings(file, function));
-        findings.extend(mutex_contention_findings(file, function, &file.imports));
-        findings.extend(allocation_churn_findings(file, function));
-        findings.extend(fmt_hot_path_findings(file, function));
-        findings.extend(reflection_hot_path_findings(file, function));
-        findings.extend(string_concat_in_loop_findings(file, function));
-        findings.extend(repeated_json_marshaling_findings(file, function));
-        findings.extend(database_query_findings(file, function));
-        findings.extend(full_dataset_load_findings(file, function));
-        findings.extend(goroutine_coordination_findings(file, function));
-        findings.extend(local_hallucination_findings(file, function, index));
+        findings.extend(error_findings(file, function));
+        findings.extend(crypto_findings(file, function));
+        findings.extend(sql_findings(file, function));
+        findings.extend(ctx_findings(file, function));
+        findings.extend(cancel_findings(file, function));
+        findings.extend(sleep_findings(file, function));
+        findings.extend(busy_findings(file, function));
+        findings.extend(shutdown_findings(file, function));
+        findings.extend(mutex_findings(file, function, &file.imports));
+        findings.extend(alloc_findings(file, function));
+        findings.extend(fmt_findings(file, function));
+        findings.extend(reflect_findings(file, function));
+        findings.extend(concat_findings(file, function));
+        findings.extend(json_findings(file, function));
+        findings.extend(db_findings(file, function));
+        findings.extend(load_findings(file, function));
+        findings.extend(coordination_findings(file, function));
+        findings.extend(hallucination_findings(file, function, index));
     }
 
     findings
 }
 
-pub(crate) fn evaluate_go_repository_findings(
+pub(crate) fn evaluate_go_repo(
     files: &[&ParsedFile],
     _index: &RepositoryIndex,
 ) -> Vec<Finding> {
-    mixed_receiver_kind_findings(files)
+    receiver_findings(files)
 }

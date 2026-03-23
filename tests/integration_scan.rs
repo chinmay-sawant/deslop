@@ -50,7 +50,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use deslop::{ScanOptions, scan_repository};
 
 #[test]
-fn flags_error_handling_slop_patterns() {
+fn test_error_slop() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -87,7 +87,7 @@ fn flags_error_handling_slop_patterns() {
 }
 
 #[test]
-fn does_not_flag_wrapped_error_handling_as_misuse() {
+fn test_error_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

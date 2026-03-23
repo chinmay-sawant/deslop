@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn flags_looped_db_access_and_query_shape_patterns() {
+fn test_db_slop() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "db.go", go_fixture!("db_query_slop.txt"));
 
@@ -38,7 +38,7 @@ fn flags_looped_db_access_and_query_shape_patterns() {
 }
 
 #[test]
-fn does_not_flag_clean_db_access_patterns() {
+fn test_db_clean() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "db.go", go_fixture!("db_query_clean.txt"));
 

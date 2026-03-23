@@ -22,9 +22,9 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
     let root = tree.root_node();
     let is_test_file = is_test_file(path);
     let imports = collect_imports(root, source);
-    let package_string_literals = collect_package_string_literals(root, source);
+    let package_string_literals = collect_pkg_strings(root, source);
     let functions = collect_functions(root, source, is_test_file);
-    let symbols = collect_symbols(root, source, &functions);
+    let symbols = collect_symbols(root, source, &functions, &imports);
 
     Ok(ParsedFile {
         language: Language::Rust,
@@ -33,7 +33,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         is_test_file,
         syntax_error: root.has_error(),
         byte_size: source.len(),
-        package_string_literals,
+        pkg_strings: package_string_literals,
         struct_tags: Vec::new(),
         functions,
         imports,
@@ -51,7 +51,8 @@ fn visit_for_imports(node: Node<'_>, source: &str, imports: &mut Vec<ImportSpec>
     if node.kind() == "use_declaration"
         && let Some(argument) = node.child_by_field_name("argument")
     {
-        flatten_use_tree(argument, source, None, imports);
+        let is_public = source.get(node.byte_range()).is_some_and(|text| text.starts_with("pub"));
+        flatten_use_tree(argument, source, None, imports, is_public);
     }
 
     let mut cursor = node.walk();
@@ -65,6 +66,7 @@ fn flatten_use_tree(
     source: &str,
     prefix: Option<String>,
     imports: &mut Vec<ImportSpec>,
+    is_public: bool,
 ) {
     match node.kind() {
         "use_as_clause" => {
@@ -80,7 +82,7 @@ fn flatten_use_tree(
                 .to_string();
             let path = combine_path_prefix(prefix.as_deref(), &render_use_path(path_node, source));
 
-            imports.push(build_rust_import_spec(alias, path));
+            imports.push(build_rust_import_spec(alias, path, is_public));
         }
         "scoped_use_list" => {
             let next_prefix = node
@@ -91,13 +93,13 @@ fn flatten_use_tree(
                 .or(prefix);
 
             if let Some(list_node) = node.child_by_field_name("list") {
-                flatten_use_tree(list_node, source, next_prefix, imports);
+                flatten_use_tree(list_node, source, next_prefix, imports, is_public);
             }
         }
         "use_list" => {
             let mut cursor = node.walk();
             for child in node.named_children(&mut cursor) {
-                flatten_use_tree(child, source, prefix.clone(), imports);
+                flatten_use_tree(child, source, prefix.clone(), imports, is_public);
             }
         }
         "use_wildcard" => {
@@ -111,6 +113,7 @@ fn flatten_use_tree(
                 path: wildcard_path,
                 namespace_path: prefix,
                 imported_name: Some("*".to_string()),
+                is_public,
             });
         }
         _ => {
@@ -121,12 +124,12 @@ fn flatten_use_tree(
                 let path = combine_path_prefix(prefix.as_deref(), &render_use_path(node, source));
                 (import_alias(&path), path)
             };
-            imports.push(build_rust_import_spec(alias, path));
+            imports.push(build_rust_import_spec(alias, path, is_public));
         }
     }
 }
 
-fn build_rust_import_spec(alias: String, path: String) -> ImportSpec {
+fn build_rust_import_spec(alias: String, path: String, is_public: bool) -> ImportSpec {
     let (namespace_path, imported_name) = rust_import_segments(&path);
 
     ImportSpec {
@@ -134,6 +137,7 @@ fn build_rust_import_spec(alias: String, path: String) -> ImportSpec {
         path,
         namespace_path,
         imported_name,
+        is_public,
     }
 }
 
@@ -189,6 +193,7 @@ fn collect_symbols(
     root: Node<'_>,
     source: &str,
     functions: &[ParsedFunction],
+    imports: &[ImportSpec],
 ) -> Vec<DeclaredSymbol> {
     let mut symbols = functions
         .iter()
@@ -204,6 +209,19 @@ fn collect_symbols(
             line: function.fingerprint.start_line,
         })
         .collect::<Vec<_>>();
+
+    // Add re-exports as symbols to allow resolution of public imports
+    for import in imports {
+        if import.is_public && import.alias != "*" {
+            symbols.push(DeclaredSymbol {
+                name: import.alias.clone(),
+                kind: SymbolKind::Function, // Treat re-exports as functions for resolution
+                receiver_type: None,
+                receiver_is_pointer: None,
+                line: 1, // Metadata only
+            });
+        }
+    }
 
     visit_for_symbols(root, source, &mut symbols);
     symbols.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
@@ -237,19 +255,19 @@ fn visit_for_symbols(node: Node<'_>, source: &str, symbols: &mut Vec<DeclaredSym
     }
 }
 
-fn collect_package_string_literals(root: Node<'_>, source: &str) -> Vec<NamedLiteral> {
+fn collect_pkg_strings(root: Node<'_>, source: &str) -> Vec<NamedLiteral> {
     let mut literals = Vec::new();
-    visit_for_package_string_literals(root, source, &mut literals);
+    visit_pkg_strings(root, source, &mut literals);
     literals
 }
 
-fn visit_for_package_string_literals(
+fn visit_pkg_strings(
     node: Node<'_>,
     source: &str,
     literals: &mut Vec<NamedLiteral>,
 ) {
     if matches!(node.kind(), "const_item" | "static_item")
-        && let Some(literal) = named_string_literal_from_item(node, source)
+        && let Some(literal) = named_string_from_item(node, source)
         && !is_inside_function(node)
     {
         literals.push(literal);
@@ -257,11 +275,11 @@ fn visit_for_package_string_literals(
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_package_string_literals(child, source, literals);
+        visit_pkg_strings(child, source, literals);
     }
 }
 
-fn named_string_literal_from_item(node: Node<'_>, source: &str) -> Option<NamedLiteral> {
+fn named_string_from_item(node: Node<'_>, source: &str) -> Option<NamedLiteral> {
     let name = node
         .child_by_field_name("name")
         .and_then(|name_node| source.get(name_node.byte_range()))?
@@ -310,8 +328,8 @@ fn visit_for_functions(
 fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Option<ParsedFunction> {
     let body_node = node.child_by_field_name("body")?;
     let calls = collect_calls(body_node, source);
-    let local_string_literals = collect_local_string_literals(body_node, source);
-    let local_binding_names = collect_local_binding_names(node, source);
+    let local_string_literals = collect_local_strings(body_node, source);
+    let local_binding_names = collect_local_bindings(node, source);
     let doc_comment = extract_doc_comment(source, node.start_position().row);
     let kind = function_kind(node, source);
     let receiver_type = if kind == "method" {
@@ -320,7 +338,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         None
     };
     let is_test_function = function_is_test_only(node, source, is_test_file);
-    let safety_comment_lines = collect_safety_comment_lines(source, node);
+    let safety_comment_lines = collect_safety_comments(source, node);
     let unsafe_lines = collect_unsafe_lines(node, body_node, source);
     let fingerprint = build_function_fingerprint(node, source, kind, receiver_type, calls.len())?;
 
@@ -331,25 +349,25 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         is_test_function,
         local_binding_names,
         doc_comment,
-        local_string_literals,
+        local_strings: local_string_literals,
         test_summary: None,
         safety_comment_lines,
         unsafe_lines,
-        dropped_error_lines: Vec::new(),
-        panic_on_error_lines: Vec::new(),
+        dropped_errors: Vec::new(),
+        panic_errors: Vec::new(),
         errorf_calls: Vec::new(),
         context_factory_calls: Vec::new(),
-        goroutine_launch_lines: Vec::new(),
-        goroutine_in_loop_lines: Vec::new(),
-        goroutine_without_shutdown_lines: Vec::new(),
-        sleep_in_loop_lines: Vec::new(),
+        goroutines: Vec::new(),
+        loop_goroutines: Vec::new(),
+        unmanaged_goroutines: Vec::new(),
+        sleep_loops: Vec::new(),
         busy_wait_lines: Vec::new(),
-        mutex_lock_in_loop_lines: Vec::new(),
-        allocation_in_loop_lines: Vec::new(),
-        fmt_in_loop_lines: Vec::new(),
-        reflection_in_loop_lines: Vec::new(),
-        string_concat_in_loop_lines: Vec::new(),
-        json_marshal_in_loop_lines: Vec::new(),
+        mutex_loops: Vec::new(),
+        alloc_loops: Vec::new(),
+        fmt_loops: Vec::new(),
+        reflect_loops: Vec::new(),
+        concat_loops: Vec::new(),
+        json_loops: Vec::new(),
         db_query_calls: Vec::new(),
     })
 }
@@ -401,7 +419,7 @@ fn build_function_fingerprint(
     let function_text = source.get(node.byte_range())?;
     let name = source.get(name_node.byte_range())?.to_string();
     let comment_lines =
-        count_comment_lines(function_text) + count_leading_doc_comment_lines(source, node.start_position().row);
+        count_comment_lines(function_text) + count_doc_lines(source, node.start_position().row);
     let code_lines = count_code_lines(function_text);
     let complexity_score = 1 + count_control_nodes(body_node);
     let symmetry_score = compute_symmetry_score(body_node);
@@ -652,14 +670,14 @@ fn collect_unsafe_lines(function_node: Node<'_>, body_node: Node<'_>, source: &s
     lines
 }
 
-fn collect_safety_comment_lines(source: &str, function_node: Node<'_>) -> Vec<usize> {
+fn collect_safety_comments(source: &str, function_node: Node<'_>) -> Vec<usize> {
     let lines = source.lines().collect::<Vec<_>>();
     let start = function_node.start_position().row.saturating_sub(2);
     let end = function_node.end_position().row.min(lines.len().saturating_sub(1));
     let mut safety_lines = Vec::new();
 
-    for index in start..=end {
-        if lines[index].contains("SAFETY:") {
+    for (index, line) in lines.iter().enumerate().take(end + 1).skip(start) {
+        if line.contains("SAFETY:") {
             safety_lines.push(index + 1);
         }
     }
@@ -678,21 +696,21 @@ fn visit_for_unsafe_lines(node: Node<'_>, lines: &mut Vec<usize>) {
     }
 }
 
-fn collect_local_string_literals(node: Node<'_>, source: &str) -> Vec<NamedLiteral> {
+fn collect_local_strings(node: Node<'_>, source: &str) -> Vec<NamedLiteral> {
     let mut literals = Vec::new();
-    visit_for_local_string_literals(node, source, &mut literals);
+    visit_local_strings(node, source, &mut literals);
     literals
 }
 
-fn collect_local_binding_names(function_node: Node<'_>, source: &str) -> Vec<String> {
+fn collect_local_bindings(function_node: Node<'_>, source: &str) -> Vec<String> {
     let mut names = Vec::new();
 
     if let Some(parameters) = function_node.child_by_field_name("parameters") {
-        collect_parameter_binding_names(parameters, source, &mut names);
+        collect_param_bindings(parameters, source, &mut names);
     }
 
     if let Some(body_node) = function_node.child_by_field_name("body") {
-        visit_for_local_binding_names(body_node, source, &mut names);
+        visit_local_bindings(body_node, source, &mut names);
     }
 
     names.sort();
@@ -700,13 +718,13 @@ fn collect_local_binding_names(function_node: Node<'_>, source: &str) -> Vec<Str
     names
 }
 
-fn collect_parameter_binding_names(node: Node<'_>, source: &str, names: &mut Vec<String>) {
+fn collect_param_bindings(node: Node<'_>, source: &str, names: &mut Vec<String>) {
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
         match child.kind() {
             "parameter" => {
                 if let Some(pattern) = child.child_by_field_name("pattern") {
-                    collect_identifier_pattern_names(pattern, source, names);
+                    collect_ident_patterns(pattern, source, names);
                 }
             }
             "self_parameter" => names.push("self".to_string()),
@@ -715,20 +733,20 @@ fn collect_parameter_binding_names(node: Node<'_>, source: &str, names: &mut Vec
     }
 }
 
-fn visit_for_local_binding_names(node: Node<'_>, source: &str, names: &mut Vec<String>) {
+fn visit_local_bindings(node: Node<'_>, source: &str, names: &mut Vec<String>) {
     if node.kind() == "let_declaration"
         && let Some(pattern_node) = node.child_by_field_name("pattern")
     {
-        collect_identifier_pattern_names(pattern_node, source, names);
+        collect_ident_patterns(pattern_node, source, names);
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_local_binding_names(child, source, names);
+        visit_local_bindings(child, source, names);
     }
 }
 
-fn collect_identifier_pattern_names(node: Node<'_>, source: &str, names: &mut Vec<String>) {
+fn collect_ident_patterns(node: Node<'_>, source: &str, names: &mut Vec<String>) {
     if matches!(node.kind(), "identifier" | "self")
         && let Some(name) = source.get(node.byte_range())
     {
@@ -737,11 +755,11 @@ fn collect_identifier_pattern_names(node: Node<'_>, source: &str, names: &mut Ve
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        collect_identifier_pattern_names(child, source, names);
+        collect_ident_patterns(child, source, names);
     }
 }
 
-fn visit_for_local_string_literals(
+fn visit_local_strings(
     node: Node<'_>,
     source: &str,
     literals: &mut Vec<NamedLiteral>,
@@ -762,7 +780,7 @@ fn visit_for_local_string_literals(
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_local_string_literals(child, source, literals);
+        visit_local_strings(child, source, literals);
     }
 }
 
@@ -939,7 +957,7 @@ fn count_code_lines(text: &str) -> usize {
     count
 }
 
-fn count_leading_doc_comment_lines(source: &str, function_start_row: usize) -> usize {
+fn count_doc_lines(source: &str, function_start_row: usize) -> usize {
     let lines = source.lines().collect::<Vec<_>>();
     if function_start_row == 0 || function_start_row > lines.len() {
         return 0;
@@ -988,7 +1006,7 @@ mod tests {
     use crate::analysis::Language;
 
     #[test]
-    fn parses_rust_functions_without_findings_data() {
+    fn test_parse_functions() {
         let source = r#"
 pub fn sum_pair(left: i32, right: i32) -> i32 {
     left + right
@@ -1016,7 +1034,7 @@ impl Runner {
     }
 
     #[test]
-    fn extracts_rust_phase_two_evidence() {
+    fn test_extract_evidence() {
         let source = r#"
 use std::fmt::{self, Display as FmtDisplay};
 use crate::config::*;
@@ -1070,8 +1088,8 @@ mod tests {
             import.alias == "*" && import.path.contains("crate::config")
         }));
 
-        assert_eq!(parsed.package_string_literals.len(), 1);
-        assert_eq!(parsed.package_string_literals[0].name, "API_TOKEN");
+        assert_eq!(parsed.pkg_strings.len(), 1);
+        assert_eq!(parsed.pkg_strings[0].name, "API_TOKEN");
 
         assert!(parsed.symbols.iter().any(|symbol| {
             symbol.name == "Runner" && matches!(symbol.kind, crate::model::SymbolKind::Struct)
@@ -1093,8 +1111,8 @@ mod tests {
             .expect("execute should be parsed");
         assert!(!execute.is_test_function);
         assert!(execute.local_binding_names.iter().any(|name| name == "self"));
-        assert_eq!(execute.local_string_literals.len(), 1);
-        assert_eq!(execute.local_string_literals[0].name, "password");
+        assert_eq!(execute.local_strings.len(), 1);
+        assert_eq!(execute.local_strings[0].name, "password");
         assert!(execute.local_binding_names.iter().any(|name| name == "password"));
         assert!(execute.calls.iter().any(|call| call.name == "dbg!"));
         assert!(execute.calls.iter().any(|call| call.name == "todo!"));
@@ -1113,7 +1131,7 @@ mod tests {
     }
 
     #[test]
-    fn keeps_syntax_error_state_for_rust_files() {
+    fn test_syntax_error() {
         let source = "pub fn broken( {\n    println!(\"oops\");\n}\n";
 
         let parsed = parse_file(Path::new("src/lib.rs"), source)

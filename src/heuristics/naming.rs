@@ -3,7 +3,7 @@ use crate::model::{Finding, Severity};
 
 use super::common::{identifier_token_count, is_generic_name, normalize_name};
 
-pub(super) fn overlong_name_finding(
+pub(super) fn overlong_finding(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Option<Finding> {
@@ -33,7 +33,7 @@ pub(super) fn overlong_name_finding(
     })
 }
 
-pub(super) fn generic_name_finding(
+pub(super) fn generic_finding(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Option<Finding> {
@@ -91,7 +91,7 @@ pub(super) fn generic_name_finding(
     })
 }
 
-pub(super) fn weak_typing_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<Finding> {
+pub(super) fn weak_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<Finding> {
     if !function.fingerprint.contains_any_type && !function.fingerprint.contains_empty_interface {
         return None;
     }

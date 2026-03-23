@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn flags_placeholder_and_low_signal_tests() {
+fn test_low_signal() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -42,7 +42,7 @@ fn flags_placeholder_and_low_signal_tests() {
 }
 
 #[test]
-fn does_not_flag_tests_with_positive_and_negative_signals() {
+fn test_high_signal() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

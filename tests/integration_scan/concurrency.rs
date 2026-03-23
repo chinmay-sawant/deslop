@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn flags_goroutines_without_coordination() {
+fn test_unmanaged_goroutines() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -36,7 +36,7 @@ fn flags_goroutines_without_coordination() {
 }
 
 #[test]
-fn does_not_flag_goroutines_with_waitgroup_coordination() {
+fn test_coordination() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -67,7 +67,7 @@ fn does_not_flag_goroutines_with_waitgroup_coordination() {
 }
 
 #[test]
-fn flags_goroutine_shutdown_and_mutex_contention_patterns() {
+fn test_shutdown_mutex() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -104,7 +104,7 @@ fn flags_goroutine_shutdown_and_mutex_contention_patterns() {
 }
 
 #[test]
-fn does_not_flag_shutdown_and_mutex_patterns_when_signals_are_absent() {
+fn test_no_slop() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

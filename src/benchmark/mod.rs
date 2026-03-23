@@ -49,16 +49,16 @@ pub fn benchmark_repository(options: &BenchmarkOptions) -> Result<BenchmarkRepor
         files_analyzed,
         functions_found,
         findings_found,
-        discover: build_stage_stats(runs.iter().map(|run| run.timings.discover_ms).collect()),
-        parse: build_stage_stats(runs.iter().map(|run| run.timings.parse_ms).collect()),
-        index: build_stage_stats(runs.iter().map(|run| run.timings.index_ms).collect()),
-        heuristics: build_stage_stats(runs.iter().map(|run| run.timings.heuristics_ms).collect()),
-        total: build_stage_stats(runs.iter().map(|run| run.timings.total_ms).collect()),
+        discover: calculate_stats(runs.iter().map(|run| run.timings.discover_ms).collect()),
+        parse: calculate_stats(runs.iter().map(|run| run.timings.parse_ms).collect()),
+        index: calculate_stats(runs.iter().map(|run| run.timings.index_ms).collect()),
+        heuristics: calculate_stats(runs.iter().map(|run| run.timings.heuristics_ms).collect()),
+        total: calculate_stats(runs.iter().map(|run| run.timings.total_ms).collect()),
         runs,
     })
 }
 
-fn build_stage_stats(mut samples: Vec<u128>) -> StageStats {
+fn calculate_stats(mut samples: Vec<u128>) -> StageStats {
     if samples.is_empty() {
         return StageStats {
             min_ms: 0,
@@ -91,11 +91,11 @@ fn build_stage_stats(mut samples: Vec<u128>) -> StageStats {
 
 #[cfg(test)]
 mod tests {
-    use super::build_stage_stats;
+    use super::calculate_stats;
 
     #[test]
-    fn computes_stage_statistics() {
-        let stats = build_stage_stats(vec![3, 1, 2, 4]);
+    fn test_calc_stats() {
+        let stats = calculate_stats(vec![3, 1, 2, 4]);
         assert_eq!(stats.min_ms, 1);
         assert_eq!(stats.max_ms, 4);
         assert_eq!(stats.median_ms, 2.5);

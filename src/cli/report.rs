@@ -8,37 +8,32 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
     let mut output = String::new();
     let findings = visible_findings(report, details);
 
-    writeln!(&mut output, "deslop scan root: {}", report.root.display()).expect("write to string");
-    writeln!(
+    let _ = writeln!(&mut output, "deslop scan root: {}", report.root.display()) ;
+    let _ = writeln!(
         &mut output,
         "Source files discovered: {}",
         report.files_discovered
-    )
-    .expect("write to string");
-    writeln!(&mut output, "Source files analyzed: {}", report.files_analyzed)
-        .expect("write to string");
-    writeln!(
+    ) ;
+    let _ = writeln!(&mut output, "Source files analyzed: {}", report.files_analyzed) ;
+    let _ = writeln!(
         &mut output,
         "Functions fingerprinted: {}",
         report.functions_found
-    )
-    .expect("write to string");
-    writeln!(&mut output, "Findings: {}", findings.len()).expect("write to string");
-    writeln!(
+    ) ;
+    let _ = writeln!(&mut output, "Findings: {}", findings.len()) ;
+    let _ = writeln!(
         &mut output,
         "Index summary: packages={} symbols={} imports={}",
         report.index_summary.package_count,
         report.index_summary.symbol_count,
         report.index_summary.import_count
-    )
-    .expect("write to string");
-    writeln!(
+    ) ;
+    let _ = writeln!(
         &mut output,
         "Parse failures: {}",
         report.parse_failures.len()
-    )
-    .expect("write to string");
-    writeln!(
+    ) ;
+    let _ = writeln!(
         &mut output,
         "Timings: discover={}ms parse={}ms index={}ms heuristics={}ms total={}ms",
         report.timings.discover_ms,
@@ -46,13 +41,12 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
         report.timings.index_ms,
         report.timings.heuristics_ms,
         report.timings.total_ms
-    )
-    .expect("write to string");
+    ) ;
 
     if details {
         for file in &report.files {
-            writeln!(&mut output).expect("write to string");
-            writeln!(&mut output, "{}", file.path.display()).expect("write to string");
+            writeln!(&mut output).ok();
+            writeln!(&mut output, "{}", file.path.display()).ok();
             writeln!(
                 &mut output,
                 "  package={} syntax_error={} functions={}",
@@ -60,7 +54,7 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
                 file.syntax_error,
                 file.functions.len()
             )
-            .expect("write to string");
+            .ok();
 
             for function in &file.functions {
                 writeln!(
@@ -75,15 +69,14 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
                     function.contains_any_type,
                     function.contains_empty_interface,
                     function.call_count
-                )
-                .expect("write to string");
+                ).ok();
             }
         }
     }
 
     if !findings.is_empty() {
-        writeln!(&mut output).expect("write to string");
-        writeln!(&mut output, "Findings:").expect("write to string");
+        writeln!(&mut output).ok();
+        writeln!(&mut output, "Findings:").ok();
         for finding in findings {
             writeln!(
                 &mut output,
@@ -93,13 +86,13 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
                 finding.message,
                 finding.rule_id
             )
-            .expect("write to string");
+            .ok();
         }
     }
 
     if !report.parse_failures.is_empty() {
-        writeln!(&mut output).expect("write to string");
-        writeln!(&mut output, "Parse failures:").expect("write to string");
+        writeln!(&mut output).ok();
+        writeln!(&mut output, "Parse failures:").ok();
         for failure in &report.parse_failures {
             writeln!(
                 &mut output,
@@ -107,7 +100,7 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
                 failure.path.display(),
                 failure.message
             )
-            .expect("write to string");
+            .ok();
         }
     }
 
@@ -317,7 +310,7 @@ mod tests {
     }
 
     #[test]
-    fn default_text_output_shows_findings_without_function_listing() {
+    fn test_text_output() {
         let output = format_scan_report(&sample_report(), false);
 
         assert!(output.contains("Findings: 1"));
@@ -330,7 +323,7 @@ mod tests {
     }
 
     #[test]
-    fn detailed_text_output_keeps_per_file_function_listing() {
+    fn test_detailed_text() {
         let output = format_scan_report(&sample_report(), true);
 
         assert!(output.contains("Findings: 2"));
@@ -340,7 +333,7 @@ mod tests {
     }
 
     #[test]
-    fn default_json_output_omits_fingerprint_metrics() {
+    fn test_json_output() {
         let output = format_scan_report_json(&sample_report(), false).expect("json should render");
 
         assert!(output.contains("\"name\": \"Run\""));
@@ -352,7 +345,7 @@ mod tests {
     }
 
     #[test]
-    fn detailed_json_output_keeps_full_fingerprint_metrics() {
+    fn test_detailed_json() {
         let output = format_scan_report_json(&sample_report(), true).expect("json should render");
 
         assert!(output.contains("full_dataset_load"));

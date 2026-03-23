@@ -26,7 +26,7 @@ fn flags_weak_crypto_usage() {
 }
 
 #[test]
-fn flags_hardcoded_secret_patterns() {
+fn test_secrets() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -51,7 +51,7 @@ fn flags_hardcoded_secret_patterns() {
 }
 
 #[test]
-fn does_not_flag_environment_loaded_secrets() {
+fn test_env_secrets() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -76,7 +76,7 @@ fn does_not_flag_environment_loaded_secrets() {
 }
 
 #[test]
-fn flags_dynamic_sql_query_construction() {
+fn test_sql_slop() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -101,7 +101,7 @@ fn flags_dynamic_sql_query_construction() {
 }
 
 #[test]
-fn does_not_flag_parameterized_sql_queries() {
+fn test_sql_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

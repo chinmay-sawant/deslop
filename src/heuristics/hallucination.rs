@@ -2,9 +2,9 @@ use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::index::{ImportResolution, RepositoryIndex};
 use crate::model::{Finding, Severity};
 
-use super::common::{import_alias_lookup, is_builtin, looks_like_global_symbol};
+use super::common::{import_alias_lookup, is_builtin, is_global_sym};
 
-pub(super) fn local_hallucination_findings(
+pub(super) fn hallucination_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     index: &RepositoryIndex,
@@ -66,7 +66,7 @@ pub(super) fn local_hallucination_findings(
                 }
             }
             None => {
-                if is_builtin(&call.name) || !looks_like_global_symbol(&call.name) {
+                if is_builtin(&call.name) || !is_global_sym(&call.name) {
                     continue;
                 }
 

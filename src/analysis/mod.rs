@@ -31,11 +31,11 @@ pub(crate) trait LanguageBackend: Send + Sync {
 
     fn parse_file(&self, path: &Path, source: &str) -> Result<ParsedFile>;
 
-    fn evaluate_file_findings(&self, _file: &ParsedFile, _index: &RepositoryIndex) -> Vec<Finding> {
+    fn evaluate_file(&self, _file: &ParsedFile, _index: &RepositoryIndex) -> Vec<Finding> {
         Vec::new()
     }
 
-    fn evaluate_repository_findings(
+    fn evaluate_repo(
         &self,
         _files: &[&ParsedFile],
         _index: &RepositoryIndex,
@@ -85,7 +85,7 @@ mod tests {
     use super::{Language, backend_for_path, supported_extensions};
 
     #[test]
-    fn routes_rust_paths_to_rust_backend() {
+    fn test_rust_backend() {
         let backend = backend_for_path(Path::new("src/main.rs"))
             .expect("rust files should resolve to a backend");
 
@@ -93,7 +93,7 @@ mod tests {
     }
 
     #[test]
-    fn advertises_go_and_rust_extensions() {
+    fn test_extensions() {
         assert_eq!(supported_extensions(), vec!["go", "rs"]);
     }
 }

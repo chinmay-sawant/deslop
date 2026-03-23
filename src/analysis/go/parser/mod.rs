@@ -16,22 +16,22 @@ use crate::analysis::{Language, ParsedFile, ParsedFunction};
 
 use self::comments::extract_doc_comment;
 use self::context::{
-    collect_busy_wait_lines, collect_context_factory_calls, collect_goroutine_in_loop_lines,
-    collect_goroutine_launch_lines, collect_goroutine_without_shutdown_lines,
-    collect_mutex_lock_in_loop_lines, collect_sleep_in_loop_lines, function_has_context_parameter,
+    collect_busy_wait_lines, collect_ctx_factories, collect_loop_goroutines,
+    collect_goroutines, collect_unmanaged_goroutines,
+    collect_mutex_loops, collect_sleep_loops, has_ctx_param,
 };
 use self::errors::{
-    collect_dropped_error_lines, collect_errorf_calls, collect_panic_on_error_lines,
+    collect_dropped_errors, collect_errorf_calls, collect_panic_errors,
 };
 use self::general::{
-    build_test_function_summary, collect_calls, collect_imports, collect_local_string_literals,
-    collect_package_string_literals, collect_struct_tags, collect_symbols, count_descendants,
-    extract_receiver_type, find_package_name,
+    build_test_summary, collect_calls, collect_imports, collect_local_strings,
+    collect_pkg_strings, collect_struct_tags, collect_symbols, count_descendants,
+    extract_receiver, find_package_name,
 };
 use self::performance::{
-    collect_allocation_in_loop_lines, collect_db_query_calls, collect_fmt_in_loop_lines,
-    collect_json_marshal_in_loop_lines, collect_reflection_in_loop_lines,
-    collect_string_concat_in_loop_lines,
+    collect_alloc_loops, collect_db_query_calls, collect_fmt_loops,
+    collect_json_loops, collect_reflect_loops,
+    collect_concat_loops,
 };
 
 pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
@@ -52,7 +52,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         .and_then(|name| name.to_str())
         .is_some_and(|name| name.ends_with("_test.go"));
     let imports = collect_imports(root, source);
-    let package_string_literals = collect_package_string_literals(root, source);
+    let package_string_literals = collect_pkg_strings(root, source);
     let struct_tags = collect_struct_tags(root, source);
     let symbols = collect_symbols(root, source);
     let functions = collect_functions(root, source, &imports, is_test_file);
@@ -64,7 +64,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         is_test_file,
         syntax_error: root.has_error(),
         byte_size: source.len(),
-        package_string_literals,
+        pkg_strings: package_string_literals,
         struct_tags,
         functions,
         imports,
@@ -116,36 +116,37 @@ fn parse_function_node(
 ) -> Option<ParsedFunction> {
     let body_node = node.child_by_field_name("body")?;
     let calls = collect_calls(body_node, source);
-    let local_string_literals = collect_local_string_literals(body_node, source);
+    let local_string_literals = collect_local_strings(body_node, source);
     let type_assertion_count = count_descendants(body_node, "type_assertion_expression");
-    let has_context_parameter = function_has_context_parameter(node, source, imports);
+    let has_context_parameter = has_ctx_param(node, source, imports);
     let doc_comment = extract_doc_comment(source, node.start_position().row);
     let function_name = source
         .get(node.child_by_field_name("name")?.byte_range())?
         .to_string();
     let test_summary =
-        build_test_function_summary(&function_name, body_node, source, &calls, is_test_file);
+        build_test_summary(&function_name, body_node, source, &calls, is_test_file);
     let is_test_function = test_summary.is_some();
-    let dropped_error_lines = collect_dropped_error_lines(body_node, source);
-    let panic_on_error_lines = collect_panic_on_error_lines(body_node, source);
+    let dropped_error_lines = collect_dropped_errors(body_node, source);
+    let panic_on_error_lines = collect_panic_errors(body_node, source);
     let errorf_calls = collect_errorf_calls(body_node, source);
-    let context_factory_calls = collect_context_factory_calls(body_node, source, imports);
-    let goroutine_launch_lines = collect_goroutine_launch_lines(body_node);
-    let goroutine_in_loop_lines = collect_goroutine_in_loop_lines(body_node);
+    let context_factory_calls = collect_ctx_factories(body_node, source, imports);
+    let goroutine_launch_lines = collect_goroutines(body_node);
+    let goroutine_in_loop_lines = collect_loop_goroutines(body_node);
     let goroutine_without_shutdown_lines =
-        collect_goroutine_without_shutdown_lines(body_node, source);
-    let sleep_in_loop_lines = collect_sleep_in_loop_lines(body_node, source, imports);
+        collect_unmanaged_goroutines(body_node, source);
+    let sleep_in_loop_lines = collect_sleep_loops(body_node, source, imports);
     let busy_wait_lines = collect_busy_wait_lines(body_node, source);
-    let mutex_lock_in_loop_lines = collect_mutex_lock_in_loop_lines(body_node, source);
-    let allocation_in_loop_lines = collect_allocation_in_loop_lines(body_node, source, imports);
-    let fmt_in_loop_lines = collect_fmt_in_loop_lines(body_node, source, imports);
-    let reflection_in_loop_lines = collect_reflection_in_loop_lines(body_node, source, imports);
-    let string_concat_in_loop_lines = collect_string_concat_in_loop_lines(body_node, source);
-    let json_marshal_in_loop_lines = collect_json_marshal_in_loop_lines(body_node, source, imports);
+    let mutex_lock_in_loop_lines = collect_mutex_loops(body_node, source);
+    let allocation_in_loop_lines = collect_alloc_loops(body_node, source, imports);
+    let fmt_in_loop_lines = collect_fmt_loops(body_node, source, imports);
+    let reflection_in_loop_lines = collect_reflect_loops(body_node, source, imports);
+    let string_concat_in_loop_lines = collect_concat_loops(body_node, source);
+    let json_marshal_in_loop_lines = collect_json_loops(body_node, source, imports);
     let db_query_calls = collect_db_query_calls(body_node, source);
     let receiver_type = node
         .child_by_field_name("receiver")
-        .and_then(|receiver| extract_receiver_type(receiver, source));
+        .and_then(|receiver| extract_receiver(receiver, source))
+        .map(|(name, _)| name);
     let fingerprint = build_function_fingerprint(
         node,
         source,
@@ -161,25 +162,25 @@ fn parse_function_node(
         is_test_function,
         local_binding_names: Vec::new(),
         doc_comment,
-        local_string_literals,
+        local_strings: local_string_literals,
         test_summary,
         safety_comment_lines: Vec::new(),
         unsafe_lines: Vec::new(),
-        dropped_error_lines,
-        panic_on_error_lines,
+        dropped_errors: dropped_error_lines,
+        panic_errors: panic_on_error_lines,
         errorf_calls,
         context_factory_calls,
-        goroutine_launch_lines,
-        goroutine_in_loop_lines,
-        goroutine_without_shutdown_lines,
-        sleep_in_loop_lines,
+        goroutines: goroutine_launch_lines,
+        loop_goroutines: goroutine_in_loop_lines,
+        unmanaged_goroutines: goroutine_without_shutdown_lines,
+        sleep_loops: sleep_in_loop_lines,
         busy_wait_lines,
-        mutex_lock_in_loop_lines,
-        allocation_in_loop_lines,
-        fmt_in_loop_lines,
-        reflection_in_loop_lines,
-        string_concat_in_loop_lines,
-        json_marshal_in_loop_lines,
+        mutex_loops: mutex_lock_in_loop_lines,
+        alloc_loops: allocation_in_loop_lines,
+        fmt_loops: fmt_in_loop_lines,
+        reflect_loops: reflection_in_loop_lines,
+        concat_loops: string_concat_in_loop_lines,
+        json_loops: json_marshal_in_loop_lines,
         db_query_calls,
     })
 }

@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn scans_rust_files_and_extracts_fingerprints() {
+fn test_rust_fingerprints() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "src/main.rs", rust_fixture!("simple.txt"));
 
@@ -32,7 +32,7 @@ fn scans_rust_files_and_extracts_fingerprints() {
 }
 
 #[test]
-fn keeps_rust_syntax_error_files_in_the_report() {
+fn test_rust_syntax() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("broken.txt"));
 
@@ -51,7 +51,7 @@ fn keeps_rust_syntax_error_files_in_the_report() {
 }
 
 #[test]
-fn scans_mixed_go_and_rust_repositories_without_a_language_flag() {
+fn test_mixed_repo() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "main.go", go_fixture!("simple.go"));
     write_fixture(&temp_dir, "src/main.rs", rust_fixture!("simple.txt"));
@@ -83,7 +83,7 @@ fn scans_mixed_go_and_rust_repositories_without_a_language_flag() {
 }
 
 #[test]
-fn flags_the_initial_rust_rule_pack() {
+fn test_rust_rules() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("rule_pack_positive.txt"));
 
@@ -109,7 +109,7 @@ fn flags_the_initial_rust_rule_pack() {
 }
 
 #[test]
-fn suppresses_test_only_rust_rule_hits_and_accepts_documented_unsafe() {
+fn test_rust_suppressions() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("rule_pack_negative.txt"));
 
@@ -135,7 +135,7 @@ fn suppresses_test_only_rust_rule_hits_and_accepts_documented_unsafe() {
 }
 
 #[test]
-fn flags_rust_local_imported_call_hallucinations() {
+fn test_rust_hallucination() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -169,7 +169,7 @@ fn flags_rust_local_imported_call_hallucinations() {
 }
 
 #[test]
-fn resolves_rust_local_imported_calls_for_self_and_super_modules() {
+fn test_rust_hierarchy() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -205,7 +205,7 @@ fn resolves_rust_local_imported_calls_for_self_and_super_modules() {
 }
 
 #[test]
-fn flags_rust_direct_call_hallucinations_for_imported_functions_and_same_module_calls() {
+fn test_direct_hallucination() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -239,7 +239,7 @@ fn flags_rust_direct_call_hallucinations_for_imported_functions_and_same_module_
 }
 
 #[test]
-fn accepts_rust_direct_calls_when_imports_locals_and_closures_exist() {
+fn test_rust_direct_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

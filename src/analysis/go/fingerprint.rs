@@ -21,10 +21,10 @@ pub(super) fn build_function_fingerprint(
     }
     .to_string();
 
-    let comment_lines = count_comment_lines(function_text)
-        + count_leading_doc_comment_lines(source, node.start_position().row);
+    let comment_lines =
+        count_comment_lines(function_text) + count_doc_lines(source, node.start_position().row);
     let code_lines = count_code_lines(function_text);
-    let boilerplate_err_guards = count_boilerplate_err_guards(function_text);
+    let boilerplate_err_guards = count_err_guards(function_text);
     let complexity_raw = count_control_nodes(body_node);
     let complexity_score = 1 + complexity_raw.saturating_sub(boilerplate_err_guards);
     let symmetry_score = compute_symmetry_score(body_node);
@@ -195,7 +195,7 @@ fn count_code_lines(text: &str) -> usize {
     count
 }
 
-fn count_boilerplate_err_guards(text: &str) -> usize {
+fn count_err_guards(text: &str) -> usize {
     let relevant_lines = text
         .lines()
         .map(str::trim)
@@ -230,7 +230,7 @@ fn count_boilerplate_err_guards(text: &str) -> usize {
     count
 }
 
-fn count_leading_doc_comment_lines(source: &str, function_start_row: usize) -> usize {
+fn count_doc_lines(source: &str, function_start_row: usize) -> usize {
     let lines = source.lines().collect::<Vec<_>>();
     if function_start_row == 0 || function_start_row > lines.len() {
         return 0;
@@ -302,27 +302,26 @@ fn is_identifier_byte(byte: u8) -> bool {
 #[cfg(test)]
 mod tests {
     use super::{
-        contains_token, count_boilerplate_err_guards, count_code_lines, count_comment_lines,
-        count_leading_doc_comment_lines,
+        contains_token, count_code_lines, count_comment_lines, count_doc_lines, count_err_guards,
     };
 
     #[test]
-    fn counts_comments_and_code_lines() {
+    fn test_counts() {
         let sample = "func demo() {\n// note\n/* block\nmore */\nvalue := 1\n}\n";
         assert_eq!(count_comment_lines(sample), 3);
         assert_eq!(count_code_lines(sample), 3);
     }
 
     #[test]
-    fn counts_canonical_err_guards() {
+    fn test_err_guards() {
         let sample = "func demo() error {\nif err != nil {\nreturn err\n}\nif another != nil { return another }\nreturn nil\n}\n";
-        assert_eq!(count_boilerplate_err_guards(sample), 2);
+        assert_eq!(count_err_guards(sample), 2);
     }
 
     #[test]
-    fn counts_leading_doc_comments() {
+    fn test_doc_comments() {
         let sample = "// Add joins numbers\n// for reporting\nfunc Add(a int, b int) int {\nreturn a + b\n}\n";
-        assert_eq!(count_leading_doc_comment_lines(sample, 2), 2);
+        assert_eq!(count_doc_lines(sample, 2), 2);
     }
 
     #[test]

@@ -1,6 +1,6 @@
 use super::common::{
-    identifier_token_count, is_generic_name, is_title_case_comment, is_tutorial_style_comment,
-    looks_like_global_symbol, normalize_name,
+    identifier_token_count, is_generic_name, is_title_doc, is_tutorial_doc,
+    is_global_sym, normalize_name,
 };
 
 #[test]
@@ -11,9 +11,9 @@ fn detects_generic_names() {
 }
 
 #[test]
-fn exported_names_look_global() {
-    assert!(looks_like_global_symbol("SanitizeEmail"));
-    assert!(!looks_like_global_symbol("sanitizeEmail"));
+fn test_global_sym() {
+    assert!(is_global_sym("SanitizeEmail"));
+    assert!(!is_global_sym("sanitizeEmail"));
 }
 
 #[test]
@@ -23,15 +23,15 @@ fn counts_identifier_tokens() {
 }
 
 #[test]
-fn detects_title_case_comments() {
-    assert!(is_title_case_comment("Run Processes Incoming Payloads"));
-    assert!(!is_title_case_comment("Run processes incoming payloads."));
+fn test_title_doc() {
+    assert!(is_title_doc("Run Processes Incoming Payloads"));
+    assert!(!is_title_doc("Run processes incoming payloads."));
 }
 
 #[test]
-fn detects_tutorial_style_comments() {
-    assert!(is_tutorial_style_comment(
+fn test_tutorial_doc() {
+    assert!(is_tutorial_doc(
         "Run Processes Incoming Payloads\nThis function does X by doing Y because Z"
     ));
-    assert!(!is_tutorial_style_comment("Run validates invoices."));
+    assert!(!is_tutorial_doc("Run validates invoices."));
 }

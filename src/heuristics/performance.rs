@@ -3,12 +3,12 @@ use crate::model::{Finding, Severity};
 
 use super::common::import_alias_lookup;
 
-pub(super) fn allocation_churn_findings(
+pub(super) fn alloc_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     function
-        .allocation_in_loop_lines
+        .alloc_loops
         .iter()
         .map(|line| Finding {
             rule_id: "allocation_churn_in_loop".to_string(),
@@ -29,9 +29,9 @@ pub(super) fn allocation_churn_findings(
         .collect()
 }
 
-pub(super) fn fmt_hot_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
-        .fmt_in_loop_lines
+        .fmt_loops
         .iter()
         .map(|line| Finding {
             rule_id: "fmt_hot_path".to_string(),
@@ -52,12 +52,12 @@ pub(super) fn fmt_hot_path_findings(file: &ParsedFile, function: &ParsedFunction
         .collect()
 }
 
-pub(super) fn reflection_hot_path_findings(
+pub(super) fn reflect_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     function
-        .reflection_in_loop_lines
+        .reflect_loops
         .iter()
         .map(|line| Finding {
             rule_id: "reflection_hot_path".to_string(),
@@ -78,12 +78,12 @@ pub(super) fn reflection_hot_path_findings(
         .collect()
 }
 
-pub(super) fn string_concat_in_loop_findings(
+pub(super) fn concat_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     function
-        .string_concat_in_loop_lines
+        .concat_loops
         .iter()
         .map(|line| Finding {
             rule_id: "string_concat_in_loop".to_string(),
@@ -103,12 +103,12 @@ pub(super) fn string_concat_in_loop_findings(
         .collect()
 }
 
-pub(super) fn repeated_json_marshaling_findings(
+pub(super) fn json_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     function
-        .json_marshal_in_loop_lines
+        .json_loops
         .iter()
         .map(|line| Finding {
             rule_id: "repeated_json_marshaling".to_string(),
@@ -130,7 +130,7 @@ pub(super) fn repeated_json_marshaling_findings(
         .collect()
 }
 
-pub(super) fn database_query_findings(
+pub(super) fn db_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
@@ -204,7 +204,7 @@ pub(super) fn database_query_findings(
     findings
 }
 
-pub(super) fn full_dataset_load_findings(
+pub(super) fn load_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {

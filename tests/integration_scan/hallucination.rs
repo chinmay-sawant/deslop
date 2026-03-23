@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn flags_hallucinated_import_calls() {
+fn test_hallucination() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "main.go", go_fixture!("hallucinated_import.txt"));
     write_fixture(
@@ -31,7 +31,7 @@ fn flags_hallucinated_import_calls() {
 }
 
 #[test]
-fn flags_hallucinated_import_calls_using_import_directory_not_package_name_only() {
+fn test_hallucination_dir() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -82,7 +82,7 @@ func Sanitize(address string) string {
 }
 
 #[test]
-fn does_not_flag_package_level_function_alias_vars_as_hallucinated() {
+fn test_alias_hallucination() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -117,7 +117,7 @@ func collectAllStandardFontsInTemplate() {
 }
 
 #[test]
-fn keeps_rust_symbols_from_satisfying_go_package_lookups() {
+fn test_rust_go_separation() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

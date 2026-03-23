@@ -57,7 +57,7 @@ impl RepositoryIndex {
             .values()
             .filter(|package| {
                 package.language == language
-                    && import_path_matches_directory(import_path, &package.directory)
+                    && import_matches_dir(import_path, &package.directory)
             })
             .collect::<Vec<_>>();
 
@@ -68,7 +68,7 @@ impl RepositoryIndex {
         }
     }
 
-    pub fn resolve_rust_module_import(
+    pub fn resolve_rust_import(
         &self,
         current_file_path: &Path,
         import_path: &str,
@@ -79,16 +79,29 @@ impl RepositoryIndex {
             return ImportResolution::Unresolved;
         };
         let Some(target_segments) =
-            normalize_rust_import_path(import_path, &current_module_segments)
+            normalize_rust_path(import_path, &current_module_segments)
         else {
             return ImportResolution::Unresolved;
         };
-        let Some(module_name) = target_segments.last() else {
-            return ImportResolution::Unresolved;
-        };
+        if target_segments.is_empty() {
+            let candidates = self
+                .packages
+                .values()
+                .filter(|package| {
+                    package.language == Language::Rust && package.directory == crate_root
+                })
+                .collect::<Vec<_>>();
 
-        let file_module_directory = rust_file_module_directory(&crate_root, &target_segments);
-        let mod_module_directory = rust_mod_module_directory(&crate_root, &target_segments);
+            return match candidates.len() {
+                0 => ImportResolution::Unresolved,
+                1 => ImportResolution::Resolved(candidates[0]),
+                _ => ImportResolution::Ambiguous(candidates),
+            };
+        }
+
+        let module_name = target_segments.last().unwrap();
+        let file_module_directory = rust_file_mod_dir(&crate_root, &target_segments);
+        let mod_module_directory = rust_mod_mod_dir(&crate_root, &target_segments);
         let mut candidates = self
             .packages
             .values()
@@ -219,7 +232,7 @@ fn package_directory(root: &Path, file_path: &Path) -> PathBuf {
         .unwrap_or_else(|_| parent.to_path_buf())
 }
 
-fn import_path_matches_directory(import_path: &str, directory: &Path) -> bool {
+fn import_matches_dir(import_path: &str, directory: &Path) -> bool {
     let directory_segments = directory
         .components()
         .map(|component| component.as_os_str().to_string_lossy().into_owned())
@@ -277,7 +290,7 @@ fn rust_module_context(root: &Path, file_path: &Path) -> Option<(PathBuf, Vec<St
     Some((PathBuf::from(crate_root), module_segments))
 }
 
-fn normalize_rust_import_path(
+fn normalize_rust_path(
     import_path: &str,
     current_module_segments: &[String],
 ) -> Option<Vec<String>> {
@@ -312,7 +325,7 @@ fn normalize_rust_import_path(
     }
 }
 
-fn rust_file_module_directory(crate_root: &Path, target_segments: &[String]) -> PathBuf {
+fn rust_file_mod_dir(crate_root: &Path, target_segments: &[String]) -> PathBuf {
     if target_segments.len() <= 1 {
         return crate_root.to_path_buf();
     }
@@ -324,7 +337,7 @@ fn rust_file_module_directory(crate_root: &Path, target_segments: &[String]) -> 
     directory
 }
 
-fn rust_mod_module_directory(crate_root: &Path, target_segments: &[String]) -> PathBuf {
+fn rust_mod_mod_dir(crate_root: &Path, target_segments: &[String]) -> PathBuf {
     let mut directory = crate_root.to_path_buf();
     for segment in target_segments {
         directory.push(segment);
@@ -353,7 +366,7 @@ mod tests {
             is_test_file: false,
             syntax_error: false,
             byte_size: 10,
-            package_string_literals: Vec::new(),
+            pkg_strings: Vec::new(),
             struct_tags: Vec::new(),
             functions: function_names
                 .iter()
@@ -381,25 +394,25 @@ mod tests {
                     is_test_function: false,
                     local_binding_names: Vec::new(),
                     doc_comment: None,
-                    local_string_literals: Vec::new(),
+                    local_strings: Vec::new(),
                     test_summary: None,
                     safety_comment_lines: Vec::new(),
                     unsafe_lines: Vec::new(),
-                    dropped_error_lines: Vec::new(),
-                    panic_on_error_lines: Vec::new(),
+                    dropped_errors: Vec::new(),
+                    panic_errors: Vec::new(),
                     errorf_calls: Vec::new(),
                     context_factory_calls: Vec::new(),
-                    goroutine_launch_lines: Vec::new(),
-                    goroutine_in_loop_lines: Vec::new(),
-                    goroutine_without_shutdown_lines: Vec::new(),
-                    sleep_in_loop_lines: Vec::new(),
+                    goroutines: Vec::new(),
+                    loop_goroutines: Vec::new(),
+                    unmanaged_goroutines: Vec::new(),
+                    sleep_loops: Vec::new(),
                     busy_wait_lines: Vec::new(),
-                    mutex_lock_in_loop_lines: Vec::new(),
-                    allocation_in_loop_lines: Vec::new(),
-                    fmt_in_loop_lines: Vec::new(),
-                    reflection_in_loop_lines: Vec::new(),
-                    string_concat_in_loop_lines: Vec::new(),
-                    json_marshal_in_loop_lines: Vec::new(),
+                    mutex_loops: Vec::new(),
+                    alloc_loops: Vec::new(),
+                    fmt_loops: Vec::new(),
+                    reflect_loops: Vec::new(),
+                    concat_loops: Vec::new(),
+                    json_loops: Vec::new(),
                     db_query_calls: Vec::new(),
                 })
                 .collect(),
@@ -430,7 +443,7 @@ mod tests {
     }
 
     #[test]
-    fn keeps_same_package_names_separate_by_directory() {
+    fn test_pkg_separation() {
         let files = vec![
             sample_file(Language::Go, "/repo/pkg/render/main.go", "render", &["Normalize"]),
             sample_file(Language::Go, "/repo/internal/render/main.go", "render", &["Sanitize"]),
@@ -453,7 +466,7 @@ mod tests {
     }
 
     #[test]
-    fn resolves_imports_by_directory_suffix_not_package_name_only() {
+    fn test_import_suffix() {
         let files = vec![
             sample_file(Language::Go, "/repo/pkg/render/main.go", "render", &["Normalize"]),
             sample_file(Language::Go, "/repo/internal/render/main.go", "render", &["Sanitize"]),
@@ -472,7 +485,7 @@ mod tests {
     }
 
     #[test]
-    fn keeps_mixed_language_packages_separate_in_the_same_directory() {
+    fn test_mixed_lang() {
         let files = vec![
             sample_file(Language::Go, "/repo/pkg/render/main.go", "render", &["Normalize"]),
             sample_file(Language::Rust, "/repo/pkg/render/lib.rs", "render", &["NormalizeRust"]),
@@ -498,7 +511,7 @@ mod tests {
     }
 
     #[test]
-    fn resolves_rust_module_imports_for_crate_self_and_super_paths() {
+    fn test_rust_imports() {
         let files = vec![
             sample_file(Language::Rust, "/repo/src/config/mod.rs", "config", &["shared"]),
             sample_file(Language::Rust, "/repo/src/config/render.rs", "render", &["normalize"]),
@@ -507,7 +520,7 @@ mod tests {
 
         let index = build_repository_index(Path::new("/repo"), &files);
 
-        match index.resolve_rust_module_import(
+        match index.resolve_rust_import(
             Path::new("/repo/src/lib.rs"),
             "crate::config::render",
         ) {
@@ -518,7 +531,7 @@ mod tests {
             other => panic!("expected crate import to resolve, got {other:?}"),
         }
 
-        match index.resolve_rust_module_import(
+        match index.resolve_rust_import(
             Path::new("/repo/src/config/mod.rs"),
             "self::render",
         ) {
@@ -529,7 +542,7 @@ mod tests {
             other => panic!("expected self import to resolve, got {other:?}"),
         }
 
-        match index.resolve_rust_module_import(
+        match index.resolve_rust_import(
             Path::new("/repo/src/config/sub/helpers.rs"),
             "super::super::render",
         ) {

@@ -66,7 +66,7 @@ pub(super) fn is_builtin(name: &str) -> bool {
     GO_BUILTINS.contains(&name)
 }
 
-pub(super) fn looks_like_global_symbol(name: &str) -> bool {
+pub(super) fn is_global_sym(name: &str) -> bool {
     name.chars().next().is_some_and(char::is_uppercase)
 }
 
@@ -125,7 +125,7 @@ pub(super) fn identifier_tokens(name: &str) -> Vec<String> {
     tokens
 }
 
-pub(super) fn is_title_case_comment(line: &str) -> bool {
+pub(super) fn is_title_doc(line: &str) -> bool {
     let words = line
         .split_whitespace()
         .map(|word| word.trim_matches(|character: char| !character.is_ascii_alphanumeric()))
@@ -141,7 +141,7 @@ pub(super) fn is_title_case_comment(line: &str) -> bool {
         })
 }
 
-pub(super) fn is_tutorial_style_comment(comment: &str) -> bool {
+pub(super) fn is_tutorial_doc(comment: &str) -> bool {
     let normalized = comment.to_ascii_lowercase();
     comment.lines().count() >= 2
         && (normalized.contains("this function")
@@ -150,11 +150,11 @@ pub(super) fn is_tutorial_style_comment(comment: &str) -> bool {
             || normalized.contains("because"))
 }
 
-pub(super) fn is_potentially_blocking_call(
+pub(super) fn is_blocking_call(
     call: &CallSite,
     import_aliases: &BTreeMap<String, String>,
 ) -> bool {
-    if is_database_query_method(&call.name) {
+    if is_db_query(&call.name) {
         return true;
     }
 
@@ -181,7 +181,7 @@ pub(super) fn is_potentially_blocking_call(
         || matches!(import_path.as_str(), "io") && call.name == "ReadAll"
 }
 
-pub(super) fn is_database_query_method(name: &str) -> bool {
+pub(super) fn is_db_query(name: &str) -> bool {
     matches!(
         name,
         "Query"

@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn flags_missing_context_for_http_calls() {
+fn test_missing_ctx_http() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "http.go", go_fixture!("missing_context.txt"));
 
@@ -26,7 +26,7 @@ fn flags_missing_context_for_http_calls() {
 }
 
 #[test]
-fn does_not_flag_context_aware_http_calls() {
+fn test_ctx_http() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "http.go", go_fixture!("context_aware_http.txt"));
 
@@ -47,7 +47,7 @@ fn does_not_flag_context_aware_http_calls() {
 }
 
 #[test]
-fn flags_missing_cancel_calls_for_derived_contexts() {
+fn test_missing_cancel() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -69,7 +69,7 @@ fn flags_missing_cancel_calls_for_derived_contexts() {
 }
 
 #[test]
-fn does_not_flag_derived_contexts_with_cancel_calls() {
+fn test_ctx_cancel() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -94,7 +94,7 @@ fn does_not_flag_derived_contexts_with_cancel_calls() {
 }
 
 #[test]
-fn flags_sleep_polling_patterns() {
+fn test_sleep_loops() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "poll.go", go_fixture!("sleep_polling.txt"));
 
@@ -115,7 +115,7 @@ fn flags_sleep_polling_patterns() {
 }
 
 #[test]
-fn does_not_flag_sleep_outside_loops() {
+fn test_sleep_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "poll.go", go_fixture!("sleep_clean.txt"));
 
@@ -136,7 +136,7 @@ fn does_not_flag_sleep_outside_loops() {
 }
 
 #[test]
-fn flags_busy_waiting_select_defaults() {
+fn test_busy_wait() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "wait.go", go_fixture!("busy_waiting_slop.txt"));
 
@@ -157,7 +157,7 @@ fn flags_busy_waiting_select_defaults() {
 }
 
 #[test]
-fn does_not_flag_blocking_select_loops_without_default() {
+fn test_select_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "wait.go", go_fixture!("busy_waiting_clean.txt"));
 
@@ -178,7 +178,7 @@ fn does_not_flag_blocking_select_loops_without_default() {
 }
 
 #[test]
-fn flags_missing_context_for_exec_calls() {
+fn test_missing_ctx_exec() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -200,7 +200,7 @@ fn flags_missing_context_for_exec_calls() {
 }
 
 #[test]
-fn does_not_flag_context_aware_exec_calls() {
+fn test_ctx_exec() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "exec.go", go_fixture!("context_aware_exec.txt"));
 

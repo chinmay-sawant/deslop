@@ -2,18 +2,18 @@ use std::path::Path;
 
 use crate::model::SymbolKind;
 
-use super::{comments::extract_doc_comment, general::package_alias_from_import_path, parse_file};
+use super::{comments::extract_doc_comment, general::alias_from_path, parse_file};
 
 #[test]
-fn derives_import_alias_from_path() {
+fn test_import_alias() {
     assert_eq!(
-        package_alias_from_import_path("github.com/acme/utils"),
+        alias_from_path("github.com/acme/utils"),
         "utils"
     );
 }
 
 #[test]
-fn collects_package_level_function_alias_vars_as_symbols() {
+fn test_alias_symbols() {
     let source = r#"package pdf
 
 import font "example.com/font"
@@ -41,7 +41,7 @@ func collectAllStandardFontsInTemplate() {
 }
 
 #[test]
-fn extracts_doc_comment_text() {
+fn test_doc_comment() {
     let source =
         "// Run Processes The Input\n// This function does X by doing Y because Z\nfunc Run() {}\n";
 
@@ -53,7 +53,7 @@ fn extracts_doc_comment_text() {
 }
 
 #[test]
-fn collects_error_handling_signals() {
+fn test_error_handling() {
     let source = r#"package sample
 
 import (
@@ -88,16 +88,16 @@ func LogOnly(err error) {
         .find(|function| function.fingerprint.name == "LogOnly")
         .expect("LogOnly should be parsed");
 
-    assert_eq!(run.dropped_error_lines, vec![9]);
-    assert_eq!(run.panic_on_error_lines, vec![10]);
+    assert_eq!(run.dropped_errors, vec![9]);
+    assert_eq!(run.panic_errors, vec![10]);
     assert_eq!(run.errorf_calls.len(), 1);
     assert!(run.errorf_calls[0].mentions_err);
     assert!(!run.errorf_calls[0].uses_percent_w);
-    assert_eq!(log_only.panic_on_error_lines, vec![17]);
+    assert_eq!(log_only.panic_errors, vec![17]);
 }
 
 #[test]
-fn collects_context_and_sleep_signals() {
+fn test_ctx_sleep() {
     let source = r#"package sample
 
 import (
@@ -121,11 +121,11 @@ func Poll(ctx context.Context) {
         .expect("Poll should be parsed");
 
     assert!(poll.has_context_parameter);
-    assert_eq!(poll.sleep_in_loop_lines, vec![10]);
+    assert_eq!(poll.sleep_loops, vec![10]);
 }
 
 #[test]
-fn collects_context_factory_busy_wait_and_json_signals() {
+fn test_ctx_busy_json() {
     let source = r#"package sample
 
 import (
@@ -164,11 +164,11 @@ func Run(parent context.Context, items []string) {
     assert_eq!(run.context_factory_calls[0].cancel_name, "cancel");
     assert_eq!(run.context_factory_calls[0].factory_name, "WithTimeout");
     assert_eq!(run.busy_wait_lines, vec![14]);
-    assert_eq!(run.json_marshal_in_loop_lines, vec![21]);
+    assert_eq!(run.json_loops, vec![21]);
 }
 
 #[test]
-fn collects_concurrency_and_db_signals() {
+fn test_concurrency_db() {
     let source = r#"package sample
 
 import (
@@ -213,11 +213,11 @@ type MutexLike interface {
         .find(|function| function.fingerprint.name == "Run")
         .expect("Run should be parsed");
 
-    assert_eq!(run.goroutine_without_shutdown_lines, vec![11]);
-    assert_eq!(run.mutex_lock_in_loop_lines, vec![18]);
-    assert_eq!(run.allocation_in_loop_lines, vec![23]);
-    assert_eq!(run.fmt_in_loop_lines, vec![21]);
-    assert_eq!(run.reflection_in_loop_lines, vec![22]);
+    assert_eq!(run.unmanaged_goroutines, vec![11]);
+    assert_eq!(run.mutex_loops, vec![18]);
+    assert_eq!(run.alloc_loops, vec![23]);
+    assert_eq!(run.fmt_loops, vec![21]);
+    assert_eq!(run.reflect_loops, vec![22]);
     assert_eq!(run.db_query_calls.len(), 1);
     assert!(run.db_query_calls[0].in_loop);
     assert_eq!(
@@ -227,7 +227,7 @@ type MutexLike interface {
 }
 
 #[test]
-fn collects_string_concat_and_goroutine_signals() {
+fn test_concat_goroutine() {
     let source = r#"package sample
 
 func Build(parts []string) string {
@@ -249,13 +249,13 @@ func notify(value string) {}
         .find(|function| function.fingerprint.name == "Build")
         .expect("Build should be parsed");
 
-    assert_eq!(build.string_concat_in_loop_lines, vec![6]);
-    assert_eq!(build.goroutine_launch_lines, vec![7]);
-    assert_eq!(build.goroutine_in_loop_lines, vec![7]);
+    assert_eq!(build.concat_loops, vec![6]);
+    assert_eq!(build.goroutines, vec![7]);
+    assert_eq!(build.loop_goroutines, vec![7]);
 }
 
 #[test]
-fn collects_package_literals_struct_tags_and_test_summaries() {
+fn test_pkg_literals() {
     let source = r#"package sample
 
 const apiToken = "sk_test_1234567890"
@@ -292,8 +292,8 @@ func buildUser() *User { return &User{} }
         .expect("TestUser should be parsed");
 
     assert!(parsed.is_test_file);
-    assert_eq!(parsed.package_string_literals.len(), 1);
-    assert_eq!(parsed.package_string_literals[0].name, "apiToken");
+    assert_eq!(parsed.pkg_strings.len(), 1);
+    assert_eq!(parsed.pkg_strings[0].name, "apiToken");
     assert_eq!(parsed.struct_tags.len(), 1);
     assert_eq!(parsed.struct_tags[0].field_name, "Name");
     assert!(parsed.symbols.iter().any(|symbol| {
@@ -306,8 +306,8 @@ func buildUser() *User { return &User{} }
             && symbol.receiver_type.as_deref() == Some("User")
             && symbol.receiver_is_pointer == Some(true)
     }));
-    assert_eq!(test_fn.local_string_literals.len(), 1);
-    assert_eq!(test_fn.local_string_literals[0].name, "token");
+    assert_eq!(test_fn.local_strings.len(), 1);
+    assert_eq!(test_fn.local_strings[0].name, "token");
     assert!(test_fn.test_summary.is_some());
     assert_eq!(
         test_fn

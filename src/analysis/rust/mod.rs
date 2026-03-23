@@ -6,7 +6,7 @@ use std::path::Path;
 use anyhow::Result;
 
 use crate::analysis::{ImportSpec, ParsedFunction};
-use crate::index::{ImportResolution, RepositoryIndex};
+use crate::index::{ImportResolution, PackageIndex, RepositoryIndex};
 use crate::model::{Finding, Severity};
 use crate::analysis::{Language, LanguageBackend, ParsedFile};
 
@@ -30,14 +30,14 @@ impl LanguageBackend for RustAnalyzer {
         parser::parse_file(path, source)
     }
 
-    fn evaluate_file_findings(&self, file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
-        evaluate_rust_file_findings(file, index)
+    fn evaluate_file(&self, file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
+        evaluate_rust_findings(file, index)
     }
 }
 
-fn evaluate_rust_file_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
+fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = Vec::new();
-    let import_aliases = import_alias_lookup(&file.imports);
+    let import_aliases = alias_lookup(&file.imports);
 
     for function in &file.functions {
         findings.extend(non_test_macro_findings(
@@ -89,15 +89,23 @@ fn evaluate_rust_file_findings(file: &ParsedFile, index: &RepositoryIndex) -> Ve
             "expect_in_non_test_code",
             "calls expect() in non-test Rust code",
         ));
-        findings.extend(unsafe_without_safety_comment_findings(file, function));
-        findings.extend(doc_comment_marker_findings(file, function));
-        findings.extend(rust_local_import_hallucination_findings(
+        findings.extend(unsafe_findings(file, function));
+        findings.extend(doc_marker_findings(file, function));
+        let Some(package_name) = &file.package_name else {
+            continue;
+        };
+        let Some(current_package) = index.package_for_file(Language::Rust, &file.path, package_name) else {
+            continue;
+        };
+
+        findings.extend(rust_import_findings(
             file,
             function,
             index,
             &import_aliases,
+            current_package,
         ));
-        findings.extend(rust_direct_call_hallucination_findings(
+        findings.extend(rust_call_findings(
             file,
             function,
             index,
@@ -167,14 +175,14 @@ fn non_test_call_findings(
         .collect()
 }
 
-fn unsafe_without_safety_comment_findings(
+fn unsafe_findings(
     file: &ParsedFile,
     function: &crate::analysis::ParsedFunction,
 ) -> Vec<Finding> {
     function
         .unsafe_lines
         .iter()
-        .filter(|unsafe_line| !has_nearby_safety_comment(**unsafe_line, &function.safety_comment_lines))
+        .filter(|unsafe_line| !has_safety_comment(**unsafe_line, &function.safety_comment_lines))
         .map(|unsafe_line| Finding {
             rule_id: "unsafe_without_safety_comment".to_string(),
             severity: Severity::Warning,
@@ -191,14 +199,14 @@ fn unsafe_without_safety_comment_findings(
         .collect()
 }
 
-fn has_nearby_safety_comment(unsafe_line: usize, safety_comment_lines: &[usize]) -> bool {
+fn has_safety_comment(unsafe_line: usize, safety_comment_lines: &[usize]) -> bool {
     let min_line = unsafe_line.saturating_sub(2);
     safety_comment_lines
         .iter()
         .any(|comment_line| *comment_line >= min_line && *comment_line <= unsafe_line)
 }
 
-fn doc_comment_marker_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+fn doc_marker_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -270,11 +278,12 @@ fn first_doc_comment_line(doc_comment: &str) -> String {
     format!("doc comment line: {line}")
 }
 
-fn rust_local_import_hallucination_findings(
+fn rust_import_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     index: &RepositoryIndex,
     import_aliases: &BTreeMap<String, ImportSpec>,
+    current_package: &PackageIndex,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
 
@@ -282,11 +291,17 @@ fn rust_local_import_hallucination_findings(
         let Some(receiver) = &call.receiver else {
             continue;
         };
-        let Some(import_path) = local_rust_module_path_for_receiver(receiver, import_aliases) else {
+
+        // If receiver is a local symbol, assume it's not a module/import call
+        if current_package.has_symbol(receiver) {
+            continue;
+        }
+
+        let Some(import_path) = rust_mod_for_receiver(receiver, import_aliases) else {
             continue;
         };
 
-        match index.resolve_rust_module_import(&file.path, &import_path) {
+        match index.resolve_rust_import(&file.path, &import_path) {
             ImportResolution::Resolved(target_package) => {
                 if !target_package.has_function(&call.name) {
                     findings.push(Finding {
@@ -341,7 +356,7 @@ fn rust_local_import_hallucination_findings(
     findings
 }
 
-fn rust_direct_call_hallucination_findings(
+fn rust_call_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     index: &RepositoryIndex,
@@ -364,12 +379,16 @@ fn rust_direct_call_hallucination_findings(
             continue;
         }
 
+        if current_package.has_function(&call.name) || current_package.has_symbol(&call.name) {
+            continue;
+        }
+
         if let Some(import_spec) = import_aliases.get(&call.name) {
-            if !is_local_rust_import_path(import_spec.path.as_str()) {
+            if !is_rust_import(import_spec.path.as_str()) {
                 continue;
             }
 
-            if direct_call_matches_local_import(index, &file.path, import_spec) {
+            if call_matches_import(index, &file.path, import_spec) {
                 continue;
             }
 
@@ -392,11 +411,7 @@ fn rust_direct_call_hallucination_findings(
             continue;
         }
 
-        if current_package.has_function(&call.name) || current_package.has_symbol(&call.name) {
-            continue;
-        }
-
-        if looks_like_rust_local_symbol(&call.name) {
+        if is_rust_local_sym(&call.name) {
             findings.push(Finding {
                 rule_id: "hallucinated_local_call".to_string(),
                 severity: Severity::Info,
@@ -421,7 +436,7 @@ fn rust_direct_call_hallucination_findings(
     findings
 }
 
-fn direct_call_matches_local_import(
+fn call_matches_import(
     index: &RepositoryIndex,
     file_path: &Path,
     import_spec: &ImportSpec,
@@ -436,15 +451,16 @@ fn direct_call_matches_local_import(
         return false;
     }
 
-    match index.resolve_rust_module_import(file_path, module_path) {
+    match index.resolve_rust_import(file_path, module_path) {
         ImportResolution::Resolved(module_package) => {
             module_package.has_function(item_name) || module_package.has_symbol(item_name)
         }
-        ImportResolution::Ambiguous(_) | ImportResolution::Unresolved => false,
+        ImportResolution::Ambiguous(_) => true,
+        ImportResolution::Unresolved => false,
     }
 }
 
-fn looks_like_rust_local_symbol(name: &str) -> bool {
+fn is_rust_local_sym(name: &str) -> bool {
     let mut characters = name.chars();
     let Some(first) = characters.next() else {
         return false;
@@ -454,7 +470,7 @@ fn looks_like_rust_local_symbol(name: &str) -> bool {
         && characters.all(|character| character.is_ascii_lowercase() || character.is_ascii_digit() || character == '_')
 }
 
-fn local_rust_module_path_for_receiver(
+fn rust_mod_for_receiver(
     receiver: &str,
     import_aliases: &BTreeMap<String, ImportSpec>,
 ) -> Option<String> {
@@ -462,7 +478,7 @@ fn local_rust_module_path_for_receiver(
         .iter()
         .filter(|(alias, import_spec)| {
             alias.as_str() != "*"
-                && is_local_rust_import_path(import_spec.path.as_str())
+                && is_rust_import(import_spec.path.as_str())
                 && (receiver == alias.as_str()
                     || receiver
                         .strip_prefix(alias.as_str())
@@ -480,13 +496,13 @@ fn local_rust_module_path_for_receiver(
     })
 }
 
-fn is_local_rust_import_path(import_path: &str) -> bool {
+fn is_rust_import(import_path: &str) -> bool {
     import_path.starts_with("crate::")
         || import_path.starts_with("self::")
         || import_path.starts_with("super::")
 }
 
-fn import_alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, ImportSpec> {
+fn alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, ImportSpec> {
     imports
         .iter()
     .map(|import| (import.alias.clone(), import.clone()))

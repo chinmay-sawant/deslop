@@ -7,7 +7,7 @@ const HTTP_CONTEXTLESS_CALLS: &[&str] = &["Get", "Head", "Post", "PostForm", "Ne
 const EXEC_CONTEXTLESS_CALLS: &[&str] = &["Command"];
 const NET_CONTEXTLESS_CALLS: &[&str] = &["Dial", "DialTimeout"];
 
-pub(super) fn missing_context_findings(
+pub(super) fn ctx_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
@@ -58,7 +58,7 @@ pub(super) fn missing_context_findings(
         .collect()
 }
 
-pub(super) fn missing_cancel_call_findings(
+pub(super) fn cancel_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
@@ -93,9 +93,9 @@ pub(super) fn missing_cancel_call_findings(
         .collect()
 }
 
-pub(super) fn sleep_polling_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn sleep_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
-        .sleep_in_loop_lines
+        .sleep_loops
         .iter()
         .map(|line| Finding {
             rule_id: "sleep_polling".to_string(),
@@ -115,7 +115,7 @@ pub(super) fn sleep_polling_findings(file: &ParsedFile, function: &ParsedFunctio
         .collect()
 }
 
-pub(super) fn busy_waiting_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn busy_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .busy_wait_lines
         .iter()

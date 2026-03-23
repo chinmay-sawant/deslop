@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn scans_go_files_and_extracts_fingerprints() {
+fn test_go_fingerprints() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "main.go", go_fixture!("simple.go"));
 
@@ -52,7 +52,7 @@ fn respects_gitignore() {
 }
 
 #[test]
-fn skips_generated_files_and_keeps_syntax_error_flag() {
+fn test_generated_syntax() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "generated.go", go_fixture!("generated.go"));
     write_fixture(&temp_dir, "broken.go", go_fixture!("malformed.txt"));

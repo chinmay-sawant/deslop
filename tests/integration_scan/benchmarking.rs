@@ -10,7 +10,7 @@ const GOPDFSUIT_ROOT: &str = "/home/chinmay/ChinmayPersonalProjects/gopdfsuit";
 
 #[test]
 #[ignore]
-fn scans_real_projects_and_prints_reports() {
+fn test_real_scan() {
     let roots = [Path::new(GOMINDMAPPER_ROOT), Path::new(GOPDFSUIT_ROOT)];
 
     for root in roots {
@@ -55,7 +55,7 @@ fn scans_real_projects_and_prints_reports() {
 }
 
 #[test]
-fn benchmarks_a_real_scan_path() {
+fn test_benchmark() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

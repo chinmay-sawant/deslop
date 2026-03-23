@@ -5,7 +5,7 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 #[test]
-fn flags_generic_names_and_weak_typing() {
+fn test_naming_slop() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "sloppy.go", go_fixture!("generic_weak.txt"));
 
@@ -32,7 +32,7 @@ fn flags_generic_names_and_weak_typing() {
 }
 
 #[test]
-fn flags_comment_style_and_overlong_names() {
+fn test_doc_overlong() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "comments.go", go_fixture!("comment_slop.txt"));
 
@@ -65,7 +65,7 @@ fn flags_comment_style_and_overlong_names() {
 }
 
 #[test]
-fn does_not_flag_concise_comments() {
+fn test_doc_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(&temp_dir, "comments.go", go_fixture!("comment_clean.txt"));
 
@@ -92,7 +92,7 @@ fn does_not_flag_concise_comments() {
 }
 
 #[test]
-fn does_not_flag_legitimate_handler_names() {
+fn test_handler_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
@@ -115,7 +115,7 @@ fn does_not_flag_legitimate_handler_names() {
 }
 
 #[test]
-fn does_not_flag_legitimate_adapter_names() {
+fn test_adapter_ok() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,

@@ -1,7 +1,7 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-pub(super) fn test_quality_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn test_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if !file.is_test_file {
         return Vec::new();
     }

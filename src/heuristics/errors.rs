@@ -1,13 +1,13 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-pub(super) fn error_handling_findings(
+pub(super) fn error_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    for line in &function.dropped_error_lines {
+    for line in &function.dropped_errors {
         findings.push(Finding {
             rule_id: "dropped_error".to_string(),
             severity: Severity::Warning,
@@ -23,7 +23,7 @@ pub(super) fn error_handling_findings(
         });
     }
 
-    for line in &function.panic_on_error_lines {
+    for line in &function.panic_errors {
         findings.push(Finding {
             rule_id: "panic_on_error".to_string(),
             severity: Severity::Warning,

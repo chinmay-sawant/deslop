@@ -4,13 +4,13 @@ use crate::analysis::FormattedErrorCall;
 
 use super::general::first_string_literal;
 
-pub(super) fn collect_dropped_error_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
+pub(super) fn collect_dropped_errors(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_dropped_errors(body_node, source, &mut lines);
+    visit_dropped_errors(body_node, source, &mut lines);
     lines
 }
 
-fn visit_for_dropped_errors(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
+fn visit_dropped_errors(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
     if matches!(
         node.kind(),
         "assignment_statement" | "short_var_declaration"
@@ -28,17 +28,17 @@ fn visit_for_dropped_errors(node: Node<'_>, source: &str, lines: &mut Vec<usize>
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_dropped_errors(child, source, lines);
+        visit_dropped_errors(child, source, lines);
     }
 }
 
-pub(super) fn collect_panic_on_error_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
+pub(super) fn collect_panic_errors(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_panic_on_error(body_node, source, &mut lines);
+    visit_panic_errors(body_node, source, &mut lines);
     lines
 }
 
-fn visit_for_panic_on_error(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
+fn visit_panic_errors(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
     if node.kind() == "if_statement" {
         let condition = node
             .child_by_field_name("condition")
@@ -61,7 +61,7 @@ fn visit_for_panic_on_error(node: Node<'_>, source: &str, lines: &mut Vec<usize>
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_panic_on_error(child, source, lines);
+        visit_panic_errors(child, source, lines);
     }
 }
 
