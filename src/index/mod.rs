@@ -51,13 +51,16 @@ impl RepositoryIndex {
         self.packages.get(&key)
     }
 
-    pub fn resolve_import_path(&self, language: Language, import_path: &str) -> ImportResolution<'_> {
+    pub fn resolve_import_path(
+        &self,
+        language: Language,
+        import_path: &str,
+    ) -> ImportResolution<'_> {
         let mut candidates = self
             .packages
             .values()
             .filter(|package| {
-                package.language == language
-                    && import_matches_dir(import_path, &package.directory)
+                package.language == language && import_matches_dir(import_path, &package.directory)
             })
             .collect::<Vec<_>>();
 
@@ -78,8 +81,7 @@ impl RepositoryIndex {
         else {
             return ImportResolution::Unresolved;
         };
-        let Some(target_segments) =
-            normalize_rust_path(import_path, &current_module_segments)
+        let Some(target_segments) = normalize_rust_path(import_path, &current_module_segments)
         else {
             return ImportResolution::Unresolved;
         };
@@ -311,13 +313,16 @@ fn normalize_rust_path(
                 .collect(),
         ),
         "super" => {
-            let super_count = segments.iter().take_while(|segment| segment == &&"super".to_string()).count();
+            let super_count = segments
+                .iter()
+                .take_while(|segment| segment == &&"super".to_string())
+                .count();
             if super_count > current_module_segments.len() {
                 return None;
             }
 
-            let mut resolved = current_module_segments[..current_module_segments.len() - super_count]
-                .to_vec();
+            let mut resolved =
+                current_module_segments[..current_module_segments.len() - super_count].to_vec();
             resolved.extend(segments.into_iter().skip(super_count));
             Some(resolved)
         }
@@ -432,7 +437,12 @@ mod tests {
 
     #[test]
     fn builds_package_lookup() {
-        let files = vec![sample_file(Language::Go, "/repo/utils/sample.go", "utils", &["Trim"])];
+        let files = vec![sample_file(
+            Language::Go,
+            "/repo/utils/sample.go",
+            "utils",
+            &["Trim"],
+        )];
 
         let index = build_repository_index(Path::new("/repo"), &files);
         assert!(
@@ -445,21 +455,39 @@ mod tests {
     #[test]
     fn test_pkg_separation() {
         let files = vec![
-            sample_file(Language::Go, "/repo/pkg/render/main.go", "render", &["Normalize"]),
-            sample_file(Language::Go, "/repo/internal/render/main.go", "render", &["Sanitize"]),
+            sample_file(
+                Language::Go,
+                "/repo/pkg/render/main.go",
+                "render",
+                &["Normalize"],
+            ),
+            sample_file(
+                Language::Go,
+                "/repo/internal/render/main.go",
+                "render",
+                &["Sanitize"],
+            ),
         ];
 
         let index = build_repository_index(Path::new("/repo"), &files);
 
         assert!(
             index
-                .package_for_file(Language::Go, Path::new("/repo/pkg/render/main.go"), "render")
+                .package_for_file(
+                    Language::Go,
+                    Path::new("/repo/pkg/render/main.go"),
+                    "render"
+                )
                 .is_some_and(|package| package.has_function("Normalize")
                     && !package.has_function("Sanitize"))
         );
         assert!(
             index
-                .package_for_file(Language::Go, Path::new("/repo/internal/render/main.go"), "render")
+                .package_for_file(
+                    Language::Go,
+                    Path::new("/repo/internal/render/main.go"),
+                    "render"
+                )
                 .is_some_and(|package| package.has_function("Sanitize")
                     && !package.has_function("Normalize"))
         );
@@ -468,8 +496,18 @@ mod tests {
     #[test]
     fn test_import_suffix() {
         let files = vec![
-            sample_file(Language::Go, "/repo/pkg/render/main.go", "render", &["Normalize"]),
-            sample_file(Language::Go, "/repo/internal/render/main.go", "render", &["Sanitize"]),
+            sample_file(
+                Language::Go,
+                "/repo/pkg/render/main.go",
+                "render",
+                &["Normalize"],
+            ),
+            sample_file(
+                Language::Go,
+                "/repo/internal/render/main.go",
+                "render",
+                &["Sanitize"],
+            ),
         ];
 
         let index = build_repository_index(Path::new("/repo"), &files);
@@ -487,18 +525,42 @@ mod tests {
     #[test]
     fn test_mixed_lang() {
         let files = vec![
-            sample_file(Language::Go, "/repo/pkg/render/main.go", "render", &["Normalize"]),
-            sample_file(Language::Rust, "/repo/pkg/render/lib.rs", "render", &["NormalizeRust"]),
+            sample_file(
+                Language::Go,
+                "/repo/pkg/render/main.go",
+                "render",
+                &["Normalize"],
+            ),
+            sample_file(
+                Language::Rust,
+                "/repo/pkg/render/lib.rs",
+                "render",
+                &["NormalizeRust"],
+            ),
         ];
 
         let index = build_repository_index(Path::new("/repo"), &files);
 
-        assert!(index
-            .package_for_file(Language::Go, Path::new("/repo/pkg/render/main.go"), "render")
-            .is_some_and(|package| package.has_function("Normalize") && !package.has_function("NormalizeRust")));
-        assert!(index
-            .package_for_file(Language::Rust, Path::new("/repo/pkg/render/lib.rs"), "render")
-            .is_some_and(|package| package.has_function("NormalizeRust") && !package.has_function("Normalize")));
+        assert!(
+            index
+                .package_for_file(
+                    Language::Go,
+                    Path::new("/repo/pkg/render/main.go"),
+                    "render"
+                )
+                .is_some_and(|package| package.has_function("Normalize")
+                    && !package.has_function("NormalizeRust"))
+        );
+        assert!(
+            index
+                .package_for_file(
+                    Language::Rust,
+                    Path::new("/repo/pkg/render/lib.rs"),
+                    "render"
+                )
+                .is_some_and(|package| package.has_function("NormalizeRust")
+                    && !package.has_function("Normalize"))
+        );
 
         match index.resolve_import_path(Language::Go, "github.com/acme/project/pkg/render") {
             ImportResolution::Resolved(package) => {
@@ -513,17 +575,29 @@ mod tests {
     #[test]
     fn test_rust_imports() {
         let files = vec![
-            sample_file(Language::Rust, "/repo/src/config/mod.rs", "config", &["shared"]),
-            sample_file(Language::Rust, "/repo/src/config/render.rs", "render", &["normalize"]),
-            sample_file(Language::Rust, "/repo/src/config/sub/helpers.rs", "helpers", &["load"]),
+            sample_file(
+                Language::Rust,
+                "/repo/src/config/mod.rs",
+                "config",
+                &["shared"],
+            ),
+            sample_file(
+                Language::Rust,
+                "/repo/src/config/render.rs",
+                "render",
+                &["normalize"],
+            ),
+            sample_file(
+                Language::Rust,
+                "/repo/src/config/sub/helpers.rs",
+                "helpers",
+                &["load"],
+            ),
         ];
 
         let index = build_repository_index(Path::new("/repo"), &files);
 
-        match index.resolve_rust_import(
-            Path::new("/repo/src/lib.rs"),
-            "crate::config::render",
-        ) {
+        match index.resolve_rust_import(Path::new("/repo/src/lib.rs"), "crate::config::render") {
             ImportResolution::Resolved(package) => {
                 assert_eq!(package.directory, PathBuf::from("src/config"));
                 assert!(package.has_function("normalize"));
@@ -531,10 +605,7 @@ mod tests {
             other => panic!("expected crate import to resolve, got {other:?}"),
         }
 
-        match index.resolve_rust_import(
-            Path::new("/repo/src/config/mod.rs"),
-            "self::render",
-        ) {
+        match index.resolve_rust_import(Path::new("/repo/src/config/mod.rs"), "self::render") {
             ImportResolution::Resolved(package) => {
                 assert_eq!(package.directory, PathBuf::from("src/config"));
                 assert!(package.has_function("normalize"));

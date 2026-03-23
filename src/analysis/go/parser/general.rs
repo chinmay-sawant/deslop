@@ -202,10 +202,7 @@ pub(super) fn find_var_value_node(node: Node<'_>) -> Option<Node<'_>> {
         })
 }
 
-pub(super) fn first_named_child<'tree>(
-    node: Node<'tree>,
-    kind: &str,
-) -> Option<Node<'tree>> {
+pub(super) fn first_named_child<'tree>(node: Node<'tree>, kind: &str) -> Option<Node<'tree>> {
     let mut cursor = node.walk();
     node.named_children(&mut cursor)
         .find(|child| child.kind() == kind)
@@ -339,12 +336,7 @@ pub(super) fn find_package_name(root: Node<'_>, source: &str) -> Option<String> 
     None
 }
 
-
-
-pub(super) fn extract_receiver(
-    receiver_node: Node<'_>,
-    source: &str,
-) -> Option<(String, bool)> {
+pub(super) fn extract_receiver(receiver_node: Node<'_>, source: &str) -> Option<(String, bool)> {
     let text = source.get(receiver_node.byte_range())?;
     let receiver_is_pointer = text.contains('*');
     let sanitized = text
@@ -392,11 +384,7 @@ pub(super) fn collect_pkg_strings(root: Node<'_>, source: &str) -> Vec<NamedLite
     literals
 }
 
-fn visit_pkg_strings(
-    node: Node<'_>,
-    source: &str,
-    literals: &mut Vec<NamedLiteral>,
-) {
+fn visit_pkg_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLiteral>) {
     if matches!(node.kind(), "var_spec" | "const_spec") && is_package_scope(node) {
         literals.extend(extract_named_strings(node, source));
     }
@@ -407,10 +395,7 @@ fn visit_pkg_strings(
     }
 }
 
-pub(super) fn collect_local_strings(
-    body_node: Node<'_>,
-    source: &str,
-) -> Vec<NamedLiteral> {
+pub(super) fn collect_local_strings(body_node: Node<'_>, source: &str) -> Vec<NamedLiteral> {
     let mut literals = Vec::new();
     visit_local_strings(body_node, source, &mut literals);
     literals.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
@@ -433,14 +418,10 @@ fn visit_local_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLit
 
 fn extract_named_strings(node: Node<'_>, source: &str) -> Vec<NamedLiteral> {
     let Some(name_node) = find_var_name_node(node) else {
-        return fallback_named_string(node, source)
-            .into_iter()
-            .collect();
+        return fallback_named_string(node, source).into_iter().collect();
     };
     let Some(value_node) = find_var_value_node(node) else {
-        return fallback_named_string(node, source)
-            .into_iter()
-            .collect();
+        return fallback_named_string(node, source).into_iter().collect();
     };
 
     let names = collect_identifiers(name_node, source);
@@ -457,9 +438,7 @@ fn extract_named_strings(node: Node<'_>, source: &str) -> Vec<NamedLiteral> {
         .collect::<Vec<_>>();
 
     if literals.is_empty() {
-        fallback_named_string(node, source)
-            .into_iter()
-            .collect()
+        fallback_named_string(node, source).into_iter().collect()
     } else {
         literals
     }
@@ -585,14 +564,8 @@ pub(super) fn build_test_summary(
     }
 
     let body_text = source.get(body_node.byte_range()).unwrap_or("");
-    let assertion_like_calls = calls
-        .iter()
-        .filter(|call| is_assert_call(call))
-        .count();
-    let error_assertion_calls = calls
-        .iter()
-        .filter(|call| is_err_assert_call(call))
-        .count()
+    let assertion_like_calls = calls.iter().filter(|call| is_assert_call(call)).count();
+    let error_assertion_calls = calls.iter().filter(|call| is_err_assert_call(call)).count()
         + usize::from(body_text.contains("err == nil") || body_text.contains("err==nil"));
     let skip_calls = calls.iter().filter(|call| is_skip_call(call)).count();
     let production_calls = calls

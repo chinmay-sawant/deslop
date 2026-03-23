@@ -7,10 +7,7 @@ const HTTP_CONTEXTLESS_CALLS: &[&str] = &["Get", "Head", "Post", "PostForm", "Ne
 const EXEC_CONTEXTLESS_CALLS: &[&str] = &["Command"];
 const NET_CONTEXTLESS_CALLS: &[&str] = &["Dial", "DialTimeout"];
 
-pub(super) fn ctx_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn ctx_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.has_context_parameter {
         return Vec::new();
     }
@@ -58,10 +55,7 @@ pub(super) fn ctx_findings(
         .collect()
 }
 
-pub(super) fn cancel_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn cancel_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .context_factory_calls
         .iter()

@@ -26,7 +26,7 @@ pub(crate) struct ParsedFunction {
     pub is_test_function: bool,
     pub local_binding_names: Vec<String>,
     pub doc_comment: Option<String>,
-        pub local_strings: Vec<NamedLiteral>,
+    pub local_strings: Vec<NamedLiteral>,
     pub test_summary: Option<TestFunctionSummary>,
     pub safety_comment_lines: Vec<usize>,
     pub unsafe_lines: Vec<usize>,

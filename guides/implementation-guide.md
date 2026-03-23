@@ -2,7 +2,7 @@
 
 ## Overview
 
-deslop is structured as a multi-stage Rust analysis pipeline for Go and Rust repositories. The current implementation focuses on fast full-repository ingestion, lightweight structural fingerprints, a repository-local symbol index, explainable heuristic findings, and repeatable benchmark measurements.
+deslop is structured as a multi-stage Rust analysis pipeline for Go, Python, and Rust repositories. The current implementation focuses on fast full-repository ingestion, lightweight structural fingerprints, a repository-local symbol index, explainable heuristic findings, and repeatable benchmark measurements.
 
 The code is intentionally split so later phases such as copypasta detection, control-flow analysis, taint tracking, and auto-fix generation can consume stable intermediate results instead of reparsing source files or embedding analysis logic inside the CLI.
 
@@ -31,7 +31,7 @@ This stage is responsible only for file selection. It does not parse or classify
 
 ### Parse stage
 
-`src/analysis/mod.rs` exposes the language-agnostic analyzer boundary. `src/analysis/go/parser.rs` wraps `tree-sitter` and `tree-sitter-go`, and `src/analysis/rust/parser.rs` wraps `tree-sitter-rust` for the current Rust backend.
+`src/analysis/mod.rs` exposes the language-agnostic analyzer boundary. `src/analysis/go/parser.rs` wraps `tree-sitter` and `tree-sitter-go`, `src/analysis/python/parser/mod.rs` wraps `tree-sitter-python`, and `src/analysis/rust/parser.rs` wraps `tree-sitter-rust` for the current backends.
 
 For each Go file, the parser extracts:
 
@@ -46,6 +46,19 @@ For each Go file, the parser extracts:
 - per-function fingerprints
 
 Parsing remains syntax-tolerant. Files with syntax errors still participate in the report when tree-sitter can recover enough structure.
+
+For Python files, the current parser extracts:
+
+- conservative module names derived from file paths
+- import statements and aliases from `import` and `from ... import ...` forms
+- module-level functions, class methods, and class symbols
+- per-function call sites using direct and attribute-style call targets
+- async function classification through function-kind metadata
+- module-level and local string literals that can support shared secret-style heuristics
+- function docstrings, local binding names, and conservative test-file and test-function classification
+- syntax error state
+
+Python support remains syntax-oriented. It does not execute imports, resolve installed packages, or attempt mypy-style semantic understanding.
 
 For Rust files, the current parser extracts:
 
@@ -87,13 +100,13 @@ These fingerprints are intended as low-cost primitives for later heuristic and r
 - per-package import counts
 - local directory origins for more precise import-call resolution
 
-The index is now language-scoped as well, so mixed Go and Rust repositories do not merge same-directory symbols into one local package entry.
+The index is now language-scoped as well, so mixed Go, Python, and Rust repositories do not merge same-directory symbols into one local package entry.
 
 This index is deliberately lightweight. It is useful for local-context checks, but it is not an authoritative substitute for `go/types`. Import-call resolution is now package-plus-directory aware, which reduces ambiguity when multiple local packages share the same package name.
 
 ### Heuristic layer
 
-`src/heuristics/mod.rs` currently implements several shared and Go-specific rule families, and `src/analysis/rust/mod.rs` hosts the first Rust-specific rule pack:
+`src/heuristics/mod.rs` currently implements several shared and Go-specific rule families, `src/heuristics/python/` now hosts the first Python-specific rule pack, and `src/analysis/rust/mod.rs` hosts the first Rust-specific rule pack:
 
 1. `generic_name`
    Flags functions whose names are unusually generic, but only when the function also lacks stronger contextual signals such as specific typing or commentary.
@@ -121,6 +134,9 @@ This index is deliberately lightweight. It is useful for local-context checks, b
 
 9. `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, Rust-local `hallucinated_import_call`, and Rust-local `hallucinated_local_call`
    The Rust backend uses parser-level call, local-binding, doc-comment, test-classification, import-alias, and unsafe-comment evidence to flag obvious leftover macros, leftover TODO or FIXME doc comments, `.unwrap()` and `.expect(...)` in non-test Rust code, local imported calls that do not match indexed Rust modules, direct same-module calls that do not match indexed Rust symbols, and `unsafe` usage that lacks a nearby `SAFETY:` comment.
+
+10. `blocking_sync_io_in_async`, `eval_exec_usage`, `print_debugging_leftover`, Python `full_dataset_load`, and Python `string_concat_in_loop`
+   The Python heuristic layer uses parser-level async function kind, import aliases, call sites, and loop-concatenation evidence to flag blocking sync I/O inside `async def`, direct `eval()` and `exec()` usage, debug-style `print()` leftovers, full-file materialization patterns such as `open(...).read()` or `Path(...).read_text()`, and repeated string concatenation inside loops.
 
 ### Benchmark layer
 

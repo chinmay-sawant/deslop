@@ -51,7 +51,9 @@ fn visit_for_imports(node: Node<'_>, source: &str, imports: &mut Vec<ImportSpec>
     if node.kind() == "use_declaration"
         && let Some(argument) = node.child_by_field_name("argument")
     {
-        let is_public = source.get(node.byte_range()).is_some_and(|text| text.starts_with("pub"));
+        let is_public = source
+            .get(node.byte_range())
+            .is_some_and(|text| text.starts_with("pub"));
         flatten_use_tree(argument, source, None, imports, is_public);
     }
 
@@ -105,7 +107,9 @@ fn flatten_use_tree(
         "use_wildcard" => {
             let wildcard_path = node
                 .named_child(0)
-                .map(|child| combine_path_prefix(prefix.as_deref(), &render_use_path(child, source)))
+                .map(|child| {
+                    combine_path_prefix(prefix.as_deref(), &render_use_path(child, source))
+                })
                 .unwrap_or_else(|| combine_path_prefix(prefix.as_deref(), "*"));
 
             imports.push(ImportSpec {
@@ -261,11 +265,7 @@ fn collect_pkg_strings(root: Node<'_>, source: &str) -> Vec<NamedLiteral> {
     literals
 }
 
-fn visit_pkg_strings(
-    node: Node<'_>,
-    source: &str,
-    literals: &mut Vec<NamedLiteral>,
-) {
+fn visit_pkg_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLiteral>) {
     if matches!(node.kind(), "const_item" | "static_item")
         && let Some(literal) = named_string_from_item(node, source)
         && !is_inside_function(node)
@@ -542,7 +542,10 @@ fn is_test_file(path: &Path) -> bool {
     let in_tests_directory = path
         .components()
         .any(|component| component.as_os_str() == "tests");
-    let file_name = path.file_name().and_then(|name| name.to_str()).unwrap_or_default();
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or_default();
 
     in_tests_directory || file_name == "tests.rs" || file_name.ends_with("_test.rs")
 }
@@ -673,7 +676,10 @@ fn collect_unsafe_lines(function_node: Node<'_>, body_node: Node<'_>, source: &s
 fn collect_safety_comments(source: &str, function_node: Node<'_>) -> Vec<usize> {
     let lines = source.lines().collect::<Vec<_>>();
     let start = function_node.start_position().row.saturating_sub(2);
-    let end = function_node.end_position().row.min(lines.len().saturating_sub(1));
+    let end = function_node
+        .end_position()
+        .row
+        .min(lines.len().saturating_sub(1));
     let mut safety_lines = Vec::new();
 
     for (index, line) in lines.iter().enumerate().take(end + 1).skip(start) {
@@ -759,11 +765,7 @@ fn collect_ident_patterns(node: Node<'_>, source: &str, names: &mut Vec<String>)
     }
 }
 
-fn visit_local_strings(
-    node: Node<'_>,
-    source: &str,
-    literals: &mut Vec<NamedLiteral>,
-) {
+fn visit_local_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLiteral>) {
     if node.kind() == "let_declaration"
         && let Some(pattern_node) = node.child_by_field_name("pattern")
         && pattern_node.kind() == "identifier"
@@ -1028,7 +1030,10 @@ impl Runner {
         assert_eq!(parsed.functions.len(), 2);
         assert_eq!(parsed.functions[0].fingerprint.name, "sum_pair");
         assert_eq!(parsed.functions[1].fingerprint.kind, "method");
-        assert_eq!(parsed.functions[1].fingerprint.receiver_type.as_deref(), Some("Runner"));
+        assert_eq!(
+            parsed.functions[1].fingerprint.receiver_type.as_deref(),
+            Some("Runner")
+        );
         assert!(!parsed.functions[0].is_test_function);
         assert_eq!(parsed.symbols.len(), 2);
     }
@@ -1076,17 +1081,24 @@ mod tests {
             .expect("rust source should parse successfully");
 
         assert_eq!(parsed.imports.len(), 3);
+        assert!(
+            parsed
+                .imports
+                .iter()
+                .any(|import| { import.alias == "fmt" && import.path.contains("std::fmt") })
+        );
         assert!(parsed.imports.iter().any(|import| {
-            import.alias == "fmt" && import.path.contains("std::fmt")
-        }));
-        assert!(parsed.imports.iter().any(|import| {
-            import.alias == "FmtDisplay" && import.path == "std::fmt::Display"
+            import.alias == "FmtDisplay"
+                && import.path == "std::fmt::Display"
                 && import.namespace_path.as_deref() == Some("std::fmt")
                 && import.imported_name.as_deref() == Some("Display")
         }));
-        assert!(parsed.imports.iter().any(|import| {
-            import.alias == "*" && import.path.contains("crate::config")
-        }));
+        assert!(
+            parsed
+                .imports
+                .iter()
+                .any(|import| { import.alias == "*" && import.path.contains("crate::config") })
+        );
 
         assert_eq!(parsed.pkg_strings.len(), 1);
         assert_eq!(parsed.pkg_strings[0].name, "API_TOKEN");
@@ -1110,15 +1122,28 @@ mod tests {
             .find(|function| function.fingerprint.name == "execute")
             .expect("execute should be parsed");
         assert!(!execute.is_test_function);
-        assert!(execute.local_binding_names.iter().any(|name| name == "self"));
+        assert!(
+            execute
+                .local_binding_names
+                .iter()
+                .any(|name| name == "self")
+        );
         assert_eq!(execute.local_strings.len(), 1);
         assert_eq!(execute.local_strings[0].name, "password");
-        assert!(execute.local_binding_names.iter().any(|name| name == "password"));
+        assert!(
+            execute
+                .local_binding_names
+                .iter()
+                .any(|name| name == "password")
+        );
         assert!(execute.calls.iter().any(|call| call.name == "dbg!"));
         assert!(execute.calls.iter().any(|call| call.name == "todo!"));
-        assert!(execute.calls.iter().any(|call| {
-            call.receiver.as_deref() == Some("value") && call.name == "unwrap"
-        }));
+        assert!(
+            execute
+                .calls
+                .iter()
+                .any(|call| { call.receiver.as_deref() == Some("value") && call.name == "unwrap" })
+        );
         assert!(execute.safety_comment_lines.is_empty());
         assert_eq!(execute.unsafe_lines.len(), 2);
 

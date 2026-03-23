@@ -1,4 +1,5 @@
 mod go;
+mod python;
 mod rust;
 mod types;
 
@@ -35,20 +36,17 @@ pub(crate) trait LanguageBackend: Send + Sync {
         Vec::new()
     }
 
-    fn evaluate_repo(
-        &self,
-        _files: &[&ParsedFile],
-        _index: &RepositoryIndex,
-    ) -> Vec<Finding> {
+    fn evaluate_repo(&self, _files: &[&ParsedFile], _index: &RepositoryIndex) -> Vec<Finding> {
         Vec::new()
     }
 }
 
-pub(crate) fn registered_backends() -> [&'static dyn LanguageBackend; 2] {
+pub(crate) fn registered_backends() -> [&'static dyn LanguageBackend; 3] {
     static GO_BACKEND: go::GoAnalyzer = go::GoAnalyzer;
+    static PYTHON_BACKEND: python::PythonAnalyzer = python::PythonAnalyzer;
     static RUST_BACKEND: rust::RustAnalyzer = rust::RustAnalyzer;
 
-    [&GO_BACKEND, &RUST_BACKEND]
+    [&GO_BACKEND, &PYTHON_BACKEND, &RUST_BACKEND]
 }
 
 pub(crate) fn backend_for_path(path: &Path) -> Option<&'static dyn LanguageBackend> {
@@ -85,6 +83,14 @@ mod tests {
     use super::{Language, backend_for_path, supported_extensions};
 
     #[test]
+    fn test_python_backend() {
+        let backend = backend_for_path(Path::new("app.py"))
+            .expect("python files should resolve to a backend");
+
+        assert_eq!(backend.language(), Language::Python);
+    }
+
+    #[test]
     fn test_rust_backend() {
         let backend = backend_for_path(Path::new("src/main.rs"))
             .expect("rust files should resolve to a backend");
@@ -94,6 +100,6 @@ mod tests {
 
     #[test]
     fn test_extensions() {
-        assert_eq!(supported_extensions(), vec!["go", "rs"]);
+        assert_eq!(supported_extensions(), vec!["go", "py", "rs"]);
     }
 }

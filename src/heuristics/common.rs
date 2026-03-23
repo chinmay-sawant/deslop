@@ -150,10 +150,7 @@ pub(super) fn is_tutorial_doc(comment: &str) -> bool {
             || normalized.contains("because"))
 }
 
-pub(super) fn is_blocking_call(
-    call: &CallSite,
-    import_aliases: &BTreeMap<String, String>,
-) -> bool {
+pub(super) fn is_blocking_call(call: &CallSite, import_aliases: &BTreeMap<String, String>) -> bool {
     if is_db_query(&call.name) {
         return true;
     }

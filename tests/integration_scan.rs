@@ -18,6 +18,16 @@ macro_rules! rust_fixture {
     };
 }
 
+macro_rules! python_fixture {
+    ($path:literal) => {
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/python/",
+            $path
+        ))
+    };
+}
+
 #[path = "integration_scan/benchmarking.rs"]
 mod benchmarking;
 #[path = "integration_scan/concurrency.rs"]
@@ -36,12 +46,14 @@ mod hallucination;
 mod naming;
 #[path = "integration_scan/performance.rs"]
 mod performance;
+#[path = "integration_scan/python.rs"]
+mod python;
+#[path = "integration_scan/rust.rs"]
+mod rust;
 #[path = "integration_scan/security.rs"]
 mod security;
 #[path = "integration_scan/test_quality.rs"]
 mod test_quality;
-#[path = "integration_scan/rust.rs"]
-mod rust;
 
 use std::fs;
 use std::path::{Path, PathBuf};

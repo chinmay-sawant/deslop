@@ -1,6 +1,6 @@
-# AI is flooding your Go and Rust code with slop. Deslop finds it in seconds.
+# AI is flooding your Go, Python, and Rust code with slop. Deslop finds it in seconds.
 
-deslop is a Rust-based static analyzer for Go and Rust repositories that focuses on signals commonly associated with low-context AI-generated code. It currently scans a repository, parses Go and Rust files with tree-sitter, extracts structural fingerprints for each function, builds a lightweight local package index, runs early heuristic checks, and can benchmark the pipeline against real repositories.
+deslop is a Rust-based static analyzer for Go, Python, and Rust repositories that focuses on signals commonly associated with low-context AI-generated code. It currently scans a repository, parses Go, Python, and Rust files with tree-sitter, extracts structural fingerprints for each function, builds a lightweight local package index, runs early heuristic checks, and can benchmark the pipeline against real repositories.
 
 ## Overview
 
@@ -8,8 +8,9 @@ The current implementation is optimized around a fast full-repository pass:
 
 - walk the target tree with `.gitignore` awareness
 - skip common generated-code inputs and `vendor/` paths
-- parse Go files with tree-sitter-go and Rust files with tree-sitter-rust
+- parse Go files with tree-sitter-go, Python files with tree-sitter-python, and Rust files with tree-sitter-rust
 - fingerprint functions and methods with lightweight structural metrics
+- flag first-pass Python issues such as blocking sync I/O in async code, `eval` or `exec`, debug `print()` leftovers, full-file reads, and looped string concatenation
 - flag generic naming, overlong naming, weak typing, comment-style slop, weak crypto usage, hardcoded secret literals, dynamically constructed SQL queries, conservative missing-context cases, missing derived-context cancellation, looped sleep and select-default busy waiting, looped JSON marshaling, looped string concatenation, goroutine fan-out inside loops, looping goroutines without shutdown paths, mutex pressure signals, allocation churn, fmt or reflect hot-path calls, full-memory read patterns, looped database query-shape issues, mixed receiver styles, suspicious struct tags, and low-signal test bodies
 - use a local package index to catch some unresolved repository-local calls
 - benchmark discovery, parse, index, heuristic, and total runtime stages
@@ -24,7 +25,7 @@ Run a scan against a target path:
 cargo run -- scan /path/to/repo
 ```
 
-deslop auto-detects supported source files under that path. The same command works for Go-only repositories, Rust-only repositories, and mixed Go/Rust repositories.
+deslop auto-detects supported source files under that path. The same command works for Go-only repositories, Python-only repositories, Rust-only repositories, and mixed-language repositories.
 
 By default, scan output prints the scan summary plus the standard finding set. Detail-only diagnostics such as `full_dataset_load` are held back unless you pass `--details`.
 

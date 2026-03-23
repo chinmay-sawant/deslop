@@ -1,10 +1,7 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-pub(super) fn error_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn error_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for line in &function.dropped_errors {

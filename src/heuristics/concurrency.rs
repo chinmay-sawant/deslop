@@ -7,10 +7,7 @@ use super::common::{import_alias_lookup, is_blocking_call};
 
 const COORDINATION_METHODS: &[&str] = &["Add", "Done", "Wait", "Go"];
 
-pub(super) fn shutdown_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn shutdown_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .unmanaged_goroutines
         .iter()
@@ -104,10 +101,7 @@ pub(super) fn mutex_findings(
     findings
 }
 
-pub(super) fn coordination_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn coordination_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.goroutines.is_empty() || has_coordination(function) {
         return Vec::new();
     }

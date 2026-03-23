@@ -2,7 +2,7 @@
 
 ## Purpose
 
-deslop is a static analyzer for Go and Rust repositories that looks for signals commonly associated with low-context or AI-assisted code. The goal is not to prove correctness. The goal is to surface suspicious patterns quickly, explain why they were flagged, and let a reviewer decide whether the code is actually a problem.
+deslop is a static analyzer for Go, Python, and Rust repositories that looks for signals commonly associated with low-context or AI-assisted code. The goal is not to prove correctness. The goal is to surface suspicious patterns quickly, explain why they were flagged, and let a reviewer decide whether the code is actually a problem.
 
 ## Current feature set
 
@@ -17,7 +17,7 @@ deslop is a static analyzer for Go and Rust repositories that looks for signals 
 
 - Walks a repository with `.gitignore` awareness by default.
 - Skips `vendor/` and generated Go files.
-- Parses Go syntax with `tree-sitter-go` and Rust syntax with `tree-sitter-rust`.
+- Parses Go syntax with `tree-sitter-go`, Python syntax with `tree-sitter-python`, and Rust syntax with `tree-sitter-rust`.
 - Continues scanning even when some files contain syntax errors.
 
 ### Analysis pipeline
@@ -65,6 +65,14 @@ deslop is a static analyzer for Go and Rust repositories that looks for signals 
 - `unwrap_in_non_test_code`: `.unwrap()` used in non-test Rust code.
 - `expect_in_non_test_code`: `.expect(...)` used in non-test Rust code.
 - `unsafe_without_safety_comment`: `unsafe fn` or `unsafe` block without a nearby `SAFETY:` comment. The current nearby-comment policy accepts a `SAFETY:` comment on the same line or within the previous two lines.
+
+### Python-specific signals
+
+- `blocking_sync_io_in_async`: obvious synchronous network, subprocess, sleep, or file I/O calls made from `async def` functions.
+- `eval_exec_usage`: direct `eval()` or `exec()` usage in non-test Python code.
+- `print_debugging_leftover`: `print()` calls left in non-test Python functions when they do not look like obvious `main`-entrypoint output.
+
+Python also reuses shared signals when the parser evidence supports them, including `hardcoded_secret`, comment-style findings based on docstrings, `full_dataset_load`, and `string_concat_in_loop` when those patterns are syntactically clear.
 
 ### Consistency and tag signals
 

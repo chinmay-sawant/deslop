@@ -7,6 +7,7 @@ mod errors;
 mod hallucination;
 mod naming;
 mod performance;
+mod python;
 mod security;
 mod test_quality;
 #[cfg(test)]
@@ -17,29 +18,21 @@ use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
 use self::comments::comment_findings;
-use self::concurrency::{
-    coordination_findings, shutdown_findings, mutex_findings,
-};
+use self::concurrency::{coordination_findings, mutex_findings, shutdown_findings};
 use self::consistency::{receiver_findings, tag_findings};
-use self::context::{
-    busy_findings, cancel_findings, ctx_findings,
-    sleep_findings,
-};
+use self::context::{busy_findings, cancel_findings, ctx_findings, sleep_findings};
 use self::errors::error_findings;
 use self::hallucination::hallucination_findings;
 use self::naming::{generic_finding, overlong_finding, weak_finding};
 use self::performance::{
-    alloc_findings, db_findings, fmt_findings,
-    load_findings, reflect_findings, json_findings,
-    concat_findings,
+    alloc_findings, concat_findings, db_findings, fmt_findings, json_findings, load_findings,
+    reflect_findings,
 };
+use self::python::python_findings;
 use self::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};
 use self::test_quality::test_findings;
 
-pub(crate) fn evaluate_shared(
-    files: &[ParsedFile],
-    _index: &RepositoryIndex,
-) -> Vec<Finding> {
+pub(crate) fn evaluate_shared(files: &[ParsedFile], _index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for file in files {
@@ -67,10 +60,7 @@ pub(crate) fn evaluate_shared(
     findings
 }
 
-pub(crate) fn evaluate_go_file(
-    file: &ParsedFile,
-    index: &RepositoryIndex,
-) -> Vec<Finding> {
+pub(crate) fn evaluate_go_file(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     findings.extend(tag_findings(file));
@@ -99,9 +89,16 @@ pub(crate) fn evaluate_go_file(
     findings
 }
 
-pub(crate) fn evaluate_go_repo(
-    files: &[&ParsedFile],
-    _index: &RepositoryIndex,
-) -> Vec<Finding> {
+pub(crate) fn evaluate_go_repo(files: &[&ParsedFile], _index: &RepositoryIndex) -> Vec<Finding> {
     receiver_findings(files)
+}
+
+pub(crate) fn evaluate_python_file(file: &ParsedFile, _index: &RepositoryIndex) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for function in &file.functions {
+        findings.extend(python_findings(file, function));
+    }
+
+    findings
 }

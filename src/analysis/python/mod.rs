@@ -1,4 +1,3 @@
-mod fingerprint;
 mod parser;
 
 use std::path::Path;
@@ -6,24 +5,24 @@ use std::path::Path;
 use anyhow::Result;
 
 use crate::analysis::{Language, LanguageBackend, ParsedFile};
-use crate::heuristics::{evaluate_go_file, evaluate_go_repo};
+use crate::heuristics::evaluate_python_file;
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) struct GoAnalyzer;
+pub(crate) struct PythonAnalyzer;
 
-impl LanguageBackend for GoAnalyzer {
+impl LanguageBackend for PythonAnalyzer {
     fn language(&self) -> Language {
-        Language::Go
+        Language::Python
     }
 
     fn supported_extensions(&self) -> &'static [&'static str] {
-        &["go"]
+        &["py"]
     }
 
     fn supports_path(&self, path: &Path) -> bool {
-        path.extension().and_then(|ext| ext.to_str()) == Some("go")
+        path.extension().and_then(|ext| ext.to_str()) == Some("py")
     }
 
     fn parse_file(&self, path: &Path, source: &str) -> Result<ParsedFile> {
@@ -31,10 +30,6 @@ impl LanguageBackend for GoAnalyzer {
     }
 
     fn evaluate_file(&self, file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
-        evaluate_go_file(file, index)
-    }
-
-    fn evaluate_repo(&self, files: &[&ParsedFile], index: &RepositoryIndex) -> Vec<Finding> {
-        evaluate_go_repo(files, index)
+        evaluate_python_file(file, index)
     }
 }

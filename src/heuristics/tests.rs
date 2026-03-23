@@ -1,6 +1,6 @@
 use super::common::{
-    identifier_token_count, is_generic_name, is_title_doc, is_tutorial_doc,
-    is_global_sym, normalize_name,
+    identifier_token_count, is_generic_name, is_global_sym, is_title_doc, is_tutorial_doc,
+    normalize_name,
 };
 
 #[test]

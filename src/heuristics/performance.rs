@@ -3,10 +3,7 @@ use crate::model::{Finding, Severity};
 
 use super::common::import_alias_lookup;
 
-pub(super) fn alloc_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .alloc_loops
         .iter()
@@ -52,10 +49,7 @@ pub(super) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
         .collect()
 }
 
-pub(super) fn reflect_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn reflect_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .reflect_loops
         .iter()
@@ -78,10 +72,7 @@ pub(super) fn reflect_findings(
         .collect()
 }
 
-pub(super) fn concat_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn concat_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .concat_loops
         .iter()
@@ -103,10 +94,7 @@ pub(super) fn concat_findings(
         .collect()
 }
 
-pub(super) fn json_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn json_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .json_loops
         .iter()
@@ -130,10 +118,7 @@ pub(super) fn json_findings(
         .collect()
 }
 
-pub(super) fn db_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn db_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for query_call in &function.db_query_calls {
@@ -204,10 +189,7 @@ pub(super) fn db_findings(
     findings
 }
 
-pub(super) fn load_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let import_aliases = import_alias_lookup(&file.imports);
 
     function

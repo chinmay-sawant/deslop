@@ -6,9 +6,9 @@ use std::path::Path;
 use anyhow::Result;
 
 use crate::analysis::{ImportSpec, ParsedFunction};
+use crate::analysis::{Language, LanguageBackend, ParsedFile};
 use crate::index::{ImportResolution, PackageIndex, RepositoryIndex};
 use crate::model::{Finding, Severity};
-use crate::analysis::{Language, LanguageBackend, ParsedFile};
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct RustAnalyzer;
@@ -94,7 +94,9 @@ fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Fin
         let Some(package_name) = &file.package_name else {
             continue;
         };
-        let Some(current_package) = index.package_for_file(Language::Rust, &file.path, package_name) else {
+        let Some(current_package) =
+            index.package_for_file(Language::Rust, &file.path, package_name)
+        else {
             continue;
         };
 
@@ -105,12 +107,7 @@ fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Fin
             &import_aliases,
             current_package,
         ));
-        findings.extend(rust_call_findings(
-            file,
-            function,
-            index,
-            &import_aliases,
-        ));
+        findings.extend(rust_call_findings(file, function, index, &import_aliases));
     }
 
     findings
@@ -175,10 +172,7 @@ fn non_test_call_findings(
         .collect()
 }
 
-fn unsafe_findings(
-    file: &ParsedFile,
-    function: &crate::analysis::ParsedFunction,
-) -> Vec<Finding> {
+fn unsafe_findings(file: &ParsedFile, function: &crate::analysis::ParsedFunction) -> Vec<Finding> {
     function
         .unsafe_lines
         .iter()
@@ -365,7 +359,8 @@ fn rust_call_findings(
     let Some(package_name) = &file.package_name else {
         return Vec::new();
     };
-    let Some(current_package) = index.package_for_file(Language::Rust, &file.path, package_name) else {
+    let Some(current_package) = index.package_for_file(Language::Rust, &file.path, package_name)
+    else {
         return Vec::new();
     };
 
@@ -375,7 +370,11 @@ fn rust_call_findings(
         if call.receiver.is_some() || call.name.ends_with('!') {
             continue;
         }
-        if function.local_binding_names.iter().any(|name| name == &call.name) {
+        if function
+            .local_binding_names
+            .iter()
+            .any(|name| name == &call.name)
+        {
             continue;
         }
 
@@ -467,7 +466,9 @@ fn is_rust_local_sym(name: &str) -> bool {
     };
 
     (first.is_ascii_lowercase() || first == '_')
-        && characters.all(|character| character.is_ascii_lowercase() || character.is_ascii_digit() || character == '_')
+        && characters.all(|character| {
+            character.is_ascii_lowercase() || character.is_ascii_digit() || character == '_'
+        })
 }
 
 fn rust_mod_for_receiver(
@@ -505,6 +506,6 @@ fn is_rust_import(import_path: &str) -> bool {
 fn alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, ImportSpec> {
     imports
         .iter()
-    .map(|import| (import.alias.clone(), import.clone()))
+        .map(|import| (import.alias.clone(), import.clone()))
         .collect()
 }
