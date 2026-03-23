@@ -16,6 +16,7 @@ pub(crate) struct ParsedFile {
     pub functions: Vec<ParsedFunction>,
     pub imports: Vec<ImportSpec>,
     pub symbols: Vec<DeclaredSymbol>,
+    pub class_summaries: Vec<ClassSummary>,
 }
 
 #[derive(Debug, Clone)]
@@ -47,6 +48,21 @@ pub(crate) struct ParsedFunction {
     pub concat_loops: Vec<usize>,
     pub json_loops: Vec<usize>,
     pub db_query_calls: Vec<DbQueryCall>,
+    pub none_comparison_lines: Vec<usize>,
+    pub side_effect_comprehension_lines: Vec<usize>,
+    pub redundant_return_none_lines: Vec<usize>,
+    pub list_materialization_lines: Vec<usize>,
+    pub deque_operation_lines: Vec<usize>,
+    pub has_varargs: bool,
+    pub has_kwargs: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct ClassSummary {
+    pub name: String,
+    pub line: usize,
+    pub method_count: usize,
+    pub instance_attribute_count: usize,
 }
 
 #[derive(Debug, Clone)]

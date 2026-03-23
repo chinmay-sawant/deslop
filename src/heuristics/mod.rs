@@ -28,7 +28,7 @@ use self::performance::{
     alloc_findings, concat_findings, db_findings, fmt_findings, json_findings, load_findings,
     reflect_findings,
 };
-use self::python::python_findings;
+use self::python::{python_file_findings, python_findings};
 use self::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};
 use self::test_quality::test_findings;
 
@@ -94,7 +94,7 @@ pub(crate) fn evaluate_go_repo(files: &[&ParsedFile], _index: &RepositoryIndex) 
 }
 
 pub(crate) fn evaluate_python_file(file: &ParsedFile, _index: &RepositoryIndex) -> Vec<Finding> {
-    let mut findings = Vec::new();
+    let mut findings = python_file_findings(file);
 
     for function in &file.functions {
         findings.extend(python_findings(file, function));

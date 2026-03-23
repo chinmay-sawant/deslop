@@ -1,0 +1,42 @@
+from collections import deque
+from pathlib import Path
+
+FIRST_MESSAGE = "alpha payload"
+SECOND_MESSAGE = "beta payload"
+
+
+def normalize_items(items):
+    if items is None:
+        return []
+
+    queue = deque(items)
+    ordered_items = []
+    while queue:
+        ordered_items.append(queue.popleft())
+    return ordered_items
+
+
+def first_item(items):
+    iterator = iter(items)
+    return next(iterator, None)
+
+
+def render_summary(items):
+    values = []
+    for item in items:
+        values.append(item.upper())
+    return ", ".join(values)
+
+
+class PayloadManager:
+    def __init__(self):
+        self.cache = {}
+        self.client = object()
+
+    def load_payload(self):
+        return self.cache
+
+
+def build_summary():
+    message_path = Path("config") / "settings.json"
+    return message_path.name

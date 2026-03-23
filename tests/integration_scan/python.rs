@@ -269,3 +269,81 @@ fn test_python_test_rule_suppressions() {
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn test_python_phase4_rules() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/__init__.py",
+        python_fixture!("phase4_positive.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "none_comparison",
+        "side_effect_comprehension",
+        "redundant_return_none",
+        "hardcoded_path_string",
+        "variadic_public_api",
+        "textbook_docstring_small_helper",
+        "mixed_naming_conventions",
+        "god_function",
+        "monolithic_init_module",
+        "too_many_instance_attributes",
+        "list_materialization_first_element",
+        "deque_candidate_queue",
+        "repeated_string_literal",
+    ] {
+        assert!(
+            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            "expected rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase4_suppressions() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/__init__.py",
+        python_fixture!("phase4_negative.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "none_comparison",
+        "side_effect_comprehension",
+        "redundant_return_none",
+        "hardcoded_path_string",
+        "variadic_public_api",
+        "textbook_docstring_small_helper",
+        "mixed_naming_conventions",
+        "god_function",
+        "monolithic_init_module",
+        "too_many_instance_attributes",
+        "list_materialization_first_element",
+        "deque_candidate_queue",
+        "repeated_string_literal",
+    ] {
+        assert!(
+            !report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            "did not expect rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

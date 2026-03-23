@@ -64,6 +64,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         functions,
         imports,
         symbols,
+        class_summaries: Vec::new(),
     })
 }
 
@@ -176,5 +177,12 @@ fn parse_function_node(
         concat_loops: string_concat_in_loop_lines,
         json_loops: json_marshal_in_loop_lines,
         db_query_calls,
+        none_comparison_lines: Vec::new(),
+        side_effect_comprehension_lines: Vec::new(),
+        redundant_return_none_lines: Vec::new(),
+        list_materialization_lines: Vec::new(),
+        deque_operation_lines: Vec::new(),
+        has_varargs: false,
+        has_kwargs: false,
     })
 }

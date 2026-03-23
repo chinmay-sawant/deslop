@@ -127,3 +127,54 @@ def recover_config():
     assert_eq!(recover_config.exception_handlers.len(), 1);
     assert!(!recover_config.exception_handlers[0].is_broad);
 }
+
+#[test]
+fn test_python_phase4_parser_evidence() {
+    let source = r#"
+def process_items(items, *args, **kwargs):
+    if items == None:
+        return None
+
+    [emit(item) for item in items]
+    first = list(items)[0]
+    queue = [first]
+    queue.pop(0)
+    return first
+
+class PayloadManager:
+    def __init__(self):
+        self.alpha = 1
+        self.beta = 2
+        self.gamma = 3
+        self.delta = 4
+        self.epsilon = 5
+        self.zeta = 6
+        self.eta = 7
+        self.theta = 8
+        self.iota = 9
+        self.kappa = 10
+
+    def render(self):
+        return self.alpha
+
+    def persist(self):
+        return self.beta
+"#;
+
+    let parsed =
+        parse_file(Path::new("pkg/service.py"), source).expect("python parsing should succeed");
+
+    let process_items = &parsed.functions[0];
+    assert_eq!(process_items.none_comparison_lines, vec![3]);
+    assert_eq!(process_items.redundant_return_none_lines, vec![4]);
+    assert_eq!(process_items.side_effect_comprehension_lines, vec![6]);
+    assert_eq!(process_items.list_materialization_lines, vec![7]);
+    assert_eq!(process_items.deque_operation_lines, vec![9]);
+    assert!(process_items.has_varargs);
+    assert!(process_items.has_kwargs);
+
+    assert_eq!(parsed.class_summaries.len(), 1);
+    assert_eq!(parsed.class_summaries[0].name, "PayloadManager");
+    assert_eq!(parsed.class_summaries[0].method_count, 3);
+    assert_eq!(parsed.class_summaries[0].instance_attribute_count, 10);
+}

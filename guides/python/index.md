@@ -35,6 +35,22 @@ The current shipped Python rule pack is intentionally small and syntactic:
 
 Python also reuses existing shared heuristics where the parser evidence supports them, including comment-style findings, hardcoded secret detection, and some naming and test-quality signals.
 
+Phase 4 expanded the shipped Python baseline with additional maintainability, performance, structure, AI-style, and duplication-style rules:
+
+- `none_comparison`
+- `side_effect_comprehension`
+- `redundant_return_none`
+- `hardcoded_path_string`
+- `variadic_public_api`
+- `list_materialization_first_element`
+- `deque_candidate_queue`
+- `god_function`
+- `monolithic_init_module`
+- `too_many_instance_attributes`
+- `textbook_docstring_small_helper`
+- `mixed_naming_conventions`
+- `repeated_string_literal`
+
 ## Why This Roadmap Uses 4 Phases
 
 Rust support needed a separate scaffold phase before parser enrichment. Python can move a little faster because the repository already has Python placeholder directories and the shared analysis model has already been generalized enough to host another language.
@@ -142,7 +158,7 @@ Checkpoints must describe observable implementation outcomes, not vague intentio
 - [Phase 1](phase-1.md): implemented
 - [Phase 2](phase-2.md): implemented for the first Python rule pack
 - [Phase 3](phase-3.md): implemented for the current rollout baseline
-- [Phase 4](phase-4.md): planned, not implemented
+- [Phase 4](phase-4.md): implemented for the current advanced Python baseline
 
 ## Rollout Artifacts
 

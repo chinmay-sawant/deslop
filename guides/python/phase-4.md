@@ -13,6 +13,26 @@ The goal of this phase is not to promise that every item from the attached notes
 
 This phase should treat the user-supplied backlog as a rule-family roadmap, not as permission to add noisy detectors quickly.
 
+## Current Implementation Snapshot
+
+The current Phase 4 baseline is now implemented for a conservative subset of the backlog. The shipped additions are:
+
+- `none_comparison`
+- `side_effect_comprehension`
+- `redundant_return_none`
+- `hardcoded_path_string`
+- `variadic_public_api`
+- `list_materialization_first_element`
+- `deque_candidate_queue`
+- `god_function`
+- `monolithic_init_module`
+- `too_many_instance_attributes`
+- `textbook_docstring_small_helper`
+- `mixed_naming_conventions`
+- `repeated_string_literal`
+
+The backlog items that still remain deferred are the ones that need stronger repository-level evidence, framework awareness, or a tighter false-positive policy.
+
 ## In Scope
 
 - Expanding the Python roadmap to explicitly cover the missing backlog from `python.md`
@@ -273,10 +293,10 @@ This section maps the user-provided Python backlog to current roadmap status.
 - repeatedly calling `len()` inside a tight loop: Phase 4 target with unchanged-receiver evidence only
 - overusing global variables as a performance claim: deferred as a pure performance rule; may be reconsidered later as a design smell instead
 - blocking async code with sync I/O: already shipped in Phases 1 through 3 as `blocking_sync_io_in_async`
-- using `list(...)[0]` instead of `next(iter(...))`: Phase 4 target
+- using `list(...)[0]` instead of `next(iter(...))`: shipped in the current Phase 4 baseline as `list_materialization_first_element`
 - creating temporary lists or dicts inside hot loops: Phase 4 target when the loop-local allocation pattern is obvious
 - using recursion for deep structures: Phase 4 target with conservative shape-based evidence; not as a proof of recursion failure
-- not using `collections.deque` for queue-style operations: Phase 4 target
+- not using `collections.deque` for queue-style operations: shipped in the current Phase 4 baseline for queue-style `pop(0)` and `insert(0, ...)` patterns as `deque_candidate_queue`
 - loading huge datasets into memory instead of streaming: partially shipped already through `full_dataset_load`; further streaming-specific expansion is a Phase 4 target
 - using pandas for tiny data or pure Python for huge data: intentional non-goal for static analysis without workload evidence
 - recomputing the same value repeatedly instead of caching: deferred pending stronger local data-flow evidence
@@ -285,11 +305,11 @@ This section maps the user-provided Python backlog to current roadmap status.
 
 ### Architectural And Design Smells
 
-- god classes or functions: Phase 4 target
-- classes with 20 or more instance variables: Phase 4 target
+- god classes or functions: partially shipped in the current Phase 4 baseline as `god_function`; broader god-class coverage remains deferred
+- classes with 20 or more instance variables: partially shipped in the current Phase 4 baseline as `too_many_instance_attributes`
 - using classes where a simple function or dataclass would suffice: Phase 4 target under the over-abstraction family
 - deep inheritance hierarchies: Phase 4 target with repository-local base-chain evidence
-- monolithic `__init__.py` files or single huge modules: Phase 4 target
+- monolithic `__init__.py` files or single huge modules: partially shipped in the current Phase 4 baseline as `monolithic_init_module`
 - hardcoded business logic instead of configuration: Phase 4 target with careful evidence thresholds
 - mixing business logic, HTTP, and DB concerns in one function: Phase 4 target
 - creating unrelated objects inside `__init__`: Phase 4 target
@@ -306,14 +326,14 @@ This section maps the user-provided Python backlog to current roadmap status.
 - copy-paste functions across files: Phase 4 target with repository-level duplicate fingerprints
 - duplicate error-handling blocks repeated many times: Phase 4 target
 - same validation logic across endpoints or services: Phase 4 target
-- repeated string literals or query fragments: Phase 4 target
+- repeated string literals or query fragments: partially shipped in the current Phase 4 baseline as `repeated_string_literal`; query-fragment duplication remains deferred
 - duplicate data-transformation pipelines: Phase 4 target, likely after repository-level duplicate-block summaries exist
 - same utility logic in tests and production code: Phase 4 target
 
 ### AI-Generated-Code Smells
 
 - overly descriptive variable names: deferred because this is too taste-driven without a stronger evidence policy
-- tiny functions with Wikipedia-style docstrings: Phase 4 target
+- tiny functions with Wikipedia-style docstrings: shipped in the current Phase 4 baseline as `textbook_docstring_small_helper`
 - imports from unrelated ecosystems when only one small capability is used: Phase 4 target
 - over-commenting the obvious: Phase 4 target
 - perfectly balanced tiny functions that should be merged: intentional non-goal unless a future structural proxy proves low-noise enough
@@ -321,7 +341,7 @@ This section maps the user-provided Python backlog to current roadmap status.
 - emojis or overly enthusiastic comments: Phase 4 target
 - structurally flawless code that lacks real-world context such as logging, retries, or environment handling: deferred because absence-of-context is too subjective without framework-aware evidence
 - toy-problem solutions that assume perfect input: deferred because robustness expectations vary by project and layer
-- inconsistent naming in the same file: Phase 4 target
+- inconsistent naming in the same file: shipped in the current Phase 4 baseline as `mixed_naming_conventions`
 - unexplained magic numbers like `17` or `2.718`: Phase 4 target
 - classes for what should be two lines of code: Phase 4 target under over-abstraction
 - variable names that are just slightly off: intentional non-goal without a measurable policy
@@ -329,16 +349,16 @@ This section maps the user-provided Python backlog to current roadmap status.
 
 ### Maintainability And Readability
 
-- using `== None` instead of `is None`: Phase 4 target
+- using `== None` instead of `is None`: shipped in the current Phase 4 baseline as `none_comparison`
 - writing loops instead of clear built-ins such as `any`, `all`, `sum`, or `max`: Phase 4 target
-- unnecessary list comprehensions for side effects: Phase 4 target
-- returning `None` explicitly in every function: Phase 4 target
+- unnecessary list comprehensions for side effects: shipped in the current Phase 4 baseline as `side_effect_comprehension`
+- returning `None` explicitly in every function: partially shipped in the current Phase 4 baseline as `redundant_return_none`
 - using `eval()` or `exec()`: already shipped in Phases 1 through 3 as `eval_exec_usage`
-- hardcoding file paths instead of using `pathlib` plus configuration: Phase 4 target
+- hardcoding file paths instead of using `pathlib` plus configuration: shipped in the current Phase 4 baseline as `hardcoded_path_string`
 - ignoring virtual environments and `pyproject.toml`: deferred as a repository-convention check rather than a per-file code smell
 - print debugging in production code: already shipped in Phases 1 through 3 as `print_debugging_leftover`
 - no type hints on public APIs: Phase 4 target only with configurable or clearly documented thresholds
-- overusing `**kwargs` and `*args` to avoid interface design: Phase 4 target
+- overusing `**kwargs` and `*args` to avoid interface design: shipped in the current Phase 4 baseline as `variadic_public_api`
 - commenting out dead code instead of deleting it: Phase 4 target
 - huge `try`/`except Exception:` blocks with `pass`: partially shipped already through `exception_swallowed`; broader obscuring-exception coverage is a Phase 4 target
 - not using context managers for files, locks, or DB connections: Phase 4 target

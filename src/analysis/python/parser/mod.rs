@@ -1,5 +1,6 @@
 mod comments;
 mod general;
+mod phase4;
 mod performance;
 #[cfg(test)]
 mod tests;
@@ -12,8 +13,8 @@ use tree_sitter::Parser;
 use crate::analysis::{Language, ParsedFile};
 
 use self::general::{
-    collect_functions, collect_imports, collect_pkg_strings, collect_symbols, is_test_file,
-    module_name_for_path,
+    collect_class_summaries, collect_functions, collect_imports, collect_pkg_strings,
+    collect_symbols, is_test_file, module_name_for_path,
 };
 
 pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
@@ -33,6 +34,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
     let package_string_literals = collect_pkg_strings(root, source);
     let functions = collect_functions(root, source, is_test_file);
     let symbols = collect_symbols(root, source, &functions);
+    let class_summaries = collect_class_summaries(root, source);
 
     Ok(ParsedFile {
         language: Language::Python,
@@ -46,5 +48,6 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         functions,
         imports,
         symbols,
+        class_summaries,
     })
 }

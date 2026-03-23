@@ -420,6 +420,13 @@ mod tests {
                     concat_loops: Vec::new(),
                     json_loops: Vec::new(),
                     db_query_calls: Vec::new(),
+                    none_comparison_lines: Vec::new(),
+                    side_effect_comprehension_lines: Vec::new(),
+                    redundant_return_none_lines: Vec::new(),
+                    list_materialization_lines: Vec::new(),
+                    deque_operation_lines: Vec::new(),
+                    has_varargs: false,
+                    has_kwargs: false,
                 })
                 .collect(),
             imports: Vec::new(),
@@ -433,6 +440,7 @@ mod tests {
                     line: 1,
                 })
                 .collect(),
+            class_summaries: Vec::new(),
         }
     }
 

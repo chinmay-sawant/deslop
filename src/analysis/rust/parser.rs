@@ -38,6 +38,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         functions,
         imports,
         symbols,
+        class_summaries: Vec::new(),
     })
 }
 
@@ -370,6 +371,13 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         concat_loops: Vec::new(),
         json_loops: Vec::new(),
         db_query_calls: Vec::new(),
+        none_comparison_lines: Vec::new(),
+        side_effect_comprehension_lines: Vec::new(),
+        redundant_return_none_lines: Vec::new(),
+        list_materialization_lines: Vec::new(),
+        deque_operation_lines: Vec::new(),
+        has_varargs: false,
+        has_kwargs: false,
     })
 }
 

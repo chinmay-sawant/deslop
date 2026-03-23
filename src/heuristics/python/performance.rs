@@ -125,6 +125,59 @@ pub(super) fn full_dataset_load_findings(
         .collect()
 }
 
+pub(super) fn list_materialization_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    function
+        .list_materialization_lines
+        .iter()
+        .map(|line| Finding {
+            rule_id: "list_materialization_first_element".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} materializes a list just to read the first element",
+                function.fingerprint.name
+            ),
+            evidence: vec!["prefer next(iter(...)) when only the first item is needed"
+                .to_string()],
+        })
+        .collect()
+}
+
+pub(super) fn deque_candidate_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    function
+        .deque_operation_lines
+        .iter()
+        .map(|line| Finding {
+            rule_id: "deque_candidate_queue".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} performs queue-style list operations that may want collections.deque",
+                function.fingerprint.name
+            ),
+            evidence: vec!["list pop(0) and insert(0, ...) can create avoidable shifting work"
+                .to_string()],
+        })
+        .collect()
+}
+
 fn blocking_sync_io_evidence(
     call: &CallSite,
     alias_lookup: &BTreeMap<String, String>,

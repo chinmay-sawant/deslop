@@ -72,6 +72,19 @@ deslop is a static analyzer for Go, Python, and Rust repositories that looks for
 - `exception_swallowed`: broad exception handlers such as `except:` or `except Exception:` that immediately suppress the error with `pass`, `continue`, `break`, or `return`.
 - `eval_exec_usage`: direct `eval()` or `exec()` usage in non-test Python code.
 - `print_debugging_leftover`: `print()` calls left in non-test Python functions when they do not look like obvious `main`-entrypoint output.
+- `none_comparison`: `== None` or `!= None` checks instead of `is None` or `is not None`.
+- `side_effect_comprehension`: list, set, or dict comprehensions used as standalone statements where the result is discarded.
+- `redundant_return_none`: explicit `return None` in simple code paths where Python would already return `None` implicitly.
+- `hardcoded_path_string`: hardcoded filesystem path literals assigned inside non-test Python functions.
+- `variadic_public_api`: public Python functions that expose `*args` or `**kwargs` instead of a clearer interface.
+- `list_materialization_first_element`: `list(...)[0]` style access that materializes a whole list just to read the first element.
+- `deque_candidate_queue`: queue-style list operations such as `pop(0)` or `insert(0, ...)` that may want `collections.deque`.
+- `god_function`: very large Python functions with high control-flow and call-surface concentration.
+- `monolithic_init_module`: `__init__.py` files that carry enough imports and behavior to look like monolithic modules.
+- `too_many_instance_attributes`: classes that assign an unusually large number of instance attributes across their methods.
+- `textbook_docstring_small_helper`: tiny helpers with long, textbook-style docstrings that restate obvious behavior.
+- `mixed_naming_conventions`: Python files that mix snake_case and camelCase function naming conventions.
+- `repeated_string_literal`: repeated long string literals in one file that likely want a shared constant.
 
 Python also reuses shared signals when the parser evidence supports them, including `hardcoded_secret`, comment-style findings based on docstrings, `full_dataset_load`, `string_concat_in_loop`, and conservative test-quality findings.
 
@@ -156,7 +169,7 @@ For Rust, `hallucinated_local_call` now also covers direct same-module calls whe
 - Phase 2 heuristic additions: broader `missing_context`, `missing_cancel_call`, `sleep_polling`, `busy_waiting`, `repeated_json_marshaling`, `string_concat_in_loop`, `goroutine_spawn_in_loop`, `goroutine_without_shutdown_path`, `mutex_in_loop`, `blocking_call_while_locked`, `allocation_churn_in_loop`, `fmt_hot_path`, `reflection_hot_path`, `full_dataset_load`, `n_plus_one_query`, `wide_select_query`, `likely_unindexed_query`, and the first conservative goroutine-coordination pass.
 - Phase 3 heuristic additions: `hardcoded_secret`, `sql_string_concat`, `mixed_receiver_kinds`, `malformed_struct_tag`, `duplicate_struct_tag_key`, `test_without_assertion_signal`, `happy_path_only_test`, and `placeholder_test_body`.
 - Python backend additions so far: `.py` routing, Python parser coverage for imports, symbols, call sites, docstrings, test classification, loop concatenation, and conservative exception-handler evidence.
-- Python heuristic additions so far: `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, Python reuse of `full_dataset_load`, and Python reuse of `string_concat_in_loop`.
+- Python heuristic additions so far: `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, `none_comparison`, `side_effect_comprehension`, `redundant_return_none`, `hardcoded_path_string`, `variadic_public_api`, `list_materialization_first_element`, `deque_candidate_queue`, `god_function`, `monolithic_init_module`, `too_many_instance_attributes`, `textbook_docstring_small_helper`, `mixed_naming_conventions`, `repeated_string_literal`, Python reuse of `full_dataset_load`, and Python reuse of `string_concat_in_loop`.
 - Rust heuristic additions so far: `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, and Rust-local `hallucinated_import_call` coverage for `crate::`, `self::`, and `super::` module imports.
 
 ### Still pending
@@ -164,5 +177,5 @@ For Rust, `hallucinated_local_call` now also covers direct same-module calls whe
 - Stronger repo-wide style checks.
 - Deeper goroutine lifetime analysis beyond local shutdown-path heuristics.
 - Better context propagation through wrappers and helper functions.
-- Python local-module hallucination checks and stronger asyncio-specific reasoning.
+- Python local-module hallucination checks, stronger asyncio-specific reasoning, and repository-scale duplication or coupling analysis beyond the current file-local Python baseline.
 - Optional deeper semantic analysis for harder cases such as true index awareness, struct layout analysis, and O(n²) detection.

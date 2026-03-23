@@ -4,12 +4,18 @@ use std::path::Path;
 use tree_sitter::Node;
 
 use crate::analysis::{
-    CallSite, DeclaredSymbol, ExceptionHandler, ImportSpec, NamedLiteral, ParsedFunction,
-    TestFunctionSummary,
+    CallSite, ClassSummary, DeclaredSymbol, ExceptionHandler, ImportSpec, NamedLiteral,
+    ParsedFunction, TestFunctionSummary,
 };
 use crate::model::{FunctionFingerprint, SymbolKind};
 
 use super::comments::{extract_docstring, parse_string_literal_text};
+use super::phase4::{
+    collect_class_summaries as collect_phase4_class_summaries, collect_deque_operation_lines,
+    collect_list_materialization_lines, collect_none_comparison_lines,
+    collect_redundant_return_none_lines, collect_side_effect_comprehension_lines,
+    parameter_flags,
+};
 use super::performance::collect_concat_loops;
 
 pub(super) fn is_test_file(path: &Path) -> bool {
@@ -91,6 +97,10 @@ pub(super) fn collect_symbols(
     visit_class_symbols(root, source, &mut symbols);
     symbols.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
     symbols
+}
+
+pub(super) fn collect_class_summaries(root: Node<'_>, source: &str) -> Vec<ClassSummary> {
+    collect_phase4_class_summaries(root, source)
 }
 
 pub(super) fn collect_calls(body_node: Node<'_>, source: &str) -> Vec<CallSite> {
@@ -317,6 +327,12 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     let local_binding_names = collect_local_bindings(node, source);
     let doc_comment = extract_docstring(body_node, source);
     let test_summary = build_test_summary(&name, body_node, source, is_test_file);
+    let none_comparison_lines = collect_none_comparison_lines(body_node, source);
+    let side_effect_comprehension_lines = collect_side_effect_comprehension_lines(body_node);
+    let redundant_return_none_lines = collect_redundant_return_none_lines(body_node, source);
+    let list_materialization_lines = collect_list_materialization_lines(body_node, source);
+    let deque_operation_lines = collect_deque_operation_lines(body_node, source);
+    let (has_varargs, has_kwargs) = parameter_flags(node, source);
     let is_test_function = test_summary.is_some()
         || (is_test_file
             && name.starts_with("test_")
@@ -361,6 +377,13 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         concat_loops: collect_concat_loops(body_node, source),
         json_loops: Vec::new(),
         db_query_calls: Vec::new(),
+        none_comparison_lines,
+        side_effect_comprehension_lines,
+        redundant_return_none_lines,
+        list_materialization_lines,
+        deque_operation_lines,
+        has_varargs,
+        has_kwargs,
     })
 }
 
