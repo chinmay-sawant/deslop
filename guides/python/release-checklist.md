@@ -31,4 +31,4 @@ This checklist is the concrete rollout artifact for deslop's first Python backen
 - Update `README.md` when the observable Python feature set changes.
 - Update `guides/features-and-detections.md` when new Python rule IDs become user-visible.
 - Update `guides/implementation-guide.md` when Python parser or heuristic routing changes materially.
-- Update `guides/python/index.md`, `guides/python/phase-2.md`, and `guides/python/phase-3.md` when rollout status or backlog changes.
+- Update `guides/python/index.md`, `guides/python/heuristics-first-rule-pack.md`, and `guides/python/rollout-hardening-and-verification.md` when rollout status or backlog changes.

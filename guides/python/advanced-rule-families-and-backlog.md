@@ -395,7 +395,7 @@ This section maps the user-provided Python backlog to current roadmap status.
 
 This section tightens the deferred entries above into explicit follow-up checkpoints. The goal is not to silently broaden Phase 4 scope after the fact. The goal is to make the remaining backlog actionable enough that later work can promote or reject items deliberately instead of reopening the entire backlog from scratch.
 
-The detailed follow-on execution contract for these checkpoints lives in `profiling-sensitive-and-deferred-gap-closure.md`. This Phase 4 section remains the authoritative status map for what is already shipped, what is partial, and what is still deferred.
+The detailed follow-on execution contract for these checkpoints lives in [Phase 5](profiling-sensitive-and-deferred-gap-closure.md). This Phase 4 section remains the authoritative status map for what is already shipped, what is partial, and what is still deferred.
 
 ### Profiling-Sensitive Performance Follow-Ups
 

@@ -26,7 +26,7 @@ This checklist is the concrete Phase 4 release artifact for deslop's Rust backen
 - Update `README.md` when the observable Rust feature set changes.
 - Update `guides/features-and-detections.md` when new Rust rule IDs become user-visible.
 - Update `guides/implementation-guide.md` when Rust parser or index behavior changes materially.
-- Update `guides/rust/phase-4.md` when rollout criteria or benchmark conventions change.
+- Update `guides/rust/verification-performance-and-rollout.md` when rollout criteria or benchmark conventions change.
 
 ## Benchmark Note Requirements
 

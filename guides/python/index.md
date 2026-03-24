@@ -139,7 +139,9 @@ The roadmap intentionally separates them into three buckets:
 - deep architectural judgments that need data flow or repository-wide semantic understanding
 - "looks AI-generated" rules that cannot be defined with a low-noise evidence policy
 
-Some of the attached ideas have now grown large enough to warrant a dedicated follow-on phase instead of living only as backlog bullets. That work is defined in [Phase 4](phase-4.md).
+Some of the attached ideas grew into a dedicated advanced backlog contract instead of living only as loose bullets. That baseline is defined in [Phase 4](advanced-rule-families-and-backlog.md).
+
+The remaining items that are still partial, profiling-sensitive, or intentionally deferred now also have a more explicit follow-on implementation contract in [Phase 5](profiling-sensitive-and-deferred-gap-closure.md). Phase 4 keeps the status map and future-work checkpoints; Phase 5 turns the still-open backlog into a concrete next-stage execution plan.
 
 The roadmap should not pretend that static analysis can prove runtime performance claims that the attached notes explicitly describe as profile-driven.
 
@@ -171,17 +173,19 @@ Checkpoints must describe observable implementation outcomes, not vague intentio
 
 ## Phase Order
 
-1. [Phase 1](phase-1.md): Python backend, parser, and evidence contract
-2. [Phase 2](phase-2.md): Python heuristics and first rule pack
-3. [Phase 3](phase-3.md): verification, mixed-language hardening, and rollout
-4. [Phase 4](phase-4.md): advanced Python rule families and backlog expansion
+1. [Phase 1](backend-parser-evidence-contract.md): Python backend, parser, and evidence contract
+2. [Phase 2](heuristics-first-rule-pack.md): Python heuristics and first rule pack
+3. [Phase 3](rollout-hardening-and-verification.md): verification, mixed-language hardening, and rollout
+4. [Phase 4](advanced-rule-families-and-backlog.md): advanced Python rule families and backlog expansion
+5. [Phase 5](profiling-sensitive-and-deferred-gap-closure.md): profiling-sensitive follow-up and deferred gap closure
 
 ## Current Completion State
 
-- [Phase 1](phase-1.md): implemented
-- [Phase 2](phase-2.md): implemented for the first Python rule pack
-- [Phase 3](phase-3.md): implemented for the current rollout baseline
-- [Phase 4](phase-4.md): implemented for the current advanced Python baseline
+- [Phase 1](backend-parser-evidence-contract.md): implemented
+- [Phase 2](heuristics-first-rule-pack.md): implemented for the first Python rule pack
+- [Phase 3](rollout-hardening-and-verification.md): implemented for the current rollout baseline
+- [Phase 4](advanced-rule-families-and-backlog.md): implemented for the current advanced Python baseline
+- [Phase 5](profiling-sensitive-and-deferred-gap-closure.md): planned follow-on work for partial and deferred Python detections
 
 ## Rollout Artifacts
 
