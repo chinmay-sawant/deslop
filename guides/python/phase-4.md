@@ -13,6 +13,10 @@ The goal of this phase is not to promise that every item from the attached notes
 
 This phase should treat the user-supplied backlog as a rule-family roadmap, not as permission to add noisy detectors quickly.
 
+Checkbox rule for this document:
+
+- [x] A checked box means the backlog item now has a final Phase 4 disposition: shipped, partially shipped with a named rule, or intentionally deferred or non-goal with that status recorded explicitly.
+
 ## Current Implementation Snapshot
 
 The current Phase 4 baseline is now implemented for a conservative subset of the backlog. The shipped additions are:
@@ -24,14 +28,37 @@ The current Phase 4 baseline is now implemented for a conservative subset of the
 - [x] `variadic_public_api`
 - [x] `list_materialization_first_element`
 - [x] `deque_candidate_queue`
+- [x] `temporary_collection_in_loop`
+- [x] `recursive_traversal_risk`
+- [x] `list_membership_in_loop`
+- [x] `repeated_len_in_loop`
+- [x] `builtin_reduction_candidate`
+- [x] `broad_exception_handler`
+- [x] `missing_context_manager`
+- [x] `public_api_missing_type_hints`
+- [x] `mixed_sync_async_module`
 - [x] `god_function`
+- [x] `god_class`
 - [x] `monolithic_init_module`
 - [x] `too_many_instance_attributes`
+- [x] `eager_constructor_collaborators`
+- [x] `over_abstracted_wrapper`
+- [x] `mixed_concerns_function`
+- [x] `name_responsibility_mismatch`
+- [x] `deep_inheritance_hierarchy`
+- [x] `tight_module_coupling`
 - [x] `textbook_docstring_small_helper`
 - [x] `mixed_naming_conventions`
+- [x] `unrelated_heavy_import`
+- [x] `obvious_commentary`
+- [x] `enthusiastic_commentary`
 - [x] `repeated_string_literal`
+- [x] `duplicate_error_handler_block`
+- [x] `duplicate_validation_pipeline`
+- [x] `duplicate_test_utility_logic`
+- [x] `cross_file_repeated_literal`
 
-The backlog items that still remain deferred are the ones that need stronger repository-level evidence, framework awareness, or a tighter false-positive policy.
+The backlog items that still remain deferred are now explicitly marked as deferred or non-goals in the resolved checklist below rather than left as open tasks.
 
 ## In Scope
 
@@ -106,25 +133,25 @@ The backlog items that still remain deferred are the ones that need stronger rep
 	Good Phase 4 candidates with conservative evidence policies:
 
 	- [x] using `list(...) [0]` or equivalent eager materialization where `next(iter(...))` would avoid building a list
-	- [ ] repeated temporary list or dict construction inside obvious hot loops
-	- [ ] recursion on clearly deep traversal helpers when the function shape suggests unbounded nesting risk
-	- [ ] using list membership checks inside loops when the looked-up value is stable and the container is obviously list-like
-	- [ ] repeated `len()` calls inside loops only when the receiver is obviously unchanged and the pattern is directly local
+	- [x] repeated temporary list or dict construction inside obvious hot loops
+	- [x] recursion on clearly deep traversal helpers when the function shape suggests unbounded nesting risk
+	- [x] using list membership checks inside loops when the looked-up value is stable and the container is obviously list-like
+	- [x] repeated `len()` calls inside loops only when the receiver is obviously unchanged and the pattern is directly local
 	- [x] not using `collections.deque` for repeated queue-style `pop(0)` or `insert(0, ...)` operations
 
 	Candidates that likely need stronger evidence before shipping:
 
-	- [ ] list-versus-set or dict lookup recommendations when the value flow is unclear
-	- [ ] recomputing the same value repeatedly instead of caching
-	- [ ] temporary-object churn in loops when the loop is not obviously hot
-	- [ ] overusing `try` and `except` in loops where context may matter
+	- [x] list-versus-set or dict lookup recommendations when the value flow is unclear remain deferred
+	- [x] recomputing the same value repeatedly instead of caching remains deferred
+	- [x] temporary-object churn in loops when the loop is not obviously hot is now partially covered by `temporary_collection_in_loop`
+	- [x] overusing `try` and `except` in loops where context may matter remains deferred
 
 	Candidates that should stay deferred or documentation-only because static analysis cannot justify them honestly:
 
-	- [ ] ignoring database indexes in the general case
-	- [ ] N+1 queries without recognizable query-call evidence beyond the current generic data-access rules
-	- [ ] pandas-versus-pure-Python recommendations based on dataset size or workload shape
-	- [ ] overuse of globals as a performance claim rather than a design smell
+	- [x] ignoring database indexes in the general case remains deferred
+	- [x] N+1 queries without recognizable query-call evidence beyond the current generic data-access rules remain deferred
+	- [x] pandas-versus-pure-Python recommendations based on dataset size or workload shape remain a non-goal
+	- [x] overuse of globals as a performance claim rather than a design smell remains deferred
 
 	Evidence rule:
 
@@ -137,17 +164,17 @@ The backlog items that still remain deferred are the ones that need stronger rep
 	Candidate families:
 
 	- [x] god functions based on line span, branching density, local-name churn, call-site fan-out, and mixed responsibility signals in a single function
-	- [ ] god classes based on method count, responsibility breadth, and instance-variable fan-out rather than a single raw threshold
+	- [x] god classes based on method count, responsibility breadth, and instance-variable fan-out rather than a single raw threshold
 	- [x] classes with excessive instance variables using `self.` assignment counts with constructor and method evidence
-	- [ ] deep inheritance hierarchies when base-class chains are locally visible and repository-scoped
+	- [x] deep inheritance hierarchies when base-class chains are locally visible and repository-scoped
 	- [x] monolithic modules including oversized `__init__.py` files, especially when they mix exports, business logic, I/O, and configuration loading
-	- [ ] hardcoded business rules or magic decision tables that should likely be externalized
-	- [ ] mixing concerns such as HTTP, persistence, and business logic in one function when the call and import evidence is locally obvious
-	- [ ] constructors that create unrelated collaborators eagerly inside `__init__`
-	- [ ] misleading names that mask responsibility only when the mismatch is supported by structural evidence rather than taste alone
-	- [ ] over-fetching or overly broad data-return shapes only when the query or serialization evidence is visible locally
-	- [ ] tight coupling between modules if import fan-in and direct constructor usage can be summarized conservatively
-	- [ ] over-abstraction patterns only when there is a low-noise structural signature, not because a design feels "too abstract"
+	- [x] hardcoded business rules or magic decision tables remain deferred behind stronger evidence work
+	- [x] mixing concerns such as HTTP, persistence, and business logic in one function when the call and import evidence is locally obvious
+	- [x] constructors that create unrelated collaborators eagerly inside `__init__`
+	- [x] misleading names that mask responsibility only when the mismatch is supported by structural evidence rather than taste alone are now partially covered by `name_responsibility_mismatch`
+	- [x] over-fetching or overly broad data-return shapes only when the query or serialization evidence is visible locally remain deferred
+	- [x] tight coupling between modules if import fan-in and direct constructor usage can be summarized conservatively
+	- [x] over-abstraction patterns only when there is a low-noise structural signature, not because a design feels "too abstract"
 
 	Threshold rule:
 
@@ -159,16 +186,16 @@ The backlog items that still remain deferred are the ones that need stronger rep
 
 	Recommended initial scope:
 
-	- [ ] repeated error-handling blocks with highly similar AST shapes in the same file
-	- [ ] repeated validation pipelines within the same module or directory
+	- [x] repeated error-handling blocks with highly similar AST shapes in the same file
+	- [x] repeated validation pipelines within the same module or directory
 	- [x] repeated string literals or query fragments above a configurable threshold
-	- [ ] duplicate utility logic split between tests and production code when function fingerprints and token shapes are very close
+	- [x] duplicate utility logic split between tests and production code when function fingerprints and token shapes are very close
 
 	Recommended non-goals for the first duplication pass:
 
-	- [ ] whole-repository clone detection
-	- [ ] semantic equivalence across renamed variables or reordered statements
-	- [ ] cross-language duplication
+	- [x] whole-repository clone detection remains a non-goal
+	- [x] semantic equivalence across renamed variables or reordered statements remains a non-goal
+	- [x] cross-language duplication remains a non-goal
 
 	Implementation guidance:
 
@@ -183,18 +210,18 @@ The backlog items that still remain deferred are the ones that need stronger rep
 	Potential candidates with moderate static signal if kept conservative:
 
 	- [x] inconsistent naming conventions within one file, such as mixed `snake_case` and `camelCase`, when the file is otherwise coherent enough to compare local symbols
-	- [ ] imports from obviously unrelated heavy ecosystems when usage evidence shows most imported modules are unused or irrelevant
-	- [ ] boilerplate try and except wrappers repeated around operations that do not raise the handled class in any visible way
-	- [ ] over-commenting of obvious operations when the comment-style heuristics and statement shape strongly agree
-	- [ ] emojis or highly enthusiastic comments in production code
+	- [x] imports from obviously unrelated heavy ecosystems when usage evidence shows most imported modules are unused or irrelevant
+	- [x] boilerplate try and except wrappers repeated around operations that do not raise the handled class in any visible way are now partially covered by `duplicate_error_handler_block`
+	- [x] over-commenting of obvious operations when the comment-style heuristics and statement shape strongly agree
+	- [x] emojis or highly enthusiastic comments in production code
 	- [x] suspiciously textbook docstrings on tiny helpers when docstrings restate the code without adding domain context
 
 	Candidates that should stay deferred unless a very strong evidence policy is defined:
 
-	- [ ] overly descriptive variable names by taste alone
-	- [ ] perfectly balanced function decomposition as a finding by itself
-	- [ ] "zero personality" or "textbook" structure without a measurable proxy
-	- [ ] variable names that merely feel slightly off
+	- [x] overly descriptive variable names by taste alone remain deferred
+	- [x] perfectly balanced function decomposition as a finding by itself remains a non-goal
+	- [x] "zero personality" or "textbook" structure without a measurable proxy remains a non-goal
+	- [x] variable names that merely feel slightly off remain a non-goal
 
 	Policy rule:
 
@@ -207,20 +234,20 @@ The backlog items that still remain deferred are the ones that need stronger rep
 	Strong static candidates:
 
 	- [x] `== None` and `!= None` comparisons instead of `is None` and `is not None`
-	- [ ] loop-based reductions or searches that should use obvious built-ins such as `any`, `all`, `sum`, `max`, or `min`
+	- [x] loop-based reductions or searches that should use obvious built-ins such as `any`, `all`, `sum`, `max`, or `min`
 	- [x] list comprehensions used only for side effects
 	- [x] explicit `return None` in functions that otherwise just fall through
 	- [x] hardcoded file-system paths where `pathlib` or configuration indirection is more appropriate
-	- [ ] commented-out dead code blocks that look intentionally disabled rather than explanatory comments
-	- [ ] broad `except Exception:` handlers that suppress or obscure failure beyond the currently shipped swallowed-exception rule
-	- [ ] missing context-manager usage for files, locks, or other obviously closable resources when the open/close lifecycle is visible locally
+	- [x] commented-out dead code blocks that look intentionally disabled rather than explanatory comments
+	- [x] broad `except Exception:` handlers that suppress or obscure failure beyond the currently shipped swallowed-exception rule
+	- [x] missing context-manager usage for files, locks, or other obviously closable resources when the open/close lifecycle is visible locally
 	- [x] overuse of `*args` and `**kwargs` on public APIs when signatures become opaque without a strong forwarding reason
-	- [ ] mixed sync and async boundaries inside one module or function family when call and declaration evidence is strong enough
+	- [x] mixed sync and async boundaries inside one module or function family when call and declaration evidence is strong enough
 
 	Candidates that need careful policy work:
 
-	- [ ] public APIs missing type hints, because repository style and Python-version targets vary
-	- [ ] ignoring virtual environments or `pyproject.toml`, because those are repository-level conventions rather than per-file heuristics
+	- [x] public APIs missing type hints, because repository style and Python-version targets vary
+	- [x] ignoring virtual environments or `pyproject.toml`, because those are repository-level conventions rather than per-file heuristics, remains deferred
 
 	Compatibility rule:
 
@@ -232,9 +259,9 @@ The backlog items that still remain deferred are the ones that need stronger rep
 
 	- [x] richer assignment-shape capture for `self.` fields, constructor collaborators, and magic constants
 	- [x] lightweight loop-body summaries for queue operations, temporary allocations, repeated length checks, and side-effect-only comprehensions
-	- [ ] richer call-target normalization for file I/O, HTTP, DB, and cache-like APIs
-	- [ ] class inheritance summaries and local base-resolution when repository-local evidence exists
-	- [ ] comment and docstring summaries that can distinguish explanatory context from restated code
+	- [x] richer call-target normalization for file I/O, HTTP, DB, and cache-like APIs
+	- [x] class inheritance summaries and local base-resolution when repository-local evidence exists
+	- [x] comment and docstring summaries that can distinguish explanatory context from restated code
 	- [x] string-literal aggregation for repeated literal and query-fragment detection
 
 	Shared-model rule:
@@ -248,9 +275,9 @@ The backlog items that still remain deferred are the ones that need stronger rep
 	Likely repository-level needs:
 
 	- [x] file and module summaries for monolithic module detection
-	- [ ] symbol-to-module ownership for tight-coupling heuristics
-	- [ ] normalized duplicate-block fingerprints for duplication rules
-	- [ ] repeated literal and query-fragment frequency counts across a package or repository slice
+	- [x] symbol-to-module ownership for tight-coupling heuristics
+	- [x] normalized duplicate-block fingerprints for duplication rules
+	- [x] repeated literal and query-fragment frequency counts across a package or repository slice
 
 	Boundary rule:
 
@@ -288,81 +315,81 @@ This section maps the user-provided Python backlog to current roadmap status.
 ### Performance And Unoptimized Code
 
 - [x] using `+` for string concatenation in a loop: already shipped in Phases 1 through 3 as `string_concat_in_loop`
-- [ ] looping over a list when a set or dict lookup would be more appropriate: Phase 4 target after modest parser enrichment and conservative local-container evidence
-- [ ] using a list for membership checks instead of a set: Phase 4 target with tight local evidence only
-- [ ] repeatedly calling `len()` inside a tight loop: Phase 4 target with unchanged-receiver evidence only
-- [ ] overusing global variables as a performance claim: deferred as a pure performance rule; may be reconsidered later as a design smell instead
+- [x] looping over a list when a set or dict lookup would be more appropriate remains deferred pending stronger local-container evidence
+- [x] using a list for membership checks instead of a set: shipped in the current Phase 4 baseline as `list_membership_in_loop`
+- [x] repeatedly calling `len()` inside a tight loop: shipped in the current Phase 4 baseline as `repeated_len_in_loop`
+- [x] overusing global variables as a performance claim remains deferred as a pure performance rule; it may be reconsidered later as a design smell instead
 - [x] blocking async code with sync I/O: already shipped in Phases 1 through 3 as `blocking_sync_io_in_async`
 - [x] using `list(...)[0]` instead of `next(iter(...))`: shipped in the current Phase 4 baseline as `list_materialization_first_element`
-- [ ] creating temporary lists or dicts inside hot loops: Phase 4 target when the loop-local allocation pattern is obvious
-- [ ] using recursion for deep structures: Phase 4 target with conservative shape-based evidence; not as a proof of recursion failure
+- [x] creating temporary lists or dicts inside hot loops: shipped in the current Phase 4 baseline as `temporary_collection_in_loop`
+- [x] using recursion for deep structures: shipped in the current Phase 4 baseline as `recursive_traversal_risk`
 - [x] not using `collections.deque` for queue-style operations: shipped in the current Phase 4 baseline for queue-style `pop(0)` and `insert(0, ...)` patterns as `deque_candidate_queue`
 - [x] loading huge datasets into memory instead of streaming: partially shipped already through `full_dataset_load`; further streaming-specific expansion is still pending
-- [ ] using pandas for tiny data or pure Python for huge data: intentional non-goal for static analysis without workload evidence
-- [ ] recomputing the same value repeatedly instead of caching: deferred pending stronger local data-flow evidence
-- [ ] overusing `try` and `except` inside loops: deferred pending a low-noise evidence policy; likely Phase 4 only for narrow repeated-wrapper shapes
-- [ ] ignoring database indexes or writing N+1 queries: N+1-style query work already exists generically in deslop, but Python-specific index-awareness remains deferred and likely framework-specific
+- [x] using pandas for tiny data or pure Python for huge data remains an intentional non-goal for static analysis without workload evidence
+- [x] recomputing the same value repeatedly instead of caching remains deferred pending stronger local data-flow evidence
+- [x] overusing `try` and `except` inside loops remains deferred pending a low-noise evidence policy; Phase 4 only covers narrower repeated-wrapper shapes
+- [x] ignoring database indexes or writing N+1 queries remains deferred; N+1-style query work already exists generically in deslop, but Python-specific index-awareness is still likely framework-specific
 
 ### Architectural And Design Smells
 
-- [x] god classes or functions: partially shipped in the current Phase 4 baseline as `god_function`; broader god-class coverage remains deferred
+- [x] god classes or functions: shipped in the current Phase 4 baseline as `god_function` and `god_class`
 - [x] classes with 20 or more instance variables: partially shipped in the current Phase 4 baseline as `too_many_instance_attributes`
-- [ ] using classes where a simple function or dataclass would suffice: Phase 4 target under the over-abstraction family
-- [ ] deep inheritance hierarchies: Phase 4 target with repository-local base-chain evidence
+- [x] using classes where a simple function or dataclass would suffice: partially shipped in the current Phase 4 baseline under `over_abstracted_wrapper`
+- [x] deep inheritance hierarchies: shipped in the current Phase 4 baseline as `deep_inheritance_hierarchy`
 - [x] monolithic `__init__.py` files or single huge modules: partially shipped in the current Phase 4 baseline as `monolithic_init_module`
-- [ ] hardcoded business logic instead of configuration: Phase 4 target with careful evidence thresholds
-- [ ] mixing business logic, HTTP, and DB concerns in one function: Phase 4 target
-- [ ] creating unrelated objects inside `__init__`: Phase 4 target
-- [ ] misleading names that hide the real responsibility: Phase 4 target only when supported by structural evidence
-- [ ] verb and subject reversal in naming such as `process_user` versus `user.process`: deferred because this is often too style- and codebase-dependent
-- [ ] returning more data than needed: deferred pending stronger call-site and data-shape evidence
-- [ ] tight coupling between modules: Phase 4 target with repository-level summaries
-- [ ] magic numbers or strings without constants or enums: Phase 4 target
-- [ ] reinventing the wheel such as a custom JSON parser instead of established libraries: deferred because library-choice judgment is hard to make honestly with local syntax alone
-- [ ] over-abstraction patterns where a simple map or helper would do: Phase 4 target when the structural signature is clear
+- [x] hardcoded business logic instead of configuration remains deferred behind stronger evidence thresholds
+- [x] mixing business logic, HTTP, and DB concerns in one function: shipped in the current Phase 4 baseline as `mixed_concerns_function`
+- [x] creating unrelated objects inside `__init__`: shipped in the current Phase 4 baseline as `eager_constructor_collaborators`
+- [x] misleading names that hide the real responsibility are partially shipped in the current Phase 4 baseline as `name_responsibility_mismatch`
+- [x] verb and subject reversal in naming such as `process_user` versus `user.process` remains deferred because this is often too style- and codebase-dependent
+- [x] returning more data than needed remains deferred pending stronger call-site and data-shape evidence
+- [x] tight coupling between modules: shipped in the current Phase 4 baseline as `tight_module_coupling`
+- [x] magic numbers or strings without constants or enums remain deferred
+- [x] reinventing the wheel such as a custom JSON parser instead of established libraries remains deferred because library-choice judgment is hard to make honestly with local syntax alone
+- [x] over-abstraction patterns where a simple map or helper would do: shipped in the current Phase 4 baseline as `over_abstracted_wrapper`
 
 ### Code Duplication
 
-- [ ] copy-paste functions across files: Phase 4 target with repository-level duplicate fingerprints
-- [ ] duplicate error-handling blocks repeated many times: Phase 4 target
-- [ ] same validation logic across endpoints or services: Phase 4 target
+- [x] copy-paste functions across files are now partially covered by repository-level duplicate fingerprints and `duplicate_test_utility_logic`
+- [x] duplicate error-handling blocks repeated many times: shipped in the current Phase 4 baseline as `duplicate_error_handler_block`
+- [x] same validation logic across endpoints or services: shipped in the current Phase 4 baseline as `duplicate_validation_pipeline`
 - [x] repeated string literals or query fragments: partially shipped in the current Phase 4 baseline as `repeated_string_literal`; query-fragment duplication remains deferred
-- [ ] duplicate data-transformation pipelines: Phase 4 target, likely after repository-level duplicate-block summaries exist
-- [ ] same utility logic in tests and production code: Phase 4 target
+- [x] duplicate data-transformation pipelines remain partially deferred beyond the current duplicate-block summaries
+- [x] same utility logic in tests and production code: shipped in the current Phase 4 baseline as `duplicate_test_utility_logic`
 
 ### AI-Generated-Code Smells
 
-- [ ] overly descriptive variable names: deferred because this is too taste-driven without a stronger evidence policy
+- [x] overly descriptive variable names remain deferred because this is too taste-driven without a stronger evidence policy
 - [x] tiny functions with Wikipedia-style docstrings: shipped in the current Phase 4 baseline as `textbook_docstring_small_helper`
-- [ ] imports from unrelated ecosystems when only one small capability is used: Phase 4 target
-- [ ] over-commenting the obvious: Phase 4 target
-- [ ] perfectly balanced tiny functions that should be merged: intentional non-goal unless a future structural proxy proves low-noise enough
-- [ ] boilerplate try and except everywhere: Phase 4 target
-- [ ] emojis or overly enthusiastic comments: Phase 4 target
-- [ ] structurally flawless code that lacks real-world context such as logging, retries, or environment handling: deferred because absence-of-context is too subjective without framework-aware evidence
-- [ ] toy-problem solutions that assume perfect input: deferred because robustness expectations vary by project and layer
+- [x] imports from unrelated ecosystems when only one small capability is used: shipped in the current Phase 4 baseline as `unrelated_heavy_import`
+- [x] over-commenting the obvious: shipped in the current Phase 4 baseline as `obvious_commentary`
+- [x] perfectly balanced tiny functions that should be merged remains an intentional non-goal unless a future structural proxy proves low-noise enough
+- [x] boilerplate try and except everywhere is now partially covered by `duplicate_error_handler_block`
+- [x] emojis or overly enthusiastic comments: shipped in the current Phase 4 baseline as `enthusiastic_commentary`
+- [x] structurally flawless code that lacks real-world context such as logging, retries, or environment handling remains deferred because absence-of-context is too subjective without framework-aware evidence
+- [x] toy-problem solutions that assume perfect input remains deferred because robustness expectations vary by project and layer
 - [x] inconsistent naming in the same file: shipped in the current Phase 4 baseline as `mixed_naming_conventions`
-- [ ] unexplained magic numbers like `17` or `2.718`: Phase 4 target
-- [ ] classes for what should be two lines of code: Phase 4 target under over-abstraction
-- [ ] variable names that are just slightly off: intentional non-goal without a measurable policy
-- [ ] feels like textbook code with no personality: intentional non-goal unless it can be reduced to a concrete structural smell
+- [x] unexplained magic numbers like `17` or `2.718` remain deferred
+- [x] classes for what should be two lines of code: partially shipped in the current Phase 4 baseline under `over_abstracted_wrapper`
+- [x] variable names that are just slightly off remains an intentional non-goal without a measurable policy
+- [x] feels like textbook code with no personality remains an intentional non-goal unless it can be reduced to a concrete structural smell
 
 ### Maintainability And Readability
 
 - [x] using `== None` instead of `is None`: shipped in the current Phase 4 baseline as `none_comparison`
-- [ ] writing loops instead of clear built-ins such as `any`, `all`, `sum`, or `max`: Phase 4 target
+- [x] writing loops instead of clear built-ins such as `any`, `all`, `sum`, or `max`: shipped in the current Phase 4 baseline as `builtin_reduction_candidate`
 - [x] unnecessary list comprehensions for side effects: shipped in the current Phase 4 baseline as `side_effect_comprehension`
 - [x] returning `None` explicitly in every function: partially shipped in the current Phase 4 baseline as `redundant_return_none`
 - [x] using `eval()` or `exec()`: already shipped in Phases 1 through 3 as `eval_exec_usage`
 - [x] hardcoding file paths instead of using `pathlib` plus configuration: shipped in the current Phase 4 baseline as `hardcoded_path_string`
-- [ ] ignoring virtual environments and `pyproject.toml`: deferred as a repository-convention check rather than a per-file code smell
+- [x] ignoring virtual environments and `pyproject.toml` remains deferred as a repository-convention check rather than a per-file code smell
 - [x] print debugging in production code: already shipped in Phases 1 through 3 as `print_debugging_leftover`
-- [ ] no type hints on public APIs: Phase 4 target only with configurable or clearly documented thresholds
+- [x] no type hints on public APIs: shipped in the current Phase 4 baseline as `public_api_missing_type_hints`
 - [x] overusing `**kwargs` and `*args` to avoid interface design: shipped in the current Phase 4 baseline as `variadic_public_api`
-- [ ] commenting out dead code instead of deleting it: Phase 4 target
+- [x] commenting out dead code instead of deleting it: shipped in the current Phase 4 baseline as `commented_out_code`
 - [x] huge `try`/`except Exception:` blocks with `pass`: partially shipped already through `exception_swallowed`; broader obscuring-exception coverage is still pending
-- [ ] not using context managers for files, locks, or DB connections: Phase 4 target
-- [ ] mixing sync and async in the same codebase without clear boundaries: Phase 4 target with careful module- and call-shape evidence
+- [x] not using context managers for files, locks, or DB connections: shipped in the current Phase 4 baseline as `missing_context_manager`
+- [x] mixing sync and async in the same codebase without clear boundaries: shipped in the current Phase 4 baseline as `mixed_sync_async_module`
 
 ## Acceptance Criteria
 

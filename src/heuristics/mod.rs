@@ -28,7 +28,7 @@ use self::performance::{
     alloc_findings, concat_findings, db_findings, fmt_findings, json_findings, load_findings,
     reflect_findings,
 };
-use self::python::{python_file_findings, python_findings};
+use self::python::{python_file_findings, python_findings, python_repo_findings};
 use self::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};
 use self::test_quality::test_findings;
 
@@ -101,4 +101,8 @@ pub(crate) fn evaluate_python_file(file: &ParsedFile, _index: &RepositoryIndex) 
     }
 
     findings
+}
+
+pub(crate) fn evaluate_python_repo(files: &[&ParsedFile], index: &RepositoryIndex) -> Vec<Finding> {
+    python_repo_findings(files, index)
 }

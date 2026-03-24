@@ -59,8 +59,11 @@ impl RepositoryIndex {
         let mut candidates = self
             .packages
             .values()
-            .filter(|package| {
-                package.language == language && import_matches_dir(import_path, &package.directory)
+            .filter(|package| match language {
+                Language::Python => {
+                    package.language == language && python_import_matches_module(import_path, package)
+                }
+                _ => package.language == language && import_matches_dir(import_path, &package.directory),
             })
             .collect::<Vec<_>>();
 
@@ -141,6 +144,50 @@ impl RepositoryIndex {
             import_count,
         }
     }
+}
+
+fn python_import_matches_module(import_path: &str, package: &PackageIndex) -> bool {
+    let import_segments = import_path
+        .split('.')
+        .filter(|segment| !segment.is_empty())
+        .collect::<Vec<_>>();
+    if import_segments.is_empty() {
+        return false;
+    }
+
+    let directory_segments = package
+        .directory
+        .components()
+        .map(|component| component.as_os_str().to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+    let full_import_path = import_segments
+        .iter()
+        .map(|segment| (*segment).to_string())
+        .collect::<Vec<_>>();
+
+    for candidate_index in [
+        import_segments.len().saturating_sub(1),
+        import_segments.len().saturating_sub(2),
+    ] {
+        let Some(candidate_name) = import_segments.get(candidate_index).copied() else {
+            continue;
+        };
+        if candidate_name == "*" || candidate_name != package.package_name {
+            continue;
+        }
+
+        let prefix_without_module = import_segments[..candidate_index]
+            .iter()
+            .map(|segment| (*segment).to_string())
+            .collect::<Vec<_>>();
+        if directory_segments.ends_with(&prefix_without_module)
+            || directory_segments.ends_with(&full_import_path)
+        {
+            return true;
+        }
+    }
+
+    false
 }
 
 impl PackageIndex {
@@ -372,6 +419,7 @@ mod tests {
             syntax_error: false,
             byte_size: 10,
             pkg_strings: Vec::new(),
+            comments: Vec::new(),
             struct_tags: Vec::new(),
             functions: function_names
                 .iter()
@@ -401,6 +449,9 @@ mod tests {
                     local_binding_names: Vec::new(),
                     doc_comment: None,
                     local_strings: Vec::new(),
+                    normalized_body: String::new(),
+                    validation_signature: None,
+                    exception_block_signatures: Vec::new(),
                     test_summary: None,
                     safety_comment_lines: Vec::new(),
                     unsafe_lines: Vec::new(),
@@ -425,6 +476,13 @@ mod tests {
                     redundant_return_none_lines: Vec::new(),
                     list_materialization_lines: Vec::new(),
                     deque_operation_lines: Vec::new(),
+                    temp_collection_lines: Vec::new(),
+                    recursive_call_lines: Vec::new(),
+                    list_membership_loop_lines: Vec::new(),
+                    repeated_len_loop_lines: Vec::new(),
+                    builtin_candidate_lines: Vec::new(),
+                    missing_context_manager_lines: Vec::new(),
+                    has_complete_type_hints: false,
                     has_varargs: false,
                     has_kwargs: false,
                 })

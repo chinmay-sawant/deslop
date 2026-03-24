@@ -139,9 +139,29 @@ def process_items(items, *args, **kwargs):
     first = list(items)[0]
     queue = [first]
     queue.pop(0)
+    total = 0
+    blocked = [first]
+    for item in items:
+        scratch = []
+        scratch.append(item)
+        if item in blocked:
+            continue
+        if len(blocked) > 0 and len(blocked) < 3:
+            total += len(item)
     return first
 
-class PayloadManager:
+def scan_tree(node):
+    for child in node.children:
+        scan_tree(child)
+
+def read_config(path):
+    handle = open(path)
+    return handle.read()
+
+class BaseManager:
+    pass
+
+class PayloadManager(BaseManager):
     def __init__(self):
         self.alpha = 1
         self.beta = 2
@@ -153,6 +173,9 @@ class PayloadManager:
         self.theta = 8
         self.iota = 9
         self.kappa = 10
+        self.client = Session()
+        self.cache = CacheClient()
+        self.reporter = Reporter()
 
     def render(self):
         return self.alpha
@@ -170,11 +193,28 @@ class PayloadManager:
     assert_eq!(process_items.side_effect_comprehension_lines, vec![6]);
     assert_eq!(process_items.list_materialization_lines, vec![7]);
     assert_eq!(process_items.deque_operation_lines, vec![9]);
+    assert_eq!(process_items.temp_collection_lines, vec![13]);
+    assert_eq!(process_items.list_membership_loop_lines, vec![15]);
+    assert_eq!(process_items.repeated_len_loop_lines, vec![12]);
+    assert_eq!(process_items.builtin_candidate_lines, vec![12]);
     assert!(process_items.has_varargs);
     assert!(process_items.has_kwargs);
+    assert!(!process_items.has_complete_type_hints);
+    assert!(process_items.validation_signature.is_some());
+    assert!(!process_items.normalized_body.is_empty());
 
-    assert_eq!(parsed.class_summaries.len(), 1);
-    assert_eq!(parsed.class_summaries[0].name, "PayloadManager");
-    assert_eq!(parsed.class_summaries[0].method_count, 3);
-    assert_eq!(parsed.class_summaries[0].instance_attribute_count, 10);
+    let scan_tree = &parsed.functions[1];
+    assert_eq!(scan_tree.recursive_call_lines, vec![23]);
+
+    let read_config = &parsed.functions[2];
+    assert_eq!(read_config.missing_context_manager_lines, vec![26]);
+
+    assert_eq!(parsed.class_summaries.len(), 2);
+    let payload_manager = &parsed.class_summaries[1];
+    assert_eq!(payload_manager.name, "PayloadManager");
+    assert_eq!(payload_manager.method_count, 3);
+    assert_eq!(payload_manager.instance_attribute_count, 13);
+    assert_eq!(payload_manager.public_method_count, 2);
+    assert_eq!(payload_manager.base_classes, vec!["BaseManager"]);
+    assert_eq!(payload_manager.constructor_collaborator_count, 3);
 }

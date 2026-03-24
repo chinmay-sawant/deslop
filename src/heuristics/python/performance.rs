@@ -178,6 +178,118 @@ pub(super) fn deque_candidate_findings(file: &ParsedFile, function: &ParsedFunct
         .collect()
 }
 
+pub(super) fn temp_collection_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    function
+        .temp_collection_lines
+        .iter()
+        .map(|line| Finding {
+            rule_id: "temporary_collection_in_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} allocates a temporary collection inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec!["loop-local list or dict construction can add avoidable allocation churn"
+                .to_string()],
+        })
+        .collect()
+}
+
+pub(super) fn recursive_traversal_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function
+        || function.recursive_call_lines.is_empty()
+        || function.fingerprint.line_count < 12
+    {
+        return Vec::new();
+    }
+
+    function
+        .recursive_call_lines
+        .iter()
+        .map(|line| Finding {
+            rule_id: "recursive_traversal_risk".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} uses direct recursion and may need an iterative traversal for deep inputs",
+                function.fingerprint.name
+            ),
+            evidence: vec![format!(
+                "line_count={} recursive_calls={}",
+                function.fingerprint.line_count,
+                function.recursive_call_lines.len()
+            )],
+        })
+        .collect()
+}
+
+pub(super) fn list_membership_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    function
+        .list_membership_loop_lines
+        .iter()
+        .map(|line| Finding {
+            rule_id: "list_membership_in_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} performs list-style membership checks inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec!["repeated membership checks may want a set when order is irrelevant"
+                .to_string()],
+        })
+        .collect()
+}
+
+pub(super) fn repeated_len_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    function
+        .repeated_len_loop_lines
+        .iter()
+        .map(|line| Finding {
+            rule_id: "repeated_len_in_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} repeats len(...) checks inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec!["cache the length locally when the container is unchanged in the loop"
+                .to_string()],
+        })
+        .collect()
+}
+
 fn blocking_sync_io_evidence(
     call: &CallSite,
     alias_lookup: &BTreeMap<String, String>,

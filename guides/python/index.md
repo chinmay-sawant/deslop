@@ -44,12 +44,35 @@ Phase 4 expanded the shipped Python baseline with additional maintainability, pe
 - `variadic_public_api`
 - `list_materialization_first_element`
 - `deque_candidate_queue`
+- `temporary_collection_in_loop`
+- `recursive_traversal_risk`
+- `list_membership_in_loop`
+- `repeated_len_in_loop`
+- `builtin_reduction_candidate`
+- `broad_exception_handler`
+- `missing_context_manager`
+- `public_api_missing_type_hints`
+- `mixed_sync_async_module`
 - `god_function`
+- `god_class`
 - `monolithic_init_module`
 - `too_many_instance_attributes`
+- `eager_constructor_collaborators`
+- `over_abstracted_wrapper`
+- `mixed_concerns_function`
+- `name_responsibility_mismatch`
+- `deep_inheritance_hierarchy`
+- `tight_module_coupling`
 - `textbook_docstring_small_helper`
 - `mixed_naming_conventions`
+- `unrelated_heavy_import`
+- `obvious_commentary`
+- `enthusiastic_commentary`
 - `repeated_string_literal`
+- `duplicate_error_handler_block`
+- `duplicate_validation_pipeline`
+- `duplicate_test_utility_logic`
+- `cross_file_repeated_literal`
 
 ## Why This Roadmap Uses 4 Phases
 

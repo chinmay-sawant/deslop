@@ -11,10 +11,14 @@ use crate::model::{FunctionFingerprint, SymbolKind};
 
 use super::comments::{extract_docstring, parse_string_literal_text};
 use super::phase4::{
-    collect_class_summaries as collect_phase4_class_summaries, collect_deque_operation_lines,
-    collect_list_materialization_lines, collect_none_comparison_lines,
-    collect_redundant_return_none_lines, collect_side_effect_comprehension_lines,
-    parameter_flags,
+    collect_builtin_candidate_lines, collect_class_summaries as collect_phase4_class_summaries,
+    collect_deque_operation_lines, collect_exception_block_signatures,
+    collect_list_materialization_lines, collect_list_membership_loop_lines,
+    collect_missing_context_manager_lines, collect_none_comparison_lines,
+    collect_recursive_call_lines, collect_redundant_return_none_lines,
+    collect_repeated_len_loop_lines, collect_side_effect_comprehension_lines,
+    collect_temp_collection_lines, collect_validation_signature, has_complete_type_hints,
+    normalize_body, parameter_flags,
 };
 use super::performance::collect_concat_loops;
 
@@ -326,12 +330,22 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     let local_string_literals = collect_local_strings(body_node, source);
     let local_binding_names = collect_local_bindings(node, source);
     let doc_comment = extract_docstring(body_node, source);
+    let normalized_body = normalize_body(body_node, source);
+    let validation_signature = collect_validation_signature(body_node, source);
+    let exception_block_signatures = collect_exception_block_signatures(body_node, source);
     let test_summary = build_test_summary(&name, body_node, source, is_test_file);
     let none_comparison_lines = collect_none_comparison_lines(body_node, source);
     let side_effect_comprehension_lines = collect_side_effect_comprehension_lines(body_node);
     let redundant_return_none_lines = collect_redundant_return_none_lines(body_node, source);
     let list_materialization_lines = collect_list_materialization_lines(body_node, source);
     let deque_operation_lines = collect_deque_operation_lines(body_node, source);
+    let temp_collection_lines = collect_temp_collection_lines(body_node, source);
+    let recursive_call_lines = collect_recursive_call_lines(&name, body_node, source);
+    let list_membership_loop_lines = collect_list_membership_loop_lines(body_node, source);
+    let repeated_len_loop_lines = collect_repeated_len_loop_lines(body_node, source);
+    let builtin_candidate_lines = collect_builtin_candidate_lines(body_node, source);
+    let missing_context_manager_lines = collect_missing_context_manager_lines(body_node, source);
+    let has_complete_type_hints = has_complete_type_hints(node, source);
     let (has_varargs, has_kwargs) = parameter_flags(node, source);
     let is_test_function = test_summary.is_some()
         || (is_test_file
@@ -358,6 +372,9 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         local_binding_names,
         doc_comment,
         local_strings: local_string_literals,
+        normalized_body,
+        validation_signature,
+        exception_block_signatures,
         test_summary,
         safety_comment_lines: Vec::new(),
         unsafe_lines: Vec::new(),
@@ -382,6 +399,13 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         redundant_return_none_lines,
         list_materialization_lines,
         deque_operation_lines,
+        temp_collection_lines,
+        recursive_call_lines,
+        list_membership_loop_lines,
+        repeated_len_loop_lines,
+        builtin_candidate_lines,
+        missing_context_manager_lines,
+        has_complete_type_hints,
         has_varargs,
         has_kwargs,
     })

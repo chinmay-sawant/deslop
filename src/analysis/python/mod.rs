@@ -5,7 +5,7 @@ use std::path::Path;
 use anyhow::Result;
 
 use crate::analysis::{Language, LanguageBackend, ParsedFile};
-use crate::heuristics::evaluate_python_file;
+use crate::heuristics::{evaluate_python_file, evaluate_python_repo};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
@@ -31,5 +31,9 @@ impl LanguageBackend for PythonAnalyzer {
 
     fn evaluate_file(&self, file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
         evaluate_python_file(file, index)
+    }
+
+    fn evaluate_repo(&self, files: &[&ParsedFile], index: &RepositoryIndex) -> Vec<Finding> {
+        evaluate_python_repo(files, index)
     }
 }

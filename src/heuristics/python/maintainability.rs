@@ -222,6 +222,188 @@ pub(super) fn variadic_public_api_findings(
     }]
 }
 
+pub(super) fn builtin_reduction_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    function
+        .builtin_candidate_lines
+        .iter()
+        .map(|line| Finding {
+            rule_id: "builtin_reduction_candidate".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} uses a loop shape that may read better with a Python built-in",
+                function.fingerprint.name
+            ),
+            evidence: vec!["consider any(), all(), or sum() when the loop is only aggregating a result"
+                .to_string()],
+        })
+        .collect()
+}
+
+pub(super) fn broad_exception_handler_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    function
+        .exception_handlers
+        .iter()
+        .filter(|handler| handler.is_broad && !handler.suppresses)
+        .map(|handler| Finding {
+            rule_id: "broad_exception_handler".to_string(),
+            severity: Severity::Warning,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: handler.line,
+            end_line: handler.line,
+            message: format!(
+                "function {} catches a broad exception without narrowing the failure type",
+                function.fingerprint.name
+            ),
+            evidence: vec![format!("handler clause: {}", handler.clause)],
+        })
+        .collect()
+}
+
+pub(super) fn missing_context_manager_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    function
+        .missing_context_manager_lines
+        .iter()
+        .map(|line| Finding {
+            rule_id: "missing_context_manager".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} opens or acquires a resource without an obvious context manager",
+                function.fingerprint.name
+            ),
+            evidence: vec!["prefer with statements for file handles, locks, and similar resources"
+                .to_string()],
+        })
+        .collect()
+}
+
+pub(super) fn public_api_missing_type_hints_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function
+        || function.fingerprint.name.starts_with('_')
+        || function.has_complete_type_hints
+    {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "public_api_missing_type_hints".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: function.fingerprint.start_line,
+        end_line: function.fingerprint.start_line,
+        message: format!(
+            "public function {} omits complete type hints",
+            function.fingerprint.name
+        ),
+        evidence: vec!["the signature is missing parameter or return annotations".to_string()],
+    }]
+}
+
+pub(super) fn commented_out_code_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let suspicious_comments = file
+        .comments
+        .iter()
+        .filter(|comment| looks_like_commented_out_code(&comment.text))
+        .collect::<Vec<_>>();
+    if suspicious_comments.is_empty() {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "commented_out_code".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: suspicious_comments[0].line,
+        end_line: suspicious_comments[0].line,
+        message: "file contains comments that look like disabled code".to_string(),
+        evidence: suspicious_comments
+            .iter()
+            .take(3)
+            .map(|comment| format!("line {}: {}", comment.line, comment.text))
+            .collect(),
+    }]
+}
+
+pub(super) fn mixed_sync_async_module_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file || !file.imports.iter().any(|import| import.path.starts_with("asyncio")) {
+        return Vec::new();
+    }
+
+    let async_public = file
+        .functions
+        .iter()
+        .filter(|function| {
+            function.fingerprint.kind.starts_with("async")
+                && !function.is_test_function
+                && !function.fingerprint.name.starts_with('_')
+        })
+        .count();
+    let sync_public = file
+        .functions
+        .iter()
+        .filter(|function| {
+            !function.fingerprint.kind.starts_with("async")
+                && !function.is_test_function
+                && !function.fingerprint.name.starts_with('_')
+        })
+        .count();
+    if async_public == 0 || sync_public == 0 {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "mixed_sync_async_module".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: file.functions[0].fingerprint.start_line,
+        end_line: file.functions[0].fingerprint.start_line,
+        message: "module mixes public sync and async entry points".to_string(),
+        evidence: vec![
+            format!("async_public_functions={async_public}"),
+            format!("sync_public_functions={sync_public}"),
+        ],
+    }]
+}
+
 fn should_skip_print_rule(file: &ParsedFile, function: &ParsedFunction) -> bool {
     function.fingerprint.name == "main"
         || file
@@ -250,4 +432,19 @@ fn has_path_like_suffix(value: &str) -> bool {
     ]
     .iter()
     .any(|suffix| value.ends_with(suffix))
+}
+
+fn looks_like_commented_out_code(text: &str) -> bool {
+    let normalized = text.trim();
+    normalized.starts_with("if ")
+        || normalized.starts_with("for ")
+        || normalized.starts_with("while ")
+        || normalized.starts_with("return ")
+        || normalized.starts_with("def ")
+        || normalized.starts_with("class ")
+        || normalized.starts_with("try:")
+        || normalized.starts_with("except ")
+        || (normalized.contains('=')
+            && normalized.contains('(')
+            && normalized.chars().any(|character| character.is_ascii_alphabetic()))
 }

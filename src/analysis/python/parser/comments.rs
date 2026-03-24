@@ -1,5 +1,27 @@
 use tree_sitter::Node;
 
+use crate::analysis::CommentSummary;
+
+pub(super) fn collect_comment_summaries(source: &str) -> Vec<CommentSummary> {
+    source
+        .lines()
+        .enumerate()
+        .filter_map(|(index, line)| {
+            let trimmed = line.trim();
+            if trimmed.starts_with("#!") {
+                return None;
+            }
+
+            let comment_start = line.find('#')?;
+            let text = line[comment_start + 1..].trim();
+            (!text.is_empty()).then(|| CommentSummary {
+                line: index + 1,
+                text: text.to_string(),
+            })
+        })
+        .collect()
+}
+
 pub(super) fn extract_docstring(body_node: Node<'_>, source: &str) -> Option<String> {
     let mut cursor = body_node.walk();
     let first_statement = body_node.named_children(&mut cursor).next()?;

@@ -5,7 +5,12 @@ FIRST_MESSAGE = "alpha payload"
 SECOND_MESSAGE = "beta payload"
 
 
-def normalize_items(items):
+async def fetch_payload(client: object, url: str) -> str:
+    response = await client.get(url)
+    return response.text
+
+
+def normalize_items(items: list[str]) -> list[str]:
     if items is None:
         return []
 
@@ -16,27 +21,53 @@ def normalize_items(items):
     return ordered_items
 
 
-def first_item(items):
+def first_item(items: list[str]) -> str | None:
     iterator = iter(items)
     return next(iterator, None)
 
 
-def render_summary(items):
-    values = []
-    for item in items:
-        values.append(item.upper())
-    return ", ".join(values)
+def build_total(items: list[str]) -> int:
+    return sum(len(item) for item in items)
 
 
-class PayloadManager:
-    def __init__(self):
-        self.cache = {}
-        self.client = object()
+def scan_tree(node: object) -> list:
+    queue = deque([node])
+    results = []
+    while queue:
+        current = queue.popleft()
+        results.append(current)
+        for child in current.children:
+            queue.append(child)
+    return results
 
-    def load_payload(self):
+
+def parse_config(path: str) -> str:
+    with open(path) as handle:
+        return handle.read()
+
+
+def load_user(logger: object, path: str) -> str:
+    try:
+        return Path(path).read_text()
+    except FileNotFoundError:
+        logger.warning("missing user file")
+        return "{}"
+
+
+def validate_payload(payload: dict, user_id: str) -> bool:
+    if not payload or not user_id:
+        return False
+    return True
+
+
+def render_summary(items: list[str]) -> str:
+    return ", ".join(item.upper() for item in items)
+
+
+class PayloadService:
+    def __init__(self, cache, client) -> None:
+        self.cache = cache
+        self.client = client
+
+    def load_payload(self) -> dict:
         return self.cache
-
-
-def build_summary():
-    message_path = Path("config") / "settings.json"
-    return message_path.name

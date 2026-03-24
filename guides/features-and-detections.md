@@ -79,12 +79,36 @@ deslop is a static analyzer for Go, Python, and Rust repositories that looks for
 - `variadic_public_api`: public Python functions that expose `*args` or `**kwargs` instead of a clearer interface.
 - `list_materialization_first_element`: `list(...)[0]` style access that materializes a whole list just to read the first element.
 - `deque_candidate_queue`: queue-style list operations such as `pop(0)` or `insert(0, ...)` that may want `collections.deque`.
+- `temporary_collection_in_loop`: loop-local list, dict, or set construction that likely adds avoidable allocation churn.
+- `recursive_traversal_risk`: direct recursion in traversal-style helpers that may be safer or clearer as iterative walks for deep inputs.
+- `list_membership_in_loop`: repeated membership checks against obviously list-like containers inside loops.
+- `repeated_len_in_loop`: repeated `len(...)` checks inside loops when the receiver appears unchanged locally.
+- `builtin_reduction_candidate`: loop shapes that look like obvious `sum`, `any`, or `all` candidates.
 - `god_function`: very large Python functions with high control-flow and call-surface concentration.
+- `god_class`: Python classes that concentrate unusually high method count, public surface area, and mutable instance state.
 - `monolithic_init_module`: `__init__.py` files that carry enough imports and behavior to look like monolithic modules.
 - `too_many_instance_attributes`: classes that assign an unusually large number of instance attributes across their methods.
+- `eager_constructor_collaborators`: constructors that instantiate several collaborators eagerly inside `__init__`.
+- `over_abstracted_wrapper`: tiny wrapper-style classes that add little beyond forwarding behavior.
+- `mixed_concerns_function`: functions that mix HTTP, persistence, and filesystem-style concerns in one body.
+- `name_responsibility_mismatch`: read-style names such as `get_*` or `load_*` that still perform obvious mutating operations.
+- `deep_inheritance_hierarchy`: repository-local Python class chains with unusually deep inheritance depth.
+- `tight_module_coupling`: modules that depend on a large number of repository-local Python modules.
 - `textbook_docstring_small_helper`: tiny helpers with long, textbook-style docstrings that restate obvious behavior.
 - `mixed_naming_conventions`: Python files that mix snake_case and camelCase function naming conventions.
+- `unrelated_heavy_import`: heavy ecosystem imports with little local evidence of real need.
+- `obvious_commentary`: comments that narrate obvious implementation steps instead of domain context.
+- `enthusiastic_commentary`: unusually enthusiastic or emoji-heavy production comments.
+- `commented_out_code`: comments that look like disabled code blocks instead of documentation.
+- `broad_exception_handler`: broad `except Exception:` style handlers that still obscure failure shape even when they are not fully swallowed.
+- `missing_context_manager`: file or resource acquisition patterns without an obvious `with` block.
+- `public_api_missing_type_hints`: public Python functions that omit complete parameter or return annotations.
+- `mixed_sync_async_module`: modules that expose public sync and async entry points together.
 - `repeated_string_literal`: repeated long string literals in one file that likely want a shared constant.
+- `duplicate_error_handler_block`: repeated exception-handling block shapes in one file.
+- `duplicate_validation_pipeline`: repeated validation guard pipelines across functions in one file.
+- `duplicate_test_utility_logic`: highly similar function shapes shared between test and production Python code.
+- `cross_file_repeated_literal`: repeated long literals across multiple Python files in the same repository slice.
 
 Python also reuses shared signals when the parser evidence supports them, including `hardcoded_secret`, comment-style findings based on docstrings, `full_dataset_load`, `string_concat_in_loop`, and conservative test-quality findings.
 
@@ -169,7 +193,7 @@ For Rust, `hallucinated_local_call` now also covers direct same-module calls whe
 - Phase 2 heuristic additions: broader `missing_context`, `missing_cancel_call`, `sleep_polling`, `busy_waiting`, `repeated_json_marshaling`, `string_concat_in_loop`, `goroutine_spawn_in_loop`, `goroutine_without_shutdown_path`, `mutex_in_loop`, `blocking_call_while_locked`, `allocation_churn_in_loop`, `fmt_hot_path`, `reflection_hot_path`, `full_dataset_load`, `n_plus_one_query`, `wide_select_query`, `likely_unindexed_query`, and the first conservative goroutine-coordination pass.
 - Phase 3 heuristic additions: `hardcoded_secret`, `sql_string_concat`, `mixed_receiver_kinds`, `malformed_struct_tag`, `duplicate_struct_tag_key`, `test_without_assertion_signal`, `happy_path_only_test`, and `placeholder_test_body`.
 - Python backend additions so far: `.py` routing, Python parser coverage for imports, symbols, call sites, docstrings, test classification, loop concatenation, and conservative exception-handler evidence.
-- Python heuristic additions so far: `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, `none_comparison`, `side_effect_comprehension`, `redundant_return_none`, `hardcoded_path_string`, `variadic_public_api`, `list_materialization_first_element`, `deque_candidate_queue`, `god_function`, `monolithic_init_module`, `too_many_instance_attributes`, `textbook_docstring_small_helper`, `mixed_naming_conventions`, `repeated_string_literal`, Python reuse of `full_dataset_load`, and Python reuse of `string_concat_in_loop`.
+- Python heuristic additions so far: `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, `none_comparison`, `side_effect_comprehension`, `redundant_return_none`, `hardcoded_path_string`, `variadic_public_api`, `list_materialization_first_element`, `deque_candidate_queue`, `temporary_collection_in_loop`, `recursive_traversal_risk`, `list_membership_in_loop`, `repeated_len_in_loop`, `builtin_reduction_candidate`, `broad_exception_handler`, `missing_context_manager`, `public_api_missing_type_hints`, `mixed_sync_async_module`, `god_function`, `god_class`, `monolithic_init_module`, `too_many_instance_attributes`, `eager_constructor_collaborators`, `over_abstracted_wrapper`, `mixed_concerns_function`, `name_responsibility_mismatch`, `deep_inheritance_hierarchy`, `tight_module_coupling`, `textbook_docstring_small_helper`, `mixed_naming_conventions`, `unrelated_heavy_import`, `obvious_commentary`, `enthusiastic_commentary`, `commented_out_code`, `repeated_string_literal`, `duplicate_error_handler_block`, `duplicate_validation_pipeline`, `duplicate_test_utility_logic`, `cross_file_repeated_literal`, Python reuse of `full_dataset_load`, and Python reuse of `string_concat_in_loop`.
 - Rust heuristic additions so far: `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, and Rust-local `hallucinated_import_call` coverage for `crate::`, `self::`, and `super::` module imports.
 
 ### Still pending

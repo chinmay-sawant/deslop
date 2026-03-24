@@ -96,6 +96,112 @@ pub(super) fn mixed_naming_convention_findings(file: &ParsedFile) -> Vec<Finding
     }]
 }
 
+pub(super) fn unrelated_heavy_import_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let heavy_imports = file
+        .imports
+        .iter()
+        .filter(|import| is_heavy_ecosystem(&import.path))
+        .collect::<Vec<_>>();
+    if heavy_imports.len() < 2 {
+        return Vec::new();
+    }
+
+    let used_aliases = file
+        .functions
+        .iter()
+        .flat_map(|function| function.calls.iter())
+        .filter_map(|call| call.receiver.as_deref().or(Some(call.name.as_str())))
+        .collect::<std::collections::BTreeSet<_>>();
+    let unused_heavy_imports = heavy_imports
+        .iter()
+        .filter(|import| !used_aliases.contains(import.alias.as_str()))
+        .collect::<Vec<_>>();
+    if unused_heavy_imports.is_empty() {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "unrelated_heavy_import".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: 1,
+        end_line: 1,
+        message: "file imports heavy ecosystems that show little local evidence of need".to_string(),
+        evidence: unused_heavy_imports
+            .iter()
+            .take(3)
+            .map(|import| format!("unused heavy import: {} as {}", import.path, import.alias))
+            .collect(),
+    }]
+}
+
+pub(super) fn obvious_commentary_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let comments = file
+        .comments
+        .iter()
+        .filter(|comment| looks_like_obvious_comment(&comment.text))
+        .collect::<Vec<_>>();
+    if comments.len() < 2 {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "obvious_commentary".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: comments[0].line,
+        end_line: comments[0].line,
+        message: "file contains comments that narrate obvious implementation steps"
+            .to_string(),
+        evidence: comments
+            .iter()
+            .take(3)
+            .map(|comment| format!("line {}: {}", comment.line, comment.text))
+            .collect(),
+    }]
+}
+
+pub(super) fn enthusiastic_commentary_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let comments = file
+        .comments
+        .iter()
+        .filter(|comment| has_enthusiastic_tone(&comment.text))
+        .collect::<Vec<_>>();
+    if comments.is_empty() {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "enthusiastic_commentary".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: comments[0].line,
+        end_line: comments[0].line,
+        message: "file contains unusually enthusiastic or emoji-heavy production comments"
+            .to_string(),
+        evidence: comments
+            .iter()
+            .take(3)
+            .map(|comment| format!("line {}: {}", comment.line, comment.text))
+            .collect(),
+    }]
+}
+
 enum NamingStyle {
     Snake,
     Camel,
@@ -116,4 +222,46 @@ fn naming_style(name: &str) -> Option<NamingStyle> {
     }
 
     None
+}
+
+fn is_heavy_ecosystem(path: &str) -> bool {
+    [
+        "tensorflow",
+        "torch",
+        "pandas",
+        "numpy",
+        "sqlalchemy",
+        "django",
+        "flask",
+        "fastapi",
+        "sklearn",
+    ]
+    .iter()
+    .any(|prefix| path.starts_with(prefix))
+}
+
+fn looks_like_obvious_comment(text: &str) -> bool {
+    let normalized = text.trim().to_ascii_lowercase();
+    [
+        "set ",
+        "increment ",
+        "append ",
+        "return ",
+        "check ",
+        "loop ",
+        "create ",
+        "initialize ",
+        "call ",
+    ]
+    .iter()
+    .any(|prefix| normalized.starts_with(prefix))
+}
+
+fn has_enthusiastic_tone(text: &str) -> bool {
+    text.contains('!')
+        || text.contains(":)")
+        || text.contains(":D")
+        || text
+            .chars()
+            .any(|character| matches!(character, '🎉' | '✨' | '🔥' | '🚀' | '💥'))
 }
