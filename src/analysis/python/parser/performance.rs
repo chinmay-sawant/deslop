@@ -26,15 +26,13 @@ fn visit_string_like_names(node: Node<'_>, source: &str, names: &mut BTreeSet<St
         && let Some(text) = source.get(node.byte_range())
     {
         let trimmed = text.trim();
-        if let Some((left, right)) = trimmed.split_once('=') {
-            if looks_like_string_literal(right.trim()) {
-                for name in assignment_targets(left) {
-                    names.insert(name);
-                }
-            } else if left.contains(": str") || left.contains(":str") {
-                for name in assignment_targets(left) {
-                    names.insert(name);
-                }
+        if let Some((left, right)) = trimmed.split_once('=')
+            && (looks_like_string_literal(right.trim())
+                || left.contains(": str")
+                || left.contains(":str"))
+        {
+            for name in assignment_targets(left) {
+                names.insert(name);
             }
         }
     }
