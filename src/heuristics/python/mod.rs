@@ -14,7 +14,9 @@ use self::ai_smells::{
     unrelated_heavy_import_findings,
 };
 use self::duplication::{
-    cross_file_repeated_literal_findings, duplicate_test_utility_logic_findings,
+    cross_file_copy_paste_function_findings, cross_file_repeated_literal_findings,
+    duplicate_query_fragment_findings, duplicate_test_utility_logic_findings,
+    duplicate_transformation_pipeline_findings,
     repeated_exception_block_findings, repeated_string_literal_findings,
     repeated_validation_pipeline_findings,
 };
@@ -34,7 +36,8 @@ use self::performance::{
 use self::structure::{
     deep_inheritance_findings, eager_constructor_collaborator_findings, god_class_findings,
     god_function_findings, mixed_concern_findings, monolithic_init_module_findings,
-    name_responsibility_mismatch_findings, over_abstracted_wrapper_findings,
+    monolithic_module_findings, name_responsibility_mismatch_findings,
+    over_abstracted_wrapper_findings,
     tight_module_coupling_findings, too_many_instance_attributes_findings,
 };
 
@@ -71,6 +74,7 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
 pub(crate) fn python_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
     findings.extend(monolithic_init_module_findings(file));
+    findings.extend(monolithic_module_findings(file));
     findings.extend(too_many_instance_attributes_findings(file));
     findings.extend(god_class_findings(file));
     findings.extend(eager_constructor_collaborator_findings(file));
@@ -91,7 +95,10 @@ pub(crate) fn python_repo_findings(files: &[&ParsedFile], index: &RepositoryInde
     let mut findings = Vec::new();
     findings.extend(deep_inheritance_findings(files));
     findings.extend(tight_module_coupling_findings(files, index));
+    findings.extend(cross_file_copy_paste_function_findings(files));
     findings.extend(duplicate_test_utility_logic_findings(files));
     findings.extend(cross_file_repeated_literal_findings(files));
+    findings.extend(duplicate_query_fragment_findings(files));
+    findings.extend(duplicate_transformation_pipeline_findings(files));
     findings
 }

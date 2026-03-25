@@ -13,7 +13,17 @@ const GOD_CLASS_ATTRIBUTE_THRESHOLD: usize = 8;
 const MONOLITHIC_INIT_BYTE_THRESHOLD: usize = 1200;
 const MONOLITHIC_INIT_IMPORT_THRESHOLD: usize = 6;
 const MONOLITHIC_INIT_FUNCTION_THRESHOLD: usize = 4;
+const MONOLITHIC_MODULE_LINE_THRESHOLD: usize = 1500;
+const MONOLITHIC_MODULE_BYTE_THRESHOLD: usize = 30_000;
+const MONOLITHIC_MODULE_IMPORT_THRESHOLD: usize = 12;
+const MONOLITHIC_MODULE_DECLARATION_THRESHOLD: usize = 12;
+const MONOLITHIC_MODULE_FUNCTION_THRESHOLD: usize = 8;
+const MONOLITHIC_MODULE_ORCHESTRATION_LINE_THRESHOLD: usize = 20;
+const MONOLITHIC_MODULE_ORCHESTRATION_CALL_THRESHOLD: usize = 8;
+const MONOLITHIC_MODULE_ORCHESTRATION_FUNCTION_THRESHOLD: usize = 2;
+const MONOLITHIC_MODULE_CONCERN_THRESHOLD: usize = 2;
 const INSTANCE_ATTRIBUTE_THRESHOLD: usize = 10;
+const INSTANCE_ATTRIBUTE_ESCALATION_THRESHOLD: usize = 20;
 const INSTANCE_ATTRIBUTE_METHOD_THRESHOLD: usize = 3;
 const EAGER_CONSTRUCTOR_THRESHOLD: usize = 3;
 
@@ -94,23 +104,115 @@ pub(super) fn too_many_instance_attributes_findings(file: &ParsedFile) -> Vec<Fi
             summary.instance_attribute_count >= INSTANCE_ATTRIBUTE_THRESHOLD
                 && summary.method_count >= INSTANCE_ATTRIBUTE_METHOD_THRESHOLD
         })
-        .map(|summary| Finding {
-            rule_id: "too_many_instance_attributes".to_string(),
-            severity: Severity::Info,
-            path: file.path.clone(),
-            function_name: None,
-            start_line: summary.line,
-            end_line: summary.line,
-            message: format!(
-                "class {} assigns an unusually large number of instance attributes",
-                summary.name
-            ),
-            evidence: vec![
-                format!("instance_attribute_count={}", summary.instance_attribute_count),
-                format!("method_count={}", summary.method_count),
-            ],
+        .map(|summary| {
+            let escalated = summary.instance_attribute_count >= INSTANCE_ATTRIBUTE_ESCALATION_THRESHOLD;
+            Finding {
+                rule_id: "too_many_instance_attributes".to_string(),
+                severity: if escalated {
+                    Severity::Warning
+                } else {
+                    Severity::Info
+                },
+                path: file.path.clone(),
+                function_name: None,
+                start_line: summary.line,
+                end_line: summary.line,
+                message: if escalated {
+                    format!(
+                        "class {} assigns 20 or more instance attributes and looks unusually state-heavy",
+                        summary.name
+                    )
+                } else {
+                    format!(
+                        "class {} assigns an unusually large number of instance attributes",
+                        summary.name
+                    )
+                },
+                evidence: vec![
+                    format!("instance_attribute_count={}", summary.instance_attribute_count),
+                    format!("method_count={}", summary.method_count),
+                    format!(
+                        "tier={}",
+                        if escalated { "20_plus" } else { "10_plus" }
+                    ),
+                ],
+            }
         })
         .collect()
+}
+
+pub(super) fn monolithic_module_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file
+        || file
+            .path
+            .file_name()
+            .and_then(|name| name.to_str())
+            == Some("__init__.py")
+    {
+        return Vec::new();
+    }
+
+    let declaration_count = file.functions.len() + file.class_summaries.len();
+    let mixed_concern_functions = file
+        .functions
+        .iter()
+        .filter(|function| !classify_infrastructure_concerns(file, function).is_empty())
+        .filter(|function| {
+            let concerns = classify_infrastructure_concerns(file, function);
+            concerns.len() >= MONOLITHIC_MODULE_CONCERN_THRESHOLD
+                && function.fingerprint.call_count >= MONOLITHIC_MODULE_ORCHESTRATION_CALL_THRESHOLD
+        })
+        .count();
+    let orchestration_functions = file
+        .functions
+        .iter()
+        .filter(|function| {
+            !function.is_test_function
+                && function.fingerprint.line_count >= MONOLITHIC_MODULE_ORCHESTRATION_LINE_THRESHOLD
+                && function.fingerprint.call_count >= MONOLITHIC_MODULE_ORCHESTRATION_CALL_THRESHOLD
+        })
+        .count();
+    let module_concerns = file
+        .functions
+        .iter()
+        .flat_map(|function| classify_infrastructure_concerns(file, function).into_iter())
+        .collect::<BTreeSet<_>>();
+
+    if file.line_count < MONOLITHIC_MODULE_LINE_THRESHOLD
+        || file.byte_size < MONOLITHIC_MODULE_BYTE_THRESHOLD
+        || declaration_count < MONOLITHIC_MODULE_DECLARATION_THRESHOLD
+        || file.functions.len() < MONOLITHIC_MODULE_FUNCTION_THRESHOLD
+        || file.imports.len() < MONOLITHIC_MODULE_IMPORT_THRESHOLD
+        || module_concerns.len() < MONOLITHIC_MODULE_CONCERN_THRESHOLD
+        || (mixed_concern_functions == 0
+            && orchestration_functions < MONOLITHIC_MODULE_ORCHESTRATION_FUNCTION_THRESHOLD)
+    {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "monolithic_module".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: 1,
+        end_line: 1,
+        message: "module is unusually large and still concentrates imports, orchestration, and mixed concerns"
+            .to_string(),
+        evidence: vec![
+            format!("line_count={}", file.line_count),
+            format!("functions={}", file.functions.len()),
+            format!("classes={}", file.class_summaries.len()),
+            format!("imports={}", file.imports.len()),
+            format!("byte_size={}", file.byte_size),
+            format!("orchestration_functions={}", orchestration_functions),
+            format!("mixed_concern_functions={}", mixed_concern_functions),
+            format!(
+                "concern_categories={}",
+                module_concerns.into_iter().collect::<Vec<_>>().join(",")
+            ),
+        ],
+    }]
 }
 
 pub(super) fn god_class_findings(file: &ParsedFile) -> Vec<Finding> {
@@ -197,31 +299,7 @@ pub(super) fn mixed_concern_findings(file: &ParsedFile, function: &ParsedFunctio
         return Vec::new();
     }
 
-    let alias_lookup = file
-        .imports
-        .iter()
-        .map(|import| (import.alias.as_str(), import.path.as_str()))
-        .collect::<BTreeMap<_, _>>();
-    let mut categories = BTreeSet::new();
-
-    for call in &function.calls {
-        if call.receiver.is_none() && call.name == "open" {
-            categories.insert("filesystem");
-            continue;
-        }
-
-        let receiver = call.receiver.as_deref().unwrap_or(call.name.as_str());
-        let import_path = alias_lookup.get(receiver).copied().unwrap_or(receiver);
-        if is_http_like(import_path, &call.name) {
-            categories.insert("http");
-        }
-        if is_persistence_like(import_path, &call.name) {
-            categories.insert("persistence");
-        }
-        if is_filesystem_like(import_path, &call.name) {
-            categories.insert("filesystem");
-        }
-    }
+    let categories = classify_infrastructure_concerns(file, function);
 
     if categories.len() < 2 || function.fingerprint.call_count < 6 {
         return Vec::new();
@@ -388,6 +466,39 @@ fn inheritance_depth_inner(
         visited.remove(simple_name);
     }
     best
+}
+
+fn classify_infrastructure_concerns(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> BTreeSet<&'static str> {
+    let alias_lookup = file
+        .imports
+        .iter()
+        .map(|import| (import.alias.as_str(), import.path.as_str()))
+        .collect::<BTreeMap<_, _>>();
+    let mut categories = BTreeSet::new();
+
+    for call in &function.calls {
+        if call.receiver.is_none() && call.name == "open" {
+            categories.insert("filesystem");
+            continue;
+        }
+
+        let receiver = call.receiver.as_deref().unwrap_or(call.name.as_str());
+        let import_path = alias_lookup.get(receiver).copied().unwrap_or(receiver);
+        if is_http_like(import_path, &call.name) {
+            categories.insert("http");
+        }
+        if is_persistence_like(import_path, &call.name) {
+            categories.insert("persistence");
+        }
+        if is_filesystem_like(import_path, &call.name) {
+            categories.insert("filesystem");
+        }
+    }
+
+    categories
 }
 
 fn is_http_like(import_path: &str, call_name: &str) -> bool {

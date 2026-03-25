@@ -1,6 +1,6 @@
 use std::fs;
 
-use deslop::{ScanOptions, scan_repository};
+use deslop::{ScanOptions, Severity, scan_repository};
 
 use super::{create_temp_workspace, write_fixture};
 
@@ -516,6 +516,465 @@ def normalize_payload(payload):
             "expected repo rule {rule_id} to fire"
         );
     }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_instance_attribute_escalation() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/heavy_state.py",
+        r#"
+class HeavyState:
+    def __init__(self):
+        self.a0 = 0
+        self.a1 = 1
+        self.a2 = 2
+        self.a3 = 3
+        self.a4 = 4
+        self.a5 = 5
+        self.a6 = 6
+        self.a7 = 7
+        self.a8 = 8
+        self.a9 = 9
+        self.a10 = 10
+        self.a11 = 11
+        self.a12 = 12
+        self.a13 = 13
+        self.a14 = 14
+        self.a15 = 15
+        self.a16 = 16
+        self.a17 = 17
+        self.a18 = 18
+        self.a19 = 19
+        self.a20 = 20
+
+    def snapshot(self):
+        return self.a0
+
+    def describe(self):
+        return self.a1
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    let finding = report
+        .findings
+        .iter()
+        .find(|finding| finding.rule_id == "too_many_instance_attributes")
+        .expect("expected too_many_instance_attributes finding");
+    assert!(matches!(finding.severity, Severity::Warning));
+    assert!(
+        finding.evidence.iter().any(|evidence| evidence == "tier=20_plus"),
+        "expected the escalated 20-plus evidence tier"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_duplicate_query_fragment_rule() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/base.py",
+        r#"
+QUERY = "select id, status from reports where status = 'open' order by created_at"
+
+def fetch_open_reports(cursor):
+    return cursor.execute(QUERY)
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/helpers.py",
+        r#"
+QUERY = "SELECT id, status FROM reports WHERE status = 'open' ORDER BY created_at"
+
+def build_query():
+    return QUERY
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/services.py",
+        r#"
+QUERY = "SELECT  id,  status  FROM reports WHERE status = 'open' ORDER BY created_at"
+
+def fetch(cursor):
+    return cursor.execute(QUERY)
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "duplicate_query_fragment"),
+        "expected duplicate_query_fragment to fire"
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "cross_file_repeated_literal"),
+        "did not expect generic cross_file_repeated_literal for query-like strings"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_cross_file_copy_paste_rule() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/service_a.py",
+        r#"
+def build_profile(records):
+    output = []
+    for record in records:
+        cleaned = str(record).strip().lower()
+        if not cleaned:
+            continue
+        payload = {"value": cleaned, "length": len(cleaned)}
+        output.append(payload)
+    return output
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/service_b.py",
+        r#"
+def build_account(records):
+    output = []
+    for record in records:
+        cleaned = str(record).strip().lower()
+        if not cleaned:
+            continue
+        payload = {"value": cleaned, "length": len(cleaned)}
+        output.append(payload)
+    return output
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "cross_file_copy_paste_function"),
+        "expected cross_file_copy_paste_function to fire"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_duplicate_transformation_pipeline_rule() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/ingest_a.py",
+        r#"
+def parse_payload(raw):
+    return raw
+
+def validate_payload(payload):
+    return payload
+
+def normalize_payload(payload):
+    return payload
+
+def enrich_payload(payload):
+    return payload
+
+def serialize_payload(payload):
+    return payload
+
+def build_report(raw):
+    payload = parse_payload(raw)
+    payload = validate_payload(payload)
+    payload = normalize_payload(payload)
+    payload = enrich_payload(payload)
+    return serialize_payload(payload)
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/ingest_b.py",
+        r#"
+def parse_record(raw):
+    return raw
+
+def validate_record(payload):
+    return payload
+
+def transform_record(payload):
+    return payload
+
+def fetch_metadata(payload):
+    return payload
+
+def render_record(payload):
+    return payload
+
+def build_snapshot(raw):
+    payload = parse_record(raw)
+    payload = validate_record(payload)
+    payload = transform_record(payload)
+    payload = fetch_metadata(payload)
+    return render_record(payload)
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "duplicate_transformation_pipeline"),
+        "expected duplicate_transformation_pipeline to fire"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_monolithic_module_rule() {
+    let temp_dir = create_temp_workspace();
+    let mut module = String::from(
+        r#"
+import os
+import json
+import pathlib
+import requests
+import sqlite3
+import csv
+import logging
+import tempfile
+import hashlib
+import itertools
+import collections
+import time
+
+class ReportRow:
+    def render(self):
+        return "row"
+
+class ReportBuilder:
+    def build(self):
+        return "report"
+
+def load_config(path):
+    return pathlib.Path(path).read_text()
+
+def parse_rows(payload):
+    return json.loads(payload)
+
+def fetch_remote(url):
+    response = requests.get(url)
+    return response.text
+
+def write_cache(path, payload):
+    pathlib.Path(path).write_text(payload)
+
+def export_rows(path, rows):
+    with open(path, "w") as handle:
+        writer = csv.writer(handle)
+        for row in rows:
+            writer.writerow(row)
+
+def sync_reports(db_path, cache_path, url):
+    logger = logging.getLogger("sync")
+    temp_dir = tempfile.mkdtemp()
+    logger.info("starting sync")
+    connection = sqlite3.connect(db_path)
+    payload = fetch_remote(url)
+    rows = parse_rows(payload)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    deduped_rows = list(itertools.islice(rows, 0, len(rows)))
+    queue = collections.deque(deduped_rows)
+    while queue:
+        row = queue.popleft()
+        logger.debug("processing %s", row)
+    write_cache(cache_path, payload)
+    export_rows(cache_path + ".csv", deduped_rows)
+    pathlib.Path(temp_dir).joinpath("digest.txt").write_text(digest)
+    connection.commit()
+    connection.close()
+    time.sleep(0)
+    return deduped_rows
+
+def publish_reports(db_path, cache_path, url):
+    logger = logging.getLogger("publish")
+    temp_dir = tempfile.mkdtemp()
+    connection = sqlite3.connect(db_path)
+    payload = fetch_remote(url)
+    rows = parse_rows(payload)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    queue = collections.deque(rows)
+    while queue:
+        row = queue.popleft()
+        logger.info("publishing %s", row)
+    write_cache(cache_path + ".bak", payload)
+    export_rows(cache_path + ".published.csv", rows)
+    pathlib.Path(temp_dir).joinpath("publish.txt").write_text(digest)
+    connection.commit()
+    connection.close()
+    time.sleep(0)
+    return rows
+"#,
+    );
+    for index in 0..320 {
+        module.push_str(&format!(
+            "\ndef helper_{index}(payload):\n    record = str(payload).strip()\n    if not record:\n        return ''\n    return record.lower()\n"
+        ));
+    }
+    write_fixture(&temp_dir, "pkg/module.py", &module);
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "monolithic_module"),
+        "expected monolithic_module to fire"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_monolithic_module_skips_broad_legitimate_modules() {
+    let temp_dir = create_temp_workspace();
+
+    let mut registry_module = String::from(
+        r#"
+import os
+import json
+import pathlib
+import logging
+import hashlib
+import itertools
+import collections
+import decimal
+import fractions
+import statistics
+import datetime
+import uuid
+
+REGISTRY = {}
+
+def register(name, value):
+    REGISTRY[name] = value
+    return value
+"#,
+    );
+    for index in 0..500 {
+        registry_module.push_str(&format!(
+            "\ndef provide_{index}():\n    value = 'entry_{index}'\n    register(value, value)\n    return REGISTRY[value]\n"
+        ));
+    }
+    write_fixture(&temp_dir, "pkg/registry.py", &registry_module);
+
+    let mut schema_module = String::from(
+        r#"
+import datetime
+import decimal
+import typing
+import uuid
+import pathlib
+import collections
+import fractions
+import statistics
+import itertools
+import hashlib
+import json
+import os
+"#,
+    );
+    for index in 0..320 {
+        schema_module.push_str(&format!(
+            "\nclass EventSchema{index}:\n    event_id = 'event_{index}'\n    source = 'api'\n    kind = 'schema'\n    version = {index}\n"
+        ));
+    }
+    write_fixture(&temp_dir, "pkg/schemas.py", &schema_module);
+
+    let mut api_surface_module = String::from(
+        r#"
+import json
+import pathlib
+import typing
+import logging
+import urllib
+import http
+import dataclasses
+import enum
+import collections
+import itertools
+import datetime
+import uuid
+
+class Response:
+    def __init__(self, payload):
+        self.payload = payload
+
+def render(payload):
+    return Response(payload)
+"#,
+    );
+    for index in 0..520 {
+        api_surface_module.push_str(&format!(
+            "\ndef route_{index}(request):\n    payload = {{'route': {index}, 'request': request}}\n    return render(payload)\n"
+        ));
+    }
+    write_fixture(&temp_dir, "pkg/api_surface.py", &api_surface_module);
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    let flagged_paths = report
+        .findings
+        .iter()
+        .filter(|finding| finding.rule_id == "monolithic_module")
+        .map(|finding| finding.path.to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+    assert!(
+        flagged_paths.is_empty(),
+        "did not expect broad-but-legitimate modules to be flagged: {flagged_paths:?}"
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

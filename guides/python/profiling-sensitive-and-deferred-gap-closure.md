@@ -65,6 +65,19 @@ This document should be read together with [Phase 4](advanced-rule-families-and-
 
 ## Implementation Checkpoints
 
+## Current Phase 5 Status
+
+- [x] Query-fragment duplication is now shipped as `duplicate_query_fragment`.
+- [x] `too_many_instance_attributes` now uses a tiered policy with a stronger 20-plus escalation checkpoint.
+- [x] Cross-file copy-paste function detection for non-test code is now shipped as `cross_file_copy_paste_function`.
+- [x] Duplicate transformation-pipeline detection is now shipped as `duplicate_transformation_pipeline`.
+- [x] Broader non-`__init__.py` monolithic-module detection is now shipped as `monolithic_module`.
+- [ ] Over-abstraction expansion beyond the current thin-wrapper rule is not shipped yet.
+- [ ] Misleading-name expansion beyond the current responsibility-mismatch proxy is not shipped yet.
+- [ ] Hardcoded business-logic, magic-value, and reinvented-utility follow-up rules are not shipped yet.
+- [ ] Boundary-aware robustness checks for missing retries, logging, environment handling, or input hardening are not shipped yet.
+- [ ] The full promotion matrix for every still-open item is not yet captured as a single checked-off implementation table in this file.
+
 ### 1. Freeze The Promotion Matrix For Every Still-Open Item
 
 Before new implementation starts, convert the open Phase 4 backlog into a single working matrix with one row per item and one allowed disposition:
@@ -95,6 +108,15 @@ This matrix must explicitly include the current gap list called out by the user:
 
 Phase 5 should not start implementation until each row has a target disposition and a short explanation for why that disposition is honest.
 
+Status:
+
+- [ ] Promotion matrix completed in this document
+- [x] Query-fragment duplication classified and implemented
+- [x] 20-plus instance-variable escalation classified and implemented
+- [x] Cross-file copy-paste detection classified and implemented
+- [x] Duplicate transformation pipelines classified and implemented
+- [x] Monolithic modules beyond `__init__.py` classified and implemented
+
 ### 2. Add Repository-Level Cross-File Copy-Paste Detection
 
 The current duplication support is intentionally narrower than full clone detection. Phase 5 should add a repository-level function-clone checkpoint with strict boundaries.
@@ -116,6 +138,12 @@ Target rule outcome:
 
 - either a new `cross_file_copy_paste_function` rule or a clearly named equivalent
 
+Status:
+
+- [x] Repository-level non-test function clone rule shipped as `cross_file_copy_paste_function`
+- [x] Minimum body-size and structure thresholds documented in code and tests
+- [x] Evidence payload reports clone-group size and file spread
+
 ### 3. Separate Query-Fragment Duplication From Generic Literal Repetition
 
 Repeated string literals are already shipped, but the backlog asked for repeated query fragments more specifically. Phase 5 should treat those as a separate repository-level smell rather than an extension of raw string equality.
@@ -136,6 +164,13 @@ Target rule outcome:
 
 - a dedicated query-fragment duplication rule or an explicitly documented decision to keep this deferred if normalization proves too noisy
 
+Status:
+
+- [x] Dedicated repo-level query-fragment rule shipped as `duplicate_query_fragment`
+- [x] Query-like literals are normalized before clustering
+- [x] Query-like literals are excluded from the generic `cross_file_repeated_literal` rule
+- [ ] Negative fixtures added for centralized query constants, migrations, and intentionally shared templates
+
 ### 4. Add Duplicate Transformation-Pipeline Detection
 
 Phase 4 already recognizes validation-pipeline repetition, but the broader data-transformation backlog remains open. This checkpoint should add a structured pipeline signature instead of relying on loose clone detection.
@@ -154,6 +189,13 @@ Required evidence policy:
 Target rule outcome:
 
 - a dedicated transformation-pipeline duplication rule or a documented repository-level prerequisite if the current parser cannot expose the needed stages cleanly
+
+Status:
+
+- [x] Ordered transformation-stage signature implemented
+- [x] Repository-level transformation-pipeline clustering shipped as `duplicate_transformation_pipeline`
+- [x] Positive fixtures added
+- [ ] Negative fixtures added
 
 ### 5. Close The Class-Size And Module-Monolith Gaps
 
@@ -174,6 +216,12 @@ Required evidence policy:
 Target rule outcome:
 
 - either an expanded `too_many_instance_attributes` policy with tiered messaging and a new `monolithic_module` rule, or a documented reason why the broader module rule remains deferred
+
+Status:
+
+- [x] `too_many_instance_attributes` tiered messaging shipped with 10-plus and 20-plus tiers
+- [x] Broader `monolithic_module` rule shipped for non-`__init__.py` files with a 1500-line floor and stronger orchestration evidence
+- [x] Negative fixtures added for broad-but-structured modules such as registries, schemas, and API-surface modules
 
 ### 6. Expand Over-Abstraction Coverage Beyond Thin Wrappers
 

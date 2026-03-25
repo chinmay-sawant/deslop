@@ -10,6 +10,7 @@ pub(crate) struct ParsedFile {
     pub package_name: Option<String>,
     pub is_test_file: bool,
     pub syntax_error: bool,
+    pub line_count: usize,
     pub byte_size: usize,
     pub pkg_strings: Vec<NamedLiteral>,
     pub comments: Vec<CommentSummary>,

@@ -32,6 +32,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         package_name: module_name_for_path(path),
         is_test_file,
         syntax_error: root.has_error(),
+        line_count: source.lines().count(),
         byte_size: source.len(),
         pkg_strings: package_string_literals,
         comments: Vec::new(),

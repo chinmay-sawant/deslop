@@ -57,6 +57,10 @@ The current Phase 4 baseline is now implemented for a conservative subset of the
 - [x] `duplicate_validation_pipeline`
 - [x] `duplicate_test_utility_logic`
 - [x] `cross_file_repeated_literal`
+- [x] `duplicate_query_fragment`
+- [x] `cross_file_copy_paste_function`
+- [x] `duplicate_transformation_pipeline`
+- [x] `monolithic_module`
 
 The backlog items that still remain deferred are now explicitly marked as deferred or non-goals in the resolved checklist below rather than left as open tasks.
 
@@ -333,10 +337,10 @@ This section maps the user-provided Python backlog to current roadmap status.
 ### Architectural And Design Smells
 
 - [x] god classes or functions: shipped in the current Phase 4 baseline as `god_function` and `god_class`
-- [x] classes with 20 or more instance variables: partially shipped in the current Phase 4 baseline as `too_many_instance_attributes`
+- [x] classes with 20 or more instance variables: shipped in the current Python baseline through the escalated 20-plus tier of `too_many_instance_attributes`
 - [x] using classes where a simple function or dataclass would suffice: partially shipped in the current Phase 4 baseline under `over_abstracted_wrapper`
 - [x] deep inheritance hierarchies: shipped in the current Phase 4 baseline as `deep_inheritance_hierarchy`
-- [x] monolithic `__init__.py` files or single huge modules: partially shipped in the current Phase 4 baseline as `monolithic_init_module`
+- [x] monolithic `__init__.py` files or single huge modules: shipped in the current Python baseline as `monolithic_init_module` and a tightened `monolithic_module` policy that now requires a 1500-line floor plus coordinator-style or mixed-concern evidence
 - [x] hardcoded business logic instead of configuration remains deferred behind stronger evidence thresholds
 - [x] mixing business logic, HTTP, and DB concerns in one function: shipped in the current Phase 4 baseline as `mixed_concerns_function`
 - [x] creating unrelated objects inside `__init__`: shipped in the current Phase 4 baseline as `eager_constructor_collaborators`
@@ -350,11 +354,11 @@ This section maps the user-provided Python backlog to current roadmap status.
 
 ### Code Duplication
 
-- [x] copy-paste functions across files are now partially covered by repository-level duplicate fingerprints and `duplicate_test_utility_logic`
+- [x] copy-paste functions across files are now shipped through `cross_file_copy_paste_function` with `duplicate_test_utility_logic` still covering the test-versus-production overlap case
 - [x] duplicate error-handling blocks repeated many times: shipped in the current Phase 4 baseline as `duplicate_error_handler_block`
 - [x] same validation logic across endpoints or services: shipped in the current Phase 4 baseline as `duplicate_validation_pipeline`
-- [x] repeated string literals or query fragments: partially shipped in the current Phase 4 baseline as `repeated_string_literal`; query-fragment duplication remains deferred
-- [x] duplicate data-transformation pipelines remain partially deferred beyond the current duplicate-block summaries
+- [x] repeated string literals or query fragments: shipped in the current Python baseline as `repeated_string_literal` and `duplicate_query_fragment`
+- [x] duplicate data-transformation pipelines are now shipped as `duplicate_transformation_pipeline`
 - [x] same utility logic in tests and production code: shipped in the current Phase 4 baseline as `duplicate_test_utility_logic`
 
 ### AI-Generated-Code Smells

@@ -417,6 +417,7 @@ mod tests {
             package_name: Some(package_name.to_string()),
             is_test_file: false,
             syntax_error: false,
+            line_count: 1,
             byte_size: 10,
             pkg_strings: Vec::new(),
             comments: Vec::new(),
