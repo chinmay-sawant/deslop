@@ -14,7 +14,7 @@ export function QuickStart() {
         {orderedItems.map((item, index) => (
           <Tab
             key={item.label}
-            className="cursor-pointer rounded-full border border-[var(--border)] bg-[var(--panel-muted)] px-5 py-3 text-sm font-medium text-[var(--muted)] transition data-[hover]:border-[var(--border-strong)] data-[hover]:text-[var(--text)] data-[selected]:border-[var(--border-strong)] data-[selected]:bg-[var(--text)] data-[selected]:text-[var(--bg)]"
+            className="cursor-pointer border-b border-transparent px-2 py-4 text-xl sm:text-2xl font-['Newsreader'] italic font-medium text-[var(--muted)] transition data-[hover]:text-[var(--text)] data-[selected]:border-[var(--text-strong)] data-[selected]:text-[var(--text-strong)]"
           >
             <span className="font-['IBM_Plex_Mono'] text-[0.68rem] uppercase tracking-[0.16em]">
               0{index + 1}
@@ -26,7 +26,7 @@ export function QuickStart() {
       <TabPanels className="mt-8">
         {/* Tabs 0–2: standard layout */}
         {orderedItems.slice(0, 3).map((item) => (
-          <TabPanel key={item.label} className="glass-panel rounded-[2.25rem] p-8 sm:p-10 lg:p-12">
+          <TabPanel key={item.label} className="py-12 lg:py-16">
             <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
               {/* Left: description */}
               <div>
@@ -48,7 +48,7 @@ export function QuickStart() {
               </div>
 
               {/* Right: snippet */}
-              <div className="grid-panel rounded-[1.8rem] p-6 sm:p-7">
+              <div className="pt-8 lg:pt-0 lg:border-l lg:border-[var(--border)] lg:pl-16">
                 <p className="font-['IBM_Plex_Mono'] text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
                   {item.channel} setup
                 </p>
@@ -75,8 +75,8 @@ export function QuickStart() {
           const cratesItem = quickStartItems[0]
           const binaryItem = quickStartItems[1]
           return (
-            <TabPanel key={scanItem.label} className="glass-panel rounded-[2.25rem] p-8 sm:p-10 lg:p-12">
-              <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+            <TabPanel key={scanItem.label} className="py-12 lg:py-16">
+              <div className="grid gap-16 xl:gap-24 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
                 {/* Left: description */}
                 <div>
                   <span className="eyebrow">{scanItem.channel}</span>
@@ -92,7 +92,7 @@ export function QuickStart() {
                 {/* Right: scan command + install quick-refs */}
                 <div className="flex flex-col gap-4">
                   {/* Scan command */}
-                  <div className="grid-panel rounded-[1.8rem] p-6">
+                  <div className="border-t border-[var(--border-strong)] pt-6">
                     <p className="font-['IBM_Plex_Mono'] text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
                       Scan command
                     </p>
@@ -104,7 +104,7 @@ export function QuickStart() {
 
                   {/* Install quick-refs */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="grid-panel rounded-[1.4rem] p-4">
+                    <div className="border-t border-[var(--border)] pt-4">
                       <p className="font-['IBM_Plex_Mono'] text-[0.66rem] uppercase tracking-[0.16em] text-[var(--muted)]">
                         Via Cargo
                       </p>
@@ -113,7 +113,7 @@ export function QuickStart() {
                         <span className="terminal-copy break-all">{cratesItem.snippet[0]}</span>
                       </div>
                     </div>
-                    <div className="grid-panel rounded-[1.4rem] p-4">
+                    <div className="border-t border-[var(--border)] pt-4">
                       <p className="font-['IBM_Plex_Mono'] text-[0.66rem] uppercase tracking-[0.16em] text-[var(--muted)]">
                         Via Binary
                       </p>
