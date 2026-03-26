@@ -1,9 +1,18 @@
+import { useState, useEffect } from 'react'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 
 import { trustPillars } from '../../../content/site-content'
 import { Container } from '../../../shared/ui/Container'
 
 export function HeroSection() {
+  const [isReady, setIsReady] = useState(false)
+
+  useEffect(() => {
+    // Delay animation start by 3 seconds after mount
+    const timer = setTimeout(() => setIsReady(true), 3000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <section id="top" className="section-anchor relative pt-24 pb-24 sm:pt-32 sm:pb-32 lg:pt-40 lg:pb-40">
       <Container className="max-w-5xl mx-auto text-center">
@@ -12,24 +21,30 @@ export function HeroSection() {
           <h1 className="mt-6 text-[clamp(2.5rem,7vw,5rem)] leading-[0.95] font-medium tracking-[-0.03em] text-[var(--text-strong)] flex flex-col items-center justify-center w-full relative">
             {/* Line 1 */}
             <div className="relative inline-flex items-center justify-center px-2 mb-2 h-[1.3em]">
-              <div className="absolute inset-x-0 inset-y-0 z-10 animate-sweep-box pointer-events-none" />
+              <div className={`absolute inset-x-0 inset-y-0 z-10 pointer-events-none ${isReady ? 'animate-sweep-box' : ''}`} />
               <div className="overflow-hidden h-full">
-                <div className="flex flex-col animate-sweep-text-col">
+                <div className={`flex flex-col ${isReady ? 'animate-sweep-text-col' : ''}`}>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Modern problems</span>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Code moves fast.</span>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Bridging the gap between</span>
-                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Modern problems</span>
                 </div>
               </div>
             </div>
 
             {/* Line 2 */}
             <div className="relative inline-flex items-center justify-center px-2 italic text-[var(--muted)] h-[1.3em]">
-              <div className="absolute inset-x-0 inset-y-0 z-10 animate-sweep-box pointer-events-none" style={{ animationDelay: '150ms' }} />
+              <div 
+                className={`absolute inset-x-0 inset-y-0 z-10 pointer-events-none ${isReady ? 'animate-sweep-box' : ''}`} 
+                style={{ animationDelay: isReady ? '150ms' : '0ms' }} 
+              />
               <div className="overflow-hidden h-full">
-                <div className="flex flex-col animate-sweep-text-col" style={{ animationDelay: '150ms' }}>
+                <div 
+                  className={`flex flex-col ${isReady ? 'animate-sweep-text-col' : ''}`} 
+                  style={{ animationDelay: isReady ? '150ms' : '0ms' }}
+                >
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Requires modern solutions.</span>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Context is left behind.</span>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Speed and clarity.</span>
-                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Requires modern solutions.</span>
                 </div>
               </div>
             </div>
