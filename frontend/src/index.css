@@ -282,15 +282,6 @@ button:focus-visible {
   color: var(--text-strong);
 }
 
-@media (min-width: 1200px) {
-  @supports (zoom: 1) {
-    .page-shell {
-      zoom: 0.8;
-      width: 125%;
-      margin-inline: calc((100% - 125%) / 2);
-    }
-  }
-}
 
 @media (max-width: 768px) {
   body {

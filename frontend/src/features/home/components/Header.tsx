@@ -18,7 +18,7 @@ function Logo() {
       <span className="flex flex-col leading-none">
         <span className="font-['Newsreader'] italic text-2xl font-bold tracking-[-0.02em] text-[var(--text)]">deslop</span>
         <span className="text-[0.76rem] tracking-[0.02em] text-[var(--muted)] mt-1">
-          Go code review signals
+Modern Problems Require Modern Solutions
         </span>
       </span>
     </Link>
