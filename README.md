@@ -46,7 +46,8 @@ Write scan output directly to a file:
 
 ```bash
 cargo run -- scan /path/to/repo > results.txt
-cargo run -- scan /home/chinmay/ChinmayPersonalProjects/gopdfsuit > results.txt
+cargo run -- scan /home/chinmay/ChinmayPersonalProjects/gopdfsuit > gopdfsuit_results.txt
+cargo run -- scan /home/chinmay/ChinmayPersonalProjects/SnapBack > snapback_results.txt
 cargo run -- scan --json /path/to/repo > results.txt
 ```
 

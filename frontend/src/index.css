@@ -185,6 +185,7 @@ pre {
 .button-secondary {
   display: inline-flex;
   min-height: 48px;
+  width: 220px;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
@@ -198,6 +199,47 @@ pre {
     border-color 150ms ease;
   font-family: var(--heading-font);
   letter-spacing: -0.02em;
+}
+
+@keyframes sweep-box {
+  0% { transform-origin: left; transform: scaleX(0); }
+  10% { transform-origin: left; transform: scaleX(1); }
+  10.1% { transform-origin: right; transform: scaleX(1); }
+  20% { transform-origin: right; transform: scaleX(0); }
+  
+  50% { transform-origin: right; transform: scaleX(0); }
+  60% { transform-origin: right; transform: scaleX(1); }
+  60.1% { transform-origin: left; transform: scaleX(1); }
+  70% { transform-origin: left; transform: scaleX(0); }
+  
+  100% { transform-origin: left; transform: scaleX(0); }
+}
+
+@keyframes sweep-text1 {
+  0%, 10% { opacity: 1; visibility: visible; }
+  10.1%, 60% { opacity: 0; visibility: hidden; }
+  60.1%, 100% { opacity: 1; visibility: visible; }
+}
+
+@keyframes sweep-text2 {
+  0%, 10% { opacity: 0; visibility: hidden; }
+  10.1%, 60% { opacity: 1; visibility: visible; }
+  60.1%, 100% { opacity: 0; visibility: hidden; }
+}
+
+.animate-sweep-box {
+  background-color: var(--text-strong);
+  transform: scaleX(0);
+  animation: sweep-box 8s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+}
+
+.animate-sweep-text1 {
+  animation: sweep-text1 8s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+}
+
+.animate-sweep-text2 {
+  opacity: 0;
+  animation: sweep-text2 8s cubic-bezier(0.77, 0, 0.175, 1) infinite;
 }
 
 .button-primary {

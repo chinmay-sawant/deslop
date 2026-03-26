@@ -12,9 +12,9 @@ import { GitHubStarsBadge } from '../../../shared/ui/GitHubStarsBadge'
 function Logo() {
   return (
     <Link to="/" className="flex items-center gap-3">
-      <span className="flex h-11 w-11 items-center justify-center border-2 border-[var(--text)] bg-[var(--text)] font-['Newsreader'] italic text-2xl font-bold text-[var(--bg)]">
-        d/
-      </span>
+      <div className="flex h-11 w-11 items-center justify-center border-2 border-[var(--text)] bg-[var(--text)] font-['Newsreader'] italic text-2xl font-bold text-[var(--bg)]">
+        <span className="translate-x-[-1px]">d/</span>
+      </div>
       <span className="flex flex-col leading-none">
         <span className="font-['Newsreader'] italic text-2xl font-bold tracking-[-0.02em] text-[var(--text)]">deslop</span>
         <span className="text-[0.76rem] tracking-[0.02em] text-[var(--muted)] mt-1">
@@ -69,7 +69,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
       const el = document.getElementById('install-run')
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' })
-        window.history.pushState(null, '', '/deslop/#install-run')
+        window.history.pushState(null, '', `${import.meta.env.BASE_URL}#install-run`)
       }
     } else {
       // If we are on /docs, navigate back to home
@@ -77,7 +77,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
       // Small delay to allow react to render the homepage before scrolling natively
       setTimeout(() => {
         document.getElementById('install-run')?.scrollIntoView({ behavior: 'smooth' })
-        window.history.pushState(null, '', '/deslop/#install-run')
+        window.history.pushState(null, '', `${import.meta.env.BASE_URL}#install-run`)
       }, 100)
     }
   }

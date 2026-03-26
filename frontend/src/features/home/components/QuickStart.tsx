@@ -11,13 +11,13 @@ export function QuickStart() {
   return (
     <TabGroup defaultIndex={0} className="mt-14">
       <TabList className="flex flex-wrap gap-3">
-        {orderedItems.map((item, index) => (
+        {orderedItems.map((item) => (
           <Tab
             key={item.label}
             className="cursor-pointer border-b border-transparent px-2 py-4 text-xl sm:text-2xl font-['Newsreader'] italic font-medium text-[var(--muted)] transition data-[hover]:text-[var(--text)] data-[selected]:border-[var(--text-strong)] data-[selected]:text-[var(--text-strong)]"
           >
             <span className="font-['IBM_Plex_Mono'] text-[0.68rem] uppercase tracking-[0.16em]">
-              0{index + 1}
+          
             </span>
             <span className="ml-2">{item.label}</span>
           </Tab>
