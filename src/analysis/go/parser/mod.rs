@@ -16,22 +16,17 @@ use crate::analysis::{Language, ParsedFile, ParsedFunction};
 
 use self::comments::extract_doc_comment;
 use self::context::{
-    collect_busy_wait_lines, collect_ctx_factories, collect_loop_goroutines,
-    collect_goroutines, collect_unmanaged_goroutines,
-    collect_mutex_loops, collect_sleep_loops, has_ctx_param,
+    collect_busy_wait_lines, collect_ctx_factories, collect_goroutines, collect_loop_goroutines,
+    collect_mutex_loops, collect_sleep_loops, collect_unmanaged_goroutines, has_ctx_param,
 };
-use self::errors::{
-    collect_dropped_errors, collect_errorf_calls, collect_panic_errors,
-};
+use self::errors::{collect_dropped_errors, collect_errorf_calls, collect_panic_errors};
 use self::general::{
-    build_test_summary, collect_calls, collect_imports, collect_local_strings,
-    collect_pkg_strings, collect_struct_tags, collect_symbols, count_descendants,
-    extract_receiver, find_package_name,
+    build_test_summary, collect_calls, collect_imports, collect_local_strings, collect_pkg_strings,
+    collect_struct_tags, collect_symbols, count_descendants, extract_receiver, find_package_name,
 };
 use self::performance::{
-    collect_alloc_loops, collect_db_query_calls, collect_fmt_loops,
+    collect_alloc_loops, collect_concat_loops, collect_db_query_calls, collect_fmt_loops,
     collect_json_loops, collect_reflect_loops,
-    collect_concat_loops,
 };
 
 pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
@@ -63,12 +58,15 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         package_name,
         is_test_file,
         syntax_error: root.has_error(),
+        line_count: source.lines().count(),
         byte_size: source.len(),
         pkg_strings: package_string_literals,
+        comments: Vec::new(),
         struct_tags,
         functions,
         imports,
         symbols,
+        class_summaries: Vec::new(),
     })
 }
 
@@ -123,8 +121,7 @@ fn parse_function_node(
     let function_name = source
         .get(node.child_by_field_name("name")?.byte_range())?
         .to_string();
-    let test_summary =
-        build_test_summary(&function_name, body_node, source, &calls, is_test_file);
+    let test_summary = build_test_summary(&function_name, body_node, source, &calls, is_test_file);
     let is_test_function = test_summary.is_some();
     let dropped_error_lines = collect_dropped_errors(body_node, source);
     let panic_on_error_lines = collect_panic_errors(body_node, source);
@@ -132,8 +129,7 @@ fn parse_function_node(
     let context_factory_calls = collect_ctx_factories(body_node, source, imports);
     let goroutine_launch_lines = collect_goroutines(body_node);
     let goroutine_in_loop_lines = collect_loop_goroutines(body_node);
-    let goroutine_without_shutdown_lines =
-        collect_unmanaged_goroutines(body_node, source);
+    let goroutine_without_shutdown_lines = collect_unmanaged_goroutines(body_node, source);
     let sleep_in_loop_lines = collect_sleep_loops(body_node, source, imports);
     let busy_wait_lines = collect_busy_wait_lines(body_node, source);
     let mutex_lock_in_loop_lines = collect_mutex_loops(body_node, source);
@@ -143,6 +139,7 @@ fn parse_function_node(
     let string_concat_in_loop_lines = collect_concat_loops(body_node, source);
     let json_marshal_in_loop_lines = collect_json_loops(body_node, source, imports);
     let db_query_calls = collect_db_query_calls(body_node, source);
+    let body_text = source.get(body_node.byte_range()).unwrap_or_default().to_string();
     let receiver_type = node
         .child_by_field_name("receiver")
         .and_then(|receiver| extract_receiver(receiver, source))
@@ -158,11 +155,16 @@ fn parse_function_node(
     Some(ParsedFunction {
         fingerprint,
         calls,
+        exception_handlers: Vec::new(),
         has_context_parameter,
         is_test_function,
         local_binding_names: Vec::new(),
         doc_comment,
+        body_text,
         local_strings: local_string_literals,
+        normalized_body: String::new(),
+        validation_signature: None,
+        exception_block_signatures: Vec::new(),
         test_summary,
         safety_comment_lines: Vec::new(),
         unsafe_lines: Vec::new(),
@@ -182,5 +184,19 @@ fn parse_function_node(
         concat_loops: string_concat_in_loop_lines,
         json_loops: json_marshal_in_loop_lines,
         db_query_calls,
+        none_comparison_lines: Vec::new(),
+        side_effect_comprehension_lines: Vec::new(),
+        redundant_return_none_lines: Vec::new(),
+        list_materialization_lines: Vec::new(),
+        deque_operation_lines: Vec::new(),
+        temp_collection_lines: Vec::new(),
+        recursive_call_lines: Vec::new(),
+        list_membership_loop_lines: Vec::new(),
+        repeated_len_loop_lines: Vec::new(),
+        builtin_candidate_lines: Vec::new(),
+        missing_context_manager_lines: Vec::new(),
+        has_complete_type_hints: false,
+        has_varargs: false,
+        has_kwargs: false,
     })
 }

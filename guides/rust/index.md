@@ -59,10 +59,10 @@ Checkpoints must describe observable outcomes, not vague intent. Acceptance crit
 
 ## Phase order
 
-1. [Phase 1](phase-1.md): Rust backend scaffold and routing
-2. [Phase 2](phase-2.md): Rust parser and normalized evidence extraction
-3. [Phase 3](phase-3.md): Rust heuristics and findings
-4. [Phase 4](phase-4.md): verification, performance, and rollout
+1. [Phase 1](backend-scaffold-and-routing.md): Rust backend scaffold and routing
+2. [Phase 2](parser-and-evidence-extraction.md): Rust parser and normalized evidence extraction
+3. [Phase 3](heuristics-and-findings.md): Rust heuristics and findings
+4. [Phase 4](verification-performance-and-rollout.md): verification, performance, and rollout
 
 ## Parallel work policy
 
@@ -73,10 +73,10 @@ Checkpoints must describe observable outcomes, not vague intent. Acceptance crit
 
 ## Phase file map
 
-- [phase-1.md](phase-1.md): backend scaffold and scan routing
-- [phase-2.md](phase-2.md): parser contract and evidence model
-- [phase-3.md](phase-3.md): Rust bad-practice heuristics and fixtures
-- [phase-4.md](phase-4.md): verification, benchmark, documentation, and rollout
+- [backend-scaffold-and-routing.md](backend-scaffold-and-routing.md): backend scaffold and scan routing
+- [parser-and-evidence-extraction.md](parser-and-evidence-extraction.md): parser contract and evidence model
+- [heuristics-and-findings.md](heuristics-and-findings.md): Rust bad-practice heuristics and fixtures
+- [verification-performance-and-rollout.md](verification-performance-and-rollout.md): verification, benchmark, documentation, and rollout
 
 ## Rollout artifacts
 

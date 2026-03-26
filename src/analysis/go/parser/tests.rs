@@ -6,10 +6,7 @@ use super::{comments::extract_doc_comment, general::alias_from_path, parse_file}
 
 #[test]
 fn test_import_alias() {
-    assert_eq!(
-        alias_from_path("github.com/acme/utils"),
-        "utils"
-    );
+    assert_eq!(alias_from_path("github.com/acme/utils"), "utils");
 }
 
 #[test]

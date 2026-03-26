@@ -51,13 +51,19 @@ impl RepositoryIndex {
         self.packages.get(&key)
     }
 
-    pub fn resolve_import_path(&self, language: Language, import_path: &str) -> ImportResolution<'_> {
+    pub fn resolve_import_path(
+        &self,
+        language: Language,
+        import_path: &str,
+    ) -> ImportResolution<'_> {
         let mut candidates = self
             .packages
             .values()
-            .filter(|package| {
-                package.language == language
-                    && import_matches_dir(import_path, &package.directory)
+            .filter(|package| match language {
+                Language::Python => {
+                    package.language == language && python_import_matches_module(import_path, package)
+                }
+                _ => package.language == language && import_matches_dir(import_path, &package.directory),
             })
             .collect::<Vec<_>>();
 
@@ -78,8 +84,7 @@ impl RepositoryIndex {
         else {
             return ImportResolution::Unresolved;
         };
-        let Some(target_segments) =
-            normalize_rust_path(import_path, &current_module_segments)
+        let Some(target_segments) = normalize_rust_path(import_path, &current_module_segments)
         else {
             return ImportResolution::Unresolved;
         };
@@ -139,6 +144,50 @@ impl RepositoryIndex {
             import_count,
         }
     }
+}
+
+fn python_import_matches_module(import_path: &str, package: &PackageIndex) -> bool {
+    let import_segments = import_path
+        .split('.')
+        .filter(|segment| !segment.is_empty())
+        .collect::<Vec<_>>();
+    if import_segments.is_empty() {
+        return false;
+    }
+
+    let directory_segments = package
+        .directory
+        .components()
+        .map(|component| component.as_os_str().to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+    let full_import_path = import_segments
+        .iter()
+        .map(|segment| (*segment).to_string())
+        .collect::<Vec<_>>();
+
+    for candidate_index in [
+        import_segments.len().saturating_sub(1),
+        import_segments.len().saturating_sub(2),
+    ] {
+        let Some(candidate_name) = import_segments.get(candidate_index).copied() else {
+            continue;
+        };
+        if candidate_name == "*" || candidate_name != package.package_name {
+            continue;
+        }
+
+        let prefix_without_module = import_segments[..candidate_index]
+            .iter()
+            .map(|segment| (*segment).to_string())
+            .collect::<Vec<_>>();
+        if directory_segments.ends_with(&prefix_without_module)
+            || directory_segments.ends_with(&full_import_path)
+        {
+            return true;
+        }
+    }
+
+    false
 }
 
 impl PackageIndex {
@@ -311,13 +360,16 @@ fn normalize_rust_path(
                 .collect(),
         ),
         "super" => {
-            let super_count = segments.iter().take_while(|segment| segment == &&"super".to_string()).count();
+            let super_count = segments
+                .iter()
+                .take_while(|segment| segment == &&"super".to_string())
+                .count();
             if super_count > current_module_segments.len() {
                 return None;
             }
 
-            let mut resolved = current_module_segments[..current_module_segments.len() - super_count]
-                .to_vec();
+            let mut resolved =
+                current_module_segments[..current_module_segments.len() - super_count].to_vec();
             resolved.extend(segments.into_iter().skip(super_count));
             Some(resolved)
         }
@@ -365,8 +417,10 @@ mod tests {
             package_name: Some(package_name.to_string()),
             is_test_file: false,
             syntax_error: false,
+            line_count: 1,
             byte_size: 10,
             pkg_strings: Vec::new(),
+            comments: Vec::new(),
             struct_tags: Vec::new(),
             functions: function_names
                 .iter()
@@ -390,11 +444,16 @@ mod tests {
                         call_count: 0,
                     },
                     calls: Vec::new(),
+                    exception_handlers: Vec::new(),
                     has_context_parameter: false,
                     is_test_function: false,
                     local_binding_names: Vec::new(),
                     doc_comment: None,
+                    body_text: String::new(),
                     local_strings: Vec::new(),
+                    normalized_body: String::new(),
+                    validation_signature: None,
+                    exception_block_signatures: Vec::new(),
                     test_summary: None,
                     safety_comment_lines: Vec::new(),
                     unsafe_lines: Vec::new(),
@@ -414,6 +473,20 @@ mod tests {
                     concat_loops: Vec::new(),
                     json_loops: Vec::new(),
                     db_query_calls: Vec::new(),
+                    none_comparison_lines: Vec::new(),
+                    side_effect_comprehension_lines: Vec::new(),
+                    redundant_return_none_lines: Vec::new(),
+                    list_materialization_lines: Vec::new(),
+                    deque_operation_lines: Vec::new(),
+                    temp_collection_lines: Vec::new(),
+                    recursive_call_lines: Vec::new(),
+                    list_membership_loop_lines: Vec::new(),
+                    repeated_len_loop_lines: Vec::new(),
+                    builtin_candidate_lines: Vec::new(),
+                    missing_context_manager_lines: Vec::new(),
+                    has_complete_type_hints: false,
+                    has_varargs: false,
+                    has_kwargs: false,
                 })
                 .collect(),
             imports: Vec::new(),
@@ -427,12 +500,18 @@ mod tests {
                     line: 1,
                 })
                 .collect(),
+            class_summaries: Vec::new(),
         }
     }
 
     #[test]
     fn builds_package_lookup() {
-        let files = vec![sample_file(Language::Go, "/repo/utils/sample.go", "utils", &["Trim"])];
+        let files = vec![sample_file(
+            Language::Go,
+            "/repo/utils/sample.go",
+            "utils",
+            &["Trim"],
+        )];
 
         let index = build_repository_index(Path::new("/repo"), &files);
         assert!(
@@ -445,21 +524,39 @@ mod tests {
     #[test]
     fn test_pkg_separation() {
         let files = vec![
-            sample_file(Language::Go, "/repo/pkg/render/main.go", "render", &["Normalize"]),
-            sample_file(Language::Go, "/repo/internal/render/main.go", "render", &["Sanitize"]),
+            sample_file(
+                Language::Go,
+                "/repo/pkg/render/main.go",
+                "render",
+                &["Normalize"],
+            ),
+            sample_file(
+                Language::Go,
+                "/repo/internal/render/main.go",
+                "render",
+                &["Sanitize"],
+            ),
         ];
 
         let index = build_repository_index(Path::new("/repo"), &files);
 
         assert!(
             index
-                .package_for_file(Language::Go, Path::new("/repo/pkg/render/main.go"), "render")
+                .package_for_file(
+                    Language::Go,
+                    Path::new("/repo/pkg/render/main.go"),
+                    "render"
+                )
                 .is_some_and(|package| package.has_function("Normalize")
                     && !package.has_function("Sanitize"))
         );
         assert!(
             index
-                .package_for_file(Language::Go, Path::new("/repo/internal/render/main.go"), "render")
+                .package_for_file(
+                    Language::Go,
+                    Path::new("/repo/internal/render/main.go"),
+                    "render"
+                )
                 .is_some_and(|package| package.has_function("Sanitize")
                     && !package.has_function("Normalize"))
         );
@@ -468,8 +565,18 @@ mod tests {
     #[test]
     fn test_import_suffix() {
         let files = vec![
-            sample_file(Language::Go, "/repo/pkg/render/main.go", "render", &["Normalize"]),
-            sample_file(Language::Go, "/repo/internal/render/main.go", "render", &["Sanitize"]),
+            sample_file(
+                Language::Go,
+                "/repo/pkg/render/main.go",
+                "render",
+                &["Normalize"],
+            ),
+            sample_file(
+                Language::Go,
+                "/repo/internal/render/main.go",
+                "render",
+                &["Sanitize"],
+            ),
         ];
 
         let index = build_repository_index(Path::new("/repo"), &files);
@@ -487,24 +594,66 @@ mod tests {
     #[test]
     fn test_mixed_lang() {
         let files = vec![
-            sample_file(Language::Go, "/repo/pkg/render/main.go", "render", &["Normalize"]),
-            sample_file(Language::Rust, "/repo/pkg/render/lib.rs", "render", &["NormalizeRust"]),
+            sample_file(
+                Language::Go,
+                "/repo/pkg/render/main.go",
+                "render",
+                &["Normalize"],
+            ),
+            sample_file(
+                Language::Rust,
+                "/repo/pkg/render/lib.rs",
+                "render",
+                &["NormalizeRust"],
+            ),
+            sample_file(
+                Language::Python,
+                "/repo/pkg/render/__init__.py",
+                "render",
+                &["normalize_python"],
+            ),
         ];
 
         let index = build_repository_index(Path::new("/repo"), &files);
 
-        assert!(index
-            .package_for_file(Language::Go, Path::new("/repo/pkg/render/main.go"), "render")
-            .is_some_and(|package| package.has_function("Normalize") && !package.has_function("NormalizeRust")));
-        assert!(index
-            .package_for_file(Language::Rust, Path::new("/repo/pkg/render/lib.rs"), "render")
-            .is_some_and(|package| package.has_function("NormalizeRust") && !package.has_function("Normalize")));
+        assert!(
+            index
+                .package_for_file(
+                    Language::Go,
+                    Path::new("/repo/pkg/render/main.go"),
+                    "render"
+                )
+                .is_some_and(|package| package.has_function("Normalize")
+                    && !package.has_function("NormalizeRust"))
+        );
+        assert!(
+            index
+                .package_for_file(
+                    Language::Rust,
+                    Path::new("/repo/pkg/render/lib.rs"),
+                    "render"
+                )
+                .is_some_and(|package| package.has_function("NormalizeRust")
+                    && !package.has_function("Normalize"))
+        );
+        assert!(
+            index
+                .package_for_file(
+                    Language::Python,
+                    Path::new("/repo/pkg/render/__init__.py"),
+                    "render"
+                )
+                .is_some_and(|package| package.has_function("normalize_python")
+                    && !package.has_function("Normalize")
+                    && !package.has_function("NormalizeRust"))
+        );
 
         match index.resolve_import_path(Language::Go, "github.com/acme/project/pkg/render") {
             ImportResolution::Resolved(package) => {
                 assert_eq!(package.language, Language::Go);
                 assert!(package.has_function("Normalize"));
                 assert!(!package.has_function("NormalizeRust"));
+                assert!(!package.has_function("normalize_python"));
             }
             other => panic!("expected go package resolution, got {other:?}"),
         }
@@ -513,17 +662,29 @@ mod tests {
     #[test]
     fn test_rust_imports() {
         let files = vec![
-            sample_file(Language::Rust, "/repo/src/config/mod.rs", "config", &["shared"]),
-            sample_file(Language::Rust, "/repo/src/config/render.rs", "render", &["normalize"]),
-            sample_file(Language::Rust, "/repo/src/config/sub/helpers.rs", "helpers", &["load"]),
+            sample_file(
+                Language::Rust,
+                "/repo/src/config/mod.rs",
+                "config",
+                &["shared"],
+            ),
+            sample_file(
+                Language::Rust,
+                "/repo/src/config/render.rs",
+                "render",
+                &["normalize"],
+            ),
+            sample_file(
+                Language::Rust,
+                "/repo/src/config/sub/helpers.rs",
+                "helpers",
+                &["load"],
+            ),
         ];
 
         let index = build_repository_index(Path::new("/repo"), &files);
 
-        match index.resolve_rust_import(
-            Path::new("/repo/src/lib.rs"),
-            "crate::config::render",
-        ) {
+        match index.resolve_rust_import(Path::new("/repo/src/lib.rs"), "crate::config::render") {
             ImportResolution::Resolved(package) => {
                 assert_eq!(package.directory, PathBuf::from("src/config"));
                 assert!(package.has_function("normalize"));
@@ -531,10 +692,7 @@ mod tests {
             other => panic!("expected crate import to resolve, got {other:?}"),
         }
 
-        match index.resolve_rust_import(
-            Path::new("/repo/src/config/mod.rs"),
-            "self::render",
-        ) {
+        match index.resolve_rust_import(Path::new("/repo/src/config/mod.rs"), "self::render") {
             ImportResolution::Resolved(package) => {
                 assert_eq!(package.directory, PathBuf::from("src/config"));
                 assert!(package.has_function("normalize"));

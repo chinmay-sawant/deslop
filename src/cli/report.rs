@@ -8,31 +8,35 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
     let mut output = String::new();
     let findings = visible_findings(report, details);
 
-    let _ = writeln!(&mut output, "deslop scan root: {}", report.root.display()) ;
+    let _ = writeln!(&mut output, "deslop scan root: {}", report.root.display());
     let _ = writeln!(
         &mut output,
         "Source files discovered: {}",
         report.files_discovered
-    ) ;
-    let _ = writeln!(&mut output, "Source files analyzed: {}", report.files_analyzed) ;
+    );
+    let _ = writeln!(
+        &mut output,
+        "Source files analyzed: {}",
+        report.files_analyzed
+    );
     let _ = writeln!(
         &mut output,
         "Functions fingerprinted: {}",
         report.functions_found
-    ) ;
-    let _ = writeln!(&mut output, "Findings: {}", findings.len()) ;
+    );
+    let _ = writeln!(&mut output, "Findings: {}", findings.len());
     let _ = writeln!(
         &mut output,
         "Index summary: packages={} symbols={} imports={}",
         report.index_summary.package_count,
         report.index_summary.symbol_count,
         report.index_summary.import_count
-    ) ;
+    );
     let _ = writeln!(
         &mut output,
         "Parse failures: {}",
         report.parse_failures.len()
-    ) ;
+    );
     let _ = writeln!(
         &mut output,
         "Timings: discover={}ms parse={}ms index={}ms heuristics={}ms total={}ms",
@@ -41,7 +45,7 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
         report.timings.index_ms,
         report.timings.heuristics_ms,
         report.timings.total_ms
-    ) ;
+    );
 
     if details {
         for file in &report.files {

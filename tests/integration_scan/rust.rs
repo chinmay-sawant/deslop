@@ -85,7 +85,11 @@ fn test_mixed_repo() {
 #[test]
 fn test_rust_rules() {
     let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("rule_pack_positive.txt"));
+    write_fixture(
+        &temp_dir,
+        "src/lib.rs",
+        rust_fixture!("rule_pack_positive.txt"),
+    );
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -93,17 +97,72 @@ fn test_rust_rules() {
     })
     .expect("scan should succeed");
 
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "todo_macro_leftover"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "unimplemented_macro_leftover"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "dbg_macro_leftover"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "panic_macro_leftover"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "unreachable_macro_leftover"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "todo_doc_comment_leftover"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "fixme_doc_comment_leftover"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "hack_doc_comment_leftover"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "unwrap_in_non_test_code"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "expect_in_non_test_code"));
-    assert!(report.findings.iter().any(|finding| finding.rule_id == "unsafe_without_safety_comment"));
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "todo_macro_leftover")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "unimplemented_macro_leftover")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "dbg_macro_leftover")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "panic_macro_leftover")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "unreachable_macro_leftover")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "todo_doc_comment_leftover")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "fixme_doc_comment_leftover")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hack_doc_comment_leftover")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "unwrap_in_non_test_code")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "expect_in_non_test_code")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "unsafe_without_safety_comment")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -111,7 +170,11 @@ fn test_rust_rules() {
 #[test]
 fn test_rust_suppressions() {
     let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("rule_pack_negative.txt"));
+    write_fixture(
+        &temp_dir,
+        "src/lib.rs",
+        rust_fixture!("rule_pack_negative.txt"),
+    );
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -119,17 +182,72 @@ fn test_rust_suppressions() {
     })
     .expect("scan should succeed");
 
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "todo_macro_leftover"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "unimplemented_macro_leftover"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "dbg_macro_leftover"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "panic_macro_leftover"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "unreachable_macro_leftover"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "todo_doc_comment_leftover"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "fixme_doc_comment_leftover"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "hack_doc_comment_leftover"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "unwrap_in_non_test_code"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "expect_in_non_test_code"));
-    assert!(!report.findings.iter().any(|finding| finding.rule_id == "unsafe_without_safety_comment"));
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "todo_macro_leftover")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "unimplemented_macro_leftover")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "dbg_macro_leftover")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "panic_macro_leftover")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "unreachable_macro_leftover")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "todo_doc_comment_leftover")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "fixme_doc_comment_leftover")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hack_doc_comment_leftover")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "unwrap_in_non_test_code")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "expect_in_non_test_code")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "unsafe_without_safety_comment")
+    );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -261,7 +379,10 @@ fn test_rust_direct_ok() {
     assert!(!report.findings.iter().any(|finding| {
         matches!(
             finding.function_name.as_deref(),
-            Some("run_direct_import") | Some("run_same_module") | Some("run_local_closure") | Some("run_constructor")
+            Some("run_direct_import")
+                | Some("run_same_module")
+                | Some("run_local_closure")
+                | Some("run_constructor")
         ) && matches!(
             finding.rule_id.as_str(),
             "hallucinated_import_call" | "hallucinated_local_call"

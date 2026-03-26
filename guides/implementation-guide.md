@@ -2,7 +2,7 @@
 
 ## Overview
 
-deslop is structured as a multi-stage Rust analysis pipeline for Go and Rust repositories. The current implementation focuses on fast full-repository ingestion, lightweight structural fingerprints, a repository-local symbol index, explainable heuristic findings, and repeatable benchmark measurements.
+deslop is structured as a multi-stage Rust analysis pipeline for Go, Python, and Rust repositories. The current implementation focuses on fast full-repository ingestion, lightweight structural fingerprints, a repository-local symbol index, explainable heuristic findings, and repeatable benchmark measurements.
 
 The code is intentionally split so later phases such as copypasta detection, control-flow analysis, taint tracking, and auto-fix generation can consume stable intermediate results instead of reparsing source files or embedding analysis logic inside the CLI.
 
@@ -31,7 +31,7 @@ This stage is responsible only for file selection. It does not parse or classify
 
 ### Parse stage
 
-`src/analysis/mod.rs` exposes the language-agnostic analyzer boundary. `src/analysis/go/parser.rs` wraps `tree-sitter` and `tree-sitter-go`, and `src/analysis/rust/parser.rs` wraps `tree-sitter-rust` for the current Rust backend.
+`src/analysis/mod.rs` exposes the language-agnostic analyzer boundary. `src/analysis/go/parser.rs` wraps `tree-sitter` and `tree-sitter-go`, `src/analysis/python/parser/mod.rs` wraps `tree-sitter-python`, and `src/analysis/rust/parser.rs` wraps `tree-sitter-rust` for the current backends.
 
 For each Go file, the parser extracts:
 
@@ -46,6 +46,22 @@ For each Go file, the parser extracts:
 - per-function fingerprints
 
 Parsing remains syntax-tolerant. Files with syntax errors still participate in the report when tree-sitter can recover enough structure.
+
+For Python files, the current parser extracts:
+
+- conservative module names derived from file paths
+- import statements and aliases from `import` and `from ... import ...` forms
+- module-level functions, class methods, and class symbols
+- per-function call sites using direct and attribute-style call targets
+- async function classification through function-kind metadata
+- module-level and local string literals that can support shared secret-style heuristics
+- function docstrings, raw function body text, hash-comment summaries, local binding names, conservative exception-handler evidence, validation and duplicate-block signatures, and conservative test-file and test-function classification
+- loop-local string concatenation evidence plus Phase 4 loop-body summaries for temporary collections, recursive calls, list membership checks, repeated `len(...)` checks, built-in reduction candidates, and missing context-manager candidates
+- class summaries including inheritance bases, public method counts, and eager constructor collaborator counts
+- normalized function-body shapes for conservative duplicate utility comparisons across test and production code
+- syntax error state
+
+Python support remains syntax-oriented. It does not execute imports, resolve installed packages, or attempt mypy-style semantic understanding.
 
 For Rust files, the current parser extracts:
 
@@ -87,13 +103,13 @@ These fingerprints are intended as low-cost primitives for later heuristic and r
 - per-package import counts
 - local directory origins for more precise import-call resolution
 
-The index is now language-scoped as well, so mixed Go and Rust repositories do not merge same-directory symbols into one local package entry.
+The index is now language-scoped as well, so mixed Go, Python, and Rust repositories do not merge same-directory symbols into one local package entry.
 
 This index is deliberately lightweight. It is useful for local-context checks, but it is not an authoritative substitute for `go/types`. Import-call resolution is now package-plus-directory aware, which reduces ambiguity when multiple local packages share the same package name.
 
 ### Heuristic layer
 
-`src/heuristics/mod.rs` currently implements several shared and Go-specific rule families, and `src/analysis/rust/mod.rs` hosts the first Rust-specific rule pack:
+`src/heuristics/mod.rs` currently implements several shared and Go-specific rule families, `src/heuristics/python/` now hosts the first Python-specific rule pack, and `src/analysis/rust/mod.rs` hosts the first Rust-specific rule pack:
 
 1. `generic_name`
    Flags functions whose names are unusually generic, but only when the function also lacks stronger contextual signals such as specific typing or commentary.
@@ -121,6 +137,9 @@ This index is deliberately lightweight. It is useful for local-context checks, b
 
 9. `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, Rust-local `hallucinated_import_call`, and Rust-local `hallucinated_local_call`
    The Rust backend uses parser-level call, local-binding, doc-comment, test-classification, import-alias, and unsafe-comment evidence to flag obvious leftover macros, leftover TODO or FIXME doc comments, `.unwrap()` and `.expect(...)` in non-test Rust code, local imported calls that do not match indexed Rust modules, direct same-module calls that do not match indexed Rust symbols, and `unsafe` usage that lacks a nearby `SAFETY:` comment.
+
+10. `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, Python `full_dataset_load`, Python `string_concat_in_loop`, and the Phase 4 plus Phase 5 Python backlog expansion
+   The Python heuristic layer now uses parser-level async function kind, raw function body text, import aliases, call sites, exception-handler evidence, validation and duplicate-block signatures, function-body normalization, class summaries, and repository-local Python module resolution to flag blocking sync I/O inside `async def`, broad exception handlers, direct `eval()` and `exec()` usage, debug-style `print()` leftovers, `None` identity mistakes, side-effect comprehensions, redundant `return None`, hardcoded path strings, hardcoded business thresholds, branch-shaping magic values, conservative reinvented-utility overlaps, variadic public APIs, list materialization for first-element access, queue-style list operations, temporary collection churn inside loops, recursive traversal risk, list membership checks inside loops, repeated `len(...)` checks inside loops, built-in reduction candidates, missing context managers, boundary HTTP calls with no obvious timeout or retry policy, environment-boundary configuration reads with no visible fallback, external-input entry points with no obvious validation path, missing public type hints, mixed sync and async modules, god functions, god classes, monolithic `__init__.py` modules, oversized instance-attribute sets, eager constructor collaborators, over-abstracted wrappers, mixed-concern functions, responsibility mismatches, deep inheritance chains, tight module coupling, textbook docstrings on tiny helpers, mixed naming conventions, unrelated heavy imports, obvious or enthusiastic commentary, commented-out code, repeated long literals, duplicate error-handler blocks, duplicate validation pipelines, duplicate test utility logic, full-file materialization patterns such as `open(...).read()` or `Path(...).read_text()`, and repeated string concatenation inside loops.
 
 ### Benchmark layer
 
@@ -165,7 +184,7 @@ The benchmark report includes:
 cargo run -- scan /absolute/path/to/repo
 ```
 
-The scan command auto-detects supported languages from the files present under the target root, so the same command works for Go-only repositories, Rust-only repositories, and mixed repositories.
+The scan command auto-detects supported languages from the files present under the target root, so the same command works for Go-only repositories, Python-only repositories, Rust-only repositories, and mixed repositories.
 
 This default output prints the summary plus findings only.
 

@@ -66,10 +66,7 @@ pub(super) fn pkg_secret_findings(file: &ParsedFile) -> Vec<Finding> {
         .collect()
 }
 
-pub(super) fn secret_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn secret_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .local_strings
         .iter()
@@ -95,10 +92,7 @@ pub(super) fn secret_findings(
         .collect()
 }
 
-pub(super) fn sql_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn sql_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .db_query_calls
         .iter()

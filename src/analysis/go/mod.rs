@@ -34,11 +34,7 @@ impl LanguageBackend for GoAnalyzer {
         evaluate_go_file(file, index)
     }
 
-    fn evaluate_repo(
-        &self,
-        files: &[&ParsedFile],
-        index: &RepositoryIndex,
-    ) -> Vec<Finding> {
+    fn evaluate_repo(&self, files: &[&ParsedFile], index: &RepositoryIndex) -> Vec<Finding> {
         evaluate_go_repo(files, index)
     }
 }

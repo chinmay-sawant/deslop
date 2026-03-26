@@ -14,7 +14,8 @@ pub(super) fn hallucination_findings(
         Some(package_name) => package_name,
         None => return findings,
     };
-    let Some(current_package) = index.package_for_file(file.language, &file.path, package_name) else {
+    let Some(current_package) = index.package_for_file(file.language, &file.path, package_name)
+    else {
         return findings;
     };
 

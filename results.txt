@@ -1,8 +1,0 @@
-deslop scan root: .
-Source files discovered: 50
-Source files analyzed: 49
-Functions fingerprinted: 362
-Findings: 0
-Index summary: packages=49 symbols=431 imports=399
-Parse failures: 0
-Timings: discover=13ms parse=120ms index=0ms heuristics=16ms total=150ms

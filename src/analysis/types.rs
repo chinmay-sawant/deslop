@@ -10,23 +10,31 @@ pub(crate) struct ParsedFile {
     pub package_name: Option<String>,
     pub is_test_file: bool,
     pub syntax_error: bool,
+    pub line_count: usize,
     pub byte_size: usize,
     pub pkg_strings: Vec<NamedLiteral>,
+    pub comments: Vec<CommentSummary>,
     pub struct_tags: Vec<StructTag>,
     pub functions: Vec<ParsedFunction>,
     pub imports: Vec<ImportSpec>,
     pub symbols: Vec<DeclaredSymbol>,
+    pub class_summaries: Vec<ClassSummary>,
 }
 
 #[derive(Debug, Clone)]
 pub(crate) struct ParsedFunction {
     pub fingerprint: FunctionFingerprint,
     pub calls: Vec<CallSite>,
+    pub exception_handlers: Vec<ExceptionHandler>,
     pub has_context_parameter: bool,
     pub is_test_function: bool,
     pub local_binding_names: Vec<String>,
     pub doc_comment: Option<String>,
-        pub local_strings: Vec<NamedLiteral>,
+    pub body_text: String,
+    pub local_strings: Vec<NamedLiteral>,
+    pub normalized_body: String,
+    pub validation_signature: Option<BlockFingerprint>,
+    pub exception_block_signatures: Vec<BlockFingerprint>,
     pub test_summary: Option<TestFunctionSummary>,
     pub safety_comment_lines: Vec<usize>,
     pub unsafe_lines: Vec<usize>,
@@ -46,6 +54,44 @@ pub(crate) struct ParsedFunction {
     pub concat_loops: Vec<usize>,
     pub json_loops: Vec<usize>,
     pub db_query_calls: Vec<DbQueryCall>,
+    pub none_comparison_lines: Vec<usize>,
+    pub side_effect_comprehension_lines: Vec<usize>,
+    pub redundant_return_none_lines: Vec<usize>,
+    pub list_materialization_lines: Vec<usize>,
+    pub deque_operation_lines: Vec<usize>,
+    pub temp_collection_lines: Vec<usize>,
+    pub recursive_call_lines: Vec<usize>,
+    pub list_membership_loop_lines: Vec<usize>,
+    pub repeated_len_loop_lines: Vec<usize>,
+    pub builtin_candidate_lines: Vec<usize>,
+    pub missing_context_manager_lines: Vec<usize>,
+    pub has_complete_type_hints: bool,
+    pub has_varargs: bool,
+    pub has_kwargs: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct ClassSummary {
+    pub name: String,
+    pub line: usize,
+    pub end_line: usize,
+    pub method_count: usize,
+    pub public_method_count: usize,
+    pub instance_attribute_count: usize,
+    pub base_classes: Vec<String>,
+    pub constructor_collaborator_count: usize,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct CommentSummary {
+    pub line: usize,
+    pub text: String,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct BlockFingerprint {
+    pub line: usize,
+    pub signature: String,
 }
 
 #[derive(Debug, Clone)]
@@ -103,6 +149,15 @@ pub(crate) struct CallSite {
     pub receiver: Option<String>,
     pub name: String,
     pub line: usize,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct ExceptionHandler {
+    pub line: usize,
+    pub clause: String,
+    pub action: Option<String>,
+    pub is_broad: bool,
+    pub suppresses: bool,
 }
 
 #[derive(Debug, Clone)]

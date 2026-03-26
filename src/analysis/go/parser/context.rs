@@ -4,11 +4,7 @@ use crate::analysis::{ContextFactoryCall, ImportSpec};
 
 use super::general::{count_descendants, is_identifier_name, split_assignment};
 
-pub(super) fn has_ctx_param(
-    node: Node<'_>,
-    source: &str,
-    imports: &[ImportSpec],
-) -> bool {
+pub(super) fn has_ctx_param(node: Node<'_>, source: &str, imports: &[ImportSpec]) -> bool {
     let Some(parameters_node) = node.child_by_field_name("parameters") else {
         return false;
     };
@@ -196,10 +192,7 @@ fn visit_loop_goroutines(node: Node<'_>, inside_loop: bool, lines: &mut Vec<usiz
     }
 }
 
-pub(super) fn collect_unmanaged_goroutines(
-    body_node: Node<'_>,
-    source: &str,
-) -> Vec<usize> {
+pub(super) fn collect_unmanaged_goroutines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_unmanaged_goroutines(body_node, source, &mut lines);
     lines
@@ -235,12 +228,7 @@ pub(super) fn collect_mutex_loops(body_node: Node<'_>, source: &str) -> Vec<usiz
     lines
 }
 
-fn visit_mutex_loops(
-    node: Node<'_>,
-    source: &str,
-    inside_loop: bool,
-    lines: &mut Vec<usize>,
-) {
+fn visit_mutex_loops(node: Node<'_>, source: &str, inside_loop: bool, lines: &mut Vec<usize>) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
     if next_inside_loop

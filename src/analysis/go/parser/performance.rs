@@ -290,12 +290,7 @@ pub(super) fn collect_db_query_calls(body_node: Node<'_>, source: &str) -> Vec<D
     calls
 }
 
-fn visit_db_queries(
-    node: Node<'_>,
-    source: &str,
-    inside_loop: bool,
-    calls: &mut Vec<DbQueryCall>,
-) {
+fn visit_db_queries(node: Node<'_>, source: &str, inside_loop: bool, calls: &mut Vec<DbQueryCall>) {
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
     if node.kind() == "call_expression" {
@@ -312,9 +307,8 @@ fn visit_db_queries(
             let query_text = arguments_node
                 .and_then(|arguments| query_argument_node(arguments, &name))
                 .and_then(|query_node| first_string_literal(query_node, source));
-            let query_uses_dynamic_construction = query_argument_text
-                .as_deref()
-                .is_some_and(is_dynamic_query);
+            let query_uses_dynamic_construction =
+                query_argument_text.as_deref().is_some_and(is_dynamic_query);
             calls.push(DbQueryCall {
                 line: node.start_position().row + 1,
                 receiver,
