@@ -1,5 +1,6 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 import { ArrowUpRightIcon, Bars3Icon, MoonIcon, SunIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Link } from 'react-router-dom'
 
 import { navigation, siteMetadata } from '../../../content/site-content'
 import { cn } from '../../../shared/lib/cn'
@@ -10,7 +11,7 @@ import { GitHubStarsBadge } from '../../../shared/ui/GitHubStarsBadge'
 
 function Logo() {
   return (
-    <a href="#top" className="flex items-center gap-3">
+    <Link to="/" className="flex items-center gap-3">
       <span className="flex h-11 w-11 items-center justify-center border-2 border-[var(--text)] bg-[var(--text)] font-['Newsreader'] italic text-2xl font-bold text-[var(--bg)]">
         d/
       </span>
@@ -20,7 +21,7 @@ function Logo() {
           Go code review signals
         </span>
       </span>
-    </a>
+    </Link>
   )
 }
 
@@ -77,15 +78,15 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
 
             <nav className="hidden items-center gap-1 md:flex">
               {navigation.map((item) => (
-                <a key={item.href} href={item.href} className={navLinkClassName}>
+                <Link key={item.href} to={item.href} className={navLinkClassName}>
                   {item.label}
-                </a>
+                </Link>
               ))}
             </nav>
 
             <div className="hidden items-center gap-3 md:flex">
               <ThemeToggleButton theme={theme} onToggleTheme={onToggleTheme} />
-              <a href="#install-run" className="button-primary">
+              <a href="/#install-run" className="button-primary">
                 Install and run
                 <ArrowUpRightIcon className="h-4 w-4" aria-hidden="true" />
               </a>
@@ -113,12 +114,12 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
                 />
                 <div className="flex flex-col gap-1">
                   {navigation.map((item) => (
-                    <a key={item.href} href={item.href} className={cn(navLinkClassName, 'px-4 py-3')}>
+                    <Link key={item.href} to={item.href} className={cn(navLinkClassName, 'px-4 py-3')}>
                       {item.label}
-                    </a>
+                    </Link>
                   ))}
                 </div>
-                <a href="#install-run" className="button-primary mt-3 w-full">
+                <a href="/#install-run" className="button-primary mt-3 w-full">
                   Install and run
                 </a>
               </div>

@@ -81,11 +81,8 @@ export const siteMetadata: SiteMetadata = {
 }
 
 export const navigation: NavItem[] = [
-  { label: 'Signals', href: '#features' },
-  { label: 'Pipeline', href: '#pipeline' },
-  { label: 'Use cases', href: '#use-cases' },
-  { label: 'Install and run', href: '#install-run' },
-  { label: 'Principles', href: '#principles' },
+  { label: 'Documentation', href: '/docs' },
+  { label: 'Install and run', href: '/#install-run' },
 ]
 
 export const trustPillars = [
@@ -311,10 +308,9 @@ export const metrics: Metric[] = [
 ]
 
 export const footerLinks: NavItem[] = [
-  { label: 'Back to top', href: '#top' },
-  { label: 'Detection families', href: '#features' },
-  { label: 'Pipeline', href: '#pipeline' },
-  { label: 'Install and run', href: '#install-run' },
+  { label: 'Back to top', href: '/#top' },
+  { label: 'Documentation', href: '/docs' },
+  { label: 'Install and run', href: '/#install-run' },
 ]
 
 export const footerSources = [

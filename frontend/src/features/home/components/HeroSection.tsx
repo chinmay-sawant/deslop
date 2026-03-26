@@ -12,7 +12,7 @@ export function HeroSection() {
           Code moves fast. <br className="hidden sm:block" />
           <span className="italic text-[var(--muted)]">Context is left behind.</span>
         </h1>
-        <p className="mt-10 mx-auto max-w-2xl text-[1.15rem] leading-[1.8] text-[var(--muted)] sm:text-[1.35rem]">
+        <p className="mt-10 mx-auto max-w-2xl text-[1.15rem] leading-[1.8] text-center text-[var(--muted)] sm:text-[1.35rem]">
           Deslop helps teams surface patterns that show up when code is generated quickly and reviewed late: vague naming, brittle error handling, and thin tests. A tool built by engineers feeling the pain of synthetic code.
         </p>
 
