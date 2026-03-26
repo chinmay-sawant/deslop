@@ -81,8 +81,8 @@ export const siteMetadata: SiteMetadata = {
 }
 
 export const navigation: NavItem[] = [
-  { label: 'Documentation', href: '/docs' },
   { label: 'Install and run', href: '/#install-run' },
+  { label: 'Documentation', href: '/docs' },
 ]
 
 export const trustPillars = [

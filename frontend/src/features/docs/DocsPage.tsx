@@ -112,6 +112,25 @@ const pythonRules: Rule[] = [
   { id: 'duplicate_error_handler_block', description: 'Repeated exception-handling block shapes in one file.' },
   { id: 'duplicate_validation_pipeline', description: 'Repeated validation guard pipelines across functions in one file.' },
   { id: 'cross_file_copy_paste_function', description: 'Highly similar non-test function bodies repeated across multiple Python files.' },
+  { id: 'hallucinated_import_call', description: 'Package-qualified calls that do not match locally indexed symbols for the imported Python package.' },
+  { id: 'hallucinated_local_call', description: 'Same-package calls to Python symbols not present in the scanned local package context.' },
+  { id: 'hardcoded_business_rule', description: 'Hardcoded threshold, rate-limit, or pricing-style literals assigned inside non-test Python functions.' },
+  { id: 'magic_value_branching', description: 'Branching logic based on magic string or integer literals instead of named constants or enums.' },
+  { id: 'reinvented_utility', description: 'Simple helper implementations that look like obvious candidates for Python standard library or popular package utilities.' },
+  { id: 'builtin_reduction_candidate', description: 'Loop shapes that look like obvious sum, any, or all candidates.' },
+  { id: 'missing_context_manager', description: 'Resource management (files, network connections) inside non-test Python functions that omits with-statement context managers.' },
+  { id: 'environment_boundary_without_fallback', description: 'Environment-variable lookups that omit a default value or explicit failure handler.' },
+  { id: 'module_name_responsibility_mismatch', description: 'Modules using utility-style names that coordinate multiple infrastructure concerns (HTTP, persistence, etc.).' },
+  { id: 'mixed_naming_conventions', description: 'File mixes snake_case and camelCase function naming conventions.' },
+  { id: 'textbook_docstring_small_helper', description: 'Very small helper functions that have unusually long, textbook-style docstrings.' },
+  { id: 'obvious_commentary', description: 'Comments that narrate obvious implementation steps instead of explaining intent.' },
+  { id: 'enthusiastic_commentary', description: 'Unusually enthusiastic or emoji-heavy production comments.' },
+  { id: 'commented_out_code', description: 'Blocks of commented-out source code left in production files.' },
+  { id: 'repeated_string_literal', description: 'Project repeats the same long string literal multiple times in one file.' },
+  { id: 'cross_file_repeated_literal', description: 'Project repeats the same long string literal across multiple files.' },
+  { id: 'duplicate_test_utility_logic', description: 'Highly similar utility logic shared between test and production code.' },
+  { id: 'duplicate_query_fragment', description: 'Repository repeats the same SQL-like query fragment across multiple files.' },
+  { id: 'duplicate_transformation_pipeline', description: 'Repository repeats the same data transformation pipeline stages across multiple functions.' },
   { id: 'network_boundary_without_timeout', description: 'Request, sync, or job-style Python functions that call HTTP boundaries with no obvious timeout or retry policy.' },
   { id: 'external_input_without_validation', description: 'Request or CLI entry points that trust external input without obvious validation or guard checks.' },
   { id: 'hardcoded_secret', description: 'Secret-like identifiers assigned direct string literals (shared signal).' },
@@ -181,7 +200,7 @@ const overviewContent = {
   },
   python: {
     title: 'Python Analysis',
-    lead: 'Python support covers a broad rule pack built around common AI-generation signals: blocked async code, swallowed exceptions, god classes, monolithic modules, over-abstracted wrappers, and many more. The parser extracts imports, symbols, call sites, docstrings, test classification, and loop patterns. Python findings are language-scoped so they do not merge with Go or Rust symbols in mixed repos.',
+    lead: 'Python support covers a broad rule pack built around common AI-generation signals: hallucinated symbol calls, blocked async code, swallowed exceptions, god classes, monolithic modules, over-abstracted wrappers, and many more. The parser extracts imports, symbols, call sites, docstrings, test classification, and loop patterns. Python findings are language-scoped so they do not merge with Go or Rust symbols in mixed repos.',
     bullets: [
       'Parses .py files with tree-sitter-python alongside Go and Rust files',
       'Extracts imports, declared symbols, call sites, docstrings, and test classification',
@@ -586,7 +605,7 @@ export function DocsPage() {
           <p className="docs-p">The following capabilities are pending or in development:</p>
           <div className="docs-pill-list">
             {activeLang === 'go' && ['Stronger repo-wide style checks', 'Deeper goroutine lifetime analysis', 'Better context propagation through wrappers', 'Optional deeper semantic analysis'].map(p => <span key={p} className="docs-pill">{p}</span>)}
-            {activeLang === 'python' && ['Python local-module hallucination checks', 'Stronger asyncio-specific reasoning', 'Repository-scale coupling analysis', 'Python type annotation inference'].map(p => <span key={p} className="docs-pill">{p}</span>)}
+            {activeLang === 'python' && ['Stronger asyncio-specific reasoning', 'Python type annotation inference', 'Type-aware data flow analysis', 'Framework-specific rule packs (Django/FastAPI)'].map(p => <span key={p} className="docs-pill">{p}</span>)}
             {activeLang === 'rust' && ['Trait resolution', 'Cargo workspace modeling', 'Macro expansion analysis', 'Deeper Rust rule pack', 'Cross-crate symbol resolution'].map(p => <span key={p} className="docs-pill">{p}</span>)}
           </div>
         </div>
