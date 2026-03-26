@@ -11,12 +11,12 @@ import { GitHubStarsBadge } from '../../../shared/ui/GitHubStarsBadge'
 function Logo() {
   return (
     <a href="#top" className="flex items-center gap-3">
-      <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--accent-soft)] font-['Space_Grotesk'] text-lg font-bold text-[var(--text)]">
+      <span className="flex h-11 w-11 items-center justify-center border-2 border-[var(--text)] bg-[var(--text)] font-['Newsreader'] italic text-2xl font-bold text-[var(--bg)]">
         d/
       </span>
       <span className="flex flex-col leading-none">
-        <span className="font-['Space_Grotesk'] text-lg font-bold tracking-[-0.05em] text-[var(--text)]">deslop</span>
-        <span className="text-[0.76rem] tracking-[0.02em] text-[var(--muted)]">
+        <span className="font-['Newsreader'] italic text-2xl font-bold tracking-[-0.02em] text-[var(--text)]">deslop</span>
+        <span className="text-[0.76rem] tracking-[0.02em] text-[var(--muted)] mt-1">
           Go code review signals
         </span>
       </span>
@@ -25,7 +25,7 @@ function Logo() {
 }
 
 const navLinkClassName =
-  'rounded-full px-4 py-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]'
+  'px-4 py-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]'
 
 type HeaderProps = {
   theme: Theme
@@ -45,7 +45,7 @@ function ThemeToggleButton({ theme, onToggleTheme, compact = false }: ThemeToggl
       type="button"
       onClick={onToggleTheme}
       className={cn(
-        'inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--panel)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--accent-soft)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]',
+        'inline-flex min-h-11 items-center justify-center gap-2 border-2 border-[var(--border)] bg-transparent text-[var(--text)] transition hover:border-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]',
         compact ? 'h-11 w-11 px-0' : 'px-4',
       )}
       aria-label={`Switch to ${nextTheme} mode`}
@@ -94,7 +94,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
             <div className="flex items-center gap-2 md:hidden">
               <ThemeToggleButton theme={theme} onToggleTheme={onToggleTheme} compact />
               <DisclosureButton
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--panel)] text-[var(--text)] transition hover:bg-[var(--accent-soft)]"
+                className="flex h-11 w-11 items-center justify-center border-2 border-[var(--border)] bg-transparent text-[var(--text)] transition hover:border-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)]"
                 aria-label={open ? 'Close navigation' : 'Open navigation'}
               >
                 {open ? <XMarkIcon className="h-5 w-5" aria-hidden="true" /> : <Bars3Icon className="h-5 w-5" aria-hidden="true" />}
@@ -104,7 +104,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
 
           <DisclosurePanel className="border-t border-[var(--border)] md:hidden">
             <Container className="pb-5">
-              <div className="glass-panel rounded-3xl p-3">
+              <div className="glass-panel p-3 border-x-0 border-b-2">
                 <GitHubStarsBadge
                   href={siteMetadata.github.url}
                   stars={stars}

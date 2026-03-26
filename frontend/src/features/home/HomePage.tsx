@@ -29,43 +29,42 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
       <main>
         <HeroSection />
 
-        <section id="features" className="section-anchor py-18 sm:py-22 lg:py-28">
+        <section id="features" className="section-anchor py-24 sm:py-32 lg:py-40">
           <Container>
-            <></>
             <SectionIntro
               eyebrow="Detection families"
-              title="Signals across clarity, reliability, and risk"
+              title="Signals across clarity, reliability, and risk."
               description="deslop groups findings into readable families so teams can scan naming, error handling, security, performance, and thin tests without digging through opaque scoring."
             />
             <FeatureGrid />
           </Container>
         </section>
 
-        <section id="pipeline" className="section-anchor py-18 sm:py-22 lg:py-28">
+        <section id="pipeline" className="section-anchor py-24 sm:py-32 lg:py-40">
           <Container>
             <SectionIntro
               eyebrow="Pipeline"
-              title="A local analysis pipeline built for speed and readable output"
+              title="A local analysis pipeline built for speed and readable output."
               description="deslop discovers files, parses structure, builds a lightweight index, and runs explainable heuristics so scans stay quick and review output stays useful."
             />
             <PipelineTabs />
           </Container>
         </section>
 
-        <section id="use-cases" className="section-anchor py-18 sm:py-22 lg:py-28">
+        <section id="use-cases" className="section-anchor py-24 sm:py-32 lg:py-40">
           <Container>
             <SectionIntro
               eyebrow="Use cases"
-              title="Built for teams that need sharper review signals, not more dashboard noise"
+              title="Built for teams that need sharper review signals, not more dashboard noise."
               description="The most credible use cases in the docs are still lightweight ones: code review, local audits, narrow security passes, and automation that benefits from readable output rather than platform ceremony."
             />
 
-            <div className="mt-14 grid gap-5 lg:grid-cols-2">
+            <div className="mt-20 flex flex-col gap-24">
               {useCases.map((useCase) => (
-                <article key={useCase.title} className="glass-panel rounded-[2rem] p-7 sm:p-8">
-                  <h3 className="text-[2rem] leading-tight font-bold">{useCase.title}</h3>
-                  <p className="mt-4 text-base leading-8 text-[var(--muted)]">{useCase.description}</p>
-                  <div className="surface-inset mt-8 rounded-[1.5rem] px-5 py-5 text-sm leading-7 sm:text-base">
+                <article key={useCase.title} className="max-w-3xl">
+                  <h3 className="text-[2.2rem] leading-tight font-medium italic text-[var(--text-strong)]">{useCase.title}</h3>
+                  <p className="mt-6 text-lg leading-relaxed text-[var(--muted)]">{useCase.description}</p>
+                  <div className="mt-8 text-base leading-relaxed text-[var(--text-strong)] border-l-2 border-[var(--text-strong)] pl-5 py-1">
                     {useCase.outcome}
                   </div>
                 </article>
@@ -85,40 +84,43 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
           </Container>
         </section>
 
-        <section id="principles" className="section-anchor py-18 sm:py-22 lg:py-28">
-          <Container className="grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start xl:gap-10">
+        <section id="principles" className="section-anchor py-24 sm:py-32 lg:py-40">
+          <Container className="grid gap-16 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start xl:gap-24">
             <div>
               <SectionIntro
                 eyebrow="Principles"
-                title="Less visual noise, fewer promises, stronger positioning"
+                title="Less visual noise, fewer promises, stronger positioning."
                 description="deslop favors readable evidence, repository-local context, and conservative signals so teams can review findings quickly and make the final call with confidence."
               />
 
-              <div className="mt-10 space-y-5">
+              <div className="mt-16 space-y-16">
                 {principles.map((principle) => (
-                  <article key={principle.title} className="glass-panel rounded-[1.8rem] p-7">
-                    <h3 className="text-[1.85rem] leading-tight font-bold">{principle.title}</h3>
-                    <p className="mt-4 text-sm leading-8 text-[var(--muted)] sm:text-base">{principle.description}</p>
+                  <article key={principle.title} className="max-w-xl">
+                    <h3 className="text-[2rem] leading-tight font-medium italic">{principle.title}</h3>
+                    <p className="mt-5 text-base leading-relaxed text-[var(--muted)] sm:text-lg">{principle.description}</p>
                   </article>
                 ))}
               </div>
             </div>
 
-            <div className="glass-panel rounded-[2.4rem] p-8 sm:p-10 lg:p-11 xl:p-12">
-              <p className="eyebrow">Benchmark reference</p><br/><br/>
-              <h3 className="mt-6 max-w-none text-[clamp(3rem,4.2vw,4.35rem)] leading-[0.95] font-bold">Benchmarks grounded in a real local repository.</h3>
-              <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
+            <div className="py-8 sm:py-10">
+              <p className="eyebrow text-[var(--accent)]">Founder Note</p>
+              <h3 className="mt-6 max-w-none text-[clamp(2.5rem,3.8vw,3.5rem)] leading-tight font-medium">Why we built this internally.</h3>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--muted)]">
+                The tooling wasn’t capturing the messy reality of code written under pressure or produced by rapid AI prompting. We needed signals that developers could read without a manual, grounded directly in the local repository context.
+              </p>
+              <p className="mt-4 max-w-2xl text-lg leading-relaxed text-[var(--muted)]">
                 The implementation guide includes a representative Go repository baseline so teams can understand scan cost and coverage at practical project scale.
               </p>
 
-              <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <div className="mt-16 grid gap-10 md:grid-cols-2 xl:grid-cols-3">
                 {metrics.map((metric) => (
                   
-                  <article key={metric.label} className="grid-panel rounded-[1.7rem] p-6 sm:p-7">
+                  <article key={metric.label} className="border-l border-[var(--border-strong)] pl-6">
                     
-                    <p className="font-['IBM_Plex_Mono'] text-xs uppercase tracking-[0.2em] text-[var(--muted)]">{metric.label}</p><br/>
-                    <p className="mt-4 text-2xl font-bold text-[var(--text)]">{metric.value}</p>
-                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{metric.note}</p>
+                    <p className="font-['IBM_Plex_Mono'] text-[0.7rem] uppercase tracking-[0.2em] text-[var(--muted)]">{metric.label}</p>
+                    <p className="mt-5 text-[1.65rem] font-medium text-[var(--text-strong)]">{metric.value}</p>
+                    <p className="mt-4 text-[0.95rem] leading-relaxed text-[var(--muted)]">{metric.note}</p>
                   </article>
                 ))}
               </div>
@@ -127,10 +129,10 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
           </Container>
         </section>
 
-        <section className="pb-20 pt-8 sm:pb-24 lg:pb-28">
+        <section className="py-24 sm:py-32 lg:py-40">
           <Container>
-            <div className="glass-panel rounded-[2.4rem] p-8 sm:p-12 lg:p-14">
-              <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div className="py-12 sm:py-16">
+              <div className="max-w-4xl">
                 <div>
                   <span className="eyebrow">Open source from day one</span>
                   <h2 className="mt-6 max-w-4xl text-4xl leading-tight font-bold sm:text-6xl">
@@ -188,7 +190,7 @@ export function HomePage({ theme, onToggleTheme }: HomePageProps) {
 
           <div className="grid gap-4 sm:grid-cols-3">
             {footerSources.map((source) => (
-              <div key={source} className="grid-panel rounded-[1.6rem] p-5">
+              <div key={source} className="grid-panel p-5">
                 <p className="font-['IBM_Plex_Mono'] text-xs uppercase tracking-[0.18em] text-[var(--text)]">Source</p>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-strong)]">{source}</p>
               </div>
