@@ -72,11 +72,11 @@ This document should be read together with [Phase 4](advanced-rule-families-and-
 - [x] Cross-file copy-paste function detection for non-test code is now shipped as `cross_file_copy_paste_function`.
 - [x] Duplicate transformation-pipeline detection is now shipped as `duplicate_transformation_pipeline`.
 - [x] Broader non-`__init__.py` monolithic-module detection is now shipped as `monolithic_module`.
-- [ ] Over-abstraction expansion beyond the current thin-wrapper rule is not shipped yet.
-- [ ] Misleading-name expansion beyond the current responsibility-mismatch proxy is not shipped yet.
-- [ ] Hardcoded business-logic, magic-value, and reinvented-utility follow-up rules are not shipped yet.
-- [ ] Boundary-aware robustness checks for missing retries, logging, environment handling, or input hardening are not shipped yet.
-- [ ] The full promotion matrix for every still-open item is not yet captured as a single checked-off implementation table in this file.
+- [x] Broader over-abstraction coverage now ships as expanded `over_abstracted_wrapper` detection for ceremonial wrappers and data-container classes.
+- [x] Broader misleading-name coverage now ships as expanded `name_responsibility_mismatch` anchors for transformation-style and utility-style names.
+- [x] Conservative hardcoded business-logic, magic-value, and reinvented-utility follow-up rules are now shipped as `hardcoded_business_rule`, `magic_value_branching`, and `reinvented_utility`.
+- [x] Boundary-aware robustness checks are now shipped as `network_boundary_without_timeout`, `environment_boundary_without_fallback`, and `external_input_without_validation`.
+- [x] The full promotion matrix for every still-open item is now captured as a checked-off implementation table in this file.
 
 ### 1. Freeze The Promotion Matrix For Every Still-Open Item
 
@@ -108,9 +108,27 @@ This matrix must explicitly include the current gap list called out by the user:
 
 Phase 5 should not start implementation until each row has a target disposition and a short explanation for why that disposition is honest.
 
+| Backlog item | Disposition | Current state and rationale |
+| --- | --- | --- |
+| cross-file copy-paste detection | create a new rule family | Shipped as `cross_file_copy_paste_function` because repository-level normalized function-body clustering provides explainable cross-file evidence. |
+| query-fragment duplication | create a new rule family | Shipped as `duplicate_query_fragment` because normalized query-like literals can be clustered conservatively across files. |
+| duplicate transformation pipelines | create a new rule family | Shipped as `duplicate_transformation_pipeline` because ordered stage signatures provide a narrower signal than generic clone detection. |
+| 20-plus instance-variable classes versus the current 10-attribute threshold | expand an existing rule conservatively | Shipped as the escalated `too_many_instance_attributes` tier so the stronger user wording now has explicit evidence and messaging. |
+| monolithic modules beyond `__init__.py` | expand an existing rule conservatively | Shipped as `monolithic_module` with stricter module-size, declaration, import, and orchestration evidence. |
+| classes that should really be functions or dataclasses | expand an existing rule conservatively | Shipped as broadened `over_abstracted_wrapper` coverage for thin wrappers and tiny data-container classes while inheritance- and lifecycle-heavy abstractions stay out of scope. |
+| misleading names beyond the current responsibility-mismatch proxy | expand an existing rule conservatively | Shipped as expanded `name_responsibility_mismatch` coverage for read-style, transformation-style, and utility-style names with visible side effects or multi-concern module behavior. |
+| hardcoded business logic | create a new rule family | Shipped conservatively as `hardcoded_business_rule` for policy-bearing thresholds and status outcomes embedded directly in business-facing branch logic. |
+| verb and subject reversal | keep deferred as a documented non-goal | Remains deferred because inversion is too codebase-specific to infer reliably from syntax and call shape alone. |
+| over-fetching | add parser evidence first | Needs stronger query or fetch-shape evidence and explicit adapter boundaries before static analysis can distinguish waste from legitimate wide reads. |
+| magic numbers and strings | create a new rule family | Shipped conservatively as `magic_value_branching` for repeated branch-shaping literals instead of a broad style-only constant rule. |
+| reinventing the wheel | create a new rule family | Shipped conservatively as `reinvented_utility` for obvious local overlap with already-imported helpers such as `itertools` flattening utilities. |
+| boilerplate exception wrappers | keep deferred as a documented non-goal | Existing `duplicate_error_handler_block` and exception heuristics remain the nearest honest anchors; a broader wrapper rule still needs a tighter evidence boundary. |
+| missing real-world context such as retries and environment handling | create a new rule family | Shipped as the boundary-aware `network_boundary_without_timeout` and `environment_boundary_without_fallback` rules so absence-of-context claims stay tied to concrete external surfaces. |
+| toy-problem code that assumes perfect input | create a new rule family | Shipped conservatively as `external_input_without_validation` for request and CLI style entry points that trust external input without obvious guards. |
+
 Status:
 
-- [ ] Promotion matrix completed in this document
+- [x] Promotion matrix completed in this document
 - [x] Query-fragment duplication classified and implemented
 - [x] 20-plus instance-variable escalation classified and implemented
 - [x] Cross-file copy-paste detection classified and implemented
@@ -169,7 +187,7 @@ Status:
 - [x] Dedicated repo-level query-fragment rule shipped as `duplicate_query_fragment`
 - [x] Query-like literals are normalized before clustering
 - [x] Query-like literals are excluded from the generic `cross_file_repeated_literal` rule
-- [ ] Negative fixtures added for centralized query constants, migrations, and intentionally shared templates
+- [x] Negative fixtures added for centralized query constants, migrations, and intentionally shared templates
 
 ### 4. Add Duplicate Transformation-Pipeline Detection
 
@@ -195,7 +213,7 @@ Status:
 - [x] Ordered transformation-stage signature implemented
 - [x] Repository-level transformation-pipeline clustering shipped as `duplicate_transformation_pipeline`
 - [x] Positive fixtures added
-- [ ] Negative fixtures added
+- [x] Negative fixtures added for short helper chains and other false-positive candidates
 
 ### 5. Close The Class-Size And Module-Monolith Gaps
 
@@ -243,6 +261,11 @@ Target rule outcome:
 
 - broadened `over_abstracted_wrapper` coverage with more explicit messaging about function-or-dataclass alternatives
 
+Status:
+
+- [x] `over_abstracted_wrapper` now covers ceremonial data-container and forwarding-wrapper class shapes
+- [x] Lifecycle-heavy, inheritance-heavy, and protocol-like classes remain excluded by negative coverage
+
 ### 7. Strengthen Misleading-Name Detection Without Drifting Into Style Policing
 
 The current name/responsibility mismatch rule covers only part of the user's wording. Phase 5 should add stronger anchors but keep style-only naming review out of scope.
@@ -262,6 +285,12 @@ Required evidence policy:
 Target rule outcome:
 
 - expanded `name_responsibility_mismatch` plus an explicit keep-deferred decision for verb-and-subject inversion unless a better proxy emerges
+
+Status:
+
+- [x] Expanded function-level anchors now cover read-style, transformation-style, and utility-style name mismatches
+- [x] Utility-style module names that still own multiple infrastructure concerns now surface through `name_responsibility_mismatch`
+- [x] Verb-and-subject inversion remains deferred as a documented non-goal
 
 ### 8. Evaluate Hardcoded Business Logic, Magic Values, And Reinvented Utilities As Separate Families
 
@@ -283,6 +312,13 @@ Target rule outcome:
 
 - either one or more narrowly defined rules with strong fixtures, or an explicit decision that the family remains deferred because the evidence line is still too subjective
 
+Status:
+
+- [x] Business-threshold and status-outcome detection shipped as `hardcoded_business_rule`
+- [x] Repeated branch-shaping literal detection shipped as `magic_value_branching`
+- [x] Obvious imported-helper overlap detection shipped as `reinvented_utility`
+- [x] Positive and negative fixtures added for all three families
+
 ### 9. Treat Context And Robustness Gaps As Boundary-Aware Checks
 
 The backlog items about missing logging, retries, environment handling, and perfect-input assumptions are easy to overstate. Phase 5 should only promote them when the code is clearly at a risk boundary.
@@ -302,6 +338,13 @@ Required evidence policy:
 Target rule outcome:
 
 - a small boundary-aware robustness family, or a reaffirmed decision to keep these items deferred if the false-positive rate stays too high
+
+Status:
+
+- [x] HTTP boundary timeout and retry-gap detection shipped as `network_boundary_without_timeout`
+- [x] Startup and config environment-fallback detection shipped as `environment_boundary_without_fallback`
+- [x] External-input hardening detection shipped as `external_input_without_validation`
+- [x] Positive and negative fixtures added for the boundary-aware robustness family
 
 ### 10. Keep Profiling-Sensitive Work Honest With Benchmarks And Messaging
 

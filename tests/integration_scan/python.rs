@@ -638,6 +638,99 @@ def fetch(cursor):
 }
 
 #[test]
+fn test_python_phase5_duplicate_query_fragment_skips_shared_constants_and_migrations() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/query_constants.py",
+        r#"
+OPEN_REPORTS_QUERY = "SELECT id, status FROM reports WHERE status = 'open' ORDER BY created_at"
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/query_templates.py",
+        r#"
+REPORT_STATUS_TEMPLATE = "SELECT id, status FROM reports WHERE status = '{status}' ORDER BY created_at"
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/service_a.py",
+        r#"
+from pkg.query_constants import OPEN_REPORTS_QUERY
+from pkg.query_templates import REPORT_STATUS_TEMPLATE
+
+def fetch_open_reports(cursor):
+    return cursor.execute(OPEN_REPORTS_QUERY)
+
+def fetch_by_status(cursor, status):
+    return cursor.execute(REPORT_STATUS_TEMPLATE.format(status=status))
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/service_b.py",
+        r#"
+from pkg.query_constants import OPEN_REPORTS_QUERY
+from pkg.query_templates import REPORT_STATUS_TEMPLATE
+
+def load_open_reports(cursor):
+    return cursor.execute(OPEN_REPORTS_QUERY)
+
+def load_by_status(cursor, status):
+    return cursor.execute(REPORT_STATUS_TEMPLATE.format(status=status))
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "migrations/0001_backfill_reports.py",
+        r#"
+SQL = "UPDATE reports SET status = 'open' WHERE status = 'draft'"
+
+def upgrade(cursor):
+    cursor.execute(SQL)
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "migrations/0002_backfill_reports.py",
+        r#"
+SQL = "UPDATE reports SET status = 'open' WHERE status = 'draft'"
+
+def upgrade(cursor):
+    cursor.execute(SQL)
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "migrations/0003_backfill_reports.py",
+        r#"
+SQL = "UPDATE reports SET status = 'open' WHERE status = 'draft'"
+
+def upgrade(cursor):
+    cursor.execute(SQL)
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "duplicate_query_fragment"),
+        "did not expect duplicate_query_fragment for centralized constants, shared templates, or migrations"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
 fn test_python_phase5_cross_file_copy_paste_rule() {
     let temp_dir = create_temp_workspace();
     write_fixture(
@@ -764,6 +857,57 @@ def build_snapshot(raw):
 }
 
 #[test]
+fn test_python_phase5_duplicate_transformation_pipeline_skips_short_helpers() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/helpers_a.py",
+        r#"
+def parse_payload(raw):
+    return raw.strip()
+
+def normalize_payload(payload):
+    return payload.lower()
+
+def build_label(raw):
+    payload = parse_payload(raw)
+    return normalize_payload(payload)
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/helpers_b.py",
+        r#"
+def parse_record(raw):
+    return raw.strip()
+
+def transform_record(payload):
+    return payload.lower()
+
+def build_slug(raw):
+    payload = parse_record(raw)
+    return transform_record(payload)
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "duplicate_transformation_pipeline"),
+        "did not expect duplicate_transformation_pipeline for short helper chains"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
 fn test_python_phase5_monolithic_module_rule() {
     let temp_dir = create_temp_workspace();
     let mut module = String::from(
@@ -869,6 +1013,405 @@ def publish_reports(db_path, cache_path, url):
             .any(|finding| finding.rule_id == "monolithic_module"),
         "expected monolithic_module to fire"
     );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_over_abstracted_wrapper_expansion() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/presenter.py",
+        r#"
+class ExportPresenter:
+    def __init__(self, renderer, prefix):
+        self.renderer = renderer
+        self.prefix = prefix
+
+    def render(self, payload):
+        return self.renderer.render(f"{self.prefix}:{payload}")
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "over_abstracted_wrapper"),
+        "expected over_abstracted_wrapper to fire for a ceremonial wrapper class"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_over_abstracted_wrapper_skips_lifecycle_classes() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/runtime.py",
+        r#"
+class BaseRuntime:
+    pass
+
+class ManagedRuntime(BaseRuntime):
+    def __init__(self, client, logger):
+        self.client = client
+        self.logger = logger
+
+    def start(self):
+        self.logger.info("starting")
+        return self.client.connect()
+
+    def stop(self):
+        return self.client.close()
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "over_abstracted_wrapper"),
+        "did not expect over_abstracted_wrapper for lifecycle-heavy classes"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_name_responsibility_mismatch_expansion() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/parser.py",
+        r#"
+def parse_user(cursor, payload):
+    cursor.execute("INSERT INTO users VALUES (?)", payload)
+    cursor.commit()
+    return payload
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/report_helper.py",
+        r#"
+import requests
+import sqlite3
+
+def helper_sync_reports(url, db_path):
+    connection = sqlite3.connect(db_path)
+    response = requests.get(url)
+    response.raise_for_status()
+    connection.execute("INSERT INTO reports VALUES (?)", (response.text,))
+    connection.commit()
+    return response.text
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report.findings.iter().any(|finding| {
+            finding.rule_id == "name_responsibility_mismatch"
+                && (finding.function_name.as_deref() == Some("parse_user")
+                    || finding.path.ends_with("pkg/report_helper.py"))
+        }),
+        "expected expanded name_responsibility_mismatch anchors to fire"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_name_responsibility_mismatch_skips_honest_transformers() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/parser.py",
+        r#"
+import json
+
+def parse_user(payload):
+    return json.loads(payload)
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "name_responsibility_mismatch"),
+        "did not expect name_responsibility_mismatch for honest parse helpers"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_business_magic_and_utility_rules() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/policy.py",
+        r#"
+def decide_discount_tier(order_total, risk_score):
+    if order_total >= 5000 and risk_score < 0.2:
+        return "priority"
+    elif order_total >= 2500:
+        return "standard"
+    return "manual_review"
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/archive.py",
+        r#"
+def rotate_archive(size, plan):
+    if size > 5000:
+        return "archive"
+    elif plan == "enterprise" and size > 5000:
+        return "archive"
+    return "keep"
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/flatteners.py",
+        r#"
+import itertools
+
+def flatten_batches(batches):
+    output = []
+    for batch in batches:
+        for item in batch:
+            output.append(item)
+    return output
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "hardcoded_business_rule",
+        "magic_value_branching",
+        "reinvented_utility",
+    ] {
+        assert!(
+            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            "expected rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_business_magic_and_utility_suppressions() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/policy.py",
+        r#"
+PREMIUM_THRESHOLD = 5000
+STANDARD_THRESHOLD = 2500
+
+def decide_discount_tier(order_total, risk_score):
+    if order_total >= PREMIUM_THRESHOLD and risk_score < 0.2:
+        return "priority"
+    elif order_total >= STANDARD_THRESHOLD:
+        return "standard"
+    return "manual_review"
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/archive.py",
+        r#"
+ARCHIVE_LIMIT = 5000
+
+def rotate_archive(size, plan):
+    if size > ARCHIVE_LIMIT:
+        return "archive"
+    elif plan == "enterprise":
+        return "archive"
+    return "keep"
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/flatteners.py",
+        r#"
+import itertools
+
+def flatten_batches(batches):
+    return list(itertools.chain.from_iterable(batches))
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "hardcoded_business_rule",
+        "magic_value_branching",
+        "reinvented_utility",
+    ] {
+        assert!(
+            !report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            "did not expect rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_boundary_robustness_rules() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/network_sync.py",
+        r#"
+import requests
+
+def sync_reports(url):
+    response = requests.get(url)
+    return response.json()
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/config_loader.py",
+        r#"
+import os
+
+def load_runtime_config():
+    api_url = os.getenv("API_URL")
+    return {"api_url": api_url}
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/cli.py",
+        r#"
+import json
+import sys
+
+def run_cli():
+    payload = json.loads(sys.argv[1])
+    return payload["user"]
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "network_boundary_without_timeout",
+        "environment_boundary_without_fallback",
+        "external_input_without_validation",
+    ] {
+        assert!(
+            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            "expected rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_phase5_boundary_robustness_suppressions() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/network_sync.py",
+        r#"
+import requests
+
+def sync_reports(url):
+    response = requests.get(url, timeout=5)
+    return response.json()
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/config_loader.py",
+        r#"
+import os
+
+def load_runtime_config():
+    api_url = os.getenv("API_URL")
+    if not api_url:
+        raise ValueError("API_URL is required")
+    return {"api_url": api_url}
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/cli.py",
+        r#"
+import json
+import sys
+
+def run_cli():
+    if len(sys.argv) < 2:
+        raise ValueError("missing payload")
+    payload = json.loads(sys.argv[1])
+    return payload["user"]
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "network_boundary_without_timeout",
+        "environment_boundary_without_fallback",
+        "external_input_without_validation",
+    ] {
+        assert!(
+            !report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            "did not expect rule {rule_id} to fire"
+        );
+    }
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

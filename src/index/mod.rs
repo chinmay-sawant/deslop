@@ -449,6 +449,7 @@ mod tests {
                     is_test_function: false,
                     local_binding_names: Vec::new(),
                     doc_comment: None,
+                    body_text: String::new(),
                     local_strings: Vec::new(),
                     normalized_body: String::new(),
                     validation_signature: None,

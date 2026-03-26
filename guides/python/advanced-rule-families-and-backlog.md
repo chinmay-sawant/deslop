@@ -172,10 +172,10 @@ The backlog items that still remain deferred are now explicitly marked as deferr
 	- [x] classes with excessive instance variables using `self.` assignment counts with constructor and method evidence
 	- [x] deep inheritance hierarchies when base-class chains are locally visible and repository-scoped
 	- [x] monolithic modules including oversized `__init__.py` files, especially when they mix exports, business logic, I/O, and configuration loading
-	- [x] hardcoded business rules or magic decision tables remain deferred behind stronger evidence work
+	- [x] hardcoded business rules and magic decision tables are now conservatively covered by `hardcoded_business_rule` and `magic_value_branching`
 	- [x] mixing concerns such as HTTP, persistence, and business logic in one function when the call and import evidence is locally obvious
 	- [x] constructors that create unrelated collaborators eagerly inside `__init__`
-	- [x] misleading names that mask responsibility only when the mismatch is supported by structural evidence rather than taste alone are now partially covered by `name_responsibility_mismatch`
+	- [x] misleading names that mask responsibility only when the mismatch is supported by structural evidence rather than taste alone are now covered by the expanded `name_responsibility_mismatch` anchors
 	- [x] over-fetching or overly broad data-return shapes only when the query or serialization evidence is visible locally remain deferred
 	- [x] tight coupling between modules if import fan-in and direct constructor usage can be summarized conservatively
 	- [x] over-abstraction patterns only when there is a low-noise structural signature, not because a design feels "too abstract"
@@ -338,19 +338,19 @@ This section maps the user-provided Python backlog to current roadmap status.
 
 - [x] god classes or functions: shipped in the current Phase 4 baseline as `god_function` and `god_class`
 - [x] classes with 20 or more instance variables: shipped in the current Python baseline through the escalated 20-plus tier of `too_many_instance_attributes`
-- [x] using classes where a simple function or dataclass would suffice: partially shipped in the current Phase 4 baseline under `over_abstracted_wrapper`
+- [x] using classes where a simple function or dataclass would suffice: shipped in the current Python baseline through broadened `over_abstracted_wrapper` coverage for ceremonial wrappers and small data-container classes
 - [x] deep inheritance hierarchies: shipped in the current Phase 4 baseline as `deep_inheritance_hierarchy`
 - [x] monolithic `__init__.py` files or single huge modules: shipped in the current Python baseline as `monolithic_init_module` and a tightened `monolithic_module` policy that now requires a 1500-line floor plus coordinator-style or mixed-concern evidence
-- [x] hardcoded business logic instead of configuration remains deferred behind stronger evidence thresholds
+- [x] hardcoded business logic instead of configuration: shipped conservatively in the current Python baseline as `hardcoded_business_rule`
 - [x] mixing business logic, HTTP, and DB concerns in one function: shipped in the current Phase 4 baseline as `mixed_concerns_function`
 - [x] creating unrelated objects inside `__init__`: shipped in the current Phase 4 baseline as `eager_constructor_collaborators`
-- [x] misleading names that hide the real responsibility are partially shipped in the current Phase 4 baseline as `name_responsibility_mismatch`
+- [x] misleading names that hide the real responsibility are shipped conservatively in the current Python baseline as expanded `name_responsibility_mismatch`
 - [x] verb and subject reversal in naming such as `process_user` versus `user.process` remains deferred because this is often too style- and codebase-dependent
 - [x] returning more data than needed remains deferred pending stronger call-site and data-shape evidence
 - [x] tight coupling between modules: shipped in the current Phase 4 baseline as `tight_module_coupling`
-- [x] magic numbers or strings without constants or enums remain deferred
-- [x] reinventing the wheel such as a custom JSON parser instead of established libraries remains deferred because library-choice judgment is hard to make honestly with local syntax alone
-- [x] over-abstraction patterns where a simple map or helper would do: shipped in the current Phase 4 baseline as `over_abstracted_wrapper`
+- [x] magic numbers or strings without constants or enums are now partially shipped as `magic_value_branching` for repeated branch-shaping literals
+- [x] reinventing the wheel such as a custom utility instead of an already-imported helper is now partially shipped as `reinvented_utility`
+- [x] over-abstraction patterns where a simple map or helper would do: shipped in the current Python baseline as broadened `over_abstracted_wrapper`
 
 ### Code Duplication
 
@@ -370,11 +370,11 @@ This section maps the user-provided Python backlog to current roadmap status.
 - [x] perfectly balanced tiny functions that should be merged remains an intentional non-goal unless a future structural proxy proves low-noise enough
 - [x] boilerplate try and except everywhere is now partially covered by `duplicate_error_handler_block`
 - [x] emojis or overly enthusiastic comments: shipped in the current Phase 4 baseline as `enthusiastic_commentary`
-- [x] structurally flawless code that lacks real-world context such as logging, retries, or environment handling remains deferred because absence-of-context is too subjective without framework-aware evidence
-- [x] toy-problem solutions that assume perfect input remains deferred because robustness expectations vary by project and layer
+- [x] structurally flawless code that lacks real-world context such as logging, retries, or environment handling is now partially shipped through `network_boundary_without_timeout` and `environment_boundary_without_fallback`
+- [x] toy-problem solutions that assume perfect input are now partially shipped through `external_input_without_validation`
 - [x] inconsistent naming in the same file: shipped in the current Phase 4 baseline as `mixed_naming_conventions`
-- [x] unexplained magic numbers like `17` or `2.718` remain deferred
-- [x] classes for what should be two lines of code: partially shipped in the current Phase 4 baseline under `over_abstracted_wrapper`
+- [x] unexplained magic numbers like `17` or `2.718` are now partially shipped as `magic_value_branching` when they repeat in branch-shaping logic
+- [x] classes for what should be two lines of code: shipped in the current Python baseline as broadened `over_abstracted_wrapper`
 - [x] variable names that are just slightly off remains an intentional non-goal without a measurable policy
 - [x] feels like textbook code with no personality remains an intentional non-goal unless it can be reduced to a concrete structural smell
 
@@ -449,32 +449,32 @@ The detailed follow-on execution contract for these checkpoints lives in [Phase 
 	- thresholds that account for byte size, function count, class count, import count, and top-level executable behavior together
 	- negative fixtures for intentionally central registry or schema modules that are large but structured
 
-3. `over_abstracted_wrapper` should be expanded into a clearer "class where a function or dataclass would suffice" checkpoint.
+3. `over_abstracted_wrapper` is now expanded into a clearer "class where a function or dataclass would suffice" checkpoint.
 
-	Future work should require evidence such as:
+	The current shipped evidence now covers:
 
 	- one or two thin pass-through methods
-	- little or no retained mutable state
-	- constructor parameters that are simply forwarded or stored without behavior
-	- no meaningful polymorphism, lifecycle management, or protocol implementation
+	- lightweight data-container classes with little or no retained behavior
+	- constructor parameters that are simply forwarded or stored without meaningful lifecycle logic
+	- explicit exclusion of inheritance-heavy, protocol-like, or lifecycle-oriented classes
 
-4. `name_responsibility_mismatch` needs additional anchors before it claims to cover misleading names more broadly.
+4. `name_responsibility_mismatch` now ships additional anchors for misleading names while keeping style-only naming review out of scope.
 
-	Useful expansion points include:
+	The current shipped evidence now covers:
 
 	- functions whose names imply pure transformation while the body performs I/O or persistence
-	- classes named as passive records that actually coordinate multiple collaborators
-	- helpers whose verbs imply one domain but whose imports and calls show another
+	- helper-style names whose imports and calls show multiple infrastructure concerns instead
+	- module names such as `*_helper` that still coordinate HTTP and persistence behavior
 
 	Verb and subject inversion remains too codebase-specific to promote unless the evidence becomes much stronger.
 
-5. Hardcoded business logic, magic values, and reinvented-utility backlog items should only advance through narrow categories.
+5. Hardcoded business logic, magic values, and reinvented-utility backlog items now ship through narrow categories instead of one broad smell.
 
-	Future work should split these items instead of treating them as one bucket:
+	The current shipped split is:
 
-	- business thresholds, ratios, or status mappings embedded in request or service logic
-	- unexplained numeric or string sentinels repeated across branches or files
-	- locally implemented parsing, encoding, or serialization helpers that overlap obvious standard-library or already-imported capabilities
+	- `hardcoded_business_rule` for policy thresholds, ratios, and status outcomes embedded in business-facing branch logic
+	- `magic_value_branching` for repeated branch-shaping numeric or string literals
+	- `reinvented_utility` for obvious local helper overlap with already-imported standard-library style utilities
 
 ### Duplication Follow-Ups
 
@@ -505,15 +505,15 @@ The detailed follow-on execution contract for these checkpoints lives in [Phase 
 
 ### Context, Robustness, And AI-Smell Follow-Ups
 
-1. Boilerplate exception wrappers, toy-problem code, and "missing real-world context" should only be promoted around concrete boundary surfaces.
+1. Boundary-aware robustness now ships through concrete boundary surfaces rather than broad absence-of-context claims.
 
-	Candidate anchors include:
+	The current shipped anchors are:
 
-	- network, filesystem, subprocess, or environment access with no visible failure handling
-	- retry-worthy operations with repeated direct calls and no timeout or retry boundary in surrounding code
-	- request, CLI, or job-entry functions that trust inputs entirely and skip obvious validation or fallback paths
+	- `network_boundary_without_timeout` for direct HTTP boundary calls with no obvious timeout or retry policy
+	- `environment_boundary_without_fallback` for startup or config flows that read required environment state without a visible fallback or validation path
+	- `external_input_without_validation` for request or CLI style entry points that trust external input without obvious guards
 
-	This work should avoid claiming that every simple helper needs logging, retries, or environment logic.
+	Further work should avoid claiming that every simple helper needs logging, retries, or environment logic.
 
 2. Overly descriptive variable names and slightly wrong variable names remain deliberately constrained.
 

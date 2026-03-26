@@ -267,29 +267,39 @@ pub(super) fn eager_constructor_collaborator_findings(file: &ParsedFile) -> Vec<
 }
 
 pub(super) fn over_abstracted_wrapper_findings(file: &ParsedFile) -> Vec<Finding> {
+    let mut methods_by_class = BTreeMap::<String, Vec<&ParsedFunction>>::new();
+    for function in &file.functions {
+        if let Some(receiver) = &function.fingerprint.receiver_type {
+            methods_by_class
+                .entry(receiver.clone())
+                .or_default()
+                .push(function);
+        }
+    }
+
     file.class_summaries
         .iter()
-        .filter(|summary| {
-            summary.method_count <= 2
-                && summary.public_method_count <= 1
-                && summary.instance_attribute_count <= 1
-                && summary.end_line.saturating_sub(summary.line) <= 20
-        })
-        .map(|summary| Finding {
-            rule_id: "over_abstracted_wrapper".to_string(),
-            severity: Severity::Info,
-            path: file.path.clone(),
-            function_name: None,
-            start_line: summary.line,
-            end_line: summary.end_line,
-            message: format!(
-                "class {} looks like a very thin wrapper that may be over-abstracted",
-                summary.name
-            ),
-            evidence: vec![
-                format!("method_count={}", summary.method_count),
-                format!("instance_attribute_count={}", summary.instance_attribute_count),
-            ],
+        .filter_map(|summary| {
+            let methods = methods_by_class.get(&summary.name)?;
+            let shape = classify_over_abstracted_shape(summary, methods)?;
+
+            Some(Finding {
+                rule_id: "over_abstracted_wrapper".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: summary.line,
+                end_line: summary.end_line,
+                message: format!(
+                    "class {} looks ceremonial enough that a function or dataclass may suffice",
+                    summary.name
+                ),
+                evidence: vec![
+                    format!("shape={shape}"),
+                    format!("method_count={}", summary.method_count),
+                    format!("instance_attribute_count={}", summary.instance_attribute_count),
+                ],
+            })
         })
         .collect()
 }
@@ -331,17 +341,102 @@ pub(super) fn name_responsibility_mismatch_findings(
         return Vec::new();
     }
 
-    let risky_call = function.calls.iter().find(|call| {
-        matches!(
-            call.name.as_str(),
-            "write" | "save" | "delete" | "update" | "post" | "put" | "commit"
+    let lower_name = function.fingerprint.name.to_ascii_lowercase();
+    let mutating_call = function
+        .calls
+        .iter()
+        .find(|call| is_mutating_call(&call.name));
+    let concerns = classify_infrastructure_concerns(file, function);
+
+    let (message, evidence_line, line) = if is_read_style_name(&lower_name) {
+        let Some(call) = mutating_call else {
+            return Vec::new();
+        };
+        (
+            format!(
+                "function {} has a read-style name but performs a mutating operation",
+                function.fingerprint.name
+            ),
+            format!("mutating call: {}", call.name),
+            call.line,
         )
-    });
-    let Some(call) = risky_call else {
+    } else if is_transformation_style_name(&lower_name)
+        && (mutating_call.is_some()
+            || concerns.contains("http")
+            || concerns.contains("persistence"))
+    {
+        let line = mutating_call
+            .map(|call| call.line)
+            .unwrap_or(function.fingerprint.start_line);
+        (
+            format!(
+                "function {} is named like a pure transformation but coordinates boundary side effects",
+                function.fingerprint.name
+            ),
+            format!(
+                "concern_categories={}{}",
+                concerns.iter().copied().collect::<Vec<_>>().join(","),
+                mutating_call
+                    .map(|call| format!(" mutating_call={}", call.name))
+                    .unwrap_or_default()
+            ),
+            line,
+        )
+    } else if is_utility_style_name(&lower_name)
+        && concerns.len() >= 2
+        && function.fingerprint.call_count >= 5
+    {
+        (
+            format!(
+                "function {} uses a utility-style name but owns multiple infrastructure concerns",
+                function.fingerprint.name
+            ),
+            format!(
+                "concern_categories={}",
+                concerns.iter().copied().collect::<Vec<_>>().join(",")
+            ),
+            function.fingerprint.start_line,
+        )
+    } else {
         return Vec::new();
     };
-    let name = function.fingerprint.name.as_str();
-    if !name.starts_with("get_") && !name.starts_with("load_") && !name.starts_with("is_") {
+
+    vec![Finding {
+        rule_id: "name_responsibility_mismatch".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: line,
+        end_line: line,
+        message,
+        evidence: vec![evidence_line],
+    }]
+}
+
+pub(super) fn module_name_responsibility_mismatch_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let module_name = file.package_name.as_deref().unwrap_or_default().to_ascii_lowercase();
+    if !module_name.contains("helper")
+        && !module_name.contains("util")
+        && !module_name.contains("client")
+    {
+        return Vec::new();
+    }
+
+    let concerns = file
+        .functions
+        .iter()
+        .flat_map(|function| classify_infrastructure_concerns(file, function).into_iter())
+        .collect::<BTreeSet<_>>();
+    let orchestration_functions = file
+        .functions
+        .iter()
+        .filter(|function| !function.is_test_function && function.fingerprint.call_count >= 6)
+        .count();
+    if concerns.len() < 2 || orchestration_functions == 0 {
         return Vec::new();
     }
 
@@ -349,14 +444,17 @@ pub(super) fn name_responsibility_mismatch_findings(
         rule_id: "name_responsibility_mismatch".to_string(),
         severity: Severity::Info,
         path: file.path.clone(),
-        function_name: Some(function.fingerprint.name.clone()),
-        start_line: call.line,
-        end_line: call.line,
+        function_name: None,
+        start_line: 1,
+        end_line: 1,
         message: format!(
-            "function {} has a read-style name but performs a mutating operation",
-            function.fingerprint.name
+            "module {} uses a utility-style name but coordinates multiple infrastructure concerns",
+            file.package_name.as_deref().unwrap_or("<module>")
         ),
-        evidence: vec![format!("mutating call: {}", call.name)],
+        evidence: vec![format!(
+            "concern_categories={}",
+            concerns.into_iter().collect::<Vec<_>>().join(",")
+        )],
     }]
 }
 
@@ -520,4 +618,77 @@ fn is_persistence_like(import_path: &str, call_name: &str) -> bool {
 fn is_filesystem_like(import_path: &str, call_name: &str) -> bool {
     import_path.starts_with("pathlib")
         || matches!(call_name, "open" | "read" | "read_text" | "write" | "write_text")
+}
+
+fn classify_over_abstracted_shape(
+    summary: &crate::analysis::ClassSummary,
+    methods: &[&ParsedFunction],
+) -> Option<&'static str> {
+    if !summary.base_classes.is_empty()
+        || summary.method_count == 0
+        || summary.method_count > 3
+        || summary.public_method_count > 1
+        || summary.instance_attribute_count > 2
+        || summary.constructor_collaborator_count > 1
+        || summary.end_line.saturating_sub(summary.line) > 40
+    {
+        return None;
+    }
+
+    if methods.iter().any(|method| {
+        method.fingerprint.kind.starts_with("async")
+            || method.fingerprint.complexity_score > 2
+            || !method.exception_handlers.is_empty()
+            || matches!(
+                method.fingerprint.name.as_str(),
+                "__enter__"
+                    | "__exit__"
+                    | "__aenter__"
+                    | "__aexit__"
+                    | "start"
+                    | "stop"
+                    | "close"
+                    | "open"
+                    | "connect"
+                    | "disconnect"
+            )
+    }) {
+        return None;
+    }
+
+    let behavior_methods = methods
+        .iter()
+        .filter(|method| method.fingerprint.name != "__init__")
+        .copied()
+        .collect::<Vec<_>>();
+    if behavior_methods.len() == 1
+        && behavior_methods[0].fingerprint.line_count <= 8
+        && behavior_methods[0].fingerprint.call_count >= 1
+        && behavior_methods[0].fingerprint.call_count <= 3
+    {
+        return Some("thin_wrapper_or_dataclass");
+    }
+
+    None
+}
+
+fn is_mutating_call(call_name: &str) -> bool {
+    matches!(
+        call_name,
+        "write" | "save" | "delete" | "update" | "post" | "put" | "commit" | "execute"
+    )
+}
+
+fn is_read_style_name(name: &str) -> bool {
+    name.starts_with("get_") || name.starts_with("load_") || name.starts_with("is_")
+}
+
+fn is_transformation_style_name(name: &str) -> bool {
+    ["parse_", "normalize_", "format_", "render_", "serialize_", "decode_"]
+        .iter()
+        .any(|prefix| name.starts_with(prefix))
+}
+
+fn is_utility_style_name(name: &str) -> bool {
+    name.starts_with("helper_") || name.starts_with("util_") || name == "helper" || name == "util"
 }

@@ -22,9 +22,13 @@ use self::duplication::{
 };
 use self::maintainability::{
     broad_exception_handler_findings, builtin_reduction_findings, commented_out_code_findings,
-    eval_exec_findings, exception_swallowed_findings, hardcoded_path_findings,
+    environment_boundary_without_fallback_findings, eval_exec_findings,
+    exception_swallowed_findings, external_input_without_validation_findings,
+    hardcoded_business_rule_findings, hardcoded_path_findings,
+    magic_value_branching_findings, network_boundary_without_timeout_findings,
     missing_context_manager_findings, mixed_sync_async_module_findings,
     none_comparison_findings, print_debugging_findings, public_api_missing_type_hints_findings,
+    reinvented_utility_findings,
     redundant_return_none_findings, side_effect_comprehension_findings,
     variadic_public_api_findings,
 };
@@ -37,7 +41,7 @@ use self::structure::{
     deep_inheritance_findings, eager_constructor_collaborator_findings, god_class_findings,
     god_function_findings, mixed_concern_findings, monolithic_init_module_findings,
     monolithic_module_findings, name_responsibility_mismatch_findings,
-    over_abstracted_wrapper_findings,
+    module_name_responsibility_mismatch_findings, over_abstracted_wrapper_findings,
     tight_module_coupling_findings, too_many_instance_attributes_findings,
 };
 
@@ -60,8 +64,14 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
     findings.extend(side_effect_comprehension_findings(file, function));
     findings.extend(redundant_return_none_findings(file, function));
     findings.extend(hardcoded_path_findings(file, function));
+    findings.extend(hardcoded_business_rule_findings(file, function));
+    findings.extend(magic_value_branching_findings(file, function));
+    findings.extend(reinvented_utility_findings(file, function));
     findings.extend(builtin_reduction_findings(file, function));
     findings.extend(missing_context_manager_findings(file, function));
+    findings.extend(network_boundary_without_timeout_findings(file, function));
+    findings.extend(environment_boundary_without_fallback_findings(file, function));
+    findings.extend(external_input_without_validation_findings(file, function));
     findings.extend(public_api_missing_type_hints_findings(file, function));
     findings.extend(variadic_public_api_findings(file, function));
     findings.extend(god_function_findings(file, function));
@@ -79,6 +89,7 @@ pub(crate) fn python_file_findings(file: &ParsedFile) -> Vec<Finding> {
     findings.extend(god_class_findings(file));
     findings.extend(eager_constructor_collaborator_findings(file));
     findings.extend(over_abstracted_wrapper_findings(file));
+    findings.extend(module_name_responsibility_mismatch_findings(file));
     findings.extend(mixed_naming_convention_findings(file));
     findings.extend(unrelated_heavy_import_findings(file));
     findings.extend(obvious_commentary_findings(file));

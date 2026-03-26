@@ -347,7 +347,7 @@ pub(super) fn cross_file_repeated_literal_findings(files: &[&ParsedFile]) -> Vec
 pub(super) fn duplicate_query_fragment_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut occurrences: BTreeMap<String, Vec<(&ParsedFile, usize, String)>> = BTreeMap::new();
     for file in files {
-        if file.is_test_file {
+        if file.is_test_file || should_skip_query_fragment_file(file) {
             continue;
         }
 
@@ -499,6 +499,16 @@ fn classify_pipeline_stage(import_path: &str, call_name: &str) -> Option<&'stati
 
 fn stage_name_matches(call_name: &str, prefixes: &[&str]) -> bool {
     prefixes.iter().any(|prefix| call_name == *prefix || call_name.starts_with(&format!("{prefix}_")))
+}
+
+fn should_skip_query_fragment_file(file: &ParsedFile) -> bool {
+    file.path.components().any(|component| {
+        let part = component.as_os_str().to_string_lossy().to_ascii_lowercase();
+        matches!(part.as_str(), "migration" | "migrations" | "alembic" | "versions")
+            || part.starts_with("migration_")
+            || part.ends_with("_migration.py")
+            || part.ends_with("_migrations.py")
+    })
 }
 
 fn normalize_query_fragment(value: &str) -> Option<String> {

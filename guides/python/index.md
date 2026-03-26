@@ -141,7 +141,7 @@ The roadmap intentionally separates them into three buckets:
 
 Some of the attached ideas grew into a dedicated advanced backlog contract instead of living only as loose bullets. That baseline is defined in [Phase 4](advanced-rule-families-and-backlog.md).
 
-The remaining items that are still partial, profiling-sensitive, or intentionally deferred now also have a more explicit follow-on implementation contract in [Phase 5](profiling-sensitive-and-deferred-gap-closure.md). Phase 4 keeps the status map and future-work checkpoints; Phase 5 turns the still-open backlog into a concrete next-stage execution plan.
+The remaining items that were still partial, profiling-sensitive, or intentionally deferred now also have a closed follow-on implementation contract in [Phase 5](profiling-sensitive-and-deferred-gap-closure.md). Phase 4 keeps the status map and future-work checkpoints; Phase 5 records which items were shipped conservatively and which ones remain explicit non-goals or parser-first follow-ups.
 
 The roadmap should not pretend that static analysis can prove runtime performance claims that the attached notes explicitly describe as profile-driven.
 
@@ -185,7 +185,7 @@ Checkpoints must describe observable implementation outcomes, not vague intentio
 - [Phase 2](heuristics-first-rule-pack.md): implemented for the first Python rule pack
 - [Phase 3](rollout-hardening-and-verification.md): implemented for the current rollout baseline
 - [Phase 4](advanced-rule-families-and-backlog.md): implemented for the current advanced Python baseline
-- [Phase 5](profiling-sensitive-and-deferred-gap-closure.md): planned follow-on work for partial and deferred Python detections
+- [Phase 5](profiling-sensitive-and-deferred-gap-closure.md): implemented closure pass for profiling-sensitive and deferred Python detections
 
 ## Rollout Artifacts
 

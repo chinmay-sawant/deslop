@@ -327,6 +327,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     };
     let calls = collect_calls(body_node, source);
     let exception_handlers = collect_exception_handlers(body_node, source);
+    let body_text = source.get(body_node.byte_range())?.to_string();
     let local_string_literals = collect_local_strings(body_node, source);
     let local_binding_names = collect_local_bindings(node, source);
     let doc_comment = extract_docstring(body_node, source);
@@ -371,6 +372,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         is_test_function,
         local_binding_names,
         doc_comment,
+        body_text,
         local_strings: local_string_literals,
         normalized_body,
         validation_signature,

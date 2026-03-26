@@ -30,6 +30,7 @@ pub(crate) struct ParsedFunction {
     pub is_test_function: bool,
     pub local_binding_names: Vec<String>,
     pub doc_comment: Option<String>,
+    pub body_text: String,
     pub local_strings: Vec<NamedLiteral>,
     pub normalized_body: String,
     pub validation_signature: Option<BlockFingerprint>,

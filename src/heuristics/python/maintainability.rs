@@ -192,6 +192,130 @@ pub(super) fn hardcoded_path_findings(file: &ParsedFile, function: &ParsedFuncti
         .collect()
 }
 
+pub(super) fn hardcoded_business_rule_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function
+        || function.fingerprint.line_count < 6
+        || !looks_like_business_context(file, function)
+    {
+        return Vec::new();
+    }
+
+    let policy_literals = collect_branch_literals(&function.body_text)
+        .into_iter()
+        .filter(|literal| is_policy_literal(literal))
+        .collect::<std::collections::BTreeSet<_>>();
+    if policy_literals.len() < 2 {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "hardcoded_business_rule".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: function.fingerprint.start_line,
+        end_line: function.fingerprint.end_line,
+        message: format!(
+            "function {} hardcodes policy thresholds or status outcomes in business logic",
+            function.fingerprint.name
+        ),
+        evidence: policy_literals
+            .into_iter()
+            .take(3)
+            .map(|literal| format!("policy_literal={literal}"))
+            .collect(),
+    }]
+}
+
+pub(super) fn magic_value_branching_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function
+        || function.fingerprint.line_count < 6
+        || looks_like_business_context(file, function)
+    {
+        return Vec::new();
+    }
+
+    let mut counts = std::collections::BTreeMap::<String, usize>::new();
+    for literal in collect_branch_literals(&function.body_text) {
+        if is_magic_literal(&literal) {
+            *counts.entry(literal).or_default() += 1;
+        }
+    }
+
+    let repeated = counts
+        .into_iter()
+        .filter(|(_, count)| *count >= 2)
+        .collect::<Vec<_>>();
+    if repeated.is_empty() {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "magic_value_branching".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: function.fingerprint.start_line,
+        end_line: function.fingerprint.end_line,
+        message: format!(
+            "function {} repeats branch-shaping literals instead of naming them explicitly",
+            function.fingerprint.name
+        ),
+        evidence: repeated
+            .into_iter()
+            .take(3)
+            .map(|(literal, count)| format!("literal={literal} occurrences={count}"))
+            .collect(),
+    }]
+}
+
+pub(super) fn reinvented_utility_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function || function.fingerprint.line_count < 5 {
+        return Vec::new();
+    }
+
+    let name = function.fingerprint.name.to_ascii_lowercase();
+    if !name.contains("flatten") {
+        return Vec::new();
+    }
+
+    let has_itertools = file.imports.iter().any(|import| {
+        import.path.starts_with("itertools") || import.path.starts_with("more_itertools")
+    });
+    let lower_body = function.body_text.to_ascii_lowercase();
+    if !has_itertools
+        || lower_body.contains("itertools.")
+        || lower_body.contains("more_itertools.")
+        || count_prefixed_lines(&function.body_text, "for ") < 2
+        || !lower_body.contains("append(")
+    {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "reinvented_utility".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: function.fingerprint.start_line,
+        end_line: function.fingerprint.end_line,
+        message: format!(
+            "function {} manually flattens iterables even though itertools-style helpers are already imported",
+            function.fingerprint.name
+        ),
+        evidence: vec!["available_import=itertools".to_string()],
+    }]
+}
+
 pub(super) fn variadic_public_api_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
@@ -248,6 +372,135 @@ pub(super) fn builtin_reduction_findings(
                 .to_string()],
         })
         .collect()
+}
+
+pub(super) fn network_boundary_without_timeout_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function || !looks_like_boundary_context(file, function) {
+        return Vec::new();
+    }
+
+    let http_calls = http_boundary_calls(file, function);
+    if http_calls.is_empty() {
+        return Vec::new();
+    }
+
+    let lower_body = function.body_text.to_ascii_lowercase();
+    if lower_body.contains("timeout=")
+        || lower_body.contains("retry")
+        || lower_body.contains("backoff")
+        || lower_body.contains("tenacity")
+    {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "network_boundary_without_timeout".to_string(),
+        severity: Severity::Warning,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: function.fingerprint.start_line,
+        end_line: function.fingerprint.end_line,
+        message: format!(
+            "function {} calls an external HTTP boundary without an obvious timeout or retry policy",
+            function.fingerprint.name
+        ),
+        evidence: vec![format!("http_calls={}", http_calls.join(","))],
+    }]
+}
+
+pub(super) fn environment_boundary_without_fallback_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function || !looks_like_startup_context(file, function) {
+        return Vec::new();
+    }
+
+    let env_lines = function
+        .body_text
+        .lines()
+        .map(str::trim)
+        .filter(|line| is_env_lookup_line(line))
+        .collect::<Vec<_>>();
+    if env_lines.is_empty() || env_lines.iter().all(|line| env_lookup_has_default(line)) {
+        return Vec::new();
+    }
+
+    let lower_body = function.body_text.to_ascii_lowercase();
+    if has_validation_markers(function, &lower_body) {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "environment_boundary_without_fallback".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: function.fingerprint.start_line,
+        end_line: function.fingerprint.end_line,
+        message: format!(
+            "function {} reads required environment configuration without an obvious fallback or validation path",
+            function.fingerprint.name
+        ),
+        evidence: env_lines
+            .into_iter()
+            .take(2)
+            .map(|line| format!("env_lookup={line}"))
+            .collect(),
+    }]
+}
+
+pub(super) fn external_input_without_validation_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function
+        || function.fingerprint.complexity_score > 1
+        || !looks_like_input_boundary_context(file, function)
+    {
+        return Vec::new();
+    }
+
+    let lower_body = function.body_text.to_ascii_lowercase();
+    let input_markers = [
+        "sys.argv[",
+        "json.loads(",
+        "request.args",
+        "request.form",
+        "request.json",
+        "get_json(",
+        "input(",
+        "read_text(",
+        "read_bytes(",
+    ];
+    let matched_markers = input_markers
+        .into_iter()
+        .filter(|marker| lower_body.contains(marker))
+        .collect::<Vec<_>>();
+    if matched_markers.is_empty() || has_validation_markers(function, &lower_body) {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "external_input_without_validation".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: function.fingerprint.start_line,
+        end_line: function.fingerprint.end_line,
+        message: format!(
+            "function {} consumes external input without an obvious validation or guard path",
+            function.fingerprint.name
+        ),
+        evidence: matched_markers
+            .into_iter()
+            .take(3)
+            .map(|marker| format!("input_marker={marker}"))
+            .collect(),
+    }]
 }
 
 pub(super) fn broad_exception_handler_findings(
@@ -447,4 +700,217 @@ fn looks_like_commented_out_code(text: &str) -> bool {
         || (normalized.contains('=')
             && normalized.contains('(')
             && normalized.chars().any(|character| character.is_ascii_alphabetic()))
+}
+
+fn looks_like_business_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    let markers = [
+        "eligib", "discount", "pricing", "price", "risk", "approve", "approval", "tier",
+        "quota", "commission", "policy", "status", "fraud", "score",
+    ];
+    function_or_path_matches(file, function, &markers)
+}
+
+fn looks_like_boundary_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    let markers = [
+        "handler", "endpoint", "route", "view", "controller", "cli", "command", "main",
+        "sync", "fetch", "publish", "process", "ingest", "import", "export", "job",
+        "startup", "bootstrap", "config",
+    ];
+    function_or_path_matches(file, function, &markers)
+}
+
+fn looks_like_startup_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    let markers = ["config", "settings", "startup", "bootstrap", "main", "env"];
+    function_or_path_matches(file, function, &markers)
+}
+
+fn looks_like_input_boundary_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    let markers = ["cli", "command", "handler", "request", "ingest", "import", "parse"];
+    function_or_path_matches(file, function, &markers)
+}
+
+fn function_or_path_matches(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    markers: &[&str],
+) -> bool {
+    let function_name = function.fingerprint.name.to_ascii_lowercase();
+    if markers.iter().any(|marker| function_name.contains(marker)) {
+        return true;
+    }
+
+    if file
+        .package_name
+        .as_deref()
+        .is_some_and(|name| markers.iter().any(|marker| name.to_ascii_lowercase().contains(marker)))
+    {
+        return true;
+    }
+
+    file.path.components().any(|component| {
+        let part = component.as_os_str().to_string_lossy().to_ascii_lowercase();
+        markers.iter().any(|marker| part.contains(marker))
+    })
+}
+
+fn collect_branch_literals(body_text: &str) -> Vec<String> {
+    body_text
+        .lines()
+        .map(str::trim)
+        .filter(|line| is_branch_line(line))
+        .flat_map(|line| {
+            let mut literals = extract_string_literals(line);
+            literals.extend(extract_numeric_literals(line));
+            literals
+        })
+        .collect()
+}
+
+fn is_branch_line(line: &str) -> bool {
+    line.starts_with("if ")
+        || line.starts_with("elif ")
+        || line.starts_with("case ")
+        || line.starts_with("match ")
+}
+
+fn extract_string_literals(line: &str) -> Vec<String> {
+    let mut literals = Vec::new();
+    let characters = line.chars().collect::<Vec<_>>();
+    let mut index = 0;
+
+    while index < characters.len() {
+        let quote = characters[index];
+        if quote != '\'' && quote != '"' {
+            index += 1;
+            continue;
+        }
+
+        index += 1;
+        let start = index;
+        while index < characters.len() && characters[index] != quote {
+            if characters[index] == '\\' {
+                index += 1;
+            }
+            index += 1;
+        }
+
+        if index > start {
+            let literal = characters[start..index].iter().collect::<String>();
+            if !literal.trim().is_empty() {
+                literals.push(literal);
+            }
+        }
+        index += 1;
+    }
+
+    literals
+}
+
+fn extract_numeric_literals(line: &str) -> Vec<String> {
+    let mut literals = Vec::new();
+    let mut current = String::new();
+
+    for character in line.chars() {
+        if character.is_ascii_digit() || character == '.' {
+            current.push(character);
+        } else {
+            flush_numeric_literal(&mut current, &mut literals);
+        }
+    }
+    flush_numeric_literal(&mut current, &mut literals);
+
+    literals
+}
+
+fn flush_numeric_literal(current: &mut String, literals: &mut Vec<String>) {
+    let token = current.trim_matches('.');
+    if !token.is_empty()
+        && token.chars().all(|character| character.is_ascii_digit() || character == '.')
+        && token.chars().any(|character| character.is_ascii_digit())
+    {
+        literals.push(token.to_string());
+    }
+    current.clear();
+}
+
+fn is_policy_literal(literal: &str) -> bool {
+    let lower = literal.to_ascii_lowercase();
+    lower.parse::<f64>().is_ok_and(|value| value >= 0.0 && (value.fract() != 0.0 || value >= 20.0))
+        || matches!(
+            lower.as_str(),
+            "approved"
+                | "rejected"
+                | "manual_review"
+                | "priority"
+                | "standard"
+                | "premium"
+                | "enterprise"
+                | "eligible"
+                | "blocked"
+                | "pending"
+        )
+}
+
+fn is_magic_literal(literal: &str) -> bool {
+    let lower = literal.to_ascii_lowercase();
+    if let Ok(value) = lower.parse::<f64>() {
+        return value.fract() != 0.0 || value >= 20.0;
+    }
+
+    lower.len() >= 5 && !matches!(lower.as_str(), "false" | "true" | "none")
+}
+
+fn count_prefixed_lines(body_text: &str, prefix: &str) -> usize {
+    body_text
+        .lines()
+        .map(str::trim)
+        .filter(|line| line.starts_with(prefix))
+        .count()
+}
+
+fn http_boundary_calls(file: &ParsedFile, function: &ParsedFunction) -> Vec<String> {
+    let alias_lookup = file
+        .imports
+        .iter()
+        .map(|import| (import.alias.as_str(), import.path.as_str()))
+        .collect::<std::collections::BTreeMap<_, _>>();
+
+    function
+        .calls
+        .iter()
+        .filter_map(|call| {
+            let receiver = call.receiver.as_deref().unwrap_or(call.name.as_str());
+            let import_path = alias_lookup.get(receiver).copied().unwrap_or(receiver);
+            (import_path.starts_with("requests")
+                || import_path.starts_with("httpx")
+                || import_path.starts_with("urllib")
+                || matches!(call.name.as_str(), "get" | "post" | "put" | "patch" | "delete" | "request"))
+            .then(|| call.name.clone())
+        })
+        .collect()
+}
+
+fn is_env_lookup_line(line: &str) -> bool {
+    line.contains("os.getenv(") || line.contains("os.environ.get(") || line.contains("os.environ[")
+}
+
+fn env_lookup_has_default(line: &str) -> bool {
+    (line.contains("os.getenv(") || line.contains("os.environ.get("))
+        && line
+            .split_once('(')
+            .and_then(|(_, tail)| tail.split_once(')'))
+            .is_some_and(|(args, _)| args.contains(','))
+        || line.contains(" or ")
+}
+
+fn has_validation_markers(function: &ParsedFunction, lower_body: &str) -> bool {
+    !function.exception_handlers.is_empty()
+        || lower_body.contains("if not ")
+        || lower_body.contains("if len(")
+        || lower_body.contains(" is none")
+        || lower_body.contains("validate")
+        || lower_body.contains("assert ")
+        || lower_body.contains("raise ")
+        || lower_body.contains("schema")
+        || lower_body.contains("pydantic")
 }
