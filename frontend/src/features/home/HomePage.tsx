@@ -83,12 +83,12 @@ export function HomePage() {
       <footer className="border-t border-[var(--border)] pb-12 pt-10 sm:pb-14">
         <Container className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <p className="font-['Space_Grotesk'] text-2xl font-bold tracking-[-0.05em] text-[var(--text)]">deslop</p>
-            <p className="mt-4 max-w-2xl text-sm leading-8 text-[var(--muted)] sm:text-base">
-              Static analysis for low-context code, focused on readable findings across Go repositories today.
+            <p className="font-['Newsreader'] italic text-3xl font-bold tracking-[-0.02em] text-[var(--text)]">deslop</p>
+            <p className="mt-4 max-w-2xl font-['Newsreader'] italic text-xl leading-8 text-[var(--muted)] sm:text-2xl">
+              Static analysis for low-context code, focused on readable findings across Go, Python, and Rust repositories.
             </p>
 
-            <p className="mt-5 text-sm leading-7 text-[var(--text-strong)] sm:text-base">
+            <p className="mt-5 font-['IBM_Plex_Mono'] text-xs uppercase tracking-widest text-[var(--text-strong)] sm:text-sm">
              Built & Vibecoded by{' '}
               <a
                 href="https://github.com/chinmay-sawant/deslop"
@@ -101,7 +101,7 @@ export function HomePage() {
               with ❤️
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-2">
+            <div className="mt-8 flex flex-wrap gap-2">
               {footerLinks.map((link) => (
                 <a 
                   key={link.href} 

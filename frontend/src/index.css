@@ -185,7 +185,8 @@ pre {
 .button-secondary {
   display: inline-flex;
   min-height: 48px;
-  width: 220px;
+  width: auto;
+  min-width: 220px;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
@@ -202,44 +203,46 @@ pre {
 }
 
 @keyframes sweep-box {
+  /* Phase 1: 0 to 33.333% */
   0% { transform-origin: left; transform: scaleX(0); }
-  10% { transform-origin: left; transform: scaleX(1); }
-  10.1% { transform-origin: right; transform: scaleX(1); }
-  20% { transform-origin: right; transform: scaleX(0); }
-  
-  50% { transform-origin: right; transform: scaleX(0); }
-  60% { transform-origin: right; transform: scaleX(1); }
-  60.1% { transform-origin: left; transform: scaleX(1); }
-  70% { transform-origin: left; transform: scaleX(0); }
-  
+  5% { transform-origin: left; transform: scaleX(1); }
+  5.1% { transform-origin: right; transform: scaleX(1); }
+  10% { transform-origin: right; transform: scaleX(0); }
+  32.9% { transform-origin: right; transform: scaleX(0); }
+  33% { transform-origin: left; transform: scaleX(0); }
+
+  /* Phase 2: 33.333 to 66.666% */
+  33.333% { transform-origin: left; transform: scaleX(0); }
+  38.333% { transform-origin: left; transform: scaleX(1); }
+  38.433% { transform-origin: right; transform: scaleX(1); }
+  43.333% { transform-origin: right; transform: scaleX(0); }
+  66.2% { transform-origin: right; transform: scaleX(0); }
+  66.3% { transform-origin: left; transform: scaleX(0); }
+
+  /* Phase 3: 66.666 to 100% */
+  66.666% { transform-origin: left; transform: scaleX(0); }
+  71.666% { transform-origin: left; transform: scaleX(1); }
+  71.766% { transform-origin: right; transform: scaleX(1); }
+  76.666% { transform-origin: right; transform: scaleX(0); }
+  99.9% { transform-origin: right; transform: scaleX(0); }
   100% { transform-origin: left; transform: scaleX(0); }
 }
 
-@keyframes sweep-text1 {
-  0%, 10% { opacity: 1; visibility: visible; }
-  10.1%, 60% { opacity: 0; visibility: hidden; }
-  60.1%, 100% { opacity: 1; visibility: visible; }
-}
-
-@keyframes sweep-text2 {
-  0%, 10% { opacity: 0; visibility: hidden; }
-  10.1%, 60% { opacity: 1; visibility: visible; }
-  60.1%, 100% { opacity: 0; visibility: hidden; }
+@keyframes sweep-text-col {
+  0%, 5% { transform: translateY(0); }
+  5.1%, 38.333% { transform: translateY(-33.3333%); }
+  38.433%, 71.666% { transform: translateY(-66.6666%); }
+  71.766%, 100% { transform: translateY(0); }
 }
 
 .animate-sweep-box {
   background-color: var(--text-strong);
   transform: scaleX(0);
-  animation: sweep-box 8s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+  animation: sweep-box 15s cubic-bezier(0.77, 0, 0.175, 1) infinite;
 }
 
-.animate-sweep-text1 {
-  animation: sweep-text1 8s cubic-bezier(0.77, 0, 0.175, 1) infinite;
-}
-
-.animate-sweep-text2 {
-  opacity: 0;
-  animation: sweep-text2 8s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+.animate-sweep-text-col {
+  animation: sweep-text-col 15s cubic-bezier(0.77, 0, 0.175, 1) infinite;
 }
 
 .button-primary {
