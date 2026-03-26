@@ -9,12 +9,34 @@ export function HeroSection() {
       <Container className="max-w-5xl mx-auto text-center">
         <span className="eyebrow mx-auto mb-8">Static analysis. Human insight.</span>
         <div className="flex flex-col items-center justify-center text-center w-full">
-          <h1 className="mt-6 text-[clamp(3rem,8vw,5.5rem)] leading-[0.95] font-medium tracking-[-0.03em] text-[var(--text-strong)] flex flex-col items-center w-full">
-            <span>Code moves fast.</span>
-            <span className="italic text-[var(--muted)]">Context is left behind.</span>
+          <h1 className="mt-6 text-[clamp(2.5rem,7vw,5rem)] leading-[0.95] font-medium tracking-[-0.03em] text-[var(--text-strong)] flex flex-col items-center justify-center w-full relative">
+            {/* Line 1 */}
+            <div className="relative inline-flex items-center justify-center px-2 mb-2 h-[1.3em]">
+              <div className="absolute inset-x-0 inset-y-0 z-10 animate-sweep-box pointer-events-none" />
+              <div className="overflow-hidden h-full">
+                <div className="flex flex-col animate-sweep-text-col">
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Code moves fast.</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Bridging the gap between</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Modern problems</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Line 2 */}
+            <div className="relative inline-flex items-center justify-center px-2 italic text-[var(--muted)] h-[1.3em]">
+              <div className="absolute inset-x-0 inset-y-0 z-10 animate-sweep-box pointer-events-none" style={{ animationDelay: '150ms' }} />
+              <div className="overflow-hidden h-full">
+                <div className="flex flex-col animate-sweep-text-col" style={{ animationDelay: '150ms' }}>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Context is left behind.</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Speed and clarity.</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Requires modern solutions.</span>
+                </div>
+              </div>
+            </div>
           </h1>
+          <br/>
           <p className="mt-10 mx-auto w-full max-w-2xl text-[1.15rem] leading-[1.8] text-[var(--muted)] sm:text-[1.35rem] text-center">
-            Deslop helps teams surface patterns that show up when code is generated quickly and reviewed late: vague naming, brittle error handling, and thin tests. A tool built by engineers feeling the pain of synthetic code.
+            A lightning-fast static analyzer that flags AI-generated code smells across Python, Rust, and Go. It surfaces suspicious patterns with readable evidence, giving engineers absolute confidence when reviewing synthetic code.
           </p>
         </div>
 
