@@ -28,14 +28,15 @@ export function HeroSection() {
               <div className="overflow-hidden h-full">
                 <div className="flex flex-col animate-sweep-text-col" style={{ animationDelay: '150ms' }}>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Context is left behind.</span>
-                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">speed and clarity.</span>
-                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">require modern solutions.</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Speed and clarity.</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Requires modern solutions.</span>
                 </div>
               </div>
             </div>
           </h1>
+          <br/>
           <p className="mt-10 mx-auto w-full max-w-2xl text-[1.15rem] leading-[1.8] text-[var(--muted)] sm:text-[1.35rem] text-center">
-            Deslop is a fast, multi-language static analyzer that flags low-context, AI-generated code patterns before they merge. It surfaces suspicious heuristics with readable evidence, giving engineers the context they need to review synthetic code with confidence.
+            A lightning-fast static analyzer that flags AI-generated code smells across Python, Rust, and Go. It surfaces suspicious patterns with readable evidence, giving engineers absolute confidence when reviewing synthetic code.
           </p>
         </div>
 
