@@ -1,5 +1,6 @@
+import { useEffect } from 'react'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import {
   footerLinks,
@@ -11,6 +12,18 @@ import { HeroSection } from './components/HeroSection'
 import { QuickStart } from './components/QuickStart'
 
 export function HomePage() {
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.substring(1)
+      // Small timeout ensures the DOM has completed its layout rendering before scrolling
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+    }
+  }, [location])
+
   return (
     <div className="relative">
       <main>
@@ -42,7 +55,18 @@ export function HomePage() {
                 </div>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row lg:flex-row">
-                  <a href="#install-run" className="button-primary">
+                  <a 
+                    href="#install-run" 
+                    className="button-primary"
+                    onClick={(e) => {
+                      const el = document.getElementById('install-run')
+                      if (el) {
+                        e.preventDefault()
+                        el.scrollIntoView({ behavior: 'smooth' })
+                        window.history.pushState(null, '', '/deslop/#install-run')
+                      }
+                    }}
+                  >
                     Install and run
                     <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
                   </a>
@@ -79,7 +103,11 @@ export function HomePage() {
 
             <div className="mt-6 flex flex-wrap gap-2">
               {footerLinks.map((link) => (
-                <a key={link.href} href={link.href} className="stat-pill rounded-full px-4 py-2 text-sm hover:text-white">
+                <a 
+                  key={link.href} 
+                  href={link.href} 
+                  className="stat-pill rounded-full px-4 py-2 text-sm hover:text-white"
+                >
                   {link.label}
                 </a>
               ))}

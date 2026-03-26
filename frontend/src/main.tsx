@@ -14,7 +14,7 @@ import App from './app/App'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/deslop">
       <App />
     </BrowserRouter>
   </StrictMode>,

@@ -1,6 +1,6 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 import { ArrowUpRightIcon, Bars3Icon, MoonIcon, SunIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { navigation, siteMetadata } from '../../../content/site-content'
 import { cn } from '../../../shared/lib/cn'
@@ -60,6 +60,27 @@ function ThemeToggleButton({ theme, onToggleTheme, compact = false }: ThemeToggl
 
 export function Header({ theme, onToggleTheme }: HeaderProps) {
   const { stars, isLoading } = useGithubStars(siteMetadata.github.owner, siteMetadata.github.repo)
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const handleInstallClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    if (location.pathname === '/' || location.pathname === '' || location.pathname === '/deslop' || location.pathname === '/deslop/') {
+      const el = document.getElementById('install-run')
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' })
+        window.history.pushState(null, '', '/deslop/#install-run')
+      }
+    } else {
+      // If we are on /docs, navigate back to home
+      navigate('/')
+      // Small delay to allow react to render the homepage before scrolling natively
+      setTimeout(() => {
+        document.getElementById('install-run')?.scrollIntoView({ behavior: 'smooth' })
+        window.history.pushState(null, '', '/deslop/#install-run')
+      }, 100)
+    }
+  }
 
   return (
     <Disclosure as="header" className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--header-bg)] backdrop-blur-xl">
@@ -78,15 +99,25 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
 
             <nav className="hidden items-center gap-1 md:flex">
               {navigation.map((item) => (
-                <Link key={item.href} to={item.href} className={navLinkClassName}>
-                  {item.label}
-                </Link>
+                item.href.includes('#') ? (
+                  <a key={item.href} href={item.href} className={navLinkClassName} onClick={handleInstallClick}>
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link key={item.href} to={item.href} className={navLinkClassName}>
+                    {item.label}
+                  </Link>
+                )
               ))}
             </nav>
 
             <div className="hidden items-center gap-3 md:flex">
               <ThemeToggleButton theme={theme} onToggleTheme={onToggleTheme} />
-              <a href="/#install-run" className="button-primary">
+              <a 
+                href="/#install-run" 
+                className="button-primary"
+                onClick={handleInstallClick}
+              >
                 Install and run
                 <ArrowUpRightIcon className="h-4 w-4" aria-hidden="true" />
               </a>
@@ -114,12 +145,22 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
                 />
                 <div className="flex flex-col gap-1">
                   {navigation.map((item) => (
-                    <Link key={item.href} to={item.href} className={cn(navLinkClassName, 'px-4 py-3')}>
-                      {item.label}
-                    </Link>
+                    item.href.includes('#') ? (
+                      <a key={item.href} href={item.href} className={cn(navLinkClassName, 'px-4 py-3')} onClick={handleInstallClick}>
+                        {item.label}
+                      </a>
+                    ) : (
+                      <Link key={item.href} to={item.href} className={cn(navLinkClassName, 'px-4 py-3')}>
+                        {item.label}
+                      </Link>
+                    )
                   ))}
                 </div>
-                <a href="/#install-run" className="button-primary mt-3 w-full">
+                <a 
+                  href="/#install-run" 
+                  className="button-primary mt-3 w-full"
+                  onClick={handleInstallClick}
+                >
                   Install and run
                 </a>
               </div>

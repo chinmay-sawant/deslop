@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { HomePage } from '../features/home/HomePage'
 import { DocsPage } from '../features/docs/DocsPage'
 import { Header } from '../features/home/components/Header'
@@ -14,7 +14,9 @@ export default function App() {
         <div className="flex-1">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route index element={<HomePage />} />
             <Route path="/docs" element={<DocsPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </div>
