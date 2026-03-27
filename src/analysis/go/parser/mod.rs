@@ -139,7 +139,10 @@ fn parse_function_node(
     let string_concat_in_loop_lines = collect_concat_loops(body_node, source);
     let json_marshal_in_loop_lines = collect_json_loops(body_node, source, imports);
     let db_query_calls = collect_db_query_calls(body_node, source);
-    let body_text = source.get(body_node.byte_range()).unwrap_or_default().to_string();
+    let body_text = source
+        .get(body_node.byte_range())
+        .unwrap_or_default()
+        .to_string();
     let receiver_type = node
         .child_by_field_name("receiver")
         .and_then(|receiver| extract_receiver(receiver, source))

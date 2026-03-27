@@ -10,17 +10,16 @@ use crate::analysis::{
 use crate::model::{FunctionFingerprint, SymbolKind};
 
 use super::comments::{extract_docstring, parse_string_literal_text};
+use super::performance::collect_concat_loops;
 use super::phase4::{
     collect_builtin_candidate_lines, collect_class_summaries as collect_phase4_class_summaries,
     collect_deque_operation_lines, collect_exception_block_signatures,
-    collect_list_materialization_lines, collect_list_membership_loop_lines,
-    collect_missing_context_manager_lines, collect_none_comparison_lines,
-    collect_recursive_call_lines, collect_redundant_return_none_lines,
-    collect_repeated_len_loop_lines, collect_side_effect_comprehension_lines,
+    collect_list_materialization_lines, collect_membership_loop_lines,
+    collect_missing_manager_lines, collect_none_comparison_lines, collect_recursive_call_lines,
+    collect_repeated_len_lines, collect_return_none_lines, collect_side_effect_lines,
     collect_temp_collection_lines, collect_validation_signature, has_complete_type_hints,
     normalize_body, parameter_flags,
 };
-use super::performance::collect_concat_loops;
 
 pub(super) fn is_test_file(path: &Path) -> bool {
     let file_name = path
@@ -204,7 +203,7 @@ fn visit_imports(node: Node<'_>, source: &str, imports: &mut Vec<ImportSpec>) {
         }
         "import_from_statement" => {
             if let Some(text) = source.get(node.byte_range()) {
-                imports.extend(parse_import_from_statement_text(text));
+                imports.extend(parse_import_from_stmt(text));
             }
         }
         _ => {}
@@ -241,7 +240,7 @@ fn parse_import_statement_text(text: &str) -> Vec<ImportSpec> {
         .collect()
 }
 
-fn parse_import_from_statement_text(text: &str) -> Vec<ImportSpec> {
+fn parse_import_from_stmt(text: &str) -> Vec<ImportSpec> {
     let normalized = normalize_import_text(text);
     let Some(rest) = normalized.strip_prefix("from ") else {
         return Vec::new();
@@ -279,8 +278,7 @@ fn visit_pkg_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLiter
     if matches!(node.kind(), "assignment" | "annotated_assignment")
         && is_module_level(node)
         && let Some(text) = source.get(node.byte_range())
-        && let Some(literal) =
-            named_literal_from_assignment_text(text, node.start_position().row + 1)
+        && let Some(literal) = named_literal_from_assignment(text, node.start_position().row + 1)
     {
         literals.push(literal);
     }
@@ -336,16 +334,16 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     let exception_block_signatures = collect_exception_block_signatures(body_node, source);
     let test_summary = build_test_summary(&name, body_node, source, is_test_file);
     let none_comparison_lines = collect_none_comparison_lines(body_node, source);
-    let side_effect_comprehension_lines = collect_side_effect_comprehension_lines(body_node);
-    let redundant_return_none_lines = collect_redundant_return_none_lines(body_node, source);
+    let side_effect_lines = collect_side_effect_lines(body_node);
+    let return_none_lines = collect_return_none_lines(body_node, source);
     let list_materialization_lines = collect_list_materialization_lines(body_node, source);
     let deque_operation_lines = collect_deque_operation_lines(body_node, source);
     let temp_collection_lines = collect_temp_collection_lines(body_node, source);
     let recursive_call_lines = collect_recursive_call_lines(&name, body_node, source);
-    let list_membership_loop_lines = collect_list_membership_loop_lines(body_node, source);
-    let repeated_len_loop_lines = collect_repeated_len_loop_lines(body_node, source);
+    let membership_loop_lines = collect_membership_loop_lines(body_node, source);
+    let repeated_len_lines = collect_repeated_len_lines(body_node, source);
     let builtin_candidate_lines = collect_builtin_candidate_lines(body_node, source);
-    let missing_context_manager_lines = collect_missing_context_manager_lines(body_node, source);
+    let missing_manager_lines = collect_missing_manager_lines(body_node, source);
     let has_complete_type_hints = has_complete_type_hints(node, source);
     let (has_varargs, has_kwargs) = parameter_flags(node, source);
     let is_test_function = test_summary.is_some()
@@ -397,16 +395,16 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         json_loops: Vec::new(),
         db_query_calls: Vec::new(),
         none_comparison_lines,
-        side_effect_comprehension_lines,
-        redundant_return_none_lines,
+        side_effect_comprehension_lines: side_effect_lines,
+        redundant_return_none_lines: return_none_lines,
         list_materialization_lines,
         deque_operation_lines,
         temp_collection_lines,
         recursive_call_lines,
-        list_membership_loop_lines,
-        repeated_len_loop_lines,
+        list_membership_loop_lines: membership_loop_lines,
+        repeated_len_loop_lines: repeated_len_lines,
         builtin_candidate_lines,
-        missing_context_manager_lines,
+        missing_context_manager_lines: missing_manager_lines,
         has_complete_type_hints,
         has_varargs,
         has_kwargs,
@@ -530,8 +528,7 @@ fn visit_local_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLit
 
     if matches!(node.kind(), "assignment" | "annotated_assignment")
         && let Some(text) = source.get(node.byte_range())
-        && let Some(literal) =
-            named_literal_from_assignment_text(text, node.start_position().row + 1)
+        && let Some(literal) = named_literal_from_assignment(text, node.start_position().row + 1)
     {
         literals.push(literal);
     }
@@ -645,7 +642,7 @@ fn is_suppression_action(action: &str) -> bool {
         || normalized.starts_with("return")
 }
 
-fn named_literal_from_assignment_text(text: &str, line: usize) -> Option<NamedLiteral> {
+fn named_literal_from_assignment(text: &str, line: usize) -> Option<NamedLiteral> {
     let (left, right) = split_assignment(text)?;
     let names = assignment_target_names(left);
     if names.len() != 1 {

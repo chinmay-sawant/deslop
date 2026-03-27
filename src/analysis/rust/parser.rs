@@ -334,7 +334,10 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     let local_string_literals = collect_local_strings(body_node, source);
     let local_binding_names = collect_local_bindings(node, source);
     let doc_comment = extract_doc_comment(source, node.start_position().row);
-    let body_text = source.get(body_node.byte_range()).unwrap_or_default().to_string();
+    let body_text = source
+        .get(body_node.byte_range())
+        .unwrap_or_default()
+        .to_string();
     let kind = function_kind(node, source);
     let receiver_type = if kind == "method" {
         enclosing_impl_type(node, source)

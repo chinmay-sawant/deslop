@@ -12,7 +12,7 @@ pub(super) fn collect_none_comparison_lines(body_node: Node<'_>, source: &str) -
     lines
 }
 
-pub(super) fn collect_side_effect_comprehension_lines(body_node: Node<'_>) -> Vec<usize> {
+pub(super) fn collect_side_effect_lines(body_node: Node<'_>) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_side_effect_comprehensions(body_node, &mut lines);
     lines.sort_unstable();
@@ -20,10 +20,7 @@ pub(super) fn collect_side_effect_comprehension_lines(body_node: Node<'_>) -> Ve
     lines
 }
 
-pub(super) fn collect_redundant_return_none_lines(
-    body_node: Node<'_>,
-    source: &str,
-) -> Vec<usize> {
+pub(super) fn collect_return_none_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_return_none(body_node, source, &mut lines);
     lines.sort_unstable();
@@ -31,10 +28,7 @@ pub(super) fn collect_redundant_return_none_lines(
     lines
 }
 
-pub(super) fn collect_list_materialization_lines(
-    body_node: Node<'_>,
-    source: &str,
-) -> Vec<usize> {
+pub(super) fn collect_list_materialization_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_list_materializations(body_node, source, &mut lines);
     lines.sort_unstable();
@@ -70,7 +64,7 @@ pub(super) fn collect_recursive_call_lines(
     lines
 }
 
-pub(super) fn collect_list_membership_loop_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
+pub(super) fn collect_membership_loop_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let list_like_names = collect_list_like_names(body_node, source);
     let mut lines = Vec::new();
     visit_list_membership(body_node, source, &list_like_names, false, &mut lines);
@@ -79,7 +73,7 @@ pub(super) fn collect_list_membership_loop_lines(body_node: Node<'_>, source: &s
     lines
 }
 
-pub(super) fn collect_repeated_len_loop_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
+pub(super) fn collect_repeated_len_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_repeated_len_loops(body_node, source, &mut lines);
     lines.sort_unstable();
@@ -95,12 +89,9 @@ pub(super) fn collect_builtin_candidate_lines(body_node: Node<'_>, source: &str)
     lines
 }
 
-pub(super) fn collect_missing_context_manager_lines(
-    body_node: Node<'_>,
-    source: &str,
-) -> Vec<usize> {
+pub(super) fn collect_missing_manager_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_missing_context_manager_calls(body_node, source, &mut lines);
+    visit_missing_manager_calls(body_node, source, &mut lines);
     lines.sort_unstable();
     lines.dedup();
     lines
@@ -321,7 +312,8 @@ fn visit_temp_collections(node: Node<'_>, source: &str, inside_loop: bool, lines
         return;
     }
 
-    let next_inside_loop = inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
+    let next_inside_loop =
+        inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
     if next_inside_loop
         && matches!(node.kind(), "assignment" | "annotated_assignment")
         && let Some(text) = source.get(node.byte_range())
@@ -373,7 +365,8 @@ fn visit_list_membership(
         return;
     }
 
-    let next_inside_loop = inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
+    let next_inside_loop =
+        inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
     if next_inside_loop
         && node.kind().contains("comparison")
         && let Some(text) = source.get(node.byte_range())
@@ -424,7 +417,7 @@ fn visit_builtin_candidates(node: Node<'_>, source: &str, lines: &mut Vec<usize>
     }
 }
 
-fn visit_missing_context_manager_calls(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
+fn visit_missing_manager_calls(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
     if should_skip_nested_scope(node) {
         return;
     }
@@ -433,14 +426,14 @@ fn visit_missing_context_manager_calls(node: Node<'_>, source: &str, lines: &mut
         && !is_inside_with(node)
         && let Some(function_node) = node.child_by_field_name("function")
         && let Some(target_text) = source.get(function_node.byte_range())
-        && looks_like_context_manager_candidate(target_text)
+        && looks_like_manager_candidate(target_text)
     {
         lines.push(node.start_position().row + 1);
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_missing_context_manager_calls(child, source, lines);
+        visit_missing_manager_calls(child, source, lines);
     }
 }
 
@@ -548,17 +541,15 @@ fn direct_method_node(node: Node<'_>) -> Option<Node<'_>> {
     }
 }
 
-fn collect_self_attribute_writes(
-    node: Node<'_>,
-    source: &str,
-    attributes: &mut BTreeSet<String>,
-) {
+fn collect_self_attribute_writes(node: Node<'_>, source: &str, attributes: &mut BTreeSet<String>) {
     if should_skip_nested_scope(node) {
         return;
     }
 
-    if matches!(node.kind(), "assignment" | "annotated_assignment" | "augmented_assignment")
-        && let Some(text) = source.get(node.byte_range())
+    if matches!(
+        node.kind(),
+        "assignment" | "annotated_assignment" | "augmented_assignment"
+    ) && let Some(text) = source.get(node.byte_range())
         && let Some(left) = assignment_left(text)
     {
         for target in left.split(',') {
@@ -689,7 +680,8 @@ fn is_list_membership_comparison(text: &str, list_like_names: &BTreeSet<String>)
     }
 
     list_like_names.iter().any(|name| {
-        normalized.contains(&format!(" in {name}")) || normalized.contains(&format!(" not in {name}"))
+        normalized.contains(&format!(" in {name}"))
+            || normalized.contains(&format!(" not in {name}"))
     })
 }
 
@@ -758,7 +750,7 @@ fn looks_like_builtin_reduction(text: &str) -> bool {
         || (normalized.contains("returnFalse") && normalized.contains("returnTrue"))
 }
 
-fn looks_like_context_manager_candidate(target_text: &str) -> bool {
+fn looks_like_manager_candidate(target_text: &str) -> bool {
     let normalized = target_text.trim();
     normalized == "open"
         || normalized.ends_with(".open")
@@ -805,8 +797,10 @@ fn looks_like_constructor_call(text: &str) -> bool {
     let Some(target) = normalized.split('(').next() else {
         return false;
     };
-    !matches!(target, "list" | "dict" | "set" | "tuple" | "str" | "int" | "float" | "bool")
-        && !target.starts_with("self.")
+    !matches!(
+        target,
+        "list" | "dict" | "set" | "tuple" | "str" | "int" | "float" | "bool"
+    ) && !target.starts_with("self.")
 }
 
 fn normalize_shape(text: &str) -> String {

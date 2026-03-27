@@ -147,13 +147,15 @@ pub(super) fn list_materialization_findings(
                 "function {} materializes a list just to read the first element",
                 function.fingerprint.name
             ),
-            evidence: vec!["prefer next(iter(...)) when only the first item is needed"
-                .to_string()],
+            evidence: vec!["prefer next(iter(...)) when only the first item is needed".to_string()],
         })
         .collect()
 }
 
-pub(super) fn deque_candidate_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn deque_candidate_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -172,13 +174,17 @@ pub(super) fn deque_candidate_findings(file: &ParsedFile, function: &ParsedFunct
                 "function {} performs queue-style list operations that may want collections.deque",
                 function.fingerprint.name
             ),
-            evidence: vec!["list pop(0) and insert(0, ...) can create avoidable shifting work"
-                .to_string()],
+            evidence: vec![
+                "list pop(0) and insert(0, ...) can create avoidable shifting work".to_string(),
+            ],
         })
         .collect()
 }
 
-pub(super) fn temp_collection_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn temp_collection_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -197,8 +203,10 @@ pub(super) fn temp_collection_findings(file: &ParsedFile, function: &ParsedFunct
                 "function {} allocates a temporary collection inside a loop",
                 function.fingerprint.name
             ),
-            evidence: vec!["loop-local list or dict construction can add avoidable allocation churn"
-                .to_string()],
+            evidence: vec![
+                "loop-local list or dict construction can add avoidable allocation churn"
+                    .to_string(),
+            ],
         })
         .collect()
 }
@@ -259,8 +267,9 @@ pub(super) fn list_membership_findings(
                 "function {} performs list-style membership checks inside a loop",
                 function.fingerprint.name
             ),
-            evidence: vec!["repeated membership checks may want a set when order is irrelevant"
-                .to_string()],
+            evidence: vec![
+                "repeated membership checks may want a set when order is irrelevant".to_string(),
+            ],
         })
         .collect()
 }
@@ -284,8 +293,9 @@ pub(super) fn repeated_len_findings(file: &ParsedFile, function: &ParsedFunction
                 "function {} repeats len(...) checks inside a loop",
                 function.fingerprint.name
             ),
-            evidence: vec!["cache the length locally when the container is unchanged in the loop"
-                .to_string()],
+            evidence: vec![
+                "cache the length locally when the container is unchanged in the loop".to_string(),
+            ],
         })
         .collect()
 }

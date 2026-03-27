@@ -27,10 +27,7 @@ const INSTANCE_ATTRIBUTE_ESCALATION_THRESHOLD: usize = 20;
 const INSTANCE_ATTRIBUTE_METHOD_THRESHOLD: usize = 3;
 const EAGER_CONSTRUCTOR_THRESHOLD: usize = 3;
 
-pub(super) fn god_function_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn god_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -64,11 +61,7 @@ pub(super) fn god_function_findings(
 
 pub(super) fn monolithic_init_module_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file
-        || file
-            .path
-            .file_name()
-            .and_then(|name| name.to_str())
-            != Some("__init__.py")
+        || file.path.file_name().and_then(|name| name.to_str()) != Some("__init__.py")
     {
         return Vec::new();
     }
@@ -97,7 +90,7 @@ pub(super) fn monolithic_init_module_findings(file: &ParsedFile) -> Vec<Finding>
     }]
 }
 
-pub(super) fn too_many_instance_attributes_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(super) fn too_many_attributes_findings(file: &ParsedFile) -> Vec<Finding> {
     file.class_summaries
         .iter()
         .filter(|summary| {
@@ -143,11 +136,7 @@ pub(super) fn too_many_instance_attributes_findings(file: &ParsedFile) -> Vec<Fi
 
 pub(super) fn monolithic_module_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file
-        || file
-            .path
-            .file_name()
-            .and_then(|name| name.to_str())
-            == Some("__init__.py")
+        || file.path.file_name().and_then(|name| name.to_str()) == Some("__init__.py")
     {
         return Vec::new();
     }
@@ -237,7 +226,10 @@ pub(super) fn god_class_findings(file: &ParsedFile) -> Vec<Finding> {
             evidence: vec![
                 format!("method_count={}", summary.method_count),
                 format!("public_method_count={}", summary.public_method_count),
-                format!("instance_attribute_count={}", summary.instance_attribute_count),
+                format!(
+                    "instance_attribute_count={}",
+                    summary.instance_attribute_count
+                ),
             ],
         })
         .collect()
@@ -297,7 +289,10 @@ pub(super) fn over_abstracted_wrapper_findings(file: &ParsedFile) -> Vec<Finding
                 evidence: vec![
                     format!("shape={shape}"),
                     format!("method_count={}", summary.method_count),
-                    format!("instance_attribute_count={}", summary.instance_attribute_count),
+                    format!(
+                        "instance_attribute_count={}",
+                        summary.instance_attribute_count
+                    ),
                 ],
             })
         })
@@ -413,12 +408,16 @@ pub(super) fn name_responsibility_mismatch_findings(
     }]
 }
 
-pub(super) fn module_name_responsibility_mismatch_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(super) fn module_name_mismatch_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file {
         return Vec::new();
     }
 
-    let module_name = file.package_name.as_deref().unwrap_or_default().to_ascii_lowercase();
+    let module_name = file
+        .package_name
+        .as_deref()
+        .unwrap_or_default()
+        .to_ascii_lowercase();
     if !module_name.contains("helper")
         && !module_name.contains("util")
         && !module_name.contains("client")
@@ -603,7 +602,10 @@ fn is_http_like(import_path: &str, call_name: &str) -> bool {
     import_path.starts_with("requests")
         || import_path.starts_with("httpx")
         || import_path.starts_with("urllib")
-        || matches!(call_name, "get" | "post" | "put" | "patch" | "delete" | "request")
+        || matches!(
+            call_name,
+            "get" | "post" | "put" | "patch" | "delete" | "request"
+        )
 }
 
 fn is_persistence_like(import_path: &str, call_name: &str) -> bool {
@@ -612,12 +614,18 @@ fn is_persistence_like(import_path: &str, call_name: &str) -> bool {
         || import_path.starts_with("psycopg")
         || import_path.starts_with("pymongo")
         || import_path.starts_with("redis")
-        || matches!(call_name, "execute" | "query" | "commit" | "fetchall" | "fetchone")
+        || matches!(
+            call_name,
+            "execute" | "query" | "commit" | "fetchall" | "fetchone"
+        )
 }
 
 fn is_filesystem_like(import_path: &str, call_name: &str) -> bool {
     import_path.starts_with("pathlib")
-        || matches!(call_name, "open" | "read" | "read_text" | "write" | "write_text")
+        || matches!(
+            call_name,
+            "open" | "read" | "read_text" | "write" | "write_text"
+        )
 }
 
 fn classify_over_abstracted_shape(
@@ -684,9 +692,16 @@ fn is_read_style_name(name: &str) -> bool {
 }
 
 fn is_transformation_style_name(name: &str) -> bool {
-    ["parse_", "normalize_", "format_", "render_", "serialize_", "decode_"]
-        .iter()
-        .any(|prefix| name.starts_with(prefix))
+    [
+        "parse_",
+        "normalize_",
+        "format_",
+        "render_",
+        "serialize_",
+        "decode_",
+    ]
+    .iter()
+    .any(|prefix| name.starts_with(prefix))
 }
 
 fn is_utility_style_name(name: &str) -> bool {

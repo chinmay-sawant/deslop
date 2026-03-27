@@ -61,9 +61,13 @@ impl RepositoryIndex {
             .values()
             .filter(|package| match language {
                 Language::Python => {
-                    package.language == language && python_import_matches_module(import_path, package)
+                    package.language == language
+                        && python_import_matches_module(import_path, package)
                 }
-                _ => package.language == language && import_matches_dir(import_path, &package.directory),
+                _ => {
+                    package.language == language
+                        && import_matches_dir(import_path, &package.directory)
+                }
             })
             .collect::<Vec<_>>();
 

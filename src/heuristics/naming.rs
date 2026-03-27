@@ -4,8 +4,12 @@ use crate::model::{Finding, Severity};
 use super::common::{identifier_token_count, is_generic_name, normalize_name};
 
 pub(super) fn overlong_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<Finding> {
+    if function.is_test_function {
+        return None;
+    }
+
     let token_count = identifier_token_count(&function.fingerprint.name);
-    if function.fingerprint.name.len() < 24 || token_count < 4 {
+    if function.fingerprint.name.len() < 28 || token_count < 5 {
         return None;
     }
 
@@ -31,6 +35,10 @@ pub(super) fn overlong_finding(file: &ParsedFile, function: &ParsedFunction) -> 
 }
 
 pub(super) fn generic_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<Finding> {
+    if function.is_test_function {
+        return None;
+    }
+
     let normalized = normalize_name(&function.fingerprint.name);
     if !is_generic_name(&normalized) {
         return None;
