@@ -90,7 +90,10 @@ fn calculate_stats(mut samples: Vec<u128>) -> StageStats {
 
 #[cfg(test)]
 mod tests {
-    use super::calculate_stats;
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    use super::{BenchmarkOptions, benchmark_repository, calculate_stats};
 
     #[test]
     fn test_calc_stats() {
@@ -98,5 +101,36 @@ mod tests {
         assert_eq!(stats.min_ms, 1);
         assert_eq!(stats.max_ms, 4);
         assert_eq!(stats.median_ms, 2.5);
+    }
+
+    fn temp_dir(name: &str) -> std::path::PathBuf {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock should be after unix epoch")
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!("deslop-bench-{name}-{nonce}"));
+        fs::create_dir_all(path.join("src")).expect("benchmark temp dir should be created");
+        path
+    }
+
+    #[test]
+    fn benchmark_repository_smoke_test() {
+        let root = temp_dir("smoke");
+        fs::write(root.join("src/lib.rs"), "pub fn demo() { dbg!(1); }\n")
+            .expect("fixture should be written");
+
+        let report = benchmark_repository(&BenchmarkOptions {
+            root: root.clone(),
+            repeats: 2,
+            warmups: 1,
+            respect_ignore: true,
+        })
+        .expect("benchmark should succeed");
+
+        assert_eq!(report.repeats, 2);
+        assert_eq!(report.runs.len(), 2);
+        assert!(report.files_analyzed >= 1);
+
+        fs::remove_dir_all(root).expect("benchmark temp dir should be removed");
     }
 }

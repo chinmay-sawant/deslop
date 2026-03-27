@@ -19,13 +19,26 @@ This repository uses static checks, bounded I/O, and CI linting to reduce unsafe
 ## Secret Handling
 
 - Avoid direct equality checks on secret-like values such as tokens, passwords, or API keys.
+- Prefer constant-time comparison helpers such as `subtle::ConstantTimeEq` when secret material must be compared.
 - Avoid deriving `Debug`, `Serialize`, or `Deserialize` on secret-bearing types without explicit review.
 - Prefer redaction or wrapper types for secret-bearing fields.
+
+## Filesystem Safety
+
+- Repository scan roots are canonicalized before discovery so symlinked files cannot escape the requested root.
+- Bounded file reads reject symlink targets and use `O_NOFOLLOW` on Unix when opening files.
+- New path-accepting code should canonicalize resolved paths and assert they stay under the intended root before use.
+
+## Shared State
+
+- Prefer `once_cell::sync::Lazy`, atomics, or explicit locks over `static mut` and `lazy_static!`.
+- Prefer `Weak` parent edges over `Rc<RefCell<_>>` ownership cycles.
 
 ## Reporting
 
 - CI runs `cargo clippy`, `cargo test`, `scripts/check_rust_hygiene.sh`, and `scripts/check-rust-security.sh`.
-- `cargo audit` and `cargo geiger` run in the Rust security workflow and remain report-oriented until stricter gating is adopted.
+- CI compares the generated Rust security baseline against `reports/rust-security-baseline/latest.txt` so new findings require an explicit baseline update.
+- `cargo audit` runs as a blocking Rust security check, while `cargo geiger` remains report-oriented until stricter unsafe-count gating is adopted.
 
 ## Disclosure
 

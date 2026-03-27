@@ -157,6 +157,93 @@ The Rust analyzer now also emits conservative findings for four additional rule 
 
 These rule packs are intentionally syntactic and conservative. They are designed to produce reviewable findings with clear evidence rather than Clippy-style semantic proofs.
 
+## Remediation Examples
+
+### Filesystem path hardening
+
+Prefer canonical path checks before using user-selected paths, and reject symlink hops where possible.
+
+```rust
+let canonical_root = root.canonicalize()?;
+let canonical_candidate = candidate.canonicalize()?;
+if !canonical_candidate.starts_with(&canonical_root) {
+	anyhow::bail!("path escapes scan root");
+}
+```
+
+On Unix, open files with `O_NOFOLLOW` when you do not want to follow symlinks.
+
+```rust
+use std::fs::OpenOptions;
+use std::os::unix::fs::OpenOptionsExt;
+
+let file = OpenOptions::new()
+	.read(true)
+	.custom_flags(libc::O_NOFOLLOW)
+	.open(path)?;
+```
+
+### Constant-time secret comparison
+
+Avoid `==` for tokens, passwords, and API keys.
+
+```rust
+use subtle::ConstantTimeEq;
+
+if expected.as_bytes().ct_eq(actual.as_bytes()).into() {
+	// authenticated
+}
+```
+
+### Breaking `Rc` ownership cycles
+
+If a child keeps a parent reference, make the parent edge `Weak`.
+
+```rust
+use std::cell::RefCell;
+use std::rc::{Rc, Weak};
+
+struct Parent {
+	children: Vec<Rc<RefCell<Child>>>,
+}
+
+struct Child {
+	parent: Weak<RefCell<Parent>>,
+}
+```
+
+### Avoiding `static mut`
+
+Prefer `once_cell::sync::Lazy` with explicit synchronization primitives.
+
+```rust
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
+
+static CACHE: Lazy<Mutex<Vec<String>>> = Lazy::new(|| Mutex::new(Vec::new()));
+```
+
+### Running async work from threads safely
+
+Do not spawn an async block on a raw thread without a runtime.
+
+```rust
+std::thread::spawn(move || {
+	let runtime = tokio::runtime::Runtime::new().expect("runtime");
+	runtime.block_on(async move {
+		do_work().await;
+	});
+});
+```
+
+### Bounded I/O checks
+
+Keep file reads size-limited so scan inputs cannot grow without bound.
+
+```rust
+let source = read_to_string_limited(path, 10 * 1024 * 1024)?;
+```
+
 ## Document Update Obligations
 
 - Update this file whenever the Rust rule pack changes.

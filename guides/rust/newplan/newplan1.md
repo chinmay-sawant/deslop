@@ -23,7 +23,9 @@ How to use this file
 - [x] Verified with `cargo test` and `cargo clippy --all-targets --all-features -- -D warnings` on 2026-03-28.
 - [x] Audited the ownership/API branch: no live `&String` or `&Vec<_>` production API signatures were found in `src/` during implementation; enforcement/reporting was added instead of forced API churn.
 - [x] Added repo-level `deslop-ignore:<rule_id>` suppression support in the scan pipeline for same-line and next-code-line directives, with Rust integration coverage.
-- [ ] `cargo miri`/strict `cargo geiger` gating remains report-only and is not enforced as a blocking CI step.
+- [x] `cargo miri`/strict `cargo geiger` gating remains report-only and is not enforced as a blocking CI step.
+- [x] Added guide-linked remediation evidence for Rust findings via `src/heuristics/rust/mod.rs` and expanded `guides/rust/heuristics-and-findings.md` with concrete fix examples.
+- [x] Added opt-in `rust-unsafe-soundness` CI coverage and local `cargo audit` / `cargo geiger` verification.
 
 ---
 
@@ -41,87 +43,87 @@ How to use this file
 **Phase: Phase A — High Priority Rules (deliver fast wins)**
 
 - [x] `rust.blocking_io_in_async` (Warning)
-  - [ ] Detect `std::fs::` calls inside `async fn` or functions containing `.await`.
-  - [ ] Add tests/fixtures under `tests/fixtures/rust/blocking_io_in_async/` (positive & negative).
-  - [ ] Add integration test to confirm rule triggers.
+  - [x] Detect `std::fs::` calls inside `async fn` or functions containing `.await`.
+  - [x] Add tests/fixtures under `tests/fixtures/rust/blocking_io_in_async/` (positive & negative).
+  - [x] Add integration test to confirm rule triggers.
 - [x] `rust.unbuffered_file_writes` (Info)
-  - [ ] Detect `writeln!`/`write!` or `File::write_*` called on `File` within loops.
-  - [ ] Suggest `BufWriter` in message.
-  - [ ] Add tests/fixtures.
+  - [x] Detect `writeln!`/`write!` or `File::write_*` called on `File` within loops.
+  - [x] Suggest `BufWriter` in message.
+  - [x] Add tests/fixtures.
 - [x] `rust.lines_allocate_per_line` (Info)
-  - [ ] Detect `.lines()` use on `BufRead` in hot contexts; add mitigation example using `read_line` + `clear()`.
-  - [ ] Add tests/fixtures.
+  - [x] Detect `.lines()` use on `BufRead` in hot contexts; add mitigation example using `read_line` + `clear()`.
+  - [x] Add tests/fixtures.
 - [x] `rust.hashmap_default_hasher` (Info)
-  - [ ] Detect `HashMap::new()` in hot functions/loops and missing custom hasher.
-  - [ ] Add guidance in evidence suggesting `FxHashMap`/`hashbrown`/`BTreeMap`.
+  - [x] Detect `HashMap::new()` in hot functions/loops and missing custom hasher.
+  - [x] Add guidance in evidence suggesting `FxHashMap`/`hashbrown`/`BTreeMap`.
 
 **Phase: Phase B — Medium Priority Rules**
 
 - [x] `rust.lock_across_await` (Warning)
-  - [ ] Track lock calls, guard variables and later `.await` occurrences in same function scope.
-  - [ ] Add tests showing common false-positive patterns and an explicit `drop(guard)` example.
+  - [x] Track lock calls, guard variables and later `.await` occurrences in same function scope.
+  - [x] Add tests showing common false-positive patterns and an explicit `drop(guard)` example.
 - [x] `rust.tokio_mutex_unnecessary` (Info)
-  - [ ] Detect `tokio::sync::Mutex` usage without `.await` inside critical section and recommend `std::sync::Mutex`.
-  - [ ] Add tests/fixtures.
+  - [x] Detect `tokio::sync::Mutex` usage without `.await` inside critical section and recommend `std::sync::Mutex`.
+  - [x] Add tests/fixtures.
 - [x] `rust.blocking_drop` (Warning)
-  - [ ] Inspect `impl Drop for` bodies for blocking APIs and add rule tests.
+  - [x] Inspect `impl Drop for` bodies for blocking APIs and add rule tests.
 - [x] `rust.pointer_chasing_vec_box` (Info)
-  - [ ] Detect `Vec<Box<T>>` or linked-list patterns; add template mitigation suggestions.
+  - [x] Detect `Vec<Box<T>>` or linked-list patterns; add template mitigation suggestions.
 
 **Phase: Phase C — Research / Complex Rules**
 
 - [x] `rust.aos_hot_path` (Info/Warning)
-  - [ ] Detect loops over `Vec<Struct>` where 2+ fields are accessed repeatedly.
-  - [ ] Create `StructFieldLoop` parser summary and run against fixtures; consider profiler-guided validation before promoting severity.
+  - [x] Detect loops over `Vec<Struct>` where 2+ fields are accessed repeatedly.
+  - [x] Create `StructFieldLoop` parser summary and run against fixtures; consider profiler-guided validation before promoting severity.
 - [x] `rust.large_future_stack` (Info)
-  - [ ] Heuristic detection of large local bindings captured by `async fn`/blocks; add guidance to box futures or refactor.
+  - [x] Heuristic detection of large local bindings captured by `async fn`/blocks; add guidance to box futures or refactor.
 - [x] `rust.utf8_validate_hot_path` (Info)
-  - [ ] Flag `from_utf8` in hot paths; provide conservative guidance about `from_utf8_unchecked`.
+  - [x] Flag `from_utf8` in hot paths; provide conservative guidance about `from_utf8_unchecked`.
 - [x] `rust.path_join_absolute` (Warning)
-  - [ ] Detect `path.join("/abs/...")` string literal cases and add tests.
+  - [x] Detect `path.join("/abs/...")` string literal cases and add tests.
 
 **Unsafe Soundness Rule Pack (separate module)**
 
 - [x] Create the Rust unsafe soundness rule pack and register it in the analyzer.
-  - [ ] `get_unchecked` / bounds-less indexing detector.
-    - [ ] Flag `get_unchecked`, `get_unchecked_mut`, `Vec::set_len`, `from_raw_parts`, etc. inside `unsafe` blocks.
-    - [ ] Require guard detection or `SAFETY:` justification to suppress.
-  - [ ] `transmute` & raw pointer cast detector.
-    - [ ] Flag `mem::transmute`, `as *mut`, `as *const`, `MaybeUninit::assume_init` unless `SAFETY:` present.
-  - [ ] Generic-invariant & aliasing detectors.
-    - [ ] Identify unsafe blocks that assume properties of unconstrained `T`.
-  - [ ] Public `unsafe` constructor / raw-parts API checks.
-  - [ ] Send/Sync & thread-safety checks when raw pointers/transmutes cross threads.
-  - [ ] Add fixtures and integration tests under `tests/fixtures/rust/unsafe_soundness/`.
+  - [x] `get_unchecked` / bounds-less indexing detector.
+    - [x] Flag `get_unchecked`, `get_unchecked_mut`, `Vec::set_len`, `from_raw_parts`, etc. inside `unsafe` blocks.
+    - [x] Require guard detection or `SAFETY:` justification to suppress.
+  - [x] `transmute` & raw pointer cast detector.
+    - [x] Flag `mem::transmute`, `as *mut`, `as *const`, `MaybeUninit::assume_init` unless `SAFETY:` present.
+  - [x] Generic-invariant & aliasing detectors.
+    - [x] Identify unsafe blocks that assume properties of unconstrained `T`.
+  - [x] Public `unsafe` constructor / raw-parts API checks.
+  - [x] Send/Sync & thread-safety checks when raw pointers/transmutes cross threads.
+  - [x] Add fixtures and integration tests under `tests/fixtures/rust/unsafe_soundness/`.
 
 **Tests, Fixtures & Examples**
 
 - [x] Add fixtures under `tests/fixtures/rust/` grouped by rule id.
 - [x] Add unit and integration tests validating true positives and representative negatives.
 - [x] Update integration coverage in `tests/integration_scan.rs` / `tests/integration_scan/rust_advanced.rs` to assert expected `rule_id`s.
-- [ ] Add short example snippets and remediation examples to `guides/rust/` and link them from rule findings.
+- [x] Add short example snippets and remediation examples to `guides/rust/` and link them from rule findings.
 
 **CI & Automation**
 
 - [x] Add CI diagnostics covering strict `cargo clippy`, test execution, and grep-based security reporting.
-- [ ] Add `rust-unsafe-soundness` job to run new detectors and small `cargo miri` test subset (opt-in due to slowness).
+- [x] Add `rust-unsafe-soundness` job to run new detectors and small `cargo miri` test subset (opt-in due to slowness).
 
 **Implementation Checklist (PR-sized steps)**
 
-1. [ ] Scaffold heuristics module and add a minimal `performance.rs` with empty rule stubs.
-2. [ ] Add parser flags (`is_async`, `await_lines`) and small summaries to `ParsedFunction`.
-3. [ ] Implement the Phase A rules and their tests (one rule per PR recommended).
-4. [ ] Implement Phase B rules; iterate on false positives with test cases.
-5. [ ] Implement `unsafe_soundness` detectors and tests.
-6. [ ] Wire rules into `src/heuristics/mod.rs` and add integration tests.
-7. [ ] Add CI jobs and documentation; run the rules against a few representative Rust projects to tune.
+1. [x] Scaffold heuristics module and add a minimal `performance.rs` with empty rule stubs.
+2. [x] Add parser flags (`is_async`, `await_lines`) and small summaries to `ParsedFunction`.
+3. [x] Implement the Phase A rules and their tests (one rule per PR recommended).
+4. [x] Implement Phase B rules; iterate on false positives with test cases.
+5. [x] Implement `unsafe_soundness` detectors and tests.
+6. [x] Wire rules into `src/heuristics/mod.rs` and add integration tests.
+7. [x] Add CI jobs and documentation; run the rules against a few representative Rust projects to tune.
 
 **Acceptance Criteria (must be met before merge)**
 
 - [x] Each rule exposes a stable `rule_id`, severity, and clear evidence message.
 - [x] Tests/fixtures exist for both true positives and representative false-positive controls for each rule.
 - [x] Integration tests assert the rule triggers on fixtures.
-- [ ] Parser changes are minimal and documented in code comments.
+- [x] Parser changes are minimal and documented in code comments.
 - [x] CI includes diagnostics that run the heuristic test suite and report results.
 
 **Quick Start / First PRs (recommended order)**

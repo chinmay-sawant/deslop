@@ -161,3 +161,5 @@ For a detailed architecture and roadmap guide, see `guides/implementation-guide.
 For a detector-oriented overview, see `guides/features-and-detections.md`.
 
 Library code uses typed errors internally and keeps `anyhow` at the CLI edge. The scanner also uses bounded file reads by default so repository scans do not rely on unbounded `read_to_string` calls.
+
+Rust scan hardening now also canonicalizes the scan root, rejects symlinked file reads, and compares the generated Rust security baseline report against the committed baseline in CI.

@@ -11,6 +11,9 @@ pub(crate) use domain_modeling::domain_findings;
 pub(crate) use performance::{performance_file_findings, performance_function_findings};
 pub(crate) use unsafe_soundness::unsafe_soundness_findings;
 
+const RUST_GUIDE_REFERENCE: &str =
+    "see guides/rust/heuristics-and-findings.md for remediation examples";
+
 fn function_finding(
     file: &ParsedFile,
     function: &ParsedFunction,
@@ -20,6 +23,9 @@ fn function_finding(
     message: String,
     evidence: Vec<String>,
 ) -> Finding {
+    let mut evidence = evidence;
+    evidence.push(RUST_GUIDE_REFERENCE.to_string());
+
     Finding {
         rule_id: rule_id.to_string(),
         severity,
@@ -40,6 +46,9 @@ fn file_finding(
     message: String,
     evidence: Vec<String>,
 ) -> Finding {
+    let mut evidence = evidence;
+    evidence.push(RUST_GUIDE_REFERENCE.to_string());
+
     Finding {
         rule_id: rule_id.to_string(),
         severity,

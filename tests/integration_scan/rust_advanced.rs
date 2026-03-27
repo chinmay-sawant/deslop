@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use deslop::{ScanOptions, scan_repository};
@@ -165,4 +166,64 @@ fn test_rust_hygiene_script() {
         .expect("hygiene script should run");
 
     assert!(status.success(), "hygiene script should pass");
+}
+
+#[test]
+fn test_rust_security_script() {
+    let output = Command::new("bash")
+        .arg("scripts/check-rust-security.sh")
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .output()
+        .expect("security script should run");
+
+    assert!(output.status.success(), "security script should pass");
+
+    let report_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("reports/rust-security-baseline/latest.txt");
+    let report = fs::read_to_string(report_path).expect("security report should be readable");
+
+    for heading in [
+        "## narrowing_as_casts",
+        "## split_at_and_indexing",
+        "## toctou_fs_checks",
+        "## toctou_check_then_open",
+        "## secret_comparisons",
+        "## shared_mutability",
+        "## unsafe_globals",
+        "## derive_default",
+        "## thread_spawn_async",
+        "## path_join_absolute",
+    ] {
+        assert!(report.contains(heading), "missing report heading {heading}");
+    }
+}
+
+#[test]
+fn test_production_source_avoids_unbounded_read_to_string() {
+    let mut rust_files = Vec::new();
+    collect_rust_files(
+        &Path::new(env!("CARGO_MANIFEST_DIR")).join("src"),
+        &mut rust_files,
+    );
+
+    for file in rust_files {
+        let contents = fs::read_to_string(&file).expect("source file should be readable");
+        assert!(
+            !contents.contains("fs::read_to_string("),
+            "production source should avoid fs::read_to_string: {}",
+            file.display()
+        );
+    }
+}
+
+fn collect_rust_files(root: &Path, files: &mut Vec<PathBuf>) {
+    for entry in fs::read_dir(root).expect("directory should be readable") {
+        let entry = entry.expect("directory entry should be readable");
+        let path = entry.path();
+        if path.is_dir() {
+            collect_rust_files(&path, files);
+        } else if path.extension().and_then(|ext| ext.to_str()) == Some("rs") {
+            files.push(path);
+        }
+    }
 }

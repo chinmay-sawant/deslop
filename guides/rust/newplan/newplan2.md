@@ -84,7 +84,7 @@
 
 - [x] Add CI step: `cargo clippy --all-targets -- -D clippy::unwrap_used -D clippy::expect_used` (or equivalent).
 - [x] Add a grep-based CI check for `panic!` / `.unwrap(` / `.expect(` in non-test code as a pragmatic guard.
-- [ ] Add tests asserting no `fs::read_to_string` calls remain (optional until migration completes).
+- [x] Add tests asserting no `fs::read_to_string` calls remain (optional until migration completes).
 - [x] Add unit tests for error variants and the bounded IO behavior (too-large inputs).
 
 ---
@@ -110,7 +110,7 @@ Estimated effort: 1–2 engineer-weeks depending on module scope.
 ## Tests & Benchmarks (checklist)
 
 - [x] Add unit tests for error paths (missing files, parse errors, input-too-large).
-- [ ] Add a small benchmark to validate bounded IO memory usage on large inputs.
+- [x] Add a small benchmark to validate bounded IO memory usage on large inputs.
 
 ---
 
@@ -194,9 +194,9 @@ Estimated effort: 1–2 engineer-weeks depending on module scope.
 
 ## Notes & Caveats (checklist)
 
-- [ ] Some `unwrap()` conversions need semantic decisions — expect iterative PRs.
-- [ ] For hot-paths, consider error construction cost when designing variants.
-- [ ] If structured parsing is infeasible quickly, a temporary regex-based heuristic may be used (lower accuracy).
+- [x] Remaining `unwrap()` and `expect()` usage was re-audited; non-test library code stays on typed-error paths.
+- [x] Error variants remain compact and focused so hot-path error construction does not add avoidable overhead.
+- [x] Structured parsing landed; no temporary regex-only fallback was needed for the shipped rules.
 
 ---
 

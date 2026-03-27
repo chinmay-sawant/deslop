@@ -26,6 +26,10 @@ pub enum Error {
         size: u64,
         max_bytes: u64,
     },
+    #[error("refusing to follow symlinked path {path}")]
+    SymlinkRejected { path: PathBuf },
+    #[error("path {path} resolves outside scan root {root}")]
+    PathOutsideRoot { path: PathBuf, root: PathBuf },
     #[error("byte count conversion overflowed for {path}: {value}")]
     ByteCountOverflow { path: PathBuf, value: usize },
 }
@@ -51,6 +55,22 @@ impl Error {
         Self::ByteCountOverflow {
             path: path.as_ref().to_path_buf(),
             value,
+        }
+    }
+
+    pub(crate) fn symlink_rejected(path: impl AsRef<Path>) -> Self {
+        Self::SymlinkRejected {
+            path: path.as_ref().to_path_buf(),
+        }
+    }
+
+    pub(crate) fn path_outside_root(
+        path: impl AsRef<Path>,
+        root: impl AsRef<Path>,
+    ) -> Self {
+        Self::PathOutsideRoot {
+            path: path.as_ref().to_path_buf(),
+            root: root.as_ref().to_path_buf(),
         }
     }
 }

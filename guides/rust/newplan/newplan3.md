@@ -60,7 +60,7 @@ This file is the checklist-focused conversion of the detailed plan. Use the chec
 - [x] Add CI step(s) to detect new `panic!`/`.unwrap()`/`.expect()` in non-test code.
    - [x] Option A: enforce `clippy` lints (e.g., `-D clippy::unwrap_used -D clippy::expect_used`).
    - [x] Option B: add a small grep-based check that excludes `tests/` and `#[cfg(test)]` blocks.
-- [ ] Optionally add a test that fails on `fs::read_to_string` occurrences.
+- [x] Optionally add a test that fails on `fs::read_to_string` occurrences.
 
 ## Migration sequencing (recommended phases)
 
@@ -84,7 +84,7 @@ This file is the checklist-focused conversion of the detailed plan. Use the chec
 ## Tests & benchmarks
 
 - [x] Add unit tests for error paths (missing files, oversized inputs, parse errors).
-- [ ] Add a small benchmark that validates `read_to_string_limited` memory behavior.
+- [x] Add a small benchmark that validates `read_to_string_limited` memory behavior.
 
 ## Domain Modeling & Invariants — checklist (parser + heuristics)
 

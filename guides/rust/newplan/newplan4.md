@@ -57,7 +57,7 @@
 
 - [x] **Clippy/CI policy**: run `cargo clippy --all-targets` and consider `-D clippy::unwrap_used -D clippy::expect_used` in CI.
 - [x] **Grep-based check**: add a CI step/script to fail on `panic!`, `.unwrap(`, `.expect(`, and `fs::read_to_string` in non-test code.
-- [ ] **Add test**: a unit/integration test that scans the repo for forbidden patterns (with allow-list support).
+- [x] **Add test**: a unit/integration test that scans the repo for forbidden patterns (with allow-list support).
 
 ## Concrete Migration Checklist (developer tasks)
 
@@ -86,7 +86,7 @@
 ## Tests & Benchmarks
 
 - [x] **Unit tests** for error paths (missing files, parse errors, input-too-large).
-- [ ] **Benchmark/test** to confirm bounded read behavior and memory footprint.
+- [x] **Benchmark/test** to confirm bounded read behavior and memory footprint.
 
 ## PR Checklist
 

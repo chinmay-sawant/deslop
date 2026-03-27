@@ -1,17 +1,16 @@
 ## narrowing_as_casts
 
 ## split_at_and_indexing
-src/heuristics/python/performance.rs:150:            evidence: vec!["prefer next(iter(...)) when only the first item is needed".to_string()],
 
 ## toctou_fs_checks
-src/io.rs:12:        .metadata()
+src/io.rs:16:        .metadata()
+src/io.rs:65:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
 tests/integration_scan/python.rs:839:def fetch_metadata(payload):
 tests/integration_scan/python.rs:849:    payload = fetch_metadata(payload)
 
+## toctou_check_then_open
+
 ## secret_comparisons
-src/heuristics/rust/mod.rs:133:    tokens.iter().any(|token| normalized == *token || normalized.contains(token))
-src/analysis/rust/parser.rs:642:        .any(|token| token == "async")
-src/analysis/rust/parser.rs:1211:        .any(|token| token == "unsafe")
 
 ## shared_mutability
 
@@ -23,38 +22,5 @@ tests/fixtures/rust/domain_modeling/positive.rs:3:#[derive(Debug, Default, Seria
 ## thread_spawn_async
 tests/fixtures/rust/async/positive.rs:39:    tokio::spawn(async move {
 
-## path_join
-src/heuristics/security.rs:131:    let joined = tokens.join("_");
-src/heuristics/rust/performance.rs:149:        if line.contains(".join(\"/") || line.contains(".join('/") {
-src/heuristics/rust/domain_modeling.rs:73:                        format!("derives={}", summary.derives.join(", ")),
-src/heuristics/rust/domain_modeling.rs:89:                    format!("derives={}", summary.derives.join(", ")),
-src/heuristics/rust/domain_modeling.rs:105:                    format!("derives={}", summary.derives.join(", ")),
-src/heuristics/rust/domain_modeling.rs:121:                    format!("derives={}", summary.derives.join(", ")),
-src/heuristics/consistency.rs:64:            .join(", ");
-src/heuristics/consistency.rs:72:            .join(", ");
-src/heuristics/consistency.rs:133:                            format!("duplicate keys: {}", duplicates.join(", ")),
-src/heuristics/python/ai_smells.rs:83:                    .join(", ")
-src/heuristics/python/ai_smells.rs:92:                    .join(", ")
-src/heuristics/python/duplication.rs:456:        .then(|| stages.join("->"))
-src/heuristics/python/duplication.rs:539:    let collapsed = value.split_whitespace().collect::<Vec<_>>().join(" ");
-src/heuristics/python/duplication.rs:564:    Some(normalized_tokens.join(" "))
-src/heuristics/python/structure.rs:201:                module_concerns.into_iter().collect::<Vec<_>>().join(",")
-src/heuristics/python/structure.rs:326:            categories.into_iter().collect::<Vec<_>>().join(", ")
-src/heuristics/python/structure.rs:373:                concerns.iter().copied().collect::<Vec<_>>().join(","),
-src/heuristics/python/structure.rs:391:                concerns.iter().copied().collect::<Vec<_>>().join(",")
-src/heuristics/python/structure.rs:455:            concerns.into_iter().collect::<Vec<_>>().join(",")
-src/heuristics/python/maintainability.rs:419:        evidence: vec![format!("http_calls={}", http_calls.join(","))],
-src/analysis/go/parser/comments.rs:47:            return Some(normalized.join("\n"));
-src/analysis/go/parser/comments.rs:57:        Some(comment_lines.join("\n"))
-src/analysis/rust/parser.rs:1136:                    return Some(collected.join("\n").trim().to_string());
-src/analysis/rust/parser.rs:1149:        Some(collected.join("\n").trim().to_string())
-src/analysis/python/parser/phase4.rs:128:        signature: signature_parts.join(" | "),
-src/analysis/python/parser/phase4.rs:461:                signature: normalize_shape(&normalized_lines.join(" ")),
-src/analysis/python/parser/general.rs:743:        .join(" ")
-src/config.rs:47:    let path = root.join(CONFIG_FILE_NAME);
-src/config.rs:75:        let path = std::env::temp_dir().join(format!("deslop-config-{name}-{nonce}"));
-src/config.rs:92:            root.join(".deslop.toml"),
-src/io.rs:59:        std::env::temp_dir().join(format!("deslop-io-{name}-{nonce}.txt"))
-tests/integration_scan.rs:145:    let dir = std::env::temp_dir().join(format!("deslop-test-{nonce}"));
-tests/integration_scan.rs:151:    let path = root.join(relative_path);
+## path_join_absolute
 

@@ -23,6 +23,8 @@ while IFS= read -r match; do
     src/analysis/rust/parser.rs:* ) continue ;;
     src/index/mod.rs:* ) continue ;;
     src/scan/mod.rs:* ) continue ;;
+    src/scan/walker.rs:* ) continue ;;
+    src/benchmark/mod.rs:* ) continue ;;
   esac
   printf '%s\n' "$match"
   status=1

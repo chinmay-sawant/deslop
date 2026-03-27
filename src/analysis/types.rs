@@ -19,6 +19,7 @@ pub(crate) struct ParsedFile {
     pub imports: Vec<ImportSpec>,
     pub symbols: Vec<DeclaredSymbol>,
     pub class_summaries: Vec<ClassSummary>,
+    // Rust heuristics consume conservative struct summaries so they can stay syntax-driven.
     pub structs: Vec<StructSummary>,
 }
 
@@ -83,6 +84,7 @@ pub(crate) struct ParsedFunction {
     pub line_iteration_loops: Vec<usize>,
     pub default_hasher_lines: Vec<usize>,
     pub boxed_container_lines: Vec<usize>,
+    // Unsafe-pattern summaries keep the rule pack local to parser evidence rather than ad-hoc text scans.
     pub unsafe_soundness: Vec<UnsafePattern>,
 }
 

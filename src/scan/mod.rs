@@ -10,17 +10,22 @@ use crate::analysis::{ParsedFile, backend_for_language, backend_for_path, suppor
 use crate::heuristics::evaluate_shared;
 use crate::index::build_repository_index;
 use crate::model::{Finding, ParseFailure, ScanOptions, ScanReport, TimingBreakdown};
+use crate::io::canonicalize_within_root;
 use crate::{DEFAULT_MAX_BYTES, RepoConfig, Result, load_repository_config, read_to_string_limited};
 use crate::scan::walker::discover_source_files;
 
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let total_start = Instant::now();
-    let repo_config = load_repository_config(&options.root)?;
+    let canonical_root = options
+        .root
+        .canonicalize()
+        .map_err(|error| crate::Error::io(&options.root, error))?;
+    let repo_config = load_repository_config(&canonical_root)?;
 
     let discover_start = Instant::now();
     let supported_extensions = supported_extensions();
     let discovered_files =
-        discover_source_files(&options.root, options.respect_ignore, &supported_extensions)?;
+        discover_source_files(&canonical_root, options.respect_ignore, &supported_extensions)?;
     let discover_ms = discover_start.elapsed().as_millis();
 
     let parse_start = Instant::now();
@@ -59,7 +64,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let files = parsed_files.iter().map(ParsedFile::to_report).collect();
 
     Ok(ScanReport {
-        root: options.root.clone(),
+        root: canonical_root,
         files_discovered: discovered_files.len(),
         files_analyzed,
         functions_found,
@@ -131,34 +136,44 @@ impl FileOutcome {
 }
 
 fn analyze_file(path: &Path) -> FileOutcome {
-    match read_to_string_limited(path, DEFAULT_MAX_BYTES) {
+    let path = match canonicalize_within_root(path.parent().unwrap_or(path), path) {
+        Ok(path) => path,
+        Err(error) => {
+            return FileOutcome::Failed(ParseFailure {
+                path: path.to_path_buf(),
+                message: error.to_string(),
+            });
+        }
+    };
+
+    match read_to_string_limited(&path, DEFAULT_MAX_BYTES) {
         Ok(source) => {
             if is_generated(&source) {
-                return FileOutcome::Generated(path.to_path_buf());
+                return FileOutcome::Generated(path.clone());
             }
 
             let suppressions = parse_suppression_directives(&source);
 
-            let Some(analyzer) = backend_for_path(path) else {
+            let Some(analyzer) = backend_for_path(&path) else {
                 return FileOutcome::Failed(ParseFailure {
-                    path: path.to_path_buf(),
+                    path: path.clone(),
                     message: format!("no analyzer registered for {}", path.display()),
                 });
             };
 
-            match analyzer.parse_file(path, &source) {
+            match analyzer.parse_file(&path, &source) {
                 Ok(file) => FileOutcome::Parsed {
                     file: Box::new(file),
                     suppressions,
                 },
                 Err(error) => FileOutcome::Failed(ParseFailure {
-                    path: path.to_path_buf(),
+                    path: path.clone(),
                     message: error.to_string(),
                 }),
             }
         }
         Err(error) => FileOutcome::Failed(ParseFailure {
-            path: path.to_path_buf(),
+            path,
             message: error.to_string(),
         }),
     }

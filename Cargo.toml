@@ -13,6 +13,7 @@ categories = ["command-line-utilities"]
 anyhow = "1.0.102"
 clap = { version = "4.6.0", features = ["derive"] }
 ignore = "0.4.25"
+libc = "0.2.177"
 rayon = "1.11.0"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
@@ -22,6 +23,9 @@ tree-sitter = "0.26.7"
 tree-sitter-go = "0.25.0"
 tree-sitter-python = "0.25.0"
 tree-sitter-rust = "0.24.0"
+
+[dev-dependencies]
+proptest = "1.7.0"
 
 [profile.release]
 codegen-units = 1
