@@ -15,133 +15,134 @@ This file is the checklist-focused conversion of the detailed plan. Use the chec
 - [x] Domain-modeling heuristics landed with fixture-backed tests.
 - [x] Async/concurrency heuristics landed with fixture-backed tests.
 - [x] Strict verification completed with `cargo test`, `cargo clippy --all-targets --all-features -- -D warnings`, and the repo hygiene script.
-- [ ] Feature-flagged rollout for async rules was not added; rules ship directly in the Rust analyzer.
-- [ ] Repo-level suppression comments/config were not added in this pass.
+- [x] Repo-level suppression comments landed via `deslop-ignore:<rule_id>` in the scan pipeline.
+- [x] Feature-flagged rollout for async rules landed via `.deslop.toml` with `rust_async_experimental = false`.
+- [x] Repo-level severity/config toggles landed via `.deslop.toml` using `disabled_rules` and `severity_overrides`.
 
 ## Goals (high level)
 
-- [ ] Library APIs return concrete `Error` types (no opaque `Box<dyn Error>` in public API).
-- [ ] Binaries use `anyhow::Result` and attach context for user-facing messages.
-- [ ] No `panic!`/`.unwrap()` in non-test library code.
-- [ ] Prevent unbounded reads (use size limits / streaming readers).
-- [ ] CI enforces these patterns.
+- [x] Library APIs return concrete `Error` types (no opaque `Box<dyn Error>` in public API).
+- [x] Binaries use `anyhow::Result` and attach context for user-facing messages.
+- [x] No `panic!`/`.unwrap()` in non-test library code.
+- [x] Prevent unbounded reads (use size limits / streaming readers).
+- [x] CI enforces these patterns.
 
 ## Prep: Dependencies & small changes
 
-- [ ] Add `thiserror = "1.0"` to `Cargo.toml` where library code lives.
-- [ ] Ensure `anyhow` remains available for binaries (optional in libraries).
+- [x] Add `thiserror = "1.0"` to `Cargo.toml` where library code lives.
+- [x] Ensure `anyhow` remains available for binaries (optional in libraries).
 
 ## Core implementation (priority tasks)
 
-- [ ] Create `src/error.rs` with a top-level `pub enum Error` and `pub type Result<T> = Result<T, Error>`.
-   - [ ] Include `#[from]` conversions for common module errors (IO, parser, etc.).
-   - [ ] Export `pub use crate::error::{Error, Result};` from `lib.rs`.
-- [ ] Add per-module `Error` enums (e.g., `analysis::parser::Error`) and wire them into the top-level `Error` via `#[from]`.
+- [x] Create `src/error.rs` with a top-level `pub enum Error` and `pub type Result<T> = Result<T, Error>`.
+   - [x] Include `#[from]` conversions for common module errors (I/O, parser/config fan-in).
+   - [x] Export `pub use crate::error::{Error, Result};` from `lib.rs`.
+- [x] Add per-module `Error` enums (e.g., `analysis::parser::Error`) and wire them into the top-level `Error` via `#[from]`.
 
 ## Replace application vs library error types
 
-- [ ] Grep and replace `use anyhow::Result` in library crates with `use crate::error::Result`.
-- [ ] Keep `main.rs` / CLI return types as `anyhow::Result` and map library errors to `anyhow::Error` with context.
+- [x] Grep and replace `use anyhow::Result` in library crates with `use crate::error::Result`.
+- [x] Keep `main.rs` / CLI return types as `anyhow::Result` and map library errors to `anyhow::Error` with context.
 
 ## Remove panics/unwraps and add typed errors
 
-- [ ] Replace trivial `unwrap()` occurrences with `ok_or(Error::...) ?` or `?` propagation.
-   - [ ] Example: replace `target_segments.last().unwrap()` with `target_segments.last().ok_or(Error::MissingModuleName)?`.
-- [ ] Replace `panic!(...)` in library code with domain `Error` variants.
+- [x] Replace trivial `unwrap()` occurrences with `ok_or(Error::...) ?` or `?` propagation.
+   - [x] Example: replace `target_segments.last().unwrap()` with a non-panicking path.
+- [x] Replace `panic!(...)` in library code with domain `Error` variants.
 
 ## Bounded IO / streaming helpers
 
-- [ ] Add `src/io.rs` with `read_to_string_limited(path: &Path, max_bytes: u64) -> Result<String, Error>`.
-- [ ] Replace `fs::read_to_string(path)` usages with the limited reader or streaming `Read::take(max)`.
+- [x] Add `src/io.rs` with `read_to_string_limited(path: &Path, max_bytes: u64) -> Result<String, Error>`.
+- [x] Replace `fs::read_to_string(path)` usages with the limited reader or streaming `Read::take(max)`.
 
 ## CI / Lint enforcement
 
-- [ ] Add CI step(s) to detect new `panic!`/`.unwrap()`/`.expect()` in non-test code.
-   - [ ] Option A: enforce `clippy` lints (e.g., `-D clippy::unwrap_used -D clippy::expect_used`).
-   - [ ] Option B: add a small grep-based check that excludes `tests/` and `#[cfg(test)]` blocks.
+- [x] Add CI step(s) to detect new `panic!`/`.unwrap()`/`.expect()` in non-test code.
+   - [x] Option A: enforce `clippy` lints (e.g., `-D clippy::unwrap_used -D clippy::expect_used`).
+   - [x] Option B: add a small grep-based check that excludes `tests/` and `#[cfg(test)]` blocks.
 - [ ] Optionally add a test that fails on `fs::read_to_string` occurrences.
 
 ## Migration sequencing (recommended phases)
 
-- [ ] Phase A — Low risk (1–2 days)
-   - [ ] Add `thiserror` and `src/error.rs`.
-   - [ ] Implement `read_to_string_limited` and migrate simple reads (e.g., `src/scan/mod.rs`).
-   - [ ] Fix local `unwrap()`/`panic!` instances with clear error cases.
-- [ ] Phase B — Medium risk (2–4 days)
-   - [ ] Add per-module errors and convert public APIs to `crate::error::Result`.
-   - [ ] Update binaries to map errors into `anyhow` with context.
-- [ ] Phase C — Finish (1–2 days)
-   - [ ] Run full build and tests; fix regressions.
-   - [ ] Add CI linting; finalize error messages and docs.
+- [x] Phase A — Low risk (1–2 days)
+   - [x] Add `thiserror` and `src/error.rs`.
+   - [x] Implement `read_to_string_limited` and migrate simple reads (e.g., `src/scan/mod.rs`).
+   - [x] Fix local `unwrap()`/`panic!` instances with clear error cases.
+- [x] Phase B — Medium risk (2–4 days)
+   - [x] Add per-module errors and convert public APIs to `crate::error::Result`.
+   - [x] Update binaries to map errors into `anyhow` with context.
+- [x] Phase C — Finish (1–2 days)
+   - [x] Run full build and tests; fix regressions.
+   - [x] Add CI linting; finalize error messages and docs.
 
 ## Developer ergonomics & utilities
 
-- [ ] Provide `pub type Result<T> = std::result::Result<T, Error>` centrally.
-- [ ] Add small adapter helpers for error conversion/context where convenient.
-- [ ] Document the library vs app boundary in `README`/guides.
+- [x] Provide `pub type Result<T> = std::result::Result<T, Error>` centrally.
+- [x] Add small adapter helpers for error conversion/context where convenient.
+- [x] Document the library vs app boundary in `README`/guides.
 
 ## Tests & benchmarks
 
-- [ ] Add unit tests for error paths (missing files, oversized inputs, parse errors).
+- [x] Add unit tests for error paths (missing files, oversized inputs, parse errors).
 - [ ] Add a small benchmark that validates `read_to_string_limited` memory behavior.
 
 ## Domain Modeling & Invariants — checklist (parser + heuristics)
 
-- [ ] Add `StructSummary` and `FieldSummary` types to `src/analysis/types.rs`.
-   - [ ] `FieldSummary { line, name, type_text, is_pub, is_option, is_primitive }`.
-   - [ ] `StructSummary { line, name, fields: Vec<FieldSummary> }`.
-- [ ] Extend `ParsedFile` to include `structs: Vec<StructSummary>`.
-- [ ] Update `src/analysis/rust/parser.rs` to extract struct fields and mark `is_option` / `is_primitive`.
-- [ ] Add `src/heuristics/rust_domain_modeling.rs` with rule implementations and wire into `evaluate_rust_findings`.
+- [x] Add `StructSummary` and `FieldSummary` types to `src/analysis/types.rs`.
+   - [x] `FieldSummary { line, name, type_text, is_pub, is_option, is_primitive }`.
+   - [x] `StructSummary { line, name, fields: Vec<FieldSummary> }`.
+- [x] Extend `ParsedFile` to include `structs: Vec<StructSummary>`.
+- [x] Update `src/analysis/rust/parser.rs` to extract struct fields and mark `is_option` / `is_primitive`.
+- [x] Add `src/heuristics/rust/domain_modeling.rs` with rule implementations and wire into `evaluate_rust_findings`.
 
 ### Domain rules to add (each as an implementation task)
 
-- [ ] `rust_domain_raw_primitive` — detect business-value fields using raw primitives (money, price, username, etc.) and recommend newtypes.
-- [ ] `rust_domain_impossible_combination` — detect boolean + `Option` credential combos and recommend enum-based designs.
-- [ ] `rust_domain_default_produces_invalid` — flag `#[derive(Default)]` producing unsafe defaults for sensitive fields.
-- [ ] `rust_debug_secret` — detect `Debug` on secret-bearing types and recommend redaction/secrecy crate.
-- [ ] `rust_serde_sensitive_deserialize` — detect `Serialize`/`Deserialize` on sensitive fields without validation or masking.
+- [x] `rust_domain_raw_primitive` — detect business-value fields using raw primitives (money, price, username, etc.) and recommend newtypes.
+- [x] `rust_domain_impossible_combination` — detect boolean + `Option` credential combos and recommend enum-based designs.
+- [x] `rust_domain_default_produces_invalid` — flag `#[derive(Default)]` producing unsafe defaults for sensitive fields.
+- [x] `rust_debug_secret` — detect `Debug` on secret-bearing types and recommend redaction/secrecy crate.
+- [x] `rust_serde_sensitive_deserialize` — detect `Serialize`/`Deserialize` on sensitive fields without validation or masking.
 
 ## Async & Concurrency heuristics — checklist (parser + rules)
 
-- [ ] Extend `ParsedFunction` with async fields: `await_points`, `macro_calls`, `spawn_calls`, `lock_calls`, `permit_acquires`, `futures_created`.
-- [ ] Implement Rust collectors in `src/analysis/rust/parser.rs` to populate those fields.
-- [ ] Add `src/heuristics/rust_async.rs` and wire into the heuristics pipeline.
+- [x] Extend `ParsedFunction` with async fields: `await_points`, `macro_calls`, `spawn_calls`, `lock_calls`, `permit_acquires`, `futures_created`.
+- [x] Implement Rust collectors in `src/analysis/rust/parser.rs` to populate those fields.
+- [x] Add Rust async heuristics and wire them into the heuristics pipeline.
 
 ### High-value async rules (implement and test each)
 
-- [ ] `rust_async_std_mutex_await` — detect `std::sync::Mutex` held across `.await` (Error).
-- [ ] `rust_async_hold_permit_across_await` — detect RAII permits held across `.await` (Warning).
-- [ ] `rust_async_spawn_cancel_at_await` — detect spawned tasks lacking cancellation handling (Warning).
-- [ ] `rust_async_missing_fuse_pin` & `rust_async_recreate_future_in_select` — detect select/future misuse (Info/Warning).
-- [ ] `rust_async_lock_order_cycle` — build lock-order graph and detect cycles (Error).
+- [x] `rust_async_std_mutex_await` — detect `std::sync::Mutex` held across `.await` (Error).
+- [x] `rust_async_hold_permit_across_await` — detect RAII permits held across `.await` (Warning).
+- [x] `rust_async_spawn_cancel_at_await` — detect spawned tasks lacking cancellation handling (Warning).
+- [x] `rust_async_missing_fuse_pin` & `rust_async_recreate_future_in_select` — detect select/future misuse (Info/Warning).
+- [x] `rust_async_lock_order_cycle` — build lock-order graph and detect cycles (Error).
 
 ## Tests, fixtures, and rollout for heuristics
 
-- [ ] Add fixtures under `tests/fixtures/rust/domain_modeling/` and `tests/fixtures/rust/async/`.
-- [ ] Add integration tests in `tests/integration_scan.rs` (or new modules) asserting findings for positive and negative cases.
-- [ ] Stage rollout behind a feature flag (e.g., `rust_async_experimental`) for initial tuning.
+- [x] Add fixtures under `tests/fixtures/rust/domain_modeling/` and `tests/fixtures/rust/async/`.
+- [x] Add integration tests in `tests/integration_scan.rs` (or new modules) asserting findings for positive and negative cases.
+- [x] Stage rollout behind a feature flag (e.g., `rust_async_experimental`) for initial tuning.
 
 ## PR checklist (one combined list)
 
-- [ ] Add `thiserror` to `Cargo.toml`.
-- [ ] Add `src/error.rs` and export `Error`/`Result`.
-- [ ] Implement `read_to_string_limited` and migrate simple reads.
-- [ ] Replace trivial `unwrap()` / `panic!` cases with typed errors.
-- [ ] Add per-module `Error` enums and `#[from]` conversions.
-- [ ] Update binaries to use `anyhow` for user-facing messages.
-- [ ] Add CI linting and grep-based checks for regressions.
-- [ ] Add `StructSummary`/`FieldSummary` and parser extracts.
-- [ ] Implement `rust_domain_*` heuristics and tests.
-- [ ] Implement `rust_async_*` heuristics and tests (start with `std::sync::Mutex` across `.await`).
-- [ ] Add fixtures and integration tests; run and fix failures.
-- [ ] Update `guides/rust/` README with summary and developer guidance.
+- [x] Add `thiserror` to `Cargo.toml`.
+- [x] Add `src/error.rs` and export `Error`/`Result`.
+- [x] Implement `read_to_string_limited` and migrate simple reads.
+- [x] Replace trivial `unwrap()` / `panic!` cases with typed errors.
+- [x] Add per-module `Error` enums and `#[from]` conversions.
+- [x] Update binaries to use `anyhow` for user-facing messages.
+- [x] Add CI linting and grep-based checks for regressions.
+- [x] Add `StructSummary`/`FieldSummary` and parser extracts.
+- [x] Implement `rust_domain_*` heuristics and tests.
+- [x] Implement `rust_async_*` heuristics and tests (start with `std::sync::Mutex` across `.await`).
+- [x] Add fixtures and integration tests; run and fix failures.
+- [x] Update `README.md` with summary and developer guidance.
 
 ## Next actions (pick one)
 
-- [ ] I will implement `src/error.rs` and add `thiserror` to `Cargo.toml` (small, low-risk PR).
-- [ ] I will convert `src/scan/mod.rs` to use `read_to_string_limited` and fix obvious `unwrap()`/`panic!` usages.
-- [ ] I will implement Phase 1 of the domain-modeling parser changes (add `StructSummary`, extract fields, and tests).
+- [x] Implemented `src/error.rs` and added `thiserror` to `Cargo.toml`.
+- [x] Converted `src/scan/mod.rs` to use `read_to_string_limited` and fixed obvious `unwrap()`/`panic!` usages.
+- [x] Implemented the domain-modeling parser changes (added `StructSummary`, extracted fields, and added tests).
 
 ---
 
@@ -219,6 +220,7 @@ pub struct StructSummary { pub line: usize, pub name: String, pub fields: Vec<Fi
 
 **False positives & configuration**
 - Provide an allowlist mechanism via code comment `// deslop-ignore:<rule_id>` and/or repo-level config to disable rules per-repo.
+   Status: comment-based suppression and repo-level config are both implemented.
 - Start rules at `Info` severity by default; escalate to `Warning` for public types.
 
 **Acceptance criteria**
@@ -227,13 +229,13 @@ pub struct StructSummary { pub line: usize, pub name: String, pub fields: Vec<Fi
 - New rules are included in `evaluate_rust_findings` and appear in scan outputs for fixtures.
 
 **PR checklist**
-- [ ] Add `StructSummary` & `FieldSummary` types and update `ParsedFile`.
-- [ ] Update `src/analysis/rust/parser.rs` to populate struct/field summaries.
-- [ ] Add `src/heuristics/rust_domain_modeling.rs` with rule implementations.
-- [ ] Integrate rules into `evaluate_rust_findings`.
-- [ ] Add fixtures under `tests/fixtures/rust/domain_modeling/`.
-- [ ] Add tests asserting findings in `tests/integration_scan.rs` or new test module.
-- [ ] Update `README.md` or `guides/rust/` with a short note about the new rules.
+- [x] Add `StructSummary` & `FieldSummary` types and update `ParsedFile`.
+- [x] Update `src/analysis/rust/parser.rs` to populate struct/field summaries.
+- [x] Add `src/heuristics/rust/domain_modeling.rs` with rule implementations.
+- [x] Integrate rules into `evaluate_rust_findings`.
+- [x] Add fixtures under `tests/fixtures/rust/domain_modeling/`.
+- [x] Add tests asserting findings in `tests/integration_scan.rs` or new test module.
+- [x] Update `README.md` with a short note about the new rules.
 
 **Next steps (proposal)**
 - I can implement Phase 1 (parser + `rust_domain_raw_primitive` and `rust_domain_impossible_combination`) as a focused PR. Shall I proceed to implement and add tests now?

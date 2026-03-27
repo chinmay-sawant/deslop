@@ -1,29 +1,29 @@
 deslop scan root: .
-Source files discovered: 78
-Source files analyzed: 77
-Functions fingerprinted: 703
-Findings: 91
-Index summary: packages=77 symbols=814 imports=664
+Source files discovered: 80
+Source files analyzed: 79
+Functions fingerprinted: 724
+Findings: 95
+Index summary: packages=79 symbols=846 imports=696
 Parse failures: 0
-Timings: discover=7ms parse=260ms index=0ms heuristics=57ms total=327ms
+Timings: discover=5ms parse=252ms index=0ms heuristics=51ms total=310ms
 
 Findings:
   - ./src/analysis/go/fingerprint.rs:121 function count_comment_lines uses .lines() inside a loop [rust_lines_allocate_per_line]
   - ./src/analysis/go/fingerprint.rs:152 function count_code_lines uses .lines() inside a loop [rust_lines_allocate_per_line]
   - ./src/analysis/go/parser/general.rs:522 function extract_struct_tags uses .lines() inside a loop [rust_lines_allocate_per_line]
-  - ./src/analysis/go/parser/mod.rs:36 call to Error::parser_configuration resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
-  - ./src/analysis/go/parser/mod.rs:40 call to Error::missing_parse_tree resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
-  - ./src/analysis/python/parser/mod.rs:25 call to Error::parser_configuration resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
-  - ./src/analysis/python/parser/mod.rs:29 call to Error::missing_parse_tree resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
-  - ./src/analysis/rust/parser.rs:17 call to Error::parser_configuration resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
-  - ./src/analysis/rust/parser.rs:21 call to Error::missing_parse_tree resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
-  - ./src/analysis/rust/parser.rs:736 function visit_for_textual_blocking_calls uses an overly descriptive name [overlong_name]
-  - ./src/analysis/rust/parser.rs:842 function visit_for_boxed_container_lines uses an overly descriptive name [overlong_name]
-  - ./src/analysis/rust/parser.rs:842 function visit_for_boxed_container_lines uses Vec<Box<T>> style storage [rust_pointer_chasing_vec_box]
-  - ./src/analysis/rust/parser.rs:843 function visit_for_boxed_container_lines uses Vec<Box<T>> style storage [rust_pointer_chasing_vec_box]
+  - ./src/analysis/go/parser/mod.rs:35 call to Error::parser_configuration resolves to local Rust module path crate::analysis::Error, but no matching module was indexed [hallucinated_import_call]
+  - ./src/analysis/go/parser/mod.rs:39 call to Error::missing_parse_tree resolves to local Rust module path crate::analysis::Error, but no matching module was indexed [hallucinated_import_call]
+  - ./src/analysis/python/parser/mod.rs:24 call to Error::parser_configuration resolves to local Rust module path crate::analysis::Error, but no matching module was indexed [hallucinated_import_call]
+  - ./src/analysis/python/parser/mod.rs:28 call to Error::missing_parse_tree resolves to local Rust module path crate::analysis::Error, but no matching module was indexed [hallucinated_import_call]
+  - ./src/analysis/rust/parser.rs:17 call to Error::parser_configuration resolves to local Rust module path crate::analysis::Error, but no matching module was indexed [hallucinated_import_call]
+  - ./src/analysis/rust/parser.rs:21 call to Error::missing_parse_tree resolves to local Rust module path crate::analysis::Error, but no matching module was indexed [hallucinated_import_call]
+  - ./src/analysis/rust/parser.rs:738 function visit_for_textual_blocking_calls uses an overly descriptive name [overlong_name]
+  - ./src/analysis/rust/parser.rs:844 function visit_for_boxed_container_lines uses an overly descriptive name [overlong_name]
   - ./src/analysis/rust/parser.rs:844 function visit_for_boxed_container_lines uses Vec<Box<T>> style storage [rust_pointer_chasing_vec_box]
-  - ./src/analysis/rust/parser.rs:1429 function count_comment_lines uses .lines() inside a loop [rust_lines_allocate_per_line]
-  - ./src/analysis/rust/parser.rs:1460 function count_code_lines uses .lines() inside a loop [rust_lines_allocate_per_line]
+  - ./src/analysis/rust/parser.rs:845 function visit_for_boxed_container_lines uses Vec<Box<T>> style storage [rust_pointer_chasing_vec_box]
+  - ./src/analysis/rust/parser.rs:846 function visit_for_boxed_container_lines uses Vec<Box<T>> style storage [rust_pointer_chasing_vec_box]
+  - ./src/analysis/rust/parser.rs:1431 function count_comment_lines uses .lines() inside a loop [rust_lines_allocate_per_line]
+  - ./src/analysis/rust/parser.rs:1462 function count_code_lines uses .lines() inside a loop [rust_lines_allocate_per_line]
   - ./src/analysis/types.rs:160 struct FormattedErrorCall uses a raw primitive for business data [rust_domain_raw_primitive]
   - ./src/benchmark/mod.rs:15 function benchmark_repository repeatedly dereferences struct fields inside a loop [rust_aos_hot_path]
   - ./src/cli/report.rs:7 function format_scan_report repeatedly dereferences struct fields inside a loop [rust_aos_hot_path]
@@ -51,11 +51,15 @@ Findings:
   - ./src/heuristics/rust/performance.rs:211 function performance_file_findings uses Vec<Box<T>> style storage [rust_pointer_chasing_vec_box]
   - ./src/heuristics/rust/performance.rs:216 function performance_file_findings uses Vec<Box<T>> style storage [rust_pointer_chasing_vec_box]
   - ./src/index/mod.rs:155 function python_import_matches_module repeatedly dereferences struct fields inside a loop [rust_aos_hot_path]
-  - ./src/index/mod.rs:223 function build_repository_index repeatedly dereferences struct fields inside a loop [rust_aos_hot_path]
+  - ./src/index/mod.rs:225 function build_repository_index repeatedly dereferences struct fields inside a loop [rust_aos_hot_path]
   - ./src/io.rs:10 call to Error::io resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
   - ./src/io.rs:13 call to Error::io resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
-  - ./src/io.rs:30 call to Error::io resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
-  - ./src/model/mod.rs:17 struct TimingBreakdown uses a raw primitive for business data [rust_domain_raw_primitive]
+  - ./src/io.rs:31 call to Error::io resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
+  - ./src/io.rs:33 call to Error::byte_count_overflow resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
+  - ./src/model/mod.rs:18 struct TimingBreakdown uses a raw primitive for business data [rust_domain_raw_primitive]
+  - ./src/scan/mod.rs:16 function scan_repository repeatedly dereferences struct fields inside a loop [rust_aos_hot_path]
+  - ./src/scan/mod.rs:80 function evaluate_findings repeatedly dereferences struct fields inside a loop [rust_aos_hot_path]
+  - ./src/scan/mod.rs:194 function apply_repository_config repeatedly dereferences struct fields inside a loop [rust_aos_hot_path]
   - ./src/scan/walker.rs:27 call to Error::walk resolves to local Rust module path crate::Error, but no matching module was indexed [hallucinated_import_call]
   - ./tests/fixtures/rust/async/positive.rs:20 function bad_async performs blocking I/O or blocking work in async code [rust_blocking_io_in_async]
   - ./tests/fixtures/rust/async/positive.rs:21 function bad_async appears to hold std::sync::Mutex across .await [rust_async_std_mutex_await]

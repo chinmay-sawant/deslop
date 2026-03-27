@@ -836,7 +836,11 @@ fn extract_string_literals(line: &str) -> Vec<String> {
         }
 
         if index > start {
-            let literal = characters[start..index].iter().collect::<String>();
+            let literal = characters
+                .get(start..index)
+                .unwrap_or(&[])
+                .iter()
+                .collect::<String>();
             if !literal.trim().is_empty() {
                 literals.push(literal);
             }

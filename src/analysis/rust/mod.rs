@@ -11,7 +11,6 @@ use crate::heuristics::rust::{
 };
 use crate::index::{ImportResolution, PackageIndex, RepositoryIndex};
 use crate::model::{Finding, Severity};
-use crate::Result;
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct RustAnalyzer;
@@ -29,8 +28,8 @@ impl LanguageBackend for RustAnalyzer {
         path.extension().and_then(|ext| ext.to_str()) == Some("rs")
     }
 
-    fn parse_file(&self, path: &Path, source: &str) -> Result<ParsedFile> {
-        parser::parse_file(path, source)
+    fn parse_file(&self, path: &Path, source: &str) -> crate::Result<ParsedFile> {
+        parser::parse_file(path, source).map_err(crate::Error::from)
     }
 
     fn evaluate_file(&self, file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {

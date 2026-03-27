@@ -1,5 +1,6 @@
 mod analysis;
 pub mod benchmark;
+mod config;
 mod error;
 mod heuristics;
 mod index;
@@ -8,6 +9,9 @@ mod model;
 mod scan;
 
 pub use benchmark::{BenchmarkOptions, benchmark_repository};
+pub use analysis::Error as AnalysisError;
+pub use config::Error as ConfigError;
+pub(crate) use config::{RepoConfig, load_repository_config};
 pub use error::{Error, Result};
 pub use io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 pub use model::{

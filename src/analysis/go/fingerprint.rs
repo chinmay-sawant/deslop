@@ -279,7 +279,7 @@ fn contains_token(haystack: &str, needle: &str) -> bool {
     }
 
     for start in 0..=bytes.len() - needle_bytes.len() {
-        if &bytes[start..start + needle_bytes.len()] != needle_bytes {
+        if bytes.get(start..start + needle_bytes.len()) != Some(needle_bytes) {
             continue;
         }
 

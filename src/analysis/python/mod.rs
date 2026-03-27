@@ -6,7 +6,6 @@ use crate::analysis::{Language, LanguageBackend, ParsedFile};
 use crate::heuristics::{evaluate_python_file, evaluate_python_repo};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
-use crate::Result;
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct PythonAnalyzer;
@@ -24,8 +23,8 @@ impl LanguageBackend for PythonAnalyzer {
         path.extension().and_then(|ext| ext.to_str()) == Some("py")
     }
 
-    fn parse_file(&self, path: &Path, source: &str) -> Result<ParsedFile> {
-        parser::parse_file(path, source)
+    fn parse_file(&self, path: &Path, source: &str) -> crate::Result<ParsedFile> {
+        parser::parse_file(path, source).map_err(crate::Error::from)
     }
 
     fn evaluate_file(&self, file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {

@@ -583,5 +583,5 @@ fn preview_literal(value: &str) -> String {
     if value.len() <= PREVIEW_LIMIT {
         return value.to_string();
     }
-    format!("{}...", &value[..PREVIEW_LIMIT])
+    format!("{}...", value.chars().take(PREVIEW_LIMIT).collect::<String>())
 }

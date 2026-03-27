@@ -182,8 +182,10 @@ fn python_import_matches_module(import_path: &str, package: &PackageIndex) -> bo
             continue;
         }
 
-        let prefix_without_module = import_segments[..candidate_index]
-            .iter()
+        let prefix_without_module = import_segments
+            .get(..candidate_index)
+            .into_iter()
+            .flatten()
             .map(|segment| (*segment).to_string())
             .collect::<Vec<_>>();
         if directory_segments.ends_with(&prefix_without_module)
@@ -306,8 +308,10 @@ fn import_matches_dir(import_path: &str, directory: &Path) -> bool {
         return false;
     }
 
-    import_segments[import_segments.len() - directory_segments.len()..]
-        .iter()
+    import_segments
+        .get(import_segments.len() - directory_segments.len()..)
+        .into_iter()
+        .flatten()
         .zip(directory_segments.iter())
         .all(|(left, right)| *left == right)
 }
@@ -326,7 +330,10 @@ fn rust_module_context(root: &Path, file_path: &Path) -> Option<(PathBuf, Vec<St
 
     let file_name = components.last()?.as_str();
     let directory_segments = if components.len() > 2 {
-        components[1..components.len() - 1].to_vec()
+        components
+            .get(1..components.len() - 1)
+            .map(|segments| segments.to_vec())
+            .unwrap_or_default()
     } else {
         Vec::new()
     };
@@ -374,8 +381,10 @@ fn normalize_rust_path(
                 return None;
             }
 
-            let mut resolved =
-                current_module_segments[..current_module_segments.len() - super_count].to_vec();
+            let mut resolved = current_module_segments
+                .get(..current_module_segments.len() - super_count)
+                .map(|segments| segments.to_vec())
+                .unwrap_or_default();
             resolved.extend(segments.into_iter().skip(super_count));
             Some(resolved)
         }
@@ -389,7 +398,7 @@ fn rust_file_mod_dir(crate_root: &Path, target_segments: &[String]) -> PathBuf {
     }
 
     let mut directory = crate_root.to_path_buf();
-    for segment in &target_segments[..target_segments.len() - 1] {
+    for segment in target_segments.iter().take(target_segments.len() - 1) {
         directory.push(segment);
     }
     directory

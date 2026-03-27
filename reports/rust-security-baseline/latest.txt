@@ -1,31 +1,7 @@
 ## narrowing_as_casts
-src/io.rs:30:        .map_err(|error| Error::io(path, error))? as u64;
 
 ## split_at_and_indexing
-src/index/mod.rs:185:        let prefix_without_module = import_segments[..candidate_index]
-src/index/mod.rs:309:    import_segments[import_segments.len() - directory_segments.len()..]
-src/index/mod.rs:329:        components[1..components.len() - 1].to_vec()
-src/index/mod.rs:378:                current_module_segments[..current_module_segments.len() - super_count].to_vec();
-src/index/mod.rs:392:    for segment in &target_segments[..target_segments.len() - 1] {
-src/heuristics/python/duplication.rs:586:    format!("{}...", &value[..PREVIEW_LIMIT])
 src/heuristics/python/performance.rs:150:            evidence: vec!["prefer next(iter(...)) when only the first item is needed".to_string()],
-src/heuristics/python/maintainability.rs:839:            let literal = characters[start..index].iter().collect::<String>();
-src/analysis/go/fingerprint.rs:282:        if &bytes[start..start + needle_bytes.len()] != needle_bytes {
-src/analysis/rust/parser.rs:616:        let derive_text = &text[start + "derive(".len()..];
-src/analysis/rust/parser.rs:620:        for derive in derive_text[..end].split(',') {
-src/analysis/rust/parser.rs:1345:        return Some(text[1..text.len() - 1].to_string());
-src/analysis/rust/parser.rs:1352:            return Some(text[start + 1..end].to_string());
-src/analysis/python/parser/performance.rs:129:    trimmed[..quote_index]
-src/analysis/python/parser/phase4.rs:707:        if &bytes[index..index + 4] == b"len(" {
-src/analysis/python/parser/phase4.rs:716:                targets.push(text[start..end].to_string());
-src/analysis/python/parser/phase4.rs:780:    let Some(close_index) = header[open_index + 1..].find(')') else {
-src/analysis/python/parser/phase4.rs:783:    header[open_index + 1..open_index + 1 + close_index]
-src/analysis/python/parser/comments.rs:16:            let text = line[comment_start + 1..].trim();
-src/analysis/python/parser/comments.rs:48:    let prefix = &trimmed[..quote_index];
-src/analysis/python/parser/comments.rs:56:    let quoted = &trimmed[quote_index..];
-src/analysis/python/parser/comments.rs:78:    let end_index = text[quote.len()..].find(quote)?;
-src/analysis/python/parser/comments.rs:79:    Some(text[quote.len()..quote.len() + end_index].to_string())
-src/analysis/python/parser/comments.rs:100:            return Some(text[1..index].to_string());
 
 ## toctou_fs_checks
 src/io.rs:12:        .metadata()
@@ -34,8 +10,8 @@ tests/integration_scan/python.rs:849:    payload = fetch_metadata(payload)
 
 ## secret_comparisons
 src/heuristics/rust/mod.rs:133:    tokens.iter().any(|token| normalized == *token || normalized.contains(token))
-src/analysis/rust/parser.rs:640:        .any(|token| token == "async")
-src/analysis/rust/parser.rs:1209:        .any(|token| token == "unsafe")
+src/analysis/rust/parser.rs:642:        .any(|token| token == "async")
+src/analysis/rust/parser.rs:1211:        .any(|token| token == "unsafe")
 
 ## shared_mutability
 
@@ -70,12 +46,15 @@ src/heuristics/python/structure.rs:455:            concerns.into_iter().collect:
 src/heuristics/python/maintainability.rs:419:        evidence: vec![format!("http_calls={}", http_calls.join(","))],
 src/analysis/go/parser/comments.rs:47:            return Some(normalized.join("\n"));
 src/analysis/go/parser/comments.rs:57:        Some(comment_lines.join("\n"))
-src/analysis/rust/parser.rs:1134:                    return Some(collected.join("\n").trim().to_string());
-src/analysis/rust/parser.rs:1147:        Some(collected.join("\n").trim().to_string())
+src/analysis/rust/parser.rs:1136:                    return Some(collected.join("\n").trim().to_string());
+src/analysis/rust/parser.rs:1149:        Some(collected.join("\n").trim().to_string())
 src/analysis/python/parser/phase4.rs:128:        signature: signature_parts.join(" | "),
 src/analysis/python/parser/phase4.rs:461:                signature: normalize_shape(&normalized_lines.join(" ")),
 src/analysis/python/parser/general.rs:743:        .join(" ")
-src/io.rs:56:        std::env::temp_dir().join(format!("deslop-io-{name}-{nonce}.txt"))
+src/config.rs:47:    let path = root.join(CONFIG_FILE_NAME);
+src/config.rs:75:        let path = std::env::temp_dir().join(format!("deslop-config-{name}-{nonce}"));
+src/config.rs:92:            root.join(".deslop.toml"),
+src/io.rs:59:        std::env::temp_dir().join(format!("deslop-io-{name}-{nonce}.txt"))
 tests/integration_scan.rs:145:    let dir = std::env::temp_dir().join(format!("deslop-test-{nonce}"));
 tests/integration_scan.rs:151:    let path = root.join(relative_path);
 

@@ -4,6 +4,10 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum Error {
+    #[error(transparent)]
+    Analysis(#[from] crate::AnalysisError),
+    #[error(transparent)]
+    Config(#[from] crate::ConfigError),
     #[error("I/O failed for {path}: {source}")]
     Io {
         path: PathBuf,
@@ -16,16 +20,14 @@ pub enum Error {
         #[source]
         source: ignore::Error,
     },
-    #[error("failed to configure {language} parser: {message}")]
-    ParserConfiguration { language: &'static str, message: String },
-    #[error("tree-sitter returned no parse tree for {language}")]
-    MissingParseTree { language: &'static str },
     #[error("input file {path} exceeded the {max_bytes}-byte limit ({size} bytes)")]
     InputTooLarge {
         path: PathBuf,
         size: u64,
         max_bytes: u64,
     },
+    #[error("byte count conversion overflowed for {path}: {value}")]
+    ByteCountOverflow { path: PathBuf, value: usize },
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -45,14 +47,10 @@ impl Error {
         }
     }
 
-    pub(crate) fn parser_configuration(language: &'static str, message: impl Into<String>) -> Self {
-        Self::ParserConfiguration {
-            language,
-            message: message.into(),
+    pub(crate) fn byte_count_overflow(path: impl AsRef<Path>, value: usize) -> Self {
+        Self::ByteCountOverflow {
+            path: path.as_ref().to_path_buf(),
+            value,
         }
-    }
-
-    pub(crate) fn missing_parse_tree(language: &'static str) -> Self {
-        Self::MissingParseTree { language }
     }
 }

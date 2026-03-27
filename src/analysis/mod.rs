@@ -1,3 +1,4 @@
+mod error;
 mod go;
 mod python;
 mod rust;
@@ -8,6 +9,9 @@ use std::path::Path;
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 use crate::Result;
+
+pub use error::Error;
+pub(crate) use error::Result as AnalysisResult;
 
 pub(crate) use types::{
     BlockFingerprint, CallSite, ClassSummary, CommentSummary, ContextFactoryCall, DbQueryCall,

@@ -23,11 +23,14 @@ pub fn read_to_string_limited(path: &Path, max_bytes: u64) -> Result<String> {
 
     let mut reader = BufReader::new(file);
     let mut source = String::new();
-    let bytes_read = reader
+    let bytes_read = u64::try_from(
+        reader
         .by_ref()
         .take(max_bytes + 1)
         .read_to_string(&mut source)
-        .map_err(|error| Error::io(path, error))? as u64;
+        .map_err(|error| Error::io(path, error))?,
+    )
+    .map_err(|_| Error::byte_count_overflow(path, source.len()))?;
 
     if bytes_read > max_bytes {
         return Err(Error::InputTooLarge {

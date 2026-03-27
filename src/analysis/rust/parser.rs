@@ -4,13 +4,13 @@ use std::path::Path;
 use tree_sitter::{Node, Parser};
 
 use crate::analysis::{
-    CallSite, DeclaredSymbol, FieldSummary, ImportSpec, Language, MacroCall, NamedLiteral,
-    ParsedFile, ParsedFunction, RuntimeCall, StructSummary, UnsafePattern, UnsafePatternKind,
+    AnalysisResult, CallSite, DeclaredSymbol, Error, FieldSummary, ImportSpec, Language,
+    MacroCall, NamedLiteral, ParsedFile, ParsedFunction, RuntimeCall, StructSummary,
+    UnsafePattern, UnsafePatternKind,
 };
 use crate::model::{FunctionFingerprint, SymbolKind};
-use crate::{Error, Result};
 
-pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
+pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
     let mut parser = Parser::new();
     parser
         .set_language(&tree_sitter_rust::LANGUAGE.into())
@@ -613,11 +613,13 @@ fn parse_derive_names(attributes: &[Node<'_>], source: &str) -> Vec<String> {
         let Some(start) = text.find("derive(") else {
             continue;
         };
-        let derive_text = &text[start + "derive(".len()..];
+        let Some(derive_text) = text.get(start + "derive(".len()..) else {
+            continue;
+        };
         let Some(end) = derive_text.find(')') else {
             continue;
         };
-        for derive in derive_text[..end].split(',') {
+        for derive in derive_text.get(..end).unwrap_or("").split(',') {
             let cleaned = derive.trim().trim_matches(']');
             if cleaned.is_empty() {
                 continue;
@@ -1342,14 +1344,14 @@ fn string_literal_value(node: Node<'_>, source: &str) -> Option<String> {
 
 fn unquote_rust_string(text: &str) -> Option<String> {
     if text.starts_with('"') && text.ends_with('"') && text.len() >= 2 {
-        return Some(text[1..text.len() - 1].to_string());
+        return text.get(1..text.len() - 1).map(ToOwned::to_owned);
     }
 
     if text.starts_with('r') {
         let start = text.find('"')?;
         let end = text.rfind('"')?;
         if end > start {
-            return Some(text[start + 1..end].to_string());
+            return text.get(start + 1..end).map(ToOwned::to_owned);
         }
     }
 

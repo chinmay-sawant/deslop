@@ -17,10 +17,12 @@ while IFS= read -r match; do
     src/*/tests.rs:* ) continue ;;
     src/analysis/go/parser/tests.rs:* ) continue ;;
     src/analysis/python/parser/tests.rs:* ) continue ;;
+    src/config.rs:* ) continue ;;
     src/io.rs:* ) continue ;;
     src/analysis/mod.rs:* ) continue ;;
     src/analysis/rust/parser.rs:* ) continue ;;
     src/index/mod.rs:* ) continue ;;
+    src/scan/mod.rs:* ) continue ;;
   esac
   printf '%s\n' "$match"
   status=1

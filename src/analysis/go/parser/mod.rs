@@ -11,8 +11,7 @@ use std::path::Path;
 use tree_sitter::{Node, Parser};
 
 use crate::analysis::go::fingerprint::build_function_fingerprint;
-use crate::analysis::{Language, ParsedFile, ParsedFunction};
-use crate::{Error, Result};
+use crate::analysis::{AnalysisResult, Error, Language, ParsedFile, ParsedFunction};
 
 use self::comments::extract_doc_comment;
 use self::context::{
@@ -29,7 +28,7 @@ use self::performance::{
     collect_json_loops, collect_reflect_loops,
 };
 
-pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
+pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
     let mut parser = Parser::new();
     parser
         .set_language(&tree_sitter_go::LANGUAGE.into())

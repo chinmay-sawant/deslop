@@ -1,5 +1,7 @@
 mod walker;
 
+use std::collections::BTreeMap;
+use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 use rayon::prelude::*;
@@ -8,11 +10,12 @@ use crate::analysis::{ParsedFile, backend_for_language, backend_for_path, suppor
 use crate::heuristics::evaluate_shared;
 use crate::index::build_repository_index;
 use crate::model::{Finding, ParseFailure, ScanOptions, ScanReport, TimingBreakdown};
-use crate::{DEFAULT_MAX_BYTES, Result, read_to_string_limited};
+use crate::{DEFAULT_MAX_BYTES, RepoConfig, Result, load_repository_config, read_to_string_limited};
 use crate::scan::walker::discover_source_files;
 
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let total_start = Instant::now();
+    let repo_config = load_repository_config(&options.root)?;
 
     let discover_start = Instant::now();
     let supported_extensions = supported_extensions();
@@ -23,6 +26,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let parse_start = Instant::now();
     let mut parsed_files = Vec::new();
     let mut parse_failures = Vec::new();
+    let mut suppressions = BTreeMap::new();
     let mut outcomes = discovered_files
         .par_iter()
         .map(|path| analyze_file(path))
@@ -31,7 +35,10 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
 
     for outcome in outcomes {
         match outcome {
-            FileOutcome::Parsed(file) => parsed_files.push(*file),
+            FileOutcome::Parsed { file, suppressions: file_suppressions } => {
+                suppressions.insert(file.path.clone(), file_suppressions);
+                parsed_files.push(*file);
+            }
             FileOutcome::Generated(_) => {}
             FileOutcome::Failed(failure) => parse_failures.push(failure),
         }
@@ -44,7 +51,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let index_ms = index_start.elapsed().as_millis();
 
     let heuristics_start = Instant::now();
-    let findings = evaluate_findings(&parsed_files, &index);
+    let findings = evaluate_findings(&parsed_files, &index, &suppressions, &repo_config);
     let heuristics_ms = heuristics_start.elapsed().as_millis();
 
     let files_analyzed = parsed_files.len();
@@ -70,7 +77,12 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     })
 }
 
-fn evaluate_findings(files: &[ParsedFile], index: &crate::index::RepositoryIndex) -> Vec<Finding> {
+fn evaluate_findings(
+    files: &[ParsedFile],
+    index: &crate::index::RepositoryIndex,
+    suppressions: &BTreeMap<PathBuf, Vec<SuppressionDirective>>,
+    repo_config: &RepoConfig,
+) -> Vec<Finding> {
     let mut findings = evaluate_shared(files, index);
 
     for file in files {
@@ -87,6 +99,9 @@ fn evaluate_findings(files: &[ParsedFile], index: &crate::index::RepositoryIndex
         findings.extend(backend.evaluate_repo(&backend_files, index));
     }
 
+    findings.retain(|finding| !is_suppressed(finding, suppressions));
+    apply_repository_config(&mut findings, repo_config);
+
     findings.sort_by(|left, right| {
         left.path
             .cmp(&right.path)
@@ -97,7 +112,10 @@ fn evaluate_findings(files: &[ParsedFile], index: &crate::index::RepositoryIndex
 }
 
 enum FileOutcome {
-    Parsed(Box<ParsedFile>),
+    Parsed {
+        file: Box<ParsedFile>,
+        suppressions: Vec<SuppressionDirective>,
+    },
     Generated(std::path::PathBuf),
     Failed(ParseFailure),
 }
@@ -105,19 +123,21 @@ enum FileOutcome {
 impl FileOutcome {
     fn path(&self) -> &std::path::Path {
         match self {
-            Self::Parsed(file) => &file.path,
+            Self::Parsed { file, .. } => &file.path,
             Self::Generated(path) => path,
             Self::Failed(failure) => &failure.path,
         }
     }
 }
 
-fn analyze_file(path: &std::path::Path) -> FileOutcome {
+fn analyze_file(path: &Path) -> FileOutcome {
     match read_to_string_limited(path, DEFAULT_MAX_BYTES) {
         Ok(source) => {
             if is_generated(&source) {
                 return FileOutcome::Generated(path.to_path_buf());
             }
+
+            let suppressions = parse_suppression_directives(&source);
 
             let Some(analyzer) = backend_for_path(path) else {
                 return FileOutcome::Failed(ParseFailure {
@@ -127,7 +147,10 @@ fn analyze_file(path: &std::path::Path) -> FileOutcome {
             };
 
             match analyzer.parse_file(path, &source) {
-                Ok(file) => FileOutcome::Parsed(Box::new(file)),
+                Ok(file) => FileOutcome::Parsed {
+                    file: Box::new(file),
+                    suppressions,
+                },
                 Err(error) => FileOutcome::Failed(ParseFailure {
                     path: path.to_path_buf(),
                     message: error.to_string(),
@@ -148,13 +171,202 @@ fn is_generated(source: &str) -> bool {
     })
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct SuppressionDirective {
+    rule_id: String,
+    line: usize,
+    next_code_line: Option<usize>,
+}
+
+fn is_suppressed(
+    finding: &Finding,
+    suppressions: &BTreeMap<PathBuf, Vec<SuppressionDirective>>,
+) -> bool {
+    suppressions.get(&finding.path).is_some_and(|directives| {
+        directives.iter().any(|directive| {
+            directive.rule_id == finding.rule_id
+                && (directive.line == finding.start_line
+                    || directive.next_code_line == Some(finding.start_line))
+        })
+    })
+}
+
+fn apply_repository_config(findings: &mut Vec<Finding>, repo_config: &RepoConfig) {
+    findings.retain(|finding| {
+        !repo_config.disabled_rules.iter().any(|rule_id| rule_id == &finding.rule_id)
+            && (repo_config.rust_async_experimental || !is_async_rollout_rule(&finding.rule_id))
+    });
+
+    for finding in findings.iter_mut() {
+        if let Some(severity) = repo_config.severity_overrides.get(&finding.rule_id) {
+            finding.severity = severity.clone();
+        }
+    }
+}
+
+fn is_async_rollout_rule(rule_id: &str) -> bool {
+    matches!(
+        rule_id,
+        "rust_blocking_io_in_async"
+            | "rust_lock_across_await"
+            | "rust_tokio_mutex_unnecessary"
+    ) || rule_id.starts_with("rust_async_")
+}
+
+fn parse_suppression_directives(source: &str) -> Vec<SuppressionDirective> {
+    let lines = source.lines().collect::<Vec<_>>();
+    let mut directives = Vec::new();
+
+    for (index, line) in lines.iter().enumerate() {
+        let Some((_, tail)) = line.split_once("deslop-ignore:") else {
+            continue;
+        };
+
+        let next_code_line = next_code_line(&lines, index + 1);
+        for rule_id in parse_rule_ids(tail) {
+            directives.push(SuppressionDirective {
+                rule_id,
+                line: index + 1,
+                next_code_line,
+            });
+        }
+    }
+
+    directives
+}
+
+fn parse_rule_ids(tail: &str) -> Vec<String> {
+    tail.split([',', ' ', '\t'])
+        .filter_map(|token| {
+            let trimmed = token
+                .trim_matches(|character: char| !matches!(character, 'a'..='z' | 'A'..='Z' | '0'..='9' | '_' | '-'));
+            (!trimmed.is_empty()).then(|| trimmed.to_string())
+        })
+        .collect()
+}
+
+fn next_code_line(lines: &[&str], start_index: usize) -> Option<usize> {
+    lines
+        .iter()
+        .enumerate()
+        .skip(start_index)
+        .find_map(|(index, line)| is_code_line(line).then_some(index + 1))
+}
+
+fn is_code_line(line: &str) -> bool {
+    let trimmed = line.trim();
+    !trimmed.is_empty()
+        && !trimmed.starts_with("//")
+        && !trimmed.starts_with('#')
+        && !trimmed.starts_with("/*")
+        && !trimmed.starts_with('*')
+        && !trimmed.starts_with("*/")
+}
+
 #[cfg(test)]
 mod tests {
-    use super::is_generated;
+    use super::{
+        SuppressionDirective, apply_repository_config, is_generated, next_code_line,
+        parse_rule_ids, parse_suppression_directives,
+    };
+    use crate::RepoConfig;
+    use crate::model::{Finding, Severity};
+
+    fn sample_finding(rule_id: &str, severity: Severity) -> Finding {
+        Finding {
+            rule_id: rule_id.to_string(),
+            severity,
+            path: std::path::PathBuf::from("src/lib.rs"),
+            function_name: Some("demo".to_string()),
+            start_line: 1,
+            end_line: 1,
+            message: "demo".to_string(),
+            evidence: Vec::new(),
+        }
+    }
 
     #[test]
     fn test_is_generated() {
         let generated = "// Code generated by mockery. DO NOT EDIT.\npackage sample\n";
         assert!(is_generated(generated));
+    }
+
+    #[test]
+    fn parses_rule_ids_from_inline_directive() {
+        assert_eq!(
+            parse_rule_ids("unwrap_in_non_test_code, panic_macro_leftover */"),
+            vec![
+                "unwrap_in_non_test_code".to_string(),
+                "panic_macro_leftover".to_string()
+            ]
+        );
+    }
+
+    #[test]
+    fn finds_next_code_line_after_directive_comments() {
+        let lines = vec!["// deslop-ignore:unwrap_in_non_test_code", "", "// note", "value.unwrap();"];
+        assert_eq!(next_code_line(&lines, 1), Some(4));
+    }
+
+    #[test]
+    fn parses_same_line_and_next_line_suppressions() {
+        let source = "fn demo() {\n    let _ = option.unwrap(); // deslop-ignore:unwrap_in_non_test_code\n    // deslop-ignore:panic_macro_leftover\n    panic!(\"boom\");\n}\n";
+
+        assert_eq!(
+            parse_suppression_directives(source),
+            vec![
+                SuppressionDirective {
+                    rule_id: "unwrap_in_non_test_code".to_string(),
+                    line: 2,
+                    next_code_line: Some(4),
+                },
+                SuppressionDirective {
+                    rule_id: "panic_macro_leftover".to_string(),
+                    line: 3,
+                    next_code_line: Some(4),
+                }
+            ]
+        );
+    }
+
+    #[test]
+    fn applies_disabled_rules_and_severity_overrides() {
+        let mut findings = vec![
+            sample_finding("panic_macro_leftover", Severity::Warning),
+            sample_finding("unwrap_in_non_test_code", Severity::Warning),
+        ];
+        let mut repo_config = RepoConfig {
+            rust_async_experimental: true,
+            disabled_rules: vec!["panic_macro_leftover".to_string()],
+            severity_overrides: std::collections::BTreeMap::new(),
+        };
+        repo_config
+            .severity_overrides
+            .insert("unwrap_in_non_test_code".to_string(), Severity::Error);
+
+        apply_repository_config(&mut findings, &repo_config);
+
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "unwrap_in_non_test_code");
+        assert_eq!(findings[0].severity, Severity::Error);
+    }
+
+    #[test]
+    fn disables_async_rollout_rules_when_flag_is_off() {
+        let mut findings = vec![
+            sample_finding("rust_async_std_mutex_await", Severity::Error),
+            sample_finding("rust_lock_across_await", Severity::Warning),
+            sample_finding("unwrap_in_non_test_code", Severity::Warning),
+        ];
+        let repo_config = RepoConfig {
+            rust_async_experimental: false,
+            disabled_rules: Vec::new(),
+            severity_overrides: std::collections::BTreeMap::new(),
+        };
+
+        apply_repository_config(&mut findings, &repo_config);
+
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "unwrap_in_non_test_code");
     }
 }

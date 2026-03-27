@@ -9,8 +9,7 @@ use std::path::Path;
 
 use tree_sitter::Parser;
 
-use crate::analysis::{Language, ParsedFile};
-use crate::{Error, Result};
+use crate::analysis::{AnalysisResult, Error, Language, ParsedFile};
 
 use self::comments::collect_comment_summaries;
 use self::general::{
@@ -18,7 +17,7 @@ use self::general::{
     collect_symbols, is_test_file, module_name_for_path,
 };
 
-pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
+pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
     let mut parser = Parser::new();
     parser
         .set_language(&tree_sitter_python::LANGUAGE.into())
