@@ -1,275 +1,142 @@
-# Error Handling & API Surface — Detailed Plan
+# Error Handling & Rust Heuristics — Checklist Plan
 
-## Summary / quick verdict
+This file is the checklist-focused conversion of the detailed plan. Use the checkboxes to track progress.
 
-- Findings: the codebase currently uses `anyhow` widely (application-style errors), has explicit detections for `panic!` / `.unwrap()` in analysis rules, and contains live occurrences of `panic!`, `.unwrap()` and unbounded `read_to_string()` reads.
-- Missing: I did not find `thiserror` usage or a consistent typed library error strategy. There are also direct `read_to_string` calls without size checks.
+## Summary
 
-Key example spots observed in the repo:
+- [ ] Adopt typed library errors (`thiserror`) and keep `anyhow` at binary edges.
+- [ ] Eliminate `panic!` / `.unwrap()` in library code and add bounded IO helpers.
+- [ ] Add CI checks to prevent regressions (unwrap/panic/read_to_string).
 
-- [src/main.rs](src/main.rs#L1) — uses `anyhow::Result`.
-- [src/cli/report.rs](src/cli/report.rs#L4) — uses `anyhow::Result`.
-- [src/scan/mod.rs](src/scan/mod.rs#L118) — `fs::read_to_string(path)` (unbounded file read).
-- [src/index/mod.rs](src/index/mod.rs#L111) — `target_segments.last().unwrap()`.
-- [src/index/mod.rs](src/index/mod.rs#L594) — `panic!("expected resolved import, got {other:?}")` (and similar panics at L662, L696, L704, L715).
-- [src/analysis/rust/parser.rs](src/analysis/rust/parser.rs#L1089) — `value.unwrap()`.
-- [src/analysis/rust/mod.rs](src/analysis/rust/mod.rs#L67) — rule text referencing `panic!` / `unwrap()` detection.
+## Goals (high level)
 
-Conclusion: detection exists, but remediation and API ergonomics are not implemented. We should adopt a library-vs-application error strategy, migrate library code to typed errors (thiserror), stop panicking/unwraping in library code, and introduce size-bounded IO helpers to avoid DoS via large inputs.
+- [ ] Library APIs return concrete `Error` types (no opaque `Box<dyn Error>` in public API).
+- [ ] Binaries use `anyhow::Result` and attach context for user-facing messages.
+- [ ] No `panic!`/`.unwrap()` in non-test library code.
+- [ ] Prevent unbounded reads (use size limits / streaming readers).
+- [ ] CI enforces these patterns.
 
----
+## Prep: Dependencies & small changes
 
-## Goals
+- [ ] Add `thiserror = "1.0"` to `Cargo.toml` where library code lives.
+- [ ] Ensure `anyhow` remains available for binaries (optional in libraries).
 
-1. Library code (anything exported from `lib.rs` or meant for reuse) must return concrete, typed error types (no `String` or `Box<dyn std::error::Error>` as public error types).
-2. Application binaries (`main.rs`, CLI) should continue to use `anyhow::Result` and attach context for user-facing messages.
-3. Eliminate `panic!` and `.unwrap()` from non-test library code; return errors instead.
-4. Prevent unbounded memory use when reading inputs (files, network, archives) by enforcing size limits and streaming where possible.
-5. Add CI enforcement (lint/tests) that detects regressions (panic/unwrap/unbounded reads) and ensures ergonomic API patterns are followed.
+## Core implementation (priority tasks)
 
----
+- [ ] Create `src/error.rs` with a top-level `pub enum Error` and `pub type Result<T> = Result<T, Error>`.
+   - [ ] Include `#[from]` conversions for common module errors (IO, parser, etc.).
+   - [ ] Export `pub use crate::error::{Error, Result};` from `lib.rs`.
+- [ ] Add per-module `Error` enums (e.g., `analysis::parser::Error`) and wire them into the top-level `Error` via `#[from]`.
 
-## Strategy & rationale
+## Replace application vs library error types
 
-- Use `thiserror` to define typed `Error` enums per module (and a top-level `deslop::Error`) so callers can pattern-match or convert errors without losing type information.
-- Keep `anyhow` at the binary edge only. Application code can convert typed errors into `anyhow::Error` (via `anyhow::Error::from`) or use `Context` for human-friendly messages.
-- Replace ad-hoc `panic!` / `.unwrap()` with `?`-propagation into typed error variants. Reserve `panic!` for truly unrecoverable, internal-logic-bug cases if ever — but prefer `debug_assert!` in such cases and return errors otherwise.
-- For file / input reading, prefer pre-checking size via `metadata()` where possible, or use streaming readers with `take(max)` to cap bytes read.
+- [ ] Grep and replace `use anyhow::Result` in library crates with `use crate::error::Result`.
+- [ ] Keep `main.rs` / CLI return types as `anyhow::Result` and map library errors to `anyhow::Error` with context.
 
----
+## Remove panics/unwraps and add typed errors
 
-## Concrete migration plan (step-by-step)
+- [ ] Replace trivial `unwrap()` occurrences with `ok_or(Error::...) ?` or `?` propagation.
+   - [ ] Example: replace `target_segments.last().unwrap()` with `target_segments.last().ok_or(Error::MissingModuleName)?`.
+- [ ] Replace `panic!(...)` in library code with domain `Error` variants.
 
-1) Prep: add dependencies
+## Bounded IO / streaming helpers
 
-   - Add to `Cargo.toml` (workspace or crate where library code lives):
+- [ ] Add `src/io.rs` with `read_to_string_limited(path: &Path, max_bytes: u64) -> Result<String, Error>`.
+- [ ] Replace `fs::read_to_string(path)` usages with the limited reader or streaming `Read::take(max)`.
 
-```toml
-[dependencies]
-thiserror = "1.0"
-anyhow = { version = "1", optional = true }
-```
+## CI / Lint enforcement
 
-   - Rationale: `thiserror` for typed library errors; `anyhow` already used for application code.
+- [ ] Add CI step(s) to detect new `panic!`/`.unwrap()`/`.expect()` in non-test code.
+   - [ ] Option A: enforce `clippy` lints (e.g., `-D clippy::unwrap_used -D clippy::expect_used`).
+   - [ ] Option B: add a small grep-based check that excludes `tests/` and `#[cfg(test)]` blocks.
+- [ ] Optionally add a test that fails on `fs::read_to_string` occurrences.
 
-2) Create a central `Error` and module pattern
+## Migration sequencing (recommended phases)
 
-   - Add `src/error.rs` (or `src/lib.rs` export) with a top-level `pub enum Error` that aggregates module errors:
+- [ ] Phase A — Low risk (1–2 days)
+   - [ ] Add `thiserror` and `src/error.rs`.
+   - [ ] Implement `read_to_string_limited` and migrate simple reads (e.g., `src/scan/mod.rs`).
+   - [ ] Fix local `unwrap()`/`panic!` instances with clear error cases.
+- [ ] Phase B — Medium risk (2–4 days)
+   - [ ] Add per-module errors and convert public APIs to `crate::error::Result`.
+   - [ ] Update binaries to map errors into `anyhow` with context.
+- [ ] Phase C — Finish (1–2 days)
+   - [ ] Run full build and tests; fix regressions.
+   - [ ] Add CI linting; finalize error messages and docs.
 
-```rust
-use thiserror::Error;
+## Developer ergonomics & utilities
 
-#[derive(Error, Debug)]
-pub enum Error {
-    #[error("io: {0}")]
-    Io(#[from] std::io::Error),
+- [ ] Provide `pub type Result<T> = std::result::Result<T, Error>` centrally.
+- [ ] Add small adapter helpers for error conversion/context where convenient.
+- [ ] Document the library vs app boundary in `README`/guides.
 
-    #[error("parse: {0}")]
-    Parse(#[from] crate::analysis::parser::Error),
+## Tests & benchmarks
 
-    #[error("input too large: {0} > {1}")]
-    InputTooLarge(u64, u64),
+- [ ] Add unit tests for error paths (missing files, oversized inputs, parse errors).
+- [ ] Add a small benchmark that validates `read_to_string_limited` memory behavior.
 
-    #[error("missing module name")]
-    MissingModuleName,
+## Domain Modeling & Invariants — checklist (parser + heuristics)
 
-    // module-specific variants (or use `#[from]` for module error enums)
-}
+- [ ] Add `StructSummary` and `FieldSummary` types to `src/analysis/types.rs`.
+   - [ ] `FieldSummary { line, name, type_text, is_pub, is_option, is_primitive }`.
+   - [ ] `StructSummary { line, name, fields: Vec<FieldSummary> }`.
+- [ ] Extend `ParsedFile` to include `structs: Vec<StructSummary>`.
+- [ ] Update `src/analysis/rust/parser.rs` to extract struct fields and mark `is_option` / `is_primitive`.
+- [ ] Add `src/heuristics/rust_domain_modeling.rs` with rule implementations and wire into `evaluate_rust_findings`.
 
-pub type Result<T> = std::result::Result<T, Error>;
-```
+### Domain rules to add (each as an implementation task)
 
-   - Export `pub use crate::error::{Error, Result};` from `lib.rs`.
+- [ ] `rust_domain_raw_primitive` — detect business-value fields using raw primitives (money, price, username, etc.) and recommend newtypes.
+- [ ] `rust_domain_impossible_combination` — detect boolean + `Option` credential combos and recommend enum-based designs.
+- [ ] `rust_domain_default_produces_invalid` — flag `#[derive(Default)]` producing unsafe defaults for sensitive fields.
+- [ ] `rust_debug_secret` — detect `Debug` on secret-bearing types and recommend redaction/secrecy crate.
+- [ ] `rust_serde_sensitive_deserialize` — detect `Serialize`/`Deserialize` on sensitive fields without validation or masking.
 
-3) Per-module typed errors
+## Async & Concurrency heuristics — checklist (parser + rules)
 
-   - For larger submodules (e.g., `analysis::parser`, `index`, `scan`) add a small `Error` enum in their module namespace:
+- [ ] Extend `ParsedFunction` with async fields: `await_points`, `macro_calls`, `spawn_calls`, `lock_calls`, `permit_acquires`, `futures_created`.
+- [ ] Implement Rust collectors in `src/analysis/rust/parser.rs` to populate those fields.
+- [ ] Add `src/heuristics/rust_async.rs` and wire into the heuristics pipeline.
 
-```rust
-// src/analysis/parser/error.rs
-use thiserror::Error;
+### High-value async rules (implement and test each)
 
-#[derive(Error, Debug)]
-pub enum Error {
-    #[error("syntax: {0}")]
-    Syntax(String),
+- [ ] `rust_async_std_mutex_await` — detect `std::sync::Mutex` held across `.await` (Error).
+- [ ] `rust_async_hold_permit_across_await` — detect RAII permits held across `.await` (Warning).
+- [ ] `rust_async_spawn_cancel_at_await` — detect spawned tasks lacking cancellation handling (Warning).
+- [ ] `rust_async_missing_fuse_pin` & `rust_async_recreate_future_in_select` — detect select/future misuse (Info/Warning).
+- [ ] `rust_async_lock_order_cycle` — build lock-order graph and detect cycles (Error).
 
-    #[error("io: {0}")]
-    Io(#[from] std::io::Error),
-}
-```
+## Tests, fixtures, and rollout for heuristics
 
-   - Let the top-level `Error` use `#[from]` to convert module errors into the public `Error`.
+- [ ] Add fixtures under `tests/fixtures/rust/domain_modeling/` and `tests/fixtures/rust/async/`.
+- [ ] Add integration tests in `tests/integration_scan.rs` (or new modules) asserting findings for positive and negative cases.
+- [ ] Stage rollout behind a feature flag (e.g., `rust_async_experimental`) for initial tuning.
 
-4) Replace `anyhow::Result` in library crates with the typed `Result` alias
-
-   - Grep for `use anyhow::Result` / `-> Result<` in crates intended as libraries and incrementally replace them with `use crate::error::Result` and `-> Result<T>`.
-
-   - Keep `anyhow` in binaries (`main.rs`, cli entrypoints). Example pattern for `main.rs`:
-
-```rust
-fn main() -> anyhow::Result<()> {
-    if let Err(e) = deslop::run() {
-        eprintln!("error: {:#}", anyhow::Error::new(e).context("running deslop"));
-        std::process::exit(1);
-    }
-    Ok(())
-}
-```
-
-5) Replace panics/unwraps with error returns
-
-   - Replace `target_segments.last().unwrap()` (see [src/index/mod.rs](src/index/mod.rs#L111)) with:
-
-```rust
-let module_name = target_segments
-    .last()
-    .ok_or(Error::MissingModuleName)?;
-```
-
-   - Replace `panic!("expected ...")` branches with returning a domain error:
-
-```rust
-match thing {
-    Expected => { /* ... */ }
-    other => return Err(Error::UnexpectedImportKind(format!("{:?}", other))),
-}
-```
-
-   - Replace `value.unwrap()` with `let v = value.ok_or(Error::MissingValue)?;` or `value.context("...")?` where appropriate.
-
-6) Input-size limits and streaming IO
-
-   - Implement a utility in e.g. `src/io.rs`:
-
-```rust
-use std::fs;
-use std::io::Read;
-use std::path::Path;
-
-pub const DEFAULT_MAX_BYTES: u64 = 10 * 1024 * 1024; // 10 MB (tunable)
-
-pub fn read_to_string_limited(path: &Path, max_bytes: u64) -> Result<String, Error> {
-    let meta = fs::metadata(path)?;
-    if meta.len() > max_bytes {
-        return Err(Error::InputTooLarge(meta.len(), max_bytes));
-    }
-    let mut s = String::new();
-    fs::File::open(path)?.read_to_string(&mut s)?;
-    Ok(s)
-}
-```
-
-   - Replace `fs::read_to_string(path)` calls (e.g., [src/scan/mod.rs](src/scan/mod.rs#L118)) with `read_to_string_limited(path, DEFAULT_MAX_BYTES)` or a configurable limit.
-
-   - For streaming sources (network, stdin, archive entries) use `Read::take(max_bytes)` and fail if the reader produces more than allowed.
-
-7) Linting / CI enforcement
-
-   - Add a CI step (or augment existing CI) to fail on new occurrences of `panic!` / `.unwrap()` / `.expect()` in non-test code. Options:
-     - Use `cargo clippy --all-targets -- -D clippy::unwrap_used -D clippy::expect_used` in CI (note: `clippy::panic` doesn't exist; use grep as backup).
-     - Add a small grep-based test that scans `src/**` for `panic!` / `.unwrap(` / `.expect(` and fails if found outside `tests/` or `#[cfg(test)]` blocks. (A targeted script that ignores allowed instances is pragmatic.)
-
-   - Add a test to assert that there are no `fs::read_to_string` calls in the codebase (optional until migration completes).
-
-8) Migration sequencing (safe, incremental)
-
-   - Phase A (low-risk, 1–2 days):
-     - Add `thiserror` and `src/error.rs` top-level.
-     - Implement `read_to_string_limited` and replace easy file reads (scan module).
-     - Fix obvious `unwrap()` occurrences that are local and have a clear error case (`index`, `parser` checks).
-
-   - Phase B (medium-risk, 2–4 days):
-     - Introduce per-module error enums for `analysis::parser`, `index`, `scan`.
-     - Convert public functions in those modules to return typed `Result<T>`.
-     - Update binaries (`main.rs`, CLI) to `map`/`context` errors into `anyhow` for user messages.
-
-   - Phase C (finish, 1–2 days):
-     - Run full compilation and tests, fix fallout.
-     - Add CI linting to prevent regressions.
-     - Perform code review and adjust error message texts for ergonomics.
-
-Estimate: 1-2 engineer-weeks depending on how many modules are large and how many call sites need careful error-handling.
-
-9) Developer ergonomics
-
-   - Provide `pub type Result<T> = std::result::Result<T, Error>` centrally so module code uses `Result<T>`.
-   - Provide small adapters/utilities to convert IO/parse errors with context: e.g., `fn io_err<E: Into<std::io::Error>>(e: E) -> Error { Error::Io(e.into()) }` or prefer `#[from]` where possible.
-   - Add examples in `README`/guides documenting the library vs app boundary and showing the new patterns.
-
-10) Tests & benchmarks
-
-   - Add unit tests that exercise error paths (missing files, too-large files, parse errors) to ensure error variants are constructed.
-   - Add a small benchmark that loads large inputs to confirm the `read_to_string_limited` behavior and memory footprint.
-
----
-
-## Checklist (developer tasks)
+## PR checklist (one combined list)
 
 - [ ] Add `thiserror` to `Cargo.toml`.
-- [ ] Add `src/error.rs` and export `Error` and `Result` from `lib.rs`.
-- [ ] Implement `read_to_string_limited` and replace `fs::read_to_string` calls.
-- [ ] Replace `unwrap()` / `panic!` occurrences in library code with typed errors (start with `index` and `analysis::parser`).
-- [ ] Add per-module error enums where needed and `#[from]` conversions.
+- [ ] Add `src/error.rs` and export `Error`/`Result`.
+- [ ] Implement `read_to_string_limited` and migrate simple reads.
+- [ ] Replace trivial `unwrap()` / `panic!` cases with typed errors.
+- [ ] Add per-module `Error` enums and `#[from]` conversions.
 - [ ] Update binaries to use `anyhow` for user-facing messages.
-- [ ] Add CI linting and grep-based checks to detect regressions.
-- [ ] Write tests for limits and error variants.
+- [ ] Add CI linting and grep-based checks for regressions.
+- [ ] Add `StructSummary`/`FieldSummary` and parser extracts.
+- [ ] Implement `rust_domain_*` heuristics and tests.
+- [ ] Implement `rust_async_*` heuristics and tests (start with `std::sync::Mutex` across `.await`).
+- [ ] Add fixtures and integration tests; run and fix failures.
+- [ ] Update `guides/rust/` README with summary and developer guidance.
+
+## Next actions (pick one)
+
+- [ ] I will implement `src/error.rs` and add `thiserror` to `Cargo.toml` (small, low-risk PR).
+- [ ] I will convert `src/scan/mod.rs` to use `read_to_string_limited` and fix obvious `unwrap()`/`panic!` usages.
+- [ ] I will implement Phase 1 of the domain-modeling parser changes (add `StructSummary`, extract fields, and tests).
 
 ---
 
-## Notes & caveats
+If you pick one of the next actions above, I will start and update this checklist as I make changes.
 
-- Some `.unwrap()` occurrences can be trivially converted to `?` / `ok_or(...)` but others require thought (the correct error variant and message). Expect iterative refinement and PR reviews.
-- For very performance-sensitive hot paths, consider error construction cost; reuse light-weight error variants where appropriate and document trade-offs.
-
----
-
-If you want, I can now:
-
-- Implement the `src/error.rs` top-level and add `thiserror` to `Cargo.toml` (small, low-risk PR), or
-- Generate a first PR converting `src/scan/mod.rs`'s `read_to_string` to a bounded reader and replace the few obvious `unwrap()`/`panic!` usages.
-
-Tell me which of the two you'd like me to start on (or I can open both PRs sequentially).
-**Domain Modeling & Invariants — Rust support plan**
-
-**Overview**
-- **Goal**: Add Rust-specific static checks to detect and remediate domain-modeling anti-patterns so invalid states become harder to represent and easier to review.
-- **Scope**: Detect raw-primitive usage for business values, structs that allow impossible combinations (boolean + Option fields), unsafe use of `#[derive(Default)]`, `#[derive(Debug)]` on secret-bearing types, and `Serialize/Deserialize` usage on sensitive fields without validation — limited to Rust source analysis in this repository.
-
-**Current status (quick scan evidence)**
-- **Shared model uses primitives**: many report structures use primitives (see [src/model/mod.rs](src/model/mod.rs)).
-- **Rust analyzer parses symbols but not struct fields**: `src/analysis/rust/parser.rs` collects `struct_item` names into `DeclaredSymbol` but does not capture field names/types for structs; see [src/analysis/rust/parser.rs](src/analysis/rust/parser.rs#L200-L260).
-- **Heuristics exist for secrets**: there are secret-detection heuristics in `src/heuristics/security.rs` but no domain-modeling rules for Rust yet.
-
-**High-level approach**
-1. Extend the Rust parser to extract struct/type definitions with field-level metadata (field name, type text, visibility, and whether the type is an `Option<>` or primitive).
-2. Add new heuristics functions (Rust-scoped) that inspect the collected struct metadata and emit Findings for the rules below.
-3. Integrate the heuristics into the Rust analyzer (`evaluate_rust_findings` in `src/analysis/rust/mod.rs`).
-4. Add tests & fixtures demonstrating the anti-patterns and the recommended fixes.
-5. Iterate on rule quality (tuning false positives, severity levels, and exceptions).
-
-**Detailed detection rules and implementation notes**
-
-**1) Raw primitives used for business values**
-- **Rule id**: `rust_domain_raw_primitive`
-- **What to detect**: Struct fields whose type is a raw primitive (e.g., `i32`, `i64`, `u32`, `f64`, `String`) where the field name indicates a business semantic (name matches a curated list/regex such as `amount|price|balance|money|cost|distance|username|user_name|email|url|path|port|ip`). Also detect `f32`/`f64` used for money.
-- **Algorithm**:
-  - Require the parser to produce for each `struct_item`: a `StructSummary { name, line, fields: Vec<FieldSummary> }` where `FieldSummary` has `name: String`, `type_text: String`, `is_pub: bool`, `is_option: bool`, `is_primitive: bool`.
-  - For each `field`: if `is_primitive && field_name.matches(BUSINESS_REGEX)` then emit finding.
-  - If `type_text` is `f32`/`f64` and field_name matches money keywords, emit `rust_domain_float_for_money` with recommendation to use `rust_decimal::Decimal` or an integer-cents newtype.
-- **Recommended fix**: Replace primitive with a validated newtype: `struct Money(Decimal); impl TryFrom<i64> for Money { ... }` or `struct Username(String); impl TryFrom<String> for Username { validate non-empty }`.
-- **Example**:
-```rust
-// BAD
-pub struct Order { pub price: f64 }
-
-// GOOD
-pub struct Price(rust_decimal::Decimal);
-impl Price { pub fn try_from_cents(cents: i64) -> Result<Self, Error> { ... } }
-```
-- **False-positive mitigation**: scope to public structs or to structs within application-level crates (configurable). Add allow-list comments like `// deslop-ignore:rust_domain_raw_primitive` when appropriate.
-
-**2) Structs that allow impossible combinations (boolean flag + Option field)**
 - **Rule id**: `rust_domain_impossible_combination`
 - **What to detect**: A struct that contains a boolean toggle field (`ssl`, `tls`, `enabled`, `use_...`) and also an `Option` field representing a certificate/token/credential (fields named `cert`, `certificate`, `key`, `token`, `auth`) where presence/absence together can create impossible or ambiguous states.
 - **Algorithm**:

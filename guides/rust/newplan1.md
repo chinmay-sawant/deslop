@@ -1,193 +1,156 @@
-# Rust Performance-Checks: Implementation Plan
+---
+# Rust Performance & Unsafe-Soundness — Checklist Plan
 
 Last updated: 2026-03-27
 
 Purpose
-- Verify which of the requested Rust performance checks are already implemented in the codebase and, where missing, provide a detailed implementation plan (parser changes, heuristics, tests, examples, estimates).
+- Convert the implementation plan into an actionable, checklist-style Markdown plan. Each checklist item is a concrete task or deliverable that can be tracked and executed.
 
 Scope
-- The checks below target the Rust language analyzer/backend in `src/analysis/rust` and the heuristics framework under `src/heuristics`.
+- Heuristics and parser changes in `src/analysis/rust` and `src/heuristics/rust`; tests and CI updates under `tests/` and CI configuration files.
 
-High-level summary of repository findings
-- The repository contains a `RustAnalyzer` at `src/analysis/rust/mod.rs` and a Rust parser at `src/analysis/rust/parser.rs` which already extracts call sites, imports, signatures, unsafe blocks, and other structural information.
-- There is no dedicated Rust performance heuristics module under `src/heuristics` (the existing `src/heuristics` folder contains Go- and Python-targeted rules). Therefore the requested Rust-specific performance checks are not implemented and must be added.
+How to use this file
+- Check items as you complete them. Each checked item should correspond to a small, reviewable PR and/or a test run.
 
-Goals for this project
-- Add a Rust-targeted heuristics module that detects the listed performance anti-patterns.
-- Extend the Rust parser minimally to surface the required signals for robust detection.
-- Add focused unit/integration tests and small example fixtures demonstrating both positive and negative cases.
-- Integrate new rules with existing findings/reporting and include clear `rule_id`/`severity`/`evidence` for each check.
+---
 
-Implementation plan (per item)
+**Phase: Setup & Scaffolding**
 
-IMPORTANT: general approach
-- Parser changes: extend `src/analysis/rust/parser.rs` to collect specific syntactic patterns (extra fields on `ParsedFunction` and/or new small helper structures). Prefer incremental additions — only add fields we need.
-- Heuristics code: create a new directory `src/heuristics/rust/` and a file `performance.rs` containing Rust-targeted performance rules, following the pattern used by `src/heuristics/python/performance.rs`.
-- Integration: add `mod rust;` and wire the new evaluators in `src/heuristics/mod.rs` and the top-level evaluation paths that dispatch on `Language::Rust` (see existing `evaluate_rust_findings` in `src/analysis/rust/mod.rs`).
-- Tests: add fixtures under `tests/fixtures/rust/` and add integration tests that run the analyzer on fixtures and assert presence/absence of `rule_id`s.
-- Profiling: for some checks (hot-path AoS/SoA) prefer a runtime profiling step to verify actual hot spots — the linter will still provide heuristic suggestions.
+- [ ] Create `src/heuristics/rust/` and scaffold `performance.rs` and `mod.rs`.
+  - [ ] Add empty rule functions for initial rules.
+  - [ ] Add module docs and examples header.
+- [ ] Add minimal parser enhancements in `src/analysis/rust/parser.rs`:
+  - [ ] `is_async` flag on `ParsedFunction`.
+  - [ ] `await_lines: Vec<usize>` and simple `call_site` metadata.
+  - [ ] `vec_struct_field_access_loops` and `boxed_container_usages` placeholders.
+- [ ] Wire new Rust heuristics into `src/heuristics/mod.rs` and the evaluation flow.
 
-Per-item detailed tasks
+**Phase: Phase A — High Priority Rules (deliver fast wins)**
 
-1) Array-of-structs (AoS) vs Struct-of-Arrays (SoA) in hot loops
-- Why: iterating over Vec<Struct> and repeatedly accessing different fields causes poor spatial locality for some large datasets; SoA can be faster for numeric/analytic workloads.
-- Detection heuristics (static approximation):
-  - Detect loops over vectors/arrays of structs: tree-sitter node types `for_expression`, `while_expression` or `for..in` style where the iterated value is `IDENT` or `&IDENT` originating from a collection variable whose type or naming indicates a container (e.g., `Vec<...>` or `_vec`).
-  - Inside loop body, detect multiple independent field accesses on the loop element (e.g., `item.a`, `item.b`, `item.c`) across the loop. If 2+ distinct fields are accessed repeatedly, flag as potential AoS hot path.
-  - Optionally, detect indexed loops with `arr[i].field` patterns.
-- Parser changes:
-  - Add `vec_struct_field_access_loops: Vec<StructFieldLoop>` to `ParsedFunction` (define `StructFieldLoop { line: usize, container: String, fields: Vec<String> }`). Populate by scanning loop bodies and tracking `field_expression`/`field_access` patterns with the receiver pointing to a loop variable.
-- Heuristic implementation (`rule_id`: `rust.aos_hot_path`, severity `Info`/`Warning`):
-  - If a `StructFieldLoop` has >= 2 fields accessed and container's type looks like a `Vec<...>` or `&[T]`, emit finding with evidence listing the fields and loop location.
-- Tests/fixtures:
-  - Positive: loop over `Vec<Point>` accessing `.x` and `.y` branches.
-  - Negative: loop using only a single field or operating on copies/refs explicitly optimized.
-- Estimated complexity: Medium (2-4 days). Edge cases and false positives need careful examples.
+- [ ] `rust.blocking_io_in_async` (Warning)
+  - [ ] Detect `std::fs::` calls inside `async fn` or functions containing `.await`.
+  - [ ] Add tests/fixtures under `tests/fixtures/rust/blocking_io_in_async/` (positive & negative).
+  - [ ] Add integration test to confirm rule triggers.
+- [ ] `rust.unbuffered_file_writes` (Info)
+  - [ ] Detect `writeln!`/`write!` or `File::write_*` called on `File` within loops.
+  - [ ] Suggest `BufWriter` in message.
+  - [ ] Add tests/fixtures.
+- [ ] `rust.lines_allocate_per_line` (Info)
+  - [ ] Detect `.lines()` use on `BufRead` in hot contexts; add mitigation example using `read_line` + `clear()`.
+  - [ ] Add tests/fixtures.
+- [ ] `rust.hashmap_default_hasher` (Info)
+  - [ ] Detect `HashMap::new()` in hot functions/loops and missing custom hasher.
+  - [ ] Add guidance in evidence suggesting `FxHashMap`/`hashbrown`/`BTreeMap`.
 
-2) `Vec<Box<T>>` or linked lists (pointer chasing)
-- Why: `Vec<Box<T>>` or linked `Box`-based lists result in pointer-chasing and poor cache locality.
-- Detection approach:
-  - Scan type usage and `let` bindings for `Vec<` followed by `Box<` or `LinkedList` occurrences.
-  - Detect iteration patterns over such containers in loops and flag.
-- Parser changes:
-  - Add `boxed_container_lines: Vec<usize>` or `box_container_usages: Vec<ContainerUsage>` where `ContainerUsage { line, container, inner_type }`.
-  - Use tree-sitter to read generic type text in `type_identifier` or `call_expression` sites that construct `Vec::<Box<_>>::new()` or `Vec::new()` where assignment type is `Vec<Box<...>>`.
-- Rule (`rust.pointer_chasing_vec_box`, severity `Info`):
-  - Suggest `Vec<T>` (non-boxed) if ownership/size allows, or recommend slab/arena allocation or `Vec<T>` of primitives.
-- Tests & estimates: Small-medium (1-2 days).
+**Phase: Phase B — Medium Priority Rules**
 
-3) HashMap poor key distribution or default hasher
-- Why: `std::collections::HashMap` uses a secure but slower hasher; for internal hot maps `FxHashMap` or `BTreeMap` can be faster depending on access pattern.
-- Detection approach:
-  - Detect occurrences of `HashMap<` (and `HashMap::new()`), especially in hot loops or in structures used heavily (evidence: used in loop or called frequently within functions with high call counts).
-  - Look at `use` lines to see if `FxHashMap` or `hashbrown::HashMap` already present; detect `HashMap::with_hasher` usage.
-- Parser changes:
-  - Add `call_site_usages` detection already exists in `calls`; extend to capture constructor patterns and `use` import alias mapping (parser already extracts imports).
-- Rule (`rust.hashmap_default_hasher`, severity `Info`):
-  - If a `HashMap` is allocated in a hot function or loop and there's no custom hasher, emit guidance listing alternatives (FxHashMap, BTreeMap) and a short rationale.
-- Tests & estimate: Small (1-2 days), but guidance must be conservative.
+- [ ] `rust.lock_across_await` (Warning)
+  - [ ] Track lock calls, guard variables and later `.await` occurrences in same function scope.
+  - [ ] Add tests showing common false-positive patterns and an explicit `drop(guard)` example.
+- [ ] `rust.tokio_mutex_unnecessary` (Info)
+  - [ ] Detect `tokio::sync::Mutex` usage without `.await` inside critical section and recommend `std::sync::Mutex`.
+  - [ ] Add tests/fixtures.
+- [ ] `rust.blocking_drop` (Warning)
+  - [ ] Inspect `impl Drop for` bodies for blocking APIs and add rule tests.
+- [ ] `rust.pointer_chasing_vec_box` (Info)
+  - [ ] Detect `Vec<Box<T>>` or linked-list patterns; add template mitigation suggestions.
 
-4) `.lines()` iterator on large files
-- Why: `.lines()` on `BufRead` yields `String` per line; `read_line` with a reused buffer avoids repeated allocations.
-- Detection approach:
-  - Detect invocation patterns `.lines()` on `File`/`BufReader`/`std::io::Read` objects within functions; if called inside a loop or large-file processing function, flag.
-- Parser changes:
-  - Populate `calls` already exists; implement a check in heuristics to find `receiver` names that resolve to `File`/`BufReader` imports and call name `lines`.
-- Rule (`rust.lines_allocate_per_line`, severity `Info`):
-  - Evidence: call line, receiver import resolution.
-  - Suggest: `let mut line = String::new(); while reader.read_line(&mut line)? { ...; line.clear(); }`.
-- Tests & estimate: Small (1 day).
+**Phase: Phase C — Research / Complex Rules**
 
-5) Unbuffered `std::fs::File` or `writeln!` in tight loops
-- Why: unbuffered writes cause syscalls often; `BufWriter` amortizes syscalls.
-- Detection approach:
-  - Detect `writeln!` or `write!` macro invocations where the writer expression is a `File` (no `BufWriter`) within loop bodies.
-  - Detect direct `File::write_all` or `File::write` calls inside loops.
-- Parser changes:
-  - Use `calls` (macro invocations are available) and import alias resolution to map receiver to `std::fs::File`.
-  - Add `writeln_in_loop_lines: Vec<usize>` or similar entries.
-- Rule (`rust.unbuffered_file_writes`, severity `Info`):
-  - Recommend wrapping `File` with `BufWriter::new(file)` and using that in the loop.
-- Tests & estimate: Small (1 day).
+- [ ] `rust.aos_hot_path` (Info/Warning)
+  - [ ] Detect loops over `Vec<Struct>` where 2+ fields are accessed repeatedly.
+  - [ ] Create `StructFieldLoop` parser summary and run against fixtures; consider profiler-guided validation before promoting severity.
+- [ ] `rust.large_future_stack` (Info)
+  - [ ] Heuristic detection of large local bindings captured by `async fn`/blocks; add guidance to box futures or refactor.
+- [ ] `rust.utf8_validate_hot_path` (Info)
+  - [ ] Flag `from_utf8` in hot paths; provide conservative guidance about `from_utf8_unchecked`.
+- [ ] `rust.path_join_absolute` (Warning)
+  - [ ] Detect `path.join("/abs/...")` string literal cases and add tests.
 
-6) UTF-8 validation on known-valid byte data
-- Why: `std::str::from_utf8` validates bytes; `from_utf8_unchecked` avoids checks but is unsafe — only recommend when caller can guarantee data validity.
-- Detection approach:
-  - Detect `from_utf8` calls in hot functions and flag with caution that `from_utf8_unchecked` is faster but unsafe.
-  - Only recommend use when source is e.g., data coming from known UTF-8 sources (`String` conversion, known literals, protocol guarantees) — this will be a conservative hint.
-- Parser changes: none or minimal — calls are in `calls`.
-- Rule (`rust.utf8_validate_hot_path`, severity `Info`):
-  - Evidence: call site location; message contains trade-offs.
-- Tests & estimate: Small (1 day).
+**Unsafe Soundness Rule Pack (separate module)**
 
-7) `Path::join` with absolute paths
-- Why: joining with an absolute path discards base path and is often a logic bug.
-- Detection approach:
-  - Detect `Path::join` or `path.join(...)` where the argument is a string literal starting with `/` or `PathBuf::from("/")`.
-  - Use tree-sitter to check the join argument node if it's a string literal and inspect its text.
-- Parser changes:
-  - No global schema changes needed; detect this in heuristics using the raw `body_text` or finer-grained AST navigation available via tree-sitter.
-- Rule (`rust.path_join_absolute`, severity `Warning`):
-  - Evidence: literal text and join location; explain that `join` discards the base when the RHS is absolute.
-- Tests & estimate: Small (1 day).
+- [ ] Create `src/analysis/rust/unsafe_soundness.rs` and register rule pack `unsafe_soundness`.
+  - [ ] `get_unchecked` / bounds-less indexing detector.
+    - [ ] Flag `get_unchecked`, `get_unchecked_mut`, `Vec::set_len`, `from_raw_parts`, etc. inside `unsafe` blocks.
+    - [ ] Require guard detection or `SAFETY:` justification to suppress.
+  - [ ] `transmute` & raw pointer cast detector.
+    - [ ] Flag `mem::transmute`, `as *mut`, `as *const`, `MaybeUninit::assume_init` unless `SAFETY:` present.
+  - [ ] Generic-invariant & aliasing detectors.
+    - [ ] Identify unsafe blocks that assume properties of unconstrained `T`.
+  - [ ] Public `unsafe` constructor / raw-parts API checks.
+  - [ ] Send/Sync & thread-safety checks when raw pointers/transmutes cross threads.
+  - [ ] Add fixtures and integration tests under `tests/fixtures/rust/unsafe_soundness/`.
 
-8) Holding locks or RAII guards across `.await`
-- Why: holding sync locks across await points can deadlock/serialize the async executor.
-- Detection approach:
-  - Detect calls to `.lock()` or `tokio::sync::Mutex::lock().await` and then search the same function body for subsequent `.await` occurrences while the guard variable is still in lexical scope.
-  - Conservative heuristic: if `lock().await` occurs and there is another `.await` later in the function before an obvious early drop (e.g., explicit `drop(guard)`), flag.
-- Parser changes:
-  - Add `await_lines: Vec<usize>` to `ParsedFunction` and track `macro`/`call_expression` nodes that include `.await` or parse `await_expression` nodes if tree-sitter exposes them.
-  - Add `lock_call_lines: Vec<LockCall>` with `LockCall {line, receiver}`.
-- Rule (`rust.lock_across_await`, severity `Warning`):
-  - Evidence: lock site and later await site lines; message explains deadlock/starvation risk.
-- Tests & estimate: Medium (2-3 days). This requires careful scope analysis to reduce false positives.
+**Tests, Fixtures & Examples**
 
-9) `tokio::sync::Mutex` when `std::sync::Mutex` suffices
-- Why: `tokio::sync::Mutex` is async-aware but has extra overhead; for short critical sections without `.await`, a `std::sync::Mutex` may be better.
-- Detection approach:
-  - If `tokio::sync::Mutex` is used and analysis of the guarded section shows no `.await` or `await`-free critical section, recommend `std::sync::Mutex`.
-- Parser changes: same data from #8 (await_lines, lock_call_lines) plus import resolution to detect `tokio::sync::Mutex` usage.
-- Rule (`rust.tokio_mutex_unnecessary`, severity `Info`):
-  - Evidence: import alias and lack of `.await` while guard in scope.
-- Tests & estimate: Medium (2-3 days).
+- [ ] Add fixtures under `tests/fixtures/rust/` grouped by rule id.
+- [ ] Add unit tests for each heuristic to validate true positives and control negatives.
+- [ ] Update or add an integration test in `tests/integration_scan.rs` to run the analyzer on Rust fixtures and assert expected `rule_id`s.
+- [ ] Add short example snippets and remediation examples to `guides/rust/` and link them from rule findings.
 
-10) Large futures on stack (complex async blocks)
-- Why: large local variables captured by `async` blocks/fns increase the future size and can cause stack pressure or performance issues.
-- Detection approach:
-  - Detect `async fn` or `async` blocks and check for large-looking local bindings (large arrays, heap-allocated buffers, or many captured variables). Use heuristics: variables of type `[T; N]` or arrays > threshold, or many `Vec` declarations.
-  - Suggest boxing the future (`Box::pin`) or refactoring to move large allocations out of the future scope.
-- Parser changes:
-  - Add `async_functions: Vec<AsyncFunctionSummary>` capturing `start_line`, `local_bindings_summary` (counts, types seen as text).
-- Rule (`rust.large_future_stack` severity `Info`):
-  - Evidence: listing of suspicious local bindings.
-- Tests & estimate: Medium (3 days). This is conservative and may require refinement to reduce false positives.
+**CI & Automation**
 
-11) Blocking I/O or `std::fs` inside async runtime
-- Why: calling blocking I/O primitives in an async runtime worker thread blocks the executor.
-- Detection approach:
-  - Detect `std::fs::read_to_string`, `std::fs::File::open`, `File::read_to_end`, etc. inside `async fn` or function bodies containing `.await` (i.e., likely in async context).
-  - Suggest `tokio::fs` equivalents or `spawn_blocking`/`blocking` wrappers.
-- Parser changes:
-  - Add `is_async_function` to `ParsedFunction` (populate by detecting `async` keyword near function signature using tree-sitter).
-  - Use existing `calls` to detect `std::fs` invocations.
-- Rule (`rust.blocking_io_in_async`, severity `Warning`):
-  - Evidence: call site and enclosing function marked `async`.
-- Tests & estimate: Small-medium (2 days).
+- [ ] Add non-failing diagnostics job to CI that runs:
+  - [ ] `cargo fmt -- --check`
+  - [ ] `cargo clippy --all-targets --all-features -- -D warnings` (progressively enforce)
+  - [ ] Grep diagnostics for `&String`, `& Vec<`, `Rc<RefCell`, `Arc<Mutex`, `\.clone()` for triage (non-failing initially).
+- [ ] Add `rust-unsafe-soundness` job to run new detectors and small `cargo miri` test subset (opt-in due to slowness).
 
-12) `Drop` impls that do blocking cleanup
-- Why: `Drop` runs on stack-unwind or when the guard goes out of scope; blocking operations here can block runtime threads.
-- Detection approach:
-  - Find `impl Drop for` blocks and inspect function body for calls to blocking APIs (`std::fs::`, `std::thread::sleep`, `std::net::TcpStream::shutdown`, etc.).
-  - Emit a warning if blocking ops are present in `drop`.
-- Parser changes:
-  - No big structural changes; parser already exposes function bodies and call sites. Heuristic code will search for `impl` blocks with trait `Drop`.
-- Rule (`rust.blocking_drop`, severity `Warning`):
-  - Evidence: text of drop method and blocking call sites.
-- Tests & estimate: Small (1-2 days).
+**Implementation Checklist (PR-sized steps)**
 
-Cross-cutting work (integration, tests, doc)
-- Create new module: `src/heuristics/rust/performance.rs` (create) and `src/heuristics/rust/mod.rs` (if needed).
-- Update `src/heuristics/mod.rs` to import the new Rust heuristics and call them from a new `evaluate_rust_file()` function or integrate with existing `evaluate_*` flows.
-- Add unit tests under `tests/` and fixtures under `tests/fixtures/rust/` with small source files exercising each rule (both positive and negative cases). Mirror the style used by other language fixtures in repo.
-- Add integration test(s) to `tests/integration_scan.rs` or a new rust-specific integration test that runs the analyzer and asserts on returned `rule_id`s.
-- Add short documentation to `guides/rust/` with examples and mitigation guidance (this file is the starting point).
+1. [ ] Scaffold heuristics module and add a minimal `performance.rs` with empty rule stubs.
+2. [ ] Add parser flags (`is_async`, `await_lines`) and small summaries to `ParsedFunction`.
+3. [ ] Implement the Phase A rules and their tests (one rule per PR recommended).
+4. [ ] Implement Phase B rules; iterate on false positives with test cases.
+5. [ ] Implement `unsafe_soundness` detectors and tests.
+6. [ ] Wire rules into `src/heuristics/mod.rs` and add integration tests.
+7. [ ] Add CI jobs and documentation; run the rules against a few representative Rust projects to tune.
 
-Acceptance criteria
-- Each of the rules above is implemented as a heuristic with:
-  - `rule_id` and `severity` defined and used consistently with other heuristics
-  - test fixtures covering true positives and false positives
-  - integration test ensuring the rule triggers for the fixture during repo scan
-- Parser changes are minimal, well-documented, and used only for the necessary heuristics.
-- The heuristics are conservative (prefer false negatives over noisy false positives) and the messages provide remediation steps.
+**Acceptance Criteria (must be met before merge)**
 
-Prioritization and estimated effort
-- Phase A (high priority, 3-7 days):
-  - Blocking I/O in async runtime (`rust.blocking_io_in_async`) — 1-2 days
-  - Unbuffered file writes / `writeln!` in loops (`rust.unbuffered_file_writes`) — 1 day
-  - `.lines()` allocation issue (`rust.lines_allocate_per_line`) — 1 day
-  - HashMap default hasher in hot paths (`rust.hashmap_default_hasher`) — 1-2 days
-- Phase B (medium priority, 4-9 days):
+- [ ] Each rule exposes a stable `rule_id`, severity, and clear evidence message.
+- [ ] Tests/fixtures exist for both true positives and representative false-positive controls for each rule.
+- [ ] Integration tests assert the rule triggers on fixtures.
+- [ ] Parser changes are minimal and documented in code comments.
+- [ ] CI includes a diagnostics job that runs heuristics on fixtures and reports results.
+
+**Quick Start / First PRs (recommended order)**
+
+- [ ] PR 1: Scaffold `src/heuristics/rust/performance.rs` and wire into `src/heuristics/mod.rs`.
+- [ ] PR 2: Parser changes — add `is_async` / `await_lines` and minor `ParsedFunction` fields.
+- [ ] PR 3: Implement `rust.blocking_io_in_async` + tests/fixtures.
+
+**Notes / Risks**
+
+- False positives are expected during early iterations — tune thresholds and add negative fixtures.
+- Some detections (AoS hot-paths, large-future detection) are research-heavy; prefer conservative messaging.
+
+---
+
+If you'd like, I can now:
+
+- [ ] scaffold the heuristics module and open the first PR (scaffold only),
+- [ ] implement the parser change for `is_async`/`await` detection, or
+- [ ] implement the first Phase A rule and its tests (blocking I/O in async).
+
+Pick one and I will proceed.
+
+---
+
+## Appendix: Useful commands
+
+```bash
+rg "&'static" --glob "*.rs"
+rg "struct .*<'[a-z]" --glob "*.rs"
+rg "&String" --glob "*.rs"
+rg "&\s*Vec<" --glob "*.rs"
+rg "Rc<RefCell|Arc<Mutex" --glob "*.rs"
+rg "\.clone\(\)" --glob "*.rs"
+```
+
+---
+
+End of checklist plan.
   - Locks across `.await` and tokio vs std mutex guidance (`rust.lock_across_await`, `rust.tokio_mutex_unnecessary`) — 2-4 days
   - `Drop` doing blocking cleanup (`rust.blocking_drop`) — 1-2 days
   - `Vec<Box<T>>` pointer-chasing (`rust.pointer_chasing_vec_box`) — 1-2 days
