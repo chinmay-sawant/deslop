@@ -12,6 +12,19 @@ Scope
 How to use this file
 - Check items as you complete them. Each checked item should correspond to a small, reviewable PR and/or a test run.
 
+## Implementation Status (2026-03-28)
+
+- [x] Added `src/heuristics/rust/` with `performance.rs`, `async_patterns.rs`, `domain_modeling.rs`, `unsafe_soundness.rs`, and `mod.rs`.
+- [x] Extended `ParsedFile` / `ParsedFunction` and `src/analysis/rust/parser.rs` with Rust-specific async/runtime, struct, and unsafe metadata.
+- [x] Implemented the planned Rust performance rules: blocking I/O in async, unbuffered writes, `.lines()` hot-path allocation, default hasher use, lock-across-await, tokio mutex guidance, blocking drop, pointer-chasing containers, AoS hot-path, large-future, UTF-8 hot-path, and absolute-path join checks.
+- [x] Implemented unsafe soundness detectors for `get_unchecked`, raw-parts creation, `set_len`, `assume_init`, `transmute`, and raw-pointer casts.
+- [x] Added positive and negative Rust fixtures plus integration coverage in `tests/integration_scan/rust_advanced.rs`.
+- [x] Added CI/workflow support with `.github/workflows/ci.yml`, `.github/workflows/rust-security.yml`, `scripts/check_rust_hygiene.sh`, and `scripts/check-rust-security.sh`.
+- [x] Verified with `cargo test` and `cargo clippy --all-targets --all-features -- -D warnings` on 2026-03-28.
+- [x] Audited the ownership/API branch: no live `&String` or `&Vec<_>` production API signatures were found in `src/` during implementation; enforcement/reporting was added instead of forced API churn.
+- [ ] `cargo miri`/strict `cargo geiger` gating remains report-only and is not enforced as a blocking CI step.
+- [ ] Repo-level suppression comments such as `deslop-ignore:<rule_id>` were not added in this pass.
+
 ---
 
 **Phase: Setup & Scaffolding**

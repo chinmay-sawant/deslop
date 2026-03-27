@@ -4,9 +4,19 @@ This file is the checklist-focused conversion of the detailed plan. Use the chec
 
 ## Summary
 
-- [ ] Adopt typed library errors (`thiserror`) and keep `anyhow` at binary edges.
-- [ ] Eliminate `panic!` / `.unwrap()` in library code and add bounded IO helpers.
-- [ ] Add CI checks to prevent regressions (unwrap/panic/read_to_string).
+- [x] Adopt typed library errors (`thiserror`) and keep `anyhow` at binary edges.
+- [x] Eliminate the targeted non-test `panic!` / `.unwrap()` library cases and add bounded IO helpers.
+- [x] Add CI checks to prevent regressions (unwrap/panic/read_to_string).
+
+## Implementation Status (2026-03-28)
+
+- [x] `src/error.rs` and `src/io.rs` landed, and the scanner now uses bounded reads.
+- [x] Rust parser/type-model changes landed: `StructSummary`, `FieldSummary`, async metadata, macro/runtime call summaries, and unsafe-pattern summaries.
+- [x] Domain-modeling heuristics landed with fixture-backed tests.
+- [x] Async/concurrency heuristics landed with fixture-backed tests.
+- [x] Strict verification completed with `cargo test`, `cargo clippy --all-targets --all-features -- -D warnings`, and the repo hygiene script.
+- [ ] Feature-flagged rollout for async rules was not added; rules ship directly in the Rust analyzer.
+- [ ] Repo-level suppression comments/config were not added in this pass.
 
 ## Goals (high level)
 

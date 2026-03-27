@@ -7,10 +7,10 @@ mod tests;
 
 use std::path::Path;
 
-use anyhow::{Context, Result, anyhow};
 use tree_sitter::Parser;
 
 use crate::analysis::{Language, ParsedFile};
+use crate::{Error, Result};
 
 use self::comments::collect_comment_summaries;
 use self::general::{
@@ -22,12 +22,11 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
     let mut parser = Parser::new();
     parser
         .set_language(&tree_sitter_python::LANGUAGE.into())
-        .map_err(|error| anyhow!(error.to_string()))
-        .context("failed to configure Python parser")?;
+        .map_err(|error| Error::parser_configuration("Python", error.to_string()))?;
 
     let tree = parser
         .parse(source, None)
-        .ok_or_else(|| anyhow!("tree-sitter returned no parse tree"))?;
+        .ok_or_else(|| Error::missing_parse_tree("Python"))?;
 
     let root = tree.root_node();
     let is_test_file = is_test_file(path);
@@ -53,5 +52,6 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         imports,
         symbols,
         class_summaries,
+        structs: Vec::new(),
     })
 }

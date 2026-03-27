@@ -1,30 +1,33 @@
+use std::collections::BTreeSet;
 use std::path::Path;
 
-use anyhow::{Context, Result, anyhow};
 use tree_sitter::{Node, Parser};
 
 use crate::analysis::{
-    CallSite, DeclaredSymbol, ImportSpec, Language, NamedLiteral, ParsedFile, ParsedFunction,
+    CallSite, DeclaredSymbol, FieldSummary, ImportSpec, Language, MacroCall, NamedLiteral,
+    ParsedFile, ParsedFunction, RuntimeCall, StructSummary, UnsafePattern, UnsafePatternKind,
 };
 use crate::model::{FunctionFingerprint, SymbolKind};
+use crate::{Error, Result};
 
 pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
     let mut parser = Parser::new();
     parser
         .set_language(&tree_sitter_rust::LANGUAGE.into())
-        .map_err(|error| anyhow!(error.to_string()))
-        .context("failed to configure Rust parser")?;
+        .map_err(|error| Error::parser_configuration("Rust", error.to_string()))?;
 
     let tree = parser
         .parse(source, None)
-        .ok_or_else(|| anyhow!("tree-sitter returned no parse tree"))?;
+        .ok_or_else(|| Error::missing_parse_tree("Rust"))?;
 
     let root = tree.root_node();
     let is_test_file = is_test_file(path);
     let imports = collect_imports(root, source);
     let package_string_literals = collect_pkg_strings(root, source);
+    let default_impls = collect_trait_impls(root, source, "Default");
     let functions = collect_functions(root, source, is_test_file);
     let symbols = collect_symbols(root, source, &functions, &imports);
+    let structs = collect_struct_summaries(root, source, &default_impls);
 
     Ok(ParsedFile {
         language: Language::Rust,
@@ -41,6 +44,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         imports,
         symbols,
         class_summaries: Vec::new(),
+        structs,
     })
 }
 
@@ -347,6 +351,24 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     let is_test_function = function_is_test_only(node, source, is_test_file);
     let safety_comment_lines = collect_safety_comments(source, node);
     let unsafe_lines = collect_unsafe_lines(node, body_node, source);
+    let is_async = function_is_async(node, body_node, source);
+    let await_points = collect_await_points(body_node);
+    let macro_calls = collect_macro_calls(&calls);
+    let spawn_calls = collect_named_runtime_calls(&calls, &["spawn", "spawn_local", "spawn_blocking"]);
+    let lock_calls = collect_named_runtime_calls(&calls, &["lock", "lock_owned", "read", "write"]);
+    let permit_acquires = collect_named_runtime_calls(&calls, &["acquire", "acquire_owned", "reserve", "get"]);
+    let futures_created = collect_future_creations(body_node, source);
+    let blocking_calls = collect_blocking_calls(body_node, source, &calls);
+    let select_macro_lines = macro_calls
+        .iter()
+        .filter(|call| call.name == "select!")
+        .map(|call| call.line)
+        .collect::<Vec<_>>();
+    let drop_impl = inside_trait_impl(node, source, "Drop");
+    let (write_loops, line_iteration_loops, default_hasher_lines) =
+        collect_loop_operation_lines(body_node, source);
+    let boxed_container_lines = collect_boxed_container_lines(body_node, source);
+    let unsafe_soundness = collect_unsafe_patterns(body_node, source);
     let fingerprint = build_function_fingerprint(node, source, kind, receiver_type, calls.len())?;
 
     Some(ParsedFunction {
@@ -395,7 +417,503 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         has_complete_type_hints: false,
         has_varargs: false,
         has_kwargs: false,
+        is_async,
+        await_points,
+        macro_calls,
+        spawn_calls,
+        lock_calls,
+        permit_acquires,
+        futures_created,
+        blocking_calls,
+        select_macro_lines,
+        drop_impl,
+        write_loops,
+        line_iteration_loops,
+        default_hasher_lines,
+        boxed_container_lines,
+        unsafe_soundness,
     })
+}
+
+fn collect_trait_impls(root: Node<'_>, source: &str, trait_name: &str) -> BTreeSet<String> {
+    let mut impls = BTreeSet::new();
+    visit_trait_impls(root, source, trait_name, &mut impls);
+    impls
+}
+
+fn visit_trait_impls(
+    node: Node<'_>,
+    source: &str,
+    trait_name: &str,
+    impls: &mut BTreeSet<String>,
+) {
+    if node.kind() == "impl_item"
+        && let Some(type_name) = trait_impl_type(node, source, trait_name)
+    {
+        impls.insert(type_name);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_trait_impls(child, source, trait_name, impls);
+    }
+}
+
+fn trait_impl_type(node: Node<'_>, source: &str, trait_name: &str) -> Option<String> {
+    let normalized = source
+        .get(node.byte_range())?
+        .chars()
+        .filter(|character| !character.is_whitespace())
+        .collect::<String>();
+    let prefix = format!("impl{trait_name}for");
+    let remainder = normalized.strip_prefix(&prefix)?;
+    let type_name = remainder
+        .chars()
+        .take_while(|character| character.is_ascii_alphanumeric() || *character == '_')
+        .collect::<String>();
+    if type_name.is_empty() {
+        None
+    } else {
+        Some(type_name)
+    }
+}
+
+fn collect_struct_summaries(
+    root: Node<'_>,
+    source: &str,
+    default_impls: &BTreeSet<String>,
+) -> Vec<StructSummary> {
+    let mut structs = Vec::new();
+    visit_for_struct_summaries(root, source, default_impls, &mut structs);
+    structs.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    structs
+}
+
+fn visit_for_struct_summaries(
+    node: Node<'_>,
+    source: &str,
+    default_impls: &BTreeSet<String>,
+    structs: &mut Vec<StructSummary>,
+) {
+    if node.kind() == "struct_item"
+        && let Some(summary) = build_struct_summary(node, source, default_impls)
+    {
+        structs.push(summary);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_struct_summaries(child, source, default_impls, structs);
+    }
+}
+
+fn build_struct_summary(
+    node: Node<'_>,
+    source: &str,
+    default_impls: &BTreeSet<String>,
+) -> Option<StructSummary> {
+    let name_node = node.child_by_field_name("name")?;
+    let name = source.get(name_node.byte_range())?.trim().to_string();
+    let fields = node
+        .child_by_field_name("body")
+        .or_else(|| named_child_by_kind(node, "field_declaration_list"))
+        .map(|body| collect_struct_fields(body, source))
+        .unwrap_or_default();
+    let derives = parse_derive_names(&leading_attributes(node), source);
+    let visibility_pub = source
+        .get(node.byte_range())
+        .is_some_and(|text| text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub("));
+
+    Some(StructSummary {
+        line: node.start_position().row + 1,
+        name: name.clone(),
+        fields,
+        has_debug_derive: derives.iter().any(|derive| derive == "Debug"),
+        has_default_derive: derives.iter().any(|derive| derive == "Default"),
+        has_serialize_derive: derives.iter().any(|derive| derive == "Serialize"),
+        has_deserialize_derive: derives.iter().any(|derive| derive == "Deserialize"),
+        visibility_pub,
+        derives,
+        impl_default: default_impls.contains(&name),
+    })
+}
+
+fn named_child_by_kind<'a>(node: Node<'a>, kind: &str) -> Option<Node<'a>> {
+    let mut cursor = node.walk();
+    node.named_children(&mut cursor)
+        .find(|child| child.kind() == kind)
+}
+
+fn collect_struct_fields(node: Node<'_>, source: &str) -> Vec<FieldSummary> {
+    let mut fields = Vec::new();
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        if child.kind() != "field_declaration" {
+            continue;
+        }
+
+        let Some(name_node) = child.child_by_field_name("name") else {
+            continue;
+        };
+        let Some(type_node) = child.child_by_field_name("type") else {
+            continue;
+        };
+        let name = source.get(name_node.byte_range()).unwrap_or("").trim().to_string();
+        let type_text = source.get(type_node.byte_range()).unwrap_or("").trim().to_string();
+        let normalized_type = type_text.chars().filter(|character| !character.is_whitespace()).collect::<String>();
+        let primitive_name = normalized_type
+            .trim_start_matches('&')
+            .trim_start_matches("mut")
+            .trim_start_matches('&');
+        let is_primitive = matches!(
+            primitive_name,
+            "bool"
+                | "str"
+                | "String"
+                | "usize"
+                | "u8"
+                | "u16"
+                | "u32"
+                | "u64"
+                | "u128"
+                | "isize"
+                | "i8"
+                | "i16"
+                | "i32"
+                | "i64"
+                | "i128"
+                | "f32"
+                | "f64"
+        );
+
+        fields.push(FieldSummary {
+            line: child.start_position().row + 1,
+            name,
+            is_pub: source
+                .get(child.byte_range())
+                .is_some_and(|text| text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub(")),
+            is_option: normalized_type.starts_with("Option<")
+                || normalized_type.contains("::Option<")
+                || normalized_type.starts_with("std::option::Option<"),
+            is_bool: primitive_name == "bool",
+            is_primitive,
+            type_text,
+        });
+    }
+    fields
+}
+
+fn parse_derive_names(attributes: &[Node<'_>], source: &str) -> Vec<String> {
+    let mut derives = Vec::new();
+
+    for attribute in attributes {
+        let Some(text) = source.get(attribute.byte_range()) else {
+            continue;
+        };
+        let Some(start) = text.find("derive(") else {
+            continue;
+        };
+        let derive_text = &text[start + "derive(".len()..];
+        let Some(end) = derive_text.find(')') else {
+            continue;
+        };
+        for derive in derive_text[..end].split(',') {
+            let cleaned = derive.trim().trim_matches(']');
+            if cleaned.is_empty() {
+                continue;
+            }
+            let simple = cleaned.rsplit("::").next().unwrap_or(cleaned).to_string();
+            derives.push(simple);
+        }
+    }
+
+    derives.sort();
+    derives.dedup();
+    derives
+}
+
+fn function_is_async(function_node: Node<'_>, body_node: Node<'_>, source: &str) -> bool {
+    source
+        .get(function_node.start_byte()..body_node.start_byte())
+        .unwrap_or("")
+        .split(|character: char| !(character.is_ascii_alphanumeric() || character == '_'))
+        .any(|token| token == "async")
+}
+
+fn collect_await_points(node: Node<'_>) -> Vec<usize> {
+    let mut lines = Vec::new();
+    visit_for_await_points(node, &mut lines);
+    lines.sort_unstable();
+    lines.dedup();
+    lines
+}
+
+fn visit_for_await_points(node: Node<'_>, lines: &mut Vec<usize>) {
+    if node.kind() == "await_expression" {
+        lines.push(node.start_position().row + 1);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_await_points(child, lines);
+    }
+}
+
+fn collect_macro_calls(calls: &[CallSite]) -> Vec<MacroCall> {
+    calls.iter()
+        .filter(|call| call.name.ends_with('!'))
+        .map(|call| MacroCall {
+            line: call.line,
+            name: call.name.clone(),
+        })
+        .collect()
+}
+
+fn collect_named_runtime_calls(calls: &[CallSite], names: &[&str]) -> Vec<RuntimeCall> {
+    calls.iter()
+        .filter(|call| names.contains(&call.name.as_str()))
+        .map(|call| RuntimeCall {
+            line: call.line,
+            name: call.name.clone(),
+            receiver: call.receiver.clone(),
+        })
+        .collect()
+}
+
+fn collect_future_creations(node: Node<'_>, source: &str) -> Vec<RuntimeCall> {
+    let mut futures = Vec::new();
+    visit_for_future_creations(node, source, &mut futures);
+    futures
+}
+
+fn visit_for_future_creations(node: Node<'_>, source: &str, futures: &mut Vec<RuntimeCall>) {
+    if node.kind() == "let_declaration"
+        && let Some(value_node) = node.child_by_field_name("value")
+        && let Some(value_text) = source.get(value_node.byte_range())
+    {
+        let trimmed = value_text.trim();
+        if trimmed.starts_with("async ") || trimmed.contains(".fuse()") || trimmed.contains("Future") {
+            futures.push(RuntimeCall {
+                line: node.start_position().row + 1,
+                name: "future".to_string(),
+                receiver: None,
+            });
+        }
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_future_creations(child, source, futures);
+    }
+}
+
+fn collect_blocking_calls(node: Node<'_>, source: &str, calls: &[CallSite]) -> Vec<RuntimeCall> {
+    let mut blocking_calls = calls
+        .iter()
+        .filter(|call| is_blocking_call(call))
+        .map(|call| RuntimeCall {
+            line: call.line,
+            name: call.name.clone(),
+            receiver: call.receiver.clone(),
+        })
+        .collect::<Vec<_>>();
+
+    visit_for_textual_blocking_calls(node, source, &mut blocking_calls);
+    blocking_calls.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    blocking_calls.dedup_by(|left, right| left.line == right.line && left.name == right.name && left.receiver == right.receiver);
+    blocking_calls
+}
+
+fn is_blocking_call(call: &CallSite) -> bool {
+    let receiver = call.receiver.as_deref().unwrap_or_default();
+    matches!(call.name.as_str(), "read_to_string" | "read" | "read_to_end" | "write" | "write_all" | "open" | "create" | "metadata" | "sleep" | "join" | "block_on")
+        || receiver.contains("std::fs")
+        || receiver.contains("fs")
+        || receiver.contains("std::thread")
+        || receiver.contains("File")
+}
+
+fn visit_for_textual_blocking_calls(
+    node: Node<'_>,
+    source: &str,
+    blocking_calls: &mut Vec<RuntimeCall>,
+) {
+    if let Some(text) = source.get(node.byte_range()) {
+        let blocking_name = if text.contains("std::thread::sleep") {
+            Some("sleep")
+        } else if text.contains("std::fs::") || text.contains("fs::read_to_string") {
+            Some("fs")
+        } else if text.contains("block_on(") {
+            Some("block_on")
+        } else {
+            None
+        };
+
+        if let Some(name) = blocking_name {
+            blocking_calls.push(RuntimeCall {
+                line: node.start_position().row + 1,
+                name: name.to_string(),
+                receiver: None,
+            });
+        }
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_textual_blocking_calls(child, source, blocking_calls);
+    }
+}
+
+fn collect_loop_operation_lines(node: Node<'_>, source: &str) -> (Vec<usize>, Vec<usize>, Vec<usize>) {
+    let mut write_loops = Vec::new();
+    let mut line_iteration_loops = Vec::new();
+    let mut default_hasher_lines = Vec::new();
+    visit_loop_operation_lines(
+        node,
+        source,
+        false,
+        &mut write_loops,
+        &mut line_iteration_loops,
+        &mut default_hasher_lines,
+    );
+    (write_loops, line_iteration_loops, default_hasher_lines)
+}
+
+fn visit_loop_operation_lines(
+    node: Node<'_>,
+    source: &str,
+    in_loop: bool,
+    write_loops: &mut Vec<usize>,
+    line_iteration_loops: &mut Vec<usize>,
+    default_hasher_lines: &mut Vec<usize>,
+) {
+    let child_in_loop = in_loop || is_loop_node(node.kind());
+
+    if child_in_loop && node.kind() == "call_expression"
+        && let Some(function_node) = node.child_by_field_name("function")
+    {
+        let target = render_call_target(function_node, source);
+        let (_, name) = split_call_target(&target);
+        let line = node.start_position().row + 1;
+        if matches!(name.as_str(), "write" | "write_all") || target.contains("File::write") {
+            write_loops.push(line);
+        }
+        if name == "lines" {
+            line_iteration_loops.push(line);
+        }
+        if target.contains("HashMap::new") || target.contains("HashMap::default") {
+            default_hasher_lines.push(line);
+        }
+    }
+
+    if child_in_loop && node.kind() == "macro_invocation"
+        && let Some(macro_node) = node.child_by_field_name("macro")
+        && let Some(macro_text) = source.get(macro_node.byte_range())
+        && matches!(macro_text.trim(), "write" | "writeln")
+    {
+        write_loops.push(node.start_position().row + 1);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_loop_operation_lines(
+            child,
+            source,
+            child_in_loop,
+            write_loops,
+            line_iteration_loops,
+            default_hasher_lines,
+        );
+    }
+}
+
+fn is_loop_node(kind: &str) -> bool {
+    matches!(kind, "for_expression" | "while_expression" | "loop_expression")
+}
+
+fn collect_boxed_container_lines(node: Node<'_>, source: &str) -> Vec<usize> {
+    let mut lines = Vec::new();
+    visit_for_boxed_container_lines(node, source, &mut lines);
+    lines.sort_unstable();
+    lines.dedup();
+    lines
+}
+
+fn visit_for_boxed_container_lines(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
+    if let Some(text) = source.get(node.byte_range())
+        && text.contains("Vec<Box<")
+    {
+        lines.push(node.start_position().row + 1);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_boxed_container_lines(child, source, lines);
+    }
+}
+
+fn collect_unsafe_patterns(node: Node<'_>, source: &str) -> Vec<UnsafePattern> {
+    let mut patterns = Vec::new();
+    visit_for_unsafe_patterns(node, source, &mut patterns);
+    patterns.sort_by(|left, right| left.line.cmp(&right.line).then(left.detail.cmp(&right.detail)));
+    patterns.dedup_by(|left, right| left.line == right.line && left.kind == right.kind && left.detail == right.detail);
+    patterns
+}
+
+fn visit_for_unsafe_patterns(node: Node<'_>, source: &str, patterns: &mut Vec<UnsafePattern>) {
+    if node.kind() == "call_expression"
+        && let Some(function_node) = node.child_by_field_name("function")
+    {
+        let target = render_call_target(function_node, source);
+        let (_, name) = split_call_target(&target);
+        let kind = match name.as_str() {
+            "get_unchecked" | "get_unchecked_mut" => Some(UnsafePatternKind::GetUnchecked),
+            "from_raw_parts" | "from_raw_parts_mut" => Some(UnsafePatternKind::RawParts),
+            "set_len" => Some(UnsafePatternKind::SetLen),
+            "assume_init" => Some(UnsafePatternKind::AssumeInit),
+            "transmute" => Some(UnsafePatternKind::Transmute),
+            _ => None,
+        };
+
+        if let Some(kind) = kind {
+            patterns.push(UnsafePattern {
+                line: node.start_position().row + 1,
+                kind,
+                detail: target,
+            });
+        }
+    }
+
+    if matches!(node.kind(), "cast_expression" | "type_cast_expression")
+        && let Some(text) = source.get(node.byte_range())
+        && (text.contains(" as *const ") || text.contains(" as *mut ") || text.ends_with(" as *const") || text.ends_with(" as *mut"))
+    {
+        patterns.push(UnsafePattern {
+            line: node.start_position().row + 1,
+            kind: UnsafePatternKind::RawPointerCast,
+            detail: text.trim().to_string(),
+        });
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_unsafe_patterns(child, source, patterns);
+    }
+}
+
+fn inside_trait_impl(node: Node<'_>, source: &str, trait_name: &str) -> bool {
+    let mut current = node.parent();
+
+    while let Some(parent) = current {
+        if parent.kind() == "impl_item"
+            && trait_impl_type(parent, source, trait_name).is_some()
+        {
+            return true;
+        }
+        current = parent.parent();
+    }
+
+    false
 }
 
 fn function_kind(node: Node<'_>, source: &str) -> &'static str {

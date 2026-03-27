@@ -2,8 +2,24 @@
 
 ## Summary / Quick Verdict
 
-- Findings: repository uses `anyhow` widely; rules detect `panic!` / `.unwrap()`; some live occurrences of `panic!`, `.unwrap()`, and unbounded `read_to_string()`.
-- Key examples: [src/main.rs](src/main.rs#L1), [src/cli/report.rs](src/cli/report.rs#L4), [src/scan/mod.rs](src/scan/mod.rs#L118), [src/index/mod.rs](src/index/mod.rs#L111), [src/analysis/rust/parser.rs](src/analysis/rust/parser.rs#L1089).
+- [x] Findings captured and remediated in core library paths: typed crate-level `Error`/`Result` added, bounded file reads implemented, and the library parse/scan backends no longer expose `anyhow::Result`.
+- [x] Key implementation points: `src/error.rs`, `src/io.rs`, `src/lib.rs`, `src/scan/mod.rs`, `src/scan/walker.rs`, `src/analysis/{mod,go,python,rust}/**`.
+- [x] Binary edge remains on `anyhow::Result` with added context in `src/main.rs`.
+- [ ] Test-only `expect`/`unwrap` calls remain in unit/integration tests by design.
+
+## Implementation Status (2026-03-28)
+
+- [x] Added `thiserror = "1.0"` to `Cargo.toml`.
+- [x] Added `src/error.rs` with a top-level `Error` enum and central `Result<T>` alias.
+- [x] Exported `Error`/`Result` and the bounded-reader helpers from `src/lib.rs`.
+- [x] Added `src/io.rs` with `read_to_string_limited` and `DEFAULT_MAX_BYTES`.
+- [x] Replaced the production `fs::read_to_string` path in the scanner with bounded reads.
+- [x] Replaced the production `target_segments.last().unwrap()` site and removed other easy non-test `expect`/`unwrap` uses in library code.
+- [x] Added CI enforcement via Clippy unwrap/expect denial and the grep-based hygiene script.
+- [x] Added unit tests for bounded read success and oversized-input failure.
+- [x] Added domain-modeling parser support and heuristics from the second half of this plan.
+- [ ] Per-module `Error` enums with `#[from]` aggregation were not split out; this pass kept one crate-level `Error` type instead.
+- [ ] Repo-level allowlist/config toggles were not added in this pass.
 
 ---
 

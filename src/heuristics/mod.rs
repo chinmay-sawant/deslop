@@ -8,6 +8,7 @@ mod hallucination;
 mod naming;
 mod performance;
 mod python;
+pub(crate) mod rust;
 mod security;
 mod test_quality;
 #[cfg(test)]

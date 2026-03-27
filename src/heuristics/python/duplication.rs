@@ -154,10 +154,12 @@ pub(super) fn test_utility_logic_findings(files: &[&ParsedFile]) -> Vec<Finding>
             continue;
         }
 
-        let anchor = records
+        let Some(anchor) = records
             .iter()
             .min_by(|left, right| left.0.path.cmp(&right.0.path).then(left.2.cmp(&right.2)))
-            .expect("duplicate logic group should not be empty");
+        else {
+            continue;
+        };
         findings.push(Finding {
             rule_id: "duplicate_test_utility_logic".to_string(),
             severity: Severity::Info,
@@ -210,10 +212,12 @@ pub(super) fn cross_file_dupe_findings(files: &[&ParsedFile]) -> Vec<Finding> {
             continue;
         }
 
-        let anchor = records
+        let Some(anchor) = records
             .iter()
             .min_by(|left, right| left.0.path.cmp(&right.0.path).then(left.2.cmp(&right.2)))
-            .expect("copy-paste function cluster should not be empty");
+        else {
+            continue;
+        };
         findings.push(Finding {
             rule_id: "cross_file_copy_paste_function".to_string(),
             severity: Severity::Info,
@@ -267,10 +271,12 @@ pub(super) fn duplicate_transformation_pipeline_findings(files: &[&ParsedFile]) 
             continue;
         }
 
-        let anchor = records
+        let Some(anchor) = records
             .iter()
             .min_by(|left, right| left.0.path.cmp(&right.0.path).then(left.2.cmp(&right.2)))
-            .expect("transformation pipeline cluster should not be empty");
+        else {
+            continue;
+        };
         findings.push(Finding {
             rule_id: "duplicate_transformation_pipeline".to_string(),
             severity: Severity::Info,
@@ -320,10 +326,12 @@ pub(super) fn cross_file_literal_findings(files: &[&ParsedFile]) -> Vec<Finding>
             continue;
         }
 
-        let anchor = records
+        let Some(anchor) = records
             .iter()
             .min_by(|left, right| left.0.path.cmp(&right.0.path).then(left.1.cmp(&right.1)))
-            .expect("cross-file literal cluster should not be empty");
+        else {
+            continue;
+        };
         findings.push(Finding {
             rule_id: "cross_file_repeated_literal".to_string(),
             severity: Severity::Info,
@@ -374,10 +382,12 @@ pub(super) fn duplicate_query_fragment_findings(files: &[&ParsedFile]) -> Vec<Fi
             continue;
         }
 
-        let anchor = records
+        let Some(anchor) = records
             .iter()
             .min_by(|left, right| left.0.path.cmp(&right.0.path).then(left.1.cmp(&right.1)))
-            .expect("query-fragment cluster should not be empty");
+        else {
+            continue;
+        };
         findings.push(Finding {
             rule_id: "duplicate_query_fragment".to_string(),
             severity: Severity::Info,

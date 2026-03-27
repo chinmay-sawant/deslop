@@ -3,12 +3,15 @@ mod parser;
 use std::collections::BTreeMap;
 use std::path::Path;
 
-use anyhow::Result;
-
 use crate::analysis::{ImportSpec, ParsedFunction};
 use crate::analysis::{Language, LanguageBackend, ParsedFile};
+use crate::heuristics::rust::{
+    async_file_findings, async_function_findings, domain_findings, performance_file_findings,
+    performance_function_findings, unsafe_soundness_findings,
+};
 use crate::index::{ImportResolution, PackageIndex, RepositoryIndex};
 use crate::model::{Finding, Severity};
+use crate::Result;
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct RustAnalyzer;
@@ -38,6 +41,10 @@ impl LanguageBackend for RustAnalyzer {
 fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = Vec::new();
     let import_aliases = alias_lookup(&file.imports);
+
+    findings.extend(domain_findings(file));
+    findings.extend(performance_file_findings(file));
+    findings.extend(async_file_findings(file));
 
     for function in &file.functions {
         findings.extend(non_test_macro_findings(
@@ -90,7 +97,10 @@ fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Fin
             "calls expect() in non-test Rust code",
         ));
         findings.extend(unsafe_findings(file, function));
+        findings.extend(unsafe_soundness_findings(file, function));
         findings.extend(doc_marker_findings(file, function));
+        findings.extend(performance_function_findings(file, function));
+        findings.extend(async_function_findings(file, function));
         let Some(package_name) = &file.package_name else {
             continue;
         };

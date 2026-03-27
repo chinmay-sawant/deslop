@@ -8,11 +8,11 @@ mod tests;
 
 use std::path::Path;
 
-use anyhow::{Context, Result, anyhow};
 use tree_sitter::{Node, Parser};
 
 use crate::analysis::go::fingerprint::build_function_fingerprint;
 use crate::analysis::{Language, ParsedFile, ParsedFunction};
+use crate::{Error, Result};
 
 use self::comments::extract_doc_comment;
 use self::context::{
@@ -33,12 +33,11 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
     let mut parser = Parser::new();
     parser
         .set_language(&tree_sitter_go::LANGUAGE.into())
-        .map_err(|error| anyhow!(error.to_string()))
-        .context("failed to configure Go parser")?;
+        .map_err(|error| Error::parser_configuration("Go", error.to_string()))?;
 
     let tree = parser
         .parse(source, None)
-        .ok_or_else(|| anyhow!("tree-sitter returned no parse tree"))?;
+        .ok_or_else(|| Error::missing_parse_tree("Go"))?;
 
     let root = tree.root_node();
     let package_name = find_package_name(root, source);
@@ -67,6 +66,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         imports,
         symbols,
         class_summaries: Vec::new(),
+        structs: Vec::new(),
     })
 }
 
@@ -201,5 +201,20 @@ fn parse_function_node(
         has_complete_type_hints: false,
         has_varargs: false,
         has_kwargs: false,
+        is_async: false,
+        await_points: Vec::new(),
+        macro_calls: Vec::new(),
+        spawn_calls: Vec::new(),
+        lock_calls: Vec::new(),
+        permit_acquires: Vec::new(),
+        futures_created: Vec::new(),
+        blocking_calls: Vec::new(),
+        select_macro_lines: Vec::new(),
+        drop_impl: false,
+        write_loops: Vec::new(),
+        line_iteration_loops: Vec::new(),
+        default_hasher_lines: Vec::new(),
+        boxed_container_lines: Vec::new(),
+        unsafe_soundness: Vec::new(),
     })
 }

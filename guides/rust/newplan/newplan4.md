@@ -2,8 +2,18 @@
 
 ## Summary / Quick Verdict
 
-- [ ] **Quick verdict**: repo uses `anyhow` widely; has `panic!/unwrap()` detections and unbounded `read_to_string()` uses.
-- [ ] **Remediation goal**: migrate library APIs to typed `Error` types, keep `anyhow` at binaries, remove panics/unwraps from library code, and add bounded IO + CI checks.
+- [x] **Quick verdict**: core library paths have been migrated off `anyhow::Result`; bounded reads and CI checks are in place.
+- [x] **Remediation goal**: typed crate-level errors, bounded IO, CLI edge context, and regression checks landed in this pass.
+
+## Implementation Status (2026-03-28)
+
+- [x] Added `thiserror`, `src/error.rs`, and the central `Result<T>` alias.
+- [x] Added `src/io.rs` with bounded `read_to_string_limited` and migrated the scanner to use it.
+- [x] Kept `anyhow` in binaries only and added `Context` at the CLI edge.
+- [x] Removed the obvious non-test library `unwrap`/`expect` cases identified during planning.
+- [x] Added `cargo clippy` unwrap/expect CI enforcement and the grep-based hygiene script.
+- [x] Added regression tests and script coverage.
+- [ ] Module-specific error enums and `#[from]` fan-in were not split out beyond the crate-level error type.
 
 ## Goals
 

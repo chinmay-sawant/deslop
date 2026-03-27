@@ -1,9 +1,8 @@
 use std::path::PathBuf;
 
-use anyhow::Result;
-
 use crate::model::{BenchmarkReport, BenchmarkRun, StageStats};
 use crate::{ScanOptions, scan_repository};
+use crate::Result;
 
 #[derive(Debug, Clone)]
 pub struct BenchmarkOptions {

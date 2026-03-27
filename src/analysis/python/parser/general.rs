@@ -408,6 +408,21 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         has_complete_type_hints,
         has_varargs,
         has_kwargs,
+        is_async: false,
+        await_points: Vec::new(),
+        macro_calls: Vec::new(),
+        spawn_calls: Vec::new(),
+        lock_calls: Vec::new(),
+        permit_acquires: Vec::new(),
+        futures_created: Vec::new(),
+        blocking_calls: Vec::new(),
+        select_macro_lines: Vec::new(),
+        drop_impl: false,
+        write_loops: Vec::new(),
+        line_iteration_loops: Vec::new(),
+        default_hasher_lines: Vec::new(),
+        boxed_container_lines: Vec::new(),
+        unsafe_soundness: Vec::new(),
     })
 }
 

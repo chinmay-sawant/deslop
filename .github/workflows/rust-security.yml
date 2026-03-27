@@ -1,0 +1,36 @@
+name: Rust Security Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  rust-security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Tests
+        run: cargo test --all-targets
+
+      - name: Cargo audit
+        run: |
+          cargo install cargo-audit || true
+          cargo audit || true
+
+      - name: Cargo geiger
+        run: |
+          cargo install cargo-geiger || true
+          cargo geiger || true
+
+      - name: Security grep report
+        run: bash scripts/check-rust-security.sh

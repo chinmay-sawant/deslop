@@ -5,15 +5,15 @@ mod types;
 
 use std::path::Path;
 
-use anyhow::Result;
-
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
+use crate::Result;
 
 pub(crate) use types::{
     BlockFingerprint, CallSite, ClassSummary, CommentSummary, ContextFactoryCall, DbQueryCall,
-    DeclaredSymbol, ExceptionHandler, FormattedErrorCall, ImportSpec, NamedLiteral, ParsedFile,
-    ParsedFunction, StructTag, TestFunctionSummary,
+    DeclaredSymbol, ExceptionHandler, FieldSummary, FormattedErrorCall, ImportSpec, MacroCall,
+    NamedLiteral, ParsedFile, ParsedFunction, RuntimeCall, StructSummary, StructTag,
+    TestFunctionSummary, UnsafePattern, UnsafePatternKind,
 };
 
 #[allow(dead_code)]

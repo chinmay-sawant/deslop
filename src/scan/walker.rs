@@ -1,7 +1,8 @@
 use std::path::{Component, Path, PathBuf};
 
-use anyhow::Result;
 use ignore::WalkBuilder;
+
+use crate::{Error, Result};
 
 pub fn discover_source_files(
     root: &Path,
@@ -23,7 +24,7 @@ pub fn discover_source_files(
     let mut files = Vec::new();
 
     for entry in builder.build() {
-        let entry = entry?;
+        let entry = entry.map_err(|error| Error::walk(root, error))?;
         let path = entry.path();
 
         if !entry

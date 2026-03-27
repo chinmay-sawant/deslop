@@ -108,6 +108,55 @@ The first implementation should favor a small set of high-signal rules rather th
 - Add fixture-driven tests for every Rust rule.
 - Run `cargo test --test integration_scan` and full `cargo test` after Rust heuristics land.
 
+## Extended Rust Rule Packs
+
+The Rust analyzer now also emits conservative findings for four additional rule families backed by parser evidence and fixture-driven tests.
+
+- Performance and async runtime checks:
+	- `rust_blocking_io_in_async`
+	- `rust_unbuffered_file_writes`
+	- `rust_lines_allocate_per_line`
+	- `rust_hashmap_default_hasher`
+	- `rust_lock_across_await`
+	- `rust_tokio_mutex_unnecessary`
+	- `rust_blocking_drop`
+	- `rust_pointer_chasing_vec_box`
+	- `rust_aos_hot_path`
+	- `rust_large_future_stack`
+	- `rust_utf8_validate_hot_path`
+	- `rust_path_join_absolute`
+
+- Domain modeling and invariants:
+	- `rust_domain_raw_primitive`
+	- `rust_domain_float_for_money`
+	- `rust_domain_impossible_combination`
+	- `rust_domain_default_produces_invalid`
+	- `rust_debug_secret`
+	- `rust_serde_sensitive_deserialize`
+	- `rust_serde_sensitive_serialize`
+
+- Async and concurrency pitfalls:
+	- `rust_async_std_mutex_await`
+	- `rust_async_hold_permit_across_await`
+	- `rust_async_spawn_cancel_at_await`
+	- `rust_async_missing_fuse_pin`
+	- `rust_async_recreate_future_in_select`
+	- `rust_async_monopolize_executor`
+	- `rust_async_blocking_drop`
+	- `rust_async_invariant_broken_at_await`
+	- `rust_async_lock_order_cycle`
+
+- Unsafe soundness checks:
+	- `rust_unsafe_get_unchecked`
+	- `rust_unsafe_from_raw_parts`
+	- `rust_unsafe_set_len`
+	- `rust_unsafe_assume_init`
+	- `rust_unsafe_transmute`
+	- `rust_unsafe_raw_pointer_cast`
+	- `rust_unsafe_aliasing_assumption`
+
+These rule packs are intentionally syntactic and conservative. They are designed to produce reviewable findings with clear evidence rather than Clippy-style semantic proofs.
+
 ## Document Update Obligations
 
 - Update this file whenever the Rust rule pack changes.

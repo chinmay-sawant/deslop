@@ -2,12 +2,11 @@ mod parser;
 
 use std::path::Path;
 
-use anyhow::Result;
-
 use crate::analysis::{Language, LanguageBackend, ParsedFile};
 use crate::heuristics::{evaluate_python_file, evaluate_python_repo};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
+use crate::Result;
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct PythonAnalyzer;

@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 
 mod cli;
@@ -57,10 +57,12 @@ fn main() -> Result<()> {
             no_ignore,
             no_fail,
         } => {
+            let scan_root = path.clone();
             let report = scan_repository(&ScanOptions {
                 root: path,
                 respect_ignore: !no_ignore,
-            })?;
+            })
+            .with_context(|| format!("scan failed for {}", scan_root.display()))?;
 
             if json {
                 println!("{}", format_scan_report_json(&report, details)?);
@@ -86,12 +88,14 @@ fn main() -> Result<()> {
             json,
             no_ignore,
         } => {
+            let bench_root = path.clone();
             let report = benchmark_repository(&BenchmarkOptions {
                 root: path,
                 repeats,
                 warmups,
                 respect_ignore: !no_ignore,
-            })?;
+            })
+            .with_context(|| format!("benchmark failed for {}", bench_root.display()))?;
 
             if json {
                 println!("{}", serde_json::to_string_pretty(&report)?);

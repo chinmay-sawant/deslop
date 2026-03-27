@@ -108,7 +108,9 @@ impl RepositoryIndex {
             };
         }
 
-        let module_name = target_segments.last().unwrap();
+        let Some(module_name) = target_segments.last() else {
+            return ImportResolution::Unresolved;
+        };
         let file_module_directory = rust_file_mod_dir(&crate_root, &target_segments);
         let mod_module_directory = rust_mod_mod_dir(&crate_root, &target_segments);
         let mut candidates = self
@@ -491,6 +493,21 @@ mod tests {
                     has_complete_type_hints: false,
                     has_varargs: false,
                     has_kwargs: false,
+                    is_async: false,
+                    await_points: Vec::new(),
+                    macro_calls: Vec::new(),
+                    spawn_calls: Vec::new(),
+                    lock_calls: Vec::new(),
+                    permit_acquires: Vec::new(),
+                    futures_created: Vec::new(),
+                    blocking_calls: Vec::new(),
+                    select_macro_lines: Vec::new(),
+                    drop_impl: false,
+                    write_loops: Vec::new(),
+                    line_iteration_loops: Vec::new(),
+                    default_hasher_lines: Vec::new(),
+                    boxed_container_lines: Vec::new(),
+                    unsafe_soundness: Vec::new(),
                 })
                 .collect(),
             imports: Vec::new(),
@@ -505,6 +522,7 @@ mod tests {
                 })
                 .collect(),
             class_summaries: Vec::new(),
+            structs: Vec::new(),
         }
     }
 

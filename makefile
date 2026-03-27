@@ -2,8 +2,8 @@
 
 # Path to scan (can be overridden with 'make scan PATH=<path>')
 # For now hardcoded the path for personal use, you can customize this as required
-PATH_TO_SCAN ?= /home/chinmay/ChinmayPersonalProjects/gopdfsuit
-# PATH_TO_SCAN ?= .
+# PATH_TO_SCAN ?= /home/chinmay/ChinmayPersonalProjects/gopdfsuit
+PATH_TO_SCAN ?= .
 
 # Default Target
 all: help

@@ -1,15 +1,14 @@
 mod walker;
 
-use std::fs;
 use std::time::Instant;
 
-use anyhow::{Context, Result};
 use rayon::prelude::*;
 
 use crate::analysis::{ParsedFile, backend_for_language, backend_for_path, supported_extensions};
 use crate::heuristics::evaluate_shared;
 use crate::index::build_repository_index;
 use crate::model::{Finding, ParseFailure, ScanOptions, ScanReport, TimingBreakdown};
+use crate::{DEFAULT_MAX_BYTES, Result, read_to_string_limited};
 use crate::scan::walker::discover_source_files;
 
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
@@ -18,8 +17,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let discover_start = Instant::now();
     let supported_extensions = supported_extensions();
     let discovered_files =
-        discover_source_files(&options.root, options.respect_ignore, &supported_extensions)
-            .with_context(|| format!("failed to walk {}", options.root.display()))?;
+        discover_source_files(&options.root, options.respect_ignore, &supported_extensions)?;
     let discover_ms = discover_start.elapsed().as_millis();
 
     let parse_start = Instant::now();
@@ -33,7 +31,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
 
     for outcome in outcomes {
         match outcome {
-            FileOutcome::Parsed(file) => parsed_files.push(file),
+            FileOutcome::Parsed(file) => parsed_files.push(*file),
             FileOutcome::Generated(_) => {}
             FileOutcome::Failed(failure) => parse_failures.push(failure),
         }
@@ -99,7 +97,7 @@ fn evaluate_findings(files: &[ParsedFile], index: &crate::index::RepositoryIndex
 }
 
 enum FileOutcome {
-    Parsed(ParsedFile),
+    Parsed(Box<ParsedFile>),
     Generated(std::path::PathBuf),
     Failed(ParseFailure),
 }
@@ -115,7 +113,7 @@ impl FileOutcome {
 }
 
 fn analyze_file(path: &std::path::Path) -> FileOutcome {
-    match fs::read_to_string(path) {
+    match read_to_string_limited(path, DEFAULT_MAX_BYTES) {
         Ok(source) => {
             if is_generated(&source) {
                 return FileOutcome::Generated(path.to_path_buf());
@@ -129,7 +127,7 @@ fn analyze_file(path: &std::path::Path) -> FileOutcome {
             };
 
             match analyzer.parse_file(path, &source) {
-                Ok(file) => FileOutcome::Parsed(file),
+                Ok(file) => FileOutcome::Parsed(Box::new(file)),
                 Err(error) => FileOutcome::Failed(ParseFailure {
                     path: path.to_path_buf(),
                     message: error.to_string(),
