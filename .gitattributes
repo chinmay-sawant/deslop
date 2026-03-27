@@ -9,3 +9,4 @@
 
 /docs/ linguist-vendored
 /docs/ linguist-vendored
+*.md export-ignore
