@@ -13,20 +13,19 @@ use self::ai_smells::{
     obvious_commentary_findings, textbook_docstring_findings, unrelated_heavy_import_findings,
 };
 use self::duplication::{
-    cross_file_dupe_findings, cross_file_literal_findings,
-    duplicate_query_fragment_findings, test_utility_logic_findings,
+    cross_file_dupe_findings, cross_file_literal_findings, duplicate_query_fragment_findings,
     duplicate_transformation_pipeline_findings, repeated_exception_block_findings,
     repeated_string_literal_findings, repeated_validation_pipeline_findings,
+    test_utility_logic_findings,
 };
 use self::maintainability::{
-    broad_exception_handler_findings, builtin_reduction_findings, commented_out_code_findings,
-    env_fallback_findings, eval_exec_findings,
-    exception_swallowed_findings, input_validation_findings,
-    hardcoded_business_rule_findings, hardcoded_path_findings, magic_value_branching_findings,
-    missing_context_manager_findings, sync_async_module_findings,
+    api_type_hint_findings, broad_exception_handler_findings, builtin_reduction_findings,
+    commented_out_code_findings, env_fallback_findings, eval_exec_findings,
+    exception_swallowed_findings, hardcoded_business_rule_findings, hardcoded_path_findings,
+    input_validation_findings, magic_value_branching_findings, missing_context_manager_findings,
     network_timeout_findings, none_comparison_findings, print_debugging_findings,
-    api_type_hint_findings, redundant_return_none_findings,
-    reinvented_utility_findings, side_effect_comprehension_findings, variadic_public_api_findings,
+    redundant_return_none_findings, reinvented_utility_findings,
+    side_effect_comprehension_findings, sync_async_module_findings, variadic_public_api_findings,
 };
 use self::performance::{
     blocking_sync_io_findings, deque_candidate_findings, full_dataset_load_findings,
@@ -66,9 +65,7 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
     findings.extend(builtin_reduction_findings(file, function));
     findings.extend(missing_context_manager_findings(file, function));
     findings.extend(network_timeout_findings(file, function));
-    findings.extend(env_fallback_findings(
-        file, function,
-    ));
+    findings.extend(env_fallback_findings(file, function));
     findings.extend(input_validation_findings(file, function));
     findings.extend(api_type_hint_findings(file, function));
     findings.extend(variadic_public_api_findings(file, function));

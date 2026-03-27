@@ -89,10 +89,7 @@ pub(super) fn collect_builtin_candidate_lines(body_node: Node<'_>, source: &str)
     lines
 }
 
-pub(super) fn collect_missing_manager_lines(
-    body_node: Node<'_>,
-    source: &str,
-) -> Vec<usize> {
+pub(super) fn collect_missing_manager_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_missing_manager_calls(body_node, source, &mut lines);
     lines.sort_unstable();

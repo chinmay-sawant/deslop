@@ -15,9 +15,8 @@ use super::phase4::{
     collect_builtin_candidate_lines, collect_class_summaries as collect_phase4_class_summaries,
     collect_deque_operation_lines, collect_exception_block_signatures,
     collect_list_materialization_lines, collect_membership_loop_lines,
-    collect_missing_manager_lines, collect_none_comparison_lines,
-    collect_recursive_call_lines, collect_return_none_lines,
-    collect_repeated_len_lines, collect_side_effect_lines,
+    collect_missing_manager_lines, collect_none_comparison_lines, collect_recursive_call_lines,
+    collect_repeated_len_lines, collect_return_none_lines, collect_side_effect_lines,
     collect_temp_collection_lines, collect_validation_signature, has_complete_type_hints,
     normalize_body, parameter_flags,
 };
@@ -279,8 +278,7 @@ fn visit_pkg_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLiter
     if matches!(node.kind(), "assignment" | "annotated_assignment")
         && is_module_level(node)
         && let Some(text) = source.get(node.byte_range())
-        && let Some(literal) =
-            named_literal_from_assignment(text, node.start_position().row + 1)
+        && let Some(literal) = named_literal_from_assignment(text, node.start_position().row + 1)
     {
         literals.push(literal);
     }
@@ -530,8 +528,7 @@ fn visit_local_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLit
 
     if matches!(node.kind(), "assignment" | "annotated_assignment")
         && let Some(text) = source.get(node.byte_range())
-        && let Some(literal) =
-            named_literal_from_assignment(text, node.start_position().row + 1)
+        && let Some(literal) = named_literal_from_assignment(text, node.start_position().row + 1)
     {
         literals.push(literal);
     }

@@ -420,10 +420,7 @@ pub(super) fn network_timeout_findings(
     }]
 }
 
-pub(super) fn env_fallback_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn env_fallback_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function || !looks_like_startup_context(file, function) {
         return Vec::new();
     }
@@ -569,10 +566,7 @@ pub(super) fn missing_context_manager_findings(
         .collect()
 }
 
-pub(super) fn api_type_hint_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn api_type_hint_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function
         || function.fingerprint.name.starts_with('_')
         || function.has_complete_type_hints
