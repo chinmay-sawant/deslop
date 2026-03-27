@@ -90,7 +90,7 @@ pub(super) fn monolithic_init_module_findings(file: &ParsedFile) -> Vec<Finding>
     }]
 }
 
-pub(super) fn too_many_instance_attributes_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(super) fn too_many_attributes_findings(file: &ParsedFile) -> Vec<Finding> {
     file.class_summaries
         .iter()
         .filter(|summary| {
@@ -408,7 +408,7 @@ pub(super) fn name_responsibility_mismatch_findings(
     }]
 }
 
-pub(super) fn module_name_responsibility_mismatch_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(super) fn module_name_mismatch_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file {
         return Vec::new();
     }

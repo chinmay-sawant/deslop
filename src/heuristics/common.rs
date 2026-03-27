@@ -18,12 +18,23 @@ const GO_BUILTINS: &[&str] = &[
     "append", "cap", "clear", "close", "complex", "copy", "delete", "imag", "len", "make", "max",
     "min", "new", "panic", "print", "println", "real", "recover",
 ];
+const PYTHON_BUILTINS: &[&str] = &[
+    "abs", "all", "any", "ascii", "bin", "bool", "breakpoint", "bytearray", "bytes", "callable",
+    "chr", "classmethod", "compile", "complex", "delattr", "dict", "dir", "divmod", "enumerate",
+    "eval", "exec", "filter", "float", "format", "frozenset", "getattr", "globals", "hasattr",
+    "hash", "help", "hex", "id", "input", "int", "isinstance", "issubclass", "iter", "len",
+    "list", "locals", "map", "max", "memoryview", "min", "next", "object", "oct", "open",
+    "ord", "pow", "print", "property", "range", "repr", "reversed", "round", "set", "setattr",
+    "slice", "sorted", "staticmethod", "str", "sum", "super", "tuple", "type", "vars", "zip",
+];
 
 pub(super) fn import_alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, String> {
-    imports
-        .iter()
-        .map(|import| (import.alias.clone(), import.path.clone()))
-        .collect()
+    let mut lookup = BTreeMap::new();
+    for import in imports {
+        lookup.insert(import.alias.clone(), import.path.clone());
+        lookup.insert(import.path.clone(), import.path.clone());
+    }
+    lookup
 }
 
 pub(super) fn normalize_name(name: &str) -> String {
@@ -63,11 +74,11 @@ pub(super) fn is_generic_name(name: &str) -> bool {
 }
 
 pub(super) fn is_builtin(name: &str) -> bool {
-    GO_BUILTINS.contains(&name)
+    GO_BUILTINS.contains(&name) || PYTHON_BUILTINS.contains(&name)
 }
 
 pub(super) fn is_global_sym(name: &str) -> bool {
-    name.chars().next().is_some_and(char::is_uppercase)
+    name.chars().next().is_some_and(|c| c.is_ascii_uppercase()) || name.contains('_')
 }
 
 pub(super) fn identifier_token_count(name: &str) -> usize {

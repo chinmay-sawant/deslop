@@ -12,7 +12,7 @@ pub(super) fn collect_none_comparison_lines(body_node: Node<'_>, source: &str) -
     lines
 }
 
-pub(super) fn collect_side_effect_comprehension_lines(body_node: Node<'_>) -> Vec<usize> {
+pub(super) fn collect_side_effect_lines(body_node: Node<'_>) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_side_effect_comprehensions(body_node, &mut lines);
     lines.sort_unstable();
@@ -20,7 +20,7 @@ pub(super) fn collect_side_effect_comprehension_lines(body_node: Node<'_>) -> Ve
     lines
 }
 
-pub(super) fn collect_redundant_return_none_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
+pub(super) fn collect_return_none_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_return_none(body_node, source, &mut lines);
     lines.sort_unstable();
@@ -64,7 +64,7 @@ pub(super) fn collect_recursive_call_lines(
     lines
 }
 
-pub(super) fn collect_list_membership_loop_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
+pub(super) fn collect_membership_loop_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let list_like_names = collect_list_like_names(body_node, source);
     let mut lines = Vec::new();
     visit_list_membership(body_node, source, &list_like_names, false, &mut lines);
@@ -73,7 +73,7 @@ pub(super) fn collect_list_membership_loop_lines(body_node: Node<'_>, source: &s
     lines
 }
 
-pub(super) fn collect_repeated_len_loop_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
+pub(super) fn collect_repeated_len_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_repeated_len_loops(body_node, source, &mut lines);
     lines.sort_unstable();
@@ -89,12 +89,12 @@ pub(super) fn collect_builtin_candidate_lines(body_node: Node<'_>, source: &str)
     lines
 }
 
-pub(super) fn collect_missing_context_manager_lines(
+pub(super) fn collect_missing_manager_lines(
     body_node: Node<'_>,
     source: &str,
 ) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_missing_context_manager_calls(body_node, source, &mut lines);
+    visit_missing_manager_calls(body_node, source, &mut lines);
     lines.sort_unstable();
     lines.dedup();
     lines
@@ -420,7 +420,7 @@ fn visit_builtin_candidates(node: Node<'_>, source: &str, lines: &mut Vec<usize>
     }
 }
 
-fn visit_missing_context_manager_calls(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
+fn visit_missing_manager_calls(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
     if should_skip_nested_scope(node) {
         return;
     }
@@ -429,14 +429,14 @@ fn visit_missing_context_manager_calls(node: Node<'_>, source: &str, lines: &mut
         && !is_inside_with(node)
         && let Some(function_node) = node.child_by_field_name("function")
         && let Some(target_text) = source.get(function_node.byte_range())
-        && looks_like_context_manager_candidate(target_text)
+        && looks_like_manager_candidate(target_text)
     {
         lines.push(node.start_position().row + 1);
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_missing_context_manager_calls(child, source, lines);
+        visit_missing_manager_calls(child, source, lines);
     }
 }
 
@@ -753,7 +753,7 @@ fn looks_like_builtin_reduction(text: &str) -> bool {
         || (normalized.contains("returnFalse") && normalized.contains("returnTrue"))
 }
 
-fn looks_like_context_manager_candidate(target_text: &str) -> bool {
+fn looks_like_manager_candidate(target_text: &str) -> bool {
     let normalized = target_text.trim();
     normalized == "open"
         || normalized.ends_with(".open")

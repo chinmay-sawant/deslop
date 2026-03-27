@@ -125,7 +125,7 @@ pub(super) fn repeated_validation_pipeline_findings(file: &ParsedFile) -> Vec<Fi
         .collect()
 }
 
-pub(super) fn duplicate_test_utility_logic_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+pub(super) fn test_utility_logic_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut shapes = BTreeMap::<String, Vec<(&ParsedFile, String, usize, bool)>>::new();
 
     for file in files {
@@ -173,7 +173,7 @@ pub(super) fn duplicate_test_utility_logic_findings(files: &[&ParsedFile]) -> Ve
     findings
 }
 
-pub(super) fn cross_file_copy_paste_function_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+pub(super) fn cross_file_dupe_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut shapes = BTreeMap::<String, Vec<(&ParsedFile, String, usize)>>::new();
 
     for file in files {
@@ -246,7 +246,7 @@ pub(super) fn duplicate_transformation_pipeline_findings(files: &[&ParsedFile]) 
                 continue;
             }
 
-            let Some(signature) = transformation_pipeline_signature(file, function) else {
+            let Some(signature) = transform_pipeline_sig(file, function) else {
                 continue;
             };
             pipelines.entry(signature).or_default().push((
@@ -291,7 +291,7 @@ pub(super) fn duplicate_transformation_pipeline_findings(files: &[&ParsedFile]) 
     findings
 }
 
-pub(super) fn cross_file_repeated_literal_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+pub(super) fn cross_file_literal_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut occurrences: BTreeMap<String, Vec<(&ParsedFile, usize)>> = BTreeMap::new();
     for file in files {
         if file.is_test_file {
@@ -347,7 +347,7 @@ pub(super) fn cross_file_repeated_literal_findings(files: &[&ParsedFile]) -> Vec
 pub(super) fn duplicate_query_fragment_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut occurrences: BTreeMap<String, Vec<(&ParsedFile, usize, String)>> = BTreeMap::new();
     for file in files {
-        if file.is_test_file || should_skip_query_fragment_file(file) {
+        if file.is_test_file || skip_query_fragment_file(&file.path) {
             continue;
         }
 
@@ -406,7 +406,7 @@ fn literal_iter(file: &ParsedFile) -> impl Iterator<Item = &NamedLiteral> {
     )
 }
 
-fn transformation_pipeline_signature(
+fn transform_pipeline_sig(
     file: &ParsedFile,
     function: &crate::analysis::ParsedFunction,
 ) -> Option<String> {
@@ -512,8 +512,9 @@ fn stage_name_matches(call_name: &str, prefixes: &[&str]) -> bool {
         .any(|prefix| call_name == *prefix || call_name.starts_with(&format!("{prefix}_")))
 }
 
-fn should_skip_query_fragment_file(file: &ParsedFile) -> bool {
-    file.path.components().any(|component| {
+use std::path::Path;
+fn skip_query_fragment_file(path: &Path) -> bool {
+    path.components().any(|component| {
         let part = component.as_os_str().to_string_lossy().to_ascii_lowercase();
         matches!(
             part.as_str(),

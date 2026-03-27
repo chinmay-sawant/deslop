@@ -383,7 +383,7 @@ pub(super) fn builtin_reduction_findings(
         .collect()
 }
 
-pub(super) fn network_boundary_without_timeout_findings(
+pub(super) fn network_timeout_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
@@ -420,7 +420,7 @@ pub(super) fn network_boundary_without_timeout_findings(
     }]
 }
 
-pub(super) fn environment_boundary_without_fallback_findings(
+pub(super) fn env_fallback_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
@@ -462,13 +462,13 @@ pub(super) fn environment_boundary_without_fallback_findings(
     }]
 }
 
-pub(super) fn external_input_without_validation_findings(
+pub(super) fn input_validation_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     if function.is_test_function
         || function.fingerprint.complexity_score > 1
-        || !looks_like_input_boundary_context(file, function)
+        || !is_input_boundary(file, function)
     {
         return Vec::new();
     }
@@ -569,7 +569,7 @@ pub(super) fn missing_context_manager_findings(
         .collect()
 }
 
-pub(super) fn public_api_missing_type_hints_findings(
+pub(super) fn api_type_hint_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
@@ -603,7 +603,7 @@ pub(super) fn commented_out_code_findings(file: &ParsedFile) -> Vec<Finding> {
     let suspicious_comments = file
         .comments
         .iter()
-        .filter(|comment| looks_like_commented_out_code(&comment.text))
+        .filter(|comment| is_commented_code(&comment.text))
         .collect::<Vec<_>>();
     if suspicious_comments.is_empty() {
         return Vec::new();
@@ -625,7 +625,7 @@ pub(super) fn commented_out_code_findings(file: &ParsedFile) -> Vec<Finding> {
     }]
 }
 
-pub(super) fn mixed_sync_async_module_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(super) fn sync_async_module_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file
         || !file
             .imports
@@ -702,7 +702,7 @@ fn has_path_like_suffix(value: &str) -> bool {
     .any(|suffix| value.ends_with(suffix))
 }
 
-fn looks_like_commented_out_code(text: &str) -> bool {
+fn is_commented_code(text: &str) -> bool {
     let normalized = text.trim();
     normalized.starts_with("if ")
         || normalized.starts_with("for ")
@@ -769,7 +769,7 @@ fn looks_like_startup_context(file: &ParsedFile, function: &ParsedFunction) -> b
     function_or_path_matches(file, function, &markers)
 }
 
-fn looks_like_input_boundary_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
+fn is_input_boundary(file: &ParsedFile, function: &ParsedFunction) -> bool {
     let markers = [
         "cli", "command", "handler", "request", "ingest", "import", "parse",
     ];
