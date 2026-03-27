@@ -88,6 +88,75 @@ const PYTHON_BUILTINS: &[&str] = &[
     "vars",
     "zip",
 ];
+const PYTHON_BUILTIN_EXCEPTIONS: &[&str] = &[
+    "ArithmeticError",
+    "AssertionError",
+    "AttributeError",
+    "BaseException",
+    "BlockingIOError",
+    "BrokenPipeError",
+    "BufferError",
+    "BytesWarning",
+    "ChildProcessError",
+    "ConnectionAbortedError",
+    "ConnectionError",
+    "ConnectionRefusedError",
+    "ConnectionResetError",
+    "DeprecationWarning",
+    "EOFError",
+    "EnvironmentError",
+    "Exception",
+    "FileExistsError",
+    "FileNotFoundError",
+    "FloatingPointError",
+    "FutureWarning",
+    "GeneratorExit",
+    "IOError",
+    "ImportError",
+    "ImportWarning",
+    "IndentationError",
+    "IndexError",
+    "InterruptedError",
+    "IsADirectoryError",
+    "KeyError",
+    "KeyboardInterrupt",
+    "LookupError",
+    "MemoryError",
+    "ModuleNotFoundError",
+    "NameError",
+    "NotADirectoryError",
+    "NotImplementedError",
+    "OSError",
+    "OverflowError",
+    "PendingDeprecationWarning",
+    "PermissionError",
+    "ProcessLookupError",
+    "RecursionError",
+    "ReferenceError",
+    "ResourceWarning",
+    "RuntimeError",
+    "RuntimeWarning",
+    "StopAsyncIteration",
+    "StopIteration",
+    "SyntaxError",
+    "SyntaxWarning",
+    "SystemError",
+    "SystemExit",
+    "TabError",
+    "TimeoutError",
+    "TypeError",
+    "UnboundLocalError",
+    "UnicodeDecodeError",
+    "UnicodeEncodeError",
+    "UnicodeError",
+    "UnicodeTranslateError",
+    "UnicodeWarning",
+    "UserWarning",
+    "ValueError",
+    "Warning",
+    "WindowsError",
+    "ZeroDivisionError",
+];
 
 pub(super) fn import_alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, String> {
     let mut lookup = BTreeMap::new();
@@ -135,7 +204,9 @@ pub(super) fn is_generic_name(name: &str) -> bool {
 }
 
 pub(super) fn is_builtin(name: &str) -> bool {
-    GO_BUILTINS.contains(&name) || PYTHON_BUILTINS.contains(&name)
+    GO_BUILTINS.contains(&name)
+        || PYTHON_BUILTINS.contains(&name)
+        || PYTHON_BUILTIN_EXCEPTIONS.contains(&name)
 }
 
 pub(super) fn is_global_sym(name: &str) -> bool {
