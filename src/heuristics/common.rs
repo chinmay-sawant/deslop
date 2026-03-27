@@ -78,7 +78,7 @@ pub(super) fn is_builtin(name: &str) -> bool {
 }
 
 pub(super) fn is_global_sym(name: &str) -> bool {
-    name.chars().next().is_some_and(|c| c.is_ascii_uppercase()) || name.contains('_')
+    name.chars().next().is_some_and(char::is_uppercase)
 }
 
 pub(super) fn identifier_token_count(name: &str) -> usize {

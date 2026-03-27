@@ -1568,10 +1568,10 @@ def do_work():
     pkg.target.imaginary_function()
 
 def do_local_work():
-    real_local_function()
-    fake_local_function()
+    RealLocalFunction()
+    FakeLocalFunction()
 
-def real_local_function():
+def RealLocalFunction():
     pass
 "#,
     );
@@ -1596,8 +1596,8 @@ def real_local_function():
             .findings
             .iter()
             .any(|finding| finding.rule_id == "hallucinated_local_call"
-                && finding.message.contains("fake_local_function")),
-        "expected hallucinated_local_call to fire for fake_local_function"
+                && finding.message.contains("FakeLocalFunction")),
+        "expected hallucinated_local_call to fire for FakeLocalFunction"
     );
 
     // Ensure we don't fire for valid calls:
@@ -1615,8 +1615,8 @@ def real_local_function():
             .findings
             .iter()
             .any(|finding| finding.rule_id == "hallucinated_local_call"
-                && finding.message.contains("real_local_function")),
-        "did not expect finding for real_local_function"
+                && finding.message.contains("RealLocalFunction")),
+        "did not expect finding for RealLocalFunction"
     );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
