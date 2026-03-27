@@ -19,6 +19,7 @@ test:
 # Check code for linting issues using clippy
 lint:
 	cargo clippy --all-targets --all-features
+	cargo fmt
 
 # Apply code formatting
 fmt:

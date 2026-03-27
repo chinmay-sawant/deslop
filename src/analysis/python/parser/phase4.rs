@@ -20,10 +20,7 @@ pub(super) fn collect_side_effect_comprehension_lines(body_node: Node<'_>) -> Ve
     lines
 }
 
-pub(super) fn collect_redundant_return_none_lines(
-    body_node: Node<'_>,
-    source: &str,
-) -> Vec<usize> {
+pub(super) fn collect_redundant_return_none_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_return_none(body_node, source, &mut lines);
     lines.sort_unstable();
@@ -31,10 +28,7 @@ pub(super) fn collect_redundant_return_none_lines(
     lines
 }
 
-pub(super) fn collect_list_materialization_lines(
-    body_node: Node<'_>,
-    source: &str,
-) -> Vec<usize> {
+pub(super) fn collect_list_materialization_lines(body_node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
     visit_list_materializations(body_node, source, &mut lines);
     lines.sort_unstable();
@@ -321,7 +315,8 @@ fn visit_temp_collections(node: Node<'_>, source: &str, inside_loop: bool, lines
         return;
     }
 
-    let next_inside_loop = inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
+    let next_inside_loop =
+        inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
     if next_inside_loop
         && matches!(node.kind(), "assignment" | "annotated_assignment")
         && let Some(text) = source.get(node.byte_range())
@@ -373,7 +368,8 @@ fn visit_list_membership(
         return;
     }
 
-    let next_inside_loop = inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
+    let next_inside_loop =
+        inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
     if next_inside_loop
         && node.kind().contains("comparison")
         && let Some(text) = source.get(node.byte_range())
@@ -548,17 +544,15 @@ fn direct_method_node(node: Node<'_>) -> Option<Node<'_>> {
     }
 }
 
-fn collect_self_attribute_writes(
-    node: Node<'_>,
-    source: &str,
-    attributes: &mut BTreeSet<String>,
-) {
+fn collect_self_attribute_writes(node: Node<'_>, source: &str, attributes: &mut BTreeSet<String>) {
     if should_skip_nested_scope(node) {
         return;
     }
 
-    if matches!(node.kind(), "assignment" | "annotated_assignment" | "augmented_assignment")
-        && let Some(text) = source.get(node.byte_range())
+    if matches!(
+        node.kind(),
+        "assignment" | "annotated_assignment" | "augmented_assignment"
+    ) && let Some(text) = source.get(node.byte_range())
         && let Some(left) = assignment_left(text)
     {
         for target in left.split(',') {
@@ -689,7 +683,8 @@ fn is_list_membership_comparison(text: &str, list_like_names: &BTreeSet<String>)
     }
 
     list_like_names.iter().any(|name| {
-        normalized.contains(&format!(" in {name}")) || normalized.contains(&format!(" not in {name}"))
+        normalized.contains(&format!(" in {name}"))
+            || normalized.contains(&format!(" not in {name}"))
     })
 }
 
@@ -805,8 +800,10 @@ fn looks_like_constructor_call(text: &str) -> bool {
     let Some(target) = normalized.split('(').next() else {
         return false;
     };
-    !matches!(target, "list" | "dict" | "set" | "tuple" | "str" | "int" | "float" | "bool")
-        && !target.starts_with("self.")
+    !matches!(
+        target,
+        "list" | "dict" | "set" | "tuple" | "str" | "int" | "float" | "bool"
+    ) && !target.starts_with("self.")
 }
 
 fn normalize_shape(text: &str) -> String {

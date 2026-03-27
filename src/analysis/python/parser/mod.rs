@@ -1,7 +1,7 @@
 mod comments;
 mod general;
-mod phase4;
 mod performance;
+mod phase4;
 #[cfg(test)]
 mod tests;
 

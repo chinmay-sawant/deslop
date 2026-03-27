@@ -322,7 +322,10 @@ fn test_python_phase4_rules() {
         "duplicate_validation_pipeline",
     ] {
         assert!(
-            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "expected rule {rule_id} to fire"
         );
     }
@@ -382,7 +385,10 @@ fn test_python_phase4_suppressions() {
         "duplicate_validation_pipeline",
     ] {
         assert!(
-            !report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "did not expect rule {rule_id} to fire"
         );
     }
@@ -512,7 +518,10 @@ def normalize_payload(payload):
         "cross_file_repeated_literal",
     ] {
         assert!(
-            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "expected repo rule {rule_id} to fire"
         );
     }
@@ -572,7 +581,10 @@ class HeavyState:
         .expect("expected too_many_instance_attributes finding");
     assert!(matches!(finding.severity, Severity::Warning));
     assert!(
-        finding.evidence.iter().any(|evidence| evidence == "tier=20_plus"),
+        finding
+            .evidence
+            .iter()
+            .any(|evidence| evidence == "tier=20_plus"),
         "expected the escalated 20-plus evidence tier"
     );
 
@@ -1225,7 +1237,10 @@ def flatten_batches(batches):
         "reinvented_utility",
     ] {
         assert!(
-            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "expected rule {rule_id} to fire"
         );
     }
@@ -1288,7 +1303,10 @@ def flatten_batches(batches):
         "reinvented_utility",
     ] {
         assert!(
-            !report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "did not expect rule {rule_id} to fire"
         );
     }
@@ -1346,7 +1364,10 @@ def run_cli():
         "external_input_without_validation",
     ] {
         assert!(
-            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "expected rule {rule_id} to fire"
         );
     }
@@ -1408,7 +1429,10 @@ def run_cli():
         "external_input_without_validation",
     ] {
         assert!(
-            !report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "did not expect rule {rule_id} to fire"
         );
     }
@@ -1562,8 +1586,8 @@ def real_local_function():
         report
             .findings
             .iter()
-            .any(|finding| finding.rule_id == "hallucinated_import_call" 
-                 && finding.message.contains("imaginary_function")),
+            .any(|finding| finding.rule_id == "hallucinated_import_call"
+                && finding.message.contains("imaginary_function")),
         "expected hallucinated_import_call to fire for imaginary_function"
     );
 
@@ -1572,17 +1596,17 @@ def real_local_function():
             .findings
             .iter()
             .any(|finding| finding.rule_id == "hallucinated_local_call"
-                 && finding.message.contains("fake_local_function")),
+                && finding.message.contains("fake_local_function")),
         "expected hallucinated_local_call to fire for fake_local_function"
     );
-    
+
     // Ensure we don't fire for valid calls:
     assert!(
         !report
             .findings
             .iter()
-            .any(|finding| finding.rule_id == "hallucinated_import_call" 
-                 && finding.message.contains("existing_function")),
+            .any(|finding| finding.rule_id == "hallucinated_import_call"
+                && finding.message.contains("existing_function")),
         "did not expect finding for existing_function"
     );
 
@@ -1591,7 +1615,7 @@ def real_local_function():
             .findings
             .iter()
             .any(|finding| finding.rule_id == "hallucinated_local_call"
-                 && finding.message.contains("real_local_function")),
+                && finding.message.contains("real_local_function")),
         "did not expect finding for real_local_function"
     );
 

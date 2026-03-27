@@ -71,8 +71,7 @@ pub(super) fn mixed_naming_convention_findings(file: &ParsedFile) -> Vec<Finding
         function_name: None,
         start_line,
         end_line: start_line,
-        message: "file mixes snake_case and camelCase function naming conventions"
-            .to_string(),
+        message: "file mixes snake_case and camelCase function naming conventions".to_string(),
         evidence: vec![
             format!(
                 "snake_case examples: {}",
@@ -131,7 +130,8 @@ pub(super) fn unrelated_heavy_import_findings(file: &ParsedFile) -> Vec<Finding>
         function_name: None,
         start_line: 1,
         end_line: 1,
-        message: "file imports heavy ecosystems that show little local evidence of need".to_string(),
+        message: "file imports heavy ecosystems that show little local evidence of need"
+            .to_string(),
         evidence: unused_heavy_imports
             .iter()
             .take(3)
@@ -161,8 +161,7 @@ pub(super) fn obvious_commentary_findings(file: &ParsedFile) -> Vec<Finding> {
         function_name: None,
         start_line: comments[0].line,
         end_line: comments[0].line,
-        message: "file contains comments that narrate obvious implementation steps"
-            .to_string(),
+        message: "file contains comments that narrate obvious implementation steps".to_string(),
         evidence: comments
             .iter()
             .take(3)
@@ -208,10 +207,18 @@ enum NamingStyle {
 }
 
 fn naming_style(name: &str) -> Option<NamingStyle> {
-    if name.starts_with('_') || name.chars().all(|character| !character.is_ascii_alphabetic()) {
+    if name.starts_with('_')
+        || name
+            .chars()
+            .all(|character| !character.is_ascii_alphabetic())
+    {
         return None;
     }
-    if name.chars().all(|character| !character.is_ascii_uppercase()) && name.contains('_') {
+    if name
+        .chars()
+        .all(|character| !character.is_ascii_uppercase())
+        && name.contains('_')
+    {
         return Some(NamingStyle::Snake);
     }
 

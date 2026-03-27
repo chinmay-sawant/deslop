@@ -10,6 +10,7 @@ use crate::analysis::{
 use crate::model::{FunctionFingerprint, SymbolKind};
 
 use super::comments::{extract_docstring, parse_string_literal_text};
+use super::performance::collect_concat_loops;
 use super::phase4::{
     collect_builtin_candidate_lines, collect_class_summaries as collect_phase4_class_summaries,
     collect_deque_operation_lines, collect_exception_block_signatures,
@@ -20,7 +21,6 @@ use super::phase4::{
     collect_temp_collection_lines, collect_validation_signature, has_complete_type_hints,
     normalize_body, parameter_flags,
 };
-use super::performance::collect_concat_loops;
 
 pub(super) fn is_test_file(path: &Path) -> bool {
     let file_name = path

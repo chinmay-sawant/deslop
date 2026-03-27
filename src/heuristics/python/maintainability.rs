@@ -88,7 +88,10 @@ pub(super) fn print_debugging_findings(
         .collect()
 }
 
-pub(super) fn none_comparison_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn none_comparison_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -161,13 +164,17 @@ pub(super) fn redundant_return_none_findings(
                 "function {} returns None explicitly where falling through would be clearer",
                 function.fingerprint.name
             ),
-            evidence: vec!["explicit return None can add noise in simple Python control flow"
-                .to_string()],
+            evidence: vec![
+                "explicit return None can add noise in simple Python control flow".to_string(),
+            ],
         })
         .collect()
 }
 
-pub(super) fn hardcoded_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn hardcoded_path_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -368,8 +375,10 @@ pub(super) fn builtin_reduction_findings(
                 "function {} uses a loop shape that may read better with a Python built-in",
                 function.fingerprint.name
             ),
-            evidence: vec!["consider any(), all(), or sum() when the loop is only aggregating a result"
-                .to_string()],
+            evidence: vec![
+                "consider any(), all(), or sum() when the loop is only aggregating a result"
+                    .to_string(),
+            ],
         })
         .collect()
 }
@@ -553,8 +562,9 @@ pub(super) fn missing_context_manager_findings(
                 "function {} opens or acquires a resource without an obvious context manager",
                 function.fingerprint.name
             ),
-            evidence: vec!["prefer with statements for file handles, locks, and similar resources"
-                .to_string()],
+            evidence: vec![
+                "prefer with statements for file handles, locks, and similar resources".to_string(),
+            ],
         })
         .collect()
 }
@@ -616,7 +626,12 @@ pub(super) fn commented_out_code_findings(file: &ParsedFile) -> Vec<Finding> {
 }
 
 pub(super) fn mixed_sync_async_module_findings(file: &ParsedFile) -> Vec<Finding> {
-    if file.is_test_file || !file.imports.iter().any(|import| import.path.starts_with("asyncio")) {
+    if file.is_test_file
+        || !file
+            .imports
+            .iter()
+            .any(|import| import.path.starts_with("asyncio"))
+    {
         return Vec::new();
     }
 
@@ -680,8 +695,8 @@ fn looks_like_hardcoded_path(value: &str) -> bool {
 
 fn has_path_like_suffix(value: &str) -> bool {
     [
-        ".json", ".yaml", ".yml", ".txt", ".csv", ".db", ".sqlite", ".ini", ".cfg",
-        ".conf", ".pem", ".log",
+        ".json", ".yaml", ".yml", ".txt", ".csv", ".db", ".sqlite", ".ini", ".cfg", ".conf",
+        ".pem", ".log",
     ]
     .iter()
     .any(|suffix| value.ends_with(suffix))
@@ -699,22 +714,52 @@ fn looks_like_commented_out_code(text: &str) -> bool {
         || normalized.starts_with("except ")
         || (normalized.contains('=')
             && normalized.contains('(')
-            && normalized.chars().any(|character| character.is_ascii_alphabetic()))
+            && normalized
+                .chars()
+                .any(|character| character.is_ascii_alphabetic()))
 }
 
 fn looks_like_business_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
     let markers = [
-        "eligib", "discount", "pricing", "price", "risk", "approve", "approval", "tier",
-        "quota", "commission", "policy", "status", "fraud", "score",
+        "eligib",
+        "discount",
+        "pricing",
+        "price",
+        "risk",
+        "approve",
+        "approval",
+        "tier",
+        "quota",
+        "commission",
+        "policy",
+        "status",
+        "fraud",
+        "score",
     ];
     function_or_path_matches(file, function, &markers)
 }
 
 fn looks_like_boundary_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
     let markers = [
-        "handler", "endpoint", "route", "view", "controller", "cli", "command", "main",
-        "sync", "fetch", "publish", "process", "ingest", "import", "export", "job",
-        "startup", "bootstrap", "config",
+        "handler",
+        "endpoint",
+        "route",
+        "view",
+        "controller",
+        "cli",
+        "command",
+        "main",
+        "sync",
+        "fetch",
+        "publish",
+        "process",
+        "ingest",
+        "import",
+        "export",
+        "job",
+        "startup",
+        "bootstrap",
+        "config",
     ];
     function_or_path_matches(file, function, &markers)
 }
@@ -725,7 +770,9 @@ fn looks_like_startup_context(file: &ParsedFile, function: &ParsedFunction) -> b
 }
 
 fn looks_like_input_boundary_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
-    let markers = ["cli", "command", "handler", "request", "ingest", "import", "parse"];
+    let markers = [
+        "cli", "command", "handler", "request", "ingest", "import", "parse",
+    ];
     function_or_path_matches(file, function, &markers)
 }
 
@@ -739,11 +786,11 @@ fn function_or_path_matches(
         return true;
     }
 
-    if file
-        .package_name
-        .as_deref()
-        .is_some_and(|name| markers.iter().any(|marker| name.to_ascii_lowercase().contains(marker)))
-    {
+    if file.package_name.as_deref().is_some_and(|name| {
+        markers
+            .iter()
+            .any(|marker| name.to_ascii_lowercase().contains(marker))
+    }) {
         return true;
     }
 
@@ -825,7 +872,9 @@ fn extract_numeric_literals(line: &str) -> Vec<String> {
 fn flush_numeric_literal(current: &mut String, literals: &mut Vec<String>) {
     let token = current.trim_matches('.');
     if !token.is_empty()
-        && token.chars().all(|character| character.is_ascii_digit() || character == '.')
+        && token
+            .chars()
+            .all(|character| character.is_ascii_digit() || character == '.')
         && token.chars().any(|character| character.is_ascii_digit())
     {
         literals.push(token.to_string());
@@ -835,7 +884,9 @@ fn flush_numeric_literal(current: &mut String, literals: &mut Vec<String>) {
 
 fn is_policy_literal(literal: &str) -> bool {
     let lower = literal.to_ascii_lowercase();
-    lower.parse::<f64>().is_ok_and(|value| value >= 0.0 && (value.fract() != 0.0 || value >= 20.0))
+    lower
+        .parse::<f64>()
+        .is_ok_and(|value| value >= 0.0 && (value.fract() != 0.0 || value >= 20.0))
         || matches!(
             lower.as_str(),
             "approved"
@@ -884,7 +935,10 @@ fn http_boundary_calls(file: &ParsedFile, function: &ParsedFunction) -> Vec<Stri
             (import_path.starts_with("requests")
                 || import_path.starts_with("httpx")
                 || import_path.starts_with("urllib")
-                || matches!(call.name.as_str(), "get" | "post" | "put" | "patch" | "delete" | "request"))
+                || matches!(
+                    call.name.as_str(),
+                    "get" | "post" | "put" | "patch" | "delete" | "request"
+                ))
             .then(|| call.name.clone())
         })
         .collect()

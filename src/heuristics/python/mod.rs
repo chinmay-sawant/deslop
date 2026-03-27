@@ -9,28 +9,24 @@ use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
 use self::ai_smells::{
-    mixed_naming_convention_findings, obvious_commentary_findings,
-    textbook_docstring_findings, enthusiastic_commentary_findings,
-    unrelated_heavy_import_findings,
+    enthusiastic_commentary_findings, mixed_naming_convention_findings,
+    obvious_commentary_findings, textbook_docstring_findings, unrelated_heavy_import_findings,
 };
 use self::duplication::{
     cross_file_copy_paste_function_findings, cross_file_repeated_literal_findings,
     duplicate_query_fragment_findings, duplicate_test_utility_logic_findings,
-    duplicate_transformation_pipeline_findings,
-    repeated_exception_block_findings, repeated_string_literal_findings,
-    repeated_validation_pipeline_findings,
+    duplicate_transformation_pipeline_findings, repeated_exception_block_findings,
+    repeated_string_literal_findings, repeated_validation_pipeline_findings,
 };
 use self::maintainability::{
     broad_exception_handler_findings, builtin_reduction_findings, commented_out_code_findings,
     environment_boundary_without_fallback_findings, eval_exec_findings,
     exception_swallowed_findings, external_input_without_validation_findings,
-    hardcoded_business_rule_findings, hardcoded_path_findings,
-    magic_value_branching_findings, network_boundary_without_timeout_findings,
+    hardcoded_business_rule_findings, hardcoded_path_findings, magic_value_branching_findings,
     missing_context_manager_findings, mixed_sync_async_module_findings,
-    none_comparison_findings, print_debugging_findings, public_api_missing_type_hints_findings,
-    reinvented_utility_findings,
-    redundant_return_none_findings, side_effect_comprehension_findings,
-    variadic_public_api_findings,
+    network_boundary_without_timeout_findings, none_comparison_findings, print_debugging_findings,
+    public_api_missing_type_hints_findings, redundant_return_none_findings,
+    reinvented_utility_findings, side_effect_comprehension_findings, variadic_public_api_findings,
 };
 use self::performance::{
     blocking_sync_io_findings, deque_candidate_findings, full_dataset_load_findings,
@@ -39,9 +35,9 @@ use self::performance::{
 };
 use self::structure::{
     deep_inheritance_findings, eager_constructor_collaborator_findings, god_class_findings,
-    god_function_findings, mixed_concern_findings, monolithic_init_module_findings,
-    monolithic_module_findings, name_responsibility_mismatch_findings,
-    module_name_responsibility_mismatch_findings, over_abstracted_wrapper_findings,
+    god_function_findings, mixed_concern_findings, module_name_responsibility_mismatch_findings,
+    monolithic_init_module_findings, monolithic_module_findings,
+    name_responsibility_mismatch_findings, over_abstracted_wrapper_findings,
     tight_module_coupling_findings, too_many_instance_attributes_findings,
 };
 
@@ -70,7 +66,9 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
     findings.extend(builtin_reduction_findings(file, function));
     findings.extend(missing_context_manager_findings(file, function));
     findings.extend(network_boundary_without_timeout_findings(file, function));
-    findings.extend(environment_boundary_without_fallback_findings(file, function));
+    findings.extend(environment_boundary_without_fallback_findings(
+        file, function,
+    ));
     findings.extend(external_input_without_validation_findings(file, function));
     findings.extend(public_api_missing_type_hints_findings(file, function));
     findings.extend(variadic_public_api_findings(file, function));

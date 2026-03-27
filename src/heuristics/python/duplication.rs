@@ -399,9 +399,11 @@ pub(super) fn duplicate_query_fragment_findings(files: &[&ParsedFile]) -> Vec<Fi
 }
 
 fn literal_iter(file: &ParsedFile) -> impl Iterator<Item = &NamedLiteral> {
-    file.pkg_strings
-        .iter()
-        .chain(file.functions.iter().flat_map(|function| function.local_strings.iter()))
+    file.pkg_strings.iter().chain(
+        file.functions
+            .iter()
+            .flat_map(|function| function.local_strings.iter()),
+    )
 }
 
 fn transformation_pipeline_signature(
@@ -488,7 +490,14 @@ fn classify_pipeline_stage(import_path: &str, call_name: &str) -> Option<&'stati
     if normalized_import.starts_with("json")
         || stage_name_matches(
             &normalized_call,
-            &["dump", "dumps", "serialize", "render", "write", "write_text"],
+            &[
+                "dump",
+                "dumps",
+                "serialize",
+                "render",
+                "write",
+                "write_text",
+            ],
         )
     {
         return Some("serialize");
@@ -498,14 +507,18 @@ fn classify_pipeline_stage(import_path: &str, call_name: &str) -> Option<&'stati
 }
 
 fn stage_name_matches(call_name: &str, prefixes: &[&str]) -> bool {
-    prefixes.iter().any(|prefix| call_name == *prefix || call_name.starts_with(&format!("{prefix}_")))
+    prefixes
+        .iter()
+        .any(|prefix| call_name == *prefix || call_name.starts_with(&format!("{prefix}_")))
 }
 
 fn should_skip_query_fragment_file(file: &ParsedFile) -> bool {
     file.path.components().any(|component| {
         let part = component.as_os_str().to_string_lossy().to_ascii_lowercase();
-        matches!(part.as_str(), "migration" | "migrations" | "alembic" | "versions")
-            || part.starts_with("migration_")
+        matches!(
+            part.as_str(),
+            "migration" | "migrations" | "alembic" | "versions"
+        ) || part.starts_with("migration_")
             || part.ends_with("_migration.py")
             || part.ends_with("_migrations.py")
     })
@@ -519,8 +532,8 @@ fn normalize_query_fragment(value: &str) -> Option<String> {
 
     let upper = collapsed.to_ascii_uppercase();
     let keyword_count = [
-        "SELECT", "FROM", "WHERE", "JOIN", "UPDATE", "INSERT", "DELETE", "ORDER BY",
-        "GROUP BY", "LIMIT",
+        "SELECT", "FROM", "WHERE", "JOIN", "UPDATE", "INSERT", "DELETE", "ORDER BY", "GROUP BY",
+        "LIMIT",
     ]
     .into_iter()
     .filter(|keyword| upper.contains(keyword))
