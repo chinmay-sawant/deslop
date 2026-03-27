@@ -27,7 +27,9 @@ pub(super) fn hallucination_findings(
                 if let Some(import_path) = import_aliases.get(receiver) {
                     match index.resolve_import_path(file.language, import_path) {
                         ImportResolution::Resolved(target_package) => {
-                            if !target_package.has_function(&call.name) {
+                            if !(target_package.has_function(&call.name)
+                                || target_package.has_symbol(&call.name))
+                            {
                                 findings.push(Finding {
                                     rule_id: "hallucinated_import_call".to_string(),
                                     severity: Severity::Warning,
@@ -71,7 +73,51 @@ pub(super) fn hallucination_findings(
                     continue;
                 }
 
-                if !current_package.has_function(&call.name) {
+                if let Some(import_path) = import_aliases.get(&call.name) {
+                    match index.resolve_import_path(file.language, import_path) {
+                        ImportResolution::Resolved(target_package) => {
+                            let imported_name = import_path
+                                .rsplit('.')
+                                .next()
+                                .unwrap_or(call.name.as_str());
+                            if target_package.has_function(imported_name)
+                                || target_package.has_symbol(imported_name)
+                            {
+                                continue;
+                            }
+
+                            findings.push(Finding {
+                                rule_id: "hallucinated_import_call".to_string(),
+                                severity: Severity::Warning,
+                                path: file.path.clone(),
+                                function_name: Some(function.fingerprint.name.clone()),
+                                start_line: call.line,
+                                end_line: call.line,
+                                message: format!(
+                                    "call to {} has no matching imported symbol in locally indexed package {}",
+                                    call.name, import_path
+                                ),
+                                evidence: vec![
+                                    format!("import alias {} resolves to {}", call.name, import_path),
+                                    format!(
+                                        "locally indexed package {} in {} does not expose {}",
+                                        target_package.package_name,
+                                        target_package.directory_display(),
+                                        imported_name
+                                    ),
+                                ],
+                            });
+                            continue;
+                        }
+                        ImportResolution::Ambiguous(_) | ImportResolution::Unresolved => {
+                            continue;
+                        }
+                    }
+                }
+
+                if !(current_package.has_function(&call.name)
+                    || current_package.has_symbol(&call.name))
+                {
                     findings.push(Finding {
                         rule_id: "hallucinated_local_call".to_string(),
                         severity: Severity::Info,

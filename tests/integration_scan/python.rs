@@ -1555,6 +1555,9 @@ fn test_python_hallucination_rule() {
         r#"
 def existing_function():
     pass
+
+class RealImportedClass:
+    pass
 "#,
     );
     write_fixture(
@@ -1562,14 +1565,34 @@ def existing_function():
         "pkg/caller.py",
         r#"
 import pkg.target
+from pathlib import Path
+from third_party import ThirdPartyClient
+from pkg.target import RealImportedClass, MissingImportedClass
+from dataclasses import dataclass
+
+@dataclass
+class SessionBundle:
+    name: str = "snapback"
+
+class SnapBackTranscriptionClient:
+    pass
 
 def do_work():
     pkg.target.existing_function()
     pkg.target.imaginary_function()
+    pkg.target.RealImportedClass()
+    pkg.target.MissingQualifiedClass()
 
 def do_local_work():
     RealLocalFunction()
     FakeLocalFunction()
+    RealImportedClass()
+    MissingImportedClass()
+    Path("notes.md")
+    ThirdPartyClient()
+    RuntimeError("boom")
+    SessionBundle()
+    SnapBackTranscriptionClient()
 
 def RealLocalFunction():
     pass
@@ -1595,6 +1618,24 @@ def RealLocalFunction():
         report
             .findings
             .iter()
+            .any(|finding| finding.rule_id == "hallucinated_import_call"
+                && finding.message.contains("MissingQualifiedClass")),
+        "expected hallucinated_import_call to fire for MissingQualifiedClass"
+    );
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hallucinated_import_call"
+                && finding.message.contains("MissingImportedClass")),
+        "expected hallucinated_import_call to fire for MissingImportedClass"
+    );
+
+    assert!(
+        report
+            .findings
+            .iter()
             .any(|finding| finding.rule_id == "hallucinated_local_call"
                 && finding.message.contains("FakeLocalFunction")),
         "expected hallucinated_local_call to fire for FakeLocalFunction"
@@ -1614,9 +1655,63 @@ def RealLocalFunction():
         !report
             .findings
             .iter()
+            .any(|finding| finding.rule_id == "hallucinated_import_call"
+                && finding.message.contains("RealImportedClass")),
+        "did not expect finding for RealImportedClass"
+    );
+
+    assert!(
+        !report
+            .findings
+            .iter()
             .any(|finding| finding.rule_id == "hallucinated_local_call"
                 && finding.message.contains("RealLocalFunction")),
         "did not expect finding for RealLocalFunction"
+    );
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
+                && finding.message.contains("Path")),
+        "did not expect finding for imported stdlib class Path"
+    );
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
+                && finding.message.contains("ThirdPartyClient")),
+        "did not expect finding for unresolved third-party import alias"
+    );
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
+                && finding.message.contains("RuntimeError")),
+        "did not expect finding for builtin exception RuntimeError"
+    );
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
+                && finding.message.contains("SessionBundle")),
+        "did not expect finding for local dataclass SessionBundle"
+    );
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
+                && finding.message.contains("SnapBackTranscriptionClient")),
+        "did not expect finding for local class SnapBackTranscriptionClient"
     );
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
