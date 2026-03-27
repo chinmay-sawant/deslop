@@ -1521,3 +1521,79 @@ def render(payload):
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn test_python_hallucination_rule() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "pkg/target.py",
+        r#"
+def existing_function():
+    pass
+"#,
+    );
+    write_fixture(
+        &temp_dir,
+        "pkg/caller.py",
+        r#"
+import pkg.target
+
+def do_work():
+    pkg.target.existing_function()
+    pkg.target.imaginary_function()
+
+def do_local_work():
+    real_local_function()
+    fake_local_function()
+
+def real_local_function():
+    pass
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hallucinated_import_call" 
+                 && finding.message.contains("imaginary_function")),
+        "expected hallucinated_import_call to fire for imaginary_function"
+    );
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hallucinated_local_call"
+                 && finding.message.contains("fake_local_function")),
+        "expected hallucinated_local_call to fire for fake_local_function"
+    );
+    
+    // Ensure we don't fire for valid calls:
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hallucinated_import_call" 
+                 && finding.message.contains("existing_function")),
+        "did not expect finding for existing_function"
+    );
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "hallucinated_local_call"
+                 && finding.message.contains("real_local_function")),
+        "did not expect finding for real_local_function"
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

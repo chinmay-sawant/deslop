@@ -93,11 +93,12 @@ pub(crate) fn evaluate_go_repo(files: &[&ParsedFile], _index: &RepositoryIndex) 
     receiver_findings(files)
 }
 
-pub(crate) fn evaluate_python_file(file: &ParsedFile, _index: &RepositoryIndex) -> Vec<Finding> {
+pub(crate) fn evaluate_python_file(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = python_file_findings(file);
 
     for function in &file.functions {
         findings.extend(python_findings(file, function));
+        findings.extend(hallucination_findings(file, function, index));
     }
 
     findings

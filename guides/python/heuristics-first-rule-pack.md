@@ -159,11 +159,11 @@ This phase must use the abstractions already present in the repository:
 
 	Current deferred backlog after implementation:
 
-	- [ ] module-aware hallucinated import and local-call checks for Python
-	- [ ] monolithic `__init__.py` detection
-	- [ ] god function and oversized class heuristics
-	- [ ] duplication detection
-	- [ ] lower-noise AI-smell detection with a defensible evidence policy
+	- [x] module-aware hallucinated import and local-call checks for Python
+	- [x] monolithic `__init__.py` detection
+	- [x] god function and oversized class heuristics
+	- [x] duplication detection
+	- [x] lower-noise AI-smell detection with a defensible evidence policy
 
 ## Acceptance Criteria
 
