@@ -42,13 +42,13 @@ run_search() {
   if has_rg; then
     {
       append_section "$label"
-      rg -n "$pattern" src tests --glob '*.rs' || true
+      rg -n "$pattern" src tests --glob '*.rs' 2>/dev/null | LC_ALL=C sort || true
       echo
     } >> "$report"
   else
     {
       append_section "$label"
-      grep -R -n -E "$pattern" src tests --include='*.rs' || true
+      grep -R -n -E "$pattern" src tests --include='*.rs' 2>/dev/null | LC_ALL=C sort || true
       echo
     } >> "$report"
   fi
@@ -60,13 +60,13 @@ run_pcre_search() {
   if rg_supports_pcre2; then
     {
       append_section "$label"
-      rg -n -P "$pattern" src tests --glob '*.rs' || true
+      rg -n -P "$pattern" src tests --glob '*.rs' 2>/dev/null | LC_ALL=C sort || true
       echo
     } >> "$report"
   else
     {
       append_section "$label"
-      grep -R -n -P "$pattern" src tests --include='*.rs' || true
+      grep -R -n -P "$pattern" src tests --include='*.rs' 2>/dev/null | LC_ALL=C sort || true
       echo
     } >> "$report"
   fi
@@ -89,8 +89,8 @@ run_proximity_search() {
           last_check_text = "";
         }
       }
-    ' "$file" >> "$report"
-  done < <(rust_files)
+    ' "$file"
+  done < <(LC_ALL=C sort < <(rust_files)) | LC_ALL=C sort >> "$report"
   echo >> "$report"
 }
 
