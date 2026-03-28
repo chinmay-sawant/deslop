@@ -36,9 +36,9 @@ This repository uses static checks, bounded I/O, and CI linting to reduce unsafe
 
 ## Reporting
 
-- CI runs `cargo clippy`, `cargo test`, `scripts/check_rust_hygiene.sh`, and `scripts/check-rust-security.sh`.
+- `ci.yml` runs `cargo clippy`, `cargo test`, and `scripts/check_rust_hygiene.sh` on every push and PR.
+- `rust-security.yml` runs `cargo audit` (known CVE check) and `scripts/check-rust-security.sh` (grep-based pattern audit).
 - CI compares the generated Rust security baseline against `reports/rust-security-baseline/latest.txt` so new findings require an explicit baseline update.
-- `cargo audit` runs as a blocking Rust security check, while `cargo geiger` remains report-oriented until stricter unsafe-count gating is adopted.
 
 ## Disclosure
 

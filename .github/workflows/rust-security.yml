@@ -16,21 +16,18 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
-
-      - name: Tests
-        run: cargo test --all-features --all-targets
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-audit-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cargo audit
         run: |
           cargo install cargo-audit --locked
           cargo audit
-
-      - name: Cargo geiger
-        run: |
-          cargo install cargo-geiger --locked || true
-          cargo geiger || true
 
       - name: Security grep report
         run: bash scripts/check-rust-security.sh
