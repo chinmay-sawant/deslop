@@ -25,8 +25,9 @@ export function HeroSection() {
               <div className="overflow-hidden h-full">
                 <div className={`flex flex-col ${isReady ? 'animate-sweep-text-col' : ''}`}>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Modern problems</span>
-                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Write code for the machine</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Built by the machine</span>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Works alongside your linters</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Machine-generated</span>
                 </div>
               </div>
             </div>
@@ -43,8 +44,9 @@ export function HeroSection() {
                   style={{ animationDelay: isReady ? '150ms' : '0ms' }}
                 >
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Requires modern solutions.</span>
-                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Optimize it for the human.</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Reviewed by the human.</span>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Flagging the context they miss.</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Human-validated.</span>
                 </div>
               </div>
             </div>

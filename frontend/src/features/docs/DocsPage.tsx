@@ -9,6 +9,7 @@ type SectionId =
   | 'cli-commands'
   | 'pipeline'
   | 'limitations'
+  | 'about'
 
 interface NavSection {
   id: SectionId
@@ -35,6 +36,7 @@ const sections: NavSection[] = [
   { id: 'cli-commands', label: 'CLI Commands', icon: '❯' },
   { id: 'pipeline', label: 'Pipeline', icon: '◎' },
   { id: 'limitations', label: 'Limitations', icon: '△' },
+  { id: 'about', label: 'About', icon: '♡' },
 ]
 
 // ─── Content Data ────────────────────────────────────────────────────────────
@@ -647,6 +649,69 @@ export function DocsPage() {
             {activeLang === 'python' && ['Stronger asyncio-specific reasoning', 'Python type annotation inference', 'Type-aware data flow analysis', 'Framework-specific rule packs (Django/FastAPI)'].map(p => <span key={p} className="docs-pill">{p}</span>)}
             {activeLang === 'rust' && ['Trait resolution', 'Cargo workspace modeling', 'Macro expansion analysis', 'Deeper Rust rule pack', 'Cross-crate symbol resolution'].map(p => <span key={p} className="docs-pill">{p}</span>)}
           </div>
+        </div>
+
+        {/* ABOUT */}
+        <div className={`docs-section${activeSection === 'about' ? ' active' : ''}`}>
+          <div className="docs-eyebrow" style={{ color: 'var(--muted)' }}>About</div>
+          <h1 className="docs-h1">A "Sloppy" Attempt at a Slop Detector.</h1>
+          <p className="docs-lead">
+            This is an early-stage experiment in identifying AI-generated slop.
+          </p>
+          <h3>The Philosophy</h3>
+          <p className="docs-p">
+            If the folks at Anthropic and Peter Steinberger can generate full-fledged applications without manually writing every line of code, then we can certainly vibecode a tool to detect the resulting "slop."
+          </p>
+          <p className="docs-p">
+            We’re fighting fire with fire. This project is mostly vibecoded, but the architecture is built with intention. Instead of just calling things slop, let’s build a better filter together.
+          </p>
+
+          <div className="docs-callout" style={{ borderLeftColor: 'var(--border-strong)', background: 'var(--accent-soft)' }}>
+            <p>
+              Before coming @ me — I am trying to find a real problem. The project is mostly vibecoded,
+              but the architecture is thought through as per my best knowledge. Instead of calling this slop,
+              let's try to work together if you want. Send me more ideas by{' '}
+              <a
+                href="https://github.com/chinmay-sawant/deslop/issues/new"
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: 'var(--text-strong)', textDecoration: 'underline', textDecorationColor: 'var(--border-strong)', textUnderlineOffset: '3px' }}
+              >
+                creating a new issue
+              </a>
+              .
+            </p>
+          </div>
+
+          <h2 className="docs-h2">Open-source & free</h2>
+          <p className="docs-p">
+            Going to keep this as open-source. Got no intention to monetize the application — for now :3
+          </p>
+          <p className="docs-p">
+            The full source is on{' '}
+            <a
+              href="https://github.com/chinmay-sawant/deslop"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: 'var(--text-strong)', textDecoration: 'underline', textDecorationColor: 'var(--border-strong)', textUnderlineOffset: '3px' }}
+            >
+              GitHub
+            </a>
+            {' '}under the MIT license. Contributions, ideas, and bug reports are all welcome.
+          </p>
+
+          <h2 className="docs-h2">Built & vibecoded by</h2>
+          <p className="docs-p">
+            <a
+              href="https://github.com/chinmay-sawant"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: 'var(--text-strong)', textDecoration: 'underline', textDecorationColor: 'var(--border-strong)', textUnderlineOffset: '3px' }}
+            >
+              Chinmay Sawant
+            </a>
+            {' '}with ❤️
+          </p>
         </div>
 
       </main>
