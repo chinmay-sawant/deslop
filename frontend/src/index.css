@@ -502,12 +502,12 @@ button:focus-visible {
 .docs-content {
   flex: 1;
   min-width: 0;
-  padding: 2.5rem 3rem;
-  max-width: 860px;
+  padding: 2.75rem clamp(1.5rem, 3.5vw, 4.5rem) 4rem;
 }
 
 .docs-section {
   display: none;
+  max-width: min(1140px, 100%);
 }
 
 .docs-section.active {
@@ -572,7 +572,7 @@ button:focus-visible {
   line-height: 1.75;
   color: var(--text);
   margin-bottom: 2rem;
-  max-width: 680px;
+  max-width: 74ch;
 }
 
 .docs-p {
@@ -580,6 +580,7 @@ button:focus-visible {
   line-height: 1.75;
   color: var(--muted);
   margin-bottom: 1rem;
+  max-width: 78ch;
 }
 
 .rule-grid {
@@ -641,6 +642,7 @@ button:focus-visible {
   color: var(--code);
   overflow-x: auto;
   margin: 1rem 0 1.5rem;
+  white-space: pre-wrap;
 }
 
 .docs-code-block .prompt {
@@ -649,11 +651,67 @@ button:focus-visible {
   margin-right: 0.5rem;
 }
 
+.docs-link {
+  color: var(--text-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.docs-download-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.85rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.docs-download-card {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid var(--border);
+  background: var(--accent-soft);
+  padding: 0.9rem 1rem;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.docs-download-card:hover {
+  border-color: var(--border-strong);
+  background: color-mix(in srgb, var(--accent-soft) 70%, var(--bg-elevated));
+}
+
+.docs-download-label {
+  font-family: var(--mono-font);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.docs-download-file {
+  font-family: var(--mono-font);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--code);
+  overflow-wrap: anywhere;
+}
+
 .cli-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
   margin: 1rem 0 1.5rem;
+  table-layout: fixed;
+}
+
+.cli-col-command {
+  width: 39%;
+}
+
+.cli-col-description {
+  width: 61%;
 }
 
 .cli-table th {
@@ -680,7 +738,8 @@ button:focus-visible {
   font-family: var(--mono-font);
   font-size: 0.8rem;
   color: var(--code);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .cli-table tr:hover td {
@@ -737,6 +796,11 @@ button:focus-visible {
 
   .docs-content {
     padding: 2rem 1.25rem;
+  }
+
+  .cli-col-command,
+  .cli-col-description {
+    width: auto;
   }
 }
 

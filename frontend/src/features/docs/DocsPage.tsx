@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { currentRelease } from '../../content/site-content'
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Language = 'go' | 'python' | 'rust'
@@ -20,6 +22,11 @@ interface NavSection {
 interface Rule {
   id: string
   description: string
+}
+
+interface CliCommand {
+  cmd: string
+  desc: string
 }
 
 // ─── Static Data ──────────────────────────────────────────────────────────────
@@ -192,12 +199,13 @@ const rustRules: Rule[] = [
 
 // ─── CLI commands by language ─────────────────────────────────────────────────
 
-const cliCommands = {
+const cliCommands: Record<Language, CliCommand[]> = {
   go: [
     { cmd: 'cargo run -- scan /path/to/repo', desc: 'Scan a Go repository and print a compact finding summary.' },
     { cmd: 'cargo run -- scan --details /path/to/repo', desc: 'Include full per-function fingerprint details and detail-only findings.' },
     { cmd: 'cargo run -- scan --json /path/to/repo', desc: 'Emit structured JSON output for pipeline integration.' },
     { cmd: 'cargo run -- scan --json --details /path/to/repo', desc: 'Combine JSON and full detail output.' },
+    { cmd: 'cargo run -- scan --ignore dropped_error,panic_on_error /path/to/repo', desc: 'Ignore selected Go rule IDs for one run without changing repository config.' },
     { cmd: 'cargo run -- scan /path/to/repo > results.txt', desc: 'Write the text report directly to a file.' },
     { cmd: 'cargo run -- scan --no-ignore /path/to/repo', desc: 'Scan without .gitignore filtering.' },
     { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark the full pipeline against a local repository.' },
@@ -208,18 +216,67 @@ const cliCommands = {
     { cmd: 'cargo run -- scan /path/to/repo', desc: 'Auto-detect and scan Python files alongside any Go or Rust files in the repository.' },
     { cmd: 'cargo run -- scan --details /path/to/repo', desc: 'Include full Python per-function fingerprint breakdown.' },
     { cmd: 'cargo run -- scan --json /path/to/repo', desc: 'Emit findings for Python files in structured JSON.' },
+    { cmd: 'cargo run -- scan --json --details /path/to/repo', desc: 'Combine JSON output with full Python detail-only diagnostics.' },
+    { cmd: 'cargo run -- scan --ignore exception_swallowed,print_debugging_leftover /path/to/repo', desc: 'Ignore selected Python rule IDs for one run without changing repository config.' },
     { cmd: 'cargo run -- scan /path/to/repo > results.txt', desc: 'Save the Python scan report to a file for review.' },
     { cmd: 'cargo run -- scan --no-ignore /path/to/repo', desc: 'Override .gitignore filtering when scanning Python projects.' },
+    { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark discovery, parse, index, heuristic, and total runtime stages for a Python-heavy repository.' },
+    { cmd: 'cargo run -- bench --warmups 2 --repeats 5 /path/to/repo', desc: 'Benchmark Python scans with explicit warmup and repeat counts.' },
+    { cmd: 'cargo run -- bench --json /path/to/repo', desc: 'Emit benchmarking data as JSON for CI or local comparisons.' },
   ],
   rust: [
     { cmd: 'cargo run -- scan /path/to/repo', desc: 'Auto-detect and scan Rust files in the repository using the Rust rule pack.' },
     { cmd: 'cargo run -- scan --details /path/to/repo', desc: 'Include full Rust per-function fingerprint details.' },
     { cmd: 'cargo run -- scan --json /path/to/repo', desc: 'Emit Rust findings in structured JSON.' },
+    { cmd: 'cargo run -- scan --json --details /path/to/repo', desc: 'Combine JSON output with full Rust detail-only diagnostics.' },
     { cmd: 'cargo run -- scan --ignore rust_async_std_mutex_await,rust_lock_across_await /path/to/repo', desc: 'Ignore specific rule IDs for one scan invocation without changing repository config.' },
     { cmd: 'cargo run -- scan /path/to/repo > results.txt', desc: 'Save the Rust scan report to a file.' },
     { cmd: 'cargo run -- scan --no-ignore /path/to/repo', desc: 'Override .gitignore filtering when scanning Rust projects.' },
     { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark discovery, parse, index, heuristic, and total runtime stages.' },
+    { cmd: 'cargo run -- bench --warmups 2 --repeats 5 /path/to/repo', desc: 'Benchmark with explicit warmup and repeat counts.' },
+    { cmd: 'cargo run -- bench --json /path/to/repo', desc: 'Emit benchmarking data as JSON.' },
   ],
+}
+
+const githubActionWorkflow = `name: Deslop
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ${currentRelease.actionRef}
+        with:
+          path: .`
+
+const githubActionJsonExample = `- uses: actions/checkout@v4
+- uses: ${currentRelease.actionRef}
+  with:
+    path: .
+    json: 'true'
+    details: 'true'
+    fail-on-findings: 'false'`
+
+const githubActionBenchExample = `- uses: actions/checkout@v4
+- uses: ${currentRelease.actionRef}
+  with:
+    command: bench
+    path: .
+    repeats: '10'
+    warmups: '2'`
+
+function CodeBlock({ code }: { code: string }) {
+  return (
+    <pre className="docs-code-block">
+      <code>{code}</code>
+    </pre>
+  )
 }
 
 // ─── Overview content by language ─────────────────────────────────────────────
@@ -402,42 +459,69 @@ export function DocsPage() {
 
           <h2 className="docs-h2">Pipeline properties</h2>
           <div className="docs-pill-list">
-            {overview.bullets.map((b) => (
-              <span key={b} className="docs-pill">{b}</span>
+            {overview.bullets.map((bullet) => (
+              <span key={bullet} className="docs-pill">{bullet}</span>
             ))}
           </div>
 
           <h2 className="docs-h2">Installation</h2>
           <p className="docs-p">Install the CLI from crates.io using Cargo:</p>
-          <div className="docs-code-block">
-            <span className="prompt">$</span> cargo install deslop
-          </div>
+          <CodeBlock code="cargo install deslop" />
           <p className="docs-p">Or download prebuilt binaries from the GitHub release page:</p>
-          <div className="docs-code-block">
-            deslop-linux-x86_64.tar.gz{'\n'}
-            deslop-macos-arm64.tar.gz{'\n'}
-            deslop-macos-x86_64.tar.gz{'\n'}
-            deslop-windows-x86_64.zip
+          <div className="docs-download-grid">
+            {currentRelease.assets.map((asset) => (
+              <a
+                key={asset.id}
+                className="docs-download-card"
+                href={asset.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="docs-download-label">{asset.label}</span>
+                <span className="docs-download-file">{asset.fileName}</span>
+              </a>
+            ))}
           </div>
+          <p className="docs-p">
+            Release overview:{' '}
+            <a className="docs-link" href={currentRelease.releasePage} target="_blank" rel="noreferrer">
+              {currentRelease.releasePage}
+            </a>
+          </p>
           <p className="docs-p">Or use the composite GitHub Action which downloads the correct binary for your runner automatically.</p>
 
           <h2 className="docs-h2">GitHub Actions</h2>
           <p className="docs-p">Scan the checked-out repository with defaults:</p>
-          <div className="docs-code-block">
-            {'- uses: actions/checkout@v4\n'}
-            {'- uses: chinmay-sawant/deslop@v0.1.0\n'}
-            {'  with:\n'}
-            {'    path: .'}
-          </div>
-          <p className="docs-p">
-            Action inputs: <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>command</code> (scan or bench),{' '}
-            <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>path</code>,{' '}
-            <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>json</code>,{' '}
-            <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>details</code>,{' '}
-            <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>no-ignore</code>,{' '}
-            <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>repeats</code>,{' '}
-            <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>warmups</code>.
-          </p>
+          <CodeBlock code={githubActionWorkflow} />
+          <p className="docs-p">Emit JSON, include detail-only findings, and keep the workflow green while you evaluate the report:</p>
+          <CodeBlock code={githubActionJsonExample} />
+          <p className="docs-p">Run benchmark mode instead of a scan:</p>
+          <CodeBlock code={githubActionBenchExample} />
+
+          <h3 className="docs-h3">Action inputs</h3>
+          <table className="cli-table">
+            <colgroup>
+              <col className="cli-col-command" />
+              <col className="cli-col-description" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Input</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>version</td><td>Release tag to install. When omitted, deslop uses the action ref if it is a full release tag; otherwise it downloads the latest release binary.</td></tr>
+              <tr><td>command</td><td>Subcommand to run: <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>scan</code> or <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>bench</code>.</td></tr>
+              <tr><td>path</td><td>Path to the repository you want to analyze. Defaults to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>.</code></td></tr>
+              <tr><td>json</td><td>Set to true to emit JSON output.</td></tr>
+              <tr><td>details</td><td>Set to true to include detail-only findings for scan.</td></tr>
+              <tr><td>no-ignore</td><td>Set to true to disable .gitignore filtering.</td></tr>
+              <tr><td>fail-on-findings</td><td>Set to false to exit 0 even when scan findings are present.</td></tr>
+              <tr><td>repeats</td><td>Benchmark repeat count for bench. Defaults to 5.</td></tr>
+              <tr><td>warmups</td><td>Benchmark warmup count for bench. Defaults to 1.</td></tr>
+            </tbody>
+          </table>
         </div>
 
         {/* DETECTION RULES */}
@@ -482,7 +566,7 @@ export function DocsPage() {
           {activeLang === 'python' && (
             <>
               <h2 className="docs-h2">Shared signals</h2>
-              <p className="docs-p">Python also reuses shared signals when the parser evidence supports them, including <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>hardcoded_secret</code>, comment-style findings based on docstrings, <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>full_dataset_load</code>, <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>string_concat_in_loop</code>, and conservative test-quality findings.</p>
+              <p className="docs-p">Python also reuses shared signals when the parser evidence supports them, including <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>hardcoded_secret</code>, comment-style findings based on docstrings, <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>full_dataset_load</code>, <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>string_concat_in_loop</code>, and conservative test-quality findings.</p>
             </>
           )}
           {activeLang === 'rust' && (
@@ -505,6 +589,10 @@ export function DocsPage() {
             {activeLang === 'go' ? 'Go' : activeLang === 'python' ? 'Python' : 'Rust'} commands
           </h2>
           <table className="cli-table">
+            <colgroup>
+              <col className="cli-col-command" />
+              <col className="cli-col-description" />
+            </colgroup>
             <thead>
               <tr>
                 <th>Command</th>
@@ -512,10 +600,10 @@ export function DocsPage() {
               </tr>
             </thead>
             <tbody>
-              {commands.map((cmd) => (
-                <tr key={cmd.cmd}>
-                  <td>{cmd.cmd}</td>
-                  <td>{cmd.desc}</td>
+              {commands.map((command) => (
+                <tr key={command.cmd}>
+                  <td>{command.cmd}</td>
+                  <td>{command.desc}</td>
                 </tr>
               ))}
             </tbody>
@@ -523,6 +611,10 @@ export function DocsPage() {
 
           <h2 className="docs-h2">Global flags</h2>
           <table className="cli-table">
+            <colgroup>
+              <col className="cli-col-command" />
+              <col className="cli-col-description" />
+            </colgroup>
             <thead>
               <tr>
                 <th>Flag</th>
@@ -534,23 +626,22 @@ export function DocsPage() {
               <tr><td>--ignore RULE1,RULE2</td><td>Ignore specific rule IDs for one scan invocation after analysis completes.</td></tr>
               <tr><td>--json</td><td>Emit structured JSON instead of human-readable text output.</td></tr>
               <tr><td>--no-fail</td><td>Exit 0 even when findings are present.</td></tr>
-              <tr><td>--no-ignore</td><td>Disable .gitignore filtering — scan all files under the target path.</td></tr>
-              <tr><td>--warmups N</td><td>Benchmark warmup iterations (bench command only). Defaults to 1.</td></tr>
-              <tr><td>--repeats N</td><td>Benchmark repeat count (bench command only). Defaults to 5.</td></tr>
+              <tr><td>--no-ignore</td><td>Disable .gitignore filtering and scan all files under the target path.</td></tr>
+              <tr><td>--warmups N</td><td>Benchmark warmup iterations for bench. Defaults to 1.</td></tr>
+              <tr><td>--repeats N</td><td>Benchmark repeat count for bench. Defaults to 5.</td></tr>
             </tbody>
           </table>
 
           <h2 className="docs-h2">Output modes</h2>
           <p className="docs-p">Text output (default) prints the scan summary plus the standard finding set. JSON output is available for pipeline integration. The --details flag adds per-function fingerprint data to either output mode.</p>
+          <CodeBlock code={`# Text output (default)
+deslop scan . > results.txt
 
-          <div className="docs-code-block">
-            <span className="prompt"># Text output (default)</span>{'\n'}
-            <span className="prompt">$</span> deslop scan . {'>'} results.txt{'\n\n'}
-            <span className="prompt"># JSON output</span>{'\n'}
-            <span className="prompt">$</span> deslop scan --json . {'>'} results.json{'\n\n'}
-            <span className="prompt"># Full detail output</span>{'\n'}
-            <span className="prompt">$</span> deslop scan --details --json .
-          </div>
+# JSON output
+deslop scan --json . > results.json
+
+# Full detail output
+deslop scan --details --json .`} />
         </div>
 
         {/* PIPELINE */}
@@ -562,7 +653,7 @@ export function DocsPage() {
             Each stage is designed to be fast and independently composable.
           </p>
 
-          {pipelineStages.map((stage, i) => (
+          {pipelineStages.map((stage, index) => (
             <div key={stage.name} style={{ marginBottom: '2.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                 <span style={{
@@ -574,7 +665,7 @@ export function DocsPage() {
                   padding: '0.15rem 0.5rem',
                   letterSpacing: '0.08em',
                 }}>
-                  {String(i + 1).padStart(2, '0')}
+                  {String(index + 1).padStart(2, '0')}
                 </span>
                 <h2 style={{ margin: 0, fontFamily: 'var(--heading-font)', fontSize: '1.2rem', fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--text-strong)' }}>
                   {stage.name}
@@ -587,12 +678,10 @@ export function DocsPage() {
 
           <h2 className="docs-h2">Benchmarking</h2>
           <p className="docs-p">
-            The <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)'}}>bench</code> command measures each pipeline stage individually — discovery, parse, index, heuristics, and total runtime.
+            The <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>bench</code> command measures each pipeline stage individually — discovery, parse, index, heuristics, and total runtime.
             A documented baseline of 180.80 ms was measured against a realistic Go repository of 89 files and 702 functions.
           </p>
-          <div className="docs-code-block">
-            <span className="prompt">$</span> cargo run -- bench --warmups 2 --repeats 5 /path/to/repo
-          </div>
+          <CodeBlock code="cargo run -- bench --warmups 2 --repeats 5 /path/to/repo" />
 
           <h2 className="docs-h2">Mixed-language repositories</h2>
           <p className="docs-p">
@@ -645,9 +734,9 @@ export function DocsPage() {
           <h2 className="docs-h2">Planned improvements</h2>
           <p className="docs-p">The following capabilities are pending or in development:</p>
           <div className="docs-pill-list">
-            {activeLang === 'go' && ['Stronger repo-wide style checks', 'Deeper goroutine lifetime analysis', 'Better context propagation through wrappers', 'Optional deeper semantic analysis'].map(p => <span key={p} className="docs-pill">{p}</span>)}
-            {activeLang === 'python' && ['Stronger asyncio-specific reasoning', 'Python type annotation inference', 'Type-aware data flow analysis', 'Framework-specific rule packs (Django/FastAPI)'].map(p => <span key={p} className="docs-pill">{p}</span>)}
-            {activeLang === 'rust' && ['Trait resolution', 'Cargo workspace modeling', 'Macro expansion analysis', 'Deeper Rust rule pack', 'Cross-crate symbol resolution'].map(p => <span key={p} className="docs-pill">{p}</span>)}
+            {activeLang === 'go' && ['Stronger repo-wide style checks', 'Deeper goroutine lifetime analysis', 'Better context propagation through wrappers', 'Optional deeper semantic analysis'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
+            {activeLang === 'python' && ['Stronger asyncio-specific reasoning', 'Python type annotation inference', 'Type-aware data flow analysis', 'Framework-specific rule packs (Django/FastAPI)'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
+            {activeLang === 'rust' && ['Trait resolution', 'Cargo workspace modeling', 'Macro expansion analysis', 'Deeper Rust rule pack', 'Cross-crate symbol resolution'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
           </div>
         </div>
 

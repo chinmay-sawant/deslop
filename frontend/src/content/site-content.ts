@@ -8,6 +8,8 @@ import {
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
 
+import releaseAssetsData from './release-assets.json'
+
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
 export type NavItem = {
@@ -68,12 +70,33 @@ export type SiteMetadata = {
   }
 }
 
+export type ReleaseAsset = {
+  id: string
+  label: string
+  platform: string
+  arch: string
+  fileName: string
+  url: string
+}
+
+export type ReleaseAssetManifest = {
+  version: string
+  releasePage: string
+  actionRef: string
+  assets: ReleaseAsset[]
+}
+
+export const currentRelease = releaseAssetsData as ReleaseAssetManifest
+
+const linuxReleaseAsset =
+  currentRelease.assets.find((asset) => asset.id === 'linux-x86_64') ?? currentRelease.assets[0]
+
 export const siteMetadata: SiteMetadata = {
   github: {
     owner: 'chinmay-sawant',
     repo: 'deslop',
     url: 'https://github.com/chinmay-sawant/deslop',
-    releaseUrl: 'https://github.com/chinmay-sawant/deslop/releases/tag/v0.1.0',
+    releaseUrl: currentRelease.releasePage,
   },
   crates: {
     url: 'https://crates.io/crates/deslop',
@@ -97,8 +120,8 @@ export const terminalFlow = [
     output: 'Install the CLI directly from crates.io when you want the fastest local setup path.',
   },
   {
-    prompt: 'curl -L https://github.com/chinmay-sawant/deslop/releases/download/v0.1.0/deslop-linux-x86_64.tar.gz -o deslop-linux-x86_64.tar.gz',
-    output: 'Pull the v0.1.0 release asset directly when you want a prebuilt binary instead of a Cargo install.',
+    prompt: `curl -L ${linuxReleaseAsset.url} -o ${linuxReleaseAsset.fileName}`,
+    output: `Pull the ${currentRelease.version} release asset directly when you want a prebuilt binary instead of a Cargo install.`,
   },
   {
     prompt: 'deslop scan . > results.txt',
@@ -236,15 +259,12 @@ export const quickStartItems: QuickStartItem[] = [
     linkHref: siteMetadata.crates.url,
   },
   {
-    label: 'Download the v0.1.0 binaries',
+    label: `Download the ${currentRelease.version} binaries`,
     channel: 'Binary',
     description: 'Grab the already published Linux, macOS, or Windows release asset when you want a prebuilt binary immediately.',
     snippet: [
-      'v0.1.0 release assets',
-      'deslop-linux-x86_64.tar.gz',
-      'deslop-macos-arm64.tar.gz',
-      'deslop-macos-x86_64.tar.gz',
-      'deslop-windows-x86_64.zip',
+      `${currentRelease.version} release assets`,
+      ...currentRelease.assets.map((asset) => asset.fileName),
     ],
     linkLabel: 'Open GitHub release assets',
     linkHref: siteMetadata.github.releaseUrl,
@@ -255,7 +275,7 @@ export const quickStartItems: QuickStartItem[] = [
     description: 'Use the composite action to download the correct release binary for the runner and execute a scan inside your workflow.',
     snippet: [
       '- uses: actions/checkout@v4',
-      '- uses: chinmay-sawant/deslop@v0.1.0',
+      `- uses: ${currentRelease.actionRef}`,
       '  with:',
       '    path: .',
     ],
