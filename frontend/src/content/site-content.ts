@@ -167,7 +167,7 @@ export const pipelineStages: PipelineStage[] = [
     name: 'Parse',
     summary: 'Parse source structure, declared symbols, and call patterns without forcing a heavy semantic stack.',
     detail:
-      'The current implementation uses tree-sitter-go and remains syntax tolerant. Even if a file is imperfect, deslop still tries to recover enough structure to keep signal flowing into the report.',
+      'The current implementation uses tree-sitter-go, tree-sitter-python, and tree-sitter-rust while remaining syntax tolerant. Even if a file is imperfect, deslop still tries to recover enough structure to keep signal flowing into the report.',
     bullets: [
       'Package names, imports, and declared symbols',
       'Call sites, loop markers, and context clues',
@@ -297,8 +297,8 @@ export const metrics: Metric[] = [
   },
   {
     label: 'Current implementation',
-    value: 'Go repositories first',
-    note: 'The shipped analyzer currently targets Go repositories.',
+    value: 'Go, Python, and Rust',
+    note: 'The shipped analyzer supports standalone and mixed-language repositories across all three backends.',
   },
   {
     label: 'Benchmark repository scale',

@@ -94,7 +94,6 @@ const pythonRules: Rule[] = [
   { id: 'recursive_traversal_risk', description: 'Direct recursion in traversal-style helpers that may be safer as iterative walks for deep inputs.' },
   { id: 'list_membership_in_loop', description: 'Repeated membership checks against obviously list-like containers inside loops.' },
   { id: 'repeated_len_in_loop', description: 'Repeated len(...) checks inside loops when the receiver appears unchanged locally.' },
-  { id: 'builtin_reduction_candidate', description: 'Loop shapes that look like obvious sum, any, or all candidates.' },
   { id: 'god_function', description: 'Very large Python functions with high control-flow and call-surface concentration.' },
   { id: 'god_class', description: 'Python classes that concentrate unusually high method count, public surface area, and mutable instance state.' },
   { id: 'monolithic_init_module', description: '__init__.py files that carry enough imports and behavior to look like monolithic modules.' },
@@ -151,6 +150,42 @@ const rustRules: Rule[] = [
   { id: 'fixme_doc_comment_leftover', description: 'Rust doc comments that still contain a FIXME marker in non-test code.' },
   { id: 'hallucinated_import_call', description: 'Covers crate::, self::, and super:: module paths when deslop can map them back to locally indexed Rust modules, plus direct calls through locally imported function aliases.' },
   { id: 'hallucinated_local_call', description: 'Direct same-module calls when the callee name is not locally bound and does not exist in the indexed Rust module.' },
+  { id: 'rust_blocking_io_in_async', description: 'Blocking I/O or blocking work observed in async Rust code.' },
+  { id: 'rust_unbuffered_file_writes', description: 'File-like writes performed inside a loop without buffering or batching.' },
+  { id: 'rust_lines_allocate_per_line', description: '.lines() iteration used in a loop where per-item allocation may matter.' },
+  { id: 'rust_hashmap_default_hasher', description: 'HashMap default-hasher construction in a likely hot path.' },
+  { id: 'rust_lock_across_await', description: 'A lock appears to be held across an .await boundary.' },
+  { id: 'rust_tokio_mutex_unnecessary', description: 'tokio::sync::Mutex used in a fully synchronous critical path with no await.' },
+  { id: 'rust_blocking_drop', description: 'A Drop implementation performs blocking work.' },
+  { id: 'rust_pointer_chasing_vec_box', description: 'Pointer-heavy boxed vector-style storage that may hurt cache locality.' },
+  { id: 'rust_path_join_absolute', description: 'Path::join used with an absolute segment that discards the existing base path.' },
+  { id: 'rust_utf8_validate_hot_path', description: 'UTF-8 validation appears in a likely hot path and may deserve profiling.' },
+  { id: 'rust_large_future_stack', description: 'Large allocations may be captured across await points and bloat future size.' },
+  { id: 'rust_aos_hot_path', description: 'Repeated struct-field dereferences inside a loop that may indicate an array-of-structs hot path.' },
+  { id: 'rust_async_std_mutex_await', description: 'std::sync::Mutex appears to be held across .await in async code.' },
+  { id: 'rust_async_hold_permit_across_await', description: 'A permit or pooled resource may be held across an .await.' },
+  { id: 'rust_async_spawn_cancel_at_await', description: 'Async work is spawned without an obvious cancellation path.' },
+  { id: 'rust_async_missing_fuse_pin', description: 'select! reuse lacks pinning or fusing markers for repeated polling.' },
+  { id: 'rust_async_recreate_future_in_select', description: 'A select! loop may recreate futures instead of reusing long-lived ones.' },
+  { id: 'rust_async_monopolize_executor', description: 'An async function may monopolize the executor with blocking work and no await.' },
+  { id: 'rust_async_blocking_drop', description: 'A Drop implementation does blocking work that can surface in async contexts.' },
+  { id: 'rust_async_invariant_broken_at_await', description: 'Related state mutations appear split around an await boundary.' },
+  { id: 'rust_async_lock_order_cycle', description: 'Conflicting lock acquisition order suggests a lock-order cycle.' },
+  { id: 'rust_domain_raw_primitive', description: 'Business-facing data is stored as a raw primitive instead of a stronger domain type.' },
+  { id: 'rust_domain_float_for_money', description: 'Floating-point storage is used for money-like values.' },
+  { id: 'rust_domain_impossible_combination', description: 'A boolean toggle is mixed with optional credentials, creating invalid-state combinations.' },
+  { id: 'rust_domain_default_produces_invalid', description: 'Default is derived or implemented on a type that likely cannot have a safe default state.' },
+  { id: 'rust_debug_secret', description: 'Debug is derived on a type that carries secret-like fields.' },
+  { id: 'rust_serde_sensitive_deserialize', description: 'Deserialize is derived for sensitive fields without obvious validation.' },
+  { id: 'rust_serde_sensitive_serialize', description: 'Serialize is derived for secret-like fields that may need redaction or exclusion.' },
+  { id: 'rust_domain_optional_secret_default', description: 'A defaultable type includes optional secret-like fields, which can hide invalid configuration.' },
+  { id: 'rust_unsafe_get_unchecked', description: 'Unsafe use of get_unchecked without proof of bounds invariants.' },
+  { id: 'rust_unsafe_from_raw_parts', description: 'Unsafe raw slice construction that depends on lifetime and length invariants.' },
+  { id: 'rust_unsafe_set_len', description: 'Unsafe Vec::set_len use that requires initialized elements and correct capacity invariants.' },
+  { id: 'rust_unsafe_assume_init', description: 'Unsafe MaybeUninit::assume_init use without proof of full initialization.' },
+  { id: 'rust_unsafe_transmute', description: 'Unsafe transmute use that requires layout and validity proof.' },
+  { id: 'rust_unsafe_raw_pointer_cast', description: 'Unsafe raw pointer cast that depends on aliasing and lifetime guarantees.' },
+  { id: 'rust_unsafe_aliasing_assumption', description: 'Unsafe code mixes interior mutability and mutable references in ways that need careful aliasing review.' },
 ]
 
 // ─── CLI commands by language ─────────────────────────────────────────────────
@@ -178,6 +213,7 @@ const cliCommands = {
     { cmd: 'cargo run -- scan /path/to/repo', desc: 'Auto-detect and scan Rust files in the repository using the Rust rule pack.' },
     { cmd: 'cargo run -- scan --details /path/to/repo', desc: 'Include full Rust per-function fingerprint details.' },
     { cmd: 'cargo run -- scan --json /path/to/repo', desc: 'Emit Rust findings in structured JSON.' },
+    { cmd: 'cargo run -- scan --ignore rust_async_std_mutex_await,rust_lock_across_await /path/to/repo', desc: 'Ignore specific rule IDs for one scan invocation without changing repository config.' },
     { cmd: 'cargo run -- scan /path/to/repo > results.txt', desc: 'Save the Rust scan report to a file.' },
     { cmd: 'cargo run -- scan --no-ignore /path/to/repo', desc: 'Override .gitignore filtering when scanning Rust projects.' },
     { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark discovery, parse, index, heuristic, and total runtime stages.' },
@@ -211,12 +247,13 @@ const overviewContent = {
   },
   rust: {
     title: 'Rust Analysis',
-    lead: 'Rust support covers leftover debug and placeholder macros, unsafe code without safety comments, and conservative hallucination checks for crate-local module paths. The Rust rule pack is growing and sits on the same fast pipeline as Go and Python: a tree-sitter parse, a language-scoped local index, and explainable heuristic output.',
+    lead: 'Rust support now covers hygiene leftovers, crate-local hallucination checks, async/runtime hazards, performance smells, domain-modeling anti-patterns, and unsafe-soundness hot spots. The Rust rule pack runs on the same fast pipeline as Go and Python: tree-sitter parsing, a language-scoped local index, and explainable heuristic output.',
     bullets: [
       'Parses .rs files with tree-sitter-rust',
-      'Detects todo!, unimplemented!, dbg!, panic!, unreachable! and .unwrap()/.expect() in non-test code',
-      'Flags unsafe blocks and functions without a nearby SAFETY: comment',
-      'Covers crate::, self::, and super:: import-call hallucinations via local Rust module index',
+      'Detects leftovers, unsafe hygiene, crate-local hallucinations, async runtime hazards, and domain-modeling issues',
+      'Flags unsafe blocks and functions without a nearby SAFETY: comment plus soundness-sensitive unsafe operations',
+      'Covers crate::, self::, and super:: import-call hallucinations via a local Rust module index',
+      'Adds Rust-specific async, performance, and domain-modeling heuristics without crossing language boundaries',
       'Language-scoped index prevents symbol merging with Go or Python in mixed repositories',
     ],
   },
@@ -266,7 +303,7 @@ const limitations = {
   ],
   rust: [
     'No Rust trait resolution, cargo workspace modeling, or macro expansion.',
-    'Rust rule pack is still growing — the current focus is leftover markers, unsafe hygiene, and conservative hallucination checks.',
+    'Rust rule pack is still growing, but current coverage already includes hygiene, hallucination, async/runtime, performance, domain-modeling, and unsafe-soundness checks.',
     'No proof of memory safety violations or lifetime errors from static analysis alone.',
     'Hallucination checks cover crate-local imports only; external crates are not indexed.',
     'No interprocedural analysis or cross-crate symbol resolution.',
@@ -449,7 +486,7 @@ export function DocsPage() {
           {activeLang === 'rust' && (
             <>
               <h2 className="docs-h2">Growing rule pack</h2>
-              <p className="docs-p">The Rust rule pack is actively growing. Current coverage focuses on leftover debug markers, unsafe code hygiene, and conservative import-call hallucination checks. Stronger checks for trait resolution, macro expansion, and workspace modeling are planned.</p>
+              <p className="docs-p">The Rust rule pack now covers leftovers and comment hygiene, crate-local hallucination checks, async/runtime hazards, performance smells, domain-modeling anti-patterns, and unsafe-soundness operations. Stronger trait resolution, macro expansion, and cargo-workspace modeling are still pending.</p>
             </>
           )}
         </div>
@@ -492,7 +529,9 @@ export function DocsPage() {
             </thead>
             <tbody>
               <tr><td>--details</td><td>Include full per-function fingerprint details and detail-only findings.</td></tr>
+              <tr><td>--ignore RULE1,RULE2</td><td>Ignore specific rule IDs for one scan invocation after analysis completes.</td></tr>
               <tr><td>--json</td><td>Emit structured JSON instead of human-readable text output.</td></tr>
+              <tr><td>--no-fail</td><td>Exit 0 even when findings are present.</td></tr>
               <tr><td>--no-ignore</td><td>Disable .gitignore filtering — scan all files under the target path.</td></tr>
               <tr><td>--warmups N</td><td>Benchmark warmup iterations (bench command only). Defaults to 1.</td></tr>
               <tr><td>--repeats N</td><td>Benchmark repeat count (bench command only). Defaults to 5.</td></tr>

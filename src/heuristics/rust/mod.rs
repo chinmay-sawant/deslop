@@ -99,7 +99,15 @@ fn secret_like(name: &str) -> bool {
 fn credential_like(name: &str) -> bool {
     matches_token(
         name,
-        &["cert", "certificate", "key", "token", "auth", "password", "secret"],
+        &[
+            "cert",
+            "certificate",
+            "key",
+            "token",
+            "auth",
+            "password",
+            "secret",
+        ],
     )
 }
 
@@ -121,15 +129,7 @@ fn business_value_like(name: &str) -> bool {
     matches_token(
         name,
         &[
-            "amount",
-            "price",
-            "cost",
-            "total",
-            "balance",
-            "rate",
-            "money",
-            "username",
-            "email",
+            "amount", "price", "cost", "total", "balance", "rate", "money", "username", "email",
             "percent",
         ],
     )
@@ -138,13 +138,17 @@ fn business_value_like(name: &str) -> bool {
 fn sensitive_default_like(name: &str) -> bool {
     matches_token(
         name,
-        &["port", "token", "password", "api_key", "secret", "key", "enabled"],
+        &[
+            "port", "token", "password", "api_key", "secret", "key", "enabled",
+        ],
     )
 }
 
 fn matches_token(name: &str, tokens: &[&str]) -> bool {
     let normalized = name.to_ascii_lowercase();
-    tokens.iter().any(|token| normalized == *token || normalized.contains(token))
+    tokens
+        .iter()
+        .any(|token| normalized == *token || normalized.contains(token))
 }
 
 fn is_std_mutex(file: &ParsedFile, function: &ParsedFunction) -> bool {
@@ -169,5 +173,10 @@ fn has_cancellation_pattern(function: &ParsedFunction) -> bool {
 }
 
 fn field_type_mentions(field: &FieldSummary, text: &str) -> bool {
-    field.type_text.chars().filter(|character| !character.is_whitespace()).collect::<String>().contains(text)
+    field
+        .type_text
+        .chars()
+        .filter(|character| !character.is_whitespace())
+        .collect::<String>()
+        .contains(text)
 }

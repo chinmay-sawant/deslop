@@ -712,7 +712,9 @@ fn len_targets(text: &str) -> Vec<String> {
             {
                 end += 1;
             }
-            if end > start && let Some(target) = text.get(start..end) {
+            if end > start
+                && let Some(target) = text.get(start..end)
+            {
                 targets.push(target.to_string());
             }
             index = end;
@@ -777,7 +779,10 @@ fn class_base_names(text: &str) -> Vec<String> {
     let Some(open_index) = header.find('(') else {
         return Vec::new();
     };
-    let Some(close_index) = header.get(open_index + 1..).and_then(|suffix| suffix.find(')')) else {
+    let Some(close_index) = header
+        .get(open_index + 1..)
+        .and_then(|suffix| suffix.find(')'))
+    else {
         return Vec::new();
     };
     header

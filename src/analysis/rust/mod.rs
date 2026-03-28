@@ -495,12 +495,12 @@ fn is_rust_prelude_function(name: &str) -> bool {
 }
 
 fn is_rust_path_receiver(receiver: &str) -> bool {
-    receiver
-        .split("::")
-        .all(|segment| !segment.is_empty()
+    receiver.split("::").all(|segment| {
+        !segment.is_empty()
             && segment
                 .chars()
-                .all(|character| character.is_ascii_alphanumeric() || character == '_'))
+                .all(|character| character.is_ascii_alphanumeric() || character == '_')
+    })
 }
 
 fn is_rust_local_sym(name: &str) -> bool {
@@ -558,9 +558,7 @@ fn alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, ImportSpec> {
 mod tests {
     use std::path::Path;
 
-    use super::{
-        alias_lookup, call_matches_import, evaluate_rust_findings, import_matches_item,
-    };
+    use super::{alias_lookup, call_matches_import, evaluate_rust_findings, import_matches_item};
     use crate::analysis::rust::parser;
     use crate::index::build_repository_index;
 
@@ -605,9 +603,11 @@ pub fn evaluate_go_repo() {}
         };
 
         assert!(call_matches_import(&index, &current.path, import_spec));
-        assert!(!evaluate_rust_findings(&current, &index)
-            .iter()
-            .any(|finding| finding.rule_id == "hallucinated_import_call"));
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| finding.rule_id == "hallucinated_import_call")
+        );
     }
 
     #[test]
@@ -650,9 +650,11 @@ pub(super) fn find_package_name() {}
                 None => unreachable!("find_package_name import should exist"),
             }
         ));
-        assert!(!evaluate_rust_findings(&current, &index)
-            .iter()
-            .any(|finding| finding.rule_id == "hallucinated_import_call"));
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| finding.rule_id == "hallucinated_import_call")
+        );
     }
 
     #[test]
@@ -698,12 +700,14 @@ impl Error {
         };
 
         assert!(import_matches_item(&index, &current.path, import_spec));
-        assert!(!evaluate_rust_findings(&current, &index)
-            .iter()
-            .any(|finding| {
-                finding.rule_id == "hallucinated_import_call"
-                    && finding.message.contains("Error::parser_configuration")
-            }));
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_import_call"
+                        && finding.message.contains("Error::parser_configuration")
+                })
+        );
     }
 
     #[test]
@@ -719,19 +723,18 @@ pub fn release(value: String) {
 
         let index = build_repository_index(Path::new("/repo"), std::slice::from_ref(&current));
 
-        assert!(!evaluate_rust_findings(&current, &index)
-            .iter()
-            .any(|finding| {
-                finding.rule_id == "hallucinated_local_call" && finding.message.contains("drop")
-            }));
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_local_call" && finding.message.contains("drop")
+                })
+        );
     }
 
     #[test]
     fn actual_go_module_imported_heuristic_call_is_resolved() {
-        let current = parse_file(
-            "/repo/src/analysis/go/mod.rs",
-            include_str!("../go/mod.rs"),
-        );
+        let current = parse_file("/repo/src/analysis/go/mod.rs", include_str!("../go/mod.rs"));
         let heuristics = parse_file(
             "/repo/src/heuristics/mod.rs",
             include_str!("../../heuristics/mod.rs"),
@@ -741,7 +744,10 @@ pub fn release(value: String) {
         let import_aliases = alias_lookup(&current.imports);
         let import_spec = import_aliases.get("evaluate_go_file");
 
-        assert!(import_spec.is_some(), "evaluate_go_file import should exist");
+        assert!(
+            import_spec.is_some(),
+            "evaluate_go_file import should exist"
+        );
         let import_spec = match import_spec {
             Some(import_spec) => import_spec,
             None => unreachable!("asserted above"),
@@ -756,14 +762,8 @@ pub fn release(value: String) {
             "/repo/src/analysis/go/parser/mod.rs",
             include_str!("../go/parser/mod.rs"),
         );
-        let analysis = parse_file(
-            "/repo/src/analysis/mod.rs",
-            include_str!("../mod.rs"),
-        );
-        let error = parse_file(
-            "/repo/src/analysis/error.rs",
-            include_str!("../error.rs"),
-        );
+        let analysis = parse_file("/repo/src/analysis/mod.rs", include_str!("../mod.rs"));
+        let error = parse_file("/repo/src/analysis/error.rs", include_str!("../error.rs"));
 
         let index = build_repository_index(Path::new("/repo"), &[current.clone(), analysis, error]);
         let import_aliases = alias_lookup(&current.imports);
@@ -797,11 +797,13 @@ pub fn run() {
 
         let index = build_repository_index(Path::new("/repo"), std::slice::from_ref(&current));
 
-        assert!(!evaluate_rust_findings(&current, &index)
-            .iter()
-            .any(|finding| {
-                finding.rule_id == "hallucinated_import_call"
-                    && finding.message.contains("parser::parse_file")
-            }));
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_import_call"
+                        && finding.message.contains("parser::parse_file")
+                })
+        );
     }
 }

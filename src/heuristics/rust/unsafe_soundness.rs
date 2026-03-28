@@ -49,8 +49,14 @@ pub(crate) fn unsafe_soundness_findings(
             rule_id,
             severity,
             pattern.line,
-            format!("function {} uses an unsafe soundness-sensitive operation", function.fingerprint.name),
-            vec![format!("unsafe detail: {}", pattern.detail), hint.to_string()],
+            format!(
+                "function {} uses an unsafe soundness-sensitive operation",
+                function.fingerprint.name
+            ),
+            vec![
+                format!("unsafe detail: {}", pattern.detail),
+                hint.to_string(),
+            ],
         ));
     }
 

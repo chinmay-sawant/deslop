@@ -6,9 +6,9 @@ mod types;
 
 use std::path::Path;
 
+use crate::Result;
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
-use crate::Result;
 
 pub use error::Error;
 pub(crate) use error::Result as AnalysisResult;

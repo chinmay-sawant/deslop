@@ -8,7 +8,10 @@ use super::{
     file_finding, first_await_after, function_finding, has_cancellation_pattern, is_std_mutex,
 };
 
-pub(crate) fn async_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn async_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     if (function.is_async || !function.await_points.is_empty()) && is_std_mutex(file, function) {
@@ -20,7 +23,10 @@ pub(crate) fn async_function_findings(file: &ParsedFile, function: &ParsedFuncti
                     "rust_async_std_mutex_await",
                     Severity::Error,
                     lock.line,
-                    format!("function {} appears to hold std::sync::Mutex across .await", function.fingerprint.name),
+                    format!(
+                        "function {} appears to hold std::sync::Mutex across .await",
+                        function.fingerprint.name
+                    ),
                     vec![
                         format!("lock line: {}", lock.line),
                         format!("await line: {await_line}"),
@@ -38,7 +44,10 @@ pub(crate) fn async_function_findings(file: &ParsedFile, function: &ParsedFuncti
                 "rust_async_hold_permit_across_await",
                 Severity::Warning,
                 permit.line,
-                format!("function {} may hold a permit or pooled resource across .await", function.fingerprint.name),
+                format!(
+                    "function {} may hold a permit or pooled resource across .await",
+                    function.fingerprint.name
+                ),
                 vec![
                     format!("permit/resource acquisition line: {}", permit.line),
                     format!("await line: {await_line}"),
@@ -57,7 +66,10 @@ pub(crate) fn async_function_findings(file: &ParsedFile, function: &ParsedFuncti
             "rust_async_spawn_cancel_at_await",
             Severity::Warning,
             function.spawn_calls[0].line,
-            format!("function {} spawns async work without an obvious cancellation path", function.fingerprint.name),
+            format!(
+                "function {} spawns async work without an obvious cancellation path",
+                function.fingerprint.name
+            ),
             vec!["no CancellationToken or select!-based shutdown branch detected".to_string()],
         ));
     }
@@ -70,7 +82,10 @@ pub(crate) fn async_function_findings(file: &ParsedFile, function: &ParsedFuncti
                 "rust_async_missing_fuse_pin",
                 Severity::Warning,
                 function.select_macro_lines[0],
-                format!("function {} reuses select! without fuse/pin markers", function.fingerprint.name),
+                format!(
+                    "function {} reuses select! without fuse/pin markers",
+                    function.fingerprint.name
+                ),
                 vec![
                     format!("macro calls observed={}", function.macro_calls.len()),
                     "consider pinning and fusing reused futures before select! loops".to_string(),
@@ -85,10 +100,17 @@ pub(crate) fn async_function_findings(file: &ParsedFile, function: &ParsedFuncti
                 "rust_async_recreate_future_in_select",
                 Severity::Info,
                 function.select_macro_lines[0],
-                format!("function {} may recreate futures inside a select! loop", function.fingerprint.name),
+                format!(
+                    "function {} may recreate futures inside a select! loop",
+                    function.fingerprint.name
+                ),
                 vec![
-                    format!("tracked future-like bindings={}", function.futures_created.len()),
-                    "move long-lived futures outside the loop when they are polled repeatedly".to_string(),
+                    format!(
+                        "tracked future-like bindings={}",
+                        function.futures_created.len()
+                    ),
+                    "move long-lived futures outside the loop when they are polled repeatedly"
+                        .to_string(),
                 ],
             ));
         }
@@ -117,8 +139,14 @@ pub(crate) fn async_function_findings(file: &ParsedFile, function: &ParsedFuncti
             "rust_async_blocking_drop",
             Severity::Warning,
             function.blocking_calls[0].line,
-            format!("Drop implementation {} does blocking work that may surface in async code", function.fingerprint.name),
-            vec!["prefer explicit async shutdown paths instead of blocking cleanup in Drop".to_string()],
+            format!(
+                "Drop implementation {} does blocking work that may surface in async code",
+                function.fingerprint.name
+            ),
+            vec![
+                "prefer explicit async shutdown paths instead of blocking cleanup in Drop"
+                    .to_string(),
+            ],
         ));
     }
 
@@ -162,7 +190,9 @@ pub(crate) fn async_file_findings(file: &ParsedFile) -> Vec<Finding> {
 
         for pair in receivers.windows(2) {
             let edge = (pair[0].clone(), pair[1].clone());
-            order_edges.entry(edge).or_insert(function.fingerprint.start_line);
+            order_edges
+                .entry(edge)
+                .or_insert(function.fingerprint.start_line);
         }
     }
 
@@ -173,7 +203,10 @@ pub(crate) fn async_file_findings(file: &ParsedFile) -> Vec<Finding> {
                 "rust_async_lock_order_cycle",
                 Severity::Error,
                 *line,
-                format!("file {} contains conflicting lock acquisition order", file.path.display()),
+                format!(
+                    "file {} contains conflicting lock acquisition order",
+                    file.path.display()
+                ),
                 vec![
                     format!("observed lock order {left} -> {right} at line {line}"),
                     format!("observed reverse order {right} -> {left} at line {reverse_line}"),
@@ -190,7 +223,11 @@ fn is_lock_order_call(call: &crate::analysis::RuntimeCall) -> bool {
         return true;
     }
 
-    let receiver = call.receiver.as_deref().unwrap_or_default().to_ascii_lowercase();
+    let receiver = call
+        .receiver
+        .as_deref()
+        .unwrap_or_default()
+        .to_ascii_lowercase();
     matches!(call.name.as_str(), "read" | "write")
         && (receiver.contains("lock") || receiver.contains("mutex") || receiver.contains("rwlock"))
 }

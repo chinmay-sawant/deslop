@@ -29,10 +29,10 @@ pub fn read_to_string_limited(path: &Path, max_bytes: u64) -> Result<String> {
     let mut source = String::new();
     let bytes_read = u64::try_from(
         reader
-        .by_ref()
-        .take(max_bytes + 1)
-        .read_to_string(&mut source)
-        .map_err(|error| Error::io(path, error))?,
+            .by_ref()
+            .take(max_bytes + 1)
+            .read_to_string(&mut source)
+            .map_err(|error| Error::io(path, error))?,
     )
     .map_err(|_| Error::byte_count_overflow(path, source.len()))?;
 
@@ -48,7 +48,9 @@ pub fn read_to_string_limited(path: &Path, max_bytes: u64) -> Result<String> {
 }
 
 pub(crate) fn canonicalize_within_root(root: &Path, candidate: &Path) -> Result<PathBuf> {
-    let canonical_root = root.canonicalize().map_err(|error| Error::io(root, error))?;
+    let canonical_root = root
+        .canonicalize()
+        .map_err(|error| Error::io(root, error))?;
     reject_symlink(candidate)?;
     let canonical_path = candidate
         .canonicalize()

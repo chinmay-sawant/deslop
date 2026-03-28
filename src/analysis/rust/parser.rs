@@ -4,9 +4,9 @@ use std::path::Path;
 use tree_sitter::{Node, Parser};
 
 use crate::analysis::{
-    AnalysisResult, CallSite, DeclaredSymbol, Error, FieldSummary, ImportSpec, Language,
-    MacroCall, NamedLiteral, ParsedFile, ParsedFunction, RuntimeCall, StructSummary,
-    UnsafePattern, UnsafePatternKind,
+    AnalysisResult, CallSite, DeclaredSymbol, Error, FieldSummary, ImportSpec, Language, MacroCall,
+    NamedLiteral, ParsedFile, ParsedFunction, RuntimeCall, StructSummary, UnsafePattern,
+    UnsafePatternKind,
 };
 use crate::model::{FunctionFingerprint, SymbolKind};
 
@@ -354,9 +354,11 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
     let is_async = function_is_async(node, body_node, source);
     let await_points = collect_await_points(body_node);
     let macro_calls = collect_macro_calls(&calls);
-    let spawn_calls = collect_named_runtime_calls(&calls, &["spawn", "spawn_local", "spawn_blocking"]);
+    let spawn_calls =
+        collect_named_runtime_calls(&calls, &["spawn", "spawn_local", "spawn_blocking"]);
     let lock_calls = collect_named_runtime_calls(&calls, &["lock", "lock_owned", "read", "write"]);
-    let permit_acquires = collect_named_runtime_calls(&calls, &["acquire", "acquire_owned", "reserve", "get"]);
+    let permit_acquires =
+        collect_named_runtime_calls(&calls, &["acquire", "acquire_owned", "reserve", "get"]);
     let futures_created = collect_future_creations(body_node, source);
     let blocking_calls = collect_blocking_calls(body_node, source, &calls);
     let select_macro_lines = macro_calls
@@ -441,12 +443,7 @@ fn collect_trait_impls(root: Node<'_>, source: &str, trait_name: &str) -> BTreeS
     impls
 }
 
-fn visit_trait_impls(
-    node: Node<'_>,
-    source: &str,
-    trait_name: &str,
-    impls: &mut BTreeSet<String>,
-) {
+fn visit_trait_impls(node: Node<'_>, source: &str, trait_name: &str, impls: &mut BTreeSet<String>) {
     if node.kind() == "impl_item"
         && let Some(type_name) = trait_impl_type(node, source, trait_name)
     {
@@ -520,9 +517,9 @@ fn build_struct_summary(
         .map(|body| collect_struct_fields(body, source))
         .unwrap_or_default();
     let derives = parse_derive_names(&leading_attributes(node), source);
-    let visibility_pub = source
-        .get(node.byte_range())
-        .is_some_and(|text| text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub("));
+    let visibility_pub = source.get(node.byte_range()).is_some_and(|text| {
+        text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub(")
+    });
 
     Some(StructSummary {
         line: node.start_position().row + 1,
@@ -558,9 +555,20 @@ fn collect_struct_fields(node: Node<'_>, source: &str) -> Vec<FieldSummary> {
         let Some(type_node) = child.child_by_field_name("type") else {
             continue;
         };
-        let name = source.get(name_node.byte_range()).unwrap_or("").trim().to_string();
-        let type_text = source.get(type_node.byte_range()).unwrap_or("").trim().to_string();
-        let normalized_type = type_text.chars().filter(|character| !character.is_whitespace()).collect::<String>();
+        let name = source
+            .get(name_node.byte_range())
+            .unwrap_or("")
+            .trim()
+            .to_string();
+        let type_text = source
+            .get(type_node.byte_range())
+            .unwrap_or("")
+            .trim()
+            .to_string();
+        let normalized_type = type_text
+            .chars()
+            .filter(|character| !character.is_whitespace())
+            .collect::<String>();
         let primitive_name = normalized_type
             .trim_start_matches('&')
             .trim_start_matches("mut")
@@ -589,9 +597,9 @@ fn collect_struct_fields(node: Node<'_>, source: &str) -> Vec<FieldSummary> {
         fields.push(FieldSummary {
             line: child.start_position().row + 1,
             name,
-            is_pub: source
-                .get(child.byte_range())
-                .is_some_and(|text| text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub(")),
+            is_pub: source.get(child.byte_range()).is_some_and(|text| {
+                text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub(")
+            }),
             is_option: normalized_type.starts_with("Option<")
                 || normalized_type.contains("::Option<")
                 || normalized_type.starts_with("std::option::Option<"),
@@ -662,7 +670,8 @@ fn visit_for_await_points(node: Node<'_>, lines: &mut Vec<usize>) {
 }
 
 fn collect_macro_calls(calls: &[CallSite]) -> Vec<MacroCall> {
-    calls.iter()
+    calls
+        .iter()
         .filter(|call| call.name.ends_with('!'))
         .map(|call| MacroCall {
             line: call.line,
@@ -672,7 +681,8 @@ fn collect_macro_calls(calls: &[CallSite]) -> Vec<MacroCall> {
 }
 
 fn collect_named_runtime_calls(calls: &[CallSite], names: &[&str]) -> Vec<RuntimeCall> {
-    calls.iter()
+    calls
+        .iter()
         .filter(|call| names.contains(&call.name.as_str()))
         .map(|call| RuntimeCall {
             line: call.line,
@@ -694,7 +704,10 @@ fn visit_for_future_creations(node: Node<'_>, source: &str, futures: &mut Vec<Ru
         && let Some(value_text) = source.get(value_node.byte_range())
     {
         let trimmed = value_text.trim();
-        if trimmed.starts_with("async ") || trimmed.contains(".fuse()") || trimmed.contains("Future") {
+        if trimmed.starts_with("async ")
+            || trimmed.contains(".fuse()")
+            || trimmed.contains("Future")
+        {
             futures.push(RuntimeCall {
                 line: node.start_position().row + 1,
                 name: "future".to_string(),
@@ -721,15 +734,30 @@ fn collect_blocking_calls(node: Node<'_>, source: &str, calls: &[CallSite]) -> V
         .collect::<Vec<_>>();
 
     visit_textual_blocking_calls(node, source, &mut blocking_calls);
-    blocking_calls.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
-    blocking_calls.dedup_by(|left, right| left.line == right.line && left.name == right.name && left.receiver == right.receiver);
+    blocking_calls
+        .sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    blocking_calls.dedup_by(|left, right| {
+        left.line == right.line && left.name == right.name && left.receiver == right.receiver
+    });
     blocking_calls
 }
 
 fn is_blocking_call(call: &CallSite) -> bool {
     let receiver = call.receiver.as_deref().unwrap_or_default();
-    matches!(call.name.as_str(), "read_to_string" | "read" | "read_to_end" | "write" | "write_all" | "open" | "create" | "metadata" | "sleep" | "join" | "block_on")
-        || receiver.contains("std::fs")
+    matches!(
+        call.name.as_str(),
+        "read_to_string"
+            | "read"
+            | "read_to_end"
+            | "write"
+            | "write_all"
+            | "open"
+            | "create"
+            | "metadata"
+            | "sleep"
+            | "join"
+            | "block_on"
+    ) || receiver.contains("std::fs")
         || receiver.contains("fs")
         || receiver.contains("std::thread")
         || receiver.contains("File")
@@ -766,7 +794,10 @@ fn visit_textual_blocking_calls(
     }
 }
 
-fn collect_loop_operation_lines(node: Node<'_>, source: &str) -> (Vec<usize>, Vec<usize>, Vec<usize>) {
+fn collect_loop_operation_lines(
+    node: Node<'_>,
+    source: &str,
+) -> (Vec<usize>, Vec<usize>, Vec<usize>) {
     let mut write_loops = Vec::new();
     let mut line_iteration_loops = Vec::new();
     let mut default_hasher_lines = Vec::new();
@@ -791,7 +822,8 @@ fn visit_loop_operation_lines(
 ) {
     let child_in_loop = in_loop || is_loop_node(node.kind());
 
-    if child_in_loop && node.kind() == "call_expression"
+    if child_in_loop
+        && node.kind() == "call_expression"
         && let Some(function_node) = node.child_by_field_name("function")
     {
         let target = render_call_target(function_node, source);
@@ -808,7 +840,8 @@ fn visit_loop_operation_lines(
         }
     }
 
-    if child_in_loop && node.kind() == "macro_invocation"
+    if child_in_loop
+        && node.kind() == "macro_invocation"
         && let Some(macro_node) = node.child_by_field_name("macro")
         && let Some(macro_text) = source.get(macro_node.byte_range())
         && matches!(macro_text.trim(), "write" | "writeln")
@@ -830,7 +863,10 @@ fn visit_loop_operation_lines(
 }
 
 fn is_loop_node(kind: &str) -> bool {
-    matches!(kind, "for_expression" | "while_expression" | "loop_expression")
+    matches!(
+        kind,
+        "for_expression" | "while_expression" | "loop_expression"
+    )
 }
 
 fn collect_boxed_container_lines(node: Node<'_>, source: &str) -> Vec<usize> {
@@ -863,15 +899,20 @@ fn contains_boxed_vec_type(text: &str) -> bool {
 }
 
 fn is_default_hashmap_target(target: &str) -> bool {
-    target.contains("HashMap::")
-        && (target.ends_with("::new") || target.ends_with("::default"))
+    target.contains("HashMap::") && (target.ends_with("::new") || target.ends_with("::default"))
 }
 
 fn collect_unsafe_patterns(node: Node<'_>, source: &str) -> Vec<UnsafePattern> {
     let mut patterns = Vec::new();
     visit_for_unsafe_patterns(node, source, &mut patterns);
-    patterns.sort_by(|left, right| left.line.cmp(&right.line).then(left.detail.cmp(&right.detail)));
-    patterns.dedup_by(|left, right| left.line == right.line && left.kind == right.kind && left.detail == right.detail);
+    patterns.sort_by(|left, right| {
+        left.line
+            .cmp(&right.line)
+            .then(left.detail.cmp(&right.detail))
+    });
+    patterns.dedup_by(|left, right| {
+        left.line == right.line && left.kind == right.kind && left.detail == right.detail
+    });
     patterns
 }
 
@@ -901,7 +942,10 @@ fn visit_for_unsafe_patterns(node: Node<'_>, source: &str, patterns: &mut Vec<Un
 
     if matches!(node.kind(), "cast_expression" | "type_cast_expression")
         && let Some(text) = source.get(node.byte_range())
-        && (text.contains(" as *const ") || text.contains(" as *mut ") || text.ends_with(" as *const") || text.ends_with(" as *mut"))
+        && (text.contains(" as *const ")
+            || text.contains(" as *mut ")
+            || text.ends_with(" as *const")
+            || text.ends_with(" as *mut"))
     {
         patterns.push(UnsafePattern {
             line: node.start_position().row + 1,
@@ -920,9 +964,7 @@ fn inside_trait_impl(node: Node<'_>, source: &str, trait_name: &str) -> bool {
     let mut current = node.parent();
 
     while let Some(parent) = current {
-        if parent.kind() == "impl_item"
-            && trait_impl_type(parent, source, trait_name).is_some()
-        {
+        if parent.kind() == "impl_item" && trait_impl_type(parent, source, trait_name).is_some() {
             return true;
         }
         current = parent.parent();

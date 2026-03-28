@@ -31,9 +31,16 @@ fn test_rust_domain_modeling_rules() {
         "rust_serde_sensitive_serialize",
     ] {
         assert!(
-            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "expected finding {rule_id:?}, got {:?}",
-            report.findings.iter().map(|finding| finding.rule_id.as_str()).collect::<Vec<_>>()
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
         );
     }
 
@@ -65,9 +72,16 @@ fn test_rust_async_and_performance_rules() {
         "rust_async_lock_order_cycle",
     ] {
         assert!(
-            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "expected finding {rule_id:?}, got {:?}",
-            report.findings.iter().map(|finding| finding.rule_id.as_str()).collect::<Vec<_>>()
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
         );
     }
 
@@ -77,7 +91,11 @@ fn test_rust_async_and_performance_rules() {
 #[test]
 fn test_rust_unsafe_soundness_rules() {
     let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("unsafe/positive.txt"));
+    write_fixture(
+        &temp_dir,
+        "src/lib.rs",
+        rust_fixture!("unsafe/positive.txt"),
+    );
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -94,9 +112,16 @@ fn test_rust_unsafe_soundness_rules() {
         "rust_unsafe_raw_pointer_cast",
     ] {
         assert!(
-            report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "expected finding {rule_id:?}, got {:?}",
-            report.findings.iter().map(|finding| finding.rule_id.as_str()).collect::<Vec<_>>()
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
         );
     }
 
@@ -111,8 +136,16 @@ fn test_rust_advanced_negative_fixtures() {
         "src/domain.rs",
         rust_fixture!("domain_modeling/negative.txt"),
     );
-    write_fixture(&temp_dir, "src/async.rs", rust_fixture!("async/negative.txt"));
-    write_fixture(&temp_dir, "src/unsafe.rs", rust_fixture!("unsafe/negative.txt"));
+    write_fixture(
+        &temp_dir,
+        "src/async.rs",
+        rust_fixture!("async/negative.txt"),
+    );
+    write_fixture(
+        &temp_dir,
+        "src/unsafe.rs",
+        rust_fixture!("unsafe/negative.txt"),
+    );
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -148,9 +181,16 @@ fn test_rust_advanced_negative_fixtures() {
 
     for rule_id in blocked {
         assert!(
-            !report.findings.iter().any(|finding| finding.rule_id == rule_id),
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
             "unexpected finding {rule_id:?}, got {:?}",
-            report.findings.iter().map(|finding| finding.rule_id.as_str()).collect::<Vec<_>>()
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
         );
     }
 
@@ -178,8 +218,8 @@ fn test_rust_security_script() {
 
     assert!(output.status.success(), "security script should pass");
 
-    let report_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("reports/rust-security-baseline/latest.txt");
+    let report_path =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("reports/rust-security-baseline/latest.txt");
     let report = fs::read_to_string(report_path).expect("security report should be readable");
 
     for heading in [

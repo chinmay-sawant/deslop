@@ -99,8 +99,14 @@ mod tests {
 
         let config = load_repository_config(&root).expect("config should parse");
         assert!(!config.rust_async_experimental);
-        assert_eq!(config.disabled_rules, vec!["panic_macro_leftover".to_string()]);
-        assert_eq!(config.suppressed_paths, vec![PathBuf::from("tests/fixtures")]);
+        assert_eq!(
+            config.disabled_rules,
+            vec!["panic_macro_leftover".to_string()]
+        );
+        assert_eq!(
+            config.suppressed_paths,
+            vec![PathBuf::from("tests/fixtures")]
+        );
         assert_eq!(
             config.severity_overrides.get("unwrap_in_non_test_code"),
             Some(&Severity::Error)

@@ -64,10 +64,7 @@ impl Error {
         }
     }
 
-    pub(crate) fn path_outside_root(
-        path: impl AsRef<Path>,
-        root: impl AsRef<Path>,
-    ) -> Self {
+    pub(crate) fn path_outside_root(path: impl AsRef<Path>, root: impl AsRef<Path>) -> Self {
         Self::PathOutsideRoot {
             path: path.as_ref().to_path_buf(),
             root: root.as_ref().to_path_buf(),

@@ -8,8 +8,8 @@ mod io;
 mod model;
 mod scan;
 
-pub use benchmark::{BenchmarkOptions, benchmark_repository};
 pub use analysis::Error as AnalysisError;
+pub use benchmark::{BenchmarkOptions, benchmark_repository};
 pub use config::Error as ConfigError;
 pub(crate) use config::{RepoConfig, load_repository_config};
 pub use error::{Error, Result};

@@ -9,10 +9,12 @@ use rayon::prelude::*;
 use crate::analysis::{ParsedFile, backend_for_language, backend_for_path, supported_extensions};
 use crate::heuristics::evaluate_shared;
 use crate::index::build_repository_index;
-use crate::model::{Finding, ParseFailure, ScanOptions, ScanReport, TimingBreakdown};
 use crate::io::canonicalize_within_root;
-use crate::{DEFAULT_MAX_BYTES, RepoConfig, Result, load_repository_config, read_to_string_limited};
+use crate::model::{Finding, ParseFailure, ScanOptions, ScanReport, TimingBreakdown};
 use crate::scan::walker::discover_source_files;
+use crate::{
+    DEFAULT_MAX_BYTES, RepoConfig, Result, load_repository_config, read_to_string_limited,
+};
 
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let total_start = Instant::now();
@@ -24,8 +26,11 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
 
     let discover_start = Instant::now();
     let supported_extensions = supported_extensions();
-    let discovered_files =
-        discover_source_files(&canonical_root, options.respect_ignore, &supported_extensions)?;
+    let discovered_files = discover_source_files(
+        &canonical_root,
+        options.respect_ignore,
+        &supported_extensions,
+    )?;
     let discover_ms = discover_start.elapsed().as_millis();
 
     let parse_start = Instant::now();
@@ -40,7 +45,10 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
 
     for outcome in outcomes {
         match outcome {
-            FileOutcome::Parsed { file, suppressions: file_suppressions } => {
+            FileOutcome::Parsed {
+                file,
+                suppressions: file_suppressions,
+            } => {
                 suppressions.insert(file.path.clone(), file_suppressions);
                 parsed_files.push(*file);
             }
@@ -215,7 +223,10 @@ fn is_suppressed(
 
 fn apply_repository_config(findings: &mut Vec<Finding>, repo_config: &RepoConfig, root: &Path) {
     findings.retain(|finding| {
-        !repo_config.disabled_rules.iter().any(|rule_id| rule_id == &finding.rule_id)
+        !repo_config
+            .disabled_rules
+            .iter()
+            .any(|rule_id| rule_id == &finding.rule_id)
             && (repo_config.rust_async_experimental || !is_async_rollout_rule(&finding.rule_id))
             && !path_is_suppressed(&finding.path, root, &repo_config.suppressed_paths)
     });
@@ -241,9 +252,7 @@ fn path_is_suppressed(path: &Path, root: &Path, suppressed_paths: &[PathBuf]) ->
 fn is_async_rollout_rule(rule_id: &str) -> bool {
     matches!(
         rule_id,
-        "rust_blocking_io_in_async"
-            | "rust_lock_across_await"
-            | "rust_tokio_mutex_unnecessary"
+        "rust_blocking_io_in_async" | "rust_lock_across_await" | "rust_tokio_mutex_unnecessary"
     ) || rule_id.starts_with("rust_async_")
 }
 
@@ -307,8 +316,8 @@ mod tests {
         parse_rule_ids, parse_suppression_directives, scan_repository,
     };
     use crate::RepoConfig;
-    use crate::model::{Finding, Severity};
     use crate::model::ScanOptions;
+    use crate::model::{Finding, Severity};
 
     fn sample_finding(rule_id: &str, severity: Severity) -> Finding {
         Finding {
@@ -352,7 +361,12 @@ mod tests {
 
     #[test]
     fn finds_next_code_line_after_directive_comments() {
-        let lines = vec!["// deslop-ignore:unwrap_in_non_test_code", "", "// note", "value.unwrap();"];
+        let lines = vec![
+            "// deslop-ignore:unwrap_in_non_test_code",
+            "",
+            "// note",
+            "value.unwrap();",
+        ];
         assert_eq!(next_code_line(&lines, 1), Some(4));
     }
 

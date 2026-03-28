@@ -9,9 +9,12 @@ deslop is a static analyzer for Go, Python, and Rust repositories that looks for
 ### Scan modes
 
 - `cargo run -- scan <path>` prints a compact summary plus findings.
+- `cargo run -- scan --ignore rule1,rule2 <path>` filters specific rule IDs for a single scan invocation after analysis completes.
 - `cargo run -- scan --details <path>` prints the full per-file and per-function breakdown.
 - `cargo run -- scan --json <path>` prints structured JSON.
 - `cargo run -- bench <path>` benchmarks the end-to-end pipeline.
+
+Repository-local scan behavior can also be tuned with `.deslop.toml`, including `disabled_rules`, `severity_overrides`, `suppressed_paths`, and `rust_async_experimental`.
 
 ### Repository handling
 
@@ -65,6 +68,54 @@ deslop is a static analyzer for Go, Python, and Rust repositories that looks for
 - `unwrap_in_non_test_code`: `.unwrap()` used in non-test Rust code.
 - `expect_in_non_test_code`: `.expect(...)` used in non-test Rust code.
 - `unsafe_without_safety_comment`: `unsafe fn` or `unsafe` block without a nearby `SAFETY:` comment. The current nearby-comment policy accepts a `SAFETY:` comment on the same line or within the previous two lines.
+
+### Rust async and runtime signals
+
+- `rust_blocking_io_in_async`: blocking I/O or other blocking work observed in async Rust code.
+- `rust_lock_across_await`: a lock appears to be held across an `.await` boundary.
+- `rust_async_std_mutex_await`: `std::sync::Mutex` appears to be held across `.await` in async code.
+- `rust_async_hold_permit_across_await`: a permit or pooled resource may be held across `.await`.
+- `rust_async_spawn_cancel_at_await`: async work is spawned without an obvious cancellation path.
+- `rust_async_missing_fuse_pin`: a `select!` loop appears to reuse futures without fuse or pin markers.
+- `rust_async_recreate_future_in_select`: a `select!` loop may recreate futures instead of reusing long-lived ones.
+- `rust_async_monopolize_executor`: an async function may monopolize the executor with blocking work and no `.await`.
+- `rust_async_blocking_drop`: a `Drop` implementation does blocking work that can surface in async contexts.
+- `rust_async_invariant_broken_at_await`: related state mutations appear split around an `.await` boundary.
+- `rust_async_lock_order_cycle`: conflicting lock acquisition order suggests a lock-order cycle.
+
+### Rust performance and layout signals
+
+- `rust_unbuffered_file_writes`: file-like writes performed inside a loop without buffering or batching.
+- `rust_lines_allocate_per_line`: `.lines()` iteration used inside a loop where per-item allocation may matter.
+- `rust_hashmap_default_hasher`: `HashMap` default-hasher construction in a likely hot path.
+- `rust_tokio_mutex_unnecessary`: `tokio::sync::Mutex` used in a fully synchronous critical path with no `.await`.
+- `rust_blocking_drop`: a `Drop` implementation performs blocking work.
+- `rust_pointer_chasing_vec_box`: pointer-heavy boxed vector-style storage that may hurt cache locality.
+- `rust_path_join_absolute`: `Path::join` used with an absolute segment that discards the existing base path.
+- `rust_utf8_validate_hot_path`: UTF-8 validation appears in a likely hot path and may deserve profiling.
+- `rust_large_future_stack`: large allocations may be captured across await points and bloat future size.
+- `rust_aos_hot_path`: repeated struct-field dereferences inside a loop may indicate an array-of-structs hot path.
+
+### Rust domain-modeling signals
+
+- `rust_domain_raw_primitive`: business-facing data is stored as a raw primitive instead of a stronger domain type.
+- `rust_domain_float_for_money`: floating-point storage is used for money-like values.
+- `rust_domain_impossible_combination`: a boolean toggle is mixed with optional credentials, creating invalid-state combinations.
+- `rust_domain_default_produces_invalid`: `Default` is derived or implemented on a type that likely cannot have a safe default state.
+- `rust_debug_secret`: `Debug` is derived on a type that carries secret-like fields.
+- `rust_serde_sensitive_deserialize`: `Deserialize` is derived for sensitive fields without obvious validation.
+- `rust_serde_sensitive_serialize`: `Serialize` is derived for secret-like fields that may need redaction or exclusion.
+- `rust_domain_optional_secret_default`: a defaultable type includes optional secret-like fields, which can hide invalid configuration.
+
+### Rust unsafe soundness signals
+
+- `rust_unsafe_get_unchecked`: unsafe use of `get_unchecked` without proof of bounds invariants.
+- `rust_unsafe_from_raw_parts`: unsafe raw slice construction that depends on lifetime and length invariants.
+- `rust_unsafe_set_len`: unsafe `Vec::set_len` use that requires initialized elements and correct capacity invariants.
+- `rust_unsafe_assume_init`: unsafe `MaybeUninit::assume_init` use without proof of full initialization.
+- `rust_unsafe_transmute`: unsafe `transmute` use that requires layout and validity proof.
+- `rust_unsafe_raw_pointer_cast`: unsafe raw pointer cast that depends on aliasing and lifetime guarantees.
+- `rust_unsafe_aliasing_assumption`: unsafe code mixes interior mutability and mutable references in ways that need careful aliasing review.
 
 ### Python-specific signals
 
@@ -204,7 +255,9 @@ For Rust, `hallucinated_local_call` now also covers direct same-module calls whe
 - Phase 3 heuristic additions: `hardcoded_secret`, `sql_string_concat`, `mixed_receiver_kinds`, `malformed_struct_tag`, `duplicate_struct_tag_key`, `test_without_assertion_signal`, `happy_path_only_test`, and `placeholder_test_body`.
 - Python backend additions so far: `.py` routing, Python parser coverage for imports, symbols, call sites, docstrings, test classification, loop concatenation, and conservative exception-handler evidence.
 - Python heuristic additions so far: `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, `none_comparison`, `side_effect_comprehension`, `redundant_return_none`, `hardcoded_path_string`, `hardcoded_business_rule`, `magic_value_branching`, `reinvented_utility`, `variadic_public_api`, `list_materialization_first_element`, `deque_candidate_queue`, `temporary_collection_in_loop`, `recursive_traversal_risk`, `list_membership_in_loop`, `repeated_len_in_loop`, `builtin_reduction_candidate`, `broad_exception_handler`, `missing_context_manager`, `network_boundary_without_timeout`, `environment_boundary_without_fallback`, `external_input_without_validation`, `public_api_missing_type_hints`, `mixed_sync_async_module`, `god_function`, `god_class`, `monolithic_init_module`, `monolithic_module`, `too_many_instance_attributes`, `eager_constructor_collaborators`, `over_abstracted_wrapper`, `mixed_concerns_function`, `name_responsibility_mismatch`, `deep_inheritance_hierarchy`, `tight_module_coupling`, `textbook_docstring_small_helper`, `mixed_naming_conventions`, `unrelated_heavy_import`, `obvious_commentary`, `enthusiastic_commentary`, `commented_out_code`, `repeated_string_literal`, `duplicate_error_handler_block`, `duplicate_validation_pipeline`, `duplicate_test_utility_logic`, `cross_file_copy_paste_function`, `cross_file_repeated_literal`, `duplicate_query_fragment`, `duplicate_transformation_pipeline`, Python reuse of `full_dataset_load`, and Python reuse of `string_concat_in_loop`.
-- Rust heuristic additions so far: `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, and Rust-local `hallucinated_import_call` coverage for `crate::`, `self::`, and `super::` module imports.
+- Rust hygiene and hallucination additions so far: `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, Rust-local `hallucinated_import_call`, and Rust-local `hallucinated_local_call`.
+- Rust async and performance additions so far: `rust_blocking_io_in_async`, `rust_lock_across_await`, `rust_async_std_mutex_await`, `rust_async_hold_permit_across_await`, `rust_async_spawn_cancel_at_await`, `rust_async_missing_fuse_pin`, `rust_async_recreate_future_in_select`, `rust_async_monopolize_executor`, `rust_async_blocking_drop`, `rust_async_invariant_broken_at_await`, `rust_async_lock_order_cycle`, `rust_unbuffered_file_writes`, `rust_lines_allocate_per_line`, `rust_hashmap_default_hasher`, `rust_tokio_mutex_unnecessary`, `rust_blocking_drop`, `rust_pointer_chasing_vec_box`, `rust_path_join_absolute`, `rust_utf8_validate_hot_path`, `rust_large_future_stack`, and `rust_aos_hot_path`.
+- Rust domain-modeling and unsafe-soundness additions so far: `rust_domain_raw_primitive`, `rust_domain_float_for_money`, `rust_domain_impossible_combination`, `rust_domain_default_produces_invalid`, `rust_debug_secret`, `rust_serde_sensitive_deserialize`, `rust_serde_sensitive_serialize`, `rust_domain_optional_secret_default`, `rust_unsafe_get_unchecked`, `rust_unsafe_from_raw_parts`, `rust_unsafe_set_len`, `rust_unsafe_assume_init`, `rust_unsafe_transmute`, `rust_unsafe_raw_pointer_cast`, and `rust_unsafe_aliasing_assumption`.
 
 ### Still pending
 

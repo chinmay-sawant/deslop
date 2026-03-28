@@ -3,7 +3,10 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("failed to configure {language} parser: {message}")]
-    ParserConfiguration { language: &'static str, message: String },
+    ParserConfiguration {
+        language: &'static str,
+        message: String,
+    },
     #[error("tree-sitter returned no parse tree for {language}")]
     MissingParseTree { language: &'static str },
 }

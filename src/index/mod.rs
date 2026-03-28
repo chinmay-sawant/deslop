@@ -280,7 +280,7 @@ fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
                 package_entry
                     .methods_by_receiver
                     .entry(receiver.clone())
-                    .or_insert_with(BTreeSet::new)
+                    .or_default()
                     .insert(symbol.name.clone());
             }
         }

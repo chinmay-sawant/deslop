@@ -5,4 +5,4 @@ Functions fingerprinted: 749
 Findings: 0
 Index summary: packages=73 symbols=863 imports=721
 Parse failures: 0
-Timings: discover=8ms parse=389ms index=2ms heuristics=91ms total=492ms
+Timings: discover=7ms parse=349ms index=1ms heuristics=66ms total=424ms

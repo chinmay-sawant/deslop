@@ -10,7 +10,9 @@ pub fn discover_source_files(
     respect_ignore: bool,
     supported_extensions: &[&str],
 ) -> Result<Vec<PathBuf>> {
-    let canonical_root = root.canonicalize().map_err(|error| Error::io(root, error))?;
+    let canonical_root = root
+        .canonicalize()
+        .map_err(|error| Error::io(root, error))?;
     let mut builder = WalkBuilder::new(root);
     builder.require_git(false);
 

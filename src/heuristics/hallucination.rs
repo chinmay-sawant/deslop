@@ -76,10 +76,8 @@ pub(super) fn hallucination_findings(
                 if let Some(import_path) = import_aliases.get(&call.name) {
                     match index.resolve_import_path(file.language, import_path) {
                         ImportResolution::Resolved(target_package) => {
-                            let imported_name = import_path
-                                .rsplit('.')
-                                .next()
-                                .unwrap_or(call.name.as_str());
+                            let imported_name =
+                                import_path.rsplit('.').next().unwrap_or(call.name.as_str());
                             if target_package.has_function(imported_name)
                                 || target_package.has_symbol(imported_name)
                             {
