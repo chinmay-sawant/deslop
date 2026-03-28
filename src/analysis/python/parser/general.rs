@@ -81,6 +81,7 @@ pub(super) fn collect_symbols(
     root: Node<'_>,
     source: &str,
     functions: &[ParsedFunction],
+    imports: &[ImportSpec],
 ) -> Vec<DeclaredSymbol> {
     let mut symbols = functions
         .iter()
@@ -96,6 +97,18 @@ pub(super) fn collect_symbols(
             line: function.fingerprint.start_line,
         })
         .collect::<Vec<_>>();
+
+    for import in imports {
+        if import.is_public && import.alias != "*" {
+            symbols.push(DeclaredSymbol {
+                name: import.alias.clone(),
+                kind: SymbolKind::Type,
+                receiver_type: None,
+                receiver_is_pointer: None,
+                line: 1,
+            });
+        }
+    }
 
     visit_class_symbols(root, source, &mut symbols);
     symbols.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
@@ -181,6 +194,10 @@ pub(super) fn build_test_summary(
             _ => {}
         }
     }
+
+    // Python's bare `assert` keyword is a statement, not a call, so
+    // collect_calls misses it. Count assert_statement AST nodes explicitly.
+    assertion_like_calls += count_assert_statements(body_node);
 
     let body_text = source.get(body_node.byte_range()).unwrap_or_default();
     let has_todo_marker = body_text.to_ascii_uppercase().contains("TODO");
@@ -408,6 +425,21 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         has_complete_type_hints,
         has_varargs,
         has_kwargs,
+        is_async: false,
+        await_points: Vec::new(),
+        macro_calls: Vec::new(),
+        spawn_calls: Vec::new(),
+        lock_calls: Vec::new(),
+        permit_acquires: Vec::new(),
+        futures_created: Vec::new(),
+        blocking_calls: Vec::new(),
+        select_macro_lines: Vec::new(),
+        drop_impl: false,
+        write_loops: Vec::new(),
+        line_iteration_loops: Vec::new(),
+        default_hasher_lines: Vec::new(),
+        boxed_container_lines: Vec::new(),
+        unsafe_soundness: Vec::new(),
     })
 }
 
@@ -496,6 +528,19 @@ fn visit_class_symbols(node: Node<'_>, source: &str, symbols: &mut Vec<DeclaredS
     for child in node.named_children(&mut cursor) {
         visit_class_symbols(child, source, symbols);
     }
+}
+
+fn count_assert_statements(node: Node<'_>) -> usize {
+    let mut count = if node.kind() == "assert_statement" {
+        1
+    } else {
+        0
+    };
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        count += count_assert_statements(child);
+    }
+    count
 }
 
 fn visit_calls(node: Node<'_>, source: &str, calls: &mut Vec<CallSite>) {
@@ -723,11 +768,44 @@ fn parse_alias(entry: &str) -> (String, String) {
 
 fn normalize_import_text(text: &str) -> String {
     text.lines()
+        .map(strip_python_comment)
         .map(str::trim)
+        .filter(|line| !line.is_empty())
         .collect::<Vec<_>>()
         .join(" ")
         .replace("( ", "")
         .replace(" )", "")
+}
+
+fn strip_python_comment(line: &str) -> &str {
+    let mut in_single = false;
+    let mut in_double = false;
+    let mut previous_was_escape = false;
+
+    for (index, character) in line.char_indices() {
+        match character {
+            '\\' if in_single || in_double => {
+                previous_was_escape = !previous_was_escape;
+                continue;
+            }
+            '\'' if !in_double && !previous_was_escape => {
+                in_single = !in_single;
+            }
+            '"' if !in_single && !previous_was_escape => {
+                in_double = !in_double;
+            }
+            '#' if !in_single && !in_double => {
+                return &line[..index];
+            }
+            _ => {}
+        }
+
+        if character != '\\' {
+            previous_was_escape = false;
+        }
+    }
+
+    line
 }
 
 fn split_import_list(text: &str) -> Vec<String> {

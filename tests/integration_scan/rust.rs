@@ -253,6 +253,97 @@ fn test_rust_suppressions() {
 }
 
 #[test]
+fn test_rust_rule_ignore_directives() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "src/lib.rs",
+        r#"
+pub fn demo() {
+    let _value = Some(1).unwrap(); // deslop-ignore:unwrap_in_non_test_code
+    // deslop-ignore:panic_macro_leftover
+    panic!("boom");
+    let _other = Some(2).expect("still flagged");
+}
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "unwrap_in_non_test_code")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "panic_macro_leftover")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "expect_in_non_test_code")
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_rust_repository_config_controls_rules() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        ".deslop.toml",
+        "rust_async_experimental = false\n[severity_overrides]\nexpect_in_non_test_code = \"error\"\n",
+    );
+    write_fixture(
+        &temp_dir,
+        "src/lib.rs",
+        r#"
+use std::sync::Mutex;
+
+static LOCK: Mutex<u32> = Mutex::new(0);
+
+pub async fn demo() {
+    let guard = LOCK.lock().unwrap();
+    async {}.await;
+    drop(guard);
+    let _value = Some(2).expect("raised to error");
+}
+"#,
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "rust_async_std_mutex_await")
+    );
+    let expect_finding = report
+        .findings
+        .iter()
+        .find(|finding| finding.rule_id == "expect_in_non_test_code")
+        .expect("expect finding should remain after config filtering");
+    assert!(matches!(expect_finding.severity, deslop::Severity::Error));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
 fn test_rust_hallucination() {
     let temp_dir = create_temp_workspace();
     write_fixture(

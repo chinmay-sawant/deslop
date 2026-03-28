@@ -667,12 +667,19 @@ pub(super) fn sync_async_module_findings(file: &ParsedFile) -> Vec<Finding> {
 }
 
 fn should_skip_print_rule(file: &ParsedFile, function: &ParsedFunction) -> bool {
-    function.fingerprint.name == "main"
+    let name = &function.fingerprint.name;
+    name == "main"
+        || name.starts_with("print_")
+        || name.starts_with("log_")
+        || name.starts_with("display_")
+        || name.starts_with("show_")
+        || name.starts_with("report_")
+        || name.starts_with("dump_")
         || file
             .path
             .file_name()
-            .and_then(|name| name.to_str())
-            .is_some_and(|name| name == "__main__.py")
+            .and_then(|n| n.to_str())
+            .is_some_and(|n| n == "__main__.py")
 }
 
 fn looks_like_hardcoded_path(value: &str) -> bool {
@@ -836,7 +843,11 @@ fn extract_string_literals(line: &str) -> Vec<String> {
         }
 
         if index > start {
-            let literal = characters[start..index].iter().collect::<String>();
+            let literal = characters
+                .get(start..index)
+                .unwrap_or(&[])
+                .iter()
+                .collect::<String>();
             if !literal.trim().is_empty() {
                 literals.push(literal);
             }

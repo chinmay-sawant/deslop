@@ -47,10 +47,12 @@ pub(super) fn receiver_findings(files: &[&ParsedFile]) -> Vec<Finding> {
             continue;
         }
 
-        let anchor = methods
+        let Some(anchor) = methods
             .iter()
             .min_by(|left, right| left.path.cmp(&right.path).then(left.line.cmp(&right.line)))
-            .expect("mixed receiver group should not be empty");
+        else {
+            continue;
+        };
 
         let pointer_methods = methods
             .iter()

@@ -19,6 +19,8 @@ pub(crate) struct ParsedFile {
     pub imports: Vec<ImportSpec>,
     pub symbols: Vec<DeclaredSymbol>,
     pub class_summaries: Vec<ClassSummary>,
+    // Rust heuristics consume conservative struct summaries so they can stay syntax-driven.
+    pub structs: Vec<StructSummary>,
 }
 
 #[derive(Debug, Clone)]
@@ -68,6 +70,22 @@ pub(crate) struct ParsedFunction {
     pub has_complete_type_hints: bool,
     pub has_varargs: bool,
     pub has_kwargs: bool,
+    pub is_async: bool,
+    pub await_points: Vec<usize>,
+    pub macro_calls: Vec<MacroCall>,
+    pub spawn_calls: Vec<RuntimeCall>,
+    pub lock_calls: Vec<RuntimeCall>,
+    pub permit_acquires: Vec<RuntimeCall>,
+    pub futures_created: Vec<RuntimeCall>,
+    pub blocking_calls: Vec<RuntimeCall>,
+    pub select_macro_lines: Vec<usize>,
+    pub drop_impl: bool,
+    pub write_loops: Vec<usize>,
+    pub line_iteration_loops: Vec<usize>,
+    pub default_hasher_lines: Vec<usize>,
+    pub boxed_container_lines: Vec<usize>,
+    // Unsafe-pattern summaries keep the rule pack local to parser evidence rather than ad-hoc text scans.
+    pub unsafe_soundness: Vec<UnsafePattern>,
 }
 
 #[derive(Debug, Clone)]
@@ -176,6 +194,61 @@ pub(crate) struct DeclaredSymbol {
     pub receiver_type: Option<String>,
     pub receiver_is_pointer: Option<bool>,
     pub line: usize,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct FieldSummary {
+    pub line: usize,
+    pub name: String,
+    pub type_text: String,
+    pub is_pub: bool,
+    pub is_option: bool,
+    pub is_primitive: bool,
+    pub is_bool: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct StructSummary {
+    pub line: usize,
+    pub name: String,
+    pub fields: Vec<FieldSummary>,
+    pub derives: Vec<String>,
+    pub has_debug_derive: bool,
+    pub has_default_derive: bool,
+    pub has_serialize_derive: bool,
+    pub has_deserialize_derive: bool,
+    pub visibility_pub: bool,
+    pub impl_default: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct MacroCall {
+    pub line: usize,
+    pub name: String,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct RuntimeCall {
+    pub line: usize,
+    pub name: String,
+    pub receiver: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct UnsafePattern {
+    pub line: usize,
+    pub kind: UnsafePatternKind,
+    pub detail: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum UnsafePatternKind {
+    GetUnchecked,
+    RawParts,
+    SetLen,
+    AssumeInit,
+    Transmute,
+    RawPointerCast,
 }
 
 impl ParsedFile {

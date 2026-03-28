@@ -4,7 +4,6 @@ import { Link, useLocation } from 'react-router-dom'
 
 import {
   footerLinks,
-  footerSources,
 } from '../../content/site-content'
 import { Container } from '../../shared/ui/Container'
 import { SectionIntro } from '../../shared/ui/SectionIntro'
@@ -50,7 +49,7 @@ export function HomePage() {
                     Install it fast. Keep the workflow local. Keep the findings readable.
                   </h2>
                   <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
-                    deslop ships as a Rust CLI for Go repositories with explainable static signals, readable output, Cargo installs, published binaries, and GitHub Actions support for automation.
+                    deslop ships as a Rust CLI for Go/Python/Rust repositories with explainable static signals, readable output, Cargo installs, published binaries, and GitHub Actions support for automation.
                   </p>
                 </div>
 
@@ -80,47 +79,65 @@ export function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-[var(--border)] pb-12 pt-10 sm:pb-14">
-        <Container className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div>
-            <p className="font-['Newsreader'] italic text-3xl font-bold tracking-[-0.02em] text-[var(--text)]">deslop</p>
-            <p className="mt-4 max-w-2xl font-['Newsreader'] italic text-xl leading-8 text-[var(--muted)] sm:text-2xl">
-              Static analysis for low-context code, focused on readable findings across Go, Python, and Rust repositories.
-            </p>
+      <footer className="border-t border-[var(--border)] pb-16 pt-14 sm:pb-20 sm:pt-18">
+        <Container>
+          {/* Main footer grid */}
+          <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr] items-start">
+            {/* Left: Brand + description + language badges */}
+            <div>
+              <p className="font-['Newsreader'] italic text-[2.6rem] font-semibold leading-none tracking-[-0.03em] text-[var(--text-strong)]">
+                deslop
+              </p>
+              <p className="mt-4 max-w-md font-['Newsreader'] italic text-[1.15rem] leading-[1.75] text-[var(--muted)]">
+                Static analysis for low-context code, focused on readable findings across Go, Python, and Rust repositories.
+              </p>
 
-            <p className="mt-5 font-['IBM_Plex_Mono'] text-xs uppercase tracking-widest text-[var(--text-strong)] sm:text-sm">
-             Built & Vibecoded by{' '}
-              <a
-                href="https://github.com/chinmay-sawant/deslop"
-                target="_blank"
-                rel="noreferrer"
-                className="font-medium text-[var(--text)] underline decoration-[var(--border)] underline-offset-4 transition hover:decoration-[var(--text)]"
-              >
-                Chinmay Sawant
-              </a>{' '}
-              with ❤️
-            </p>
+              {/* Language badges */}
+              <div className="mt-6 flex flex-wrap gap-2">
+                <span className="px-3 py-1 text-[0.7rem] font-medium font-['IBM_Plex_Mono'] tracking-[0.12em] uppercase border border-[var(--lang-go-badge)] text-[var(--lang-go)] bg-[var(--lang-go-soft)]">
+                  Go
+                </span>
+                <span className="px-3 py-1 text-[0.7rem] font-medium font-['IBM_Plex_Mono'] tracking-[0.12em] uppercase border border-[var(--lang-python-badge)] text-[var(--lang-python)] bg-[var(--lang-python-soft)]">
+                  Python
+                </span>
+                <span className="px-3 py-1 text-[0.7rem] font-medium font-['IBM_Plex_Mono'] tracking-[0.12em] uppercase border border-[var(--lang-rust-badge)] text-[var(--lang-rust)] bg-[var(--lang-rust-soft)]">
+                  Rust
+                </span>
+              </div>
+            </div>
 
-            <div className="mt-8 flex flex-wrap gap-2">
+            {/* Right: Navigation links */}
+            <div className="flex flex-col gap-4 lg:items-end lg:pt-1">
               {footerLinks.map((link) => (
-                <a 
-                  key={link.href} 
-                  href={link.href} 
-                  className="stat-pill rounded-full px-4 py-2 text-sm hover:text-white"
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="group flex items-center gap-2 text-sm text-[var(--muted)] transition-colors duration-150 hover:text-[var(--text-strong)]"
                 >
-                  {link.label}
+                  <span>{link.label}</span>
+                  <span className="inline-block transition-transform duration-150 group-hover:translate-x-0.5 opacity-40 group-hover:opacity-100">→</span>
                 </a>
               ))}
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            {footerSources.map((source) => (
-              <div key={source} className="grid-panel p-5">
-                <p className="font-['IBM_Plex_Mono'] text-xs uppercase tracking-[0.18em] text-[var(--text)]">Source</p>
-                <p className="mt-3 text-sm leading-7 text-[var(--text-strong)]">{source}</p>
-              </div>
-            ))}
+          {/* Bottom bar */}
+          <div className="mt-14 border-t border-[var(--border)] pt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-[var(--muted)] font-['IBM_Plex_Mono'] tracking-[0.06em]">
+              © 2026 deslop · MIT License · Open-source from day one
+            </p>
+            <p className="text-sm text-[var(--muted)]">
+              Built &amp; vibecoded by{' '}
+              <a
+                href="https://github.com/chinmay-sawant"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[var(--text)] underline decoration-[var(--border)] underline-offset-4 transition-colors duration-150 hover:decoration-[var(--text)]"
+              >
+                Chinmay Sawant
+              </a>{' '}
+              with ❤️
+            </p>
           </div>
         </Container>
       </footer>

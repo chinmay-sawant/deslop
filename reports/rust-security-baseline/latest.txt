@@ -1,0 +1,33 @@
+## narrowing_as_casts
+
+## split_at_and_indexing
+src/analysis/python/parser/general.rs:798:                return &line[..index];
+src/analysis/rust/parser.rs:898:    text[vec_start + 4..].contains("Box<")
+src/heuristics/rust/performance.rs:305:    text[vec_start + 4..].contains("Box<")
+src/heuristics/rust/performance.rs:312:    line[start + marker.len()..].starts_with('/')
+src/heuristics/rust/performance.rs:350:                let receiver = &line[start..index];
+
+## toctou_fs_checks
+src/io.rs:16:        .metadata()
+src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
+tests/integration_scan/python.rs:839:def fetch_metadata(payload):
+tests/integration_scan/python.rs:849:    payload = fetch_metadata(payload)
+
+## toctou_check_then_open
+
+## secret_comparisons
+src/analysis/rust/parser.rs:1738:                .any(|name| name == "password")
+src/heuristics/rust/mod.rs:151:        .any(|token| normalized == *token || normalized.contains(token))
+tests/integration_scan/security.rs:47:            .any(|finding| finding.rule_id == "hardcoded_secret")
+tests/integration_scan/security.rs:72:            .any(|finding| finding.rule_id == "hardcoded_secret")
+
+## shared_mutability
+
+## unsafe_globals
+
+## derive_default
+
+## thread_spawn_async
+
+## path_join_absolute
+

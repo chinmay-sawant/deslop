@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use serde::Deserialize;
 use serde::Serialize;
 
 #[derive(Debug, Clone)]
@@ -17,7 +18,7 @@ pub struct TimingBreakdown {
     pub total_ms: u128,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum Severity {
     Info,

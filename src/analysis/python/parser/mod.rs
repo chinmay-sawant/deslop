@@ -7,10 +7,9 @@ mod tests;
 
 use std::path::Path;
 
-use anyhow::{Context, Result, anyhow};
 use tree_sitter::Parser;
 
-use crate::analysis::{Language, ParsedFile};
+use crate::analysis::{AnalysisResult, Error, Language, ParsedFile};
 
 use self::comments::collect_comment_summaries;
 use self::general::{
@@ -18,24 +17,26 @@ use self::general::{
     collect_symbols, is_test_file, module_name_for_path,
 };
 
-pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
+pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
     let mut parser = Parser::new();
     parser
         .set_language(&tree_sitter_python::LANGUAGE.into())
-        .map_err(|error| anyhow!(error.to_string()))
-        .context("failed to configure Python parser")?;
+        .map_err(|error| Error::parser_configuration("Python", error.to_string()))?;
 
     let tree = parser
         .parse(source, None)
-        .ok_or_else(|| anyhow!("tree-sitter returned no parse tree"))?;
+        .ok_or_else(|| Error::missing_parse_tree("Python"))?;
 
     let root = tree.root_node();
     let is_test_file = is_test_file(path);
-    let imports = collect_imports(root, source);
+    let mut imports = collect_imports(root, source);
+    if is_package_export_module(path) {
+        mark_public_reexports(&mut imports);
+    }
     let package_string_literals = collect_pkg_strings(root, source);
     let comments = collect_comment_summaries(source);
     let functions = collect_functions(root, source, is_test_file);
-    let symbols = collect_symbols(root, source, &functions);
+    let symbols = collect_symbols(root, source, &functions, &imports);
     let class_summaries = collect_class_summaries(root, source);
 
     Ok(ParsedFile {
@@ -53,5 +54,18 @@ pub(super) fn parse_file(path: &Path, source: &str) -> Result<ParsedFile> {
         imports,
         symbols,
         class_summaries,
+        structs: Vec::new(),
     })
+}
+
+fn is_package_export_module(path: &Path) -> bool {
+    path.file_name().and_then(|name| name.to_str()) == Some("__init__.py")
+}
+
+fn mark_public_reexports(imports: &mut [crate::analysis::ImportSpec]) {
+    for import in imports {
+        if import.alias != "*" && !import.alias.starts_with('_') && import.path.starts_with('.') {
+            import.is_public = true;
+        }
+    }
 }

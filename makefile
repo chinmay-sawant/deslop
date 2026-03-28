@@ -2,8 +2,9 @@
 
 # Path to scan (can be overridden with 'make scan PATH=<path>')
 # For now hardcoded the path for personal use, you can customize this as required
-PATH_TO_SCAN ?= /home/chinmay/ChinmayPersonalProjects/gopdfsuit
-# PATH_TO_SCAN ?= .
+PATH_TO_SCAN_GOPDFSUIT ?= /home/chinmay/ChinmayPersonalProjects/gopdfsuit
+PATH_TO_SCAN_SNAPBACK ?= /home/chinmay/ChinmayPersonalProjects/snapback
+PATH_TO_SCAN ?= .
 
 # Default Target
 all: help
@@ -30,11 +31,16 @@ fmt:
 scan:
 	cargo run -- scan $(PATH_TO_SCAN) > results.txt
 
+scan-gopdfsuit:
+	cargo run -- scan $(PATH_TO_SCAN_GOPDFSUIT) > temp_gopdfsuit.txt
+
+scan-snapback:
+	cargo run -- scan $(PATH_TO_SCAN_SNAPBACK) > temp_snapback.txt
 
 # Clean build artifacts and temporary files
 clean:
 	cargo clean
-	rm -f results.txt
+	rm -f results.txt temp_gopdfsuit.txt temp_snapback.txt
 
 # Display help for make targets
 help:
@@ -47,3 +53,5 @@ help:
 	@echo "                Example: make scan PATH_TO_SCAN=/path/to/go/project"
 	@echo "  clean       - Remove build artifacts and result files"
 	@echo "  help        - Show this menu"
+	@echo "  scan-gopdfsuit - Scan the gopdfsuit project and save results to temp_gopdfsuit.txt"
+	@echo "  scan-snapback - Scan the snapback project and save results to temp_snapback.txt"

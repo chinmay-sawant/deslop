@@ -15,6 +15,27 @@ deslop auto-detects supported source files under that path. The same command wor
 
 By default, scan output prints the scan summary plus the standard finding set. Detail-only diagnostics such as `full_dataset_load` are held back unless you pass `--details`.
 
+Repository-local scan behavior can be tuned with a `.deslop.toml` file at the scan root:
+
+```toml
+rust_async_experimental = true
+disabled_rules = ["panic_macro_leftover"]
+suppressed_paths = ["tests/fixtures"]
+
+[severity_overrides]
+expect_in_non_test_code = "error"
+```
+
+`rust_async_experimental = false` disables the Rust async rule pack for that repository. `disabled_rules` removes matching rule ids entirely, `suppressed_paths` filters findings under matching relative path prefixes after analysis, and `severity_overrides` rewrites the emitted severity after analysis.
+
+You can also ignore rule ids for a single scan invocation without changing repository config:
+
+```bash
+cargo run -- scan --ignore hallucinated_import_call,hallucinated_local_call /path/to/repo
+```
+
+`--ignore` applies after analysis and only affects the emitted findings for that command.
+
 Run the same scan with JSON output:
 
 ```bash
@@ -147,3 +168,7 @@ The native release binary is written to `target/release/`. Cross-compiled binari
 
 For a detailed architecture and roadmap guide, see `guides/implementation-guide.md`.
 For a detector-oriented overview, see `guides/features-and-detections.md`.
+
+Library code uses typed errors internally and keeps `anyhow` at the CLI edge. The scanner also uses bounded file reads by default so repository scans do not rely on unbounded `read_to_string` calls.
+
+Rust scan hardening now also canonicalizes the scan root, rejects symlinked file reads, and compares the generated Rust security baseline report against the committed baseline in CI.

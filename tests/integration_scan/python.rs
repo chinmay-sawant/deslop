@@ -1670,47 +1670,44 @@ def RealLocalFunction():
     );
 
     assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
-                && finding.message.contains("Path")),
+        !report.findings.iter().any(|finding| matches!(
+            finding.rule_id.as_str(),
+            "hallucinated_import_call" | "hallucinated_local_call"
+        ) && finding.message.contains("Path")),
         "did not expect finding for imported stdlib class Path"
     );
 
     assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
-                && finding.message.contains("ThirdPartyClient")),
+        !report.findings.iter().any(|finding| matches!(
+            finding.rule_id.as_str(),
+            "hallucinated_import_call" | "hallucinated_local_call"
+        ) && finding.message.contains("ThirdPartyClient")),
         "did not expect finding for unresolved third-party import alias"
     );
 
     assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
-                && finding.message.contains("RuntimeError")),
+        !report.findings.iter().any(|finding| matches!(
+            finding.rule_id.as_str(),
+            "hallucinated_import_call" | "hallucinated_local_call"
+        ) && finding.message.contains("RuntimeError")),
         "did not expect finding for builtin exception RuntimeError"
     );
 
     assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
-                && finding.message.contains("SessionBundle")),
+        !report.findings.iter().any(|finding| matches!(
+            finding.rule_id.as_str(),
+            "hallucinated_import_call" | "hallucinated_local_call"
+        ) && finding.message.contains("SessionBundle")),
         "did not expect finding for local dataclass SessionBundle"
     );
 
     assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| matches!(finding.rule_id.as_str(), "hallucinated_import_call" | "hallucinated_local_call")
-                && finding.message.contains("SnapBackTranscriptionClient")),
+        !report.findings.iter().any(|finding| matches!(
+            finding.rule_id.as_str(),
+            "hallucinated_import_call" | "hallucinated_local_call"
+        ) && finding
+            .message
+            .contains("SnapBackTranscriptionClient")),
         "did not expect finding for local class SnapBackTranscriptionClient"
     );
 

@@ -108,6 +108,142 @@ The first implementation should favor a small set of high-signal rules rather th
 - Add fixture-driven tests for every Rust rule.
 - Run `cargo test --test integration_scan` and full `cargo test` after Rust heuristics land.
 
+## Extended Rust Rule Packs
+
+The Rust analyzer now also emits conservative findings for four additional rule families backed by parser evidence and fixture-driven tests.
+
+- Performance and async runtime checks:
+	- `rust_blocking_io_in_async`
+	- `rust_unbuffered_file_writes`
+	- `rust_lines_allocate_per_line`
+	- `rust_hashmap_default_hasher`
+	- `rust_lock_across_await`
+	- `rust_tokio_mutex_unnecessary`
+	- `rust_blocking_drop`
+	- `rust_pointer_chasing_vec_box`
+	- `rust_aos_hot_path`
+	- `rust_large_future_stack`
+	- `rust_utf8_validate_hot_path`
+	- `rust_path_join_absolute`
+
+- Domain modeling and invariants:
+	- `rust_domain_raw_primitive`
+	- `rust_domain_float_for_money`
+	- `rust_domain_impossible_combination`
+	- `rust_domain_default_produces_invalid`
+	- `rust_debug_secret`
+	- `rust_serde_sensitive_deserialize`
+	- `rust_serde_sensitive_serialize`
+
+- Async and concurrency pitfalls:
+	- `rust_async_std_mutex_await`
+	- `rust_async_hold_permit_across_await`
+	- `rust_async_spawn_cancel_at_await`
+	- `rust_async_missing_fuse_pin`
+	- `rust_async_recreate_future_in_select`
+	- `rust_async_monopolize_executor`
+	- `rust_async_blocking_drop`
+	- `rust_async_invariant_broken_at_await`
+	- `rust_async_lock_order_cycle`
+
+- Unsafe soundness checks:
+	- `rust_unsafe_get_unchecked`
+	- `rust_unsafe_from_raw_parts`
+	- `rust_unsafe_set_len`
+	- `rust_unsafe_assume_init`
+	- `rust_unsafe_transmute`
+	- `rust_unsafe_raw_pointer_cast`
+	- `rust_unsafe_aliasing_assumption`
+
+These rule packs are intentionally syntactic and conservative. They are designed to produce reviewable findings with clear evidence rather than Clippy-style semantic proofs.
+
+## Remediation Examples
+
+### Filesystem path hardening
+
+Prefer canonical path checks before using user-selected paths, and reject symlink hops where possible.
+
+```rust
+let canonical_root = root.canonicalize()?;
+let canonical_candidate = candidate.canonicalize()?;
+if !canonical_candidate.starts_with(&canonical_root) {
+	anyhow::bail!("path escapes scan root");
+}
+```
+
+On Unix, open files with `O_NOFOLLOW` when you do not want to follow symlinks.
+
+```rust
+use std::fs::OpenOptions;
+use std::os::unix::fs::OpenOptionsExt;
+
+let file = OpenOptions::new()
+	.read(true)
+	.custom_flags(libc::O_NOFOLLOW)
+	.open(path)?;
+```
+
+### Constant-time secret comparison
+
+Avoid `==` for tokens, passwords, and API keys.
+
+```rust
+use subtle::ConstantTimeEq;
+
+if expected.as_bytes().ct_eq(actual.as_bytes()).into() {
+	// authenticated
+}
+```
+
+### Breaking `Rc` ownership cycles
+
+If a child keeps a parent reference, make the parent edge `Weak`.
+
+```rust
+use std::cell::RefCell;
+use std::rc::{Rc, Weak};
+
+struct Parent {
+	children: Vec<Rc<RefCell<Child>>>,
+}
+
+struct Child {
+	parent: Weak<RefCell<Parent>>,
+}
+```
+
+### Avoiding `static mut`
+
+Prefer `once_cell::sync::Lazy` with explicit synchronization primitives.
+
+```rust
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
+
+static CACHE: Lazy<Mutex<Vec<String>>> = Lazy::new(|| Mutex::new(Vec::new()));
+```
+
+### Running async work from threads safely
+
+Do not spawn an async block on a raw thread without a runtime.
+
+```rust
+std::thread::spawn(move || {
+	let runtime = tokio::runtime::Runtime::new().expect("runtime");
+	runtime.block_on(async move {
+		do_work().await;
+	});
+});
+```
+
+### Bounded I/O checks
+
+Keep file reads size-limited so scan inputs cannot grow without bound.
+
+```rust
+let source = read_to_string_limited(path, 10 * 1024 * 1024)?;
+```
+
 ## Document Update Obligations
 
 - Update this file whenever the Rust rule pack changes.

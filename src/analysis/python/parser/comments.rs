@@ -12,14 +12,64 @@ pub(super) fn collect_comment_summaries(source: &str) -> Vec<CommentSummary> {
                 return None;
             }
 
-            let comment_start = line.find('#')?;
-            let text = line[comment_start + 1..].trim();
+            let comment_start = comment_start_in_line(line)?;
+            let text = line.get(comment_start + 1..)?.trim();
             (!text.is_empty()).then(|| CommentSummary {
                 line: index + 1,
                 text: text.to_string(),
             })
         })
         .collect()
+}
+
+/// Find the byte offset of a `#` that starts a comment, skipping over `#`
+/// characters that appear inside single- or double-quoted string literals
+/// (including triple-quoted). Returns `None` when no comment `#` exists.
+fn comment_start_in_line(line: &str) -> Option<usize> {
+    let bytes = line.as_bytes();
+    let len = bytes.len();
+    let mut i = 0;
+    let mut in_string: Option<u8> = None; // quote char we're inside
+    let mut triple = false;
+
+    while i < len {
+        let ch = bytes[i];
+
+        if let Some(q) = in_string {
+            if ch == b'\\' {
+                // skip the escaped character
+                i += 2;
+                continue;
+            }
+            if triple {
+                if ch == q && i + 2 < len && bytes[i + 1] == q && bytes[i + 2] == q {
+                    in_string = None;
+                    triple = false;
+                    i += 3;
+                    continue;
+                }
+            } else if ch == q {
+                in_string = None;
+            }
+        } else {
+            match ch {
+                b'\'' | b'"' => {
+                    let q = ch;
+                    if i + 2 < len && bytes[i + 1] == q && bytes[i + 2] == q {
+                        in_string = Some(q);
+                        triple = true;
+                        i += 3;
+                        continue;
+                    }
+                    in_string = Some(q);
+                }
+                b'#' => return Some(i),
+                _ => {}
+            }
+        }
+        i += 1;
+    }
+    None
 }
 
 pub(super) fn extract_docstring(body_node: Node<'_>, source: &str) -> Option<String> {
@@ -45,7 +95,7 @@ pub(super) fn string_literal_value(node: Node<'_>, source: &str) -> Option<Strin
 pub(super) fn parse_string_literal_text(text: &str) -> Option<String> {
     let trimmed = text.trim();
     let quote_index = trimmed.find(['\'', '"'])?;
-    let prefix = &trimmed[..quote_index];
+    let prefix = trimmed.get(..quote_index)?;
     if !prefix
         .chars()
         .all(|character| matches!(character, 'r' | 'R' | 'u' | 'U' | 'b' | 'B' | 'f' | 'F'))
@@ -53,7 +103,7 @@ pub(super) fn parse_string_literal_text(text: &str) -> Option<String> {
         return None;
     }
 
-    let quoted = &trimmed[quote_index..];
+    let quoted = trimmed.get(quote_index..)?;
     if let Some(value) = strip_quoted(quoted, "\"\"\"") {
         return Some(value);
     }
@@ -75,8 +125,9 @@ fn strip_quoted(text: &str, quote: &str) -> Option<String> {
         return None;
     }
 
-    let end_index = text[quote.len()..].find(quote)?;
-    Some(text[quote.len()..quote.len() + end_index].to_string())
+    let suffix = text.get(quote.len()..)?;
+    let end_index = suffix.find(quote)?;
+    suffix.get(..end_index).map(ToOwned::to_owned)
 }
 
 fn strip_single_quoted(text: &str, quote: char) -> Option<String> {
@@ -97,7 +148,7 @@ fn strip_single_quoted(text: &str, quote: char) -> Option<String> {
         }
 
         if character == quote {
-            return Some(text[1..index].to_string());
+            return text.get(1..index).map(ToOwned::to_owned);
         }
     }
 

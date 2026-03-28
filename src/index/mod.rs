@@ -108,7 +108,9 @@ impl RepositoryIndex {
             };
         }
 
-        let module_name = target_segments.last().unwrap();
+        let Some(module_name) = target_segments.last() else {
+            return ImportResolution::Unresolved;
+        };
         let file_module_directory = rust_file_mod_dir(&crate_root, &target_segments);
         let mod_module_directory = rust_mod_mod_dir(&crate_root, &target_segments);
         let mut candidates = self
@@ -180,8 +182,10 @@ fn python_import_matches_module(import_path: &str, package: &PackageIndex) -> bo
             continue;
         }
 
-        let prefix_without_module = import_segments[..candidate_index]
-            .iter()
+        let prefix_without_module = import_segments
+            .get(..candidate_index)
+            .into_iter()
+            .flatten()
             .map(|segment| (*segment).to_string())
             .collect::<Vec<_>>();
         if directory_segments.ends_with(&prefix_without_module)
@@ -221,19 +225,28 @@ impl PackageIndex {
 pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> RepositoryIndex {
     let mut packages = BTreeMap::new();
 
-    for file in files {
-        let package_name = file
-            .package_name
+    for ParsedFile {
+        language,
+        path,
+        package_name,
+        imports,
+        symbols,
+        ..
+    } in files
+    {
+        let language = *language;
+        let package_name = package_name
             .clone()
             .unwrap_or_else(|| "unknown".to_string());
-        let directory = package_directory(root, &file.path);
+        let directory = package_directory(root, path);
+        let import_count = imports.len();
         let key = PackageKey {
-            language: file.language,
+            language,
             package_name: package_name.clone(),
             directory: directory.clone(),
         };
         let package_entry = packages.entry(key).or_insert_with(|| PackageIndex {
-            language: file.language,
+            language,
             package_name,
             directory,
             functions: BTreeSet::new(),
@@ -242,31 +255,36 @@ pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> Repos
             import_count: 0,
         });
 
-        package_entry.import_count += file.imports.len();
+        package_entry.import_count += import_count;
 
-        for symbol in &file.symbols {
-            package_entry.symbols.push(symbol.clone());
-            match symbol.kind {
-                SymbolKind::Function => {
-                    package_entry.functions.insert(symbol.name.clone());
-                }
-                SymbolKind::Method => {
-                    if let Some(receiver) = &symbol.receiver_type {
-                        package_entry
-                            .methods_by_receiver
-                            .entry(receiver.clone())
-                            .or_insert_with(BTreeSet::new)
-                            .insert(symbol.name.clone());
-                    }
-                }
-                _ => {}
-            }
+        for symbol in symbols {
+            insert_symbol(package_entry, symbol);
         }
     }
 
     RepositoryIndex {
         root: root.to_path_buf(),
         packages,
+    }
+}
+
+fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
+    package_entry.symbols.push(symbol.clone());
+
+    match symbol.kind {
+        SymbolKind::Function => {
+            package_entry.functions.insert(symbol.name.clone());
+        }
+        SymbolKind::Method => {
+            if let Some(receiver) = &symbol.receiver_type {
+                package_entry
+                    .methods_by_receiver
+                    .entry(receiver.clone())
+                    .or_default()
+                    .insert(symbol.name.clone());
+            }
+        }
+        _ => {}
     }
 }
 
@@ -304,8 +322,10 @@ fn import_matches_dir(import_path: &str, directory: &Path) -> bool {
         return false;
     }
 
-    import_segments[import_segments.len() - directory_segments.len()..]
-        .iter()
+    import_segments
+        .get(import_segments.len() - directory_segments.len()..)
+        .into_iter()
+        .flatten()
         .zip(directory_segments.iter())
         .all(|(left, right)| *left == right)
 }
@@ -324,7 +344,10 @@ fn rust_module_context(root: &Path, file_path: &Path) -> Option<(PathBuf, Vec<St
 
     let file_name = components.last()?.as_str();
     let directory_segments = if components.len() > 2 {
-        components[1..components.len() - 1].to_vec()
+        components
+            .get(1..components.len() - 1)
+            .map(|segments| segments.to_vec())
+            .unwrap_or_default()
     } else {
         Vec::new()
     };
@@ -372,8 +395,10 @@ fn normalize_rust_path(
                 return None;
             }
 
-            let mut resolved =
-                current_module_segments[..current_module_segments.len() - super_count].to_vec();
+            let mut resolved = current_module_segments
+                .get(..current_module_segments.len() - super_count)
+                .map(|segments| segments.to_vec())
+                .unwrap_or_default();
             resolved.extend(segments.into_iter().skip(super_count));
             Some(resolved)
         }
@@ -387,7 +412,7 @@ fn rust_file_mod_dir(crate_root: &Path, target_segments: &[String]) -> PathBuf {
     }
 
     let mut directory = crate_root.to_path_buf();
-    for segment in &target_segments[..target_segments.len() - 1] {
+    for segment in target_segments.iter().take(target_segments.len() - 1) {
         directory.push(segment);
     }
     directory
@@ -491,6 +516,21 @@ mod tests {
                     has_complete_type_hints: false,
                     has_varargs: false,
                     has_kwargs: false,
+                    is_async: false,
+                    await_points: Vec::new(),
+                    macro_calls: Vec::new(),
+                    spawn_calls: Vec::new(),
+                    lock_calls: Vec::new(),
+                    permit_acquires: Vec::new(),
+                    futures_created: Vec::new(),
+                    blocking_calls: Vec::new(),
+                    select_macro_lines: Vec::new(),
+                    drop_impl: false,
+                    write_loops: Vec::new(),
+                    line_iteration_loops: Vec::new(),
+                    default_hasher_lines: Vec::new(),
+                    boxed_container_lines: Vec::new(),
+                    unsafe_soundness: Vec::new(),
                 })
                 .collect(),
             imports: Vec::new(),
@@ -505,6 +545,7 @@ mod tests {
                 })
                 .collect(),
             class_summaries: Vec::new(),
+            structs: Vec::new(),
         }
     }
 

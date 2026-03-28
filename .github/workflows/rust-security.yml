@@ -1,0 +1,60 @@
+name: Rust Security Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  rust-security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Tests
+        run: cargo test --all-features --all-targets
+
+      - name: Cargo audit
+        run: |
+          cargo install cargo-audit --locked
+          cargo audit
+
+      - name: Cargo geiger
+        run: |
+          cargo install cargo-geiger --locked || true
+          cargo geiger || true
+
+      - name: Security grep report
+        run: bash scripts/check-rust-security.sh
+
+      - name: Security baseline drift
+        run: git diff --exit-code -- reports/rust-security-baseline/latest.txt
+
+  rust-unsafe-soundness:
+    if: ${{ vars.DESLOP_RUN_MIRI == '1' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install nightly with Miri
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: miri
+
+      - name: Unsafe soundness regression test
+        run: cargo test --test integration_scan test_rust_unsafe_soundness_rules
+
+      - name: Miri bounded I/O subset
+        run: cargo miri test --lib reads_small_file
+
+      - name: Miri oversized-input subset
+        run: cargo miri test --lib rejects_oversized_file

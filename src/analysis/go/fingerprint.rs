@@ -118,7 +118,7 @@ fn count_comment_lines(text: &str) -> usize {
     let mut count = 0usize;
     let mut in_block_comment = false;
 
-    for line in text.lines() {
+    for line in text.split('\n') {
         let trimmed = line.trim();
 
         if in_block_comment {
@@ -149,7 +149,7 @@ fn count_code_lines(text: &str) -> usize {
     let mut count = 0usize;
     let mut in_block_comment = false;
 
-    for line in text.lines() {
+    for line in text.split('\n') {
         let trimmed = line.trim();
 
         if trimmed.is_empty() {
@@ -279,7 +279,7 @@ fn contains_token(haystack: &str, needle: &str) -> bool {
     }
 
     for start in 0..=bytes.len() - needle_bytes.len() {
-        if &bytes[start..start + needle_bytes.len()] != needle_bytes {
+        if bytes.get(start..start + needle_bytes.len()) != Some(needle_bytes) {
             continue;
         }
 

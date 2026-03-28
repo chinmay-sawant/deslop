@@ -126,7 +126,9 @@ fn looks_like_string_literal(text: &str) -> bool {
         Some(index) => index,
         None => return false,
     };
-    trimmed[..quote_index]
+    trimmed
+        .get(..quote_index)
+        .unwrap_or("")
         .chars()
         .all(|character| matches!(character, 'r' | 'R' | 'u' | 'U' | 'b' | 'B' | 'f' | 'F'))
 }

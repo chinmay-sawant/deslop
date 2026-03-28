@@ -49,31 +49,34 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
 
     if details {
         for file in &report.files {
-            writeln!(&mut output).ok();
-            writeln!(&mut output, "{}", file.path.display()).ok();
-            writeln!(
+            push_line(&mut output, "");
+            push_line(&mut output, file.path.display().to_string());
+            push_line(
                 &mut output,
-                "  package={} syntax_error={} functions={}",
-                file.package_name.as_deref().unwrap_or("<unknown>"),
-                file.syntax_error,
-                file.functions.len()
-            )
-            .ok();
+                format!(
+                    "  package={} syntax_error={} functions={}",
+                    file.package_name.as_deref().unwrap_or("<unknown>"),
+                    file.syntax_error,
+                    file.functions.len()
+                ),
+            );
 
             for function in &file.functions {
-                writeln!(
+                push_line(
                     &mut output,
-                    "  - {} [{}:{}] complexity={} comment_ratio={:.2} symmetry={:.2} any={} iface={} calls={}",
-                    function.name,
-                    function.start_line,
-                    function.end_line,
-                    function.complexity_score,
-                    function.comment_to_code_ratio,
-                    function.symmetry_score,
-                    function.contains_any_type,
-                    function.contains_empty_interface,
-                    function.call_count
-                ).ok();
+                    format!(
+                        "  - {} [{}:{}] complexity={} comment_ratio={:.2} symmetry={:.2} any={} iface={} calls={}",
+                        function.name,
+                        function.start_line,
+                        function.end_line,
+                        function.complexity_score,
+                        function.comment_to_code_ratio,
+                        function.symmetry_score,
+                        function.contains_any_type,
+                        function.contains_empty_interface,
+                        function.call_count
+                    ),
+                );
             }
         }
     }
@@ -82,15 +85,16 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
         writeln!(&mut output).ok();
         writeln!(&mut output, "Findings:").ok();
         for finding in findings {
-            writeln!(
+            push_line(
                 &mut output,
-                "  - {}:{} {} [{}]",
-                finding.path.display(),
-                finding.start_line,
-                finding.message,
-                finding.rule_id
-            )
-            .ok();
+                format!(
+                    "  - {}:{} {} [{}]",
+                    finding.path.display(),
+                    finding.start_line,
+                    finding.message,
+                    finding.rule_id
+                ),
+            );
         }
     }
 
@@ -98,17 +102,19 @@ pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> 
         writeln!(&mut output).ok();
         writeln!(&mut output, "Parse failures:").ok();
         for failure in &report.parse_failures {
-            writeln!(
+            push_line(
                 &mut output,
-                "  - {}: {}",
-                failure.path.display(),
-                failure.message
-            )
-            .ok();
+                format!("  - {}: {}", failure.path.display(), failure.message),
+            );
         }
     }
 
     output
+}
+
+fn push_line(output: &mut String, line: impl AsRef<str>) {
+    output.push_str(line.as_ref());
+    output.push('\n');
 }
 
 pub(crate) fn format_scan_report_json(

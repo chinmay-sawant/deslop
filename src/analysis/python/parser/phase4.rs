@@ -704,7 +704,7 @@ fn len_targets(text: &str) -> Vec<String> {
     let bytes = text.as_bytes();
     let mut index = 0usize;
     while index + 4 <= bytes.len() {
-        if &bytes[index..index + 4] == b"len(" {
+        if bytes.get(index..index + 4) == Some(b"len(") {
             let start = index + 4;
             let mut end = start;
             while end < bytes.len()
@@ -712,8 +712,10 @@ fn len_targets(text: &str) -> Vec<String> {
             {
                 end += 1;
             }
-            if end > start {
-                targets.push(text[start..end].to_string());
+            if end > start
+                && let Some(target) = text.get(start..end)
+            {
+                targets.push(target.to_string());
             }
             index = end;
             continue;
@@ -777,10 +779,15 @@ fn class_base_names(text: &str) -> Vec<String> {
     let Some(open_index) = header.find('(') else {
         return Vec::new();
     };
-    let Some(close_index) = header[open_index + 1..].find(')') else {
+    let Some(close_index) = header
+        .get(open_index + 1..)
+        .and_then(|suffix| suffix.find(')'))
+    else {
         return Vec::new();
     };
-    header[open_index + 1..open_index + 1 + close_index]
+    header
+        .get(open_index + 1..open_index + 1 + close_index)
+        .unwrap_or("")
         .split(',')
         .map(str::trim)
         .filter(|base| !base.is_empty())
