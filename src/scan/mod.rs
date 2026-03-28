@@ -51,7 +51,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let parse_ms = parse_start.elapsed().as_millis();
 
     let index_start = Instant::now();
-    let index = build_repository_index(&options.root, &parsed_files);
+    let index = build_repository_index(&canonical_root, &parsed_files);
     let index_summary = index.summary();
     let index_ms = index_start.elapsed().as_millis();
 
@@ -280,12 +280,16 @@ fn is_code_line(line: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
     use super::{
         SuppressionDirective, apply_repository_config, is_generated, next_code_line,
-        parse_rule_ids, parse_suppression_directives,
+        parse_rule_ids, parse_suppression_directives, scan_repository,
     };
     use crate::RepoConfig;
     use crate::model::{Finding, Severity};
+    use crate::model::ScanOptions;
 
     fn sample_finding(rule_id: &str, severity: Severity) -> Finding {
         Finding {
@@ -298,6 +302,16 @@ mod tests {
             message: "demo".to_string(),
             evidence: Vec::new(),
         }
+    }
+
+    fn temp_dir(name: &str) -> std::path::PathBuf {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock should be after unix epoch")
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!("deslop-scan-{name}-{nonce}"));
+        fs::create_dir_all(&path).expect("scan temp dir should be created");
+        path
     }
 
     #[test]
@@ -383,5 +397,33 @@ mod tests {
 
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].rule_id, "unwrap_in_non_test_code");
+    }
+
+    #[test]
+    fn scan_uses_canonical_root_for_index_resolution() {
+        let root = temp_dir("canonical-root");
+        let src = root.join("src");
+        let config = src.join("config");
+        fs::create_dir_all(&config).expect("config dir should be created");
+        fs::write(
+            src.join("lib.rs"),
+            "use crate::config::render::normalize as normalize_fn;\n\npub fn run() {\n    normalize_fn();\n}\n",
+        )
+        .expect("lib fixture should be written");
+        fs::write(config.join("render.rs"), "pub fn normalize() {}\n")
+            .expect("render fixture should be written");
+
+        let report = scan_repository(&ScanOptions {
+            root: root.join("."),
+            respect_ignore: true,
+        })
+        .expect("scan should succeed");
+
+        assert!(!report.findings.iter().any(|finding| {
+            finding.rule_id == "hallucinated_import_call"
+                && finding.function_name.as_deref() == Some("run")
+        }));
+
+        fs::remove_dir_all(root).expect("scan temp dir should be removed");
     }
 }
