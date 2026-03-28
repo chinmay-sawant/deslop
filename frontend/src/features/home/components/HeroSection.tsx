@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 
-import { trustPillars } from '../../../content/site-content'
+import { currentRelease, siteMetadata, trustPillars } from '../../../content/site-content'
 import { Container } from '../../../shared/ui/Container'
 
 export function HeroSection() {
@@ -63,12 +63,12 @@ export function HeroSection() {
             <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
           </a>
           <a
-            href="https://github.com/chinmay-sawant/deslop/releases/tag/v0.1.0"
+            href={siteMetadata.github.releaseUrl}
             target="_blank"
             rel="noreferrer"
             className="button-secondary px-8"
           >
-            Get v0.1.0 binaries
+            Get {currentRelease.version} binaries
           </a>
         </div>
 

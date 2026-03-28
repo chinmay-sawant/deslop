@@ -1,0 +1,39 @@
+{
+  "version": "v0.1.0",
+  "releasePage": "https://github.com/chinmay-sawant/deslop/releases/tag/v0.1.0",
+  "actionRef": "chinmay-sawant/deslop@v0.1.0",
+  "assets": [
+    {
+      "id": "linux-x86_64",
+      "label": "Linux x86_64",
+      "platform": "Linux",
+      "arch": "x86_64",
+      "fileName": "deslop-linux-x86_64.tar.gz",
+      "url": "https://github.com/chinmay-sawant/deslop/releases/download/v0.1.0/deslop-linux-x86_64.tar.gz"
+    },
+    {
+      "id": "macos-arm64",
+      "label": "macOS arm64",
+      "platform": "macOS",
+      "arch": "arm64",
+      "fileName": "deslop-macos-arm64.tar.gz",
+      "url": "https://github.com/chinmay-sawant/deslop/releases/download/v0.1.0/deslop-macos-arm64.tar.gz"
+    },
+    {
+      "id": "macos-x86_64",
+      "label": "macOS x86_64",
+      "platform": "macOS",
+      "arch": "x86_64",
+      "fileName": "deslop-macos-x86_64.tar.gz",
+      "url": "https://github.com/chinmay-sawant/deslop/releases/download/v0.1.0/deslop-macos-x86_64.tar.gz"
+    },
+    {
+      "id": "windows-x86_64",
+      "label": "Windows x86_64",
+      "platform": "Windows",
+      "arch": "x86_64",
+      "fileName": "deslop-windows-x86_64.zip",
+      "url": "https://github.com/chinmay-sawant/deslop/releases/download/v0.1.0/deslop-windows-x86_64.zip"
+    }
+  ]
+}
