@@ -226,15 +226,29 @@ from .types import WidgetTemplate, LayoutConfig, Heading
 from .generator import render_widget
 "#;
 
-    let parsed =
-        parse_file(Path::new("pkg/widgets/__init__.py"), source)
-            .expect("python parsing should succeed");
+    let parsed = parse_file(Path::new("pkg/widgets/__init__.py"), source)
+        .expect("python parsing should succeed");
 
     assert!(parsed.imports.iter().all(|import| import.is_public));
-    assert!(parsed.symbols.iter().any(|symbol| symbol.name == "WidgetTemplate"));
-    assert!(parsed.symbols.iter().any(|symbol| symbol.name == "LayoutConfig"));
+    assert!(
+        parsed
+            .symbols
+            .iter()
+            .any(|symbol| symbol.name == "WidgetTemplate")
+    );
+    assert!(
+        parsed
+            .symbols
+            .iter()
+            .any(|symbol| symbol.name == "LayoutConfig")
+    );
     assert!(parsed.symbols.iter().any(|symbol| symbol.name == "Heading"));
-    assert!(parsed.symbols.iter().any(|symbol| symbol.name == "render_widget"));
+    assert!(
+        parsed
+            .symbols
+            .iter()
+            .any(|symbol| symbol.name == "render_widget")
+    );
 }
 
 #[test]
@@ -250,7 +264,22 @@ from widgets import (  # exported widget surface
     let parsed = parse_file(Path::new("tests/test_widgets.py"), source)
         .expect("python parsing should succeed");
 
-    assert!(parsed.imports.iter().any(|import| import.alias == "WidgetTemplate"));
-    assert!(parsed.imports.iter().any(|import| import.alias == "LayoutConfig"));
-    assert!(parsed.imports.iter().any(|import| import.alias == "Heading"));
+    assert!(
+        parsed
+            .imports
+            .iter()
+            .any(|import| import.alias == "WidgetTemplate")
+    );
+    assert!(
+        parsed
+            .imports
+            .iter()
+            .any(|import| import.alias == "LayoutConfig")
+    );
+    assert!(
+        parsed
+            .imports
+            .iter()
+            .any(|import| import.alias == "Heading")
+    );
 }

@@ -64,10 +64,7 @@ fn is_package_export_module(path: &Path) -> bool {
 
 fn mark_public_reexports(imports: &mut [crate::analysis::ImportSpec]) {
     for import in imports {
-        if import.alias != "*"
-            && !import.alias.starts_with('_')
-            && import.path.starts_with('.')
-        {
+        if import.alias != "*" && !import.alias.starts_with('_') && import.path.starts_with('.') {
             import.is_public = true;
         }
     }

@@ -12,7 +12,7 @@ pub(super) fn collect_comment_summaries(source: &str) -> Vec<CommentSummary> {
                 return None;
             }
 
-            let comment_start = line.find('#')?;
+            let comment_start = comment_start_in_line(line)?;
             let text = line.get(comment_start + 1..)?.trim();
             (!text.is_empty()).then(|| CommentSummary {
                 line: index + 1,
@@ -20,6 +20,56 @@ pub(super) fn collect_comment_summaries(source: &str) -> Vec<CommentSummary> {
             })
         })
         .collect()
+}
+
+/// Find the byte offset of a `#` that starts a comment, skipping over `#`
+/// characters that appear inside single- or double-quoted string literals
+/// (including triple-quoted). Returns `None` when no comment `#` exists.
+fn comment_start_in_line(line: &str) -> Option<usize> {
+    let bytes = line.as_bytes();
+    let len = bytes.len();
+    let mut i = 0;
+    let mut in_string: Option<u8> = None; // quote char we're inside
+    let mut triple = false;
+
+    while i < len {
+        let ch = bytes[i];
+
+        if let Some(q) = in_string {
+            if ch == b'\\' {
+                // skip the escaped character
+                i += 2;
+                continue;
+            }
+            if triple {
+                if ch == q && i + 2 < len && bytes[i + 1] == q && bytes[i + 2] == q {
+                    in_string = None;
+                    triple = false;
+                    i += 3;
+                    continue;
+                }
+            } else if ch == q {
+                in_string = None;
+            }
+        } else {
+            match ch {
+                b'\'' | b'"' => {
+                    let q = ch;
+                    if i + 2 < len && bytes[i + 1] == q && bytes[i + 2] == q {
+                        in_string = Some(q);
+                        triple = true;
+                        i += 3;
+                        continue;
+                    }
+                    in_string = Some(q);
+                }
+                b'#' => return Some(i),
+                _ => {}
+            }
+        }
+        i += 1;
+    }
+    None
 }
 
 pub(super) fn extract_docstring(body_node: Node<'_>, source: &str) -> Option<String> {

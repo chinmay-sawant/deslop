@@ -195,6 +195,10 @@ pub(super) fn build_test_summary(
         }
     }
 
+    // Python's bare `assert` keyword is a statement, not a call, so
+    // collect_calls misses it. Count assert_statement AST nodes explicitly.
+    assertion_like_calls += count_assert_statements(body_node);
+
     let body_text = source.get(body_node.byte_range()).unwrap_or_default();
     let has_todo_marker = body_text.to_ascii_uppercase().contains("TODO");
 
@@ -524,6 +528,19 @@ fn visit_class_symbols(node: Node<'_>, source: &str, symbols: &mut Vec<DeclaredS
     for child in node.named_children(&mut cursor) {
         visit_class_symbols(child, source, symbols);
     }
+}
+
+fn count_assert_statements(node: Node<'_>) -> usize {
+    let mut count = if node.kind() == "assert_statement" {
+        1
+    } else {
+        0
+    };
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        count += count_assert_statements(child);
+    }
+    count
 }
 
 fn visit_calls(node: Node<'_>, source: &str, calls: &mut Vec<CallSite>) {

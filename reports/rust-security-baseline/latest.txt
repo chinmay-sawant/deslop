@@ -1,16 +1,17 @@
 ## narrowing_as_casts
 
 ## split_at_and_indexing
+src/analysis/python/parser/general.rs:794:                return &line[..index];
 src/analysis/rust/parser.rs:898:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:305:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:312:    line[start + marker.len()..].starts_with('/')
 src/heuristics/rust/performance.rs:350:                let receiver = &line[start..index];
 
 ## toctou_fs_checks
-tests/integration_scan/python.rs:839:def fetch_metadata(payload):
-tests/integration_scan/python.rs:849:    payload = fetch_metadata(payload)
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
+tests/integration_scan/python.rs:839:def fetch_metadata(payload):
+tests/integration_scan/python.rs:849:    payload = fetch_metadata(payload)
 
 ## toctou_check_then_open
 
