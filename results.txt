@@ -1,8 +1,40 @@
 deslop scan root: /home/chinmay/ChinmayPersonalProjects/deslop
-Source files discovered: 74
-Source files analyzed: 73
-Functions fingerprinted: 749
-Findings: 0
-Index summary: packages=73 symbols=863 imports=721
+Source files discovered: 75
+Source files analyzed: 74
+Functions fingerprinted: 758
+Findings: 30
+Index summary: packages=74 symbols=872 imports=728
 Parse failures: 0
-Timings: discover=7ms parse=349ms index=1ms heuristics=66ms total=424ms
+Timings: discover=8ms parse=258ms index=0ms heuristics=58ms total=326ms
+
+Findings:
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:6 public function parse_findings omits complete type hints [public_api_missing_type_hints]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:15 public function extract_category omits complete type hints [public_api_missing_type_hints]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:20 public function extract_file omits complete type hints [public_api_missing_type_hints]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:27 function summarize concentrates too much control flow and behavior [god_function]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:27 public function summarize omits complete type hints [public_api_missing_type_hints]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:46 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:47 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:48 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:49 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:50 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:51 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:54 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:56 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:57 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:59 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:60 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:63 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:65 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:66 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:68 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:69 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:73 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:75 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:76 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:79 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:81 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/compare_findings.py:82 function summarize leaves print-style debugging in Python code [print_debugging_leftover]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/python/mod.rs:27 call to parser::parse_file resolves to local Rust module path super::parser, but no matching module was indexed [hallucinated_import_call]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/python/mod.rs:48 call to parser::parse_file resolves to local Rust module path super::parser, but no matching module was indexed [hallucinated_import_call]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/rust/parser.rs:902 function is_default_hashmap_target creates a HashMap with the default hasher in a likely hot path [rust_hashmap_default_hasher]

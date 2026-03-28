@@ -218,3 +218,21 @@ class PayloadManager(BaseManager):
     assert_eq!(payload_manager.base_classes, vec!["BaseManager"]);
     assert_eq!(payload_manager.constructor_collaborator_count, 3);
 }
+
+#[test]
+fn test_python_init_reexports_are_indexed_as_symbols() {
+    let source = r#"
+from .types import WidgetTemplate, LayoutConfig, Heading
+from .generator import render_widget
+"#;
+
+    let parsed =
+        parse_file(Path::new("pkg/widgets/__init__.py"), source)
+            .expect("python parsing should succeed");
+
+    assert!(parsed.imports.iter().all(|import| import.is_public));
+    assert!(parsed.symbols.iter().any(|symbol| symbol.name == "WidgetTemplate"));
+    assert!(parsed.symbols.iter().any(|symbol| symbol.name == "LayoutConfig"));
+    assert!(parsed.symbols.iter().any(|symbol| symbol.name == "Heading"));
+    assert!(parsed.symbols.iter().any(|symbol| symbol.name == "render_widget"));
+}

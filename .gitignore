@@ -1,5 +1,46 @@
-/target
+/target/
 
-/frontend/node_modules
-/frontend/.vite
+# Frontend
+/frontend/node_modules/
+/frontend/.vite/
+/frontend/dist/
+/frontend/build/
+/frontend/.cache/
 /frontend/.DS_Store
+
+# IDEs and editors
+/.vscode/
+/.idea/
+*.iml
+.DS_Store
+*.swp
+*.swo
+
+# Python
+/.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Node/npm logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Logs and runtime files
+*.log
+logs/
+
+# Build outputs
+/dist/
+/build/
+/out/
+/coverage/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+.venv

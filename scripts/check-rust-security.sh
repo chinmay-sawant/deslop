@@ -6,8 +6,25 @@ cd "$(dirname "$0")/.."
 mkdir -p reports/rust-security-baseline
 report="reports/rust-security-baseline/latest.txt"
 
+has_rg() {
+  command -v rg >/dev/null 2>&1
+}
+
+rg_supports_pcre2() {
+  if ! has_rg; then
+    return 1
+  fi
+
+  if rg -P 'a' /dev/null >/dev/null 2>&1; then
+    return 0
+  fi
+
+  local status=$?
+  [[ "$status" -eq 1 ]]
+}
+
 rust_files() {
-  if command -v rg >/dev/null 2>&1; then
+  if has_rg; then
     rg --files src tests -g '*.rs'
   else
     find src tests -type f -name '*.rs'
@@ -22,7 +39,7 @@ append_section() {
 run_search() {
   local label="$1"
   local pattern="$2"
-  if command -v rg >/dev/null 2>&1; then
+  if has_rg; then
     {
       append_section "$label"
       rg -n "$pattern" src tests --glob '*.rs' || true
@@ -40,14 +57,18 @@ run_search() {
 run_pcre_search() {
   local label="$1"
   local pattern="$2"
-  if command -v rg >/dev/null 2>&1; then
+  if rg_supports_pcre2; then
     {
       append_section "$label"
       rg -n -P "$pattern" src tests --glob '*.rs' || true
       echo
     } >> "$report"
   else
-    run_search "$label" "$pattern"
+    {
+      append_section "$label"
+      grep -R -n -P "$pattern" src tests --include='*.rs' || true
+      echo
+    } >> "$report"
   fi
 }
 

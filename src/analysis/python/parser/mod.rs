@@ -29,11 +29,14 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
 
     let root = tree.root_node();
     let is_test_file = is_test_file(path);
-    let imports = collect_imports(root, source);
+    let mut imports = collect_imports(root, source);
+    if is_package_export_module(path) {
+        mark_public_reexports(&mut imports);
+    }
     let package_string_literals = collect_pkg_strings(root, source);
     let comments = collect_comment_summaries(source);
     let functions = collect_functions(root, source, is_test_file);
-    let symbols = collect_symbols(root, source, &functions);
+    let symbols = collect_symbols(root, source, &functions, &imports);
     let class_summaries = collect_class_summaries(root, source);
 
     Ok(ParsedFile {
@@ -53,4 +56,19 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
         class_summaries,
         structs: Vec::new(),
     })
+}
+
+fn is_package_export_module(path: &Path) -> bool {
+    path.file_name().and_then(|name| name.to_str()) == Some("__init__.py")
+}
+
+fn mark_public_reexports(imports: &mut [crate::analysis::ImportSpec]) {
+    for import in imports {
+        if import.alias != "*"
+            && !import.alias.starts_with('_')
+            && import.path.starts_with('.')
+        {
+            import.is_public = true;
+        }
+    }
 }

@@ -81,6 +81,7 @@ pub(super) fn collect_symbols(
     root: Node<'_>,
     source: &str,
     functions: &[ParsedFunction],
+    imports: &[ImportSpec],
 ) -> Vec<DeclaredSymbol> {
     let mut symbols = functions
         .iter()
@@ -96,6 +97,18 @@ pub(super) fn collect_symbols(
             line: function.fingerprint.start_line,
         })
         .collect::<Vec<_>>();
+
+    for import in imports {
+        if import.is_public && import.alias != "*" {
+            symbols.push(DeclaredSymbol {
+                name: import.alias.clone(),
+                kind: SymbolKind::Type,
+                receiver_type: None,
+                receiver_is_pointer: None,
+                line: 1,
+            });
+        }
+    }
 
     visit_class_symbols(root, source, &mut symbols);
     symbols.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
