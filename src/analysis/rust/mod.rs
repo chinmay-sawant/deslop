@@ -306,7 +306,7 @@ fn rust_import_findings(
 
         if import_aliases
             .get(receiver)
-            .is_some_and(|import_spec| import_spec_matches_indexed_item(index, &file.path, import_spec))
+            .is_some_and(|import_spec| import_matches_item(index, &file.path, import_spec))
         {
             continue;
         }
@@ -463,10 +463,10 @@ fn call_matches_import(
     file_path: &Path,
     import_spec: &ImportSpec,
 ) -> bool {
-    import_spec_matches_indexed_item(index, file_path, import_spec)
+    import_matches_item(index, file_path, import_spec)
 }
 
-fn import_spec_matches_indexed_item(
+fn import_matches_item(
     index: &RepositoryIndex,
     file_path: &Path,
     import_spec: &ImportSpec,
@@ -559,7 +559,7 @@ mod tests {
     use std::path::Path;
 
     use super::{
-        alias_lookup, call_matches_import, evaluate_rust_findings, import_spec_matches_indexed_item,
+        alias_lookup, call_matches_import, evaluate_rust_findings, import_matches_item,
     };
     use crate::analysis::rust::parser;
     use crate::index::build_repository_index;
@@ -682,7 +682,7 @@ impl Error {
             .get("Error")
             .expect("type import should be indexed");
 
-        assert!(import_spec_matches_indexed_item(&index, &current.path, import_spec));
+        assert!(import_matches_item(&index, &current.path, import_spec));
         assert!(!evaluate_rust_findings(&current, &index)
             .iter()
             .any(|finding| {
@@ -752,7 +752,7 @@ pub fn release(value: String) {
             .get("Error")
             .expect("Error import should exist");
 
-        assert!(import_spec_matches_indexed_item(&index, &current.path, import_spec));
+        assert!(import_matches_item(&index, &current.path, import_spec));
     }
 
     #[test]

@@ -225,19 +225,28 @@ impl PackageIndex {
 pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> RepositoryIndex {
     let mut packages = BTreeMap::new();
 
-    for file in files {
-        let package_name = file
-            .package_name
+    for ParsedFile {
+        language,
+        path,
+        package_name,
+        imports,
+        symbols,
+        ..
+    } in files
+    {
+        let language = *language;
+        let package_name = package_name
             .clone()
             .unwrap_or_else(|| "unknown".to_string());
-        let directory = package_directory(root, &file.path);
+        let directory = package_directory(root, path);
+        let import_count = imports.len();
         let key = PackageKey {
-            language: file.language,
+            language,
             package_name: package_name.clone(),
             directory: directory.clone(),
         };
         let package_entry = packages.entry(key).or_insert_with(|| PackageIndex {
-            language: file.language,
+            language,
             package_name,
             directory,
             functions: BTreeSet::new(),
@@ -246,31 +255,36 @@ pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> Repos
             import_count: 0,
         });
 
-        package_entry.import_count += file.imports.len();
+        package_entry.import_count += import_count;
 
-        for symbol in &file.symbols {
-            package_entry.symbols.push(symbol.clone());
-            match symbol.kind {
-                SymbolKind::Function => {
-                    package_entry.functions.insert(symbol.name.clone());
-                }
-                SymbolKind::Method => {
-                    if let Some(receiver) = &symbol.receiver_type {
-                        package_entry
-                            .methods_by_receiver
-                            .entry(receiver.clone())
-                            .or_insert_with(BTreeSet::new)
-                            .insert(symbol.name.clone());
-                    }
-                }
-                _ => {}
-            }
+        for symbol in symbols {
+            insert_symbol(package_entry, symbol);
         }
     }
 
     RepositoryIndex {
         root: root.to_path_buf(),
         packages,
+    }
+}
+
+fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
+    package_entry.symbols.push(symbol.clone());
+
+    match symbol.kind {
+        SymbolKind::Function => {
+            package_entry.functions.insert(symbol.name.clone());
+        }
+        SymbolKind::Method => {
+            if let Some(receiver) = &symbol.receiver_type {
+                package_entry
+                    .methods_by_receiver
+                    .entry(receiver.clone())
+                    .or_insert_with(BTreeSet::new)
+                    .insert(symbol.name.clone());
+            }
+        }
+        _ => {}
     }
 }
 

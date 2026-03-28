@@ -113,6 +113,11 @@ fn enabled_like(name: &str) -> bool {
 }
 
 fn business_value_like(name: &str) -> bool {
+    let normalized = name.to_ascii_lowercase();
+    if normalized.ends_with("_ms") || normalized.starts_with("uses_") {
+        return false;
+    }
+
     matches_token(
         name,
         &[

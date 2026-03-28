@@ -720,7 +720,7 @@ fn collect_blocking_calls(node: Node<'_>, source: &str, calls: &[CallSite]) -> V
         })
         .collect::<Vec<_>>();
 
-    visit_for_textual_blocking_calls(node, source, &mut blocking_calls);
+    visit_textual_blocking_calls(node, source, &mut blocking_calls);
     blocking_calls.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
     blocking_calls.dedup_by(|left, right| left.line == right.line && left.name == right.name && left.receiver == right.receiver);
     blocking_calls
@@ -735,7 +735,7 @@ fn is_blocking_call(call: &CallSite) -> bool {
         || receiver.contains("File")
 }
 
-fn visit_for_textual_blocking_calls(
+fn visit_textual_blocking_calls(
     node: Node<'_>,
     source: &str,
     blocking_calls: &mut Vec<RuntimeCall>,
@@ -762,7 +762,7 @@ fn visit_for_textual_blocking_calls(
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_textual_blocking_calls(child, source, blocking_calls);
+        visit_textual_blocking_calls(child, source, blocking_calls);
     }
 }
 
@@ -803,7 +803,7 @@ fn visit_loop_operation_lines(
         if name == "lines" {
             line_iteration_loops.push(line);
         }
-        if target.contains("HashMap::new") || target.contains("HashMap::default") {
+        if is_default_hashmap_target(&target) {
             default_hasher_lines.push(line);
         }
     }
@@ -835,23 +835,36 @@ fn is_loop_node(kind: &str) -> bool {
 
 fn collect_boxed_container_lines(node: Node<'_>, source: &str) -> Vec<usize> {
     let mut lines = Vec::new();
-    visit_for_boxed_container_lines(node, source, &mut lines);
+    visit_boxed_vec_lines(node, source, &mut lines);
     lines.sort_unstable();
     lines.dedup();
     lines
 }
 
-fn visit_for_boxed_container_lines(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
-    if let Some(text) = source.get(node.byte_range())
-        && text.contains("Vec<Box<")
+fn visit_boxed_vec_lines(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
+    if node.kind() == "let_declaration"
+        && let Some(text) = source.get(node.byte_range())
+        && contains_boxed_vec_type(text)
     {
         lines.push(node.start_position().row + 1);
     }
 
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        visit_for_boxed_container_lines(child, source, lines);
+        visit_boxed_vec_lines(child, source, lines);
     }
+}
+
+fn contains_boxed_vec_type(text: &str) -> bool {
+    let Some(vec_start) = text.find("Vec<") else {
+        return false;
+    };
+    text[vec_start + 4..].contains("Box<")
+}
+
+fn is_default_hashmap_target(target: &str) -> bool {
+    target.contains("HashMap::")
+        && (target.ends_with("::new") || target.ends_with("::default"))
 }
 
 fn collect_unsafe_patterns(node: Node<'_>, source: &str) -> Vec<UnsafePattern> {
@@ -1428,7 +1441,7 @@ fn count_comment_lines(text: &str) -> usize {
     let mut count = 0usize;
     let mut in_block_comment = false;
 
-    for line in text.lines() {
+    for line in text.split('\n') {
         let trimmed = line.trim();
 
         if in_block_comment {
@@ -1459,7 +1472,7 @@ fn count_code_lines(text: &str) -> usize {
     let mut count = 0usize;
     let mut in_block_comment = false;
 
-    for line in text.lines() {
+    for line in text.split('\n') {
         let trimmed = line.trim();
 
         if trimmed.is_empty() {

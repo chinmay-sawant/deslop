@@ -5,7 +5,7 @@ Functions fingerprinted: 876
 Findings: 769
 Index summary: packages=63 symbols=1089 imports=755
 Parse failures: 0
-Timings: discover=72ms parse=527ms index=0ms heuristics=149ms total=750ms
+Timings: discover=10ms parse=362ms index=0ms heuristics=131ms total=505ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/__init__.py:1 module depends on a large number of repository-local modules [tight_module_coupling]

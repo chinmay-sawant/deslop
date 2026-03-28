@@ -156,6 +156,7 @@ pub(crate) fn async_file_findings(file: &ParsedFile) -> Vec<Finding> {
         let receivers = function
             .lock_calls
             .iter()
+            .filter(|call| is_lock_order_call(call))
             .filter_map(|call| call.receiver.clone())
             .collect::<Vec<_>>();
 
@@ -182,4 +183,14 @@ pub(crate) fn async_file_findings(file: &ParsedFile) -> Vec<Finding> {
     }
 
     findings
+}
+
+fn is_lock_order_call(call: &crate::analysis::RuntimeCall) -> bool {
+    if matches!(call.name.as_str(), "lock" | "lock_owned") {
+        return true;
+    }
+
+    let receiver = call.receiver.as_deref().unwrap_or_default().to_ascii_lowercase();
+    matches!(call.name.as_str(), "read" | "write")
+        && (receiver.contains("lock") || receiver.contains("mutex") || receiver.contains("rwlock"))
 }

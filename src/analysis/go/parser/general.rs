@@ -519,7 +519,7 @@ fn extract_struct_tags(node: Node<'_>, source: &str) -> Vec<StructTag> {
     let mut tags = Vec::new();
     let base_line = type_node.start_position().row + 1;
 
-    for (offset, line) in struct_text.lines().enumerate() {
+    for (offset, line) in struct_text.split('\n').enumerate() {
         let trimmed = line.trim();
         if trimmed.is_empty() || trimmed == "struct{" || trimmed == "struct {" || trimmed == "}" {
             continue;
