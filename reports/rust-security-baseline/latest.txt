@@ -1,6 +1,10 @@
 ## narrowing_as_casts
 
 ## split_at_and_indexing
+src/analysis/rust/parser.rs:862:    text[vec_start + 4..].contains("Box<")
+src/heuristics/rust/performance.rs:245:    text[vec_start + 4..].contains("Box<")
+src/heuristics/rust/performance.rs:252:    line[start + marker.len()..].starts_with('/')
+src/heuristics/rust/performance.rs:288:                let receiver = &line[start..index];
 
 ## toctou_fs_checks
 src/io.rs:16:        .metadata()
@@ -17,10 +21,8 @@ tests/integration_scan/python.rs:849:    payload = fetch_metadata(payload)
 ## unsafe_globals
 
 ## derive_default
-tests/fixtures/rust/domain_modeling/positive.rs:3:#[derive(Debug, Default, Serialize, Deserialize)]
 
 ## thread_spawn_async
-tests/fixtures/rust/async/positive.rs:39:    tokio::spawn(async move {
 
 ## path_join_absolute
 

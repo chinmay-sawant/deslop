@@ -14,6 +14,7 @@ const CONFIG_FILE_NAME: &str = ".deslop.toml";
 pub(crate) struct RepoConfig {
     pub rust_async_experimental: bool,
     pub disabled_rules: Vec<String>,
+    pub suppressed_paths: Vec<PathBuf>,
     pub severity_overrides: BTreeMap<String, Severity>,
 }
 
@@ -22,6 +23,7 @@ impl Default for RepoConfig {
         Self {
             rust_async_experimental: true,
             disabled_rules: Vec::new(),
+            suppressed_paths: Vec::new(),
             severity_overrides: BTreeMap::new(),
         }
     }
@@ -62,6 +64,7 @@ pub(crate) fn load_repository_config(root: &Path) -> Result<RepoConfig, Error> {
 #[cfg(test)]
 mod tests {
     use std::fs;
+    use std::path::PathBuf;
     use std::time::{SystemTime, UNIX_EPOCH};
 
     use super::{RepoConfig, load_repository_config};
@@ -90,13 +93,14 @@ mod tests {
         let root = temp_dir("toml");
         fs::write(
             root.join(".deslop.toml"),
-            "rust_async_experimental = false\ndisabled_rules = [\"panic_macro_leftover\"]\n[severity_overrides]\nunwrap_in_non_test_code = \"error\"\n",
+            "rust_async_experimental = false\ndisabled_rules = [\"panic_macro_leftover\"]\nsuppressed_paths = [\"tests/fixtures\"]\n[severity_overrides]\nunwrap_in_non_test_code = \"error\"\n",
         )
         .expect("config file should be written");
 
         let config = load_repository_config(&root).expect("config should parse");
         assert!(!config.rust_async_experimental);
         assert_eq!(config.disabled_rules, vec!["panic_macro_leftover".to_string()]);
+        assert_eq!(config.suppressed_paths, vec![PathBuf::from("tests/fixtures")]);
         assert_eq!(
             config.severity_overrides.get("unwrap_in_non_test_code"),
             Some(&Severity::Error)

@@ -29,6 +29,8 @@ enum Command {
         details: bool,
         #[arg(long)]
         no_ignore: bool,
+        #[arg(long, value_delimiter = ',')]
+        ignore: Vec<String>,
         /// Exit 0 even when findings are present (useful for informational runs).
         #[arg(long)]
         no_fail: bool,
@@ -55,14 +57,21 @@ fn main() -> Result<()> {
             json,
             details,
             no_ignore,
+            ignore,
             no_fail,
         } => {
             let scan_root = path.clone();
-            let report = scan_repository(&ScanOptions {
+            let mut report = scan_repository(&ScanOptions {
                 root: path,
                 respect_ignore: !no_ignore,
             })
             .with_context(|| format!("scan failed for {}", scan_root.display()))?;
+
+            if !ignore.is_empty() {
+                report
+                    .findings
+                    .retain(|finding| !ignore.iter().any(|rule_id| rule_id == &finding.rule_id));
+            }
 
             if json {
                 println!("{}", format_scan_report_json(&report, details)?);

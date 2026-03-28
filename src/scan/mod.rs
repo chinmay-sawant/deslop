@@ -56,7 +56,13 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let index_ms = index_start.elapsed().as_millis();
 
     let heuristics_start = Instant::now();
-    let findings = evaluate_findings(&parsed_files, &index, &suppressions, &repo_config);
+    let findings = evaluate_findings(
+        &parsed_files,
+        &index,
+        &suppressions,
+        &repo_config,
+        &canonical_root,
+    );
     let heuristics_ms = heuristics_start.elapsed().as_millis();
 
     let files_analyzed = parsed_files.len();
@@ -87,6 +93,7 @@ fn evaluate_findings(
     index: &crate::index::RepositoryIndex,
     suppressions: &BTreeMap<PathBuf, Vec<SuppressionDirective>>,
     repo_config: &RepoConfig,
+    root: &Path,
 ) -> Vec<Finding> {
     let mut findings = evaluate_shared(files, index);
 
@@ -105,7 +112,7 @@ fn evaluate_findings(
     }
 
     findings.retain(|finding| !is_suppressed(finding, suppressions));
-    apply_repository_config(&mut findings, repo_config);
+    apply_repository_config(&mut findings, repo_config, root);
 
     findings.sort_by(|left, right| {
         left.path
@@ -206,10 +213,11 @@ fn is_suppressed(
     })
 }
 
-fn apply_repository_config(findings: &mut Vec<Finding>, repo_config: &RepoConfig) {
+fn apply_repository_config(findings: &mut Vec<Finding>, repo_config: &RepoConfig, root: &Path) {
     findings.retain(|finding| {
         !repo_config.disabled_rules.iter().any(|rule_id| rule_id == &finding.rule_id)
             && (repo_config.rust_async_experimental || !is_async_rollout_rule(&finding.rule_id))
+            && !path_is_suppressed(&finding.path, root, &repo_config.suppressed_paths)
     });
 
     for finding in findings.iter_mut() {
@@ -217,6 +225,17 @@ fn apply_repository_config(findings: &mut Vec<Finding>, repo_config: &RepoConfig
             finding.severity = severity.clone();
         }
     }
+}
+
+fn path_is_suppressed(path: &Path, root: &Path, suppressed_paths: &[PathBuf]) -> bool {
+    suppressed_paths.iter().any(|prefix| {
+        if prefix.is_absolute() {
+            path.starts_with(prefix)
+        } else {
+            path.strip_prefix(root)
+                .is_ok_and(|relative_path| relative_path.starts_with(prefix))
+        }
+    })
 }
 
 fn is_async_rollout_rule(rule_id: &str) -> bool {
@@ -367,13 +386,14 @@ mod tests {
         let mut repo_config = RepoConfig {
             rust_async_experimental: true,
             disabled_rules: vec!["panic_macro_leftover".to_string()],
+            suppressed_paths: Vec::new(),
             severity_overrides: std::collections::BTreeMap::new(),
         };
         repo_config
             .severity_overrides
             .insert("unwrap_in_non_test_code".to_string(), Severity::Error);
 
-        apply_repository_config(&mut findings, &repo_config);
+        apply_repository_config(&mut findings, &repo_config, std::path::Path::new("."));
 
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].rule_id, "unwrap_in_non_test_code");
@@ -390,13 +410,42 @@ mod tests {
         let repo_config = RepoConfig {
             rust_async_experimental: false,
             disabled_rules: Vec::new(),
+            suppressed_paths: Vec::new(),
             severity_overrides: std::collections::BTreeMap::new(),
         };
 
-        apply_repository_config(&mut findings, &repo_config);
+        apply_repository_config(&mut findings, &repo_config, std::path::Path::new("."));
 
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].rule_id, "unwrap_in_non_test_code");
+    }
+
+    #[test]
+    fn suppresses_findings_under_configured_paths() {
+        let root = temp_dir("suppressed-paths");
+        let mut findings = vec![
+            Finding {
+                path: root.join("tests/fixtures/rust/async/positive.rs"),
+                ..sample_finding("rust_blocking_io_in_async", Severity::Warning)
+            },
+            Finding {
+                path: root.join("src/lib.rs"),
+                ..sample_finding("unwrap_in_non_test_code", Severity::Warning)
+            },
+        ];
+        let repo_config = RepoConfig {
+            rust_async_experimental: true,
+            disabled_rules: Vec::new(),
+            suppressed_paths: vec![std::path::PathBuf::from("tests/fixtures")],
+            severity_overrides: std::collections::BTreeMap::new(),
+        };
+
+        apply_repository_config(&mut findings, &repo_config, &root);
+
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].path, root.join("src/lib.rs"));
+
+        fs::remove_dir_all(root).expect("scan temp dir should be removed");
     }
 
     #[test]

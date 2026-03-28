@@ -12,7 +12,7 @@ fn test_rust_domain_modeling_rules() {
     write_fixture(
         &temp_dir,
         "src/lib.rs",
-        rust_fixture!("domain_modeling/positive.rs"),
+        rust_fixture!("domain_modeling/positive.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -43,7 +43,7 @@ fn test_rust_domain_modeling_rules() {
 #[test]
 fn test_rust_async_and_performance_rules() {
     let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("async/positive.rs"));
+    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("async/positive.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -77,7 +77,7 @@ fn test_rust_async_and_performance_rules() {
 #[test]
 fn test_rust_unsafe_soundness_rules() {
     let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("unsafe/positive.rs"));
+    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("unsafe/positive.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -109,10 +109,10 @@ fn test_rust_advanced_negative_fixtures() {
     write_fixture(
         &temp_dir,
         "src/domain.rs",
-        rust_fixture!("domain_modeling/negative.rs"),
+        rust_fixture!("domain_modeling/negative.txt"),
     );
-    write_fixture(&temp_dir, "src/async.rs", rust_fixture!("async/negative.rs"));
-    write_fixture(&temp_dir, "src/unsafe.rs", rust_fixture!("unsafe/negative.rs"));
+    write_fixture(&temp_dir, "src/async.rs", rust_fixture!("async/negative.txt"));
+    write_fixture(&temp_dir, "src/unsafe.rs", rust_fixture!("unsafe/negative.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),

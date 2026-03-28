@@ -20,12 +20,21 @@ Repository-local scan behavior can be tuned with a `.deslop.toml` file at the sc
 ```toml
 rust_async_experimental = true
 disabled_rules = ["panic_macro_leftover"]
+suppressed_paths = ["tests/fixtures"]
 
 [severity_overrides]
 expect_in_non_test_code = "error"
 ```
 
-`rust_async_experimental = false` disables the Rust async rule pack for that repository. `disabled_rules` removes matching rule ids entirely, and `severity_overrides` rewrites the emitted severity after analysis.
+`rust_async_experimental = false` disables the Rust async rule pack for that repository. `disabled_rules` removes matching rule ids entirely, `suppressed_paths` filters findings under matching relative path prefixes after analysis, and `severity_overrides` rewrites the emitted severity after analysis.
+
+You can also ignore rule ids for a single scan invocation without changing repository config:
+
+```bash
+cargo run -- scan --ignore hallucinated_import_call,hallucinated_local_call /path/to/repo
+```
+
+`--ignore` applies after analysis and only affects the emitted findings for that command.
 
 Run the same scan with JSON output:
 

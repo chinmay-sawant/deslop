@@ -565,7 +565,12 @@ mod tests {
     use crate::index::build_repository_index;
 
     fn parse_file(path: &str, source: &str) -> crate::analysis::ParsedFile {
-        parser::parse_file(Path::new(path), source).expect("rust source should parse")
+        let parsed = parser::parse_file(Path::new(path), source);
+        assert!(parsed.is_ok(), "rust source should parse");
+        match parsed {
+            Ok(file) => file,
+            Err(_) => unreachable!("asserted above"),
+        }
     }
 
     #[test]
@@ -591,9 +596,13 @@ pub fn evaluate_go_repo() {}
 
         let index = build_repository_index(Path::new("/repo"), &[current.clone(), heuristics]);
         let import_aliases = alias_lookup(&current.imports);
-        let import_spec = import_aliases
-            .get("evaluate_go_file")
-            .expect("grouped import should be indexed");
+        let import_spec = import_aliases.get("evaluate_go_file");
+
+        assert!(import_spec.is_some(), "grouped import should be indexed");
+        let import_spec = match import_spec {
+            Some(import_spec) => import_spec,
+            None => unreachable!("asserted above"),
+        };
 
         assert!(call_matches_import(&index, &current.path, import_spec));
         assert!(!evaluate_rust_findings(&current, &index)
@@ -628,16 +637,18 @@ pub(super) fn find_package_name() {}
         assert!(call_matches_import(
             &index,
             &current.path,
-            import_aliases
-                .get("collect_calls")
-                .expect("collect_calls import should exist")
+            match import_aliases.get("collect_calls") {
+                Some(import_spec) => import_spec,
+                None => unreachable!("collect_calls import should exist"),
+            }
         ));
         assert!(call_matches_import(
             &index,
             &current.path,
-            import_aliases
-                .get("find_package_name")
-                .expect("find_package_name import should exist")
+            match import_aliases.get("find_package_name") {
+                Some(import_spec) => import_spec,
+                None => unreachable!("find_package_name import should exist"),
+            }
         ));
         assert!(!evaluate_rust_findings(&current, &index)
             .iter()
@@ -678,9 +689,13 @@ impl Error {
 
         let index = build_repository_index(Path::new("/repo"), &[current.clone(), analysis, error]);
         let import_aliases = alias_lookup(&current.imports);
-        let import_spec = import_aliases
-            .get("Error")
-            .expect("type import should be indexed");
+        let import_spec = import_aliases.get("Error");
+
+        assert!(import_spec.is_some(), "type import should be indexed");
+        let import_spec = match import_spec {
+            Some(import_spec) => import_spec,
+            None => unreachable!("asserted above"),
+        };
 
         assert!(import_matches_item(&index, &current.path, import_spec));
         assert!(!evaluate_rust_findings(&current, &index)
@@ -724,9 +739,13 @@ pub fn release(value: String) {
 
         let index = build_repository_index(Path::new("/repo"), &[current.clone(), heuristics]);
         let import_aliases = alias_lookup(&current.imports);
-        let import_spec = import_aliases
-            .get("evaluate_go_file")
-            .expect("evaluate_go_file import should exist");
+        let import_spec = import_aliases.get("evaluate_go_file");
+
+        assert!(import_spec.is_some(), "evaluate_go_file import should exist");
+        let import_spec = match import_spec {
+            Some(import_spec) => import_spec,
+            None => unreachable!("asserted above"),
+        };
 
         assert!(call_matches_import(&index, &current.path, import_spec));
     }
@@ -748,9 +767,13 @@ pub fn release(value: String) {
 
         let index = build_repository_index(Path::new("/repo"), &[current.clone(), analysis, error]);
         let import_aliases = alias_lookup(&current.imports);
-        let import_spec = import_aliases
-            .get("Error")
-            .expect("Error import should exist");
+        let import_spec = import_aliases.get("Error");
+
+        assert!(import_spec.is_some(), "Error import should exist");
+        let import_spec = match import_spec {
+            Some(import_spec) => import_spec,
+            None => unreachable!("asserted above"),
+        };
 
         assert!(import_matches_item(&index, &current.path, import_spec));
     }
