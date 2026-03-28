@@ -236,3 +236,21 @@ from .generator import render_widget
     assert!(parsed.symbols.iter().any(|symbol| symbol.name == "Heading"));
     assert!(parsed.symbols.iter().any(|symbol| symbol.name == "render_widget"));
 }
+
+#[test]
+fn test_python_parenthesized_from_import_ignores_inline_comments() {
+    let source = r#"
+from widgets import (  # exported widget surface
+    WidgetTemplate,
+    LayoutConfig,
+    Heading,
+)
+"#;
+
+    let parsed = parse_file(Path::new("tests/test_widgets.py"), source)
+        .expect("python parsing should succeed");
+
+    assert!(parsed.imports.iter().any(|import| import.alias == "WidgetTemplate"));
+    assert!(parsed.imports.iter().any(|import| import.alias == "LayoutConfig"));
+    assert!(parsed.imports.iter().any(|import| import.alias == "Heading"));
+}

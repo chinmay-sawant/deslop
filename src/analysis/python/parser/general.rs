@@ -751,11 +751,44 @@ fn parse_alias(entry: &str) -> (String, String) {
 
 fn normalize_import_text(text: &str) -> String {
     text.lines()
+        .map(strip_python_comment)
         .map(str::trim)
+        .filter(|line| !line.is_empty())
         .collect::<Vec<_>>()
         .join(" ")
         .replace("( ", "")
         .replace(" )", "")
+}
+
+fn strip_python_comment(line: &str) -> &str {
+    let mut in_single = false;
+    let mut in_double = false;
+    let mut previous_was_escape = false;
+
+    for (index, character) in line.char_indices() {
+        match character {
+            '\\' if in_single || in_double => {
+                previous_was_escape = !previous_was_escape;
+                continue;
+            }
+            '\'' if !in_double && !previous_was_escape => {
+                in_single = !in_single;
+            }
+            '"' if !in_single && !previous_was_escape => {
+                in_double = !in_double;
+            }
+            '#' if !in_single && !in_double => {
+                return &line[..index];
+            }
+            _ => {}
+        }
+
+        if character != '\\' {
+            previous_was_escape = false;
+        }
+    }
+
+    line
 }
 
 fn split_import_list(text: &str) -> Vec<String> {

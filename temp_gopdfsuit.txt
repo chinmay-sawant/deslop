@@ -2,10 +2,10 @@ deslop scan root: /home/chinmay/ChinmayPersonalProjects/gopdfsuit
 Source files discovered: 125
 Source files analyzed: 125
 Functions fingerprinted: 876
-Findings: 397
+Findings: 396
 Index summary: packages=63 symbols=1129 imports=755
 Parse failures: 0
-Timings: discover=9ms parse=366ms index=0ms heuristics=144ms total=521ms
+Timings: discover=13ms parse=573ms index=1ms heuristics=179ms total=768ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/__init__.py:1 module depends on a large number of repository-local modules [tight_module_coupling]
@@ -313,7 +313,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/main.go:685 function main launches a looping goroutine without an obvious shutdown path [goroutine_without_shutdown_path]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:73 function generate_trades repeats branch-shaping literals instead of naming them explicitly [magic_value_branching]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:77 function generate_trades uses a loop shape that may read better with a Python built-in [builtin_reduction_candidate]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:106 call to Bookmark has no matching symbol in package pypdfsuit_bench [hallucinated_local_call]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:109 function get_machine_info concentrates too much control flow and behavior [god_function]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:134 function get_machine_info allocates a temporary collection inside a loop [temporary_collection_in_loop]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:137 file repeats highly similar exception-handling blocks [duplicate_error_handler_block]

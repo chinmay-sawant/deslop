@@ -112,4 +112,44 @@ def test_basic_render():
             "package re-exports should resolve as imported symbols: {findings:?}"
         );
     }
+
+    #[test]
+    fn parenthesized_from_import_with_inline_comment_does_not_fall_back_to_local_call() {
+        let package = parse_file(
+            "/repo/pkg/widgets/__init__.py",
+            r#"
+from .types import BookmarkNode
+"#,
+        );
+        let types = parse_file(
+            "/repo/pkg/widgets/types.py",
+            r#"
+class BookmarkNode:
+    pass
+"#,
+        );
+        let current = parse_file(
+            "/repo/examples/bench.py",
+            r#"
+from widgets import (  # benchmark imports
+    BookmarkNode,
+)
+
+def bookmark_node() -> BookmarkNode:
+    return BookmarkNode()
+"#,
+        );
+
+        let index = build_repository_index(Path::new("/repo"), &[current.clone(), package, types]);
+        let findings = evaluate_python_file(&current, &index);
+
+        assert!(
+            !findings.iter().any(|finding| {
+                (finding.rule_id == "hallucinated_import_call"
+                    || finding.rule_id == "hallucinated_local_call")
+                    && finding.message.contains("BookmarkNode")
+            }),
+            "parenthesized from-import should resolve imported names: {findings:?}"
+        );
+    }
 }
