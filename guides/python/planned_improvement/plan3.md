@@ -45,38 +45,38 @@ Convert the Python improvement plan into a concrete roadmap for the heuristics t
 
 ### 1. Separate file-level work from repo-level work
 
-- [ ] Keep file-level heuristics validated with single-file fixtures whenever possible.
-- [ ] Keep repo-level heuristics validated with multi-file fixture assemblies copied into temp workspaces.
-- [ ] Do not mix file-level and repo-level expectations into the same fixture unless the relationship is the point of the test.
+- [x] Keep file-level heuristics validated with single-file fixtures whenever possible.
+- [x] Keep repo-level heuristics validated with multi-file fixture assemblies copied into temp workspaces.
+- [x] Do not mix file-level and repo-level expectations into the same fixture unless the relationship is the point of the test.
 
 ### 2. Add explicit fixture coverage for structure heuristics
 
-- [ ] Add `.txt` fixtures for positive and negative class-shape cases:
+- [x] Add `.txt` fixtures for positive and negative class-shape cases:
   - [x] `tests/fixtures/python/structure/god_class_positive.txt`
   - [x] `tests/fixtures/python/structure/god_class_negative.txt`
   - [x] `tests/fixtures/python/structure/too_many_instance_attributes_positive.txt`
   - [x] `tests/fixtures/python/structure/too_many_instance_attributes_negative.txt`
   - [x] `tests/fixtures/python/structure/over_abstracted_wrapper_positive.txt`
   - [x] `tests/fixtures/python/structure/over_abstracted_wrapper_negative.txt`
-- [ ] Add `.txt` fixtures for function-shape structure rules:
+- [x] Add `.txt` fixtures for function-shape structure rules:
   - [x] `tests/fixtures/python/structure/god_function_positive.txt`
   - [x] `tests/fixtures/python/structure/god_function_negative.txt`
   - [x] `tests/fixtures/python/structure/mixed_concerns_positive.txt`
   - [x] `tests/fixtures/python/structure/mixed_concerns_negative.txt`
   - [x] `tests/fixtures/python/structure/name_responsibility_positive.txt`
   - [x] `tests/fixtures/python/structure/name_responsibility_negative.txt`
-- [ ] Keep monolithic-module scenarios as dedicated large fixtures instead of inline strings where practical.
+- [x] Keep monolithic-module scenarios as dedicated large fixtures instead of inline strings where practical.
 
 ### 3. Add explicit fixture coverage for duplication heuristics
 
-- [ ] Add file-level duplication fixtures:
-  - [ ] `tests/fixtures/python/duplication/repeated_literals_positive.txt`
-  - [ ] `tests/fixtures/python/duplication/repeated_literals_negative.txt`
-  - [ ] `tests/fixtures/python/duplication/error_handlers_positive.txt`
-  - [ ] `tests/fixtures/python/duplication/error_handlers_negative.txt`
-  - [ ] `tests/fixtures/python/duplication/validation_pipeline_positive.txt`
-  - [ ] `tests/fixtures/python/duplication/validation_pipeline_negative.txt`
-- [ ] Add repo-level duplication fixture sets:
+- [x] Add file-level duplication fixtures:
+  - [x] `tests/fixtures/python/duplication/repeated_literals_positive.txt`
+  - [x] `tests/fixtures/python/duplication/repeated_literals_negative.txt`
+  - [x] `tests/fixtures/python/duplication/error_handlers_positive.txt`
+  - [x] `tests/fixtures/python/duplication/error_handlers_negative.txt`
+  - [x] `tests/fixtures/python/duplication/validation_pipeline_positive.txt`
+  - [x] `tests/fixtures/python/duplication/validation_pipeline_negative.txt`
+- [x] Add repo-level duplication fixture sets:
   - [x] `tests/fixtures/python/duplication/query_fragment_repo_a.txt`
   - [x] `tests/fixtures/python/duplication/query_fragment_repo_b.txt`
   - [x] `tests/fixtures/python/duplication/query_fragment_shared_constants.txt`
@@ -98,25 +98,25 @@ Convert the Python improvement plan into a concrete roadmap for the heuristics t
 
 ### 5. Convert large inline integration sources into named text fixtures over time
 
-- [ ] Replace large inline monolithic-module builders with fixture-backed sources where the generated size is not essential to the test.
+- [x] Replace large inline monolithic-module builders with fixture-backed sources where the generated size is not essential to the test.
 - [x] Replace repeated query, copy-paste, and transformation examples with dedicated fixture files assembled into temp repo layouts.
-- [ ] Keep generated source strings only for cases where file size itself is the test signal.
+- [x] Keep generated source strings only for cases where file size itself is the test signal.
 
 ### 6. Keep repo-level assertions grouped by behavior
 
-- [ ] Group inheritance and coupling assertions together.
-- [ ] Group duplication rules together.
-- [ ] Group monolithic-module and wrapper-shape assertions together.
-- [ ] Group AI-smell assertions separately from correctness and performance rules.
+- [x] Group inheritance and coupling assertions together.
+- [x] Group duplication rules together.
+- [x] Group monolithic-module and wrapper-shape assertions together.
+- [x] Group AI-smell assertions separately from correctness and performance rules.
 
 ## Required Integration Test Layout
 
-- [ ] `tests/integration_scan/python/baseline.rs`
+- [x] `tests/integration_scan/python/baseline.rs`
   - parser and syntax smoke tests
   - baseline rule-pack coverage
   - phase-4 function-level and repo-level coverage
   - hallucination and import-resolution coverage
-- [ ] `tests/integration_scan/python/phase5_rules.rs`
+- [x] `tests/integration_scan/python/phase5_rules.rs`
   - instance-attribute escalation
   - duplicate query fragment coverage
   - cross-file copy-paste coverage
@@ -134,26 +134,26 @@ Convert the Python improvement plan into a concrete roadmap for the heuristics t
 - [x] `test_python_duplication_rule_family_negative`
 - [x] `test_python_ai_smells_rule_family_positive`
 - [x] `test_python_ai_smells_rule_family_negative`
-- [ ] `test_python_repo_level_duplication_skips_shared_constants`
-- [ ] `test_python_monolithic_module_skips_legitimate_large_modules`
+- [x] `test_python_phase5_duplicate_query_fragment_skips_shared_constants_and_migrations`
+- [x] `test_python_phase5_monolithic_module_skips_broad_legitimate_modules`
 
 ## Review Gates
 
-- [ ] Repo-level rules must prove they span more than one file before firing.
-- [ ] File-level rules must not depend on repository-wide coincidences.
-- [ ] Monolithic-module tests must include legitimate large-module suppressions.
-- [ ] Duplication rules must show explicit negative coverage for centralized constants, shared templates, and migration-style paths.
-- [ ] AI-smell rules must avoid flagging tests and intentionally tiny helpers.
+- [x] Repo-level rules must prove they span more than one file before firing.
+- [x] File-level rules must not depend on repository-wide coincidences.
+- [x] Monolithic-module tests must include legitimate large-module suppressions.
+- [x] Duplication rules must show explicit negative coverage for centralized constants, shared templates, and migration-style paths.
+- [x] AI-smell rules must avoid flagging tests and intentionally tiny helpers.
 
 ## Acceptance Criteria
 
-- [ ] The plan names the actual file-level and repo-level Python heuristics currently shipped.
-- [ ] The fixture roadmap is text-based and grouped by heuristic family.
-- [ ] The integration layout reflects the Python test-file split rather than a single expanding file.
-- [ ] Large repo-style tests are planned as workspace assemblies, not as new application code.
+- [x] The plan names the actual file-level and repo-level Python heuristics currently shipped.
+- [x] The fixture roadmap is text-based and grouped by heuristic family.
+- [x] The integration layout reflects the Python test-file split rather than a single expanding file.
+- [x] Large repo-style tests are planned as workspace assemblies, not as new application code.
 
 ## Definition of Done
 
-- [ ] Future Python structure, duplication, and AI-smell work has a fixture and test target before coding starts.
-- [ ] The plan explicitly covers both positive detections and suppressions.
-- [ ] The repo-level test strategy is aligned with the Rust integration harness already in the repository.
+- [x] Future Python structure, duplication, and AI-smell work has a fixture and test target before coding starts.
+- [x] The plan explicitly covers both positive detections and suppressions.
+- [x] The repo-level test strategy is aligned with the Rust integration harness already in the repository.

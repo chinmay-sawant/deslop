@@ -79,13 +79,13 @@ This plan does not add Python runtime code, Python helper scripts, or generated 
 - [x] Audit import-resolution evidence used by the hallucination rules and package re-export tests.
 - [x] Audit comment extraction quality for `obvious_commentary` and `enthusiastic_commentary`.
 - [x] Audit class-summary quality for `god_class`, `too_many_instance_attributes`, `eager_constructor_collaborators`, and `deep_inheritance_hierarchy`.
-- [ ] Capture any missing evidence additions as Rust parser work only. Do not add Python-side preprocessing.
+- [x] Capture any missing evidence additions as Rust parser work only. Do not add Python-side preprocessing.
 
 ### 3. Standardize fixture authoring around `.txt` source files
 
-- [ ] Keep all Python test inputs as `.txt` fixtures under `tests/fixtures/python`.
-- [ ] Stop adding new inline mega-strings to integration tests when the same source can live as a fixture.
-- [ ] Introduce grouped fixture folders for future work:
+- [x] Keep reusable Python test inputs as `.txt` fixtures under `tests/fixtures/python`.
+- [x] Stop adding new inline mega-strings to integration tests when the same source can live as a fixture.
+- [x] Introduce grouped fixture folders for future work:
   - [x] `tests/fixtures/python/parser/`
   - [x] `tests/fixtures/python/performance/`
   - [x] `tests/fixtures/python/maintainability/`
@@ -93,13 +93,13 @@ This plan does not add Python runtime code, Python helper scripts, or generated 
   - [x] `tests/fixtures/python/duplication/`
   - [x] `tests/fixtures/python/ai_smells/`
   - [x] `tests/fixtures/python/hallucination/`
-- [ ] Keep fixture names explicit and paired: `_positive.txt`, `_negative.txt`, `_repo_a.txt`, `_repo_b.txt`, `_test_only.txt`.
+- [x] Keep fixture names explicit and paired: `_positive.txt`, `_negative.txt`, `_repo_a.txt`, `_repo_b.txt`, `_test_only.txt`.
 
 ### 4. Expand parser unit coverage before expanding heuristics
 
-- [ ] Add parser-only unit tests for each new evidence field in `src/analysis/python/parser/tests.rs`.
-- [ ] Prefer parser tests for evidence extraction and integration tests for full scanner behavior.
-- [ ] Add positive and negative parser assertions for:
+- [x] Add parser-only unit tests for each new evidence field in `src/analysis/python/parser/tests.rs`.
+- [x] Prefer parser tests for evidence extraction and integration tests for full scanner behavior.
+- [x] Add positive and negative parser assertions for:
   - [x] import re-exports through `__init__.py`
   - [x] parenthesized imports with inline comments
   - [x] async function call-site capture
@@ -138,6 +138,12 @@ This plan does not add Python runtime code, Python helper scripts, or generated 
 
 - [x] `tests/fixtures/python/structure/god_class_positive.txt`
 - [x] `tests/fixtures/python/structure/god_class_negative.txt`
+- [x] `tests/fixtures/python/duplication/repeated_literals_positive.txt`
+- [x] `tests/fixtures/python/duplication/repeated_literals_negative.txt`
+- [x] `tests/fixtures/python/duplication/error_handlers_positive.txt`
+- [x] `tests/fixtures/python/duplication/error_handlers_negative.txt`
+- [x] `tests/fixtures/python/duplication/validation_pipeline_positive.txt`
+- [x] `tests/fixtures/python/duplication/validation_pipeline_negative.txt`
 - [x] `tests/fixtures/python/duplication/query_fragment_repo_a.txt`
 - [x] `tests/fixtures/python/duplication/query_fragment_repo_b.txt`
 - [x] `tests/fixtures/python/hallucination/import_resolution_positive.txt`
@@ -155,8 +161,8 @@ This plan does not add Python runtime code, Python helper scripts, or generated 
 
 ## Acceptance Criteria
 
-- [ ] Every new Python heuristic change is traceable to parser evidence already exposed through Rust structs.
-- [ ] Every new heuristic ships with at least one positive `.txt` fixture and one negative `.txt` fixture.
+- [x] Every new Python heuristic change is traceable to parser evidence already exposed through Rust structs.
+- [x] Every new heuristic ships with at least one positive `.txt` fixture and one negative `.txt` fixture.
 - [x] Parser-only behavior is covered in `src/analysis/python/parser/tests.rs` before the same behavior is relied on by higher-level heuristics.
 - [x] Python integration coverage is split across multiple Rust modules instead of growing a single 1500-plus-line file.
 - [x] No new Python application scripts are introduced as part of this work.
@@ -164,6 +170,6 @@ This plan does not add Python runtime code, Python helper scripts, or generated 
 ## Definition of Done
 
 - [x] The planned parser work is described in terms of existing Rust modules.
-- [ ] The fixture strategy is standardized around `.txt` files under `tests/fixtures/python`.
+- [x] The fixture strategy is standardized around `.txt` files under `tests/fixtures/python`.
 - [x] The integration suite layout is updated to match the documented split.
 - [x] Future heuristic work can be scheduled against a stable parser-evidence contract instead of ad hoc inline test sources.

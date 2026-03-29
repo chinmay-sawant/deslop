@@ -247,6 +247,18 @@ fn test_python_duplication_rule_family_positive() {
         &temp_dir,
         &[
             (
+                "pkg/file_literals.py",
+                python_fixture!("duplication/repeated_literals_positive.txt"),
+            ),
+            (
+                "pkg/file_error_handlers.py",
+                python_fixture!("duplication/error_handlers_positive.txt"),
+            ),
+            (
+                "pkg/file_validation.py",
+                python_fixture!("duplication/validation_pipeline_positive.txt"),
+            ),
+            (
                 "pkg/query_base.py",
                 python_fixture!("duplication/query_fragment_repo_a.txt"),
             ),
@@ -284,6 +296,9 @@ fn test_python_duplication_rule_family_positive() {
     .expect("scan should succeed");
 
     for rule_id in [
+        "repeated_string_literal",
+        "duplicate_error_handler_block",
+        "duplicate_validation_pipeline",
         "duplicate_query_fragment",
         "cross_file_copy_paste_function",
         "duplicate_transformation_pipeline",
@@ -306,6 +321,18 @@ fn test_python_duplication_rule_family_negative() {
     write_files(
         &temp_dir,
         &[
+            (
+                "pkg/file_literals.py",
+                python_fixture!("duplication/repeated_literals_negative.txt"),
+            ),
+            (
+                "pkg/file_error_handlers.py",
+                python_fixture!("duplication/error_handlers_negative.txt"),
+            ),
+            (
+                "pkg/file_validation.py",
+                python_fixture!("duplication/validation_pipeline_negative.txt"),
+            ),
             (
                 "pkg/query_constants.py",
                 python_fixture!("duplication/query_fragment_shared_constants.txt"),
@@ -344,6 +371,9 @@ fn test_python_duplication_rule_family_negative() {
     .expect("scan should succeed");
 
     for rule_id in [
+        "repeated_string_literal",
+        "duplicate_error_handler_block",
+        "duplicate_validation_pipeline",
         "duplicate_query_fragment",
         "cross_file_copy_paste_function",
         "duplicate_transformation_pipeline",

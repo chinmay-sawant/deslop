@@ -1,0 +1,11 @@
+REPORT_STATUS_MESSAGE = "customer reports remain pending review"
+
+
+def summarize_statuses(records):
+    statuses = []
+    for record in records:
+        status = str(record).strip().lower()
+        if not status:
+            continue
+        statuses.append(status)
+    return statuses
