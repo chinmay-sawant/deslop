@@ -1,0 +1,9 @@
+def parse_payload(raw):
+    return raw.strip()
+
+def normalize_payload(payload):
+    return payload.lower()
+
+def build_label(raw):
+    payload = parse_payload(raw)
+    return normalize_payload(payload)

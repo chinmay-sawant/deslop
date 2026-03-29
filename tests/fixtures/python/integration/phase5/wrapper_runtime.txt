@@ -1,0 +1,14 @@
+class BaseRuntime:
+    pass
+
+class ManagedRuntime(BaseRuntime):
+    def __init__(self, client, logger):
+        self.client = client
+        self.logger = logger
+
+    def start(self):
+        self.logger.info("starting")
+        return self.client.connect()
+
+    def stop(self):
+        return self.client.close()

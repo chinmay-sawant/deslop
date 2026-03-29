@@ -1,0 +1,21 @@
+def parse_record(raw):
+    return raw
+
+def validate_record(payload):
+    return payload
+
+def transform_record(payload):
+    return payload
+
+def fetch_metadata(payload):
+    return payload
+
+def render_record(payload):
+    return payload
+
+def build_snapshot(raw):
+    payload = parse_record(raw)
+    payload = validate_record(payload)
+    payload = transform_record(payload)
+    payload = fetch_metadata(payload)
+    return render_record(payload)
