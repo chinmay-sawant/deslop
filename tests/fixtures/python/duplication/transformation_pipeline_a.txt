@@ -1,0 +1,21 @@
+def parse_payload(raw):
+    return raw
+
+def validate_payload(payload):
+    return payload
+
+def normalize_payload(payload):
+    return payload
+
+def enrich_payload(payload):
+    return payload
+
+def serialize_payload(payload):
+    return payload
+
+def build_report(raw):
+    payload = parse_payload(raw)
+    payload = validate_payload(payload)
+    payload = normalize_payload(payload)
+    payload = enrich_payload(payload)
+    return serialize_payload(payload)

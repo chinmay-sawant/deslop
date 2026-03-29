@@ -1,0 +1,5 @@
+def render_json():
+    return "ok"
+
+def build_html():
+    return render_json()

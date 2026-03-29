@@ -1,0 +1,6 @@
+def summarize(items):
+    label = "# not a comment"
+    # set the running total
+    total = len(items)
+    # return the final count
+    return total

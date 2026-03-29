@@ -1,0 +1,32 @@
+class BillingCoordinator:
+    def __init__(self, client, cache, reporter):
+        self.client = client
+        self.cache = cache
+        self.reporter = reporter
+        self.retry_policy = 3
+        self.timeout = 10
+        self.headers = {}
+        self.query = {}
+        self.metrics = []
+        self.flags = set()
+
+    def load_invoice(self):
+        return self.cache
+
+    def save_invoice(self):
+        return self.headers
+
+    def publish_invoice(self):
+        return self.query
+
+    def sync_invoice(self):
+        return self.metrics
+
+    def refresh_invoice(self):
+        return self.flags
+
+    def archive_invoice(self):
+        return self.client
+
+    def report_invoice(self):
+        return self.reporter

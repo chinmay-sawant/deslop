@@ -48,9 +48,9 @@ Make the Python roadmap operational by defining how tests, fixtures, and integra
 
 ### 3. Standardize fixture migration away from inline source blobs
 
-- [ ] Prefer fixture-backed sources for reusable test cases.
-- [ ] Reserve inline source generation only for tests where size itself is the heuristic trigger.
-- [ ] For repo-level scenarios, assemble temp workspaces from multiple `.txt` fixtures rather than embedding the same source repeatedly.
+- [x] Prefer fixture-backed sources for reusable test cases.
+- [x] Reserve inline source generation only for tests where size itself is the heuristic trigger.
+- [x] For repo-level scenarios, assemble temp workspaces from multiple `.txt` fixtures rather than embedding the same source repeatedly.
 
 ### 4. Define a fixture naming convention that matches test responsibilities
 
@@ -77,9 +77,9 @@ Make the Python roadmap operational by defining how tests, fixtures, and integra
 
 ### Batch B - Fixture extraction
 
-- [ ] Extract reusable phase-5 positive cases into `tests/fixtures/python/structure/`, `tests/fixtures/python/duplication/`, and `tests/fixtures/python/maintainability/`.
-- [ ] Extract reusable hallucination cases into `tests/fixtures/python/hallucination/`.
-- [ ] Leave only large generated-module scenarios inline if size is the point.
+- [x] Extract reusable phase-5 positive cases into `tests/fixtures/python/structure/`, `tests/fixtures/python/duplication/`, and `tests/fixtures/python/maintainability/`.
+- [x] Extract reusable hallucination cases into `tests/fixtures/python/hallucination/`.
+- [x] Leave only large generated-module scenarios inline if size is the point.
 
 ### Batch C - Coverage tightening
 

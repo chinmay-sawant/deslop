@@ -12,7 +12,7 @@ fn test_python_phase5_instance_attribute_escalation() {
         &temp_dir,
         &[(
             "pkg/heavy_state.py",
-            python_fixture!("integration/phase5/heavy_state.txt"),
+            python_fixture!("structure/heavy_state_positive.txt"),
         )],
     );
 
@@ -47,15 +47,15 @@ fn test_python_phase5_duplicate_query_fragment_rule() {
         &[
             (
                 "pkg/base.py",
-                python_fixture!("integration/phase5/query_fragment_base.txt"),
+                python_fixture!("duplication/query_fragment_repo_a.txt"),
             ),
             (
                 "pkg/helpers.py",
-                python_fixture!("integration/phase5/query_fragment_helpers.txt"),
+                python_fixture!("duplication/query_fragment_repo_b.txt"),
             ),
             (
                 "pkg/services.py",
-                python_fixture!("integration/phase5/query_fragment_services.txt"),
+                python_fixture!("duplication/query_fragment_repo_c.txt"),
             ),
         ],
     );
@@ -92,19 +92,19 @@ fn test_python_phase5_duplicate_query_fragment_skips_shared_constants_and_migrat
         &[
             (
                 "pkg/query_constants.py",
-                python_fixture!("integration/phase5/query_constants.txt"),
+                python_fixture!("duplication/query_fragment_shared_constants.txt"),
             ),
             (
                 "pkg/query_templates.py",
-                python_fixture!("integration/phase5/query_templates.txt"),
+                python_fixture!("duplication/query_fragment_shared_templates.txt"),
             ),
             (
                 "pkg/service_a.py",
-                python_fixture!("integration/phase5/query_service_a.txt"),
+                python_fixture!("duplication/query_fragment_consumer_a.txt"),
             ),
             (
                 "pkg/service_b.py",
-                python_fixture!("integration/phase5/query_service_b.txt"),
+                python_fixture!("duplication/query_fragment_consumer_b.txt"),
             ),
             (
                 "migrations/0001_backfill_reports.py",
@@ -146,11 +146,11 @@ fn test_python_phase5_cross_file_copy_paste_rule() {
         &[
             (
                 "pkg/service_a.py",
-                python_fixture!("integration/phase5/copy_paste_service_a.txt"),
+                python_fixture!("duplication/cross_file_copy_a.txt"),
             ),
             (
                 "pkg/service_b.py",
-                python_fixture!("integration/phase5/copy_paste_service_b.txt"),
+                python_fixture!("duplication/cross_file_copy_b.txt"),
             ),
         ],
     );
@@ -180,11 +180,11 @@ fn test_python_phase5_duplicate_transformation_pipeline_rule() {
         &[
             (
                 "pkg/ingest_a.py",
-                python_fixture!("integration/phase5/transformation_ingest_a.txt"),
+                python_fixture!("duplication/transformation_pipeline_a.txt"),
             ),
             (
                 "pkg/ingest_b.py",
-                python_fixture!("integration/phase5/transformation_ingest_b.txt"),
+                python_fixture!("duplication/transformation_pipeline_b.txt"),
             ),
         ],
     );
@@ -214,11 +214,11 @@ fn test_python_phase5_duplicate_transformation_pipeline_skips_short_helpers() {
         &[
             (
                 "pkg/helpers_a.py",
-                python_fixture!("integration/phase5/transformation_helpers_a.txt"),
+                python_fixture!("duplication/transformation_helpers_a.txt"),
             ),
             (
                 "pkg/helpers_b.py",
-                python_fixture!("integration/phase5/transformation_helpers_b.txt"),
+                python_fixture!("duplication/transformation_helpers_b.txt"),
             ),
         ],
     );
@@ -277,7 +277,7 @@ fn test_python_phase5_over_abstracted_wrapper_expansion() {
         &temp_dir,
         &[(
             "pkg/presenter.py",
-            python_fixture!("integration/phase5/wrapper_presenter.txt"),
+            python_fixture!("structure/over_abstracted_wrapper_positive.txt"),
         )],
     );
 
@@ -305,7 +305,7 @@ fn test_python_phase5_over_abstracted_wrapper_skips_lifecycle_classes() {
         &temp_dir,
         &[(
             "pkg/runtime.py",
-            python_fixture!("integration/phase5/wrapper_runtime.txt"),
+            python_fixture!("structure/over_abstracted_wrapper_negative.txt"),
         )],
     );
 
@@ -334,11 +334,11 @@ fn test_python_phase5_name_responsibility_mismatch_expansion() {
         &[
             (
                 "pkg/parser.py",
-                python_fixture!("integration/phase5/name_mismatch_parser_positive.txt"),
+                python_fixture!("structure/name_responsibility_parser_positive.txt"),
             ),
             (
                 "pkg/report_helper.py",
-                python_fixture!("integration/phase5/name_mismatch_helper_positive.txt"),
+                python_fixture!("structure/name_responsibility_helper_positive.txt"),
             ),
         ],
     );
@@ -368,7 +368,7 @@ fn test_python_phase5_name_responsibility_mismatch_skips_honest_transformers() {
         &temp_dir,
         &[(
             "pkg/parser.py",
-            python_fixture!("integration/phase5/name_mismatch_parser_negative.txt"),
+            python_fixture!("structure/name_responsibility_negative.txt"),
         )],
     );
 
@@ -397,15 +397,15 @@ fn test_python_phase5_business_magic_and_utility_rules() {
         &[
             (
                 "pkg/policy.py",
-                python_fixture!("integration/phase5/business_policy_positive.txt"),
+                python_fixture!("maintainability/business_policy_positive.txt"),
             ),
             (
                 "pkg/archive.py",
-                python_fixture!("integration/phase5/business_archive_positive.txt"),
+                python_fixture!("maintainability/business_archive_positive.txt"),
             ),
             (
                 "pkg/flatteners.py",
-                python_fixture!("integration/phase5/business_flatteners_positive.txt"),
+                python_fixture!("maintainability/business_flatteners_positive.txt"),
             ),
         ],
     );
@@ -441,15 +441,15 @@ fn test_python_phase5_business_magic_and_utility_suppressions() {
         &[
             (
                 "pkg/policy.py",
-                python_fixture!("integration/phase5/business_policy_negative.txt"),
+                python_fixture!("maintainability/business_policy_negative.txt"),
             ),
             (
                 "pkg/archive.py",
-                python_fixture!("integration/phase5/business_archive_negative.txt"),
+                python_fixture!("maintainability/business_archive_negative.txt"),
             ),
             (
                 "pkg/flatteners.py",
-                python_fixture!("integration/phase5/business_flatteners_negative.txt"),
+                python_fixture!("maintainability/business_flatteners_negative.txt"),
             ),
         ],
     );
@@ -485,15 +485,15 @@ fn test_python_phase5_boundary_robustness_rules() {
         &[
             (
                 "pkg/network_sync.py",
-                python_fixture!("integration/phase5/boundary_network_positive.txt"),
+                python_fixture!("maintainability/boundary_network_positive.txt"),
             ),
             (
                 "pkg/config_loader.py",
-                python_fixture!("integration/phase5/boundary_config_positive.txt"),
+                python_fixture!("maintainability/boundary_config_positive.txt"),
             ),
             (
                 "pkg/cli.py",
-                python_fixture!("integration/phase5/boundary_cli_positive.txt"),
+                python_fixture!("maintainability/boundary_cli_positive.txt"),
             ),
         ],
     );
@@ -529,15 +529,15 @@ fn test_python_phase5_boundary_robustness_suppressions() {
         &[
             (
                 "pkg/network_sync.py",
-                python_fixture!("integration/phase5/boundary_network_negative.txt"),
+                python_fixture!("maintainability/boundary_network_negative.txt"),
             ),
             (
                 "pkg/config_loader.py",
-                python_fixture!("integration/phase5/boundary_config_negative.txt"),
+                python_fixture!("maintainability/boundary_config_negative.txt"),
             ),
             (
                 "pkg/cli.py",
-                python_fixture!("integration/phase5/boundary_cli_negative.txt"),
+                python_fixture!("maintainability/boundary_cli_negative.txt"),
             ),
         ],
     );

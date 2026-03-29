@@ -61,7 +61,7 @@ This plan does not add Python runtime code, Python helper scripts, or generated 
 - Baseline Python integration coverage: `tests/integration_scan/python/baseline.rs`
 - Phase-5 Python integration coverage: `tests/integration_scan/python/phase5_rules.rs`
 - Fixture root: `tests/fixtures/python`
-- Existing text fixture groups: root parser and rule-pack fixtures, `tests/fixtures/python/parser/`, and `tests/fixtures/python/integration/{baseline,phase5}/`
+- Existing text fixture groups: root parser and rule-pack fixtures, `tests/fixtures/python/parser/`, `tests/fixtures/python/performance/`, `tests/fixtures/python/maintainability/`, `tests/fixtures/python/structure/`, `tests/fixtures/python/duplication/`, `tests/fixtures/python/ai_smells/`, `tests/fixtures/python/hallucination/`, and `tests/fixtures/python/integration/{baseline,phase5}/`
 
 ## Detailed Checklist
 
@@ -75,9 +75,9 @@ This plan does not add Python runtime code, Python helper scripts, or generated 
 ### 2. Close parser evidence gaps before adding new heuristics
 
 - [x] Audit async evidence used by `blocking_sync_io_in_async` and `mixed_sync_async_module`.
-- [ ] Audit boundary-call metadata used by `network_boundary_without_timeout`, `environment_boundary_without_fallback`, and `external_input_without_validation`.
+- [x] Audit boundary-call metadata used by `network_boundary_without_timeout`, `environment_boundary_without_fallback`, and `external_input_without_validation`.
 - [x] Audit import-resolution evidence used by the hallucination rules and package re-export tests.
-- [ ] Audit comment extraction quality for `obvious_commentary` and `enthusiastic_commentary`.
+- [x] Audit comment extraction quality for `obvious_commentary` and `enthusiastic_commentary`.
 - [x] Audit class-summary quality for `god_class`, `too_many_instance_attributes`, `eager_constructor_collaborators`, and `deep_inheritance_hierarchy`.
 - [ ] Capture any missing evidence additions as Rust parser work only. Do not add Python-side preprocessing.
 
@@ -89,10 +89,10 @@ This plan does not add Python runtime code, Python helper scripts, or generated 
   - [x] `tests/fixtures/python/parser/`
   - [x] `tests/fixtures/python/performance/`
   - [x] `tests/fixtures/python/maintainability/`
-  - [ ] `tests/fixtures/python/structure/`
-  - [ ] `tests/fixtures/python/duplication/`
-  - [ ] `tests/fixtures/python/ai_smells/`
-  - [ ] `tests/fixtures/python/hallucination/`
+  - [x] `tests/fixtures/python/structure/`
+  - [x] `tests/fixtures/python/duplication/`
+  - [x] `tests/fixtures/python/ai_smells/`
+  - [x] `tests/fixtures/python/hallucination/`
 - [ ] Keep fixture names explicit and paired: `_positive.txt`, `_negative.txt`, `_repo_a.txt`, `_repo_b.txt`, `_test_only.txt`.
 
 ### 4. Expand parser unit coverage before expanding heuristics
@@ -136,12 +136,12 @@ This plan does not add Python runtime code, Python helper scripts, or generated 
 
 ### File-level and repo-level evidence fixtures
 
-- [ ] `tests/fixtures/python/structure/god_class_positive.txt`
-- [ ] `tests/fixtures/python/structure/god_class_negative.txt`
-- [ ] `tests/fixtures/python/duplication/query_fragment_repo_a.txt`
-- [ ] `tests/fixtures/python/duplication/query_fragment_repo_b.txt`
-- [ ] `tests/fixtures/python/hallucination/import_resolution_positive.txt`
-- [ ] `tests/fixtures/python/hallucination/import_resolution_negative.txt`
+- [x] `tests/fixtures/python/structure/god_class_positive.txt`
+- [x] `tests/fixtures/python/structure/god_class_negative.txt`
+- [x] `tests/fixtures/python/duplication/query_fragment_repo_a.txt`
+- [x] `tests/fixtures/python/duplication/query_fragment_repo_b.txt`
+- [x] `tests/fixtures/python/hallucination/import_resolution_positive.txt`
+- [x] `tests/fixtures/python/hallucination/import_resolution_negative.txt`
 
 ## Required Rust File Changes for This Plan
 

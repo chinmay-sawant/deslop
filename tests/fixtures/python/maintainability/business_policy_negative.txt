@@ -1,0 +1,9 @@
+PREMIUM_THRESHOLD = 5000
+STANDARD_THRESHOLD = 2500
+
+def decide_discount_tier(order_total, risk_score):
+    if order_total >= PREMIUM_THRESHOLD and risk_score < 0.2:
+        return "priority"
+    elif order_total >= STANDARD_THRESHOLD:
+        return "standard"
+    return "manual_review"

@@ -52,19 +52,19 @@ Convert the Python improvement plan into a concrete roadmap for the heuristics t
 ### 2. Add explicit fixture coverage for structure heuristics
 
 - [ ] Add `.txt` fixtures for positive and negative class-shape cases:
-  - [ ] `tests/fixtures/python/structure/god_class_positive.txt`
-  - [ ] `tests/fixtures/python/structure/god_class_negative.txt`
-  - [ ] `tests/fixtures/python/structure/too_many_instance_attributes_positive.txt`
-  - [ ] `tests/fixtures/python/structure/too_many_instance_attributes_negative.txt`
-  - [ ] `tests/fixtures/python/structure/over_abstracted_wrapper_positive.txt`
-  - [ ] `tests/fixtures/python/structure/over_abstracted_wrapper_negative.txt`
+  - [x] `tests/fixtures/python/structure/god_class_positive.txt`
+  - [x] `tests/fixtures/python/structure/god_class_negative.txt`
+  - [x] `tests/fixtures/python/structure/too_many_instance_attributes_positive.txt`
+  - [x] `tests/fixtures/python/structure/too_many_instance_attributes_negative.txt`
+  - [x] `tests/fixtures/python/structure/over_abstracted_wrapper_positive.txt`
+  - [x] `tests/fixtures/python/structure/over_abstracted_wrapper_negative.txt`
 - [ ] Add `.txt` fixtures for function-shape structure rules:
   - [ ] `tests/fixtures/python/structure/god_function_positive.txt`
   - [ ] `tests/fixtures/python/structure/god_function_negative.txt`
   - [ ] `tests/fixtures/python/structure/mixed_concerns_positive.txt`
   - [ ] `tests/fixtures/python/structure/mixed_concerns_negative.txt`
-  - [ ] `tests/fixtures/python/structure/name_responsibility_positive.txt`
-  - [ ] `tests/fixtures/python/structure/name_responsibility_negative.txt`
+  - [x] `tests/fixtures/python/structure/name_responsibility_positive.txt`
+  - [x] `tests/fixtures/python/structure/name_responsibility_negative.txt`
 - [ ] Keep monolithic-module scenarios as dedicated large fixtures instead of inline strings where practical.
 
 ### 3. Add explicit fixture coverage for duplication heuristics
@@ -77,29 +77,29 @@ Convert the Python improvement plan into a concrete roadmap for the heuristics t
   - [ ] `tests/fixtures/python/duplication/validation_pipeline_positive.txt`
   - [ ] `tests/fixtures/python/duplication/validation_pipeline_negative.txt`
 - [ ] Add repo-level duplication fixture sets:
-  - [ ] `tests/fixtures/python/duplication/query_fragment_repo_a.txt`
-  - [ ] `tests/fixtures/python/duplication/query_fragment_repo_b.txt`
-  - [ ] `tests/fixtures/python/duplication/query_fragment_shared_constants.txt`
-  - [ ] `tests/fixtures/python/duplication/cross_file_copy_a.txt`
-  - [ ] `tests/fixtures/python/duplication/cross_file_copy_b.txt`
-  - [ ] `tests/fixtures/python/duplication/transformation_pipeline_a.txt`
-  - [ ] `tests/fixtures/python/duplication/transformation_pipeline_b.txt`
+  - [x] `tests/fixtures/python/duplication/query_fragment_repo_a.txt`
+  - [x] `tests/fixtures/python/duplication/query_fragment_repo_b.txt`
+  - [x] `tests/fixtures/python/duplication/query_fragment_shared_constants.txt`
+  - [x] `tests/fixtures/python/duplication/cross_file_copy_a.txt`
+  - [x] `tests/fixtures/python/duplication/cross_file_copy_b.txt`
+  - [x] `tests/fixtures/python/duplication/transformation_pipeline_a.txt`
+  - [x] `tests/fixtures/python/duplication/transformation_pipeline_b.txt`
 
 ### 4. Add explicit fixture coverage for AI-smell heuristics
 
 - [ ] `tests/fixtures/python/ai_smells/docstring_small_helper_positive.txt`
 - [ ] `tests/fixtures/python/ai_smells/docstring_small_helper_negative.txt`
-- [ ] `tests/fixtures/python/ai_smells/mixed_naming_positive.txt`
-- [ ] `tests/fixtures/python/ai_smells/mixed_naming_negative.txt`
+- [x] `tests/fixtures/python/ai_smells/mixed_naming_positive.txt`
+- [x] `tests/fixtures/python/ai_smells/mixed_naming_negative.txt`
 - [ ] `tests/fixtures/python/ai_smells/heavy_imports_positive.txt`
 - [ ] `tests/fixtures/python/ai_smells/heavy_imports_negative.txt`
-- [ ] `tests/fixtures/python/ai_smells/commentary_positive.txt`
-- [ ] `tests/fixtures/python/ai_smells/commentary_negative.txt`
+- [x] `tests/fixtures/python/ai_smells/commentary_positive.txt`
+- [x] `tests/fixtures/python/ai_smells/commentary_negative.txt`
 
 ### 5. Convert large inline integration sources into named text fixtures over time
 
 - [ ] Replace large inline monolithic-module builders with fixture-backed sources where the generated size is not essential to the test.
-- [ ] Replace repeated query, copy-paste, and transformation examples with dedicated fixture files assembled into temp repo layouts.
+- [x] Replace repeated query, copy-paste, and transformation examples with dedicated fixture files assembled into temp repo layouts.
 - [ ] Keep generated source strings only for cases where file size itself is the test signal.
 
 ### 6. Keep repo-level assertions grouped by behavior

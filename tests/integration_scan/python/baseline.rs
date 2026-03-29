@@ -479,11 +479,11 @@ fn test_python_hallucination_rule() {
         &[
             (
                 "pkg/target.py",
-                python_fixture!("integration/baseline/hallucination_target.txt"),
+                python_fixture!("hallucination/import_resolution_target.txt"),
             ),
             (
                 "pkg/caller.py",
-                python_fixture!("integration/baseline/hallucination_caller.txt"),
+                python_fixture!("hallucination/import_resolution_positive.txt"),
             ),
         ],
     );

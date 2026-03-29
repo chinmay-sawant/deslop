@@ -1,0 +1,1 @@
+OPEN_REPORTS_QUERY = "SELECT id, status FROM reports WHERE status = 'open' ORDER BY created_at"
