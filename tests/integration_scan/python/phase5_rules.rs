@@ -243,7 +243,9 @@ fn test_python_phase5_duplicate_transformation_pipeline_skips_short_helpers() {
 #[test]
 fn test_python_phase5_monolithic_module_rule() {
     let temp_dir = create_temp_workspace();
-    let mut module = String::from(python_fixture!("integration/phase5/monolithic_module_prefix.txt"));
+    let mut module = String::from(python_fixture!(
+        "integration/phase5/monolithic_module_prefix.txt"
+    ));
     for index in 0..320 {
         module.push_str(&format!(
             "\ndef helper_{index}(payload):\n    record = str(payload).strip()\n    if not record:\n        return ''\n    return record.lower()\n"
@@ -567,24 +569,27 @@ fn test_python_phase5_boundary_robustness_suppressions() {
 fn test_python_phase5_monolithic_module_skips_broad_legitimate_modules() {
     let temp_dir = create_temp_workspace();
 
-    let mut registry_module =
-        String::from(python_fixture!("integration/phase5/legit_registry_prefix.txt"));
+    let mut registry_module = String::from(python_fixture!(
+        "integration/phase5/legit_registry_prefix.txt"
+    ));
     for index in 0..500 {
         registry_module.push_str(&format!(
             "\ndef provide_{index}():\n    value = 'entry_{index}'\n    register(value, value)\n    return REGISTRY[value]\n"
         ));
     }
 
-    let mut schema_module =
-        String::from(python_fixture!("integration/phase5/legit_schemas_prefix.txt"));
+    let mut schema_module = String::from(python_fixture!(
+        "integration/phase5/legit_schemas_prefix.txt"
+    ));
     for index in 0..320 {
         schema_module.push_str(&format!(
             "\nclass EventSchema{index}:\n    event_id = 'event_{index}'\n    source = 'api'\n    kind = 'schema'\n    version = {index}\n"
         ));
     }
 
-    let mut api_surface_module =
-        String::from(python_fixture!("integration/phase5/legit_api_surface_prefix.txt"));
+    let mut api_surface_module = String::from(python_fixture!(
+        "integration/phase5/legit_api_surface_prefix.txt"
+    ));
     for index in 0..520 {
         api_surface_module.push_str(&format!(
             "\ndef route_{index}(request):\n    payload = {{'route': {index}, 'request': request}}\n    return render(payload)\n"

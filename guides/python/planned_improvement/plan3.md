@@ -111,12 +111,12 @@ Convert the Python improvement plan into a concrete roadmap for the heuristics t
 
 ## Required Integration Test Layout
 
-- [ ] `tests/integration_scan/python.rs`
+- [ ] `tests/integration_scan/python/baseline.rs`
   - parser and syntax smoke tests
   - baseline rule-pack coverage
   - phase-4 function-level and repo-level coverage
   - hallucination and import-resolution coverage
-- [ ] `tests/integration_scan/python_phase5.rs`
+- [ ] `tests/integration_scan/python/phase5_rules.rs`
   - instance-attribute escalation
   - duplicate query fragment coverage
   - cross-file copy-paste coverage

@@ -425,7 +425,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         has_complete_type_hints,
         has_varargs,
         has_kwargs,
-        is_async: false,
+        is_async,
         await_points: Vec::new(),
         macro_calls: Vec::new(),
         spawn_calls: Vec::new(),

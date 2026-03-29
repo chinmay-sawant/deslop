@@ -2,35 +2,19 @@ use std::path::Path;
 
 use super::parse_file;
 
+macro_rules! python_parser_fixture {
+    ($path:literal) => {
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/python/parser/",
+            $path
+        ))
+    };
+}
+
 #[test]
 fn test_python_parser_extracts_functions_imports_and_strings() {
-    let source = r#"
-import requests as req
-from pathlib import Path
-
-API_TOKEN = "super-secret-value"
-
-async def fetch_profile(user_id: str) -> str:
-    """Fetch Profile Data.
-
-    This docstring explains every implementation step.
-    """
-    password = "top-secret-token"
-    result = ""
-    for piece in ["a", "b"]:
-        result += piece
-    return req.get(user_id).text
-
-class Renderer:
-    def render(self, path: str) -> str:
-        return Path(path).read_text()
-
-def helper():
-    def nested():
-        return 1
-
-    return print("ready")
-"#;
+    let source = python_parser_fixture!("async_calls_positive.txt");
 
     let parsed =
         parse_file(Path::new("pkg/service.py"), source).expect("python parsing should succeed");
@@ -98,23 +82,24 @@ class TestClient:
 
 #[test]
 fn test_python_exception_handler_evidence() {
-    let source = r#"
-def load_config():
-    try:
-        return read_config()
-    except Exception:
-        pass
+    let positive = parse_file(
+        Path::new("config.py"),
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/python/maintainability/exception_shapes_positive.txt"
+        )),
+    )
+    .expect("python parsing should succeed");
+    let negative = parse_file(
+        Path::new("config_safe.py"),
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/python/maintainability/exception_shapes_negative.txt"
+        )),
+    )
+    .expect("python parsing should succeed");
 
-def recover_config():
-    try:
-        return read_config()
-    except ValueError:
-        return default_config()
-"#;
-
-    let parsed = parse_file(Path::new("config.py"), source).expect("python parsing should succeed");
-
-    let load_config = &parsed.functions[0];
+    let load_config = &positive.functions[0];
     assert_eq!(load_config.exception_handlers.len(), 1);
     assert!(load_config.exception_handlers[0].is_broad);
     assert!(load_config.exception_handlers[0].suppresses);
@@ -123,66 +108,67 @@ def recover_config():
         Some("pass")
     );
 
-    let recover_config = &parsed.functions[1];
+    let recover_config = &negative.functions[0];
     assert_eq!(recover_config.exception_handlers.len(), 1);
     assert!(!recover_config.exception_handlers[0].is_broad);
 }
 
 #[test]
+fn test_python_async_io_fixture_contract() {
+    let positive = parse_file(
+        Path::new("pkg/network_sync.py"),
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/python/performance/async_io_positive.txt"
+        )),
+    )
+    .expect("python parsing should succeed");
+    let negative = parse_file(
+        Path::new("pkg/network_async.py"),
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/python/performance/async_io_negative.txt"
+        )),
+    )
+    .expect("python parsing should succeed");
+
+    let sync_reports = &positive.functions[0];
+    assert!(sync_reports.fingerprint.kind.starts_with("async_"));
+    assert!(sync_reports.is_async);
+    assert!(sync_reports.calls.iter().any(|call| call.name == "get"));
+
+    let async_reports = &negative.functions[0];
+    assert!(async_reports.fingerprint.kind.starts_with("async_"));
+    assert!(async_reports.is_async);
+    assert!(async_reports.calls.iter().any(|call| call.name == "get"));
+}
+
+#[test]
+fn test_python_type_hint_fixture_contract() {
+    let positive = parse_file(
+        Path::new("pkg/api_types.py"),
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/python/maintainability/type_hints_positive.txt"
+        )),
+    )
+    .expect("python parsing should succeed");
+    let negative = parse_file(
+        Path::new("pkg/api_types_partial.py"),
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/python/maintainability/type_hints_negative.txt"
+        )),
+    )
+    .expect("python parsing should succeed");
+
+    assert!(positive.functions[0].has_complete_type_hints);
+    assert!(!negative.functions[0].has_complete_type_hints);
+}
+
+#[test]
 fn test_python_phase4_parser_evidence() {
-    let source = r#"
-def process_items(items, *args, **kwargs):
-    if items == None:
-        return None
-
-    [emit(item) for item in items]
-    first = list(items)[0]
-    queue = [first]
-    queue.pop(0)
-    total = 0
-    blocked = [first]
-    for item in items:
-        scratch = []
-        scratch.append(item)
-        if item in blocked:
-            continue
-        if len(blocked) > 0 and len(blocked) < 3:
-            total += len(item)
-    return first
-
-def scan_tree(node):
-    for child in node.children:
-        scan_tree(child)
-
-def read_config(path):
-    handle = open(path)
-    return handle.read()
-
-class BaseManager:
-    pass
-
-class PayloadManager(BaseManager):
-    def __init__(self):
-        self.alpha = 1
-        self.beta = 2
-        self.gamma = 3
-        self.delta = 4
-        self.epsilon = 5
-        self.zeta = 6
-        self.eta = 7
-        self.theta = 8
-        self.iota = 9
-        self.kappa = 10
-        self.client = Session()
-        self.cache = CacheClient()
-        self.reporter = Reporter()
-
-    def render(self):
-        return self.alpha
-
-    def persist(self):
-        return self.beta
-"#;
+    let source = python_parser_fixture!("class_summary_positive.txt");
 
     let parsed =
         parse_file(Path::new("pkg/service.py"), source).expect("python parsing should succeed");
@@ -221,10 +207,7 @@ class PayloadManager(BaseManager):
 
 #[test]
 fn test_python_init_reexports_are_indexed_as_symbols() {
-    let source = r#"
-from .types import WidgetTemplate, LayoutConfig, Heading
-from .generator import render_widget
-"#;
+    let source = python_parser_fixture!("reexports_positive.txt");
 
     let parsed = parse_file(Path::new("pkg/widgets/__init__.py"), source)
         .expect("python parsing should succeed");
@@ -252,14 +235,24 @@ from .generator import render_widget
 }
 
 #[test]
+fn test_python_non_init_relative_imports_do_not_become_public_reexports() {
+    let source = python_parser_fixture!("reexports_negative.txt");
+
+    let parsed = parse_file(Path::new("pkg/widgets/helpers.py"), source)
+        .expect("python parsing should succeed");
+
+    assert!(parsed.imports.iter().all(|import| !import.is_public));
+    assert!(parsed.symbols.iter().all(|symbol| {
+        !matches!(
+            symbol.name.as_str(),
+            "WidgetTemplate" | "LayoutConfig" | "_HiddenWidget" | "render_widget"
+        )
+    }));
+}
+
+#[test]
 fn test_python_parenthesized_from_import_ignores_inline_comments() {
-    let source = r#"
-from widgets import (  # exported widget surface
-    WidgetTemplate,
-    LayoutConfig,
-    Heading,
-)
-"#;
+    let source = python_parser_fixture!("parenthesized_imports_positive.txt");
 
     let parsed = parse_file(Path::new("tests/test_widgets.py"), source)
         .expect("python parsing should succeed");
@@ -282,4 +275,35 @@ from widgets import (  # exported widget surface
             .iter()
             .any(|import| import.alias == "Heading")
     );
+}
+
+#[test]
+fn test_python_symbol_extraction_preserves_naming_styles() {
+    let source = r#"
+class HTTPClient:
+    pass
+
+class widget_renderer:
+    pass
+
+def render_json():
+    return HTTPClient()
+
+def buildHTML():
+    return widget_renderer()
+"#;
+
+    let parsed =
+        parse_file(Path::new("pkg/naming_mix.py"), source).expect("python parsing should succeed");
+
+    let symbol_names = parsed
+        .symbols
+        .iter()
+        .map(|symbol| symbol.name.as_str())
+        .collect::<Vec<_>>();
+
+    assert!(symbol_names.contains(&"HTTPClient"));
+    assert!(symbol_names.contains(&"widget_renderer"));
+    assert!(symbol_names.contains(&"render_json"));
+    assert!(symbol_names.contains(&"buildHTML"));
 }

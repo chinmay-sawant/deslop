@@ -1,0 +1,52 @@
+
+def process_items(items, *args, **kwargs):
+    if items == None:
+        return None
+
+    [emit(item) for item in items]
+    first = list(items)[0]
+    queue = [first]
+    queue.pop(0)
+    total = 0
+    blocked = [first]
+    for item in items:
+        scratch = []
+        scratch.append(item)
+        if item in blocked:
+            continue
+        if len(blocked) > 0 and len(blocked) < 3:
+            total += len(item)
+    return first
+
+def scan_tree(node):
+    for child in node.children:
+        scan_tree(child)
+
+def read_config(path):
+    handle = open(path)
+    return handle.read()
+
+class BaseManager:
+    pass
+
+class PayloadManager(BaseManager):
+    def __init__(self):
+        self.alpha = 1
+        self.beta = 2
+        self.gamma = 3
+        self.delta = 4
+        self.epsilon = 5
+        self.zeta = 6
+        self.eta = 7
+        self.theta = 8
+        self.iota = 9
+        self.kappa = 10
+        self.client = Session()
+        self.cache = CacheClient()
+        self.reporter = Reporter()
+
+    def render(self):
+        return self.alpha
+
+    def persist(self):
+        return self.beta

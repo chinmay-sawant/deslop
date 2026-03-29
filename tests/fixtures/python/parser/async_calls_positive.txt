@@ -1,0 +1,26 @@
+
+import requests as req
+from pathlib import Path
+
+API_TOKEN = "super-secret-value"
+
+async def fetch_profile(user_id: str) -> str:
+    """Fetch Profile Data.
+
+    This docstring explains every implementation step.
+    """
+    password = "top-secret-token"
+    result = ""
+    for piece in ["a", "b"]:
+        result += piece
+    return req.get(user_id).text
+
+class Renderer:
+    def render(self, path: str) -> str:
+        return Path(path).read_text()
+
+def helper():
+    def nested():
+        return 1
+
+    return print("ready")

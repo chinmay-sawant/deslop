@@ -4,7 +4,7 @@ Date: 2026-03-29
 
 ## Objective
 
-Make the Python roadmap operational by defining how tests, fixtures, and integration modules should be organized as Python support grows. The immediate concern is that `tests/integration_scan/python.rs` has become too large. The fix is to split the Rust integration modules while keeping Python fixtures in `.txt` format.
+Make the Python roadmap operational by defining how tests, fixtures, and integration modules should be organized as Python support grows. The immediate concern was that the old flat Python integration file had become too large. The fix is the current nested Rust integration module layout plus `.txt` fixtures.
 
 ## Immediate Repository Constraints
 
@@ -19,30 +19,31 @@ Make the Python roadmap operational by defining how tests, fixtures, and integra
   - shared fixture macros
   - shared temp-workspace helpers
   - `mod python;`
-  - `mod python_phase5;`
-- [ ] `tests/integration_scan/python.rs`
+- [ ] `tests/integration_scan/python/mod.rs`
+  - module split and shared Python test helper
+- [ ] `tests/integration_scan/python/baseline.rs`
   - parser smoke coverage
   - syntax-error coverage
   - baseline rule-pack coverage
   - phase-4 coverage
   - mixed-language smoke coverage
   - hallucination/import-resolution coverage
-- [ ] `tests/integration_scan/python_phase5.rs`
+- [ ] `tests/integration_scan/python/phase5_rules.rs`
   - phase-5 expansion coverage and related suppressions
 
 ## Detailed Checklist
 
 ### 1. Split the current Python integration surface
 
-- [ ] Move phase-5 tests out of `tests/integration_scan/python.rs`.
+- [ ] Keep phase-5 tests out of `tests/integration_scan/python/baseline.rs`.
 - [ ] Register the new Rust module in `tests/integration_scan.rs`.
 - [ ] Keep shared helpers in the root integration harness so there is no duplication.
 - [ ] Keep import lists minimal in each child module so moved tests do not leave stale imports behind.
 
 ### 2. Define file ownership so the split stays stable
 
-- [ ] `python.rs` owns baseline, parser, phase-4, and hallucination tests.
-- [ ] `python_phase5.rs` owns phase-5 rule expansion and suppression tests.
+- [ ] `baseline.rs` owns baseline, parser, phase-4, and hallucination tests.
+- [ ] `phase5_rules.rs` owns phase-5 rule expansion and suppression tests.
 - [ ] If Python repo-level coverage grows again, introduce a third module such as `python_repo.rs` instead of re-growing one file past the limit.
 
 ### 3. Standardize fixture migration away from inline source blobs
@@ -70,9 +71,9 @@ Make the Python roadmap operational by defining how tests, fixtures, and integra
 
 ### Batch A - Structural cleanup
 
-- [ ] Add `tests/integration_scan/python_phase5.rs`.
+- [ ] Add `tests/integration_scan/python/phase5_rules.rs`.
 - [ ] Update `tests/integration_scan.rs`.
-- [ ] Trim `tests/integration_scan/python.rs`.
+- [ ] Trim `tests/integration_scan/python/baseline.rs` as coverage grows by adding sibling modules instead of regrowing a catch-all file.
 
 ### Batch B - Fixture extraction
 

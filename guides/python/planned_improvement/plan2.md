@@ -117,8 +117,8 @@ Define a detailed implementation plan for improving the existing function-level 
 
 ### 4. Make integration tests match rule families instead of one giant catch-all case
 
-- [ ] Keep baseline function-level tests in `tests/integration_scan/python.rs`.
-- [ ] Place phase-5 expansion tests in `tests/integration_scan/python_phase5.rs`.
+- [ ] Keep baseline function-level tests in `tests/integration_scan/python/baseline.rs`.
+- [ ] Place phase-5 expansion tests in `tests/integration_scan/python/phase5_rules.rs`.
 - [ ] Add one integration test per family instead of one test per rule where possible.
 - [ ] Keep at least one dedicated assertion per rule ID so failures stay local and obvious.
 

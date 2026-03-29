@@ -593,7 +593,9 @@ fn test_python_hallucination_rule() {
         !report.findings.iter().any(|finding| matches!(
             finding.rule_id.as_str(),
             "hallucinated_import_call" | "hallucinated_local_call"
-        ) && finding.message.contains("SnapBackTranscriptionClient")),
+        ) && finding
+            .message
+            .contains("SnapBackTranscriptionClient")),
         "did not expect finding for local class SnapBackTranscriptionClient"
     );
 
