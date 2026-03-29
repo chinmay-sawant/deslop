@@ -1,0 +1,15 @@
+import pkg.target
+from pathlib import Path
+from pkg.target import RealImportedClass
+
+def do_work():
+    pkg.target.existing_function()
+    pkg.target.RealImportedClass()
+
+def do_local_work():
+    RealLocalFunction()
+    RealImportedClass()
+    Path("notes.md")
+
+def RealLocalFunction():
+    pass

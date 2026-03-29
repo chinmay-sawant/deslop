@@ -2,35 +2,19 @@ use std::path::Path;
 
 use super::parse_file;
 
+macro_rules! python_parser_fixture {
+    ($path:literal) => {
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/python/",
+            $path
+        ))
+    };
+}
+
 #[test]
 fn test_python_parser_extracts_functions_imports_and_strings() {
-    let source = r#"
-import requests as req
-from pathlib import Path
-
-API_TOKEN = "super-secret-value"
-
-async def fetch_profile(user_id: str) -> str:
-    """Fetch Profile Data.
-
-    This docstring explains every implementation step.
-    """
-    password = "top-secret-token"
-    result = ""
-    for piece in ["a", "b"]:
-        result += piece
-    return req.get(user_id).text
-
-class Renderer:
-    def render(self, path: str) -> str:
-        return Path(path).read_text()
-
-def helper():
-    def nested():
-        return 1
-
-    return print("ready")
-"#;
+    let source = python_parser_fixture!("parser/async_calls_positive.txt");
 
     let parsed =
         parse_file(Path::new("pkg/service.py"), source).expect("python parsing should succeed");
@@ -69,10 +53,7 @@ def helper():
 
 #[test]
 fn test_python_parser_marks_syntax_errors() {
-    let source = r#"
-def broken(
-    return 1
-"#;
+    let source = python_parser_fixture!("parser/syntax_error_positive.txt");
 
     let parsed = parse_file(Path::new("broken.py"), source)
         .expect("python parsing should still return a parsed file");
@@ -82,11 +63,7 @@ def broken(
 
 #[test]
 fn test_python_test_detection() {
-    let source = r#"
-class TestClient:
-    def test_fetch(self):
-        self.assertEqual(fetch(), 1)
-"#;
+    let source = python_parser_fixture!("parser/test_detection_positive.txt");
 
     let parsed = parse_file(Path::new("tests/test_client.py"), source)
         .expect("python parsing should succeed");
@@ -98,23 +75,18 @@ class TestClient:
 
 #[test]
 fn test_python_exception_handler_evidence() {
-    let source = r#"
-def load_config():
-    try:
-        return read_config()
-    except Exception:
-        pass
+    let positive = parse_file(
+        Path::new("config.py"),
+        python_parser_fixture!("maintainability/exception_shapes_positive.txt"),
+    )
+    .expect("python parsing should succeed");
+    let negative = parse_file(
+        Path::new("config_safe.py"),
+        python_parser_fixture!("maintainability/exception_shapes_negative.txt"),
+    )
+    .expect("python parsing should succeed");
 
-def recover_config():
-    try:
-        return read_config()
-    except ValueError:
-        return default_config()
-"#;
-
-    let parsed = parse_file(Path::new("config.py"), source).expect("python parsing should succeed");
-
-    let load_config = &parsed.functions[0];
+    let load_config = &positive.functions[0];
     assert_eq!(load_config.exception_handlers.len(), 1);
     assert!(load_config.exception_handlers[0].is_broad);
     assert!(load_config.exception_handlers[0].suppresses);
@@ -123,66 +95,55 @@ def recover_config():
         Some("pass")
     );
 
-    let recover_config = &parsed.functions[1];
+    let recover_config = &negative.functions[0];
     assert_eq!(recover_config.exception_handlers.len(), 1);
     assert!(!recover_config.exception_handlers[0].is_broad);
 }
 
 #[test]
+fn test_python_async_io_fixture_contract() {
+    let positive = parse_file(
+        Path::new("pkg/network_sync.py"),
+        python_parser_fixture!("performance/async_io_positive.txt"),
+    )
+    .expect("python parsing should succeed");
+    let negative = parse_file(
+        Path::new("pkg/network_async.py"),
+        python_parser_fixture!("performance/async_io_negative.txt"),
+    )
+    .expect("python parsing should succeed");
+
+    let sync_reports = &positive.functions[0];
+    assert!(sync_reports.fingerprint.kind.starts_with("async_"));
+    assert!(sync_reports.is_async);
+    assert!(sync_reports.calls.iter().any(|call| call.name == "get"));
+
+    let async_reports = &negative.functions[0];
+    assert!(async_reports.fingerprint.kind.starts_with("async_"));
+    assert!(async_reports.is_async);
+    assert!(async_reports.calls.iter().any(|call| call.name == "get"));
+}
+
+#[test]
+fn test_python_type_hint_fixture_contract() {
+    let positive = parse_file(
+        Path::new("pkg/api_types.py"),
+        python_parser_fixture!("maintainability/type_hints_positive.txt"),
+    )
+    .expect("python parsing should succeed");
+    let negative = parse_file(
+        Path::new("pkg/api_types_partial.py"),
+        python_parser_fixture!("maintainability/type_hints_negative.txt"),
+    )
+    .expect("python parsing should succeed");
+
+    assert!(positive.functions[0].has_complete_type_hints);
+    assert!(!negative.functions[0].has_complete_type_hints);
+}
+
+#[test]
 fn test_python_phase4_parser_evidence() {
-    let source = r#"
-def process_items(items, *args, **kwargs):
-    if items == None:
-        return None
-
-    [emit(item) for item in items]
-    first = list(items)[0]
-    queue = [first]
-    queue.pop(0)
-    total = 0
-    blocked = [first]
-    for item in items:
-        scratch = []
-        scratch.append(item)
-        if item in blocked:
-            continue
-        if len(blocked) > 0 and len(blocked) < 3:
-            total += len(item)
-    return first
-
-def scan_tree(node):
-    for child in node.children:
-        scan_tree(child)
-
-def read_config(path):
-    handle = open(path)
-    return handle.read()
-
-class BaseManager:
-    pass
-
-class PayloadManager(BaseManager):
-    def __init__(self):
-        self.alpha = 1
-        self.beta = 2
-        self.gamma = 3
-        self.delta = 4
-        self.epsilon = 5
-        self.zeta = 6
-        self.eta = 7
-        self.theta = 8
-        self.iota = 9
-        self.kappa = 10
-        self.client = Session()
-        self.cache = CacheClient()
-        self.reporter = Reporter()
-
-    def render(self):
-        return self.alpha
-
-    def persist(self):
-        return self.beta
-"#;
+    let source = python_parser_fixture!("parser/class_summary_positive.txt");
 
     let parsed =
         parse_file(Path::new("pkg/service.py"), source).expect("python parsing should succeed");
@@ -221,10 +182,7 @@ class PayloadManager(BaseManager):
 
 #[test]
 fn test_python_init_reexports_are_indexed_as_symbols() {
-    let source = r#"
-from .types import WidgetTemplate, LayoutConfig, Heading
-from .generator import render_widget
-"#;
+    let source = python_parser_fixture!("parser/reexports_positive.txt");
 
     let parsed = parse_file(Path::new("pkg/widgets/__init__.py"), source)
         .expect("python parsing should succeed");
@@ -252,14 +210,24 @@ from .generator import render_widget
 }
 
 #[test]
+fn test_python_non_init_relative_imports_do_not_become_public_reexports() {
+    let source = python_parser_fixture!("parser/reexports_negative.txt");
+
+    let parsed = parse_file(Path::new("pkg/widgets/helpers.py"), source)
+        .expect("python parsing should succeed");
+
+    assert!(parsed.imports.iter().all(|import| !import.is_public));
+    assert!(parsed.symbols.iter().all(|symbol| {
+        !matches!(
+            symbol.name.as_str(),
+            "WidgetTemplate" | "LayoutConfig" | "_HiddenWidget" | "render_widget"
+        )
+    }));
+}
+
+#[test]
 fn test_python_parenthesized_from_import_ignores_inline_comments() {
-    let source = r#"
-from widgets import (  # exported widget surface
-    WidgetTemplate,
-    LayoutConfig,
-    Heading,
-)
-"#;
+    let source = python_parser_fixture!("parser/parenthesized_imports_positive.txt");
 
     let parsed = parse_file(Path::new("tests/test_widgets.py"), source)
         .expect("python parsing should succeed");
@@ -282,4 +250,101 @@ from widgets import (  # exported widget surface
             .iter()
             .any(|import| import.alias == "Heading")
     );
+}
+
+#[test]
+fn test_python_commentary_fixtures_extract_real_comments_only() {
+    let positive = parse_file(
+        Path::new("pkg/comments.py"),
+        python_parser_fixture!("ai_smells/commentary_positive.txt"),
+    )
+    .expect("python parsing should succeed");
+    let negative = parse_file(
+        Path::new("pkg/comments_safe.py"),
+        python_parser_fixture!("ai_smells/commentary_negative.txt"),
+    )
+    .expect("python parsing should succeed");
+
+    assert_eq!(positive.comments.len(), 2);
+    assert_eq!(positive.comments[0].text, "set the running total");
+    assert_eq!(positive.comments[1].text, "return the final count");
+    assert!(positive.comments.iter().all(|comment| !comment.text.contains("not a comment")));
+    assert!(negative.comments.is_empty());
+}
+
+#[test]
+fn test_python_boundary_fixture_contract() {
+    let network_positive = parse_file(
+        Path::new("pkg/network_sync.py"),
+        python_parser_fixture!("maintainability/boundary_network_positive.txt"),
+    )
+    .expect("python parsing should succeed");
+    let network_negative = parse_file(
+        Path::new("pkg/network_safe.py"),
+        python_parser_fixture!("maintainability/boundary_network_negative.txt"),
+    )
+    .expect("python parsing should succeed");
+    let config_positive = parse_file(
+        Path::new("pkg/config_loader.py"),
+        python_parser_fixture!("maintainability/boundary_config_positive.txt"),
+    )
+    .expect("python parsing should succeed");
+    let cli_positive = parse_file(
+        Path::new("pkg/cli.py"),
+        python_parser_fixture!("maintainability/boundary_cli_positive.txt"),
+    )
+    .expect("python parsing should succeed");
+    let cli_negative = parse_file(
+        Path::new("pkg/cli_safe.py"),
+        python_parser_fixture!("maintainability/boundary_cli_negative.txt"),
+    )
+    .expect("python parsing should succeed");
+
+    let sync_reports = &network_positive.functions[0];
+    assert!(sync_reports.calls.iter().any(|call| {
+        call.receiver.as_deref() == Some("requests") && call.name == "get"
+    }));
+    assert!(!sync_reports.body_text.to_ascii_lowercase().contains("timeout="));
+
+    let safe_reports = &network_negative.functions[0];
+    assert!(safe_reports.calls.iter().any(|call| {
+        call.receiver.as_deref() == Some("requests") && call.name == "get"
+    }));
+    assert!(safe_reports.body_text.to_ascii_lowercase().contains("timeout=5"));
+
+    let load_runtime_config = &config_positive.functions[0];
+    assert!(load_runtime_config.calls.iter().any(|call| {
+        call.receiver.as_deref() == Some("os") && call.name == "getenv"
+    }));
+
+    let run_cli = &cli_positive.functions[0];
+    assert!(run_cli.calls.iter().any(|call| {
+        call.receiver.as_deref() == Some("json") && call.name == "loads"
+    }));
+    assert!(!run_cli.body_text.contains("len(sys.argv) < 2"));
+
+    let safe_cli = &cli_negative.functions[0];
+    assert!(safe_cli.calls.iter().any(|call| {
+        call.receiver.as_deref() == Some("json") && call.name == "loads"
+    }));
+    assert!(safe_cli.body_text.contains("len(sys.argv) < 2"));
+}
+
+#[test]
+fn test_python_symbol_extraction_preserves_naming_styles() {
+    let source = python_parser_fixture!("ai_smells/naming_styles_positive.txt");
+
+    let parsed =
+        parse_file(Path::new("pkg/naming_mix.py"), source).expect("python parsing should succeed");
+
+    let symbol_names = parsed
+        .symbols
+        .iter()
+        .map(|symbol| symbol.name.as_str())
+        .collect::<Vec<_>>();
+
+    assert!(symbol_names.contains(&"HTTPClient"));
+    assert!(symbol_names.contains(&"widget_renderer"));
+    assert!(symbol_names.contains(&"render_json"));
+    assert!(symbol_names.contains(&"buildHTML"));
 }

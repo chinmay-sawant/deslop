@@ -1,0 +1,11 @@
+import requests
+import time
+from pathlib import Path
+
+
+async def fetch_snapshot(url):
+    response = requests.get(url)
+    time.sleep(1)
+    payload = open("snapshot.json").read()
+    cache = Path("cache.json").read_text()
+    return response.text + payload + cache

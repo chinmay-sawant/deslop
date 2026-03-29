@@ -1,0 +1,4 @@
+QUERY = "SELECT  id,  status  FROM reports WHERE status = 'open' ORDER BY created_at"
+
+def fetch(cursor):
+    return cursor.execute(QUERY)

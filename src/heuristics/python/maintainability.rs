@@ -21,13 +21,13 @@ pub(super) fn exception_swallowed_findings(
             start_line: handler.line,
             end_line: handler.line,
             message: format!(
-                "function {} swallows a broad exception handler",
+                "function {} suppresses a broad exception instead of surfacing or narrowing it",
                 function.fingerprint.name
             ),
             evidence: vec![
-                format!("handler clause: {}", handler.clause),
+                format!("handler_clause={}", handler.clause),
                 format!(
-                    "handler action: {}",
+                    "handler_action={}",
                     handler.action.as_deref().unwrap_or("<unknown>")
                 ),
             ],
@@ -52,10 +52,10 @@ pub(super) fn eval_exec_findings(file: &ParsedFile, function: &ParsedFunction) -
             start_line: call.line,
             end_line: call.line,
             message: format!(
-                "function {} uses {} in non-test Python code",
+                "function {} evaluates dynamic Python code with {}",
                 function.fingerprint.name, call.name
             ),
-            evidence: vec![format!("builtin call: {}()", call.name)],
+            evidence: vec![format!("dynamic_builtin={}()", call.name)],
         })
         .collect()
 }
@@ -80,10 +80,10 @@ pub(super) fn print_debugging_findings(
             start_line: call.line,
             end_line: call.line,
             message: format!(
-                "function {} leaves print-style debugging in Python code",
+                "function {} leaves print()-based debugging in production code",
                 function.fingerprint.name
             ),
-            evidence: vec!["builtin call: print()".to_string()],
+            evidence: vec!["output_call=print()".to_string()],
         })
         .collect()
 }
@@ -110,7 +110,10 @@ pub(super) fn none_comparison_findings(
                 "function {} compares against None with == or != instead of identity checks",
                 function.fingerprint.name
             ),
-            evidence: vec!["prefer is None or is not None for None checks".to_string()],
+            evidence: vec![
+                "pattern=none_equality_comparison".to_string(),
+                "suggestion=prefer is None or is not None".to_string(),
+            ],
         })
         .collect()
 }
@@ -137,7 +140,10 @@ pub(super) fn side_effect_comprehension_findings(
                 "function {} uses a comprehension only for side effects",
                 function.fingerprint.name
             ),
-            evidence: vec!["prefer an explicit loop when the result is discarded".to_string()],
+            evidence: vec![
+                "pattern=discarded_comprehension_result".to_string(),
+                "suggestion=prefer an explicit loop when the result is discarded".to_string(),
+            ],
         })
         .collect()
 }
@@ -165,7 +171,8 @@ pub(super) fn redundant_return_none_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                "explicit return None can add noise in simple Python control flow".to_string(),
+                "pattern=explicit_return_none".to_string(),
+                "impact=adds noise in simple control flow".to_string(),
             ],
         })
         .collect()
@@ -194,7 +201,7 @@ pub(super) fn hardcoded_path_findings(
                 "function {} hardcodes a filesystem path string",
                 function.fingerprint.name
             ),
-            evidence: vec![format!("binding {} = {}", literal.name, literal.value)],
+            evidence: vec![format!("path_binding={}={}", literal.name, literal.value)],
         })
         .collect()
 }
@@ -232,7 +239,7 @@ pub(super) fn hardcoded_business_rule_findings(
         evidence: policy_literals
             .into_iter()
             .take(3)
-            .map(|literal| format!("policy_literal={literal}"))
+            .map(|literal| format!("business_policy_literal={literal}"))
             .collect(),
     }]
 }
@@ -277,7 +284,7 @@ pub(super) fn magic_value_branching_findings(
         evidence: repeated
             .into_iter()
             .take(3)
-            .map(|(literal, count)| format!("literal={literal} occurrences={count}"))
+            .map(|(literal, count)| format!("branch_literal={literal} occurrences={count}"))
             .collect(),
     }]
 }
@@ -319,7 +326,10 @@ pub(super) fn reinvented_utility_findings(
             "function {} manually flattens iterables even though itertools-style helpers are already imported",
             function.fingerprint.name
         ),
-        evidence: vec!["available_import=itertools".to_string()],
+        evidence: vec![
+            "pattern=manual_flatten_loop".to_string(),
+            "available_import=itertools".to_string(),
+        ],
     }]
 }
 
@@ -347,7 +357,7 @@ pub(super) fn variadic_public_api_findings(
             function.fingerprint.name
         ),
         evidence: vec![format!(
-            "has_varargs={} has_kwargs={}",
+            "signature_flags=has_varargs:{} has_kwargs:{}",
             function.has_varargs, function.has_kwargs
         )],
     }]
@@ -376,8 +386,8 @@ pub(super) fn builtin_reduction_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                "consider any(), all(), or sum() when the loop is only aggregating a result"
-                    .to_string(),
+                "pattern=aggregation_loop_candidate".to_string(),
+                "suggestion=consider any(), all(), or sum()".to_string(),
             ],
         })
         .collect()
@@ -416,7 +426,10 @@ pub(super) fn network_timeout_findings(
             "function {} calls an external HTTP boundary without an obvious timeout or retry policy",
             function.fingerprint.name
         ),
-        evidence: vec![format!("http_calls={}", http_calls.join(","))],
+        evidence: vec![
+            format!("http_boundary_calls={}", http_calls.join(",")),
+            "timeout_or_retry_markers=absent".to_string(),
+        ],
     }]
 }
 
@@ -498,7 +511,7 @@ pub(super) fn input_validation_findings(
         start_line: function.fingerprint.start_line,
         end_line: function.fingerprint.end_line,
         message: format!(
-            "function {} consumes external input without an obvious validation or guard path",
+            "function {} consumes external input without an obvious validation or guard step",
             function.fingerprint.name
         ),
         evidence: matched_markers
@@ -532,7 +545,13 @@ pub(super) fn broad_exception_handler_findings(
                 "function {} catches a broad exception without narrowing the failure type",
                 function.fingerprint.name
             ),
-            evidence: vec![format!("handler clause: {}", handler.clause)],
+            evidence: vec![
+                format!("handler_clause={}", handler.clause),
+                format!(
+                    "handler_action={}",
+                    handler.action.as_deref().unwrap_or("<unknown>")
+                ),
+            ],
         })
         .collect()
 }
@@ -560,7 +579,9 @@ pub(super) fn missing_context_manager_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                "prefer with statements for file handles, locks, and similar resources".to_string(),
+                "pattern=resource_without_context_manager".to_string(),
+                "suggestion=prefer with statements for file handles and similar resources"
+                    .to_string(),
             ],
         })
         .collect()
@@ -585,7 +606,7 @@ pub(super) fn api_type_hint_findings(file: &ParsedFile, function: &ParsedFunctio
             "public function {} omits complete type hints",
             function.fingerprint.name
         ),
-        evidence: vec!["the signature is missing parameter or return annotations".to_string()],
+        evidence: vec!["signature_annotations=incomplete".to_string()],
     }]
 }
 

@@ -1,0 +1,12 @@
+def validate_payload(payload, user_id):
+    if not payload or not user_id:
+        return False
+    return True
+
+
+def validate_record(record):
+    if not record:
+        return False
+    if "items" not in record:
+        return False
+    return True

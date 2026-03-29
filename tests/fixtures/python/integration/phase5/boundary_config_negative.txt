@@ -1,0 +1,7 @@
+import os
+
+def load_runtime_config():
+    api_url = os.getenv("API_URL")
+    if not api_url:
+        raise ValueError("API_URL is required")
+    return {"api_url": api_url}

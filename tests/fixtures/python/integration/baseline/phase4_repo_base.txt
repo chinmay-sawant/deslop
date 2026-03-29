@@ -1,0 +1,12 @@
+from pkg.root import Root
+
+SHARED_LITERAL = "this repeated literal belongs in one shared constant"
+
+class Base(Root):
+    pass
+
+def normalize_payload(payload):
+    cleaned = []
+    for item in payload:
+        cleaned.append(str(item).strip())
+    return cleaned

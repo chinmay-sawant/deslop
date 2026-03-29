@@ -1,0 +1,6 @@
+def rotate_archive(size, plan):
+    if size > 5000:
+        return "archive"
+    elif plan == "enterprise" and size > 5000:
+        return "archive"
+    return "keep"

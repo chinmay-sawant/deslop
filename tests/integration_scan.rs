@@ -46,7 +46,7 @@ mod hallucination;
 mod naming;
 #[path = "integration_scan/performance.rs"]
 mod performance;
-#[path = "integration_scan/python.rs"]
+#[path = "integration_scan/python/mod.rs"]
 mod python;
 #[path = "integration_scan/rust.rs"]
 mod rust;

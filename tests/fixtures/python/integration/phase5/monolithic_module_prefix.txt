@@ -1,0 +1,79 @@
+import os
+import json
+import pathlib
+import requests
+import sqlite3
+import csv
+import logging
+import tempfile
+import hashlib
+import itertools
+import collections
+import time
+
+class ReportRow:
+    def render(self):
+        return "row"
+
+class ReportBuilder:
+    def build(self):
+        return "report"
+
+def load_config(path):
+    return pathlib.Path(path).read_text()
+
+def parse_rows(payload):
+    return json.loads(payload)
+
+def fetch_remote(url):
+    response = requests.get(url)
+    return response.text
+
+def write_cache(path, payload):
+    pathlib.Path(path).write_text(payload)
+
+def export_rows(path, rows):
+    with open(path, "w") as handle:
+        writer = csv.writer(handle)
+        for row in rows:
+            writer.writerow(row)
+
+def sync_reports(db_path, cache_path, url):
+    logger = logging.getLogger("sync")
+    temp_dir = tempfile.mkdtemp()
+    logger.info("starting sync")
+    connection = sqlite3.connect(db_path)
+    payload = fetch_remote(url)
+    rows = parse_rows(payload)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    deduped_rows = list(itertools.islice(rows, 0, len(rows)))
+    queue = collections.deque(deduped_rows)
+    while queue:
+        row = queue.popleft()
+        logger.debug("processing %s", row)
+    write_cache(cache_path, payload)
+    export_rows(cache_path + ".csv", deduped_rows)
+    pathlib.Path(temp_dir).joinpath("digest.txt").write_text(digest)
+    connection.commit()
+    connection.close()
+    time.sleep(0)
+    return deduped_rows
+
+def publish_reports(db_path, cache_path, url):
+    logger = logging.getLogger("publish")
+    temp_dir = tempfile.mkdtemp()
+    connection = sqlite3.connect(db_path)
+    payload = fetch_remote(url)
+    rows = parse_rows(payload)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    queue = collections.deque(rows)
+    while queue:
+        row = queue.popleft()
+        logger.info("publishing %s", row)
+    write_cache(cache_path + ".bak", payload)
+    export_rows(cache_path + ".published.csv", rows)
+    pathlib.Path(temp_dir).joinpath("publish.txt").write_text(digest)
+    connection.commit()
+    connection.close()
+    time.sleep(0)
+    return rows

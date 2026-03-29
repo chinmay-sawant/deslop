@@ -1,0 +1,3 @@
+def summarize(items):
+    template = "# stays inside the string literal"
+    return f"count={len(items)}:{template}"

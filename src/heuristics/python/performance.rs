@@ -30,7 +30,8 @@ pub(super) fn string_concat_findings(file: &ParsedFile, function: &ParsedFunctio
                 function.fingerprint.name
             ),
             evidence: vec![
-                "loop-local string concatenation can create repeated allocations".to_string(),
+                "pattern=loop_local_string_concatenation".to_string(),
+                "suggestion=collect parts and join once after the loop".to_string(),
             ],
         })
         .collect()
@@ -60,10 +61,10 @@ pub(super) fn blocking_sync_io_findings(
             start_line: call.line,
             end_line: call.line,
             message: format!(
-                "async function {} calls likely blocking sync I/O",
+                "async function {} performs synchronous I/O inside the event loop",
                 function.fingerprint.name
             ),
-            evidence: vec![evidence],
+            evidence: vec![format!("blocking_call={evidence}")],
         });
     }
 
@@ -116,10 +117,10 @@ pub(super) fn full_dataset_load_findings(
                 start_line: call.line,
                 end_line: call.line,
                 message: format!(
-                    "function {} loads an entire payload into memory",
+                    "function {} materializes an entire file payload in memory",
                     function.fingerprint.name
                 ),
-                evidence: vec![evidence],
+                evidence: vec![format!("full_read={evidence}")],
             })
         })
         .collect()
@@ -147,7 +148,10 @@ pub(super) fn list_materialization_findings(
                 "function {} materializes a list just to read the first element",
                 function.fingerprint.name
             ),
-            evidence: vec!["prefer next(iter(...)) when only the first item is needed".to_string()],
+            evidence: vec![
+                "pattern=list_materialization_for_first_element".to_string(),
+                "suggestion=prefer next(iter(...), default) for first-item access".to_string(),
+            ],
         })
         .collect()
 }
@@ -175,7 +179,8 @@ pub(super) fn deque_candidate_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                "list pop(0) and insert(0, ...) can create avoidable shifting work".to_string(),
+                "pattern=list_queue_operations".to_string(),
+                "suggestion=pop(0) or insert(0, ...) may want collections.deque".to_string(),
             ],
         })
         .collect()
@@ -204,8 +209,8 @@ pub(super) fn temp_collection_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                "loop-local list or dict construction can add avoidable allocation churn"
-                    .to_string(),
+                "pattern=loop_local_scratch_collection".to_string(),
+                "impact=repeated list or dict allocation inside the loop body".to_string(),
             ],
         })
         .collect()
@@ -237,10 +242,9 @@ pub(super) fn recursive_traversal_findings(
                 function.fingerprint.name
             ),
             evidence: vec![format!(
-                "line_count={} recursive_calls={}",
-                function.fingerprint.line_count,
+                "recursive_calls={}",
                 function.recursive_call_lines.len()
-            )],
+            ), format!("line_count={}", function.fingerprint.line_count)],
         })
         .collect()
 }
@@ -268,7 +272,8 @@ pub(super) fn list_membership_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                "repeated membership checks may want a set when order is irrelevant".to_string(),
+                "pattern=list_membership_inside_loop".to_string(),
+                "suggestion=prefer a set when order is irrelevant".to_string(),
             ],
         })
         .collect()
@@ -294,7 +299,9 @@ pub(super) fn repeated_len_findings(file: &ParsedFile, function: &ParsedFunction
                 function.fingerprint.name
             ),
             evidence: vec![
-                "cache the length locally when the container is unchanged in the loop".to_string(),
+                "pattern=repeated_len_checks_inside_loop".to_string(),
+                "suggestion=cache the length locally when the container is unchanged"
+                    .to_string(),
             ],
         })
         .collect()

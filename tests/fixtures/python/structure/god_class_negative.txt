@@ -1,0 +1,11 @@
+class InvoiceCache:
+    def __init__(self, store):
+        self.store = store
+        self.entries = []
+
+    def load(self):
+        return self.store
+
+    def save(self, payload):
+        self.entries.append(payload)
+        return payload

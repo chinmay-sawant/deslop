@@ -92,6 +92,9 @@ const pythonRules: Rule[] = [
   { id: 'broad_exception_handler', description: 'Broad except Exception: style handlers that still obscure failure shape even when not fully swallowed.' },
   { id: 'eval_exec_usage', description: 'Direct eval() or exec() usage in non-test Python code.' },
   { id: 'print_debugging_leftover', description: 'print() calls left in non-test Python functions that do not look like obvious main-entrypoint output.' },
+  { id: 'generic_name', description: 'Generic function names that lack stronger domain-specific signals (shared signal).' },
+  { id: 'overlong_name', description: 'Overly descriptive function names with too many name tokens (shared signal).' },
+  { id: 'weak_typing', description: 'Weakly typed inputs or outputs, including vague any-style signatures when the parser can see them (shared signal).' },
   { id: 'none_comparison', description: '== None or != None checks instead of is None or is not None.' },
   { id: 'side_effect_comprehension', description: 'List, set, or dict comprehensions used as standalone statements where the result is discarded.' },
   { id: 'redundant_return_none', description: 'Explicit return None in simple code paths where Python would already return None implicitly.' },
@@ -123,19 +126,23 @@ const pythonRules: Rule[] = [
   { id: 'hallucinated_import_call', description: 'Package-qualified calls that do not match locally indexed symbols for the imported Python package.' },
   { id: 'hallucinated_local_call', description: 'Same-package calls to Python symbols not present in the scanned local package context.' },
   { id: 'hardcoded_business_rule', description: 'Hardcoded threshold, rate-limit, or pricing-style literals assigned inside non-test Python functions.' },
-  { id: 'magic_value_branching', description: 'Branching logic based on magic string or integer literals instead of named constants or enums.' },
-  { id: 'reinvented_utility', description: 'Simple helper implementations that look like obvious candidates for Python standard library or popular package utilities.' },
+  { id: 'magic_value_branching', description: 'Repeated branch-shaping numeric or string literals that likely want an explicit constant or policy name.' },
+  { id: 'reinvented_utility', description: 'Obvious locally implemented utility helpers that overlap with already-imported standard-library style helpers.' },
   { id: 'builtin_reduction_candidate', description: 'Loop shapes that look like obvious sum, any, or all candidates.' },
   { id: 'missing_context_manager', description: 'Resource management (files, network connections) inside non-test Python functions that omits with-statement context managers.' },
   { id: 'environment_boundary_without_fallback', description: 'Environment-variable lookups that omit a default value or explicit failure handler.' },
-  { id: 'module_name_responsibility_mismatch', description: 'Modules using utility-style names that coordinate multiple infrastructure concerns (HTTP, persistence, etc.).' },
   { id: 'mixed_naming_conventions', description: 'File mixes snake_case and camelCase function naming conventions.' },
+  { id: 'comment_style_title_case', description: 'Title Case function documentation that reads more like a heading than intent-focused docs (shared signal).' },
+  { id: 'comment_style_tutorial', description: 'Verbose tutorial-style function documentation that narrates implementation steps (shared signal).' },
   { id: 'textbook_docstring_small_helper', description: 'Very small helper functions that have unusually long, textbook-style docstrings.' },
   { id: 'obvious_commentary', description: 'Comments that narrate obvious implementation steps instead of explaining intent.' },
   { id: 'enthusiastic_commentary', description: 'Unusually enthusiastic or emoji-heavy production comments.' },
   { id: 'commented_out_code', description: 'Blocks of commented-out source code left in production files.' },
   { id: 'repeated_string_literal', description: 'Project repeats the same long string literal multiple times in one file.' },
   { id: 'cross_file_repeated_literal', description: 'Project repeats the same long string literal across multiple files.' },
+  { id: 'test_without_assertion_signal', description: 'Python tests that exercise production code without an obvious assertion or failure signal (shared signal).' },
+  { id: 'happy_path_only_test', description: 'Python tests that appear to cover only success expectations and no visible negative path (shared signal).' },
+  { id: 'placeholder_test_body', description: 'Python tests that look skipped, TODO-shaped, or otherwise placeholder-like rather than validating behavior (shared signal).' },
   { id: 'duplicate_test_utility_logic', description: 'Highly similar utility logic shared between test and production code.' },
   { id: 'duplicate_query_fragment', description: 'Repository repeats the same SQL-like query fragment across multiple files.' },
   { id: 'duplicate_transformation_pipeline', description: 'Repository repeats the same data transformation pipeline stages across multiple functions.' },
@@ -271,6 +278,13 @@ const githubActionBenchExample = `- uses: actions/checkout@v4
     repeats: '10'
     warmups: '2'`
 
+const repositoryConfigExample = `rust_async_experimental = true
+disabled_rules = ["panic_macro_leftover"]
+suppressed_paths = ["tests/fixtures"]
+
+[severity_overrides]
+unwrap_in_non_test_code = "error"`
+
 function CodeBlock({ code }: { code: string }) {
   return (
     <pre className="docs-code-block">
@@ -295,12 +309,13 @@ const overviewContent = {
   },
   python: {
     title: 'Python Analysis',
-    lead: 'Python support covers a broad rule pack built around common AI-generation signals: hallucinated symbol calls, blocked async code, swallowed exceptions, god classes, monolithic modules, over-abstracted wrappers, and many more. The parser extracts imports, symbols, call sites, docstrings, test classification, and loop patterns. Python findings are language-scoped so they do not merge with Go or Rust symbols in mixed repos.',
+    lead: 'Python support now spans function-level, file-level, and repo-level heuristics backed by fixture-driven parser evidence. The shipped rule pack covers async boundary misuse, exception handling, duplication families, class and module structure smells, AI-style commentary signals, and repository-local hallucination checks without crossing language boundaries in mixed repos.',
     bullets: [
       'Parses .py files with tree-sitter-python alongside Go and Rust files',
-      'Extracts imports, declared symbols, call sites, docstrings, and test classification',
-      'Runs 40+ Python-specific heuristics plus shared signals like full_dataset_load and string_concat_in_loop',
-      'Language-scoped local index prevents symbol cross-contamination in mixed repos',
+      'Extracts imports, declared symbols, call sites, docstrings, class summaries, and phase-4 evidence used by maintainability and structure rules',
+      'Runs 60-plus Python-specific and shared heuristics across function, file, and repository scopes',
+      'Language-scoped local index prevents symbol cross-contamination in mixed repos and powers Python hallucination checks',
+      'Fixture-backed parser and integration coverage keeps rule families stable as the Python surface area grows',
       'Conservative about flagging policy: favors lower false-positive rates over exhaustive coverage',
     ],
   },
@@ -357,8 +372,8 @@ const limitations = {
     'No Python module graph resolution or installed-package awareness.',
     'No authoritative Python type analysis — hints are structural and conservative.',
     'No interprocedural propagation. Checks are local to individual functions or files.',
-    'No runtime behavior analysis or confirmed asyncio-specific reasoning.',
-    'Cross-file duplicate detection covers a sampling of the repository, not exhaustive pairwise comparison.',
+    'No proof of runtime behavior or end-to-end asyncio correctness — async findings remain syntax-driven heuristics.',
+    'Cross-file duplicate detection is conservative and normalized; it is not exhaustive pairwise semantic comparison.',
   ],
   rust: [
     'No Rust trait resolution, cargo workspace modeling, or macro expansion.',
@@ -566,7 +581,7 @@ export function DocsPage() {
           {activeLang === 'python' && (
             <>
               <h2 className="docs-h2">Shared signals</h2>
-              <p className="docs-p">Python also reuses shared signals when the parser evidence supports them, including <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>hardcoded_secret</code>, comment-style findings based on docstrings, <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>full_dataset_load</code>, <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>string_concat_in_loop</code>, and conservative test-quality findings.</p>
+              <p className="docs-p">Python also inherits the shared cross-language layer when parser evidence supports it, including naming-quality checks, doc-comment hygiene, conservative test-quality findings, <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>hardcoded_secret</code>, <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>full_dataset_load</code>, and <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>string_concat_in_loop</code>.</p>
             </>
           )}
           {activeLang === 'rust' && (
@@ -631,6 +646,13 @@ export function DocsPage() {
               <tr><td>--repeats N</td><td>Benchmark repeat count for bench. Defaults to 5.</td></tr>
             </tbody>
           </table>
+
+          <h2 className="docs-h2">Repository config</h2>
+          <p className="docs-p">
+            Repository-local behavior can also be tuned with a <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>.deslop.toml</code>
+            file at the scan root. The current config surface supports disabled rules, severity overrides, suppressed path prefixes, and the staged Rust async pack toggle.
+          </p>
+          <CodeBlock code={repositoryConfigExample} />
 
           <h2 className="docs-h2">Output modes</h2>
           <p className="docs-p">Text output (default) prints the scan summary plus the standard finding set. JSON output is available for pipeline integration. The --details flag adds per-function fingerprint data to either output mode.</p>
@@ -735,7 +757,7 @@ deslop scan --details --json .`} />
           <p className="docs-p">The following capabilities are pending or in development:</p>
           <div className="docs-pill-list">
             {activeLang === 'go' && ['Stronger repo-wide style checks', 'Deeper goroutine lifetime analysis', 'Better context propagation through wrappers', 'Optional deeper semantic analysis'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
-            {activeLang === 'python' && ['Stronger asyncio-specific reasoning', 'Python type annotation inference', 'Type-aware data flow analysis', 'Framework-specific rule packs (Django/FastAPI)'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
+            {activeLang === 'python' && ['Installed-package and module-graph awareness', 'Deeper interprocedural asyncio reasoning', 'Optional type-aware data-flow analysis', 'Framework-specific rule packs (Django/FastAPI)'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
             {activeLang === 'rust' && ['Trait resolution', 'Cargo workspace modeling', 'Macro expansion analysis', 'Deeper Rust rule pack', 'Cross-crate symbol resolution'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
           </div>
         </div>

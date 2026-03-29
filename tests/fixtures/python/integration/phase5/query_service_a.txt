@@ -1,0 +1,8 @@
+from pkg.query_constants import OPEN_REPORTS_QUERY
+from pkg.query_templates import REPORT_STATUS_TEMPLATE
+
+def fetch_open_reports(cursor):
+    return cursor.execute(OPEN_REPORTS_QUERY)
+
+def fetch_by_status(cursor, status):
+    return cursor.execute(REPORT_STATUS_TEMPLATE.format(status=status))

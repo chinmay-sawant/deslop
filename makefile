@@ -3,7 +3,7 @@
 # Path to scan (can be overridden with 'make scan PATH=<path>')
 # For now hardcoded the path for personal use, you can customize this as required
 PATH_TO_SCAN_GOPDFSUIT ?= /home/chinmay/ChinmayPersonalProjects/gopdfsuit
-PATH_TO_SCAN_SNAPBACK ?= /home/chinmay/ChinmayPersonalProjects/snapback
+PATH_TO_SCAN_SNAPBACK ?= /home/chinmay/ChinmayPersonalProjects/SnapBack
 PATH_TO_SCAN ?= .
 
 # Default Target
