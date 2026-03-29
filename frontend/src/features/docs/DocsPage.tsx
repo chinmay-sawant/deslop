@@ -757,7 +757,7 @@ deslop scan --details --json .`} />
 
           <div className="docs-callout" style={{ borderLeftColor: 'var(--border-strong)', background: 'var(--accent-soft)' }}>
             <p>
-              Before coming @ me — I am trying to find a real problem. The project is mostly vibecoded,
+              Before coming @ me — I am trying to solve a real problem. The project is mostly vibecoded,
               but the architecture is thought through as per my best knowledge. Instead of calling this slop,
               let's try to work together if you want. Send me more ideas by{' '}
               <a
