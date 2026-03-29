@@ -4,7 +4,7 @@ import { currentRelease } from '../../content/site-content'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Language = 'go' | 'python' | 'rust'
+type Language = 'go' | 'python' | 'rust' | 'common'
 type SectionId =
   | 'overview'
   | 'detection-rules'
@@ -35,6 +35,7 @@ const languages: { id: Language; label: string }[] = [
   { id: 'go', label: 'Go' },
   { id: 'python', label: 'Python' },
   { id: 'rust', label: 'Rust' },
+  { id: 'common', label: 'Common' },
 ]
 
 const sections: NavSection[] = [
@@ -49,9 +50,6 @@ const sections: NavSection[] = [
 // ─── Content Data ────────────────────────────────────────────────────────────
 
 const goRules: Rule[] = [
-  { id: 'generic_name', description: 'Function names that are overly generic without stronger contextual signals.' },
-  { id: 'overlong_name', description: 'Very long identifiers with too many descriptive tokens.' },
-  { id: 'weak_typing', description: 'Signatures that rely on any or interface{}.' },
   { id: 'dropped_error', description: 'Blank identifier assignments that discard an err-like value.' },
   { id: 'panic_on_error', description: 'err != nil branches that jump straight to panic or log.Fatal style exits.' },
   { id: 'error_wrapping_misuse', description: 'fmt.Errorf calls that reference err without %w.' },
@@ -67,32 +65,22 @@ const goRules: Rule[] = [
   { id: 'goroutine_derived_context_unmanaged', description: 'Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.' },
   { id: 'mutex_in_loop', description: 'Repeated Lock or RLock acquisition inside loops.' },
   { id: 'blocking_call_while_locked', description: 'Potentially blocking calls observed between Lock and Unlock.' },
-  { id: 'string_concat_in_loop', description: 'Repeated string concatenation inside loops when the function is clearly building a string incrementally.' },
   { id: 'likely_n_squared_string_concat', description: 'Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.' },
   { id: 'repeated_json_marshaling', description: 'encoding/json.Marshal or MarshalIndent inside loops — repeated allocation and serialization hot spots.' },
   { id: 'allocation_churn_in_loop', description: 'Obvious make, new, or buffer-construction calls inside loops.' },
   { id: 'likely_n_squared_allocation', description: 'Opt-in deeper semantic signal for allocations that also sit inside nested loop structure.' },
   { id: 'fmt_hot_path', description: 'fmt formatting calls such as Sprintf inside loops.' },
   { id: 'reflection_hot_path', description: 'reflect package calls inside loops.' },
-  { id: 'full_dataset_load', description: 'Calls such as io.ReadAll or os.ReadFile that load an entire payload into memory instead of streaming.' },
   { id: 'n_plus_one_query', description: 'Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.' },
   { id: 'wide_select_query', description: 'Literal SELECT * query shapes.' },
   { id: 'likely_unindexed_query', description: 'Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.' },
   { id: 'weak_crypto', description: 'Direct use of weak standard-library crypto packages such as crypto/md5, crypto/sha1, crypto/des, and crypto/rc4.' },
-  { id: 'hardcoded_secret', description: 'Secret-like identifiers assigned direct string literals instead of environment or secret-manager lookups.' },
   { id: 'sql_string_concat', description: 'Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf.' },
   { id: 'inconsistent_package_name', description: 'Directories that mix base Go package names after ignoring the _test suffix.' },
   { id: 'misgrouped_imports', description: 'Import blocks that place stdlib imports after third-party imports.' },
   { id: 'mixed_receiver_kinds', description: 'Methods on the same receiver type mix pointer and value receivers.' },
   { id: 'malformed_struct_tag', description: 'Struct field tags that do not parse as valid Go tag key/value pairs.' },
   { id: 'duplicate_struct_tag_key', description: 'Struct field tags that repeat the same key more than once.' },
-  { id: 'hallucinated_import_call', description: 'Package-qualified calls that do not match locally indexed symbols for the imported package.' },
-  { id: 'hallucinated_local_call', description: 'Same-package calls to symbols not present in the scanned local package context.' },
-  { id: 'test_without_assertion_signal', description: 'Tests that call production code without any obvious assertion or failure signal.' },
-  { id: 'happy_path_only_test', description: 'Tests that assert success expectations without any obvious negative-path signal.' },
-  { id: 'placeholder_test_body', description: 'Tests that look skipped, TODO-shaped, or otherwise placeholder-like rather than validating behavior.' },
-  { id: 'comment_style_title_case', description: 'Heading-like Title Case doc comments.' },
-  { id: 'comment_style_tutorial', description: 'Tutorial-style comments that narrate obvious implementation steps.' },
 ]
 
 const pythonRules: Rule[] = [
@@ -101,11 +89,8 @@ const pythonRules: Rule[] = [
   { id: 'broad_exception_handler', description: 'Broad except Exception: style handlers that still obscure failure shape even when not fully swallowed.' },
   { id: 'eval_exec_usage', description: 'Direct eval() or exec() usage in non-test Python code.' },
   { id: 'print_debugging_leftover', description: 'print() calls left in non-test Python functions that do not look like obvious main-entrypoint output.' },
-  { id: 'generic_name', description: 'Generic function names that lack stronger domain-specific signals (shared signal).' },
-  { id: 'overlong_name', description: 'Overly descriptive function names with too many name tokens (shared signal).' },
-  { id: 'weak_typing', description: 'Weakly typed inputs or outputs, including vague any-style signatures when the parser can see them (shared signal).' },
   { id: 'none_comparison', description: '== None or != None checks instead of is None or is not None.' },
-  { id: 'side_effect_comprehension', description: 'List, set, or dict comprehensions used as standalone statements where the result is discarded.' },
+  { id: 'side_effect_comprehension', description: 'List, set, or dicit comprehensions used as standalone statements where the result is discarded.' },
   { id: 'redundant_return_none', description: 'Explicit return None in simple code paths where Python would already return None implicitly.' },
   { id: 'hardcoded_path_string', description: 'Hardcoded filesystem path literals assigned inside non-test Python functions.' },
   { id: 'variadic_public_api', description: 'Public Python functions that expose *args or **kwargs instead of a clearer interface.' },
@@ -132,8 +117,6 @@ const pythonRules: Rule[] = [
   { id: 'duplicate_error_handler_block', description: 'Repeated exception-handling block shapes in one file.' },
   { id: 'duplicate_validation_pipeline', description: 'Repeated validation guard pipelines across functions in one file.' },
   { id: 'cross_file_copy_paste_function', description: 'Highly similar non-test function bodies repeated across multiple Python files.' },
-  { id: 'hallucinated_import_call', description: 'Package-qualified calls that do not match locally indexed symbols for the imported Python package.' },
-  { id: 'hallucinated_local_call', description: 'Same-package calls to Python symbols not present in the scanned local package context.' },
   { id: 'hardcoded_business_rule', description: 'Hardcoded threshold, rate-limit, or pricing-style literals assigned inside non-test Python functions.' },
   { id: 'magic_value_branching', description: 'Repeated branch-shaping numeric or string literals that likely want an explicit constant or policy name.' },
   { id: 'reinvented_utility', description: 'Obvious locally implemented utility helpers that overlap with already-imported standard-library style helpers.' },
@@ -141,25 +124,17 @@ const pythonRules: Rule[] = [
   { id: 'missing_context_manager', description: 'Resource management (files, network connections) inside non-test Python functions that omits with-statement context managers.' },
   { id: 'environment_boundary_without_fallback', description: 'Environment-variable lookups that omit a default value or explicit failure handler.' },
   { id: 'mixed_naming_conventions', description: 'File mixes snake_case and camelCase function naming conventions.' },
-  { id: 'comment_style_title_case', description: 'Title Case function documentation that reads more like a heading than intent-focused docs (shared signal).' },
-  { id: 'comment_style_tutorial', description: 'Verbose tutorial-style function documentation that narrates implementation steps (shared signal).' },
   { id: 'textbook_docstring_small_helper', description: 'Very small helper functions that have unusually long, textbook-style docstrings.' },
   { id: 'obvious_commentary', description: 'Comments that narrate obvious implementation steps instead of explaining intent.' },
   { id: 'enthusiastic_commentary', description: 'Unusually enthusiastic or emoji-heavy production comments.' },
   { id: 'commented_out_code', description: 'Blocks of commented-out source code left in production files.' },
   { id: 'repeated_string_literal', description: 'Project repeats the same long string literal multiple times in one file.' },
   { id: 'cross_file_repeated_literal', description: 'Project repeats the same long string literal across multiple files.' },
-  { id: 'test_without_assertion_signal', description: 'Python tests that exercise production code without an obvious assertion or failure signal (shared signal).' },
-  { id: 'happy_path_only_test', description: 'Python tests that appear to cover only success expectations and no visible negative path (shared signal).' },
-  { id: 'placeholder_test_body', description: 'Python tests that look skipped, TODO-shaped, or otherwise placeholder-like rather than validating behavior (shared signal).' },
   { id: 'duplicate_test_utility_logic', description: 'Highly similar utility logic shared between test and production code.' },
   { id: 'duplicate_query_fragment', description: 'Repository repeats the same SQL-like query fragment across multiple files.' },
   { id: 'duplicate_transformation_pipeline', description: 'Repository repeats the same data transformation pipeline stages across multiple functions.' },
   { id: 'network_boundary_without_timeout', description: 'Request, sync, or job-style Python functions that call HTTP boundaries with no obvious timeout or retry policy.' },
   { id: 'external_input_without_validation', description: 'Request or CLI entry points that trust external input without obvious validation or guard checks.' },
-  { id: 'hardcoded_secret', description: 'Secret-like identifiers assigned direct string literals (shared signal).' },
-  { id: 'full_dataset_load', description: 'Calls that load an entire payload into memory instead of streaming it (shared signal).' },
-  { id: 'string_concat_in_loop', description: 'Repeated string concatenation inside loops (shared signal).' },
 ]
 
 const rustRules: Rule[] = [
@@ -173,8 +148,6 @@ const rustRules: Rule[] = [
   { id: 'unsafe_without_safety_comment', description: 'unsafe fn or unsafe block without a nearby SAFETY: comment within the previous two lines.' },
   { id: 'todo_doc_comment_leftover', description: 'Rust doc comments that still contain a TODO marker in non-test code.' },
   { id: 'fixme_doc_comment_leftover', description: 'Rust doc comments that still contain a FIXME marker in non-test code.' },
-  { id: 'hallucinated_import_call', description: 'Covers crate::, self::, and super:: module paths when deslop can map them back to locally indexed Rust modules, plus direct calls through locally imported function aliases.' },
-  { id: 'hallucinated_local_call', description: 'Direct same-module calls when the callee name is not locally bound and does not exist in the indexed Rust module.' },
   { id: 'rust_blocking_io_in_async', description: 'Blocking I/O or blocking work observed in async Rust code.' },
   { id: 'rust_unbuffered_file_writes', description: 'File-like writes performed inside a loop without buffering or batching.' },
   { id: 'rust_lines_allocate_per_line', description: '.lines() iteration used in a loop where per-item allocation may matter.' },
@@ -211,6 +184,22 @@ const rustRules: Rule[] = [
   { id: 'rust_unsafe_transmute', description: 'Unsafe transmute use that requires layout and validity proof.' },
   { id: 'rust_unsafe_raw_pointer_cast', description: 'Unsafe raw pointer cast that depends on aliasing and lifetime guarantees.' },
   { id: 'rust_unsafe_aliasing_assumption', description: 'Unsafe code mixes interior mutability and mutable references in ways that need careful aliasing review.' },
+]
+
+const commonRules: Rule[] = [
+  { id: 'generic_name', description: 'Function names that are overly generic without stronger contextual signals.' },
+  { id: 'overlong_name', description: 'Very long identifiers with too many descriptive tokens.' },
+  { id: 'weak_typing', description: 'Signatures that rely on any or empty interface types.' },
+  { id: 'hallucinated_import_call', description: 'Package-qualified calls that do not match locally indexed symbols for the imported package.' },
+  { id: 'hallucinated_local_call', description: 'Same-package calls to symbols not present in the scanned local package context.' },
+  { id: 'hardcoded_secret', description: 'Secret-like identifiers assigned direct string literals instead of environment lookups.' },
+  { id: 'test_without_assertion_signal', description: 'Tests that exercise production code without an obvious assertion or failure signal.' },
+  { id: 'happy_path_only_test', description: 'Tests that assert success expectations without any obvious negative-path signal.' },
+  { id: 'placeholder_test_body', description: 'Tests that look skipped, TODO-shaped, or otherwise placeholder-like.' },
+  { id: 'comment_style_title_case', description: 'Heading-like Title Case documentation.' },
+  { id: 'comment_style_tutorial', description: 'Tutorial-style documentation that narrates obvious implementation steps.' },
+  { id: 'full_dataset_load', description: 'Calls that load an entire payload into memory instead of streaming.' },
+  { id: 'string_concat_in_loop', description: 'Repeated string concatenation inside loops (O(n^2) risk).' },
 ]
 
 // ─── CLI commands by language ─────────────────────────────────────────────────
@@ -253,6 +242,10 @@ const cliCommands: Record<Language, CliCommand[]> = {
     { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark discovery, parse, index, heuristic, and total runtime stages.' },
     { cmd: 'cargo run -- bench --warmups 2 --repeats 5 /path/to/repo', desc: 'Benchmark with explicit warmup and repeat counts.' },
     { cmd: 'cargo run -- bench --json /path/to/repo', desc: 'Emit benchmarking data as JSON.' },
+  ],
+  common: [
+    { cmd: 'cargo run -- scan /path/to/repo', desc: 'Scan any supported repository to trigger the shared heuristic layer.' },
+    { cmd: 'cargo run -- scan --ignore hardcoded_secret,generic_name /path/to/repo', desc: 'Ignore specific shared rules for the current scan.' },
   ],
 }
 
@@ -347,6 +340,18 @@ const overviewContent = {
       'Language-scoped index prevents symbol merging with Go or Python in mixed repositories',
     ],
   },
+  common: {
+    title: 'Shared Heuristics',
+    lead: 'deslop includes a core layer of cross-language heuristics that apply regardless of the specific source language. These rules focus on naming quality, documentation hygiene, repository-local hallucination checks, and common anti-patterns like hardcoded secrets or unbuffered I/O.',
+    bullets: [
+      'Universal naming quality checks (generic, overlong, or weak identifiers)',
+      'Language-scoped local index for internal symbol hallucination detection',
+      'Documentation-style and commentary hygiene checks',
+      'Basic test quality and placeholder detection',
+      'Common security smells like hardcoded secrets',
+      'General performance signals like unbuffered full-dataset loads',
+    ],
+  },
 }
 
 // ─── Pipeline content ─────────────────────────────────────────────────────────
@@ -398,6 +403,13 @@ const limitations = {
     'Hallucination checks cover crate-local imports only; external crates are not indexed.',
     'No interprocedural analysis or cross-crate symbol resolution.',
   ],
+  common: [
+    'Shared heuristics are strictly syntax-driven and do not perform deep interprocedural data-flow or points-to analysis.',
+    'No cross-language semantic bridge (e.g., deslop does not model Go-to-Python FFI calling conventions).',
+    'Naming and commentary hygiene checks are suggestive and do not account for project-specific jargon or acronyms.',
+    'Hallucination checks are strictly repository-local and scoped by language to prevent false-positive cross-pollination.',
+    'General performance signals like unbuffered I/O are pattern-based and do not account for OS-level buffering or hardware-specific optimizations.',
+  ],
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -408,7 +420,7 @@ export function DocsPage() {
 
   const langClass = `lang-${activeLang}`
   const overview = overviewContent[activeLang]
-  const rules = activeLang === 'go' ? goRules : activeLang === 'python' ? pythonRules : rustRules
+  const rules = activeLang === 'common' ? commonRules : activeLang === 'go' ? goRules : activeLang === 'python' ? pythonRules : rustRules
   const commands = cliCommands[activeLang]
   const limits = limitations[activeLang]
 
@@ -471,6 +483,7 @@ export function DocsPage() {
             {activeLang === 'go' && 'Static analysis for Go repositories.'}
             {activeLang === 'python' && 'Static analysis for Python repositories.'}
             {activeLang === 'rust' && 'Static analysis for Rust repositories.'}
+            {activeLang === 'common' && 'Shared heuristics for all supported languages.'}
           </h1>
           <p className="docs-lead">{overview.lead}</p>
 
@@ -574,7 +587,7 @@ export function DocsPage() {
             </p>
           </div>
 
-          <h2 className="docs-h2">All {activeLang === 'go' ? 'Go' : activeLang === 'python' ? 'Python' : 'Rust'} rules</h2>
+          <h2 className="docs-h2">All {activeLang === 'go' ? 'Go' : activeLang === 'python' ? 'Python' : activeLang === 'rust' ? 'Rust' : 'Common'} rules</h2>
           <div className="rule-grid">
             {rules.map((rule) => (
               <div key={rule.id} className="rule-item">
@@ -777,6 +790,7 @@ deslop scan --details --json .`} />
             {activeLang === 'go' && ['Index-assisted DB call classification', 'Public-API-aware context propagation', 'AST-resolved ctx.Done detection inside goroutines', 'Type-aware Go analysis'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
             {activeLang === 'python' && ['Installed-package and module-graph awareness', 'Deeper interprocedural asyncio reasoning', 'Optional type-aware data-flow analysis', 'Framework-specific rule packs (Django/FastAPI)'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
             {activeLang === 'rust' && ['Trait resolution', 'Cargo workspace modeling', 'Macro expansion analysis', 'Deeper Rust rule pack', 'Cross-crate symbol resolution'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
+            {activeLang === 'common' && ['Inter-language FFI/RPC bridge modeling', 'Global AST-normalized similarity indexing', 'Heuristic weight calibration', 'Support for JS/TS and C++'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
           </div>
         </div>
 
