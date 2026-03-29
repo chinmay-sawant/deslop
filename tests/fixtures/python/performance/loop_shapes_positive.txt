@@ -1,0 +1,27 @@
+def build_message(parts):
+    message = ""
+    for part in parts:
+        message += part
+    return message
+
+
+def first_record(records):
+    first = list(records)[0]
+    queue = [first, "fallback"]
+    queue.pop(0)
+    queue.insert(0, "prefix")
+    return queue[0]
+
+
+def scan_tree(node):
+    blocked = [node]
+    results = []
+    for child in node.children:
+        scratch = []
+        scratch.append(child)
+        if child in blocked:
+            continue
+        if len(results) > 0 and len(results) < 5:
+            results.append(child)
+        scan_tree(child)
+    return results

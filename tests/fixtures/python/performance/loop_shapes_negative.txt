@@ -1,0 +1,28 @@
+from collections import deque
+
+
+def build_message(parts):
+    return "".join(parts)
+
+
+def first_record(records):
+    iterator = iter(records)
+    return next(iterator, None)
+
+
+def scan_tree(node):
+    blocked = {node}
+    queue = deque([node])
+    results = []
+    total_results = 0
+    while queue:
+        current = queue.popleft()
+        for child in current.children:
+            if child in blocked:
+                continue
+            blocked.add(child)
+            queue.append(child)
+        total_results = len(results)
+        if total_results < 5:
+            results.append(current)
+    return results

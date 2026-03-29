@@ -361,6 +361,142 @@ fn test_python_duplication_rule_family_negative() {
 }
 
 #[test]
+fn test_python_performance_rule_family_positive() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/loop_shapes.py",
+            python_fixture!("performance/loop_shapes_positive.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "string_concat_in_loop",
+        "list_materialization_first_element",
+        "deque_candidate_queue",
+        "temporary_collection_in_loop",
+        "recursive_traversal_risk",
+        "list_membership_in_loop",
+        "repeated_len_in_loop",
+    ] {
+        assert!(
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "expected rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_performance_rule_family_negative() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/loop_shapes.py",
+            python_fixture!("performance/loop_shapes_negative.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "string_concat_in_loop",
+        "list_materialization_first_element",
+        "deque_candidate_queue",
+        "temporary_collection_in_loop",
+        "recursive_traversal_risk",
+        "list_membership_in_loop",
+        "repeated_len_in_loop",
+    ] {
+        assert!(
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "did not expect rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_async_boundary_rules_positive() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/async_boundaries.py",
+            python_fixture!("performance/async_boundaries_positive.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in ["blocking_sync_io_in_async", "full_dataset_load"] {
+        assert!(
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "expected rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_async_boundary_rules_negative() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/async_boundaries.py",
+            python_fixture!("performance/async_boundaries_negative.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in ["blocking_sync_io_in_async", "full_dataset_load"] {
+        assert!(
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "did not expect rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
 fn test_python_structure_rule_family_positive() {
     let temp_dir = create_temp_workspace();
     write_files(

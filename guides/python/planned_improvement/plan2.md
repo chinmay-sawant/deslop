@@ -100,11 +100,11 @@ Define a detailed implementation plan for improving the existing function-level 
 ### 3. Require positive and negative `.txt` fixtures per rule family
 
 - [ ] Add fixture pairs for async and I/O rules:
-  - [ ] `tests/fixtures/python/performance/async_boundaries_positive.txt`
-  - [ ] `tests/fixtures/python/performance/async_boundaries_negative.txt`
+  - [x] `tests/fixtures/python/performance/async_boundaries_positive.txt`
+  - [x] `tests/fixtures/python/performance/async_boundaries_negative.txt`
 - [ ] Add fixture pairs for loop-shape rules:
-  - [ ] `tests/fixtures/python/performance/loop_shapes_positive.txt`
-  - [ ] `tests/fixtures/python/performance/loop_shapes_negative.txt`
+  - [x] `tests/fixtures/python/performance/loop_shapes_positive.txt`
+  - [x] `tests/fixtures/python/performance/loop_shapes_negative.txt`
 - [ ] Add fixture pairs for exception and debug rules:
   - [x] `tests/fixtures/python/maintainability/exception_and_debug_positive.txt`
   - [x] `tests/fixtures/python/maintainability/exception_and_debug_negative.txt`
@@ -117,10 +117,10 @@ Define a detailed implementation plan for improving the existing function-level 
 
 ### 4. Make integration tests match rule families instead of one giant catch-all case
 
-- [ ] Keep baseline function-level tests in `tests/integration_scan/python/baseline.rs`.
-- [ ] Place phase-5 expansion tests in `tests/integration_scan/python/phase5_rules.rs`.
-- [ ] Add one integration test per family instead of one test per rule where possible.
-- [ ] Keep at least one dedicated assertion per rule ID so failures stay local and obvious.
+- [x] Keep baseline function-level tests in `tests/integration_scan/python/baseline.rs`.
+- [x] Place phase-5 expansion tests in `tests/integration_scan/python/phase5_rules.rs`.
+- [x] Add one integration test per family instead of one test per rule where possible.
+- [x] Keep at least one dedicated assertion per rule ID so failures stay local and obvious.
 
 ### 5. Add suppression-focused negative cases
 
@@ -132,10 +132,10 @@ Define a detailed implementation plan for improving the existing function-level 
 
 ### Performance-focused integration cases
 
-- [ ] `test_python_performance_rule_family_positive`
-- [ ] `test_python_performance_rule_family_negative`
-- [ ] `test_python_async_boundary_rules_positive`
-- [ ] `test_python_async_boundary_rules_negative`
+- [x] `test_python_performance_rule_family_positive`
+- [x] `test_python_performance_rule_family_negative`
+- [x] `test_python_async_boundary_rules_positive`
+- [x] `test_python_async_boundary_rules_negative`
 
 ### Maintainability-focused integration cases
 
@@ -148,8 +148,8 @@ Define a detailed implementation plan for improving the existing function-level 
 
 ## Review Gates
 
-- [ ] Rule message text names the actual smell and does not oversell confidence.
-- [ ] Evidence strings point to the exact syntactic reason the rule fired.
+- [x] Rule message text names the actual smell and does not oversell confidence.
+- [x] Evidence strings point to the exact syntactic reason the rule fired.
 - [ ] Test-only code remains suppressed where intended.
 - [ ] Function-level heuristics do not silently rely on repository-wide state.
 - [ ] Parser changes needed for these rules are tracked separately from heuristic-message tuning.
@@ -157,13 +157,13 @@ Define a detailed implementation plan for improving the existing function-level 
 ## Acceptance Criteria
 
 - [ ] Every function-level heuristic has an explicit fixture owner and test owner.
-- [ ] Positive and negative fixture coverage exists for each rule family.
+- [x] Positive and negative fixture coverage exists for each rule family.
 - [ ] The function-level heuristic plan reflects only the rules that exist in `performance.rs` and `maintainability.rs`.
 - [ ] No plan item requires adding Python code to the application itself.
 
 ## Definition of Done
 
 - [ ] The function-level roadmap is grouped by current heuristic families.
-- [ ] Fixture creation is explicitly text-based.
-- [ ] Integration tests are planned around the new module split.
+- [x] Fixture creation is explicitly text-based.
+- [x] Integration tests are planned around the new module split.
 - [ ] The next implementation pass can be scheduled rule-family by rule-family without re-scoping the repo.
