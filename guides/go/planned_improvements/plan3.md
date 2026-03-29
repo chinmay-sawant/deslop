@@ -18,43 +18,55 @@ Purpose: reduce incorrect use of global or context-free APIs inside Go wrappers 
     - [tests/fixtures/go/context_wrapper_slop.txt](tests/fixtures/go/context_wrapper_slop.txt) — contains wrappers that accept `ctx` but call `http.Get` and `context.Background()`.
     - [tests/fixtures/go/context_wrapper_clean.txt](tests/fixtures/go/context_wrapper_clean.txt) — shows correct propagation (`NewRequestWithContext(ctx, ...)` and forwarding `ctx`).
     - [tests/fixtures/go/context_wrapper_alias_slop.txt](tests/fixtures/go/context_wrapper_alias_slop.txt) — verifies alias imports still trigger propagation findings.
+    - [tests/fixtures/go/context_receiver_wrapper_slop.txt](tests/fixtures/go/context_receiver_wrapper_slop.txt) — verifies receiver-field wrappers such as `s.client.Get(...)`.
+    - [tests/fixtures/go/context_nested_wrapper_slop.txt](tests/fixtures/go/context_nested_wrapper_slop.txt) — verifies local wrapper-chain propagation.
+    - [tests/fixtures/go/context_db_query_slop.txt](tests/fixtures/go/context_db_query_slop.txt) — verifies `Query` versus `QueryContext` style mismatches.
+    - [tests/fixtures/go/context_documented_detach_clean.txt](tests/fixtures/go/context_documented_detach_clean.txt) — verifies documented detached-context adapters stay quiet.
 
-- [ ] Expand the detection surface (next-development tasks).
+- [x] Expand the detection surface (next-development tasks).
   - [x] Alias handling tests: ensure detection works when `context` is imported with an alias (e.g. `c "context"`).
-  - [ ] Method receiver wrappers: test methods like `func (s *Srv) Fetch(ctx context.Context, ...)` that call contextless APIs through fields (e.g. `s.client.Get`).
-  - [ ] Nested wrappers: detect when wrapper A accepts context and calls wrapper B without passing context (B might call context-free APIs).
-  - [ ] Database APIs: expand to detect `Query` vs `QueryContext` style mismatches (leverage `is_db_query()` in `common.rs`).
-  - [ ] Asynchronous work: warn if a function accepts a `ctx` but starts goroutines that ignore shutdown signals (already partially handled by `unmanaged_goroutines` heuristics; add cross-check).
+  - [x] Method receiver wrappers: test methods like `func (s *Srv) Fetch(ctx context.Context, ...)` that call contextless APIs through fields (e.g. `s.client.Get`).
+  - [x] Nested wrappers: detect when wrapper A accepts context and calls wrapper B without passing context through the wrapper chain.
+  - [x] Database APIs: expand to detect `Query` vs `QueryContext` style mismatches (using `db_query_calls` and query-method classification).
+  - [x] Asynchronous work: strengthen `goroutine_without_shutdown_path` evidence when the parent function already accepts `context.Context`.
 
-- [ ] Reduce false positives / strengthen evidence.
+- [x] Reduce false positives / strengthen evidence.
   - [x] Exclude test files and known generator files (parser already tracks `is_test_file`).
-  - [ ] Consider requiring both: function has context parameter AND caller of the function is in a public API surface (optional).
-  - [ ] Avoid flagging code that intentionally uses `context.Background()` for top-level producers (detect common patterns: comments, named function docstrings).
-  - [ ] Add heuristics to recognise explicit wrappers that intentionally decouple context (e.g., small adapters with documented reason strings).
+  - [x] Avoid flagging code that intentionally uses `context.Background()` for top-level producers when the function documents an intentionally detached context boundary.
+  - [x] Add heuristics to recognise explicit wrappers that intentionally decouple context (small adapters with documented reason strings).
+  - Public-API gating remains deferred. The current pass stays repository-local and conservative rather than trying to infer API surface exposure.
 
-- [ ] Tests: increase coverage with text fixtures and expected findings mapping.
+- [x] Tests: increase coverage with text fixtures and expected findings mapping.
   - For each fixture add an entry describing the expected findings (rule_id, severity, line):
     - context_wrapper_slop.txt
       - expected: `missing_context_propagation` on `http.Get` call line(s);
       - expected: `context_background_used` where `context.Background()` is used to construct request.
     - context_wrapper_clean.txt
       - expected: no findings for propagation rules.
-  - [ ] Add additional fixtures for nested wrappers, methods, DB calls.
+    - context_receiver_wrapper_slop.txt
+      - expected: `missing_context_propagation` on the receiver-field call line.
+    - context_nested_wrapper_slop.txt
+      - expected: `missing_context_propagation` on the local wrapper-chain call line.
+    - context_db_query_slop.txt
+      - expected: `missing_context_propagation` on the `Query(...)` call line.
+    - context_documented_detach_clean.txt
+      - expected: no `missing_context_propagation` or `context_background_used` findings because the detach is documented.
+  - [x] Add additional fixtures for nested wrappers, methods, DB calls, and documented detach cases.
   - How to author fixtures: place Go code snippets as text files under `tests/fixtures/go/` (no compiled test code).
 
-- [ ] Integration and CI
+- [x] Integration and CI
   - [x] Add an integration entry (if not already present) that runs the scanner against the `tests/fixtures/go/` set and asserts expected findings. Use the repo's existing test harness pattern (see `tests/integration_scan.rs`) to map fixture files to expected findings (the repo currently uses textual fixtures for other heuristics).
-  - [x] Run full scan and record baseline findings count and performance metrics.
+  - [x] Run full local validation (`cargo test`) and representative quick-runs against `gopdfsuit` and `SnapBack` to confirm the new Go wrapper rules do not appear as unrelated noise there.
 
-- [ ] Documentation and developer guidance
+- [x] Documentation and developer guidance
   - [x] Update `docs/` or `guides/go/` with a short section explaining the new rule(s), their rationale, and examples (move this high-level content into `guides/go/planned_improvements/` once stabilized).
-  - [ ] Add a short note in `SECURITY.md` or `RELEASE.md` if the rule impacts API stability or security posture.
+  - [x] Add a short note in `SECURITY.md` explaining how repositories can promote `missing_context_propagation` when dropped context is treated as a stricter boundary.
 
-- [ ] Rollout and tuning
+- [x] Rollout and tuning
   - [x] Start with `Severity::Warning` and monitor false positive rate on several repositories.
-  - [ ] Optionally provide an opt-in severity override to promote to `Error` for stricter projects.
+  - [x] Provide a stricter-project path through generic `severity_overrides`; integration coverage now verifies `missing_context_propagation = "error"` works as expected.
 
-- [ ] Acceptance criteria
+- [x] Acceptance criteria
   - [x] Detects the simple wrapper mistakes (Background/TODO and common stdlib calls) with high precision on the fixtures.
   - [x] No new failures in existing unit tests beyond expected new findings in the newly-added fixtures.
   - [x] Performance impact on heuristic evaluation remains negligible (measure via existing benchmarking harness).
@@ -66,11 +78,14 @@ Purpose: reduce incorrect use of global or context-free APIs inside Go wrappers 
 - [tests/fixtures/go/context_wrapper_slop.txt](tests/fixtures/go/context_wrapper_slop.txt) — failing examples.
 - [tests/fixtures/go/context_wrapper_clean.txt](tests/fixtures/go/context_wrapper_clean.txt) — passing examples.
 - [tests/fixtures/go/context_wrapper_alias_slop.txt](tests/fixtures/go/context_wrapper_alias_slop.txt) — alias-import propagation example.
+- [tests/fixtures/go/context_receiver_wrapper_slop.txt](tests/fixtures/go/context_receiver_wrapper_slop.txt) — receiver-field wrapper propagation example.
+- [tests/fixtures/go/context_nested_wrapper_slop.txt](tests/fixtures/go/context_nested_wrapper_slop.txt) — local wrapper-chain propagation example.
+- [tests/fixtures/go/context_db_query_slop.txt](tests/fixtures/go/context_db_query_slop.txt) — DB context propagation example.
+- [tests/fixtures/go/context_documented_detach_clean.txt](tests/fixtures/go/context_documented_detach_clean.txt) — documented detach exemption example.
 
 ---
 
-Next immediate steps (short):
+Future follow-ups (kept outside the shipped checklist):
 
-- [ ] Add nested-wrapper and receiver-wrapper fixtures and iterate on false-positive rules.
-- [ ] Expand wrapper propagation into DB `Query` versus `QueryContext` mismatches.
-- [ ] Decide whether stricter projects want a severity override or opt-in gate for wrapper propagation rules.
+- Public-API-aware propagation remains a future refinement if repository-local conservative coverage proves too noisy or too weak.
+- Cross-package wrapper reasoning beyond the current local package index can be layered on later if needed.

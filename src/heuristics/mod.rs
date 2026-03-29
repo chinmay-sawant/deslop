@@ -16,6 +16,7 @@ mod test_quality;
 mod tests;
 
 use crate::analysis::ParsedFile;
+use crate::analysis::AnalysisConfig;
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
@@ -32,7 +33,7 @@ use self::hallucination::hallucination_findings;
 use self::naming::{generic_finding, overlong_finding, weak_finding};
 use self::performance::{
     alloc_findings, concat_findings, db_findings, fmt_findings, json_findings, load_findings,
-    reflect_findings,
+    n_squared_findings, reflect_findings,
 };
 use self::python::{python_file_findings, python_findings, python_repo_findings};
 use self::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};
@@ -67,7 +68,11 @@ pub(crate) fn evaluate_shared(files: &[ParsedFile], _index: &RepositoryIndex) ->
     findings
 }
 
-pub(crate) fn evaluate_go_file(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
+pub(crate) fn evaluate_go_file(
+    file: &ParsedFile,
+    index: &RepositoryIndex,
+    analysis_config: &AnalysisConfig,
+) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     findings.extend(tag_findings(file));
@@ -78,7 +83,7 @@ pub(crate) fn evaluate_go_file(file: &ParsedFile, index: &RepositoryIndex) -> Ve
         findings.extend(crypto_findings(file, function));
         findings.extend(sql_findings(file, function));
         findings.extend(ctx_findings(file, function));
-        findings.extend(propagate_findings(file, function));
+        findings.extend(propagate_findings(file, function, index));
         findings.extend(cancel_findings(file, function));
         findings.extend(sleep_findings(file, function));
         findings.extend(busy_findings(file, function));
@@ -89,8 +94,17 @@ pub(crate) fn evaluate_go_file(file: &ParsedFile, index: &RepositoryIndex) -> Ve
         findings.extend(fmt_findings(file, function));
         findings.extend(reflect_findings(file, function));
         findings.extend(concat_findings(file, function));
+        findings.extend(n_squared_findings(
+            file,
+            function,
+            analysis_config.enable_go_semantic,
+        ));
         findings.extend(json_findings(file, function));
-        findings.extend(db_findings(file, function));
+        findings.extend(db_findings(
+            file,
+            function,
+            analysis_config.enable_go_semantic,
+        ));
         findings.extend(load_findings(file, function));
         findings.extend(coordination_findings(file, function));
         findings.extend(hallucination_findings(file, function, index));

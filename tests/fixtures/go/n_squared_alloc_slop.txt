@@ -1,0 +1,14 @@
+// should trigger likely_n_squared_allocation because make is called inside a nested loop.
+package sample
+
+func Expand(rows [][]string) [][]byte {
+	out := make([][]byte, 0, len(rows))
+	for _, row := range rows {
+		for _, cell := range row {
+			buf := make([]byte, 0, len(cell))
+			buf = append(buf, cell...)
+			out = append(out, buf)
+		}
+	}
+	return out
+}

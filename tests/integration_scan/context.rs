@@ -308,3 +308,129 @@ fn test_context_wrapper_alias_slop() {
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn test_context_receiver_wrapper_slop() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "receiver_wrapper.go",
+        go_fixture!("context_receiver_wrapper_slop.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "missing_context_propagation"
+            && finding.function_name.as_deref() == Some("Fetch")
+    }));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_context_nested_wrapper_slop() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "nested_wrapper.go",
+        go_fixture!("context_nested_wrapper_slop.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "missing_context_propagation"
+            && finding.function_name.as_deref() == Some("Fetch")
+            && finding.message.contains("wrapper chain")
+    }));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_context_db_query_wrapper_slop() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "db_wrapper.go",
+        go_fixture!("context_db_query_slop.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "missing_context_propagation"
+            && finding.function_name.as_deref() == Some("Load")
+            && finding.message.contains("context-aware DB variant")
+    }));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_documented_context_detach_is_allowed() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "detach.go",
+        go_fixture!("context_documented_detach_clean.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report.findings.iter().any(|finding| {
+            matches!(
+                finding.rule_id.as_str(),
+                "missing_context_propagation" | "context_background_used"
+            )
+        })
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_context_propagation_severity_override() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "receiver_wrapper.go",
+        go_fixture!("context_receiver_wrapper_slop.txt"),
+    );
+    write_fixture(
+        &temp_dir,
+        ".deslop.toml",
+        "[severity_overrides]\nmissing_context_propagation = \"error\"\n",
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "missing_context_propagation"
+            && matches!(finding.severity, deslop::Severity::Error)
+    }));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

@@ -1,0 +1,20 @@
+// should trigger missing_context_propagation because the wrapper receives ctx but still uses Query instead of QueryContext.
+package sample
+
+import "context"
+
+type Rows interface{}
+
+type DB interface {
+	Query(string, ...any) (Rows, error)
+}
+
+type Store struct {
+	db DB
+}
+
+func (s *Store) Load(ctx context.Context, id int) error {
+	_ = ctx
+	_, err := s.db.Query("SELECT * FROM widgets WHERE id = ?", id)
+	return err
+}

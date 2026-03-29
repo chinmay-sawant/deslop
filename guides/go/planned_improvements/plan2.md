@@ -51,10 +51,11 @@ Purpose: A concise, actionable checklist for implementing a conservative, repo-l
   - [x] Add rule description to `guides/features-and-detections.md` and update frontend docs (`frontend/src/features/docs/DocsPage.tsx` assets) if desired.
   - [x] Set initial severity conservatively (Info/Warning) and consider gating via a feature flag or opt-in ruleset.
 
-- [ ] Follow-ups (future phases)
-  - [ ] Consider conservative interprocedural propagation of derived contexts (create/propagate context handles across helper calls and package boundaries).
-  - [ ] Replace simple text searches with AST-resolved detection of `ctx.Done()` in goroutine bodies.
-  - [ ] Add unit tests for parser helpers that populate `context_factory_calls` and `unmanaged_goroutines` if coverage gaps are discovered.
+Future follow-ups retained for a later pass:
+
+- Consider conservative interprocedural propagation of derived contexts across helper calls and package boundaries.
+- Replace the current text-shape shutdown detection with AST-resolved `ctx.Done()` matching inside goroutine bodies.
+- Add extra parser-helper unit tests if future changes expose gaps around `context_factory_calls` or `unmanaged_goroutines`.
 
 ## Short-term next actions
 

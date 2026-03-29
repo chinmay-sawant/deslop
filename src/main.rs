@@ -8,6 +8,8 @@ use std::path::PathBuf;
 use crate::cli::{format_scan_report, format_scan_report_json, print_benchmark_report};
 use deslop::{BenchmarkOptions, ScanOptions, benchmark_repository, scan_repository};
 
+const GO_SEMANTIC_ENV_VAR: &str = "DESLOP_ENABLE_GO_SEMANTIC";
+
 #[derive(Debug, Parser)]
 #[command(
     author,
@@ -29,6 +31,8 @@ enum Command {
         details: bool,
         #[arg(long)]
         no_ignore: bool,
+        #[arg(long)]
+        enable_semantic: bool,
         #[arg(long, value_delimiter = ',')]
         ignore: Vec<String>,
         /// Exit 0 even when findings are present (useful for informational runs).
@@ -45,6 +49,8 @@ enum Command {
         json: bool,
         #[arg(long)]
         no_ignore: bool,
+        #[arg(long)]
+        enable_semantic: bool,
     },
 }
 
@@ -57,9 +63,11 @@ fn main() -> Result<()> {
             json,
             details,
             no_ignore,
+            enable_semantic,
             ignore,
             no_fail,
         } => {
+            set_go_semantic_env(enable_semantic);
             let scan_root = path.clone();
             let mut report = scan_repository(&ScanOptions {
                 root: path,
@@ -96,7 +104,9 @@ fn main() -> Result<()> {
             warmups,
             json,
             no_ignore,
+            enable_semantic,
         } => {
+            set_go_semantic_env(enable_semantic);
             let bench_root = path.clone();
             let report = benchmark_repository(&BenchmarkOptions {
                 root: path,
@@ -115,4 +125,12 @@ fn main() -> Result<()> {
     }
 
     Ok(())
+}
+
+fn set_go_semantic_env(enable_semantic: bool) {
+    if enable_semantic {
+        unsafe {
+            std::env::set_var(GO_SEMANTIC_ENV_VAR, "1");
+        }
+    }
 }

@@ -209,3 +209,168 @@ fn test_streaming_ok() {
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn test_semantic_n_squared_rules_are_opt_in() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "alloc.go",
+        go_fixture!("n_squared_alloc_slop.txt"),
+    );
+    write_fixture(
+        &temp_dir,
+        "concat.go",
+        go_fixture!("n_squared_concat_slop.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report.findings.iter().any(|finding| {
+            matches!(
+                finding.rule_id.as_str(),
+                "likely_n_squared_allocation" | "likely_n_squared_string_concat"
+            )
+        })
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_semantic_n_squared_rules() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        ".deslop.toml",
+        "go_semantic_experimental = true\n",
+    );
+    write_fixture(
+        &temp_dir,
+        "alloc.go",
+        go_fixture!("n_squared_alloc_slop.txt"),
+    );
+    write_fixture(
+        &temp_dir,
+        "concat.go",
+        go_fixture!("n_squared_concat_slop.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "likely_n_squared_allocation"
+            && finding.function_name.as_deref() == Some("Expand")
+    }));
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "likely_n_squared_string_concat"
+            && finding.function_name.as_deref() == Some("Render")
+    }));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_semantic_n_squared_clean_fixtures() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        ".deslop.toml",
+        "go_semantic_experimental = true\n",
+    );
+    write_fixture(
+        &temp_dir,
+        "alloc.go",
+        go_fixture!("n_squared_alloc_clean.txt"),
+    );
+    write_fixture(
+        &temp_dir,
+        "concat.go",
+        go_fixture!("n_squared_concat_clean.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report.findings.iter().any(|finding| {
+            matches!(
+                finding.rule_id.as_str(),
+                "likely_n_squared_allocation" | "likely_n_squared_string_concat"
+            )
+        })
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_semantic_nested_query_escalation() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        ".deslop.toml",
+        "go_semantic_experimental = true\n",
+    );
+    write_fixture(
+        &temp_dir,
+        "query.go",
+        go_fixture!("n_squared_query_slop.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "n_plus_one_query"
+            && matches!(finding.severity, deslop::Severity::Error)
+            && finding.function_name.as_deref() == Some("Load")
+    }));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_semantic_nested_query_clean() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        ".deslop.toml",
+        "go_semantic_experimental = true\n",
+    );
+    write_fixture(
+        &temp_dir,
+        "query.go",
+        go_fixture!("n_squared_query_clean.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "n_plus_one_query")
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

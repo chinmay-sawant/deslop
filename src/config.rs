@@ -12,6 +12,7 @@ const CONFIG_FILE_NAME: &str = ".deslop.toml";
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
 #[serde(default)]
 pub(crate) struct RepoConfig {
+    pub go_semantic_experimental: bool,
     pub rust_async_experimental: bool,
     pub disabled_rules: Vec<String>,
     pub suppressed_paths: Vec<PathBuf>,
@@ -21,6 +22,7 @@ pub(crate) struct RepoConfig {
 impl Default for RepoConfig {
     fn default() -> Self {
         Self {
+            go_semantic_experimental: false,
             rust_async_experimental: true,
             disabled_rules: Vec::new(),
             suppressed_paths: Vec::new(),
@@ -93,11 +95,12 @@ mod tests {
         let root = temp_dir("toml");
         fs::write(
             root.join(".deslop.toml"),
-            "rust_async_experimental = false\ndisabled_rules = [\"panic_macro_leftover\"]\nsuppressed_paths = [\"tests/fixtures\"]\n[severity_overrides]\nunwrap_in_non_test_code = \"error\"\n",
+            "go_semantic_experimental = true\nrust_async_experimental = false\ndisabled_rules = [\"panic_macro_leftover\"]\nsuppressed_paths = [\"tests/fixtures\"]\n[severity_overrides]\nunwrap_in_non_test_code = \"error\"\n",
         )
         .expect("config file should be written");
 
         let config = load_repository_config(&root).expect("config should parse");
+        assert!(config.go_semantic_experimental);
         assert!(!config.rust_async_experimental);
         assert_eq!(
             config.disabled_rules,

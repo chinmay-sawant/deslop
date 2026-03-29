@@ -3,6 +3,7 @@
 ## split_at_and_indexing
 src/analysis/python/parser/general.rs:805:                return &line[..index];
 src/analysis/rust/parser.rs:912:    text[vec_start + 4..].contains("Box<")
+src/heuristics/performance.rs:342:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/rust/performance.rs:305:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:312:    line[start + marker.len()..].starts_with('/')
 src/heuristics/rust/performance.rs:350:                let receiver = &line[start..index];
@@ -24,6 +25,7 @@ tests/integration_scan/security.rs:72:            .any(|finding| finding.rule_id
 ## unsafe_globals
 
 ## derive_default
+src/analysis/mod.rs:23:#[derive(Debug, Clone, Copy, Default)]
 
 ## thread_spawn_async
 

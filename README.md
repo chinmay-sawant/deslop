@@ -18,6 +18,7 @@ By default, scan output prints the scan summary plus the standard finding set. D
 Repository-local scan behavior can be tuned with a `.deslop.toml` file at the scan root:
 
 ```toml
+go_semantic_experimental = false
 rust_async_experimental = true
 disabled_rules = ["panic_macro_leftover"]
 suppressed_paths = ["tests/fixtures"]
@@ -26,7 +27,11 @@ suppressed_paths = ["tests/fixtures"]
 expect_in_non_test_code = "error"
 ```
 
-`rust_async_experimental = false` disables the Rust async rule pack for that repository. `disabled_rules` removes matching rule ids entirely, `suppressed_paths` filters findings under matching relative path prefixes after analysis, and `severity_overrides` rewrites the emitted severity after analysis.
+`go_semantic_experimental = true` enables the opt-in deeper semantic Go heuristics such as nested-loop allocation/string-build checks and stronger nested N+1 escalation. 
+`rust_async_experimental = false` disables the Rust async rule pack for that repository. 
+`disabled_rules` removes matching rule ids entirely, 
+`suppressed_paths` filters findings under matching relative path prefixes after analysis, and 
+`severity_overrides` rewrites the emitted severity after analysis.
 
 You can also ignore rule ids for a single scan invocation without changing repository config:
 
@@ -40,6 +45,12 @@ Run the same scan with JSON output:
 
 ```bash
 cargo run -- scan --json /path/to/repo
+```
+
+Enable the opt-in deeper semantic Go checks for a single run:
+
+```bash
+cargo run -- scan --enable-semantic /path/to/go-repo
 ```
 
 Show full per-function fingerprint details and detail-only findings in either text or JSON output:
@@ -138,8 +149,15 @@ Inputs:
 - `json`: Set to `true` to emit JSON output.
 - `details`: Set to `true` to include detail-only findings for `scan`.
 - `no-ignore`: Set to `true` to ignore `.gitignore` filtering.
+- `enable-semantic`: Set to `true` to enable the opt-in deeper semantic Go rule pack.
 - `repeats`: Benchmark repeat count for `bench`. Defaults to `5`.
 - `warmups`: Benchmark warmup count for `bench`. Defaults to `1`.
+
+## Recent Go additions
+
+- Wrapper propagation now covers receiver-field clients, local wrapper chains, and `Query` versus `QueryContext`-style mismatches when a function already accepts `context.Context`.
+- Functions that intentionally detach from request context can document that boundary and avoid the propagation warning.
+- The opt-in semantic Go pack adds `likely_n_squared_allocation`, `likely_n_squared_string_concat`, and stronger nested-loop correlation for `n_plus_one_query`.
 
 ## Development
 

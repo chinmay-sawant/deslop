@@ -1,5 +1,5 @@
 name: run-deslop
-description: Scan Go repositories for likely AI-generated slop patterns.
+description: Scan Go, Python, and Rust repositories for likely AI-generated slop patterns.
 author: chinmay-sawant
 
 inputs:
@@ -25,6 +25,10 @@ inputs:
     default: 'false'
   no-ignore:
     description: Scan without respecting .gitignore.
+    required: false
+    default: 'false'
+  enable-semantic:
+    description: Enable the opt-in deeper semantic Go heuristics.
     required: false
     default: 'false'
   fail-on-findings:
@@ -73,6 +77,7 @@ runs:
         DESLOP_JSON: ${{ inputs.json }}
         DESLOP_DETAILS: ${{ inputs.details }}
         DESLOP_NO_IGNORE: ${{ inputs.no-ignore }}
+        DESLOP_ENABLE_SEMANTIC: ${{ inputs.enable-semantic }}
         DESLOP_FAIL_ON_FINDINGS: ${{ inputs.fail-on-findings }}
         DESLOP_REPEATS: ${{ inputs.repeats }}
         DESLOP_WARMUPS: ${{ inputs.warmups }}
@@ -96,6 +101,10 @@ runs:
               args+=(--no-ignore)
             fi
 
+            if [[ "$DESLOP_ENABLE_SEMANTIC" == 'true' ]]; then
+              args+=(--enable-semantic)
+            fi
+
             if [[ "${DESLOP_FAIL_ON_FINDINGS:-true}" != 'true' ]]; then
               args+=(--no-fail)
             fi
@@ -109,6 +118,10 @@ runs:
 
             if [[ "$DESLOP_NO_IGNORE" == 'true' ]]; then
               args+=(--no-ignore)
+            fi
+
+            if [[ "$DESLOP_ENABLE_SEMANTIC" == 'true' ]]; then
+              args+=(--enable-semantic)
             fi
 
             args+=(--repeats "$DESLOP_REPEATS" --warmups "$DESLOP_WARMUPS")
@@ -131,6 +144,7 @@ runs:
         DESLOP_JSON: ${{ inputs.json }}
         DESLOP_DETAILS: ${{ inputs.details }}
         DESLOP_NO_IGNORE: ${{ inputs.no-ignore }}
+        DESLOP_ENABLE_SEMANTIC: ${{ inputs.enable-semantic }}
         DESLOP_FAIL_ON_FINDINGS: ${{ inputs.fail-on-findings }}
         DESLOP_REPEATS: ${{ inputs.repeats }}
         DESLOP_WARMUPS: ${{ inputs.warmups }}
@@ -154,6 +168,10 @@ runs:
               $args += '--no-ignore'
             }
 
+            if ($env:DESLOP_ENABLE_SEMANTIC -eq 'true') {
+              $args += '--enable-semantic'
+            }
+
             $failOnFindings = if ($env:DESLOP_FAIL_ON_FINDINGS) { $env:DESLOP_FAIL_ON_FINDINGS } else { 'true' }
             if ($failOnFindings -ne 'true') {
               $args += '--no-fail'
@@ -168,6 +186,10 @@ runs:
 
             if ($env:DESLOP_NO_IGNORE -eq 'true') {
               $args += '--no-ignore'
+            }
+
+            if ($env:DESLOP_ENABLE_SEMANTIC -eq 'true') {
+              $args += '--enable-semantic'
             }
 
             $args += '--repeats'

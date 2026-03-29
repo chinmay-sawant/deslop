@@ -118,15 +118,24 @@ pub(super) fn json_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
         .collect()
 }
 
-pub(super) fn db_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn db_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    enable_go_semantic: bool,
+) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let nested_loop_signal = enable_go_semantic && has_nested_loop_signal(&function.body_text);
 
     for query_call in &function.db_query_calls {
         if query_call.in_loop && query_call.method_name != "Preload" {
             let receiver = query_call.receiver.as_deref().unwrap_or("<unknown>");
             findings.push(Finding {
                 rule_id: "n_plus_one_query".to_string(),
-                severity: Severity::Warning,
+                severity: if nested_loop_signal {
+                    Severity::Error
+                } else {
+                    Severity::Warning
+                },
                 path: file.path.clone(),
                 function_name: Some(function.fingerprint.name.clone()),
                 start_line: query_call.line,
@@ -138,6 +147,12 @@ pub(super) fn db_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
                 evidence: vec![
                     format!("looped query method: {receiver}.{}", query_call.method_name),
                     "query execution inside loops often turns into N+1 access patterns".to_string(),
+                    if nested_loop_signal {
+                        "semantic opt-in correlated this query with nested loop structure, which makes multiplicative query growth more likely"
+                            .to_string()
+                    } else {
+                        "no nested-loop correlation was required for the baseline warning".to_string()
+                    },
                 ],
             });
         }
@@ -187,6 +202,187 @@ pub(super) fn db_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
     }
 
     findings
+}
+
+/// Returns opt-in deeper semantic findings that correlate existing loop evidence with
+/// nested-loop structure from the parsed function body. The findings stay conservative:
+/// they only fire when the function already showed loop-local allocation or string
+/// concatenation signals, and the evidence explicitly calls out the uncertainty.
+pub(super) fn n_squared_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    enable_go_semantic: bool,
+) -> Vec<Finding> {
+    if !enable_go_semantic || !has_nested_loop_signal(&function.body_text) {
+        return Vec::new();
+    }
+
+    let mut findings = likely_n_squared_allocation_findings(file, function);
+    findings.extend(likely_n_squared_string_concat_findings(file, function));
+    findings
+}
+
+/// Flags likely O(n^2) allocation churn when the parser already saw allocation sites inside
+/// loops and a lightweight nested-loop scan of the function body confirms loop nesting.
+/// This remains a heuristic because preallocation or small bounded inputs may make the code acceptable.
+fn likely_n_squared_allocation_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    function
+        .alloc_loops
+        .iter()
+        .map(|line| Finding {
+            rule_id: "likely_n_squared_allocation".to_string(),
+            severity: Severity::Warning,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} appears to allocate inside a nested loop",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("allocation observed inside a loop at line {line}"),
+                "nested loop structure was also detected in the same function body".to_string(),
+                "this is conservative: preallocation or small bounded inputs may still make the code acceptable"
+                    .to_string(),
+                "consider preallocating outside the inner loop or flattening repeated traversal"
+                    .to_string(),
+            ],
+        })
+        .collect()
+}
+
+/// Flags likely O(n^2) string building when repeated concatenation appears in a nested loop
+/// and the function body does not show obvious strings.Builder or bytes.Buffer usage.
+fn likely_n_squared_string_concat_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if has_builder_usage(&function.body_text) {
+        return Vec::new();
+    }
+
+    function
+        .concat_loops
+        .iter()
+        .map(|line| Finding {
+            rule_id: "likely_n_squared_string_concat".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *line,
+            end_line: *line,
+            message: format!(
+                "function {} appears to concatenate strings inside a nested loop",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("string concatenation observed inside a loop at line {line}"),
+                "nested loop structure was also detected in the same function body".to_string(),
+                "no obvious strings.Builder or bytes.Buffer usage was detected nearby".to_string(),
+                "consider strings.Builder, bytes.Buffer, or a pre-sized byte slice for repeated inner-loop string assembly"
+                    .to_string(),
+            ],
+        })
+        .collect()
+}
+
+fn has_nested_loop_signal(body_text: &str) -> bool {
+    let mut brace_depth = 0usize;
+    let mut active_loop_exit_depths = Vec::new();
+
+    for raw_line in body_text.lines() {
+        let line = raw_line.split("//").next().unwrap_or("");
+        let closing_braces = line.chars().filter(|character| *character == '}').count();
+        for _ in 0..closing_braces {
+            brace_depth = brace_depth.saturating_sub(1);
+            while active_loop_exit_depths
+                .last()
+                .is_some_and(|exit_depth| *exit_depth > brace_depth)
+            {
+                active_loop_exit_depths.pop();
+            }
+        }
+
+        if contains_keyword(line, "for") {
+            if !active_loop_exit_depths.is_empty() {
+                return true;
+            }
+
+            let opening_braces = line.chars().filter(|character| *character == '{').count();
+            active_loop_exit_depths.push(brace_depth + opening_braces.max(1));
+        }
+
+        brace_depth += line.chars().filter(|character| *character == '{').count();
+    }
+
+    false
+}
+
+fn has_builder_usage(body_text: &str) -> bool {
+    let normalized = body_text.replace(char::is_whitespace, "");
+    normalized.contains("strings.Builder")
+        || normalized.contains("bytes.Buffer")
+        || normalized.contains("Builder{}")
+        || normalized.contains("Buffer{}")
+}
+
+fn contains_keyword(line: &str, keyword: &str) -> bool {
+    let bytes = line.as_bytes();
+    let keyword_bytes = keyword.as_bytes();
+
+    if keyword_bytes.is_empty() || bytes.len() < keyword_bytes.len() {
+        return false;
+    }
+
+    for start in 0..=bytes.len() - keyword_bytes.len() {
+        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+            continue;
+        }
+
+        let left_ok = start == 0 || !bytes[start - 1].is_ascii_alphanumeric() && bytes[start - 1] != b'_';
+        let right_index = start + keyword_bytes.len();
+        let right_ok = right_index == bytes.len()
+            || !bytes[right_index].is_ascii_alphanumeric() && bytes[right_index] != b'_';
+
+        if left_ok && right_ok {
+            return true;
+        }
+    }
+
+    false
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{contains_keyword, has_builder_usage, has_nested_loop_signal};
+
+    #[test]
+    fn detects_nested_loop_signal() {
+        let body = "{\nfor _, row := range rows {\n    for _, cell := range row {\n        _ = cell\n    }\n}\n}";
+        assert!(has_nested_loop_signal(body));
+    }
+
+    #[test]
+    fn ignores_sequential_loops() {
+        let body = "{\nfor _, row := range rows {\n    _ = row\n}\nfor _, cell := range cells {\n    _ = cell\n}\n}";
+        assert!(!has_nested_loop_signal(body));
+    }
+
+    #[test]
+    fn detects_builder_usage_markers() {
+        assert!(has_builder_usage("{\nvar builder strings.Builder\n}\n"));
+        assert!(has_builder_usage("{\nvar buf bytes.Buffer\n}\n"));
+    }
+
+    #[test]
+    fn matches_keyword_boundaries() {
+        assert!(contains_keyword("for _, item := range items {", "for"));
+        assert!(!contains_keyword("formatValue()", "for"));
+    }
 }
 
 pub(super) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {

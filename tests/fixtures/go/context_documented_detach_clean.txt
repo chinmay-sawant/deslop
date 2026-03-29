@@ -1,0 +1,15 @@
+// should not trigger propagation findings because the function documents an intentionally detached context boundary.
+package sample
+
+import (
+	"context"
+	"net/http"
+)
+
+func Fetch(ctx context.Context, url string) (*http.Response, error) {
+	// Intentionally detached background worker: this call must survive request cancellation.
+	_ = ctx
+	detached := context.Background()
+	_ = detached
+	return http.Get(url)
+}

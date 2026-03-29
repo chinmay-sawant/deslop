@@ -20,6 +20,11 @@ pub(crate) use types::{
     TestFunctionSummary, UnsafePattern, UnsafePatternKind,
 };
 
+#[derive(Debug, Clone, Copy, Default)]
+pub(crate) struct AnalysisConfig {
+    pub enable_go_semantic: bool,
+}
+
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum Language {
@@ -37,11 +42,21 @@ pub(crate) trait LanguageBackend: Send + Sync {
 
     fn parse_file(&self, path: &Path, source: &str) -> Result<ParsedFile>;
 
-    fn evaluate_file(&self, _file: &ParsedFile, _index: &RepositoryIndex) -> Vec<Finding> {
+    fn evaluate_file(
+        &self,
+        _file: &ParsedFile,
+        _index: &RepositoryIndex,
+        _analysis_config: &AnalysisConfig,
+    ) -> Vec<Finding> {
         Vec::new()
     }
 
-    fn evaluate_repo(&self, _files: &[&ParsedFile], _index: &RepositoryIndex) -> Vec<Finding> {
+    fn evaluate_repo(
+        &self,
+        _files: &[&ParsedFile],
+        _index: &RepositoryIndex,
+        _analysis_config: &AnalysisConfig,
+    ) -> Vec<Finding> {
         Vec::new()
     }
 }

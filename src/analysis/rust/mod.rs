@@ -3,7 +3,7 @@ mod parser;
 use std::collections::BTreeMap;
 use std::path::Path;
 
-use crate::analysis::{ImportSpec, ParsedFunction};
+use crate::analysis::{AnalysisConfig, ImportSpec, ParsedFunction};
 use crate::analysis::{Language, LanguageBackend, ParsedFile};
 use crate::heuristics::rust::{
     async_file_findings, async_function_findings, domain_findings, performance_file_findings,
@@ -32,7 +32,12 @@ impl LanguageBackend for RustAnalyzer {
         parser::parse_file(path, source).map_err(crate::Error::from)
     }
 
-    fn evaluate_file(&self, file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
+    fn evaluate_file(
+        &self,
+        file: &ParsedFile,
+        index: &RepositoryIndex,
+        _analysis_config: &AnalysisConfig,
+    ) -> Vec<Finding> {
         evaluate_rust_findings(file, index)
     }
 }
