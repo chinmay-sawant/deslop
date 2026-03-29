@@ -10,8 +10,6 @@ src/heuristics/rust/performance.rs:350:                let receiver = &line[star
 ## toctou_fs_checks
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
-tests/integration_scan/python.rs:839:def fetch_metadata(payload):
-tests/integration_scan/python.rs:849:    payload = fetch_metadata(payload)
 
 ## toctou_check_then_open
 
