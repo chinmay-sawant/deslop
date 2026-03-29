@@ -286,8 +286,45 @@ pub(crate) fn performance_file_findings(file: &ParsedFile) -> Vec<Finding> {
 }
 
 fn contains_default_hashmap_ctor(line: &str) -> bool {
-    line.contains(HASHMAP_PREFIX)
-        && (line.contains(HASHMAP_NEW_SUFFIX) || line.contains(HASHMAP_DEFAULT_SUFFIX))
+    let normalized = strip_double_quoted_strings(line).replace(char::is_whitespace, "");
+
+    normalized.contains("HashMap::new(")
+        || normalized.contains("HashMap::default(")
+        || (normalized.contains(HASHMAP_PREFIX)
+            && (normalized.contains(&format!("<{HASHMAP_NEW_SUFFIX}("))
+                || normalized.contains(&format!("<{HASHMAP_DEFAULT_SUFFIX}("))))
+}
+
+fn strip_double_quoted_strings(line: &str) -> String {
+    let mut stripped = String::with_capacity(line.len());
+    let mut in_string = false;
+    let mut escaped = false;
+
+    for character in line.chars() {
+        if in_string {
+            if escaped {
+                escaped = false;
+                continue;
+            }
+
+            match character {
+                '\\' => escaped = true,
+                '"' => in_string = false,
+                _ => {}
+            }
+
+            continue;
+        }
+
+        if character == '"' {
+            in_string = true;
+            continue;
+        }
+
+        stripped.push(character);
+    }
+
+    stripped
 }
 
 fn contains_absolute_join(line: &str) -> bool {
@@ -354,4 +391,25 @@ fn repeated_receiver_field_accesses(body: &str) -> usize {
     }
 
     counts.into_values().max().unwrap_or(0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{contains_default_hashmap_ctor, strip_double_quoted_strings};
+
+    #[test]
+    fn strips_double_quoted_strings_before_text_matching() {
+        assert_eq!(
+            strip_double_quoted_strings("let msg = \"HashMap::new(\";"),
+            "let msg = ;"
+        );
+    }
+
+    #[test]
+    fn ignores_hashmap_markers_inside_strings() {
+        assert!(!contains_default_hashmap_ctor(
+            "let msg = \"HashMap::new(\";"
+        ));
+        assert!(contains_default_hashmap_ctor("let map = HashMap::new();"));
+    }
 }

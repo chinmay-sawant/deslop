@@ -314,3 +314,33 @@ func buildUser() *User { return &User{} }
         Some(2)
     );
 }
+
+#[test]
+fn test_imports_preserve_source_order_and_lines() {
+    let source = r#"package sample
+
+import (
+    "github.com/acme/widgets"
+    "fmt"
+    "strings"
+)
+
+func Run() {}
+"#;
+
+    let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
+    let imports = parsed
+        .imports
+        .iter()
+        .map(|import| (import.path.as_str(), import.line, import.group_line))
+        .collect::<Vec<_>>();
+
+    assert_eq!(
+        imports,
+        vec![
+            ("github.com/acme/widgets", 4, 3),
+            ("fmt", 5, 3),
+            ("strings", 6, 3),
+        ]
+    );
+}

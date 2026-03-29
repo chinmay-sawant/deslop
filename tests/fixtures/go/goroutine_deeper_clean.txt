@@ -1,0 +1,20 @@
+package sample
+
+import "context"
+
+func Run(parent context.Context) {
+	ctx, cancel := context.WithCancel(parent)
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				return
+			}
+		}
+	}()
+
+	cancel()
+}

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>deslop</title>
+    <script>
+      (function () {
+        var path = window.location.pathname
+        var baseEnd = path.indexOf('/', 1)
+        var base = baseEnd > 0 ? path.slice(0, baseEnd + 1) : '/'
+        var redirect = base + '?p=' + encodeURIComponent(path + window.location.search + window.location.hash)
+        window.location.replace(redirect)
+      })()
+    </script>
+  </head>
+  <body></body>
+</html>

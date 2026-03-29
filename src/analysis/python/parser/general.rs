@@ -215,12 +215,15 @@ fn visit_imports(node: Node<'_>, source: &str, imports: &mut Vec<ImportSpec>) {
     match node.kind() {
         "import_statement" => {
             if let Some(text) = source.get(node.byte_range()) {
-                imports.extend(parse_import_statement_text(text));
+                imports.extend(parse_import_statement_text(
+                    text,
+                    node.start_position().row + 1,
+                ));
             }
         }
         "import_from_statement" => {
             if let Some(text) = source.get(node.byte_range()) {
-                imports.extend(parse_import_from_stmt(text));
+                imports.extend(parse_import_from_stmt(text, node.start_position().row + 1));
             }
         }
         _ => {}
@@ -232,7 +235,7 @@ fn visit_imports(node: Node<'_>, source: &str, imports: &mut Vec<ImportSpec>) {
     }
 }
 
-fn parse_import_statement_text(text: &str) -> Vec<ImportSpec> {
+fn parse_import_statement_text(text: &str, line: usize) -> Vec<ImportSpec> {
     let normalized = normalize_import_text(text);
     let Some(rest) = normalized.strip_prefix("import ") else {
         return Vec::new();
@@ -247,6 +250,8 @@ fn parse_import_statement_text(text: &str) -> Vec<ImportSpec> {
             }
 
             Some(ImportSpec {
+                line,
+                group_line: line,
                 alias,
                 path: path.clone(),
                 namespace_path: namespace_path(&path),
@@ -257,7 +262,7 @@ fn parse_import_statement_text(text: &str) -> Vec<ImportSpec> {
         .collect()
 }
 
-fn parse_import_from_stmt(text: &str) -> Vec<ImportSpec> {
+fn parse_import_from_stmt(text: &str, line: usize) -> Vec<ImportSpec> {
     let normalized = normalize_import_text(text);
     let Some(rest) = normalized.strip_prefix("from ") else {
         return Vec::new();
@@ -281,6 +286,8 @@ fn parse_import_from_stmt(text: &str) -> Vec<ImportSpec> {
             };
 
             Some(ImportSpec {
+                line,
+                group_line: line,
                 alias,
                 path: full_path,
                 namespace_path: Some(module_path.to_string()),

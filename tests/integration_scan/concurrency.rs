@@ -133,3 +133,53 @@ fn test_no_slop() {
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn test_deeper_goroutine_lifetime() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "goroutine_deeper.go",
+        go_fixture!("goroutine_deeper_slop.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "goroutine_derived_context_unmanaged")
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_deeper_goroutine_lifetime_clean() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "goroutine_deeper.go",
+        go_fixture!("goroutine_deeper_clean.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "goroutine_derived_context_unmanaged")
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

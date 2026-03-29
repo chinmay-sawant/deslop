@@ -53,7 +53,7 @@ export function HeroSection() {
           </h1>
           <br/>
           <p className="mt-10 mx-auto w-full max-w-2xl text-[1.15rem] leading-[1.8] text-[var(--muted)] sm:text-[1.35rem] text-center">
-            A lightning-fast static analyzer that flags AI-generated code smells across Python, Rust, and Go. It surfaces suspicious patterns with readable evidence, giving engineers absolute confidence when reviewing synthetic code.
+            A lightning-fast static analyzer that flags AI-generated code smells across Python, Rust, and Go. It surfaces suspicious patterns with readable evidence, including Go wrapper propagation and opt-in nested-loop pressure checks when you want stronger review signal.
           </p>
         </div>
 

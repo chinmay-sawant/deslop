@@ -180,6 +180,8 @@ pub(crate) struct ExceptionHandler {
 
 #[derive(Debug, Clone)]
 pub(crate) struct ImportSpec {
+    pub line: usize,
+    pub group_line: usize,
     pub alias: String,
     pub path: String,
     pub namespace_path: Option<String>,

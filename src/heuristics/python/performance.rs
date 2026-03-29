@@ -300,8 +300,7 @@ pub(super) fn repeated_len_findings(file: &ParsedFile, function: &ParsedFunction
             ),
             evidence: vec![
                 "pattern=repeated_len_checks_inside_loop".to_string(),
-                "suggestion=cache the length locally when the container is unchanged"
-                    .to_string(),
+                "suggestion=cache the length locally when the container is unchanged".to_string(),
             ],
         })
         .collect()

@@ -26,6 +26,12 @@ pub(super) fn shutdown_findings(file: &ParsedFile, function: &ParsedFunction) ->
                 "go func literal contains a loop".to_string(),
                 "no ctx.Done() or done-channel shutdown signal was observed in the goroutine body"
                     .to_string(),
+                if function.has_context_parameter {
+                    "the parent function already accepts context.Context, so the goroutine likely skipped an available shutdown signal"
+                        .to_string()
+                } else {
+                    "no parent context parameter was available for the goroutine to observe".to_string()
+                },
             ],
         })
         .collect()
@@ -145,6 +151,105 @@ pub(super) fn coordination_findings(file: &ParsedFile, function: &ParsedFunction
                 .to_string(),
         ],
     }));
+
+    findings
+}
+
+pub(super) fn deeper_goroutine_lifetime_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.context_factory_calls.is_empty()
+        || (function.loop_goroutines.is_empty() && function.unmanaged_goroutines.is_empty())
+    {
+        return Vec::new();
+    }
+
+    let loop_goroutines = function
+        .loop_goroutines
+        .iter()
+        .copied()
+        .collect::<BTreeSet<_>>();
+    let unmanaged_goroutines = function
+        .unmanaged_goroutines
+        .iter()
+        .copied()
+        .collect::<BTreeSet<_>>();
+    let candidate_lines = loop_goroutines
+        .union(&unmanaged_goroutines)
+        .copied()
+        .collect::<Vec<_>>();
+
+    let mut findings = Vec::new();
+
+    for goroutine_line in candidate_lines {
+        let Some(factory_call) = function
+            .context_factory_calls
+            .iter()
+            .filter(|factory_call| factory_call.line < goroutine_line)
+            .max_by_key(|factory_call| factory_call.line)
+        else {
+            continue;
+        };
+
+        let earliest_cancel = function
+            .calls
+            .iter()
+            .filter(|call| {
+                call.receiver.is_none()
+                    && call.name == factory_call.cancel_name
+                    && call.line > factory_call.line
+            })
+            .map(|call| call.line)
+            .min();
+
+        if earliest_cancel.is_some_and(|cancel_line| goroutine_line >= cancel_line) {
+            continue;
+        }
+
+        let severity = if unmanaged_goroutines.contains(&goroutine_line) {
+            Severity::Warning
+        } else {
+            Severity::Info
+        };
+        let goroutine_shape = if unmanaged_goroutines.contains(&goroutine_line) {
+            "goroutine literal loops without an obvious shutdown path"
+        } else {
+            "goroutine launch occurs inside a loop"
+        };
+        let cancel_evidence = match earliest_cancel {
+            Some(cancel_line) => format!(
+                "earliest {}() observed at line {} after the goroutine launch",
+                factory_call.cancel_name, cancel_line
+            ),
+            None => format!(
+                "no local {}() call was observed after the derived context was created",
+                factory_call.cancel_name
+            ),
+        };
+
+        findings.push(Finding {
+            rule_id: "goroutine_derived_context_unmanaged".to_string(),
+            severity,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: goroutine_line,
+            end_line: goroutine_line,
+            message: format!(
+                "function {} launches a likely long-lived goroutine after deriving context but before {}()",
+                function.fingerprint.name, factory_call.cancel_name
+            ),
+            evidence: vec![
+                format!(
+                    "context.{} assigns cancel function {} at line {}",
+                    factory_call.factory_name, factory_call.cancel_name, factory_call.line
+                ),
+                format!("goroutine launch observed at line {goroutine_line}"),
+                goroutine_shape.to_string(),
+                cancel_evidence,
+            ],
+        });
+    }
 
     findings
 }

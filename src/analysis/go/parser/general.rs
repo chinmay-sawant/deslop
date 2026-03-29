@@ -48,11 +48,6 @@ pub(super) fn extract_call_target(
 pub(super) fn collect_imports(root: Node<'_>, source: &str) -> Vec<ImportSpec> {
     let mut imports = Vec::new();
     visit_imports(root, source, &mut imports);
-    imports.sort_by(|left, right| {
-        left.alias
-            .cmp(&right.alias)
-            .then(left.path.cmp(&right.path))
-    });
     imports
 }
 
@@ -80,6 +75,12 @@ fn parse_import_spec(node: Node<'_>, source: &str) -> Option<ImportSpec> {
         .unwrap_or_else(|| alias_from_path(&path));
 
     Some(ImportSpec {
+        line: node.start_position().row + 1,
+        group_line: node
+            .parent()
+            .map_or(node.start_position().row + 1, |parent| {
+                parent.start_position().row + 1
+            }),
         alias,
         path,
         namespace_path: None,

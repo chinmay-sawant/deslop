@@ -23,6 +23,11 @@ This repository uses static checks, bounded I/O, and CI linting to reduce unsafe
 - Avoid deriving `Debug`, `Serialize`, or `Deserialize` on secret-bearing types without explicit review.
 - Prefer redaction or wrapper types for secret-bearing fields.
 
+## Go Context Boundaries
+
+- Go wrapper propagation now flags context-free HTTP, exec, network, and DB wrapper calls when the surrounding function already accepts `context.Context`.
+- Repositories that treat dropped context propagation as a release or security concern can promote `missing_context_propagation` with `.deslop.toml` `severity_overrides`.
+
 ## Filesystem Safety
 
 - Repository scan roots are canonicalized before discovery so symlinked files cannot escape the requested root.

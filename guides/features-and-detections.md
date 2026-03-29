@@ -14,7 +14,7 @@ deslop is a static analyzer for Go, Python, and Rust repositories that looks for
 - `cargo run -- scan --json <path>` prints structured JSON.
 - `cargo run -- bench <path>` benchmarks the end-to-end pipeline.
 
-Repository-local scan behavior can also be tuned with `.deslop.toml`, including `disabled_rules`, `severity_overrides`, `suppressed_paths`, and `rust_async_experimental`.
+Repository-local scan behavior can also be tuned with `.deslop.toml`, including `disabled_rules`, `severity_overrides`, `suppressed_paths`, `go_semantic_experimental`, and `rust_async_experimental`.
 
 ### Repository handling
 
@@ -175,6 +175,8 @@ Python also reuses shared signals when the parser evidence supports them, includ
 
 ### Consistency and tag signals
 
+- `inconsistent_package_name`: files in the same Go directory resolve to different base package names after ignoring the `_test` suffix.
+- `misgrouped_imports`: a Go import block places stdlib imports after third-party imports.
 - `mixed_receiver_kinds`: methods on the same receiver type mix pointer and value receivers.
 - `malformed_struct_tag`: struct field tags that do not parse as valid Go tag key/value pairs.
 - `duplicate_struct_tag_key`: struct field tags that repeat the same key more than once.
@@ -182,6 +184,9 @@ Python also reuses shared signals when the parser evidence supports them, includ
 ### Context and blocking signals
 
 - `missing_context`: obvious standard-library context-aware calls such as `http.Get`, `http.NewRequest`, `exec.Command`, or `net.Dial` made from functions that do not accept `context.Context`.
+- `missing_context_propagation`: functions that already accept `context.Context` but still call context-free stdlib APIs such as `http.Get`, `http.NewRequest`, `exec.Command`, or `net.Dial`.
+- `missing_context_propagation`: now also covers receiver-field wrappers, local wrapper chains, and `Query` versus `QueryContext`-style DB mismatches when the enclosing function already accepts `context.Context`.
+- `context_background_used`: functions that already accept `context.Context` but still create `context.Background()` or `context.TODO()` locally instead of forwarding the incoming context.
 - `missing_cancel_call`: derived contexts created with `context.WithCancel`, `context.WithTimeout`, or `context.WithDeadline` where deslop cannot find a local `cancel()` or `defer cancel()` call.
 - `sleep_polling`: `time.Sleep` inside loops, which often indicates polling or busy-wait style code.
 - `busy_waiting`: `select { default: ... }` inside loops, which often spins instead of blocking on a channel, timer, or context.
@@ -189,8 +194,10 @@ Python also reuses shared signals when the parser evidence supports them, includ
 ### Performance signals
 
 - `string_concat_in_loop`: repeated string concatenation inside loops when the function is clearly building a string value incrementally.
+- `likely_n_squared_string_concat`: opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.
 - `repeated_json_marshaling`: `encoding/json.Marshal` or `MarshalIndent` inside loops, which can turn iterative paths into repeated allocation and serialization hot spots.
 - `allocation_churn_in_loop`: obvious `make`, `new`, or buffer-construction calls inside loops.
+- `likely_n_squared_allocation`: opt-in deeper semantic signal for allocation churn that also appears inside nested loop structure.
 - `fmt_hot_path`: `fmt` formatting calls such as `Sprintf` inside loops.
 - `reflection_hot_path`: `reflect` package calls inside loops.
 - `full_dataset_load`: calls such as `io.ReadAll`, `ioutil.ReadAll`, or `os.ReadFile` that load an entire payload into memory instead of streaming it.
@@ -200,12 +207,13 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `goroutine_without_coordination`: raw `go` statements where deslop cannot find an obvious context or WaitGroup-like coordination signal in the same function.
 - `goroutine_spawn_in_loop`: raw `go` statements launched from inside loops without an obvious context or WaitGroup-like coordination signal.
 - `goroutine_without_shutdown_path`: looping goroutine literals that do not show an obvious `ctx.Done()` or done-channel shutdown path.
+- `goroutine_derived_context_unmanaged`: a derived context is created and then used around a likely long-lived goroutine launch before the matching cancel call is observed.
 - `mutex_in_loop`: repeated `Lock` or `RLock` acquisition inside loops.
 - `blocking_call_while_locked`: potentially blocking calls observed between `Lock` and `Unlock`.
 
 ### Data-access signals
 
-- `n_plus_one_query`: database-style query calls issued inside loops.
+- `n_plus_one_query`: database-style query calls issued inside loops. When `go_semantic_experimental = true` or `--enable-semantic` is enabled, nested-loop correlation can raise severity and add stronger evidence.
 - `wide_select_query`: literal `SELECT *` query shapes.
 - `likely_unindexed_query`: query shapes such as leading-wildcard `LIKE` or `ORDER BY` without `LIMIT` that often scale poorly.
 
@@ -239,7 +247,7 @@ For Rust, `hallucinated_local_call` now also covers direct same-module calls whe
 ## Current limitations
 
 - No authoritative Go, Python, or Rust type checking yet.
-- No interprocedural context propagation.
+- No full interprocedural context propagation or type-aware Go data flow.
 - No proof of goroutine leaks, N+1 queries, or runtime performance regressions.
 - Package-method and local-symbol checks are repository-local and now language-scoped for mixed-language repositories.
 - No Python module graph resolution or installed-package awareness yet.

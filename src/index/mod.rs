@@ -17,6 +17,7 @@ pub(crate) struct PackageIndex {
     pub package_name: String,
     pub directory: PathBuf,
     pub functions: BTreeSet<String>,
+    pub contextless_wrapper_functions: BTreeSet<String>,
     pub methods_by_receiver: BTreeMap<String, BTreeSet<String>>,
     pub symbols: Vec<DeclaredSymbol>,
     pub import_count: usize,
@@ -211,6 +212,10 @@ impl PackageIndex {
         self.functions.contains(name)
     }
 
+    pub fn has_contextless_wrapper_function(&self, name: &str) -> bool {
+        self.contextless_wrapper_functions.contains(name)
+    }
+
     pub fn has_method(&self, receiver: &str, name: &str) -> bool {
         self.methods_by_receiver
             .get(receiver)
@@ -225,15 +230,15 @@ impl PackageIndex {
 pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> RepositoryIndex {
     let mut packages = BTreeMap::new();
 
-    for ParsedFile {
-        language,
-        path,
-        package_name,
-        imports,
-        symbols,
-        ..
-    } in files
-    {
+    for file in files {
+        let ParsedFile {
+            language,
+            path,
+            package_name,
+            imports,
+            symbols,
+            ..
+        } = file;
         let language = *language;
         let package_name = package_name
             .clone()
@@ -250,12 +255,23 @@ pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> Repos
             package_name,
             directory,
             functions: BTreeSet::new(),
+            contextless_wrapper_functions: BTreeSet::new(),
             methods_by_receiver: BTreeMap::new(),
             symbols: Vec::new(),
             import_count: 0,
         });
 
         package_entry.import_count += import_count;
+
+        for function in &file.functions {
+            if function.fingerprint.receiver_type.is_none()
+                && is_contextless_wrapper_candidate(file, function)
+            {
+                package_entry
+                    .contextless_wrapper_functions
+                    .insert(function.fingerprint.name.clone());
+            }
+        }
 
         for symbol in symbols {
             insert_symbol(package_entry, symbol);
@@ -286,6 +302,43 @@ fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
         }
         _ => {}
     }
+}
+
+fn is_contextless_wrapper_candidate(
+    file: &ParsedFile,
+    function: &crate::analysis::ParsedFunction,
+) -> bool {
+    if function.has_context_parameter {
+        return false;
+    }
+
+    let import_aliases = file
+        .imports
+        .iter()
+        .map(|import| (import.alias.as_str(), import.path.as_str()))
+        .collect::<BTreeMap<_, _>>();
+
+    function.calls.iter().any(|call| {
+        let Some(receiver) = call.receiver.as_deref() else {
+            return false;
+        };
+        let Some(import_path) = import_aliases.get(receiver) else {
+            return false;
+        };
+
+        matches!(*import_path, "net/http")
+            && matches!(
+                call.name.as_str(),
+                "Get" | "Head" | "Post" | "PostForm" | "NewRequest"
+            )
+            || matches!(*import_path, "os/exec") && call.name == "Command"
+            || matches!(*import_path, "net") && matches!(call.name.as_str(), "Dial" | "DialTimeout")
+    }) || function.db_query_calls.iter().any(|query_call| {
+        matches!(
+            query_call.method_name.as_str(),
+            "Query" | "QueryRow" | "Exec" | "Get" | "Select"
+        )
+    })
 }
 
 fn package_directory(root: &Path, file_path: &Path) -> PathBuf {

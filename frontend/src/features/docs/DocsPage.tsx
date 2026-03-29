@@ -56,27 +56,36 @@ const goRules: Rule[] = [
   { id: 'panic_on_error', description: 'err != nil branches that jump straight to panic or log.Fatal style exits.' },
   { id: 'error_wrapping_misuse', description: 'fmt.Errorf calls that reference err without %w.' },
   { id: 'missing_context', description: 'Standard-library context-aware calls from functions that do not accept context.Context.' },
+  { id: 'missing_context_propagation', description: 'Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.' },
+  { id: 'context_background_used', description: 'Functions that already accept context.Context but still create context.Background() or context.TODO() locally.' },
   { id: 'missing_cancel_call', description: 'Derived contexts where deslop cannot find a local cancel() or defer cancel() call.' },
   { id: 'sleep_polling', description: 'time.Sleep inside loops — often indicates polling or busy-wait style code.' },
   { id: 'busy_waiting', description: 'select { default: ... } inside loops, which often spins instead of blocking.' },
+  { id: 'goroutine_without_coordination', description: 'Raw go statements without an obvious context or WaitGroup-like coordination signal.' },
   { id: 'goroutine_spawn_in_loop', description: 'Raw go statements launched from inside loops without obvious WaitGroup coordination.' },
   { id: 'goroutine_without_shutdown_path', description: 'Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.' },
+  { id: 'goroutine_derived_context_unmanaged', description: 'Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.' },
   { id: 'mutex_in_loop', description: 'Repeated Lock or RLock acquisition inside loops.' },
   { id: 'blocking_call_while_locked', description: 'Potentially blocking calls observed between Lock and Unlock.' },
   { id: 'string_concat_in_loop', description: 'Repeated string concatenation inside loops when the function is clearly building a string incrementally.' },
+  { id: 'likely_n_squared_string_concat', description: 'Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.' },
   { id: 'repeated_json_marshaling', description: 'encoding/json.Marshal or MarshalIndent inside loops — repeated allocation and serialization hot spots.' },
   { id: 'allocation_churn_in_loop', description: 'Obvious make, new, or buffer-construction calls inside loops.' },
+  { id: 'likely_n_squared_allocation', description: 'Opt-in deeper semantic signal for allocations that also sit inside nested loop structure.' },
   { id: 'fmt_hot_path', description: 'fmt formatting calls such as Sprintf inside loops.' },
   { id: 'reflection_hot_path', description: 'reflect package calls inside loops.' },
   { id: 'full_dataset_load', description: 'Calls such as io.ReadAll or os.ReadFile that load an entire payload into memory instead of streaming.' },
-  { id: 'n_plus_one_query', description: 'Database-style query calls issued inside loops.' },
+  { id: 'n_plus_one_query', description: 'Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.' },
   { id: 'wide_select_query', description: 'Literal SELECT * query shapes.' },
   { id: 'likely_unindexed_query', description: 'Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.' },
   { id: 'weak_crypto', description: 'Direct use of weak standard-library crypto packages such as crypto/md5, crypto/sha1, crypto/des, and crypto/rc4.' },
   { id: 'hardcoded_secret', description: 'Secret-like identifiers assigned direct string literals instead of environment or secret-manager lookups.' },
   { id: 'sql_string_concat', description: 'Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf.' },
+  { id: 'inconsistent_package_name', description: 'Directories that mix base Go package names after ignoring the _test suffix.' },
+  { id: 'misgrouped_imports', description: 'Import blocks that place stdlib imports after third-party imports.' },
   { id: 'mixed_receiver_kinds', description: 'Methods on the same receiver type mix pointer and value receivers.' },
   { id: 'malformed_struct_tag', description: 'Struct field tags that do not parse as valid Go tag key/value pairs.' },
+  { id: 'duplicate_struct_tag_key', description: 'Struct field tags that repeat the same key more than once.' },
   { id: 'hallucinated_import_call', description: 'Package-qualified calls that do not match locally indexed symbols for the imported package.' },
   { id: 'hallucinated_local_call', description: 'Same-package calls to symbols not present in the scanned local package context.' },
   { id: 'test_without_assertion_signal', description: 'Tests that call production code without any obvious assertion or failure signal.' },
@@ -212,10 +221,12 @@ const cliCommands: Record<Language, CliCommand[]> = {
     { cmd: 'cargo run -- scan --details /path/to/repo', desc: 'Include full per-function fingerprint details and detail-only findings.' },
     { cmd: 'cargo run -- scan --json /path/to/repo', desc: 'Emit structured JSON output for pipeline integration.' },
     { cmd: 'cargo run -- scan --json --details /path/to/repo', desc: 'Combine JSON and full detail output.' },
+    { cmd: 'cargo run -- scan --enable-semantic /path/to/repo', desc: 'Enable the opt-in deeper semantic Go pack for nested-loop allocation, concat, and stronger N+1 correlation.' },
     { cmd: 'cargo run -- scan --ignore dropped_error,panic_on_error /path/to/repo', desc: 'Ignore selected Go rule IDs for one run without changing repository config.' },
     { cmd: 'cargo run -- scan /path/to/repo > results.txt', desc: 'Write the text report directly to a file.' },
     { cmd: 'cargo run -- scan --no-ignore /path/to/repo', desc: 'Scan without .gitignore filtering.' },
     { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark the full pipeline against a local repository.' },
+    { cmd: 'cargo run -- bench --enable-semantic /path/to/repo', desc: 'Benchmark the Go pipeline with the opt-in semantic pack enabled.' },
     { cmd: 'cargo run -- bench --warmups 2 --repeats 5 /path/to/repo', desc: 'Benchmark with explicit warmup and repeat counts.' },
     { cmd: 'cargo run -- bench --json /path/to/repo', desc: 'Emit benchmarking data as JSON.' },
   ],
@@ -278,12 +289,14 @@ const githubActionBenchExample = `- uses: actions/checkout@v4
     repeats: '10'
     warmups: '2'`
 
-const repositoryConfigExample = `rust_async_experimental = true
+const repositoryConfigExample = `go_semantic_experimental = true
+rust_async_experimental = true
 disabled_rules = ["panic_macro_leftover"]
 suppressed_paths = ["tests/fixtures"]
 
 [severity_overrides]
-unwrap_in_non_test_code = "error"`
+unwrap_in_non_test_code = "error"
+missing_context_propagation = "error"`
 
 function CodeBlock({ code }: { code: string }) {
   return (
@@ -298,11 +311,14 @@ function CodeBlock({ code }: { code: string }) {
 const overviewContent = {
   go: {
     title: 'Go Analysis',
-    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and runs over 30 explainable rule families covering naming, error handling, context, concurrency, security, performance, and test quality.',
+    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and now covers repo-wide style checks, receiver-field and nested wrapper propagation, derived-context goroutine lifetime analysis, security, performance, and an opt-in deeper semantic loop pass with explainable rules.',
     bullets: [
       '.gitignore-aware walk; skips vendor/ and generated files by default',
       'Parses package names, imports, declared symbols, call sites, and function fingerprints',
       'Builds a repository-local symbol index for same-package and import hallucination checks',
+      'Includes repo-wide package and import style checks plus wrapper-level context propagation heuristics',
+      'Covers receiver-field wrappers, local wrapper chains, and Query versus QueryContext mismatches',
+      'Adds an opt-in semantic pack for nested-loop allocation, concat, and stronger N+1 signals',
       'Produces compact text output by default; full detail and JSON via flags',
       'Supports standalone Go repos and mixed Go + Python + Rust repositories',
     ],
@@ -363,10 +379,10 @@ const pipelineStages = [
 const limitations = {
   go: [
     'No authoritative Go type checking. Heuristics use structural patterns, not go/types.',
-    'No interprocedural context propagation. Checks are local to each function.',
+    'No full interprocedural or type-aware context propagation. Wrapper-chain reasoning stays repository-local and conservative.',
     'No proof of goroutine leaks, N+1 queries, or runtime performance regressions — only pattern signals.',
     'Package-method and local-symbol checks are repository-local; external packages are not indexed.',
-    'No struct layout analysis, O(n²) detection, or deeper semantic analysis.',
+    'The opt-in deeper semantic Go pack is still heuristic: it correlates nested-loop structure but does not prove asymptotic complexity or schema-aware DB cost.',
   ],
   python: [
     'No Python module graph resolution or installed-package awareness.',
@@ -532,6 +548,7 @@ export function DocsPage() {
               <tr><td>json</td><td>Set to true to emit JSON output.</td></tr>
               <tr><td>details</td><td>Set to true to include detail-only findings for scan.</td></tr>
               <tr><td>no-ignore</td><td>Set to true to disable .gitignore filtering.</td></tr>
+              <tr><td>enable-semantic</td><td>Set to true to enable the opt-in deeper semantic Go rule pack.</td></tr>
               <tr><td>fail-on-findings</td><td>Set to false to exit 0 even when scan findings are present.</td></tr>
               <tr><td>repeats</td><td>Benchmark repeat count for bench. Defaults to 5.</td></tr>
               <tr><td>warmups</td><td>Benchmark warmup count for bench. Defaults to 1.</td></tr>
@@ -638,6 +655,7 @@ export function DocsPage() {
             </thead>
             <tbody>
               <tr><td>--details</td><td>Include full per-function fingerprint details and detail-only findings.</td></tr>
+              <tr><td>--enable-semantic</td><td>Enable the opt-in deeper semantic Go heuristics for the current scan or benchmark run.</td></tr>
               <tr><td>--ignore RULE1,RULE2</td><td>Ignore specific rule IDs for one scan invocation after analysis completes.</td></tr>
               <tr><td>--json</td><td>Emit structured JSON instead of human-readable text output.</td></tr>
               <tr><td>--no-fail</td><td>Exit 0 even when findings are present.</td></tr>
@@ -650,7 +668,7 @@ export function DocsPage() {
           <h2 className="docs-h2">Repository config</h2>
           <p className="docs-p">
             Repository-local behavior can also be tuned with a <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>.deslop.toml</code>
-            file at the scan root. The current config surface supports disabled rules, severity overrides, suppressed path prefixes, and the staged Rust async pack toggle.
+            file at the scan root. The current config surface supports disabled rules, severity overrides, suppressed path prefixes, the opt-in Go semantic pack, and the staged Rust async pack toggle.
           </p>
           <CodeBlock code={repositoryConfigExample} />
 
@@ -743,7 +761,7 @@ deslop scan --details --json .`} />
           <h2 className="docs-h2">General limitations</h2>
           <div className="rule-grid">
             {[
-              'No interprocedural context propagation. All analysis is local to each function.',
+              'No full interprocedural context propagation. Most analysis is local to each function, with only conservative repository-local wrapper-chain awareness.',
               'Package-method and local-symbol checks are repository-local and language-scoped for mixed-language repositories.',
               'No proof of runtime behavior: goroutine leaks, N+1 query counts, or actual memory pressure are not detectable from static structure alone.',
             ].map((limit) => (
@@ -756,7 +774,7 @@ deslop scan --details --json .`} />
           <h2 className="docs-h2">Planned improvements</h2>
           <p className="docs-p">The following capabilities are pending or in development:</p>
           <div className="docs-pill-list">
-            {activeLang === 'go' && ['Stronger repo-wide style checks', 'Deeper goroutine lifetime analysis', 'Better context propagation through wrappers', 'Optional deeper semantic analysis'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
+            {activeLang === 'go' && ['Index-assisted DB call classification', 'Public-API-aware context propagation', 'AST-resolved ctx.Done detection inside goroutines', 'Type-aware Go analysis'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
             {activeLang === 'python' && ['Installed-package and module-graph awareness', 'Deeper interprocedural asyncio reasoning', 'Optional type-aware data-flow analysis', 'Framework-specific rule packs (Django/FastAPI)'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
             {activeLang === 'rust' && ['Trait resolution', 'Cargo workspace modeling', 'Macro expansion analysis', 'Deeper Rust rule pack', 'Cross-crate symbol resolution'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
           </div>

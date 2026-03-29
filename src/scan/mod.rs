@@ -1,12 +1,15 @@
 mod walker;
 
 use std::collections::BTreeMap;
+use std::env;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 use rayon::prelude::*;
 
-use crate::analysis::{ParsedFile, backend_for_language, backend_for_path, supported_extensions};
+use crate::analysis::{
+    AnalysisConfig, ParsedFile, backend_for_language, backend_for_path, supported_extensions,
+};
 use crate::heuristics::evaluate_shared;
 use crate::index::build_repository_index;
 use crate::io::canonicalize_within_root;
@@ -15,6 +18,8 @@ use crate::scan::walker::discover_source_files;
 use crate::{
     DEFAULT_MAX_BYTES, RepoConfig, Result, load_repository_config, read_to_string_limited,
 };
+
+const GO_SEMANTIC_ENV_VAR: &str = "DESLOP_ENABLE_GO_SEMANTIC";
 
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let total_start = Instant::now();
@@ -63,6 +68,11 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let index_summary = index.summary();
     let index_ms = index_start.elapsed().as_millis();
 
+    let analysis_config = AnalysisConfig {
+        enable_go_semantic: repo_config.go_semantic_experimental
+            || env_flag_enabled(GO_SEMANTIC_ENV_VAR),
+    };
+
     let heuristics_start = Instant::now();
     let findings = evaluate_findings(
         &parsed_files,
@@ -70,6 +80,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
         &suppressions,
         &repo_config,
         &canonical_root,
+        &analysis_config,
     );
     let heuristics_ms = heuristics_start.elapsed().as_millis();
 
@@ -102,12 +113,13 @@ fn evaluate_findings(
     suppressions: &BTreeMap<PathBuf, Vec<SuppressionDirective>>,
     repo_config: &RepoConfig,
     root: &Path,
+    analysis_config: &AnalysisConfig,
 ) -> Vec<Finding> {
     let mut findings = evaluate_shared(files, index);
 
     for file in files {
         if let Some(backend) = backend_for_language(file.language) {
-            findings.extend(backend.evaluate_file(file, index));
+            findings.extend(backend.evaluate_file(file, index, analysis_config));
         }
     }
 
@@ -116,7 +128,7 @@ fn evaluate_findings(
             .iter()
             .filter(|file| file.language == backend.language())
             .collect::<Vec<_>>();
-        findings.extend(backend.evaluate_repo(&backend_files, index));
+        findings.extend(backend.evaluate_repo(&backend_files, index, analysis_config));
     }
 
     findings.retain(|finding| !is_suppressed(finding, suppressions));
@@ -129,6 +141,15 @@ fn evaluate_findings(
             .then(left.rule_id.cmp(&right.rule_id))
     });
     findings
+}
+
+fn env_flag_enabled(name: &str) -> bool {
+    env::var(name).ok().is_some_and(|value| {
+        matches!(
+            value.trim().to_ascii_lowercase().as_str(),
+            "1" | "true" | "yes" | "on"
+        )
+    })
 }
 
 enum FileOutcome {
@@ -398,6 +419,7 @@ mod tests {
             sample_finding("unwrap_in_non_test_code", Severity::Warning),
         ];
         let mut repo_config = RepoConfig {
+            go_semantic_experimental: false,
             rust_async_experimental: true,
             disabled_rules: vec!["panic_macro_leftover".to_string()],
             suppressed_paths: Vec::new(),
@@ -422,6 +444,7 @@ mod tests {
             sample_finding("unwrap_in_non_test_code", Severity::Warning),
         ];
         let repo_config = RepoConfig {
+            go_semantic_experimental: false,
             rust_async_experimental: false,
             disabled_rules: Vec::new(),
             suppressed_paths: Vec::new(),
@@ -448,6 +471,7 @@ mod tests {
             },
         ];
         let repo_config = RepoConfig {
+            go_semantic_experimental: false,
             rust_async_experimental: true,
             disabled_rules: Vec::new(),
             suppressed_paths: vec![std::path::PathBuf::from("tests/fixtures")],

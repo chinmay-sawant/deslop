@@ -104,12 +104,13 @@ export const siteMetadata: SiteMetadata = {
 }
 
 export const navigation: NavItem[] = [
-  { label: 'Install and run', href: '/#install-run' },
+  { label: 'Install and run', href: '#install-run' },
   { label: 'Documentation', href: '/docs' },
 ]
 
 export const trustPillars = [
   'Explainable findings instead of opaque scoring',
+  'Go wrapper propagation now reaches receiver fields, local wrapper chains, and DB context mismatches',
   'Structured output for local workflows and automation',
   'Installs through Cargo, prebuilt release binaries, or GitHub Actions',
 ]
@@ -154,15 +155,15 @@ export const detectionFamilies: DetectionFamily[] = [
   {
     title: 'Coordination',
     description:
-      'Find shutdown, cancellation, and blocking decisions that often look harmless until systems are under load.',
-    rules: ['Missing context', 'Missing cancel', 'Busy waiting'],
+      'Find shutdown, cancellation, wrapper propagation, and blocking decisions that often look harmless until systems are under load.',
+    rules: ['Receiver wrapper propagation', 'Derived-context goroutines', 'Busy waiting'],
     icon: BoltIcon,
   },
   {
     title: 'Performance',
     description:
-      'Flag repeated work inside loops, full-payload reads, and formatting-heavy hot paths before they harden into defaults.',
-    rules: ['Allocation churn', 'Formatting hot paths', 'Full data loads'],
+      'Flag repeated work inside loops, full-payload reads, and formatting-heavy hot paths before they harden into defaults, with an opt-in semantic pass for nested-loop pressure.',
+    rules: ['Allocation churn', 'Nested loop allocations', 'Full data loads'],
     icon: CpuChipIcon,
   },
   {
@@ -212,10 +213,11 @@ export const pipelineStages: PipelineStage[] = [
     name: 'Heuristics',
     summary: 'Run explainable rule families that emit rule IDs, severity, messages, and evidence.',
     detail:
-      'The heuristics layer is designed for human review rather than opaque scoring. Findings stay readable and conservative where deeper semantic proof does not exist yet.',
+      'The heuristics layer is designed for human review rather than opaque scoring. Findings stay readable by default, while the opt-in Go semantic pack adds nested-loop correlation only when you explicitly turn it on.',
     bullets: [
       'Compact text output by default, details opt in',
       'JSON output for pipeline integration',
+      'Optional `--enable-semantic` or `go_semantic_experimental = true` for deeper Go loop correlation',
       'Readable evidence payloads instead of black-box scores',
     ],
   },
@@ -285,7 +287,7 @@ export const quickStartItems: QuickStartItem[] = [
   {
     label: 'Scan the current repository',
     channel: 'CLI',
-    description: 'Run deslop from the repository root and save a readable report you can review locally or attach to CI output.',
+    description: 'Run deslop from the repository root and save a readable report you can review locally or attach to CI output. Add `--enable-semantic` when you want the opt-in deeper Go loop heuristics.',
     snippet: ['deslop scan . > results.txt'],
     showPrompt: true,
   },
@@ -328,9 +330,9 @@ export const metrics: Metric[] = [
 ]
 
 export const footerLinks: NavItem[] = [
-  { label: 'Back to top', href: '/#top' },
+  { label: 'Back to top', href: '#top' },
   { label: 'Documentation', href: '/docs' },
-  { label: 'Install and run', href: '/#install-run' },
+  { label: 'Install and run', href: '#install-run' },
   { label: 'GitHub', href: 'https://github.com/chinmay-sawant/deslop' },
 ]
 

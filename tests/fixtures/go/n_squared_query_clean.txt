@@ -1,0 +1,25 @@
+// should not trigger n_plus_one_query because the query happens before the nested iteration starts.
+package sample
+
+import "context"
+
+type Rows interface{}
+
+type DB interface {
+	QueryContext(context.Context, string, ...any) (Rows, error)
+}
+
+func Load(ctx context.Context, db DB, orgs []int, ids []int) error {
+	_, err := db.QueryContext(ctx, "SELECT * FROM widgets WHERE org_id IN (?)", orgs)
+	if err != nil {
+		return err
+	}
+
+	for _, orgID := range orgs {
+		for _, id := range ids {
+			_, _ = orgID, id
+		}
+	}
+
+	return nil
+}
