@@ -268,7 +268,12 @@ fn test_python_commentary_fixtures_extract_real_comments_only() {
     assert_eq!(positive.comments.len(), 2);
     assert_eq!(positive.comments[0].text, "set the running total");
     assert_eq!(positive.comments[1].text, "return the final count");
-    assert!(positive.comments.iter().all(|comment| !comment.text.contains("not a comment")));
+    assert!(
+        positive
+            .comments
+            .iter()
+            .all(|comment| !comment.text.contains("not a comment"))
+    );
     assert!(negative.comments.is_empty());
 }
 
@@ -301,32 +306,57 @@ fn test_python_boundary_fixture_contract() {
     .expect("python parsing should succeed");
 
     let sync_reports = &network_positive.functions[0];
-    assert!(sync_reports.calls.iter().any(|call| {
-        call.receiver.as_deref() == Some("requests") && call.name == "get"
-    }));
-    assert!(!sync_reports.body_text.to_ascii_lowercase().contains("timeout="));
+    assert!(
+        sync_reports
+            .calls
+            .iter()
+            .any(|call| { call.receiver.as_deref() == Some("requests") && call.name == "get" })
+    );
+    assert!(
+        !sync_reports
+            .body_text
+            .to_ascii_lowercase()
+            .contains("timeout=")
+    );
 
     let safe_reports = &network_negative.functions[0];
-    assert!(safe_reports.calls.iter().any(|call| {
-        call.receiver.as_deref() == Some("requests") && call.name == "get"
-    }));
-    assert!(safe_reports.body_text.to_ascii_lowercase().contains("timeout=5"));
+    assert!(
+        safe_reports
+            .calls
+            .iter()
+            .any(|call| { call.receiver.as_deref() == Some("requests") && call.name == "get" })
+    );
+    assert!(
+        safe_reports
+            .body_text
+            .to_ascii_lowercase()
+            .contains("timeout=5")
+    );
 
     let load_runtime_config = &config_positive.functions[0];
-    assert!(load_runtime_config.calls.iter().any(|call| {
-        call.receiver.as_deref() == Some("os") && call.name == "getenv"
-    }));
+    assert!(
+        load_runtime_config
+            .calls
+            .iter()
+            .any(|call| { call.receiver.as_deref() == Some("os") && call.name == "getenv" })
+    );
 
     let run_cli = &cli_positive.functions[0];
-    assert!(run_cli.calls.iter().any(|call| {
-        call.receiver.as_deref() == Some("json") && call.name == "loads"
-    }));
+    assert!(
+        run_cli
+            .calls
+            .iter()
+            .any(|call| { call.receiver.as_deref() == Some("json") && call.name == "loads" })
+    );
     assert!(!run_cli.body_text.contains("len(sys.argv) < 2"));
 
     let safe_cli = &cli_negative.functions[0];
-    assert!(safe_cli.calls.iter().any(|call| {
-        call.receiver.as_deref() == Some("json") && call.name == "loads"
-    }));
+    assert!(
+        safe_cli
+            .calls
+            .iter()
+            .any(|call| { call.receiver.as_deref() == Some("json") && call.name == "loads" })
+    );
     assert!(safe_cli.body_text.contains("len(sys.argv) < 2"));
 }
 

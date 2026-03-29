@@ -15,8 +15,8 @@ mod test_quality;
 #[cfg(test)]
 mod tests;
 
-use crate::analysis::ParsedFile;
 use crate::analysis::AnalysisConfig;
+use crate::analysis::ParsedFile;
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 

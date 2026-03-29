@@ -230,14 +230,12 @@ fn test_semantic_n_squared_rules_are_opt_in() {
     })
     .expect("scan should succeed");
 
-    assert!(
-        !report.findings.iter().any(|finding| {
-            matches!(
-                finding.rule_id.as_str(),
-                "likely_n_squared_allocation" | "likely_n_squared_string_concat"
-            )
-        })
-    );
+    assert!(!report.findings.iter().any(|finding| {
+        matches!(
+            finding.rule_id.as_str(),
+            "likely_n_squared_allocation" | "likely_n_squared_string_concat"
+        )
+    }));
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
@@ -304,14 +302,12 @@ fn test_semantic_n_squared_clean_fixtures() {
     })
     .expect("scan should succeed");
 
-    assert!(
-        !report.findings.iter().any(|finding| {
-            matches!(
-                finding.rule_id.as_str(),
-                "likely_n_squared_allocation" | "likely_n_squared_string_concat"
-            )
-        })
-    );
+    assert!(!report.findings.iter().any(|finding| {
+        matches!(
+            finding.rule_id.as_str(),
+            "likely_n_squared_allocation" | "likely_n_squared_string_concat"
+        )
+    }));
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

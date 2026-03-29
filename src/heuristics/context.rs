@@ -1,5 +1,5 @@
-use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::analysis::Language;
+use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::{Finding, Severity};
 
@@ -198,7 +198,10 @@ pub(super) fn propagate_findings(
             ),
             evidence: vec![
                 "function signature already accepts context.Context".to_string(),
-                format!("context-free API call: {receiver}.{} from {import_path}", call.name),
+                format!(
+                    "context-free API call: {receiver}.{} from {import_path}",
+                    call.name
+                ),
                 "prefer a context-aware variant or request construction that forwards ctx"
                     .to_string(),
             ],
@@ -261,12 +264,14 @@ pub(super) fn propagate_findings(
     let Some(package_name) = file.package_name.as_deref() else {
         return findings;
     };
-    let Some(current_package) = index.package_for_file(Language::Go, &file.path, package_name) else {
+    let Some(current_package) = index.package_for_file(Language::Go, &file.path, package_name)
+    else {
         return findings;
     };
 
     for call in &function.calls {
-        if call.receiver.is_some() || !current_package.has_contextless_wrapper_function(&call.name) {
+        if call.receiver.is_some() || !current_package.has_contextless_wrapper_function(&call.name)
+        {
             continue;
         }
 

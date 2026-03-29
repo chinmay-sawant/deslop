@@ -204,10 +204,7 @@ pub(super) fn db_findings(
     findings
 }
 
-/// Returns opt-in deeper semantic findings that correlate existing loop evidence with
-/// nested-loop structure from the parsed function body. The findings stay conservative:
-/// they only fire when the function already showed loop-local allocation or string
-/// concatenation signals, and the evidence explicitly calls out the uncertainty.
+/// Returns conservative nested-loop findings when Go semantic analysis is enabled.
 pub(super) fn n_squared_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
@@ -217,18 +214,13 @@ pub(super) fn n_squared_findings(
         return Vec::new();
     }
 
-    let mut findings = likely_n_squared_allocation_findings(file, function);
-    findings.extend(likely_n_squared_string_concat_findings(file, function));
+    let mut findings = nested_loop_alloc_findings(file, function);
+    findings.extend(nested_loop_concat_findings(file, function));
     findings
 }
 
-/// Flags likely O(n^2) allocation churn when the parser already saw allocation sites inside
-/// loops and a lightweight nested-loop scan of the function body confirms loop nesting.
-/// This remains a heuristic because preallocation or small bounded inputs may make the code acceptable.
-fn likely_n_squared_allocation_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+/// Flags nested-loop allocation churn when allocation evidence already exists.
+fn nested_loop_alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .alloc_loops
         .iter()
@@ -255,12 +247,8 @@ fn likely_n_squared_allocation_findings(
         .collect()
 }
 
-/// Flags likely O(n^2) string building when repeated concatenation appears in a nested loop
-/// and the function body does not show obvious strings.Builder or bytes.Buffer usage.
-fn likely_n_squared_string_concat_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+/// Flags nested-loop string concatenation when no builder-style buffer is visible.
+fn nested_loop_concat_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if has_builder_usage(&function.body_text) {
         return Vec::new();
     }
@@ -294,7 +282,7 @@ fn has_nested_loop_signal(body_text: &str) -> bool {
     let mut brace_depth = 0usize;
     let mut active_loop_exit_depths = Vec::new();
 
-    for raw_line in body_text.lines() {
+    for raw_line in body_text.split('\n') {
         let line = raw_line.split("//").next().unwrap_or("");
         let closing_braces = line.chars().filter(|character| *character == '}').count();
         for _ in 0..closing_braces {
@@ -343,7 +331,8 @@ fn contains_keyword(line: &str, keyword: &str) -> bool {
             continue;
         }
 
-        let left_ok = start == 0 || !bytes[start - 1].is_ascii_alphanumeric() && bytes[start - 1] != b'_';
+        let left_ok =
+            start == 0 || !bytes[start - 1].is_ascii_alphanumeric() && bytes[start - 1] != b'_';
         let right_index = start + keyword_bytes.len();
         let right_ok = right_index == bytes.len()
             || !bytes[right_index].is_ascii_alphanumeric() && bytes[right_index] != b'_';
@@ -354,35 +343,6 @@ fn contains_keyword(line: &str, keyword: &str) -> bool {
     }
 
     false
-}
-
-#[cfg(test)]
-mod tests {
-    use super::{contains_keyword, has_builder_usage, has_nested_loop_signal};
-
-    #[test]
-    fn detects_nested_loop_signal() {
-        let body = "{\nfor _, row := range rows {\n    for _, cell := range row {\n        _ = cell\n    }\n}\n}";
-        assert!(has_nested_loop_signal(body));
-    }
-
-    #[test]
-    fn ignores_sequential_loops() {
-        let body = "{\nfor _, row := range rows {\n    _ = row\n}\nfor _, cell := range cells {\n    _ = cell\n}\n}";
-        assert!(!has_nested_loop_signal(body));
-    }
-
-    #[test]
-    fn detects_builder_usage_markers() {
-        assert!(has_builder_usage("{\nvar builder strings.Builder\n}\n"));
-        assert!(has_builder_usage("{\nvar buf bytes.Buffer\n}\n"));
-    }
-
-    #[test]
-    fn matches_keyword_boundaries() {
-        assert!(contains_keyword("for _, item := range items {", "for"));
-        assert!(!contains_keyword("formatValue()", "for"));
-    }
 }
 
 pub(super) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
@@ -423,4 +383,33 @@ pub(super) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
             })
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{contains_keyword, has_builder_usage, has_nested_loop_signal};
+
+    #[test]
+    fn detects_nested_loop_signal() {
+        let body = "{\nfor _, row := range rows {\n    for _, cell := range row {\n        _ = cell\n    }\n}\n}";
+        assert!(has_nested_loop_signal(body));
+    }
+
+    #[test]
+    fn ignores_sequential_loops() {
+        let body = "{\nfor _, row := range rows {\n    _ = row\n}\nfor _, cell := range cells {\n    _ = cell\n}\n}";
+        assert!(!has_nested_loop_signal(body));
+    }
+
+    #[test]
+    fn detects_builder_usage_markers() {
+        assert!(has_builder_usage("{\nvar builder strings.Builder\n}\n"));
+        assert!(has_builder_usage("{\nvar buf bytes.Buffer\n}\n"));
+    }
+
+    #[test]
+    fn matches_keyword_boundaries() {
+        assert!(contains_keyword("for _, item := range items {", "for"));
+        assert!(!contains_keyword("formatValue()", "for"));
+    }
 }

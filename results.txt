@@ -1,0 +1,8 @@
+deslop scan root: /home/chinmay/ChinmayPersonalProjects/deslop
+Source files discovered: 79
+Source files analyzed: 78
+Functions fingerprinted: 841
+Findings: 0
+Index summary: packages=78 symbols=956 imports=769
+Parse failures: 0
+Timings: discover=13ms parse=437ms index=12ms heuristics=222ms total=687ms

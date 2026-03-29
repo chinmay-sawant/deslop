@@ -44,7 +44,6 @@ impl LanguageBackend for RustAnalyzer {
 
 fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = Vec::new();
-    let import_aliases = alias_lookup(&file.imports);
 
     findings.extend(domain_findings(file));
     findings.extend(performance_file_findings(file));
@@ -113,15 +112,14 @@ fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Fin
         else {
             continue;
         };
-
         findings.extend(rust_import_findings(
             file,
             function,
             index,
-            &import_aliases,
+            &file.imports,
             current_package,
         ));
-        findings.extend(rust_call_findings(file, function, index, &import_aliases));
+        findings.extend(rust_call_findings(file, function, index, &file.imports));
     }
 
     findings
@@ -290,7 +288,7 @@ fn rust_import_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     index: &RepositoryIndex,
-    import_aliases: &BTreeMap<String, ImportSpec>,
+    imports: &[ImportSpec],
     current_package: &PackageIndex,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
@@ -309,6 +307,8 @@ fn rust_import_findings(
             continue;
         }
 
+        let import_aliases = visible_alias_lookup(imports, call.line);
+
         if import_aliases
             .get(receiver)
             .is_some_and(|import_spec| import_matches_item(index, &file.path, import_spec))
@@ -316,7 +316,7 @@ fn rust_import_findings(
             continue;
         }
 
-        let Some(import_path) = rust_mod_for_receiver(receiver, import_aliases) else {
+        let Some(import_path) = rust_mod_for_receiver(receiver, &import_aliases) else {
             continue;
         };
 
@@ -379,7 +379,7 @@ fn rust_call_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     index: &RepositoryIndex,
-    import_aliases: &BTreeMap<String, ImportSpec>,
+    imports: &[ImportSpec],
 ) -> Vec<Finding> {
     let Some(package_name) = &file.package_name else {
         return Vec::new();
@@ -409,6 +409,8 @@ fn rust_call_findings(
         if current_package.has_function(&call.name) || current_package.has_symbol(&call.name) {
             continue;
         }
+
+        let import_aliases = visible_alias_lookup(imports, call.line);
 
         if let Some(import_spec) = import_aliases.get(&call.name) {
             if !is_rust_import(import_spec.path.as_str()) {
@@ -488,11 +490,43 @@ fn import_matches_item(
 
     match index.resolve_rust_import(file_path, module_path) {
         ImportResolution::Resolved(module_package) => {
-            module_package.has_function(item_name) || module_package.has_symbol(item_name)
+            module_package.has_function(item_name)
+                || module_package.has_symbol(item_name)
+                || import_matches_local_module(index, file_path, module_path, item_name)
         }
         ImportResolution::Ambiguous(_) => true,
-        ImportResolution::Unresolved => false,
+        ImportResolution::Unresolved => {
+            import_matches_local_module(index, file_path, module_path, item_name)
+        }
     }
+}
+
+fn import_matches_local_module(
+    index: &RepositoryIndex,
+    file_path: &Path,
+    module_path: &str,
+    item_name: &str,
+) -> bool {
+    if !module_path.starts_with("super") {
+        return false;
+    }
+
+    let Some(parent) = file_path.parent() else {
+        return false;
+    };
+
+    let sibling_file = parent.join(format!("{item_name}.rs"));
+    if index
+        .package_for_file(Language::Rust, &sibling_file, item_name)
+        .is_some()
+    {
+        return true;
+    }
+
+    let sibling_mod = parent.join(item_name).join("mod.rs");
+    index
+        .package_for_file(Language::Rust, &sibling_mod, item_name)
+        .is_some()
 }
 
 fn is_rust_prelude_function(name: &str) -> bool {
@@ -557,6 +591,16 @@ fn alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, ImportSpec> {
         .iter()
         .map(|import| (import.alias.clone(), import.clone()))
         .collect()
+}
+
+fn visible_alias_lookup(imports: &[ImportSpec], max_line: usize) -> BTreeMap<String, ImportSpec> {
+    let visible_imports = imports
+        .iter()
+        .filter(|import| import.line <= max_line)
+        .cloned()
+        .collect::<Vec<_>>();
+
+    alias_lookup(&visible_imports)
 }
 
 #[cfg(test)]
@@ -781,6 +825,114 @@ pub fn release(value: String) {
         };
 
         assert!(import_matches_item(&index, &current.path, import_spec));
+    }
+
+    #[test]
+    fn nested_test_module_imports_do_not_leak_into_outer_function_checks() {
+        let current = parse_file(
+            "/repo/src/analysis/python/mod.rs",
+            r#"
+mod parser;
+
+fn run() {
+    let _ = parser::parse_file();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parser;
+}
+"#,
+        );
+        let parser_module = parse_file(
+            "/repo/src/analysis/python/parser/mod.rs",
+            r#"
+pub fn parse_file() -> Result<(), ()> {
+    Ok(())
+}
+"#,
+        );
+
+        let index = build_repository_index(Path::new("/repo"), &[current.clone(), parser_module]);
+
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_import_call"
+                        && finding.message.contains("parser::parse_file")
+                })
+        );
+    }
+
+    #[test]
+    fn nested_test_module_super_import_matches_local_child_module() {
+        let current = parse_file(
+            "/repo/src/analysis/python/mod.rs",
+            r#"
+mod parser;
+
+#[cfg(test)]
+mod tests {
+    use super::parser;
+
+    fn parse_file() {
+        let _ = parser::parse_file();
+    }
+}
+"#,
+        );
+        let parser_module = parse_file(
+            "/repo/src/analysis/python/parser/mod.rs",
+            r#"
+pub fn parse_file() -> Result<(), ()> {
+    Ok(())
+}
+"#,
+        );
+
+        let index = build_repository_index(Path::new("/repo"), &[current.clone(), parser_module]);
+        let import_aliases = alias_lookup(&current.imports);
+        let import_spec = match import_aliases.get("parser") {
+            Some(import_spec) => import_spec,
+            None => unreachable!("parser import should exist"),
+        };
+
+        assert!(import_matches_item(&index, &current.path, import_spec));
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_import_call"
+                        && finding.message.contains("parser::parse_file")
+                })
+        );
+    }
+
+    #[test]
+    fn function_scoped_import_before_call_is_not_flagged_as_local() {
+        let current = parse_file(
+            "/repo/src/io.rs",
+            r#"
+#[cfg(unix)]
+fn create_link(target: &str, link: &str) {
+    use std::os::unix::fs::symlink as create_fs_link;
+
+    assert!(create_fs_link(target, link).is_ok());
+}
+"#,
+        );
+
+        let index = build_repository_index(Path::new("/repo"), std::slice::from_ref(&current));
+
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_local_call"
+                        && finding.message.contains("create_fs_link")
+                })
+        );
     }
 
     #[test]

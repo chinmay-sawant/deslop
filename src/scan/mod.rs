@@ -145,7 +145,10 @@ fn evaluate_findings(
 
 fn env_flag_enabled(name: &str) -> bool {
     env::var(name).ok().is_some_and(|value| {
-        matches!(value.trim().to_ascii_lowercase().as_str(), "1" | "true" | "yes" | "on")
+        matches!(
+            value.trim().to_ascii_lowercase().as_str(),
+            "1" | "true" | "yes" | "on"
+        )
     })
 }
 

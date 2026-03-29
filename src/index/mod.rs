@@ -304,7 +304,10 @@ fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
     }
 }
 
-fn is_contextless_wrapper_candidate(file: &ParsedFile, function: &crate::analysis::ParsedFunction) -> bool {
+fn is_contextless_wrapper_candidate(
+    file: &ParsedFile,
+    function: &crate::analysis::ParsedFunction,
+) -> bool {
     if function.has_context_parameter {
         return false;
     }
@@ -324,7 +327,10 @@ fn is_contextless_wrapper_candidate(file: &ParsedFile, function: &crate::analysi
         };
 
         matches!(*import_path, "net/http")
-            && matches!(call.name.as_str(), "Get" | "Head" | "Post" | "PostForm" | "NewRequest")
+            && matches!(
+                call.name.as_str(),
+                "Get" | "Head" | "Post" | "PostForm" | "NewRequest"
+            )
             || matches!(*import_path, "os/exec") && call.name == "Command"
             || matches!(*import_path, "net") && matches!(call.name.as_str(), "Dial" | "DialTimeout")
     }) || function.db_query_calls.iter().any(|query_call| {

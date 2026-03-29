@@ -395,14 +395,12 @@ fn test_documented_context_detach_is_allowed() {
     })
     .expect("scan should succeed");
 
-    assert!(
-        !report.findings.iter().any(|finding| {
-            matches!(
-                finding.rule_id.as_str(),
-                "missing_context_propagation" | "context_background_used"
-            )
-        })
-    );
+    assert!(!report.findings.iter().any(|finding| {
+        matches!(
+            finding.rule_id.as_str(),
+            "missing_context_propagation" | "context_background_used"
+        )
+    }));
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

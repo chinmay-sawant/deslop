@@ -129,6 +129,8 @@ fn main() -> Result<()> {
 
 fn set_go_semantic_env(enable_semantic: bool) {
     if enable_semantic {
+        // SAFETY: This CLI sets the process environment before starting repository work,
+        // and the variable is used as a simple opt-in flag for child logic in the same process.
         unsafe {
             std::env::set_var(GO_SEMANTIC_ENV_VAR, "1");
         }
