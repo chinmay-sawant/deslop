@@ -1,0 +1,13 @@
+package sample
+
+import (
+	c "context"
+	h "net/http"
+)
+
+func Fetch(ctx c.Context, url string) (*h.Response, error) {
+	_ = ctx
+	aliasContext := c.TODO()
+	_ = aliasContext
+	return h.Get(url)
+}

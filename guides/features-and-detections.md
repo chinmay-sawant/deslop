@@ -184,6 +184,8 @@ Python also reuses shared signals when the parser evidence supports them, includ
 ### Context and blocking signals
 
 - `missing_context`: obvious standard-library context-aware calls such as `http.Get`, `http.NewRequest`, `exec.Command`, or `net.Dial` made from functions that do not accept `context.Context`.
+- `missing_context_propagation`: functions that already accept `context.Context` but still call context-free stdlib APIs such as `http.Get`, `http.NewRequest`, `exec.Command`, or `net.Dial`.
+- `context_background_used`: functions that already accept `context.Context` but still create `context.Background()` or `context.TODO()` locally instead of forwarding the incoming context.
 - `missing_cancel_call`: derived contexts created with `context.WithCancel`, `context.WithTimeout`, or `context.WithDeadline` where deslop cannot find a local `cancel()` or `defer cancel()` call.
 - `sleep_polling`: `time.Sleep` inside loops, which often indicates polling or busy-wait style code.
 - `busy_waiting`: `select { default: ... }` inside loops, which often spins instead of blocking on a channel, timer, or context.

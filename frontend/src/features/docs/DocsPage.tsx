@@ -56,11 +56,15 @@ const goRules: Rule[] = [
   { id: 'panic_on_error', description: 'err != nil branches that jump straight to panic or log.Fatal style exits.' },
   { id: 'error_wrapping_misuse', description: 'fmt.Errorf calls that reference err without %w.' },
   { id: 'missing_context', description: 'Standard-library context-aware calls from functions that do not accept context.Context.' },
+  { id: 'missing_context_propagation', description: 'Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.' },
+  { id: 'context_background_used', description: 'Functions that already accept context.Context but still create context.Background() or context.TODO() locally.' },
   { id: 'missing_cancel_call', description: 'Derived contexts where deslop cannot find a local cancel() or defer cancel() call.' },
   { id: 'sleep_polling', description: 'time.Sleep inside loops — often indicates polling or busy-wait style code.' },
   { id: 'busy_waiting', description: 'select { default: ... } inside loops, which often spins instead of blocking.' },
+  { id: 'goroutine_without_coordination', description: 'Raw go statements without an obvious context or WaitGroup-like coordination signal.' },
   { id: 'goroutine_spawn_in_loop', description: 'Raw go statements launched from inside loops without obvious WaitGroup coordination.' },
   { id: 'goroutine_without_shutdown_path', description: 'Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.' },
+  { id: 'goroutine_derived_context_unmanaged', description: 'Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.' },
   { id: 'mutex_in_loop', description: 'Repeated Lock or RLock acquisition inside loops.' },
   { id: 'blocking_call_while_locked', description: 'Potentially blocking calls observed between Lock and Unlock.' },
   { id: 'string_concat_in_loop', description: 'Repeated string concatenation inside loops when the function is clearly building a string incrementally.' },
@@ -75,8 +79,11 @@ const goRules: Rule[] = [
   { id: 'weak_crypto', description: 'Direct use of weak standard-library crypto packages such as crypto/md5, crypto/sha1, crypto/des, and crypto/rc4.' },
   { id: 'hardcoded_secret', description: 'Secret-like identifiers assigned direct string literals instead of environment or secret-manager lookups.' },
   { id: 'sql_string_concat', description: 'Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf.' },
+  { id: 'inconsistent_package_name', description: 'Directories that mix base Go package names after ignoring the _test suffix.' },
+  { id: 'misgrouped_imports', description: 'Import blocks that place stdlib imports after third-party imports.' },
   { id: 'mixed_receiver_kinds', description: 'Methods on the same receiver type mix pointer and value receivers.' },
   { id: 'malformed_struct_tag', description: 'Struct field tags that do not parse as valid Go tag key/value pairs.' },
+  { id: 'duplicate_struct_tag_key', description: 'Struct field tags that repeat the same key more than once.' },
   { id: 'hallucinated_import_call', description: 'Package-qualified calls that do not match locally indexed symbols for the imported package.' },
   { id: 'hallucinated_local_call', description: 'Same-package calls to symbols not present in the scanned local package context.' },
   { id: 'test_without_assertion_signal', description: 'Tests that call production code without any obvious assertion or failure signal.' },
@@ -298,11 +305,12 @@ function CodeBlock({ code }: { code: string }) {
 const overviewContent = {
   go: {
     title: 'Go Analysis',
-    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and runs over 30 explainable rule families covering naming, error handling, context, concurrency, security, performance, and test quality.',
+    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and now covers repo-wide style checks, context wrapper propagation, derived-context goroutine lifetime analysis, security, performance, and test quality with explainable rules.',
     bullets: [
       '.gitignore-aware walk; skips vendor/ and generated files by default',
       'Parses package names, imports, declared symbols, call sites, and function fingerprints',
       'Builds a repository-local symbol index for same-package and import hallucination checks',
+      'Includes repo-wide package and import style checks plus wrapper-level context propagation heuristics',
       'Produces compact text output by default; full detail and JSON via flags',
       'Supports standalone Go repos and mixed Go + Python + Rust repositories',
     ],
@@ -366,7 +374,7 @@ const limitations = {
     'No interprocedural context propagation. Checks are local to each function.',
     'No proof of goroutine leaks, N+1 queries, or runtime performance regressions — only pattern signals.',
     'Package-method and local-symbol checks are repository-local; external packages are not indexed.',
-    'No struct layout analysis, O(n²) detection, or deeper semantic analysis.',
+    'No receiver-field wrapper propagation, Query versus QueryContext modeling, or deeper semantic analysis yet.',
   ],
   python: [
     'No Python module graph resolution or installed-package awareness.',
@@ -756,7 +764,7 @@ deslop scan --details --json .`} />
           <h2 className="docs-h2">Planned improvements</h2>
           <p className="docs-p">The following capabilities are pending or in development:</p>
           <div className="docs-pill-list">
-            {activeLang === 'go' && ['Stronger repo-wide style checks', 'Deeper goroutine lifetime analysis', 'Better context propagation through wrappers', 'Optional deeper semantic analysis'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
+            {activeLang === 'go' && ['Receiver-based wrapper propagation', 'Nested wrapper context flow', 'Query versus QueryContext expansion', 'Optional deeper semantic analysis'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
             {activeLang === 'python' && ['Installed-package and module-graph awareness', 'Deeper interprocedural asyncio reasoning', 'Optional type-aware data-flow analysis', 'Framework-specific rule packs (Django/FastAPI)'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
             {activeLang === 'rust' && ['Trait resolution', 'Cargo workspace modeling', 'Macro expansion analysis', 'Deeper Rust rule pack', 'Cross-crate symbol resolution'].map((item) => <span key={item} className="docs-pill">{item}</span>)}
           </div>

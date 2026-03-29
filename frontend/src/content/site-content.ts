@@ -154,8 +154,8 @@ export const detectionFamilies: DetectionFamily[] = [
   {
     title: 'Coordination',
     description:
-      'Find shutdown, cancellation, and blocking decisions that often look harmless until systems are under load.',
-    rules: ['Missing context', 'Missing cancel', 'Busy waiting'],
+      'Find shutdown, cancellation, context propagation, and blocking decisions that often look harmless until systems are under load.',
+    rules: ['Wrapper context propagation', 'Derived-context goroutines', 'Busy waiting'],
     icon: BoltIcon,
   },
   {

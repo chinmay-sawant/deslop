@@ -16,8 +16,8 @@ This document is a detailed, checklist-driven plan to add repo-wide style checks
 
 - Add checks that operate across files in a directory and per-file import-order checks.
 - Initial rules:
-  - [ ] `inconsistent_package_name`: detect directories where multiple package names are used (ignoring `_test` suffix differences).
-  - [ ] `misgrouped_imports`: detect files that mix stdlib and third-party imports out-of-order (stdlib imports should not appear after third-party imports in the same import list).
+  - [x] `inconsistent_package_name`: detect directories where multiple package names are used (ignoring `_test` suffix differences).
+  - [x] `misgrouped_imports`: detect files that mix stdlib and third-party imports out-of-order (stdlib imports should not appear after third-party imports in the same import list).
 
 Excluded for Phase 1: license/header checks, enforcing `gofmt` output (Phase 2).
 
@@ -47,32 +47,32 @@ Rule ids must be snake_case and match repository config usage: `inconsistent_pac
 
 Repository paths mentioned below are relative to the project root.
 
-- [ ] Confirm no existing implementation already covers these rules (search):
-  - [ ] Inspect `src/heuristics/mod.rs` to see how repo/file heuristics are registered.
-  - [ ] Inspect `src/heuristics/consistency.rs`, `src/heuristics/naming.rs`, and other heuristics for any overlapping logic.
-  - [ ] Inspect parser `ParsedFile` usage: `src/analysis/types.rs`, `src/analysis/go/parser/mod.rs` to confirm `package_name` and `imports` are available.
+- [x] Confirm no existing implementation already covers these rules (search):
+  - [x] Inspect `src/heuristics/mod.rs` to see how repo/file heuristics are registered.
+  - [x] Inspect `src/heuristics/consistency.rs`, `src/heuristics/naming.rs`, and other heuristics for any overlapping logic.
+  - [x] Inspect parser `ParsedFile` usage: `src/analysis/types.rs`, `src/analysis/go/parser/mod.rs` to confirm `package_name` and `imports` are available.
 
-- [ ] Add new Rust source file: `src/heuristics/style.rs` implementing:
-  - [ ] `pub(super) fn package_name_consistency(files: &[&ParsedFile]) -> Vec<Finding>`
+- [x] Add new Rust source file: `src/heuristics/style.rs` implementing:
+  - [x] `pub(super) fn package_name_consistency(files: &[&ParsedFile]) -> Vec<Finding>`
     - Behavior:
       - Group `files` by parent directory.
       - For each directory, normalize package names by stripping a trailing `_test` suffix.
       - If >1 distinct base package name found, create one `Finding` per directory anchored to a representative file (prefer the earliest file path lexicographically).
       - Evidence: list package names and example file paths.
       - Rule id: `inconsistent_package_name`.
-  - [ ] `pub(super) fn import_grouping_findings(file: &ParsedFile) -> Vec<Finding>`
+  - [x] `pub(super) fn import_grouping_findings(file: &ParsedFile) -> Vec<Finding>`
     - Behavior:
       - Walk imports in declared order, map each import to `is_stdlib: bool` by checking for `.` in the path.
       - If a stdlib import appears after a third-party import, emit a `Finding` with rule id `misgrouped_imports` and evidence describing the offending import order and a short suggestion (e.g., "group stdlib imports before third-party imports").
 
-- [ ] Wire into heuristics pipeline:
-  - [ ] Add `mod style;` to `src/heuristics/mod.rs`.
-  - [ ] In `evaluate_go_file`, call `import_grouping_findings(file)` and extend the file-level findings.
-  - [ ] In `evaluate_go_repo`, call `package_name_consistency(files)` in addition to existing repo-level checks (e.g., `receiver_findings`).
+- [x] Wire into heuristics pipeline:
+  - [x] Add `mod style;` to `src/heuristics/mod.rs`.
+  - [x] In `evaluate_go_file`, call `import_grouping_findings(file)` and extend the file-level findings.
+  - [x] In `evaluate_go_repo`, call `package_name_consistency(files)` in addition to existing repo-level checks (e.g., `receiver_findings`).
 
-- [ ] Documentation and rule metadata
-  - [ ] Add brief descriptions for each rule to the guides or a rules registry if one exists (brief note in this plan suffices for Phase 1).
-  - [ ] Ensure rule ids are usable by `RepoConfig.disabled_rules` and `severity_overrides`.
+- [x] Documentation and rule metadata
+  - [x] Add brief descriptions for each rule to the guides or a rules registry if one exists (brief note in this plan suffices for Phase 1).
+  - [x] Ensure rule ids are usable by `RepoConfig.disabled_rules` and `severity_overrides`.
 
 ---
 
@@ -81,16 +81,16 @@ Repository paths mentioned below are relative to the project root.
 Testing style follows the repository conventions: plain-text Go fixtures live under `tests/fixtures/go` and Rust integration tests in `tests/integration_scan` drive the scanner using those fixtures.
 
 Fixtures to add (plain text files):
-- [ ] `tests/fixtures/go/package_conflict_a.txt` — package name `sample`
-- [ ] `tests/fixtures/go/package_conflict_b.txt` — package name `sample_test` (or a different base name) placed in same directory during test to trigger `inconsistent_package_name`
-- [ ] `tests/fixtures/go/import_misgrouped.txt` — an import block that contains a third-party import followed by a stdlib import (to trigger `misgrouped_imports`)
-- [ ] `tests/fixtures/go/import_grouped.txt` — correctly grouped imports (control)
+- [x] `tests/fixtures/go/package_conflict_a.txt` — package name `sample`
+- [x] `tests/fixtures/go/package_conflict_b.txt` — package name `sample_test` (or a different base name) placed in same directory during test to trigger `inconsistent_package_name`
+- [x] `tests/fixtures/go/import_misgrouped.txt` — an import block that contains a third-party import followed by a stdlib import (to trigger `misgrouped_imports`)
+- [x] `tests/fixtures/go/import_grouped.txt` — correctly grouped imports (control)
 
 Integration tests (Rust) — checklist:
-- [ ] Add test module file `tests/integration_scan/style.rs` with tests that:
-  - [ ] Write fixtures into a temp workspace using the existing `write_fixture` helper.
-  - [ ] Call `scan_repository(&ScanOptions { root: temp_dir.clone(), respect_ignore: true })`.
-  - [ ] Assert that the expected rule_ids appear (or do not appear) in `report.findings`.
+- [x] Add test module file `tests/integration_scan/style.rs` with tests that:
+  - [x] Write fixtures into a temp workspace using the existing `write_fixture` helper.
+  - [x] Call `scan_repository(&ScanOptions { root: temp_dir.clone(), respect_ignore: true })`.
+  - [x] Assert that the expected rule_ids appear (or do not appear) in `report.findings`.
 
 Test file content style note (per repo convention):
 - The Go code for test cases must be in plain text fixture files (as above). The Rust integration test file itself will contain only harness/assert logic, not Go source code.
@@ -106,17 +106,17 @@ Test file content style note (per repo convention):
 
 ## Acceptance criteria
 
-- [ ] New rules produce expected findings on canonical fixtures.
+- [x] New rules produce expected findings on canonical fixtures.
 - [ ] No unrelated false positives on representative real repositories (sample quick-run).
 - [ ] Rules can be toggled via repository config (`disabled_rules`) and severity overrides work.
-- [ ] Performance impact is minor (<= ~5-10% extra heuristics time for large repos).
+- [x] Performance impact is minor (<= ~5-10% extra heuristics time for large repos).
 
 ---
 
 ## Rollout plan
 
-- [ ] Implement with conservative severities and default enabled.
-- [ ] Add docs to `guides/go/planned_improvements/plan1.md` (this file).
+- [x] Implement with conservative severities and default enabled.
+- [x] Add docs to `guides/go/planned_improvements/plan1.md` (this file).
 - [ ] Run CI and monitor for noise; lower severity or add to `disabled_rules` in repos that opt-out.
 - [ ] Phase 2: consider `gofmt` detection and license/header checks if requested.
 
@@ -124,19 +124,14 @@ Test file content style note (per repo convention):
 
 ## Tasks checklist (concrete steps)
 
-- [ ] Search repository for `package_name` and `imports` usage and any existing style checks.
-- [ ] Implement `src/heuristics/style.rs` with `package_name_consistency` and `import_grouping_findings`.
-- [ ] Update `src/heuristics/mod.rs` to register and call new checks.
-- [ ] Add test fixtures under `tests/fixtures/go` (text files only).
-- [ ] Add `tests/integration_scan/style.rs` with test harness to write fixtures and assert findings.
-- [ ] Run unit and integration tests, adjust heuristics for noise.
-- [ ] Add benchmark run and document performance.
+- [x] Search repository for `package_name` and `imports` usage and any existing style checks.
+- [x] Implement `src/heuristics/style.rs` with `package_name_consistency` and `import_grouping_findings`.
+- [x] Update `src/heuristics/mod.rs` to register and call new checks.
+- [x] Add test fixtures under `tests/fixtures/go` (text files only).
+- [x] Add `tests/integration_scan/style.rs` with test harness to write fixtures and assert findings.
+- [x] Run unit and integration tests, adjust heuristics for noise.
+- [x] Add benchmark run and document performance.
 
 ---
 
-If you want, I can now:
-
-- [ ] Search the codebase for existing implementations and report back (I already checked core heuristics for naming/consistency and did not find package/import grouping checks).
-- [ ] Implement Phase 1 Rust code + fixtures + integration tests now.
-
-Which action should I take next?
+Implementation status: phase 1 shipped with heuristic wiring, fixtures, integration coverage, markdown docs, frontend docs, and a benchmark sanity check. Remaining unchecked items are rollout-oriented follow-ups.

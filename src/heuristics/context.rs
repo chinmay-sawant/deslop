@@ -3,6 +3,7 @@ use crate::model::{Finding, Severity};
 
 use super::common::import_alias_lookup;
 
+const CONTEXT_FACTORY_ESCAPES: &[&str] = &["Background", "TODO"];
 const HTTP_CONTEXTLESS_CALLS: &[&str] = &["Get", "Head", "Post", "PostForm", "NewRequest"];
 const EXEC_CONTEXTLESS_CALLS: &[&str] = &["Command"];
 const NET_CONTEXTLESS_CALLS: &[&str] = &["Dial", "DialTimeout"];
@@ -130,4 +131,75 @@ pub(super) fn busy_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
             ],
         })
         .collect()
+}
+
+pub(super) fn propagate_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if !function.has_context_parameter || file.is_test_file {
+        return Vec::new();
+    }
+
+    let import_aliases = import_alias_lookup(&file.imports);
+    let mut findings = Vec::new();
+
+    for call in &function.calls {
+        let Some(receiver) = call.receiver.as_ref() else {
+            continue;
+        };
+        let Some(import_path) = import_aliases.get(receiver) else {
+            continue;
+        };
+
+        if import_path == "context" && CONTEXT_FACTORY_ESCAPES.contains(&call.name.as_str()) {
+            findings.push(Finding {
+                rule_id: "context_background_used".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: call.line,
+                end_line: call.line,
+                message: format!(
+                    "function {} accepts context.Context but creates context.{}() locally",
+                    function.fingerprint.name, call.name
+                ),
+                evidence: vec![
+                    "function signature already accepts context.Context".to_string(),
+                    format!("observed call: {receiver}.{}()", call.name),
+                    "prefer propagating the incoming context instead of starting from Background or TODO"
+                        .to_string(),
+                ],
+            });
+            continue;
+        }
+
+        if !is_contextless_wrapper_call(import_path, &call.name) {
+            continue;
+        }
+
+        findings.push(Finding {
+            rule_id: "missing_context_propagation".to_string(),
+            severity: Severity::Warning,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: call.line,
+            end_line: call.line,
+            message: format!(
+                "function {} accepts context.Context but still calls {}.{} without propagating ctx",
+                function.fingerprint.name, receiver, call.name
+            ),
+            evidence: vec![
+                "function signature already accepts context.Context".to_string(),
+                format!("context-free API call: {receiver}.{} from {import_path}", call.name),
+                "prefer a context-aware variant or request construction that forwards ctx"
+                    .to_string(),
+            ],
+        });
+    }
+
+    findings
+}
+
+fn is_contextless_wrapper_call(import_path: &str, call_name: &str) -> bool {
+    matches!(import_path, "net/http") && HTTP_CONTEXTLESS_CALLS.contains(&call_name)
+        || matches!(import_path, "os/exec") && EXEC_CONTEXTLESS_CALLS.contains(&call_name)
+        || matches!(import_path, "net") && NET_CONTEXTLESS_CALLS.contains(&call_name)
 }

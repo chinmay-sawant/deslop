@@ -219,3 +219,92 @@ fn test_ctx_exec() {
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn test_context_wrapper_slop() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "wrapper.go",
+        go_fixture!("context_wrapper_slop.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "missing_context_propagation")
+    );
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "context_background_used")
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_context_wrapper_clean() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "wrapper.go",
+        go_fixture!("context_wrapper_clean.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "missing_context_propagation")
+    );
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "context_background_used")
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_context_wrapper_alias_slop() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "wrapper_alias.go",
+        go_fixture!("context_wrapper_alias_slop.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "missing_context_propagation"
+            && finding.function_name.as_deref() == Some("Fetch")
+    }));
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "context_background_used"
+            && finding.function_name.as_deref() == Some("Fetch")
+    }));
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

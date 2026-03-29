@@ -24,7 +24,9 @@ use self::concurrency::{
     coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, shutdown_findings,
 };
 use self::consistency::{receiver_findings, tag_findings};
-use self::context::{busy_findings, cancel_findings, ctx_findings, sleep_findings};
+use self::context::{
+    busy_findings, cancel_findings, ctx_findings, propagate_findings, sleep_findings,
+};
 use self::errors::error_findings;
 use self::hallucination::hallucination_findings;
 use self::naming::{generic_finding, overlong_finding, weak_finding};
@@ -76,6 +78,7 @@ pub(crate) fn evaluate_go_file(file: &ParsedFile, index: &RepositoryIndex) -> Ve
         findings.extend(crypto_findings(file, function));
         findings.extend(sql_findings(file, function));
         findings.extend(ctx_findings(file, function));
+        findings.extend(propagate_findings(file, function));
         findings.extend(cancel_findings(file, function));
         findings.extend(sleep_findings(file, function));
         findings.extend(busy_findings(file, function));
