@@ -106,14 +106,14 @@ Define a detailed implementation plan for improving the existing function-level 
   - [ ] `tests/fixtures/python/performance/loop_shapes_positive.txt`
   - [ ] `tests/fixtures/python/performance/loop_shapes_negative.txt`
 - [ ] Add fixture pairs for exception and debug rules:
-  - [ ] `tests/fixtures/python/maintainability/exception_and_debug_positive.txt`
-  - [ ] `tests/fixtures/python/maintainability/exception_and_debug_negative.txt`
+  - [x] `tests/fixtures/python/maintainability/exception_and_debug_positive.txt`
+  - [x] `tests/fixtures/python/maintainability/exception_and_debug_negative.txt`
 - [ ] Add fixture pairs for boundary robustness rules:
-  - [ ] `tests/fixtures/python/maintainability/boundaries_positive.txt`
-  - [ ] `tests/fixtures/python/maintainability/boundaries_negative.txt`
+  - [x] `tests/fixtures/python/maintainability/boundaries_positive.txt`
+  - [x] `tests/fixtures/python/maintainability/boundaries_negative.txt`
 - [ ] Add fixture pairs for branch and literal rules:
-  - [ ] `tests/fixtures/python/maintainability/business_rules_positive.txt`
-  - [ ] `tests/fixtures/python/maintainability/business_rules_negative.txt`
+  - [x] `tests/fixtures/python/maintainability/business_rules_positive.txt`
+  - [x] `tests/fixtures/python/maintainability/business_rules_negative.txt`
 
 ### 4. Make integration tests match rule families instead of one giant catch-all case
 
@@ -139,12 +139,12 @@ Define a detailed implementation plan for improving the existing function-level 
 
 ### Maintainability-focused integration cases
 
-- [ ] `test_python_exception_and_debug_rules_positive`
-- [ ] `test_python_exception_and_debug_rules_negative`
-- [ ] `test_python_boundary_robustness_rules_positive`
-- [ ] `test_python_boundary_robustness_rules_negative`
-- [ ] `test_python_branch_literal_rules_positive`
-- [ ] `test_python_branch_literal_rules_negative`
+- [x] `test_python_exception_and_debug_rules_positive`
+- [x] `test_python_exception_and_debug_rules_negative`
+- [x] `test_python_phase5_boundary_robustness_rules`
+- [x] `test_python_phase5_boundary_robustness_suppressions`
+- [x] `test_python_phase5_business_magic_and_utility_rules`
+- [x] `test_python_phase5_business_magic_and_utility_suppressions`
 
 ## Review Gates
 

@@ -241,6 +241,342 @@ fn test_python_phase5_duplicate_transformation_pipeline_skips_short_helpers() {
 }
 
 #[test]
+fn test_python_duplication_rule_family_positive() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[
+            (
+                "pkg/query_base.py",
+                python_fixture!("duplication/query_fragment_repo_a.txt"),
+            ),
+            (
+                "pkg/query_helpers.py",
+                python_fixture!("duplication/query_fragment_repo_b.txt"),
+            ),
+            (
+                "pkg/query_services.py",
+                python_fixture!("duplication/query_fragment_repo_c.txt"),
+            ),
+            (
+                "pkg/profile_builder.py",
+                python_fixture!("duplication/cross_file_copy_a.txt"),
+            ),
+            (
+                "pkg/account_builder.py",
+                python_fixture!("duplication/cross_file_copy_b.txt"),
+            ),
+            (
+                "pkg/pipeline_a.py",
+                python_fixture!("duplication/transformation_pipeline_a.txt"),
+            ),
+            (
+                "pkg/pipeline_b.py",
+                python_fixture!("duplication/transformation_pipeline_b.txt"),
+            ),
+        ],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "duplicate_query_fragment",
+        "cross_file_copy_paste_function",
+        "duplicate_transformation_pipeline",
+    ] {
+        assert!(
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "expected rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_duplication_rule_family_negative() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[
+            (
+                "pkg/query_constants.py",
+                python_fixture!("duplication/query_fragment_shared_constants.txt"),
+            ),
+            (
+                "pkg/query_templates.py",
+                python_fixture!("duplication/query_fragment_shared_templates.txt"),
+            ),
+            (
+                "pkg/query_consumer_a.py",
+                python_fixture!("duplication/query_fragment_consumer_a.txt"),
+            ),
+            (
+                "pkg/query_consumer_b.py",
+                python_fixture!("duplication/query_fragment_consumer_b.txt"),
+            ),
+            (
+                "pkg/pipeline_helper_a.py",
+                python_fixture!("duplication/transformation_helpers_a.txt"),
+            ),
+            (
+                "pkg/pipeline_helper_b.py",
+                python_fixture!("duplication/transformation_helpers_b.txt"),
+            ),
+            (
+                "pkg/profile_builder.py",
+                python_fixture!("duplication/cross_file_copy_a.txt"),
+            ),
+        ],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "duplicate_query_fragment",
+        "cross_file_copy_paste_function",
+        "duplicate_transformation_pipeline",
+    ] {
+        assert!(
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "did not expect rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_structure_rule_family_positive() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[
+            (
+                "pkg/god_function.py",
+                python_fixture!("structure/god_function_positive.txt"),
+            ),
+            (
+                "pkg/mixed_concerns.py",
+                python_fixture!("structure/mixed_concerns_positive.txt"),
+            ),
+            (
+                "pkg/presenter.py",
+                python_fixture!("structure/over_abstracted_wrapper_positive.txt"),
+            ),
+            (
+                "pkg/session_state.py",
+                python_fixture!("structure/too_many_instance_attributes_positive.txt"),
+            ),
+            (
+                "pkg/parser.py",
+                python_fixture!("structure/name_responsibility_positive.txt"),
+            ),
+            (
+                "pkg/billing.py",
+                python_fixture!("structure/god_class_positive.txt"),
+            ),
+        ],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "god_function",
+        "mixed_concerns_function",
+        "over_abstracted_wrapper",
+        "too_many_instance_attributes",
+        "name_responsibility_mismatch",
+        "god_class",
+    ] {
+        assert!(
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "expected rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_structure_rule_family_negative() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[
+            (
+                "pkg/god_function.py",
+                python_fixture!("structure/god_function_negative.txt"),
+            ),
+            (
+                "pkg/mixed_concerns.py",
+                python_fixture!("structure/mixed_concerns_negative.txt"),
+            ),
+            (
+                "pkg/presenter.py",
+                python_fixture!("structure/over_abstracted_wrapper_negative.txt"),
+            ),
+            (
+                "pkg/session_state.py",
+                python_fixture!("structure/too_many_instance_attributes_negative.txt"),
+            ),
+            (
+                "pkg/parser.py",
+                python_fixture!("structure/name_responsibility_negative.txt"),
+            ),
+            (
+                "pkg/billing.py",
+                python_fixture!("structure/god_class_negative.txt"),
+            ),
+        ],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "god_function",
+        "mixed_concerns_function",
+        "over_abstracted_wrapper",
+        "too_many_instance_attributes",
+        "name_responsibility_mismatch",
+        "god_class",
+    ] {
+        assert!(
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "did not expect rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_ai_smells_rule_family_positive() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[
+            (
+                "pkg/docstrings.py",
+                python_fixture!("ai_smells/docstring_small_helper_positive.txt"),
+            ),
+            (
+                "pkg/naming.py",
+                python_fixture!("ai_smells/mixed_naming_positive.txt"),
+            ),
+            (
+                "pkg/heavy.py",
+                python_fixture!("ai_smells/heavy_imports_positive.txt"),
+            ),
+            (
+                "pkg/comments.py",
+                python_fixture!("ai_smells/commentary_positive.txt"),
+            ),
+        ],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "textbook_docstring_small_helper",
+        "mixed_naming_conventions",
+        "unrelated_heavy_import",
+        "obvious_commentary",
+    ] {
+        assert!(
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "expected rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_ai_smells_rule_family_negative() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[
+            (
+                "pkg/docstrings.py",
+                python_fixture!("ai_smells/docstring_small_helper_negative.txt"),
+            ),
+            (
+                "pkg/naming.py",
+                python_fixture!("ai_smells/mixed_naming_negative.txt"),
+            ),
+            (
+                "pkg/heavy.py",
+                python_fixture!("ai_smells/heavy_imports_negative.txt"),
+            ),
+            (
+                "pkg/comments.py",
+                python_fixture!("ai_smells/commentary_negative.txt"),
+            ),
+        ],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "textbook_docstring_small_helper",
+        "mixed_naming_conventions",
+        "unrelated_heavy_import",
+        "obvious_commentary",
+    ] {
+        assert!(
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "did not expect rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
 fn test_python_phase5_monolithic_module_rule() {
     let temp_dir = create_temp_workspace();
     let mut module = String::from(python_fixture!(
@@ -394,20 +730,10 @@ fn test_python_phase5_business_magic_and_utility_rules() {
     let temp_dir = create_temp_workspace();
     write_files(
         &temp_dir,
-        &[
-            (
-                "pkg/policy.py",
-                python_fixture!("maintainability/business_policy_positive.txt"),
-            ),
-            (
-                "pkg/archive.py",
-                python_fixture!("maintainability/business_archive_positive.txt"),
-            ),
-            (
-                "pkg/flatteners.py",
-                python_fixture!("maintainability/business_flatteners_positive.txt"),
-            ),
-        ],
+        &[(
+            "pkg/business_rules.py",
+            python_fixture!("maintainability/business_rules_positive.txt"),
+        )],
     );
 
     let report = scan_repository(&ScanOptions {
@@ -438,20 +764,10 @@ fn test_python_phase5_business_magic_and_utility_suppressions() {
     let temp_dir = create_temp_workspace();
     write_files(
         &temp_dir,
-        &[
-            (
-                "pkg/policy.py",
-                python_fixture!("maintainability/business_policy_negative.txt"),
-            ),
-            (
-                "pkg/archive.py",
-                python_fixture!("maintainability/business_archive_negative.txt"),
-            ),
-            (
-                "pkg/flatteners.py",
-                python_fixture!("maintainability/business_flatteners_negative.txt"),
-            ),
-        ],
+        &[(
+            "pkg/business_rules.py",
+            python_fixture!("maintainability/business_rules_negative.txt"),
+        )],
     );
 
     let report = scan_repository(&ScanOptions {
@@ -482,20 +798,10 @@ fn test_python_phase5_boundary_robustness_rules() {
     let temp_dir = create_temp_workspace();
     write_files(
         &temp_dir,
-        &[
-            (
-                "pkg/network_sync.py",
-                python_fixture!("maintainability/boundary_network_positive.txt"),
-            ),
-            (
-                "pkg/config_loader.py",
-                python_fixture!("maintainability/boundary_config_positive.txt"),
-            ),
-            (
-                "pkg/cli.py",
-                python_fixture!("maintainability/boundary_cli_positive.txt"),
-            ),
-        ],
+        &[(
+            "pkg/boundaries.py",
+            python_fixture!("maintainability/boundaries_positive.txt"),
+        )],
     );
 
     let report = scan_repository(&ScanOptions {
@@ -526,20 +832,10 @@ fn test_python_phase5_boundary_robustness_suppressions() {
     let temp_dir = create_temp_workspace();
     write_files(
         &temp_dir,
-        &[
-            (
-                "pkg/network_sync.py",
-                python_fixture!("maintainability/boundary_network_negative.txt"),
-            ),
-            (
-                "pkg/config_loader.py",
-                python_fixture!("maintainability/boundary_config_negative.txt"),
-            ),
-            (
-                "pkg/cli.py",
-                python_fixture!("maintainability/boundary_cli_negative.txt"),
-            ),
-        ],
+        &[(
+            "pkg/boundaries.py",
+            python_fixture!("maintainability/boundaries_negative.txt"),
+        )],
     );
 
     let report = scan_repository(&ScanOptions {
@@ -552,6 +848,78 @@ fn test_python_phase5_boundary_robustness_suppressions() {
         "network_boundary_without_timeout",
         "environment_boundary_without_fallback",
         "external_input_without_validation",
+    ] {
+        assert!(
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "did not expect rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_exception_and_debug_rules_positive() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/debug_rules.py",
+            python_fixture!("maintainability/exception_and_debug_positive.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "exception_swallowed",
+        "broad_exception_handler",
+        "eval_exec_usage",
+        "print_debugging_leftover",
+        "commented_out_code",
+    ] {
+        assert!(
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "expected rule {rule_id} to fire"
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_exception_and_debug_rules_negative() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/debug_rules.py",
+            python_fixture!("maintainability/exception_and_debug_negative.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "exception_swallowed",
+        "broad_exception_handler",
+        "eval_exec_usage",
+        "print_debugging_leftover",
+        "commented_out_code",
     ] {
         assert!(
             !report

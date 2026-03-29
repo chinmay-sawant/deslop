@@ -1,0 +1,6 @@
+def format_slug(value):
+    """Small helper."""
+    cleaned = value.strip()
+    if not cleaned:
+        return ""
+    return cleaned.lower()

@@ -1,11 +1,13 @@
-class HTTPClient:
-    pass
-
-class widget_renderer:
-    pass
-
 def render_json():
-    return HTTPClient()
+    return "json"
+
+
+def build_html():
+    return render_json()
 
 def buildHTML():
-    return widget_renderer()
+    return build_html()
+
+
+def formatPayload():
+    return buildHTML()

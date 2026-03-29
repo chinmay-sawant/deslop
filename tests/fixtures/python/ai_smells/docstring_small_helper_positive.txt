@@ -1,0 +1,6 @@
+def format_slug(value):
+    """Return a stable slug for downstream identifiers.
+
+    This helper trims whitespace and lowercases a single label.
+    """
+    return value.strip().lower()

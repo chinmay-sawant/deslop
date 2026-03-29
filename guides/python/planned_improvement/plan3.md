@@ -59,10 +59,10 @@ Convert the Python improvement plan into a concrete roadmap for the heuristics t
   - [x] `tests/fixtures/python/structure/over_abstracted_wrapper_positive.txt`
   - [x] `tests/fixtures/python/structure/over_abstracted_wrapper_negative.txt`
 - [ ] Add `.txt` fixtures for function-shape structure rules:
-  - [ ] `tests/fixtures/python/structure/god_function_positive.txt`
-  - [ ] `tests/fixtures/python/structure/god_function_negative.txt`
-  - [ ] `tests/fixtures/python/structure/mixed_concerns_positive.txt`
-  - [ ] `tests/fixtures/python/structure/mixed_concerns_negative.txt`
+  - [x] `tests/fixtures/python/structure/god_function_positive.txt`
+  - [x] `tests/fixtures/python/structure/god_function_negative.txt`
+  - [x] `tests/fixtures/python/structure/mixed_concerns_positive.txt`
+  - [x] `tests/fixtures/python/structure/mixed_concerns_negative.txt`
   - [x] `tests/fixtures/python/structure/name_responsibility_positive.txt`
   - [x] `tests/fixtures/python/structure/name_responsibility_negative.txt`
 - [ ] Keep monolithic-module scenarios as dedicated large fixtures instead of inline strings where practical.
@@ -87,12 +87,12 @@ Convert the Python improvement plan into a concrete roadmap for the heuristics t
 
 ### 4. Add explicit fixture coverage for AI-smell heuristics
 
-- [ ] `tests/fixtures/python/ai_smells/docstring_small_helper_positive.txt`
-- [ ] `tests/fixtures/python/ai_smells/docstring_small_helper_negative.txt`
+- [x] `tests/fixtures/python/ai_smells/docstring_small_helper_positive.txt`
+- [x] `tests/fixtures/python/ai_smells/docstring_small_helper_negative.txt`
 - [x] `tests/fixtures/python/ai_smells/mixed_naming_positive.txt`
 - [x] `tests/fixtures/python/ai_smells/mixed_naming_negative.txt`
-- [ ] `tests/fixtures/python/ai_smells/heavy_imports_positive.txt`
-- [ ] `tests/fixtures/python/ai_smells/heavy_imports_negative.txt`
+- [x] `tests/fixtures/python/ai_smells/heavy_imports_positive.txt`
+- [x] `tests/fixtures/python/ai_smells/heavy_imports_negative.txt`
 - [x] `tests/fixtures/python/ai_smells/commentary_positive.txt`
 - [x] `tests/fixtures/python/ai_smells/commentary_negative.txt`
 
@@ -128,12 +128,12 @@ Convert the Python improvement plan into a concrete roadmap for the heuristics t
 
 ## Specific Test Cases to Create or Refactor
 
-- [ ] `test_python_structure_rule_family_positive`
-- [ ] `test_python_structure_rule_family_negative`
-- [ ] `test_python_duplication_rule_family_positive`
-- [ ] `test_python_duplication_rule_family_negative`
-- [ ] `test_python_ai_smells_rule_family_positive`
-- [ ] `test_python_ai_smells_rule_family_negative`
+- [x] `test_python_structure_rule_family_positive`
+- [x] `test_python_structure_rule_family_negative`
+- [x] `test_python_duplication_rule_family_positive`
+- [x] `test_python_duplication_rule_family_negative`
+- [x] `test_python_ai_smells_rule_family_positive`
+- [x] `test_python_ai_smells_rule_family_negative`
 - [ ] `test_python_repo_level_duplication_skips_shared_constants`
 - [ ] `test_python_monolithic_module_skips_legitimate_large_modules`
 

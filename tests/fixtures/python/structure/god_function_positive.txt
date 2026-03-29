@@ -1,0 +1,161 @@
+def fetch_profile(client, user_id):
+    return {"id": user_id, "risk": 7, "orders": 6, "balance": -2}
+
+
+def fetch_orders(client, user_id):
+    return [user_id]
+
+
+def load_balance(user_id):
+    return user_id
+
+
+def build_summary(profile, orders, balance):
+    return {
+        "id": profile["id"],
+        "risk": profile["risk"],
+        "orders": len(orders),
+        "balance": balance,
+    }
+
+
+def audit(summary):
+    return summary
+
+
+def notify(summary):
+    return summary
+
+
+def render(summary):
+    return summary
+
+
+def should_archive(summary):
+    return summary["orders"] > 3
+
+
+def save_snapshot(summary):
+    return summary
+
+
+def publish(summary):
+    return summary
+
+
+def has_pending(summary):
+    return summary["risk"] > 5
+
+
+def needs_followup(summary):
+    return summary["balance"] < 0
+
+
+def sync_cache(summary):
+    return summary
+
+
+def send_email(summary):
+    return summary
+
+
+def log_event(summary):
+    return summary
+
+
+def freeze_account(summary):
+    return summary
+
+
+def enqueue(summary):
+    return summary
+
+
+def persist_summary(summary):
+    return summary
+
+
+def refresh_metrics(summary):
+    return summary
+
+
+def emit_alert(summary):
+    return summary
+
+
+def close_out(summary):
+    return summary
+
+
+def blocked_ids():
+    return {"guest"}
+
+
+def format_summary(summary):
+    return str(summary["id"])
+
+
+def orchestrate_user_report(user_ids, client, logger):
+    report = []
+    total = 0
+    for user_id in user_ids:
+        profile = fetch_profile(client, user_id)
+        orders = fetch_orders(client, user_id)
+        balance = load_balance(user_id)
+        summary = build_summary(profile, orders, balance)
+        if not summary:
+            logger.warning("missing summary")
+            continue
+        if summary["risk"] > 8:
+            audit(summary)
+            total += 1
+        elif summary["risk"] > 5:
+            notify(summary)
+            total += 2
+        else:
+            render(summary)
+            total += 3
+
+        if should_archive(summary):
+            save_snapshot(summary)
+        else:
+            publish(summary)
+
+        if has_pending(summary):
+            sync_cache(summary)
+        elif needs_followup(summary):
+            send_email(summary)
+        else:
+            log_event(summary)
+
+        if summary["balance"] < 0:
+            freeze_account(summary)
+        if summary["orders"] > 5:
+            enqueue(summary)
+        if summary["risk"] > 9:
+            emit_alert(summary)
+            persist_summary(summary)
+        elif summary["risk"] > 7:
+            refresh_metrics(summary)
+        else:
+            close_out(summary)
+
+        if total > 10:
+            logger.info("high total")
+        elif total > 5:
+            logger.warning("medium total")
+        else:
+            logger.debug("low total")
+
+        if summary["orders"] == 0:
+            logger.error("empty orders")
+            continue
+        if summary["id"] == "retry":
+            persist_summary(summary)
+            emit_alert(summary)
+
+        if user_id in blocked_ids():
+            logger.info("blocked user")
+            continue
+        report.append(format_summary(summary))
+    return report

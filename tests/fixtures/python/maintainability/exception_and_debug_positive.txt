@@ -1,0 +1,30 @@
+# return cached payload
+
+
+def swallow_payload(source):
+    try:
+        return source.read()
+    except Exception:
+        pass
+
+
+def reload_snapshot(path, logger):
+    try:
+        return open(path).read()
+    except Exception as error:
+        logger.error(error)
+        raise
+
+
+def evaluate_expression(expression):
+    return eval(expression)
+
+
+def apply_script(script, scope):
+    exec(script, scope)
+    return scope
+
+
+def trace_payload(payload):
+    print(payload)
+    return payload
