@@ -54,6 +54,8 @@ mod rust;
 mod rust_advanced;
 #[path = "integration_scan/security.rs"]
 mod security;
+#[path = "integration_scan/style.rs"]
+mod style;
 #[path = "integration_scan/test_quality.rs"]
 mod test_quality;
 

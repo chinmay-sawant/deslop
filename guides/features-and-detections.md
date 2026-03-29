@@ -175,6 +175,8 @@ Python also reuses shared signals when the parser evidence supports them, includ
 
 ### Consistency and tag signals
 
+- `inconsistent_package_name`: files in the same Go directory resolve to different base package names after ignoring the `_test` suffix.
+- `misgrouped_imports`: a Go import block places stdlib imports after third-party imports.
 - `mixed_receiver_kinds`: methods on the same receiver type mix pointer and value receivers.
 - `malformed_struct_tag`: struct field tags that do not parse as valid Go tag key/value pairs.
 - `duplicate_struct_tag_key`: struct field tags that repeat the same key more than once.
@@ -200,6 +202,7 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `goroutine_without_coordination`: raw `go` statements where deslop cannot find an obvious context or WaitGroup-like coordination signal in the same function.
 - `goroutine_spawn_in_loop`: raw `go` statements launched from inside loops without an obvious context or WaitGroup-like coordination signal.
 - `goroutine_without_shutdown_path`: looping goroutine literals that do not show an obvious `ctx.Done()` or done-channel shutdown path.
+- `goroutine_derived_context_unmanaged`: a derived context is created and then used around a likely long-lived goroutine launch before the matching cancel call is observed.
 - `mutex_in_loop`: repeated `Lock` or `RLock` acquisition inside loops.
 - `blocking_call_while_locked`: potentially blocking calls observed between `Lock` and `Unlock`.
 

@@ -91,7 +91,12 @@ fn flatten_use_tree(
                 .to_string();
             let path = combine_path_prefix(prefix.as_deref(), &render_use_path(path_node, source));
 
-            imports.push(build_rust_import_spec(alias, path, is_public));
+            imports.push(build_rust_import_spec(
+                alias,
+                path,
+                is_public,
+                node.start_position().row + 1,
+            ));
         }
         "scoped_use_list" => {
             let next_prefix = node
@@ -120,6 +125,8 @@ fn flatten_use_tree(
                 .unwrap_or_else(|| combine_path_prefix(prefix.as_deref(), "*"));
 
             imports.push(ImportSpec {
+                line: node.start_position().row + 1,
+                group_line: node.start_position().row + 1,
                 alias: "*".to_string(),
                 path: wildcard_path,
                 namespace_path: prefix,
@@ -135,15 +142,22 @@ fn flatten_use_tree(
                 let path = combine_path_prefix(prefix.as_deref(), &render_use_path(node, source));
                 (import_alias(&path), path)
             };
-            imports.push(build_rust_import_spec(alias, path, is_public));
+            imports.push(build_rust_import_spec(
+                alias,
+                path,
+                is_public,
+                node.start_position().row + 1,
+            ));
         }
     }
 }
 
-fn build_rust_import_spec(alias: String, path: String, is_public: bool) -> ImportSpec {
+fn build_rust_import_spec(alias: String, path: String, is_public: bool, line: usize) -> ImportSpec {
     let (namespace_path, imported_name) = rust_import_segments(&path);
 
     ImportSpec {
+        line,
+        group_line: line,
         alias,
         path,
         namespace_path,

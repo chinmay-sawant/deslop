@@ -1,8 +1,8 @@
 ## narrowing_as_casts
 
 ## split_at_and_indexing
-src/analysis/python/parser/general.rs:798:                return &line[..index];
-src/analysis/rust/parser.rs:898:    text[vec_start + 4..].contains("Box<")
+src/analysis/python/parser/general.rs:805:                return &line[..index];
+src/analysis/rust/parser.rs:912:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:305:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:312:    line[start + marker.len()..].starts_with('/')
 src/heuristics/rust/performance.rs:350:                let receiver = &line[start..index];
@@ -14,7 +14,7 @@ src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io
 ## toctou_check_then_open
 
 ## secret_comparisons
-src/analysis/rust/parser.rs:1738:                .any(|name| name == "password")
+src/analysis/rust/parser.rs:1752:                .any(|name| name == "password")
 src/heuristics/rust/mod.rs:151:        .any(|token| normalized == *token || normalized.contains(token))
 tests/integration_scan/security.rs:47:            .any(|finding| finding.rule_id == "hardcoded_secret")
 tests/integration_scan/security.rs:72:            .any(|finding| finding.rule_id == "hardcoded_secret")
