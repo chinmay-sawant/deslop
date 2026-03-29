@@ -49,7 +49,7 @@ export function HomePage() {
                     Install it fast. Keep the workflow local. Keep the findings readable.
                   </h2>
                   <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
-                    deslop ships as a Rust CLI for Go/Python/Rust repositories with explainable static signals, readable output, Cargo installs, published binaries, and GitHub Actions support for automation.
+                    deslop ships as a Rust CLI for Go, Python, and Rust repositories with explainable static signals, repository-local symbol awareness, readable output, Cargo installs, published binaries, and GitHub Actions support for automation.
                   </p>
                 </div>
 
@@ -89,7 +89,7 @@ export function HomePage() {
                 deslop
               </p>
               <p className="mt-4 max-w-md font-['Newsreader'] italic text-[1.15rem] leading-[1.75] text-[var(--muted)]">
-                Static analysis for low-context code, focused on readable findings across Go, Python, and Rust repositories.
+                Static analysis for low-context code, focused on readable, repository-aware findings across Go, Python, and Rust repositories.
               </p>
 
               {/* Language badges */}

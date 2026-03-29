@@ -5,7 +5,7 @@ Functions fingerprinted: 69
 Findings: 67
 Index summary: packages=13 symbols=81 imports=81
 Parse failures: 0
-Timings: discover=18ms parse=48ms index=0ms heuristics=17ms total=85ms
+Timings: discover=2ms parse=47ms index=0ms heuristics=20ms total=71ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/SnapBack/apps/api/main.py:1 module depends on a large number of repository-local modules [tight_module_coupling]

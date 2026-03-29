@@ -166,10 +166,10 @@ export const detectionFamilies: DetectionFamily[] = [
     icon: CpuChipIcon,
   },
   {
-    title: 'Tests and local context',
+    title: 'Tests and repo-local context',
     description:
-      'Differentiate between tests that only gesture at safety and local code paths that appear to reference symbols the project cannot resolve.',
-    rules: ['Placeholder tests', 'Happy-path-only tests', 'Local call misses'],
+      'Differentiate between tests that only gesture at safety and repository-local code paths that appear to reference symbols the scanned project cannot resolve.',
+    rules: ['Placeholder tests', 'Happy-path-only tests', 'Repo-local symbol misses'],
     icon: CircleStackIcon,
   },
 ]
@@ -194,18 +194,18 @@ export const pipelineStages: PipelineStage[] = [
     bullets: [
       'Package names, imports, and declared symbols',
       'Call sites, loop markers, and context clues',
-      'Function-level fingerprints built for later heuristics',
+      'Function-, class-, and module-level evidence built for later heuristics',
     ],
   },
   {
     name: 'Index',
-    summary: 'Build a lightweight repository-local symbol index keyed by package and directory context.',
+    summary: 'Build a lightweight repository-local symbol index keyed by language plus package or module and directory context.',
     detail:
-      'This stage is intentionally modest. It improves local selector and same-package checks without pretending to replace full Go type analysis.',
+      'This stage is intentionally modest. It improves same-package, same-module, and import-qualified checks without pretending to replace full semantic analysis or type resolution.',
     bullets: [
       'Functions, methods, and declared symbol counts',
-      'Package-plus-directory matching to reduce ambiguity',
-      'Import context reused by hallucination heuristics',
+      'Language-scoped package or module matching to reduce ambiguity in mixed repositories',
+      'Import context reused by hallucination heuristics and repo-local structure checks',
     ],
   },
   {
