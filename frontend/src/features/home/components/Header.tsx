@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { navigation, siteMetadata } from '../../../content/site-content'
 import { cn } from '../../../shared/lib/cn'
+import { isHomePath, sitePath } from '../../../shared/lib/sitePath'
 import { useGithubStars } from '../../../shared/lib/useGithubStars'
 import type { Theme } from '../../../shared/lib/useTheme'
 import { Container } from '../../../shared/ui/Container'
@@ -65,11 +66,11 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
 
   const handleInstallClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
-    if (location.pathname === '/' || location.pathname === '' || location.pathname === '/deslop' || location.pathname === '/deslop/') {
+    if (isHomePath(location.pathname)) {
       const el = document.getElementById('install-run')
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' })
-        window.history.pushState(null, '', `${import.meta.env.BASE_URL}#install-run`)
+        window.history.pushState(null, '', sitePath('#install-run'))
       }
     } else {
       // If we are on /docs, navigate back to home
@@ -77,7 +78,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
       // Small delay to allow react to render the homepage before scrolling natively
       setTimeout(() => {
         document.getElementById('install-run')?.scrollIntoView({ behavior: 'smooth' })
-        window.history.pushState(null, '', `${import.meta.env.BASE_URL}#install-run`)
+        window.history.pushState(null, '', sitePath('#install-run'))
       }, 100)
     }
   }
@@ -100,7 +101,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
             <nav className="hidden items-center gap-1 md:flex">
               {navigation.map((item) => (
                 item.href.includes('#') ? (
-                  <a key={item.href} href={item.href} className={navLinkClassName} onClick={handleInstallClick}>
+                  <a key={item.href} href={sitePath(item.href)} className={navLinkClassName} onClick={handleInstallClick}>
                     {item.label}
                   </a>
                 ) : (
@@ -114,7 +115,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
             <div className="hidden items-center gap-3 md:flex">
               <ThemeToggleButton theme={theme} onToggleTheme={onToggleTheme} />
               <a 
-                href="/#install-run" 
+                href={sitePath('#install-run')} 
                 className="button-primary"
                 onClick={handleInstallClick}
               >
@@ -146,7 +147,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
                 <div className="flex flex-col gap-1">
                   {navigation.map((item) => (
                     item.href.includes('#') ? (
-                      <a key={item.href} href={item.href} className={cn(navLinkClassName, 'px-4 py-3')} onClick={handleInstallClick}>
+                      <a key={item.href} href={sitePath(item.href)} className={cn(navLinkClassName, 'px-4 py-3')} onClick={handleInstallClick}>
                         {item.label}
                       </a>
                     ) : (
@@ -157,7 +158,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
                   ))}
                 </div>
                 <a 
-                  href="/#install-run" 
+                  href={sitePath('#install-run')} 
                   className="button-primary mt-3 w-full"
                   onClick={handleInstallClick}
                 >

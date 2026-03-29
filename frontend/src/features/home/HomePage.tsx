@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom'
 import {
   footerLinks,
 } from '../../content/site-content'
+import { sitePath } from '../../shared/lib/sitePath'
 import { Container } from '../../shared/ui/Container'
 import { SectionIntro } from '../../shared/ui/SectionIntro'
 import { HeroSection } from './components/HeroSection'
@@ -55,14 +56,14 @@ export function HomePage() {
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row lg:flex-row">
                   <a 
-                    href="#install-run" 
+                    href={sitePath('#install-run')} 
                     className="button-primary"
                     onClick={(e) => {
                       const el = document.getElementById('install-run')
                       if (el) {
                         e.preventDefault()
                         el.scrollIntoView({ behavior: 'smooth' })
-                        window.history.pushState(null, '', '/deslop/#install-run')
+                        window.history.pushState(null, '', sitePath('#install-run'))
                       }
                     }}
                   >
@@ -111,7 +112,7 @@ export function HomePage() {
               {footerLinks.map((link) => (
                 <a
                   key={link.href}
-                  href={link.href}
+                  href={link.href.startsWith('http') ? link.href : sitePath(link.href)}
                   className="group flex items-center gap-2 text-sm text-[var(--muted)] transition-colors duration-150 hover:text-[var(--text-strong)]"
                 >
                   <span>{link.label}</span>

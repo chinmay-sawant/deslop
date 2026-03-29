@@ -12,6 +12,12 @@ import '@fontsource/ibm-plex-mono/500.css'
 import './index.css'
 import App from './app/App'
 
+const redirectedPath = new URLSearchParams(window.location.search).get('p')
+
+if (redirectedPath) {
+  window.history.replaceState(null, '', redirectedPath)
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL}>

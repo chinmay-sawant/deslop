@@ -104,7 +104,7 @@ export const siteMetadata: SiteMetadata = {
 }
 
 export const navigation: NavItem[] = [
-  { label: 'Install and run', href: '/#install-run' },
+  { label: 'Install and run', href: '#install-run' },
   { label: 'Documentation', href: '/docs' },
 ]
 
@@ -330,9 +330,9 @@ export const metrics: Metric[] = [
 ]
 
 export const footerLinks: NavItem[] = [
-  { label: 'Back to top', href: '/#top' },
+  { label: 'Back to top', href: '#top' },
   { label: 'Documentation', href: '/docs' },
-  { label: 'Install and run', href: '/#install-run' },
+  { label: 'Install and run', href: '#install-run' },
   { label: 'GitHub', href: 'https://github.com/chinmay-sawant/deslop' },
 ]
 
