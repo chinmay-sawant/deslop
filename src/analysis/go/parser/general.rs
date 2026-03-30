@@ -1,7 +1,8 @@
 use tree_sitter::Node;
 
 use crate::analysis::{
-    CallSite, DeclaredSymbol, ImportSpec, NamedLiteral, StructTag, TestFunctionSummary,
+    CallSite, DeclaredSymbol, GoFieldSummary, GoStructSummary, ImportSpec, InterfaceSummary,
+    NamedLiteral, PackageVarSummary, StructTag, TestFunctionSummary,
 };
 use crate::model::SymbolKind;
 
@@ -94,6 +95,183 @@ pub(super) fn collect_symbols(root: Node<'_>, source: &str) -> Vec<DeclaredSymbo
     visit_symbols(root, source, &mut symbols);
     symbols.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
     symbols
+}
+
+pub(super) fn collect_package_vars(root: Node<'_>, source: &str) -> Vec<PackageVarSummary> {
+    let mut vars = Vec::new();
+    visit_package_vars(root, source, &mut vars);
+    vars.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    vars
+}
+
+fn visit_package_vars(node: Node<'_>, source: &str, vars: &mut Vec<PackageVarSummary>) {
+    if node.kind() == "var_spec" && is_package_scope(node) {
+        vars.extend(extract_package_vars(node, source));
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_package_vars(child, source, vars);
+    }
+}
+
+fn extract_package_vars(node: Node<'_>, source: &str) -> Vec<PackageVarSummary> {
+    let Some(name_node) = find_var_name_node(node) else {
+        return Vec::new();
+    };
+    let names = collect_identifiers(name_node, source);
+    if names.is_empty() {
+        return Vec::new();
+    }
+
+    let type_text = node
+        .child_by_field_name("type")
+        .and_then(|type_node| source.get(type_node.byte_range()))
+        .map(|text| text.trim().to_string());
+    let values = find_var_value_node(node)
+        .map(collect_expression_nodes)
+        .unwrap_or_default();
+
+    names
+        .into_iter()
+        .enumerate()
+        .map(|(index, (name, line))| PackageVarSummary {
+            is_pub: is_exported_name(&name),
+            line,
+            name,
+            type_text: type_text.clone(),
+            value_text: values
+                .get(index)
+                .and_then(|value_node| source.get(value_node.byte_range()))
+                .map(|text| text.trim().to_string()),
+        })
+        .collect()
+}
+
+pub(super) fn collect_interface_summaries(root: Node<'_>, source: &str) -> Vec<InterfaceSummary> {
+    let mut summaries = Vec::new();
+    visit_interface_summaries(root, source, &mut summaries);
+    summaries.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    summaries
+}
+
+fn visit_interface_summaries(
+    node: Node<'_>,
+    source: &str,
+    summaries: &mut Vec<InterfaceSummary>,
+) {
+    if node.kind() == "type_spec"
+        && let Some(summary) = extract_interface_summary(node, source)
+    {
+        summaries.push(summary);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_interface_summaries(child, source, summaries);
+    }
+}
+
+fn extract_interface_summary(node: Node<'_>, source: &str) -> Option<InterfaceSummary> {
+    let name_node = node.child_by_field_name("name")?;
+    let type_node = node.child_by_field_name("type")?;
+    if type_node.kind() != "interface_type" {
+        return None;
+    }
+
+    let name = source.get(name_node.byte_range())?.to_string();
+    let text = source.get(type_node.byte_range())?;
+    let methods = text
+        .lines()
+        .filter_map(|line| {
+            let trimmed = line.trim();
+            if trimmed.is_empty() || trimmed == "interface{" || trimmed == "interface {" || trimmed == "}" {
+                return None;
+            }
+            let name = trimmed.split('(').next()?.trim();
+            is_identifier_name(name).then(|| name.to_string())
+        })
+        .collect::<Vec<_>>();
+
+    Some(InterfaceSummary {
+        name: name.clone(),
+        line: node.start_position().row + 1,
+        is_pub: is_exported_name(&name),
+        methods,
+    })
+}
+
+pub(super) fn collect_go_structs(root: Node<'_>, source: &str) -> Vec<GoStructSummary> {
+    let mut structs = Vec::new();
+    visit_go_structs(root, source, &mut structs);
+    structs.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    structs
+}
+
+fn visit_go_structs(node: Node<'_>, source: &str, structs: &mut Vec<GoStructSummary>) {
+    if node.kind() == "type_spec"
+        && let Some(summary) = extract_go_struct_summary(node, source)
+    {
+        structs.push(summary);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_go_structs(child, source, structs);
+    }
+}
+
+fn extract_go_struct_summary(node: Node<'_>, source: &str) -> Option<GoStructSummary> {
+    let name_node = node.child_by_field_name("name")?;
+    let type_node = node.child_by_field_name("type")?;
+    if type_node.kind() != "struct_type" {
+        return None;
+    }
+
+    let name = source.get(name_node.byte_range())?.to_string();
+    let struct_text = source.get(type_node.byte_range())?;
+    let base_line = type_node.start_position().row + 1;
+    let mut fields = Vec::new();
+
+    for (offset, line) in struct_text.lines().enumerate() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() || trimmed == "struct{" || trimmed == "struct {" || trimmed == "}" {
+            continue;
+        }
+
+        let without_tag = trimmed.split('`').next().unwrap_or(trimmed).trim();
+        let mut parts = without_tag.split_whitespace();
+        let Some(first) = parts.next() else {
+            continue;
+        };
+        let Some(second) = parts.next() else {
+            continue;
+        };
+        let remaining_parts = parts.collect::<Vec<_>>();
+
+        if first == "//" {
+            continue;
+        }
+
+        for field_name in first.split(',').map(str::trim).filter(|name| !name.is_empty()) {
+            fields.push(GoFieldSummary {
+                name: field_name.to_string(),
+                line: base_line + offset,
+                type_text: std::iter::once(second)
+                    .chain(remaining_parts.iter().copied())
+                    .collect::<Vec<_>>()
+                    .join(" "),
+                is_pub: is_exported_name(field_name),
+            });
+        }
+    }
+
+    Some(GoStructSummary {
+        name: name.clone(),
+        line: node.start_position().row + 1,
+        is_pub: is_exported_name(&name),
+        fields,
+    })
 }
 
 fn visit_symbols(node: Node<'_>, source: &str, symbols: &mut Vec<DeclaredSymbol>) {
@@ -376,6 +554,10 @@ pub(super) fn is_identifier_name(text: &str) -> bool {
             .chars()
             .next()
             .is_some_and(|character| character == '_' || character.is_ascii_alphabetic())
+}
+
+fn is_exported_name(text: &str) -> bool {
+    text.chars().next().is_some_and(|character| character.is_ascii_uppercase())
 }
 
 pub(super) fn collect_pkg_strings(root: Node<'_>, source: &str) -> Vec<NamedLiteral> {

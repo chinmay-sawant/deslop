@@ -2,78 +2,59 @@
 
 Date: 2026-03-30
 
+## Status
+
+- [x] Implemented on 2026-03-30.
+- [x] Verification passed with `cargo test rust_advanceplan2`.
+- [x] Parser evidence regression passed with `cargo test test_collects_advanceplan2_rust_summaries`.
+
 ## Objective
 
 Add a Rust rule family for builder misuse, option-bag configuration types, and multi-flag state encoding that often compiles cleanly but leaves invalid states easy to construct.
 
 ## Existing Coverage Explicitly Excluded
 
-This plan must not duplicate:
+This plan does not duplicate:
 
 - `rust_domain_impossible_combination`
 - `rust_domain_default_produces_invalid`
 - `rust_domain_optional_secret_default`
 - `rust_domain_raw_primitive`
 
-The current domain pack already covers a subset of invalid-state modeling. This phase expands into builder workflows and broader configuration/state encodings.
+## Shipped Rules
 
-## Candidate Rule Inventory
+- [x] `rust_option_bag_config`
+- [x] `rust_builder_without_validate`
+- [x] `rust_constructor_many_flags`
+- [x] `rust_partial_init_escape`
+- [x] `rust_boolean_state_machine`
 
-- [ ] `rust_option_bag_config`
-  - Detect config or request structs with many `Option<_>` fields and little evidence of a validating constructor or build step.
-- [ ] `rust_builder_without_validate`
-  - Detect builder types that collect configuration state but expose `build()` without an obvious validation or required-field check.
-- [ ] `rust_constructor_many_flags`
-  - Detect constructors or public associated functions with multiple boolean parameters that encode behavior through flags.
-- [ ] `rust_partial_init_escape`
-  - Detect partially configured structs that are returned or stored before an explicit finalize or build step.
-- [ ] `rust_boolean_state_machine`
-  - Detect state encoded through multiple booleans or `Option` pairs when an enum or dedicated state type would be clearer.
+## Implementation Notes
 
-## Why These Rules Belong In Advance Plan 2
-
-- [ ] They address a recurrent class of generated Rust code: configuration types that grow by accretion rather than by explicit state modeling.
-- [ ] They complement the existing domain-modeling pack without restating the same secret or default-value findings.
-- [ ] The rules are realistically implementable with struct summaries, impl summaries, and simple method-shape analysis.
+- [x] Reused struct summaries and parsed function signatures rather than inventing impl-only metadata.
+- [x] Kept `rust_option_bag_config` thresholded to larger config-like structs with many `Option<_>` fields and no obvious validation method.
+- [x] Used conservative body-local markers for `build()` validation and partial-initialization escape checks.
 
 ## Parser And Evidence Work
 
-- [ ] Extend Rust summaries with lightweight impl and method metadata:
-  - [ ] builder-like type names
-  - [ ] presence of `build`, `finish`, `validate`, or `new` methods
-  - [ ] constructor parameter counts and boolean parameter positions
-- [ ] Preserve field counts for `Option<_>` and boolean fields on config-like structs.
-- [ ] Track whether a `build()` method visibly checks for missing required state before constructing the output type.
+- [x] Reused shared Rust function signature text for constructor-like boolean-flag detection.
+- [x] Reused struct field counts plus existing `Option` and `bool` field summaries for config and state-shape checks.
+- [x] Kept validation reasoning local to method names and body markers such as `validate`, `ok_or`, `Err`, and `missing`.
 
-## Implementation Checklist
+## Fixtures And Tests
 
-- [ ] Add parser tests for impl summaries and constructor signature capture.
-- [ ] Implement config and builder heuristics in a dedicated Rust module.
-- [ ] Use conservative thresholds so small builder types or honest compatibility shims do not trigger.
-- [ ] Add suppressions for generated schema types, serde migration shells, and clearly validated constructors.
+- [x] Added grouped builder and config positive and clean fixtures under `tests/fixtures/rust/advanceplan2/`.
+- [x] Added grouped integration coverage in `tests/integration_scan/rust_advanceplan2.rs`.
+- [x] Validated enum-backed states, validated builders, and narrow constructors as representative clean coverage.
 
-## Fixture Plan
+## Acceptance
 
-- [ ] Positive fixtures:
-  - [ ] `option_bag_config_positive.rs.txt`
-  - [ ] `builder_without_validate_positive.rs.txt`
-  - [ ] `constructor_many_flags_positive.rs.txt`
-  - [ ] `partial_init_escape_positive.rs.txt`
-  - [ ] `boolean_state_machine_positive.rs.txt`
-- [ ] Negative fixtures:
-  - [ ] enum-backed state models
-  - [ ] builders with explicit validation and typed required fields
-  - [ ] narrow constructors with one honest flag
-  - [ ] compatibility DTOs kept private and wrapped by validated constructors
-
-## Acceptance Criteria
-
-- [ ] Findings explain the invalid-state risk, not just the raw field count.
-- [ ] The rule family stays clearly separate from the shipped domain-modeling pack.
-- [ ] Parser enrichment remains modest and reusable for future Rust API-shape heuristics.
+- [x] Findings explain the invalid-state risk rather than only counting fields.
+- [x] The rule family stays distinct from the shipped Rust domain-modeling pack.
+- [x] The shipped heuristics remain modest, conservative, and reusable for future Rust API-shape work.
 
 ## Non-Goals
 
-- [ ] Full typestate verification.
-- [ ] Ownership-proof analysis across multiple impl blocks or crates.
-- [ ] Enforcing builders for every configuration type.
+- [x] Full typestate verification.
+- [x] Ownership-proof analysis across multiple impl blocks or crates.
+- [x] Enforcing builders for every configuration type.

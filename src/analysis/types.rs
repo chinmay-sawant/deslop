@@ -19,6 +19,14 @@ pub(crate) struct ParsedFile {
     pub imports: Vec<ImportSpec>,
     pub symbols: Vec<DeclaredSymbol>,
     pub class_summaries: Vec<ClassSummary>,
+    pub package_vars: Vec<PackageVarSummary>,
+    pub interfaces: Vec<InterfaceSummary>,
+    pub go_structs: Vec<GoStructSummary>,
+    pub module_scope_calls: Vec<TopLevelCallSummary>,
+    pub top_level_bindings: Vec<TopLevelBindingSummary>,
+    pub python_models: Vec<PythonModelSummary>,
+    pub rust_statics: Vec<RustStaticSummary>,
+    pub rust_enums: Vec<RustEnumSummary>,
     // Rust heuristics consume conservative struct summaries so they can stay syntax-driven.
     pub structs: Vec<StructSummary>,
 }
@@ -26,6 +34,8 @@ pub(crate) struct ParsedFile {
 #[derive(Debug, Clone)]
 pub(crate) struct ParsedFunction {
     pub fingerprint: FunctionFingerprint,
+    pub signature_text: String,
+    pub body_start_line: usize,
     pub calls: Vec<CallSite>,
     pub exception_handlers: Vec<ExceptionHandler>,
     pub has_context_parameter: bool,
@@ -199,10 +209,79 @@ pub(crate) struct DeclaredSymbol {
 }
 
 #[derive(Debug, Clone)]
+pub(crate) struct PackageVarSummary {
+    pub name: String,
+    pub line: usize,
+    pub type_text: Option<String>,
+    pub value_text: Option<String>,
+    pub is_pub: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct InterfaceSummary {
+    pub name: String,
+    pub line: usize,
+    pub is_pub: bool,
+    pub methods: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct GoFieldSummary {
+    pub name: String,
+    pub line: usize,
+    pub type_text: String,
+    pub is_pub: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct GoStructSummary {
+    pub name: String,
+    pub line: usize,
+    pub is_pub: bool,
+    pub fields: Vec<GoFieldSummary>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct TopLevelCallSummary {
+    pub line: usize,
+    pub receiver: Option<String>,
+    pub name: String,
+    pub text: String,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct TopLevelBindingSummary {
+    pub name: String,
+    pub line: usize,
+    pub value_text: String,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PythonFieldSummary {
+    pub name: String,
+    pub line: usize,
+    pub annotation_text: Option<String>,
+    pub default_text: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PythonModelSummary {
+    pub name: String,
+    pub line: usize,
+    pub base_classes: Vec<String>,
+    pub decorators: Vec<String>,
+    pub is_dataclass: bool,
+    pub is_typed_dict: bool,
+    pub fields: Vec<PythonFieldSummary>,
+    pub method_names: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
 pub(crate) struct FieldSummary {
     pub line: usize,
     pub name: String,
     pub type_text: String,
+    pub attributes: Vec<String>,
     pub is_pub: bool,
     pub is_option: bool,
     pub is_primitive: bool,
@@ -215,12 +294,34 @@ pub(crate) struct StructSummary {
     pub name: String,
     pub fields: Vec<FieldSummary>,
     pub derives: Vec<String>,
+    pub attributes: Vec<String>,
     pub has_debug_derive: bool,
     pub has_default_derive: bool,
     pub has_serialize_derive: bool,
     pub has_deserialize_derive: bool,
     pub visibility_pub: bool,
     pub impl_default: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct RustStaticSummary {
+    pub line: usize,
+    pub name: String,
+    pub type_text: String,
+    pub value_text: Option<String>,
+    pub visibility_pub: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct RustEnumSummary {
+    pub line: usize,
+    pub name: String,
+    pub variant_count: usize,
+    pub derives: Vec<String>,
+    pub attributes: Vec<String>,
+    pub has_serialize_derive: bool,
+    pub has_deserialize_derive: bool,
+    pub visibility_pub: bool,
 }
 
 #[derive(Debug, Clone)]

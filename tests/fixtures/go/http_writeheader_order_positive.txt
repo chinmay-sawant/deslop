@@ -1,0 +1,8 @@
+package sample
+
+import "net/http"
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+	_, _ = w.Write([]byte("ok"))
+	w.WriteHeader(http.StatusAccepted)
+}

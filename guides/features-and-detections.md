@@ -96,6 +96,39 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 - `rust_large_future_stack`: large allocations may be captured across await points and bloat future size.
 - `rust_aos_hot_path`: repeated struct-field dereferences inside a loop may indicate an array-of-structs hot path.
 
+### Rust API surface signals
+
+- `rust_public_anyhow_result`: public library-facing APIs that return `anyhow`-style `Result` types instead of a clearer domain error surface.
+- `rust_public_box_dyn_error`: public APIs that expose `Box<dyn Error>` rather than a clearer error contract.
+- `rust_borrowed_string_api`: public signatures that borrow `&String` where `&str` would be more general.
+- `rust_borrowed_vec_api`: public signatures that borrow `&Vec<T>` where `&[T]` would better preserve flexibility.
+- `rust_borrowed_pathbuf_api`: public signatures that borrow `&PathBuf` where `&Path` is the more general contract.
+- `rust_public_bool_parameter_api`: public functions or methods that expose a raw boolean mode switch in the signature.
+
+### Rust shared-state and interior-mutability signals
+
+- `rust_pub_interior_mutability_field`: public structs that expose `Mutex`, `RwLock`, `RefCell`, `Cell`, or similar interior-mutable fields directly.
+- `rust_global_lock_state`: `static`, `Lazy`, or `OnceLock` globals that wrap mutable shared state in lock-based containers.
+- `rust_arc_mutex_option_state`: `Arc<Mutex<Option<T>>>`-style state bags that hide lifecycle state behind nested mutation layers.
+- `rust_mutex_wrapped_collection`: collection-plus-lock fields embedded directly in public or central state structs.
+- `rust_rc_refcell_domain_model`: domain-style structs built around `Rc<RefCell<T>>` instead of clearer ownership boundaries.
+
+### Rust serde and wire-contract signals
+
+- `rust_serde_untagged_enum_boundary`: boundary-facing enums that derive `#[serde(untagged)]`, making wire formats easier to confuse.
+- `rust_serde_default_on_required_field`: required-looking contract fields that opt into `#[serde(default)]`.
+- `rust_serde_flatten_catchall`: `#[serde(flatten)]` catch-all maps or loose value bags that absorb unknown fields.
+- `rust_serde_unknown_fields_allowed`: strict-looking config or request structs that deserialize without `deny_unknown_fields`.
+- `rust_stringly_typed_enum_boundary`: enum-like boundary fields modeled as `String` instead of a dedicated enum.
+
+### Rust builder and state-modeling signals
+
+- `rust_option_bag_config`: config-like structs with many `Option<_>` fields and no obvious validation path.
+- `rust_builder_without_validate`: builders that expose `build()` without an obvious validation step.
+- `rust_constructor_many_flags`: constructor-like APIs that use multiple boolean flags to encode behavior.
+- `rust_partial_init_escape`: constructor-like functions that return or store partially initialized struct shapes.
+- `rust_boolean_state_machine`: stateful structs that encode state through multiple booleans instead of a dedicated enum.
+
 ### Rust domain-modeling signals
 
 - `rust_domain_raw_primitive`: business-facing data is stored as a raw primitive instead of a stronger domain type.
@@ -135,6 +168,10 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 - `list_membership_in_loop`: repeated membership checks against obviously list-like containers inside loops.
 - `repeated_len_in_loop`: repeated `len(...)` checks inside loops when the receiver appears unchanged locally.
 - `builtin_reduction_candidate`: loop shapes that look like obvious `sum`, `any`, or `all` candidates.
+- `untracked_asyncio_task`: `asyncio.create_task(...)` or similar task creation whose handle is immediately discarded.
+- `background_task_exception_unobserved`: background task bindings with no obvious await, callback, supervisor, or observation path.
+- `async_lock_held_across_await`: async lock scopes or explicit `acquire()` / `release()` regions that continue across unrelated `await` points.
+- `async_retry_sleep_without_backoff`: retry-style async loops that sleep a fixed interval with no visible backoff, jitter, or bounded retry policy.
 - `god_function`: very large Python functions with high control-flow and call-surface concentration.
 - `god_class`: Python classes that concentrate unusually high method count, public surface area, and mutable instance state.
 - `monolithic_init_module`: `__init__.py` files that carry enough imports and behavior to look like monolithic modules.
@@ -142,6 +179,12 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 - `too_many_instance_attributes`: classes that assign an unusually large number of instance attributes across their methods. The current policy flags 10-plus attributes conservatively and escalates at 20-plus attributes when the class still carries multiple methods.
 - `eager_constructor_collaborators`: constructors that instantiate several collaborators eagerly inside `__init__`.
 - `over_abstracted_wrapper`: ceremonial wrapper-style or tiny data-container classes that add little beyond storing constructor state and forwarding one small behavior.
+- `mutable_default_argument`: function parameters that use mutable defaults such as `[]`, `{}`, or `set()` directly in the signature.
+- `dataclass_mutable_default`: dataclass fields that use mutable defaults instead of `default_factory`.
+- `dataclass_heavy_post_init`: dataclass `__post_init__` methods that perform I/O, subprocess, network, or heavyweight client setup.
+- `option_bag_model`: dataclass or `TypedDict` models that accumulate many optional fields and boolean switches.
+- `public_any_type_leak`: public functions or model fields that expose `Any`, `object`, or similarly wide contracts.
+- `typeddict_unchecked_access`: direct indexing of optional `TypedDict` keys without an obvious guard path.
 - `mixed_concerns_function`: functions that mix HTTP, persistence, and filesystem-style concerns in one body.
 - `name_responsibility_mismatch`: read-style, transformation-style, or utility-style names that still perform mutation or own multiple infrastructure concerns.
 - `hardcoded_business_rule`: business-facing functions that embed policy thresholds or status outcomes directly in branch logic instead of naming that policy explicitly.
@@ -150,6 +193,11 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 - `network_boundary_without_timeout`: request, sync, or job-style Python functions that call HTTP boundaries with no obvious timeout or retry policy.
 - `environment_boundary_without_fallback`: startup or configuration functions that read environment state with no visible fallback or validation path.
 - `external_input_without_validation`: request or CLI entry points that trust external input without obvious validation or guard checks.
+- `unsafe_yaml_loader`: `yaml.load(...)` or `full_load(...)` style loaders used where safe loading is more appropriate.
+- `pickle_deserialization_boundary`: `pickle.load(s)` or `dill.load(s)` style deserialization in production code.
+- `subprocess_shell_true`: subprocess boundaries that enable `shell=True`.
+- `tar_extractall_unfiltered`: `tarfile.extractall(...)` without an obvious filter, members list, or path-validation helper.
+- `tempfile_without_cleanup`: temporary files or directories created without a visible cleanup or context-manager ownership path.
 - `deep_inheritance_hierarchy`: repository-local Python class chains with unusually deep inheritance depth.
 - `tight_module_coupling`: modules that depend on a large number of repository-local Python modules.
 - `textbook_docstring_small_helper`: tiny helpers with long, textbook-style docstrings that restate obvious behavior.
@@ -170,6 +218,12 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 - `cross_file_repeated_literal`: repeated long literals across multiple Python files in the same repository slice.
 - `duplicate_query_fragment`: repeated SQL-like or query-like string fragments across multiple Python files after case and whitespace normalization.
 - `duplicate_transformation_pipeline`: repeated ordered parse, validate, transform, enrich, aggregate, or serialize stage sequences across functions in multiple Python files.
+- `import_time_network_call`: module-scope HTTP or socket calls executed while the module is imported.
+- `import_time_file_io`: module-scope file reads, writes, or directory scans that happen during import.
+- `import_time_subprocess`: subprocess launches triggered from module scope during import.
+- `module_singleton_client_side_effect`: eagerly constructed network, database, or cloud clients bound at module scope.
+- `mutable_module_global_state`: mutable module globals updated from multiple functions.
+- `import_time_config_load`: module-scope configuration or secret loading that runs during import instead of an explicit startup path.
 
 Python also reuses shared signals when the parser evidence supports them, including `hardcoded_secret`, comment-style findings based on docstrings, `full_dataset_load`, `string_concat_in_loop`, and conservative test-quality findings.
 
@@ -210,6 +264,38 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `goroutine_derived_context_unmanaged`: a derived context is created and then used around a likely long-lived goroutine launch before the matching cancel call is observed.
 - `mutex_in_loop`: repeated `Lock` or `RLock` acquisition inside loops.
 - `blocking_call_while_locked`: potentially blocking calls observed between `Lock` and `Unlock`.
+
+### Channel and timer lifecycle signals
+
+- `range_over_local_channel_without_close`: a function ranges over a locally owned channel without an observed `close(ch)` path in the same function.
+- `double_close_local_channel`: the same locally created channel appears to be closed more than once in one function body.
+- `send_after_local_close_risk`: a locally owned channel is closed and later used in a send expression.
+- `time_after_in_loop`: `time.After(...)` is allocated inside a loop instead of reusing a timer or deadline mechanism.
+- `ticker_without_stop`: `time.NewTicker(...)` is created without an observed `Stop()` call in the owning function.
+
+### HTTP boundary signals
+
+- `http_response_body_not_closed`: an HTTP response is acquired locally without an observed `resp.Body.Close()` call.
+- `http_client_without_timeout`: a local `http.Client{}` literal is constructed without an explicit timeout.
+- `http_server_without_timeouts`: an explicit `http.Server{}` literal omits common timeout fields such as `ReadTimeout`, `WriteTimeout`, or `IdleTimeout`.
+- `http_status_ignored_before_decode`: response decoding or body consumption happens with no visible `StatusCode` check.
+- `http_writeheader_after_write`: a handler writes the response body before calling `WriteHeader(...)`, making the later status-setting call misleading.
+
+### Resource cleanup signals
+
+- `file_handle_without_close`: a file handle opened via `os.Open`, `os.Create`, or `os.OpenFile` lacks an observed `Close()` path in the owning function.
+- `rows_without_close`: a query result handle looks locally owned but no `rows.Close()` call is observed.
+- `stmt_without_close`: a prepared statement or similar closable DB handle lacks an observed `Close()` call.
+- `tx_without_rollback_guard`: a transaction is begun and later committed with no observed rollback guard.
+- `defer_in_loop_resource_growth`: a `defer` statement appears inside a loop, which can accumulate resources until function exit.
+
+### Package state and abstraction signals
+
+- `mutable_package_global`: a package-level variable is mutated from function bodies rather than being kept immutable or wrapped behind ownership boundaries.
+- `init_side_effect`: an `init()` function performs network, file-system, or subprocess side effects.
+- `single_impl_interface`: a repository-local interface currently has one obvious implementation and a very small consumer surface, suggesting ceremonial abstraction.
+- `passthrough_wrapper_interface`: a wrapper struct mostly forwards one-to-one through an interface field with little added policy.
+- `public_bool_parameter_api`: an exported function or method exposes raw boolean mode switches in its signature.
 
 ### Data-access signals
 
@@ -262,10 +348,11 @@ For Rust, `hallucinated_local_call` now also covers direct same-module calls whe
 - Phase 2 heuristic additions: broader `missing_context`, `missing_cancel_call`, `sleep_polling`, `busy_waiting`, `repeated_json_marshaling`, `string_concat_in_loop`, `goroutine_spawn_in_loop`, `goroutine_without_shutdown_path`, `mutex_in_loop`, `blocking_call_while_locked`, `allocation_churn_in_loop`, `fmt_hot_path`, `reflection_hot_path`, `full_dataset_load`, `n_plus_one_query`, `wide_select_query`, `likely_unindexed_query`, and the first conservative goroutine-coordination pass.
 - Phase 3 heuristic additions: `hardcoded_secret`, `sql_string_concat`, `mixed_receiver_kinds`, `malformed_struct_tag`, `duplicate_struct_tag_key`, `test_without_assertion_signal`, `happy_path_only_test`, and `placeholder_test_body`.
 - Python backend additions so far: `.py` routing, Python parser coverage for imports, symbols, call sites, docstrings, test classification, loop concatenation, and conservative exception-handler evidence.
-- Python parser-contract and rollout additions so far: fixture-backed parser coverage under `src/analysis/python/parser/tests.rs`, standardized `.txt` fixture families under `tests/fixtures/python/**`, a split Python integration harness under `tests/integration_scan/python/{baseline,phase5_rules}.rs`, and fixture-backed multi-file assemblies for repo-level duplication, coupling, and hallucination coverage.
-- Python heuristic additions so far: `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, `none_comparison`, `side_effect_comprehension`, `redundant_return_none`, `hardcoded_path_string`, `hardcoded_business_rule`, `magic_value_branching`, `reinvented_utility`, `variadic_public_api`, `list_materialization_first_element`, `deque_candidate_queue`, `temporary_collection_in_loop`, `recursive_traversal_risk`, `list_membership_in_loop`, `repeated_len_in_loop`, `builtin_reduction_candidate`, `broad_exception_handler`, `missing_context_manager`, `network_boundary_without_timeout`, `environment_boundary_without_fallback`, `external_input_without_validation`, `public_api_missing_type_hints`, `mixed_sync_async_module`, `god_function`, `god_class`, `monolithic_init_module`, `monolithic_module`, `too_many_instance_attributes`, `eager_constructor_collaborators`, `over_abstracted_wrapper`, `mixed_concerns_function`, `name_responsibility_mismatch`, `deep_inheritance_hierarchy`, `tight_module_coupling`, `textbook_docstring_small_helper`, `mixed_naming_conventions`, `unrelated_heavy_import`, `obvious_commentary`, `enthusiastic_commentary`, `commented_out_code`, `repeated_string_literal`, `duplicate_error_handler_block`, `duplicate_validation_pipeline`, `duplicate_test_utility_logic`, `cross_file_copy_paste_function`, `cross_file_repeated_literal`, `duplicate_query_fragment`, `duplicate_transformation_pipeline`, Python reuse of `full_dataset_load`, and Python reuse of `string_concat_in_loop`.
+- Python parser-contract and rollout additions so far: fixture-backed parser coverage under `src/analysis/python/parser/tests.rs`, standardized `.txt` fixture families under `tests/fixtures/python/**`, a split Python integration harness under `tests/integration_scan/python/{baseline,phase5_rules,advanceplan2}.rs`, grouped advanceplan2 fixture families for async, contract, import-time, and boundary checks, and fixture-backed multi-file assemblies for repo-level duplication, coupling, and hallucination coverage.
+- Python heuristic additions so far: `blocking_sync_io_in_async`, `exception_swallowed`, `eval_exec_usage`, `print_debugging_leftover`, `none_comparison`, `side_effect_comprehension`, `redundant_return_none`, `hardcoded_path_string`, `hardcoded_business_rule`, `magic_value_branching`, `reinvented_utility`, `variadic_public_api`, `list_materialization_first_element`, `deque_candidate_queue`, `temporary_collection_in_loop`, `recursive_traversal_risk`, `list_membership_in_loop`, `repeated_len_in_loop`, `builtin_reduction_candidate`, `untracked_asyncio_task`, `background_task_exception_unobserved`, `async_lock_held_across_await`, `async_retry_sleep_without_backoff`, `mutable_default_argument`, `dataclass_mutable_default`, `dataclass_heavy_post_init`, `option_bag_model`, `public_any_type_leak`, `typeddict_unchecked_access`, `broad_exception_handler`, `missing_context_manager`, `network_boundary_without_timeout`, `environment_boundary_without_fallback`, `external_input_without_validation`, `unsafe_yaml_loader`, `pickle_deserialization_boundary`, `subprocess_shell_true`, `tar_extractall_unfiltered`, `tempfile_without_cleanup`, `public_api_missing_type_hints`, `mixed_sync_async_module`, `import_time_network_call`, `import_time_file_io`, `import_time_subprocess`, `module_singleton_client_side_effect`, `mutable_module_global_state`, `import_time_config_load`, `god_function`, `god_class`, `monolithic_init_module`, `monolithic_module`, `too_many_instance_attributes`, `eager_constructor_collaborators`, `over_abstracted_wrapper`, `mixed_concerns_function`, `name_responsibility_mismatch`, `deep_inheritance_hierarchy`, `tight_module_coupling`, `textbook_docstring_small_helper`, `mixed_naming_conventions`, `unrelated_heavy_import`, `obvious_commentary`, `enthusiastic_commentary`, `commented_out_code`, `repeated_string_literal`, `duplicate_error_handler_block`, `duplicate_validation_pipeline`, `duplicate_test_utility_logic`, `cross_file_copy_paste_function`, `cross_file_repeated_literal`, `duplicate_query_fragment`, `duplicate_transformation_pipeline`, Python reuse of `full_dataset_load`, and Python reuse of `string_concat_in_loop`.
 - Rust hygiene and hallucination additions so far: `todo_macro_leftover`, `unimplemented_macro_leftover`, `dbg_macro_leftover`, `panic_macro_leftover`, `unreachable_macro_leftover`, `todo_doc_comment_leftover`, `fixme_doc_comment_leftover`, `unwrap_in_non_test_code`, `expect_in_non_test_code`, `unsafe_without_safety_comment`, Rust-local `hallucinated_import_call`, and Rust-local `hallucinated_local_call`.
 - Rust async and performance additions so far: `rust_blocking_io_in_async`, `rust_lock_across_await`, `rust_async_std_mutex_await`, `rust_async_hold_permit_across_await`, `rust_async_spawn_cancel_at_await`, `rust_async_missing_fuse_pin`, `rust_async_recreate_future_in_select`, `rust_async_monopolize_executor`, `rust_async_blocking_drop`, `rust_async_invariant_broken_at_await`, `rust_async_lock_order_cycle`, `rust_unbuffered_file_writes`, `rust_lines_allocate_per_line`, `rust_hashmap_default_hasher`, `rust_tokio_mutex_unnecessary`, `rust_blocking_drop`, `rust_pointer_chasing_vec_box`, `rust_path_join_absolute`, `rust_utf8_validate_hot_path`, `rust_large_future_stack`, and `rust_aos_hot_path`.
+- Rust API, shared-state, wire-contract, and builder-state additions so far: `rust_public_anyhow_result`, `rust_public_box_dyn_error`, `rust_borrowed_string_api`, `rust_borrowed_vec_api`, `rust_borrowed_pathbuf_api`, `rust_public_bool_parameter_api`, `rust_pub_interior_mutability_field`, `rust_global_lock_state`, `rust_arc_mutex_option_state`, `rust_mutex_wrapped_collection`, `rust_rc_refcell_domain_model`, `rust_serde_untagged_enum_boundary`, `rust_serde_default_on_required_field`, `rust_serde_flatten_catchall`, `rust_serde_unknown_fields_allowed`, `rust_stringly_typed_enum_boundary`, `rust_option_bag_config`, `rust_builder_without_validate`, `rust_constructor_many_flags`, `rust_partial_init_escape`, and `rust_boolean_state_machine`.
 - Rust domain-modeling and unsafe-soundness additions so far: `rust_domain_raw_primitive`, `rust_domain_float_for_money`, `rust_domain_impossible_combination`, `rust_domain_default_produces_invalid`, `rust_debug_secret`, `rust_serde_sensitive_deserialize`, `rust_serde_sensitive_serialize`, `rust_domain_optional_secret_default`, `rust_unsafe_get_unchecked`, `rust_unsafe_from_raw_parts`, `rust_unsafe_set_len`, `rust_unsafe_assume_init`, `rust_unsafe_transmute`, `rust_unsafe_raw_pointer_cast`, and `rust_unsafe_aliasing_assumption`.
 
 ### Still pending

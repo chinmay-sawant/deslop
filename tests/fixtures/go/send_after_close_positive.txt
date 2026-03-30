@@ -1,0 +1,7 @@
+package sample
+
+func Stop() {
+	ch := make(chan int, 1)
+	close(ch)
+	ch <- 1
+}

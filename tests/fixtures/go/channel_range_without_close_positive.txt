@@ -1,0 +1,8 @@
+package sample
+
+func Drain() {
+	ch := make(chan int)
+	for value := range ch {
+		_ = value
+	}
+}

@@ -20,8 +20,10 @@ use self::context::{
 };
 use self::errors::{collect_dropped_errors, collect_errorf_calls, collect_panic_errors};
 use self::general::{
-    build_test_summary, collect_calls, collect_imports, collect_local_strings, collect_pkg_strings,
-    collect_struct_tags, collect_symbols, count_descendants, extract_receiver, find_package_name,
+    build_test_summary, collect_calls, collect_go_structs, collect_imports,
+    collect_interface_summaries, collect_local_strings, collect_package_vars,
+    collect_pkg_strings, collect_struct_tags, collect_symbols, count_descendants,
+    extract_receiver, find_package_name,
 };
 use self::performance::{
     collect_alloc_loops, collect_concat_loops, collect_db_query_calls, collect_fmt_loops,
@@ -48,6 +50,9 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
     let package_string_literals = collect_pkg_strings(root, source);
     let struct_tags = collect_struct_tags(root, source);
     let symbols = collect_symbols(root, source);
+    let package_vars = collect_package_vars(root, source);
+    let interfaces = collect_interface_summaries(root, source);
+    let go_structs = collect_go_structs(root, source);
     let functions = collect_functions(root, source, &imports, is_test_file);
 
     Ok(ParsedFile {
@@ -65,6 +70,14 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
         imports,
         symbols,
         class_summaries: Vec::new(),
+        package_vars,
+        interfaces,
+        go_structs,
+        module_scope_calls: Vec::new(),
+        top_level_bindings: Vec::new(),
+        python_models: Vec::new(),
+        rust_statics: Vec::new(),
+        rust_enums: Vec::new(),
         structs: Vec::new(),
     })
 }
@@ -112,6 +125,10 @@ fn parse_function_node(
     is_test_file: bool,
 ) -> Option<ParsedFunction> {
     let body_node = node.child_by_field_name("body")?;
+    let signature_text = source
+        .get(node.start_byte()..body_node.start_byte())
+        .unwrap_or_default()
+        .to_string();
     let calls = collect_calls(body_node, source);
     let local_string_literals = collect_local_strings(body_node, source);
     let type_assertion_count = count_descendants(body_node, "type_assertion_expression");
@@ -156,6 +173,8 @@ fn parse_function_node(
 
     Some(ParsedFunction {
         fingerprint,
+        signature_text,
+        body_start_line: body_node.start_position().row + 1,
         calls,
         exception_handlers: Vec::new(),
         has_context_parameter,

@@ -1,3 +1,4 @@
+mod advanceplan2;
 mod async_patterns;
 mod domain_modeling;
 mod performance;
@@ -6,6 +7,7 @@ mod unsafe_soundness;
 use crate::analysis::{FieldSummary, ParsedFile, ParsedFunction, StructSummary};
 use crate::model::{Finding, Severity};
 
+pub(crate) use advanceplan2::{advanceplan2_file_findings, advanceplan2_function_findings};
 pub(crate) use async_patterns::{async_file_findings, async_function_findings};
 pub(crate) use domain_modeling::domain_findings;
 pub(crate) use performance::{performance_file_findings, performance_function_findings};

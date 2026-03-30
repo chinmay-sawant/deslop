@@ -2,95 +2,58 @@
 
 Date: 2026-03-30
 
+## Status
+
+- [x] Implemented on 2026-03-30.
+- [x] Verification passed with `cargo test --test integration_scan test_go_advanceplan2`.
+- [x] Parser evidence regression passed with `cargo test test_collects_package_vars_interfaces_structs_and_signature_text`.
+
 ## Objective
 
 Add a conservative Go rule pack for channel ownership, timer lifecycle, and select-loop misuse that is not already covered by the current context and goroutine heuristics.
 
-## Existing Coverage Explicitly Excluded
+## Shipped Rules
 
-This plan must not re-implement or rename the currently shipped rules below:
+- [x] `range_over_local_channel_without_close`
+- [x] `double_close_local_channel`
+- [x] `send_after_local_close_risk`
+- [x] `time_after_in_loop`
+- [x] `ticker_without_stop`
 
-- `goroutine_without_coordination`
-- `goroutine_spawn_in_loop`
-- `goroutine_without_shutdown_path`
-- `goroutine_derived_context_unmanaged`
-- `busy_waiting`
-- `sleep_polling`
-- `missing_cancel_call`
-- `context_background_used`
-- `missing_context_propagation`
+## Implementation Notes
 
-The goal here is lifecycle correctness around channels and timers, not a second pass on context propagation or general goroutine shutdown detection.
-
-## Candidate Rule Inventory
-
-- [ ] `range_over_local_channel_without_close`
-  - Detect a function or local closure that ranges over a channel it appears to create or own locally, with no visible `close(ch)` path in the same ownership scope.
-- [ ] `double_close_local_channel`
-  - Detect the same locally scoped channel being closed more than once in one function body.
-- [ ] `send_after_local_close_risk`
-  - Detect a local channel that is closed and later used in a `ch <- value` send within the same function or goroutine literal.
-- [ ] `time_after_in_loop`
-  - Detect `time.After(...)` allocations inside loops where a reusable timer or context deadline would be more stable and cheaper.
-- [ ] `ticker_without_stop`
-  - Detect `time.NewTicker(...)` created in a function that appears to own the ticker but never calls `Stop()`.
-
-## Why These Rules Belong In Advance Plan 2
-
-- [ ] These patterns are common in low-context generated Go code because they compile cleanly but fail under load, shutdown, or longer runtimes.
-- [ ] The current Go rule pack already catches obvious coordination gaps, but it does not model channel close ownership or timer cleanup.
-- [ ] All candidate rules can be implemented conservatively with local parser evidence plus limited line-order reasoning.
+- [x] Kept the scope separate from `goroutine_without_coordination`, `goroutine_without_shutdown_path`, `busy_waiting`, and the existing context rules.
+- [x] Reused the existing Go parser plus new shared `signature_text` and `body_start_line` metadata.
+- [x] Implemented conservative function-local line scanning so findings stay explainable without pretending to prove cross-goroutine happens-before semantics.
+- [x] Anchored each finding to the relevant range, close, send, timer, or ticker line.
+- [x] Used `Warning` for lifecycle-risk findings and `Info` for `time_after_in_loop`.
 
 ## Parser And Evidence Work
 
-- [ ] Extend Go parser evidence with explicit channel summaries:
-  - [ ] channel creations (`make(chan ...)`)
-  - [ ] close calls and their line numbers
-  - [ ] send expressions and receive/range sites
-  - [ ] whether the channel appears to escape through return values, struct fields, or function arguments
-- [ ] Extend function evidence with timer summaries:
-  - [ ] `time.After(...)` call lines
-  - [ ] `time.NewTimer(...)` and `time.NewTicker(...)` constructor lines
-  - [ ] `Stop()` calls paired to known local timer/ticker bindings
-- [ ] Capture `for range ch` and `select` case metadata so findings can anchor the exact lifecycle edge.
+- [x] Extended shared function evidence with `signature_text` and `body_start_line` to support precise body-line heuristics.
+- [x] Added Go parser coverage for the new summary fields in `src/analysis/go/parser/tests.rs`.
+- [x] Kept channel and timer ownership reasoning local and parser-driven rather than introducing a second analysis pipeline.
 
-## Implementation Checklist
+## Fixtures And Tests
 
-- [ ] Confirm current parser output does not already expose enough channel and timer metadata.
-- [ ] Add parser tests under `src/analysis/go/parser/tests.rs` for:
-  - [ ] local channel creation and close detection
-  - [ ] send-after-close ordering in a single function
-  - [ ] `for range` channel loops
-  - [ ] ticker creation and stop calls
-- [ ] Implement the rule functions in a Go-focused heuristic module.
-- [ ] Register the new findings in the Go evaluation pipeline without affecting Python or Rust.
-- [ ] Keep severities conservative:
-  - [ ] lifecycle leaks and double-close risks start at `Warning`
-  - [ ] `time_after_in_loop` starts at `Info` unless nested loop evidence raises confidence
+- [x] Added positive fixtures:
+  - [x] `channel_range_without_close_positive.txt`
+  - [x] `double_close_channel_positive.txt`
+  - [x] `send_after_close_positive.txt`
+  - [x] `time_after_in_loop_positive.txt`
+  - [x] `ticker_without_stop_positive.txt`
+- [x] Added clean coverage in `channel_lifecycle_clean.txt`.
+- [x] Added grouped integration coverage in `tests/integration_scan/go_advanceplan2.rs`.
 
-## Fixture Plan
+## Acceptance
 
-- [ ] Add positive fixtures under `tests/fixtures/go/` for each rule:
-  - [ ] `channel_range_without_close_positive.txt`
-  - [ ] `double_close_channel_positive.txt`
-  - [ ] `send_after_close_positive.txt`
-  - [ ] `time_after_in_loop_positive.txt`
-  - [ ] `ticker_without_stop_positive.txt`
-- [ ] Add negative fixtures that demonstrate the intended suppressions:
-  - [ ] channels closed by documented owner goroutines
-  - [ ] timers reused safely outside loops
-  - [ ] tickers stopped through `defer ticker.Stop()`
-  - [ ] channels intentionally returned to a caller-owned lifecycle
-
-## Acceptance Criteria
-
-- [ ] Each rule emits a stable rule id, a line-anchored message, and evidence naming the owned channel or timer binding.
-- [ ] Cross-goroutine proofs are intentionally avoided unless ownership is local and obvious.
-- [ ] Clean ownership-transfer patterns do not trigger on representative fixtures.
-- [ ] The rule pack remains parser-driven and explainable.
+- [x] Each rule emits a stable rule id and line-anchored evidence.
+- [x] Clean representative fixtures stay quiet.
+- [x] Cross-goroutine proofs remain intentionally out of scope.
+- [x] The shipped implementation is conservative and explainable.
 
 ## Non-Goals
 
-- [ ] Proving general deadlocks across functions or packages.
-- [ ] Full happens-before reasoning for sends and receives across goroutines.
-- [ ] Replacing race detection or runtime tracing.
+- [x] Proving general deadlocks across functions or packages.
+- [x] Full happens-before reasoning for sends and receives across goroutines.
+- [x] Replacing race detection or runtime tracing.

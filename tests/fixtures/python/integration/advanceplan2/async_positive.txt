@@ -1,0 +1,15 @@
+import asyncio
+
+
+async def orchestrate(lock):
+    asyncio.create_task(refresh_index())
+    worker = asyncio.create_task(process_item())
+
+    async with lock:
+        await persist_state()
+
+    while True:
+        try:
+            return await run_job()
+        except RuntimeError:
+            await asyncio.sleep(1)

@@ -1,0 +1,32 @@
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+import boto3
+import requests
+
+DEFAULT_HEADERS = {"User-Agent": "deslop"}
+cache = ()
+
+
+def load_config():
+    token = os.getenv("API_TOKEN")
+    config_text = Path("settings.json").read_text()
+    return token, config_text
+
+
+def build_client():
+    return boto3.client("s3")
+
+
+def fetch_bootstrap():
+    return requests.get("https://example.com/bootstrap.json", timeout=5)
+
+
+def run_probe():
+    return subprocess.run(["echo", "warm"], shell=False, check=True)
+
+
+def cleanup_temp(path):
+    shutil.rmtree(path)

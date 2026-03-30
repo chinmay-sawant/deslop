@@ -2,80 +2,61 @@
 
 Date: 2026-03-30
 
+## Status
+
+- [x] Implemented on 2026-03-30.
+- [x] Verification passed with `cargo test rust_advanceplan2`.
+- [x] Parser evidence regression passed with `cargo test test_collects_advanceplan2_rust_summaries`.
+
 ## Objective
 
-Add a Rust rule family for public API signatures and error-surface choices that are common in generated code but reduce ergonomics, clarity, or library stability.
+Add a Rust rule family for public API signatures and error-surface choices that are common in generated code but weaken ergonomics, clarity, or library stability.
 
 ## Existing Coverage Explicitly Excluded
 
-This plan must not duplicate the currently shipped Rust packs for:
+This plan does not duplicate:
 
 - macro leftovers (`todo!`, `dbg!`, `panic!`, `unwrap`, `expect`)
 - async runtime misuse
-- performance/layout heuristics
+- performance and layout heuristics
 - domain modeling and invariants
 - unsafe soundness
 
-The focus here is public-facing API design, not runtime behavior or unsafe correctness.
+## Shipped Rules
 
-## Candidate Rule Inventory
+- [x] `rust_public_anyhow_result`
+- [x] `rust_public_box_dyn_error`
+- [x] `rust_borrowed_string_api`
+- [x] `rust_borrowed_vec_api`
+- [x] `rust_borrowed_pathbuf_api`
+- [x] `rust_public_bool_parameter_api`
 
-- [ ] `rust_public_anyhow_result`
-  - Detect public library-facing functions that return `anyhow::Result<_>` or equivalent opaque application-edge error types.
-- [ ] `rust_public_box_dyn_error`
-  - Detect public APIs that expose `Box<dyn Error>` rather than a concrete or domain-specific error surface.
-- [ ] `rust_borrowed_string_api`
-  - Detect `&String` in public argument positions where `&str` is the more general contract.
-- [ ] `rust_borrowed_vec_api`
-  - Detect `&Vec<T>` in public argument positions where `&[T]` is a better contract.
-- [ ] `rust_borrowed_pathbuf_api`
-  - Detect `&PathBuf` in public signatures where `&Path` would avoid over-specifying ownership.
-- [ ] `rust_public_bool_parameter_api`
-  - Detect public functions that expose raw boolean mode switches instead of named types or separate entry points.
+## Implementation Notes
 
-## Why These Rules Belong In Advance Plan 2
-
-- [ ] These are classic review findings that do not fit the current runtime-focused Rust packs.
-- [ ] They are especially common in AI-authored Rust because example snippets often optimize for compiling quickly rather than shaping stable APIs.
-- [ ] The rules are mostly signature-driven and should be implementable with parser and visibility evidence.
+- [x] Reused shared `signature_text` and public-visibility detection from parsed Rust functions.
+- [x] Kept error-surface checks library-biased so `main.rs` and `bin/` entrypoints stay quieter.
+- [x] Suppressed builder-style setters and receiver-internal configuration methods for borrowed-container and bool-flag checks.
 
 ## Parser And Evidence Work
 
-- [ ] Preserve signature type text and visibility for public functions, methods, and associated functions.
-- [ ] Track return-type text for public APIs so error-surface rules can remain purely syntactic.
-- [ ] Preserve parameter order and names so `rust_public_bool_parameter_api` can anchor the exact flag argument.
-- [ ] Add small helpers that normalize common path spellings such as `std::path::PathBuf` versus imported `PathBuf`.
+- [x] Preserved full Rust signature text for parameter and return-type analysis.
+- [x] Fixed parameter-list extraction to use the matching closing parenthesis so return types like `Result<()>` do not break bool-parameter detection.
+- [x] Kept the rule family signature-driven and explainable without trait or type resolution.
 
-## Implementation Checklist
+## Fixtures And Tests
 
-- [ ] Add parser tests for borrowed type spellings and public visibility.
-- [ ] Implement the API-surface heuristics in a new Rust sub-module or a dedicated API-shape file.
-- [ ] Keep findings scoped to public or crate-exposed APIs first; private helpers should stay mostly quiet.
-- [ ] Use conservative suppressions for builder internals, trait impl requirements, and test-only helpers.
+- [x] Added grouped API positive and clean fixtures under `tests/fixtures/rust/advanceplan2/`.
+- [x] Added grouped integration coverage in `tests/integration_scan/rust_advanceplan2.rs`.
+- [x] Reused the Rust parser regression in `src/analysis/rust/parser.rs` for signature and summary coverage.
 
-## Fixture Plan
+## Acceptance
 
-- [ ] Positive fixtures:
-  - [ ] `public_anyhow_result_positive.rs.txt`
-  - [ ] `public_box_dyn_error_positive.rs.txt`
-  - [ ] `borrowed_string_api_positive.rs.txt`
-  - [ ] `borrowed_vec_api_positive.rs.txt`
-  - [ ] `borrowed_pathbuf_api_positive.rs.txt`
-  - [ ] `public_bool_parameter_api_positive.rs.txt`
-- [ ] Negative fixtures:
-  - [ ] typed domain error enums
-  - [ ] `&str`, `&[T]`, and `&Path` signatures
-  - [ ] internal helpers that intentionally use concrete borrowed containers
-  - [ ] explicit option or enum parameters instead of booleans
-
-## Acceptance Criteria
-
-- [ ] Findings reference the public signature element that narrows or weakens the API.
-- [ ] The rule family remains low-noise for ordinary internal code.
-- [ ] The output clearly explains why the alternative contract is more idiomatic or more stable.
+- [x] Findings anchor the exact public parameter or return-shape choice.
+- [x] Private helpers and builder internals stay quiet on representative clean fixtures.
+- [x] The shipped rules remain conservative and parser-backed.
 
 ## Non-Goals
 
-- [ ] Enforcing one public API style for every Rust crate.
-- [ ] Full trait-bound reasoning or semver analysis.
-- [ ] Replacing Clippy or rustdoc review for all API concerns.
+- [x] Enforcing one public API style for every Rust crate.
+- [x] Full trait-bound reasoning or semver analysis.
+- [x] Replacing Clippy or rustdoc review for all API concerns.

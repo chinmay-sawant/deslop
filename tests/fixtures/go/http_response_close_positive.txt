@@ -1,0 +1,12 @@
+package sample
+
+import "net/http"
+
+func Fetch() error {
+	resp, err := http.Get("https://example.com")
+	if err != nil {
+		return err
+	}
+	_ = resp.StatusCode
+	return nil
+}

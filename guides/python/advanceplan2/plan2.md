@@ -2,13 +2,19 @@
 
 Date: 2026-03-30
 
+## Status
+
+- [x] Implemented on 2026-03-30.
+- [x] Verification passed with `cargo test python_advanceplan2`.
+- [x] Parser evidence regression passed with `cargo test test_python_advanceplan2_parser_evidence`.
+
 ## Objective
 
 Add a Python rule family for mutable defaults, dataclass model hazards, and weak public type contracts that are not part of the currently shipped maintainability and structure rules.
 
 ## Existing Coverage Explicitly Excluded
 
-This plan must not duplicate:
+This plan does not duplicate:
 
 - `variadic_public_api`
 - `public_api_missing_type_hints`
@@ -17,67 +23,41 @@ This plan must not duplicate:
 - `hardcoded_business_rule`
 - `magic_value_branching`
 
-The new work targets default-value and type-contract hazards rather than general structure size or public API completeness.
+## Shipped Rules
 
-## Candidate Rule Inventory
+- [x] `mutable_default_argument`
+- [x] `dataclass_mutable_default`
+- [x] `dataclass_heavy_post_init`
+- [x] `option_bag_model`
+- [x] `public_any_type_leak`
+- [x] `typeddict_unchecked_access`
 
-- [ ] `mutable_default_argument`
-  - Detect list, dict, set, or other mutable literals used directly as default function arguments.
-- [ ] `dataclass_mutable_default`
-  - Detect dataclass fields that use mutable defaults instead of `default_factory`.
-- [ ] `dataclass_heavy_post_init`
-  - Detect `__post_init__` methods that perform I/O, network calls, subprocesses, or heavy collaborator construction.
-- [ ] `option_bag_model`
-  - Detect dataclasses or model-like classes with many optional fields or boolean toggles that encode too many invalid combinations.
-- [ ] `public_any_type_leak`
-  - Detect public functions or model fields that use `Any`, `object`, or wide `dict[str, Any]` contracts where the rest of the signature suggests a specific domain shape.
-- [ ] `typeddict_unchecked_access`
-  - Detect `TypedDict`-style access patterns that immediately index optional or open-ended keys with no guard.
+## Implementation Notes
 
-## Why These Rules Belong In Advance Plan 2
-
-- [ ] These are frequent AI-authored Python mistakes because the code is syntactically correct and easy to generate from examples.
-- [ ] The current Python pack checks whether public type hints exist, but not whether the default values and model shape undermine the contract.
-- [ ] The candidate rules stay local enough to implement with parser enrichment instead of new runtime systems.
+- [x] Reused shared `signature_text` for mutable-default and wide-contract checks.
+- [x] Added Python model summaries for decorators, base classes, method names, field annotations, and field defaults.
+- [x] Kept `public_any_type_leak` at `Info` and suppressed serializer or migration-style paths.
 
 ## Parser And Evidence Work
 
-- [ ] Extend function signature parsing to preserve default-value expressions.
-- [ ] Extend decorator and class evidence so dataclass-like models are easy to classify.
-- [ ] Capture field default expressions, `default_factory` usage, and annotation text for dataclass fields.
-- [ ] Preserve `Any`, `object`, `dict[str, Any]`, `Optional[...]`, and `TypedDict` annotation text in shared function and class summaries.
+- [x] Preserved function signature text for default-expression checks.
+- [x] Extended field extraction so `TypedDict` declaration lines contribute model metadata even without default values.
+- [x] Kept dataclass and `TypedDict` evidence distinct so messages can stay specific.
 
-## Implementation Checklist
+## Fixtures And Tests
 
-- [ ] Add parser unit tests for mutable defaults and dataclass field metadata.
-- [ ] Add conservative thresholds for `option_bag_model` so small, honest option sets do not trigger.
-- [ ] Implement the rule family with clear suppression cases for test helpers, migration models, and serializer glue code.
-- [ ] Keep `public_any_type_leak` at `Info` until real-repo calibration proves it is precise enough.
+- [x] Added parser coverage in `src/analysis/python/parser/tests.rs`.
+- [x] Added grouped positive and clean fixtures under `tests/fixtures/python/integration/advanceplan2/`.
+- [x] Added grouped integration coverage in `tests/integration_scan/python/advanceplan2.rs`.
 
-## Fixture Plan
+## Acceptance
 
-- [ ] Positive fixtures:
-  - [ ] `mutable_default_argument_positive.txt`
-  - [ ] `dataclass_mutable_default_positive.txt`
-  - [ ] `dataclass_post_init_positive.txt`
-  - [ ] `option_bag_model_positive.txt`
-  - [ ] `public_any_type_leak_positive.txt`
-  - [ ] `typeddict_unchecked_access_positive.txt`
-- [ ] Negative fixtures:
-  - [ ] immutable default sentinel pattern
-  - [ ] dataclass `default_factory` usage
-  - [ ] lightweight `__post_init__` normalization only
-  - [ ] narrow and validated public type contracts
-  - [ ] guarded optional-key access on typed dictionaries
-
-## Acceptance Criteria
-
-- [ ] Findings clearly explain the contract hazard rather than just naming the syntax.
-- [ ] Dataclass and plain-class paths are handled separately when needed.
-- [ ] The rule family stays conservative and fixture-driven.
+- [x] Findings explain the contract hazard rather than only naming syntax.
+- [x] Dataclass and `TypedDict` paths are handled through separate evidence checks.
+- [x] Small, honest option sets stay quiet on representative clean fixtures.
 
 ## Non-Goals
 
-- [ ] Full runtime type checking or mypy-style inference.
-- [ ] Framework-specific model semantics in the first iteration.
-- [ ] Penalizing every use of `Any` regardless of context.
+- [x] Full runtime type checking or mypy-style inference.
+- [x] Framework-specific model semantics in the first iteration.
+- [x] Penalizing every use of `Any` regardless of context.

@@ -1,0 +1,18 @@
+package sample
+
+type Rows interface {
+	Close() error
+}
+
+type DB interface {
+	Query(string) (Rows, error)
+}
+
+func Load(db DB) error {
+	rows, err := db.Query("select 1")
+	if err != nil {
+		return err
+	}
+	_ = rows
+	return nil
+}

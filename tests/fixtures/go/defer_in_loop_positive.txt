@@ -1,0 +1,13 @@
+package sample
+
+import "os"
+
+func Process(paths []string) {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil {
+			continue
+		}
+		defer file.Close()
+	}
+}

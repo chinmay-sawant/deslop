@@ -1,0 +1,12 @@
+package sample
+
+import "os"
+
+func Load() error {
+	file, err := os.Open("input.txt")
+	if err != nil {
+		return err
+	}
+	_ = file
+	return nil
+}
