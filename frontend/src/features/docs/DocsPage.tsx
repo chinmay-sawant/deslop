@@ -491,11 +491,19 @@ export function DocsPage() {
     setActiveSection('overview')
   }
 
+  const ruleCounts: Record<Language, number> = {
+    go: goRules.length,
+    python: pythonRules.length,
+    rust: rustRules.length,
+    common: commonRules.length,
+  }
+
   return (
     <div className="docs-layout">
       {/* ── Sidebar ─────────────────────────────────────────────────────── */}
       <aside className="docs-sidebar">
         {/* Language tabs */}
+        <p className="docs-sidebar-section-label" style={{ marginTop: 0 }}>Language</p>
         <div className="docs-lang-tabs">
           {languages.map((lang) => (
             <button
@@ -504,7 +512,9 @@ export function DocsPage() {
               onClick={() => handleLangChange(lang.id)}
               type="button"
             >
-              {lang.label}
+              <span className="docs-lang-tab-dot" />
+              <span className="docs-lang-tab-label">{lang.label}</span>
+              <span className="docs-lang-tab-count">{ruleCounts[lang.id]}</span>
             </button>
           ))}
         </div>
@@ -635,7 +645,9 @@ export function DocsPage() {
         <div className={`docs-section${activeSection === 'detection-rules' ? ' active' : ''}`}>
           <div className={`docs-eyebrow ${langClass}`}>Detection rules</div>
           <h1 className="docs-h1">
-            {rules.length} rules for {activeLang === 'go' ? 'Go' : activeLang === 'python' ? 'Python' : 'Rust'}.
+            {activeLang === 'common'
+              ? `${rules.length} generic rules.`
+              : `${rules.length} rules for ${activeLang === 'go' ? 'Go' : activeLang === 'python' ? 'Python' : 'Rust'}.`}
           </h1>
           <p className="docs-lead">
             Each rule produces a finding with a rule ID, severity, file path, line number, and human-readable evidence.

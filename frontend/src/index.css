@@ -399,53 +399,99 @@ button:focus-visible {
 
 .docs-lang-tabs {
   display: flex;
+  flex-direction: column;
   gap: 0;
-  margin: 0 1.25rem 1.75rem;
-  border: 1px solid var(--border);
+  margin: 0 0 1.25rem;
 }
 
 .docs-lang-tab {
-  flex: 1;
-  padding: 0.45rem 0;
-  font-size: 0.78rem;
-  font-weight: 600;
-  font-family: var(--mono-font);
-  letter-spacing: 0.04em;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--body-font);
+  letter-spacing: 0;
+  text-align: left;
   cursor: pointer;
   background: transparent;
   border: none;
+  border-left: 2px solid transparent;
   color: var(--muted);
-  transition: color 150ms ease, background 150ms ease;
+  width: 100%;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease;
   position: relative;
 }
 
-.docs-lang-tab:not(:last-child) {
-  border-right: 1px solid var(--border);
+.docs-lang-tab-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: currentColor;
+  opacity: 0.45;
+  transition: opacity 150ms ease;
+}
+
+.docs-lang-tab-label {
+  flex: 1;
+  font-family: var(--mono-font);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.docs-lang-tab-count {
+  font-family: var(--mono-font);
+  font-size: 0.68rem;
+  opacity: 0.5;
+  transition: opacity 150ms ease;
 }
 
 .docs-lang-tab:hover {
   color: var(--text);
+  background: var(--accent-soft);
+}
+
+.docs-lang-tab:hover .docs-lang-tab-dot {
+  opacity: 0.75;
+}
+
+.docs-lang-tab:hover .docs-lang-tab-count {
+  opacity: 0.7;
 }
 
 .docs-lang-tab.lang-go.active {
   background: var(--lang-go-soft);
   color: var(--lang-go);
+  border-left-color: var(--lang-go);
 }
 
 .docs-lang-tab.lang-python.active {
   background: var(--lang-python-soft);
   color: var(--lang-python);
+  border-left-color: var(--lang-python);
 }
 
 .docs-lang-tab.lang-rust.active {
   background: var(--lang-rust-soft);
   color: var(--lang-rust);
+  border-left-color: var(--lang-rust);
 }
 
 .docs-lang-tab.lang-common.active {
   background: var(--lang-common-soft);
   color: var(--lang-common);
+  border-left-color: var(--lang-common);
+}
+
+.docs-lang-tab.active .docs-lang-tab-dot {
+  opacity: 1;
+}
+
+.docs-lang-tab.active .docs-lang-tab-count {
+  opacity: 0.8;
 }
 
 .docs-sidebar-section-label {
