@@ -110,7 +110,6 @@ export const navigation: NavItem[] = [
 
 export const trustPillars = [
   'Explainable findings instead of opaque scoring',
-  'Go wrapper propagation now reaches receiver fields, local wrapper chains, and DB context mismatches',
   'Structured output for local workflows and automation',
   'Installs through Cargo, prebuilt release binaries, or GitHub Actions',
 ]
