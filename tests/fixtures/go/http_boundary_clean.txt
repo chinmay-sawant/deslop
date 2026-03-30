@@ -1,0 +1,39 @@
+package sample
+
+import (
+	"encoding/json"
+	"errors"
+	"net/http"
+	"time"
+)
+
+func Fetch() error {
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Get("https://example.com")
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("bad status")
+	}
+	var payload map[string]any
+	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusAccepted)
+	_, _ = w.Write([]byte("ok"))
+}
+
+func NewServer() *http.Server {
+	return &http.Server{
+		Addr:         ":8080",
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}
+}

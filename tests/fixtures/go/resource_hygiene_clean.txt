@@ -1,0 +1,49 @@
+package sample
+
+import "os"
+
+type Rows interface {
+	Close() error
+}
+
+type Stmt interface {
+	Close() error
+}
+
+type Tx interface {
+	Commit() error
+	Rollback() error
+}
+
+type DB interface {
+	Query(string) (Rows, error)
+	Prepare(string) (Stmt, error)
+	Begin() (Tx, error)
+}
+
+func Load(db DB) error {
+	file, err := os.Open("input.txt")
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	rows, err := db.Query("select 1")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	stmt, err := db.Prepare("select 1")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	return tx.Commit()
+}

@@ -13,8 +13,9 @@ use crate::analysis::{AnalysisResult, Error, Language, ParsedFile};
 
 use self::comments::collect_comment_summaries;
 use self::general::{
-    collect_class_summaries, collect_functions, collect_imports, collect_pkg_strings,
-    collect_symbols, is_test_file, module_name_for_path,
+    collect_class_summaries, collect_functions, collect_imports, collect_module_scope_calls,
+    collect_pkg_strings, collect_python_models, collect_symbols, collect_top_level_bindings,
+    is_test_file, module_name_for_path,
 };
 
 pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
@@ -38,6 +39,9 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
     let functions = collect_functions(root, source, is_test_file);
     let symbols = collect_symbols(root, source, &functions, &imports);
     let class_summaries = collect_class_summaries(root, source);
+    let module_scope_calls = collect_module_scope_calls(root, source);
+    let top_level_bindings = collect_top_level_bindings(root, source);
+    let python_models = collect_python_models(root, source);
 
     Ok(ParsedFile {
         language: Language::Python,
@@ -54,6 +58,14 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
         imports,
         symbols,
         class_summaries,
+        package_vars: Vec::new(),
+        interfaces: Vec::new(),
+        go_structs: Vec::new(),
+        module_scope_calls,
+        top_level_bindings,
+        python_models,
+        rust_statics: Vec::new(),
+        rust_enums: Vec::new(),
         structs: Vec::new(),
     })
 }

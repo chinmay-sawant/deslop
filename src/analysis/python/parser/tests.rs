@@ -378,3 +378,47 @@ fn test_python_symbol_extraction_preserves_naming_styles() {
     assert!(symbol_names.contains(&"render_json"));
     assert!(symbol_names.contains(&"buildHTML"));
 }
+
+#[test]
+fn test_python_advanceplan2_parser_evidence() {
+    let source = python_parser_fixture!("parser/advanceplan2_evidence.txt");
+
+    let parsed =
+        parse_file(Path::new("pkg/service.py"), source).expect("python parsing should succeed");
+
+    assert_eq!(parsed.module_scope_calls.len(), 1);
+    assert_eq!(parsed.module_scope_calls[0].name, "Client");
+    assert_eq!(parsed.top_level_bindings.len(), 1);
+    assert_eq!(parsed.top_level_bindings[0].name, "SETTINGS");
+    assert_eq!(parsed.python_models.len(), 2);
+
+    let payload = parsed
+        .python_models
+        .iter()
+        .find(|model| model.name == "Payload")
+        .expect("expected dataclass summary");
+    assert!(payload.is_dataclass);
+    assert_eq!(payload.fields.len(), 2);
+    assert_eq!(payload.fields[0].default_text.as_deref(), Some("[]"));
+
+    let payload_shape = parsed
+        .python_models
+        .iter()
+        .find(|model| model.name == "PayloadShape")
+        .expect("expected typeddict summary");
+    assert!(payload_shape.is_typed_dict);
+    assert_eq!(payload_shape.fields.len(), 2);
+    assert_eq!(
+        payload_shape.fields[1].annotation_text.as_deref(),
+        Some("NotRequired[str]")
+    );
+
+    let orchestrate = parsed
+        .functions
+        .iter()
+        .find(|function| function.fingerprint.name == "orchestrate")
+        .expect("expected async function summary");
+    assert!(orchestrate.is_async);
+    assert_eq!(orchestrate.await_points, vec![orchestrate.body_start_line + 2]);
+    assert!(orchestrate.signature_text.contains("async def orchestrate(lock):"));
+}

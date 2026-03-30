@@ -1,5 +1,6 @@
 use std::path::Path;
 
+pub(super) mod advanceplan2;
 pub(super) mod baseline;
 pub(super) mod phase5_rules;
 

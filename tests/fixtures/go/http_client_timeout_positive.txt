@@ -1,0 +1,10 @@
+package sample
+
+import "net/http"
+
+func NewClient() *http.Client {
+	client := &http.Client{
+		Transport: http.DefaultTransport,
+	}
+	return client
+}

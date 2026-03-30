@@ -1,0 +1,16 @@
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::rc::Rc;
+use std::sync::{Arc, Mutex, OnceLock};
+
+pub struct SharedState {
+    pub sessions: Mutex<Vec<String>>,
+    pub gate: Mutex<bool>,
+    pub current: Arc<Mutex<Option<String>>>,
+}
+
+pub static GLOBAL_CACHE: OnceLock<Mutex<HashMap<String, String>>> = OnceLock::new();
+
+pub struct OrderManager {
+    items: Rc<RefCell<Vec<String>>>,
+}

@@ -525,6 +525,8 @@ mod tests {
                         type_assertion_count: 0,
                         call_count: 0,
                     },
+                    signature_text: String::new(),
+                    body_start_line: 1,
                     calls: Vec::new(),
                     exception_handlers: Vec::new(),
                     has_context_parameter: false,
@@ -598,6 +600,14 @@ mod tests {
                 })
                 .collect(),
             class_summaries: Vec::new(),
+            package_vars: Vec::new(),
+            interfaces: Vec::new(),
+            go_structs: Vec::new(),
+            module_scope_calls: Vec::new(),
+            top_level_bindings: Vec::new(),
+            python_models: Vec::new(),
+            rust_statics: Vec::new(),
+            rust_enums: Vec::new(),
             structs: Vec::new(),
         }
     }

@@ -5,8 +5,8 @@ use tree_sitter::{Node, Parser};
 
 use crate::analysis::{
     AnalysisResult, CallSite, DeclaredSymbol, Error, FieldSummary, ImportSpec, Language, MacroCall,
-    NamedLiteral, ParsedFile, ParsedFunction, RuntimeCall, StructSummary, UnsafePattern,
-    UnsafePatternKind,
+    NamedLiteral, ParsedFile, ParsedFunction, RuntimeCall, RustEnumSummary, RustStaticSummary,
+    StructSummary, UnsafePattern, UnsafePatternKind,
 };
 use crate::model::{FunctionFingerprint, SymbolKind};
 
@@ -27,6 +27,8 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
     let default_impls = collect_trait_impls(root, source, "Default");
     let functions = collect_functions(root, source, is_test_file);
     let symbols = collect_symbols(root, source, &functions, &imports);
+    let rust_statics = collect_static_summaries(root, source);
+    let rust_enums = collect_enum_summaries(root, source);
     let structs = collect_struct_summaries(root, source, &default_impls);
 
     Ok(ParsedFile {
@@ -44,6 +46,14 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
         imports,
         symbols,
         class_summaries: Vec::new(),
+        package_vars: Vec::new(),
+        interfaces: Vec::new(),
+        go_structs: Vec::new(),
+        module_scope_calls: Vec::new(),
+        top_level_bindings: Vec::new(),
+        python_models: Vec::new(),
+        rust_statics,
+        rust_enums,
         structs,
     })
 }
@@ -389,6 +399,11 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
 
     Some(ParsedFunction {
         fingerprint,
+        signature_text: source
+            .get(node.start_byte()..body_node.start_byte())
+            .unwrap_or_default()
+            .to_string(),
+        body_start_line: body_node.start_position().row + 1,
         calls,
         exception_handlers: Vec::new(),
         has_context_parameter: false,
@@ -545,6 +560,7 @@ fn build_struct_summary(
         has_deserialize_derive: derives.iter().any(|derive| derive == "Deserialize"),
         visibility_pub,
         derives,
+        attributes: parse_attribute_texts(&leading_attributes(node), source),
         impl_default: default_impls.contains(&name),
     })
 }
@@ -611,6 +627,7 @@ fn collect_struct_fields(node: Node<'_>, source: &str) -> Vec<FieldSummary> {
         fields.push(FieldSummary {
             line: child.start_position().row + 1,
             name,
+            attributes: parse_attribute_texts(&leading_attributes(child), source),
             is_pub: source.get(child.byte_range()).is_some_and(|text| {
                 text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub(")
             }),
@@ -654,6 +671,129 @@ fn parse_derive_names(attributes: &[Node<'_>], source: &str) -> Vec<String> {
     derives.sort();
     derives.dedup();
     derives
+}
+
+fn parse_attribute_texts(attributes: &[Node<'_>], source: &str) -> Vec<String> {
+    let mut parsed = Vec::new();
+
+    for attribute in attributes {
+        let Some(text) = source.get(attribute.byte_range()) else {
+            continue;
+        };
+        let normalized = text
+            .chars()
+            .filter(|character| !character.is_whitespace())
+            .collect::<String>();
+        if !normalized.is_empty() {
+            parsed.push(normalized);
+        }
+    }
+
+    parsed.sort();
+    parsed.dedup();
+    parsed
+}
+
+fn collect_static_summaries(root: Node<'_>, source: &str) -> Vec<RustStaticSummary> {
+    let mut statics = Vec::new();
+    visit_for_static_summaries(root, source, &mut statics);
+    statics.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    statics
+}
+
+fn visit_for_static_summaries(node: Node<'_>, source: &str, statics: &mut Vec<RustStaticSummary>) {
+    if node.kind() == "static_item"
+        && let Some(summary) = build_static_summary(node, source)
+    {
+        statics.push(summary);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_static_summaries(child, source, statics);
+    }
+}
+
+fn build_static_summary(node: Node<'_>, source: &str) -> Option<RustStaticSummary> {
+    let name = node
+        .child_by_field_name("name")
+        .and_then(|name_node| source.get(name_node.byte_range()))?
+        .trim()
+        .to_string();
+    let type_text = node
+        .child_by_field_name("type")
+        .and_then(|type_node| source.get(type_node.byte_range()))?
+        .trim()
+        .to_string();
+    let value_text = node
+        .child_by_field_name("value")
+        .and_then(|value_node| source.get(value_node.byte_range()))
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(str::to_string);
+
+    Some(RustStaticSummary {
+        line: node.start_position().row + 1,
+        name,
+        type_text,
+        value_text,
+        visibility_pub: source.get(node.byte_range()).is_some_and(|text| {
+            text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub(")
+        }),
+    })
+}
+
+fn collect_enum_summaries(root: Node<'_>, source: &str) -> Vec<RustEnumSummary> {
+    let mut enums = Vec::new();
+    visit_for_enum_summaries(root, source, &mut enums);
+    enums.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    enums
+}
+
+fn visit_for_enum_summaries(node: Node<'_>, source: &str, enums: &mut Vec<RustEnumSummary>) {
+    if node.kind() == "enum_item"
+        && let Some(summary) = build_enum_summary(node, source)
+    {
+        enums.push(summary);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_enum_summaries(child, source, enums);
+    }
+}
+
+fn build_enum_summary(node: Node<'_>, source: &str) -> Option<RustEnumSummary> {
+    let name = node
+        .child_by_field_name("name")
+        .and_then(|name_node| source.get(name_node.byte_range()))?
+        .trim()
+        .to_string();
+    let derives = parse_derive_names(&leading_attributes(node), source);
+    let attributes = parse_attribute_texts(&leading_attributes(node), source);
+    let variant_count = node
+        .child_by_field_name("body")
+        .or_else(|| named_child_by_kind(node, "enum_variant_list"))
+        .map(|body| {
+            let mut cursor = body.walk();
+            body.named_children(&mut cursor)
+                .filter(|child| child.kind() == "enum_variant")
+                .count()
+        })
+        .unwrap_or(0);
+
+    Some(RustEnumSummary {
+        line: node.start_position().row + 1,
+        name,
+        variant_count,
+        has_serialize_derive: derives.iter().any(|derive| derive == "Serialize"),
+        has_deserialize_derive: derives.iter().any(|derive| derive == "Deserialize"),
+        derives,
+        attributes,
+        visibility_pub: source.get(node.byte_range()).is_some_and(|text| {
+            text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub(")
+        }),
+    })
 }
 
 fn function_is_async(function_node: Node<'_>, body_node: Node<'_>, source: &str) -> bool {
@@ -1768,6 +1908,75 @@ mod tests {
             .find(|function| function.fingerprint.name == "detects_test_only_code")
             .expect("test function should be parsed");
         assert!(test_fn.is_test_function);
+    }
+
+    #[test]
+    fn test_collects_advanceplan2_rust_summaries() {
+        let source = r#"
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use std::collections::HashMap;
+use std::sync::{Mutex, OnceLock};
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RequestConfig {
+    #[serde(default)]
+    pub mode: String,
+    #[serde(flatten)]
+    pub extra: HashMap<String, Value>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WireValue {
+    Text(String),
+    Count(u64),
+}
+
+pub static CACHE: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
+"#;
+
+        let parsed = parse_file(Path::new("src/lib.rs"), source)
+            .expect("rust source should parse successfully");
+
+        let config = parsed
+            .structs
+            .iter()
+            .find(|summary| summary.name == "RequestConfig")
+            .expect("RequestConfig should be summarized");
+        assert!(
+            config
+                .attributes
+                .iter()
+                .any(|attribute| attribute.contains("deny_unknown_fields"))
+        );
+        assert!(
+            config.fields[0]
+                .attributes
+                .iter()
+                .any(|attribute| attribute.contains("serde(default)"))
+        );
+        assert!(
+            config.fields[1]
+                .attributes
+                .iter()
+                .any(|attribute| attribute.contains("serde(flatten)"))
+        );
+
+        assert_eq!(parsed.rust_enums.len(), 1);
+        assert_eq!(parsed.rust_enums[0].name, "WireValue");
+        assert_eq!(parsed.rust_enums[0].variant_count, 2);
+        assert!(
+            parsed.rust_enums[0]
+                .attributes
+                .iter()
+                .any(|attribute| attribute.contains("untagged"))
+        );
+
+        assert_eq!(parsed.rust_statics.len(), 1);
+        assert_eq!(parsed.rust_statics[0].name, "CACHE");
+        assert!(parsed.rust_statics[0].type_text.contains("OnceLock"));
     }
 
     #[test]

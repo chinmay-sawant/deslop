@@ -1,0 +1,18 @@
+package sample
+
+type Stmt interface {
+	Close() error
+}
+
+type DB interface {
+	Prepare(string) (Stmt, error)
+}
+
+func Build(db DB) error {
+	stmt, err := db.Prepare("select 1")
+	if err != nil {
+		return err
+	}
+	_ = stmt
+	return nil
+}

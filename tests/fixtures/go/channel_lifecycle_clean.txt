@@ -1,0 +1,25 @@
+package sample
+
+import "time"
+
+func Drain() {
+	ch := make(chan int, 1)
+	ch <- 1
+	close(ch)
+	for value := range ch {
+		_ = value
+	}
+}
+
+func Poll(stop <-chan struct{}) {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			return
+		case <-stop:
+			return
+		}
+	}
+}

@@ -344,3 +344,48 @@ func Run() {}
         ]
     );
 }
+
+#[test]
+fn test_collects_package_vars_interfaces_structs_and_signature_text() {
+    let source = r#"package sample
+
+var DefaultStore = newStore()
+var maxRetries int = 3
+
+type Store interface {
+    Save(item string) error
+    Load(id string) (string, error)
+}
+
+type Service struct {
+    store Store
+    logger Logger
+}
+
+func Run(items []string, dryRun bool) error {
+    return nil
+}
+"#;
+
+    let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
+    assert_eq!(parsed.package_vars.len(), 2);
+    assert_eq!(parsed.package_vars[0].name, "DefaultStore");
+    assert_eq!(parsed.package_vars[1].type_text.as_deref(), Some("int"));
+
+    assert_eq!(parsed.interfaces.len(), 1);
+    assert_eq!(parsed.interfaces[0].name, "Store");
+    assert_eq!(parsed.interfaces[0].methods, vec!["Save", "Load"]);
+
+    assert_eq!(parsed.go_structs.len(), 1);
+    assert_eq!(parsed.go_structs[0].name, "Service");
+    assert_eq!(parsed.go_structs[0].fields.len(), 2);
+    assert_eq!(parsed.go_structs[0].fields[0].type_text, "Store");
+
+    let run = parsed
+        .functions
+        .iter()
+        .find(|function| function.fingerprint.name == "Run")
+        .expect("Run should be parsed");
+    assert!(run.signature_text.contains("dryRun bool"));
+    assert_eq!(run.body_start_line, 16);
+}

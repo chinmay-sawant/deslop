@@ -1,0 +1,9 @@
+package sample
+
+func Stop() {
+	ch := make(chan int)
+	close(ch)
+	if true {
+		close(ch)
+	}
+}

@@ -1,0 +1,44 @@
+pub struct AppConfig {
+    pub endpoint: Option<String>,
+    pub token: Option<String>,
+    pub region: Option<String>,
+    pub profile: Option<String>,
+    pub timeout: Option<u64>,
+    pub retries: Option<u32>,
+}
+
+pub struct AppBuilder {
+    endpoint: Option<String>,
+    token: Option<String>,
+}
+
+impl AppBuilder {
+    pub fn build(self) -> AppConfig {
+        AppConfig {
+            endpoint: self.endpoint,
+            token: self.token,
+            region: None,
+            profile: None,
+            timeout: None,
+            retries: None,
+        }
+    }
+}
+
+pub fn new_client(verbose: bool, dry_run: bool) -> AppConfig {
+    let _ = (verbose, dry_run);
+    AppConfig {
+        endpoint: None,
+        token: None,
+        region: None,
+        profile: None,
+        timeout: None,
+        retries: None,
+    }
+}
+
+pub struct SessionState {
+    pub is_ready: bool,
+    pub is_running: bool,
+    pub pending_token: Option<String>,
+}
