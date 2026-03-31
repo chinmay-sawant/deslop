@@ -15,10 +15,11 @@ pub(crate) use error::Result as AnalysisResult;
 
 pub(crate) use types::{
     BlockFingerprint, CallSite, ClassSummary, CommentSummary, ContextFactoryCall, DbQueryCall,
-    DeclaredSymbol, ExceptionHandler, FieldSummary, FormattedErrorCall, GoFieldSummary,
-    GoStructSummary, ImportSpec, InterfaceSummary, MacroCall, NamedLiteral, PackageVarSummary,
-    ParsedFile, ParsedFunction, PythonFieldSummary, PythonModelSummary, RuntimeCall,
-    RustEnumSummary, RustStaticSummary, StructSummary, StructTag, TestFunctionSummary, TopLevelBindingSummary,
+    DeclaredSymbol, ExceptionHandler, FieldSummary, FormattedErrorCall, GinCallSummary,
+    GoFieldSummary, GoStructSummary, GormChainStep, GormQueryChain, ImportSpec,
+    InterfaceSummary, MacroCall, NamedLiteral, PackageVarSummary, ParseInputCall, ParsedFile,
+    ParsedFunction, PythonFieldSummary, PythonModelSummary, RuntimeCall, RustEnumSummary,
+    RustStaticSummary, StructSummary, StructTag, TestFunctionSummary, TopLevelBindingSummary,
     TopLevelCallSummary, UnsafePattern, UnsafePatternKind,
 };
 

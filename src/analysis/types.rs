@@ -66,6 +66,9 @@ pub(crate) struct ParsedFunction {
     pub concat_loops: Vec<usize>,
     pub json_loops: Vec<usize>,
     pub db_query_calls: Vec<DbQueryCall>,
+    pub gorm_query_chains: Vec<GormQueryChain>,
+    pub parse_input_calls: Vec<ParseInputCall>,
+    pub gin_calls: Vec<GinCallSummary>,
     pub none_comparison_lines: Vec<usize>,
     pub side_effect_comprehension_lines: Vec<usize>,
     pub redundant_return_none_lines: Vec<usize>,
@@ -137,6 +140,46 @@ pub(crate) struct DbQueryCall {
     pub query_text: Option<String>,
     pub query_argument_text: Option<String>,
     pub query_uses_dynamic_construction: bool,
+    pub in_loop: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct GormChainStep {
+    pub line: usize,
+    pub method_name: String,
+    pub argument_texts: Vec<String>,
+    pub first_string_arg: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct GormQueryChain {
+    pub line: usize,
+    pub root_text: String,
+    pub terminal_method: String,
+    pub steps: Vec<GormChainStep>,
+    pub in_loop: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct ParseInputCall {
+    pub line: usize,
+    pub parser_family: String,
+    pub input_text: String,
+    pub input_binding: Option<String>,
+    pub target_text: Option<String>,
+    #[allow(dead_code)]
+    pub in_loop: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct GinCallSummary {
+    pub line: usize,
+    pub operation: String,
+    #[allow(dead_code)]
+    pub argument_texts: Vec<String>,
+    #[allow(dead_code)]
+    pub assigned_binding: Option<String>,
+    #[allow(dead_code)]
     pub in_loop: bool,
 }
 

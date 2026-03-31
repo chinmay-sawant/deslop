@@ -1,0 +1,41 @@
+package sample
+
+import (
+	"compress/gzip"
+	"encoding/csv"
+	"encoding/json"
+	"html/template"
+	"io"
+	"net/http"
+	"regexp"
+)
+
+var rowPattern = regexp.MustCompile("^[a-z]+$")
+
+func BuildTemplateSet() {
+	_, _ = template.ParseFiles("list.tmpl")
+}
+
+func CompileRows(rows []string, target io.Writer) {
+	encoder := json.NewEncoder(target)
+	zipWriter := gzip.NewWriter(target)
+	for _, row := range rows {
+		_ = rowPattern.MatchString(row)
+		_ = encoder.Encode(map[string]string{"row": row})
+		_, _ = zipWriter.Write([]byte(row))
+	}
+	_ = zipWriter.Close()
+}
+
+func ExportRows(w http.ResponseWriter, rows [][]string) {
+	writer := csv.NewWriter(w)
+	for _, row := range rows {
+		_ = writer.Write(row)
+	}
+	writer.Flush()
+}
+
+func DecodeOnce(body []byte) {
+	var first map[string]string
+	_ = json.Unmarshal(body, &first)
+}

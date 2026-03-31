@@ -42,6 +42,8 @@ mod core;
 mod data_access;
 #[path = "integration_scan/go_advanceplan2.rs"]
 mod go_advanceplan2;
+#[path = "integration_scan/go_advanceplan3.rs"]
+mod go_advanceplan3;
 #[path = "integration_scan/hallucination.rs"]
 mod hallucination;
 #[path = "integration_scan/naming.rs"]

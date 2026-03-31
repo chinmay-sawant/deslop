@@ -4,9 +4,10 @@ Date: 2026-03-31
 
 ## Status
 
-- [ ] Drafted only; not implemented yet.
-- [ ] This plan extends the current coarse DB-query heuristics with import-aware SQL, `database/sql`, `sqlx`, `pgx`, and `gorm` performance analysis.
-- [ ] The target set focuses on round-trip amplification, query-shape cost, ORM chain misuse, and request-path connection churn that common linter bundles usually do not model.
+- [x] Initial slice implemented on 2026-03-31.
+- [x] Ordered GORM chain follow-up implemented on 2026-03-31 with real-repo validation.
+- [x] This plan extends the current coarse DB-query heuristics with import-aware SQL, `database/sql`, `sqlx`, `pgx`, and `gorm` performance analysis.
+- [x] The target set focuses on round-trip amplification, query-shape cost, ORM chain misuse, and request-path connection churn that common linter bundles usually do not model.
 
 ## Already Covered And Excluded From This Plan
 
@@ -22,19 +23,41 @@ Date: 2026-03-31
 
 Move from method-name-only query spotting to framework-aware DB performance heuristics that understand connection churn, batching gaps, ORM chain shape, result width, and handler-driven query misuse. This phase should explicitly support `database/sql`, `jmoiron/sqlx`, `jackc/pgx`, and `gorm.io/gorm` without pretending to prove schema-level truth.
 
+## Shipped Rules
+
+- [x] `sql_open_per_request`
+- [x] `gorm_open_per_request`
+- [x] `prepare_inside_loop`
+- [x] `gorm_debug_enabled_in_request_path`
+- [x] `create_single_in_loop_instead_of_batches`
+- [x] `gorm_find_without_limit_on_handler_path`
+- [x] `offset_pagination_on_large_table`
+- [x] `gorm_preload_clause_associations_on_wide_graph`
+- [x] `count_then_find_same_filter`
+
+## Fixtures And Verification
+
+- [x] Added `tests/fixtures/go/advanceplan3_data_positive.txt`.
+- [x] Added `tests/fixtures/go/advanceplan3_data_clean.txt`.
+- [x] Added `tests/integration_scan/go_advanceplan3.rs` coverage for the first SQL/GORM family.
+- [x] Expanded the data fixtures with ordered `Limit`, `Offset`, `Preload`, `Count`, and `Find` chain cases.
+- [x] Added parser regression coverage for ordered GORM chain summaries.
+- [x] Verified with `cargo test --test integration_scan go_advanceplan3` and the full `cargo test --test integration_scan` suite.
+- [x] Validated the second GORM wave against `go-admin-team/go-admin`; only two batch-insert findings surfaced in application code, so no extra suppression was needed before expanding the rule set.
+
 ## Candidate Scenario Backlog (50 scenarios)
 
 ### Connection, Pool, Session, And Statement Churn
 
-- [ ] `sql_open_per_request`: detect `sql.Open` or equivalent pool creation inside handlers, middleware, or looped work instead of process-level initialization.
-- [ ] `gorm_open_per_request`: detect `gorm.Open` in request or loop paths where the handle should be shared.
+- [x] `sql_open_per_request`: detect `sql.Open` or equivalent pool creation inside handlers, middleware, or looped work instead of process-level initialization.
+- [x] `gorm_open_per_request`: detect `gorm.Open` in request or loop paths where the handle should be shared.
 - [ ] `db_ping_per_request`: detect `Ping` or `PingContext` on hot request paths rather than startup or health-check boundaries.
-- [ ] `prepare_inside_loop`: detect `Prepare` or `PrepareContext` inside loops where one prepared statement could serve the batch.
+- [x] `prepare_inside_loop`: detect `Prepare` or `PrepareContext` inside loops where one prepared statement could serve the batch.
 - [ ] `prepare_on_every_request_same_sql`: detect the same literal SQL prepared repeatedly in a single request path.
 - [ ] `tx_begin_per_item_loop`: detect transactions started once per element instead of around the full batch.
 - [ ] `nested_transaction_in_request_path`: detect nested or repeated transactional scopes in request code without clear batching intent.
 - [ ] `gorm_session_allocated_per_item`: detect `db.Session(...)` or similar GORM session construction inside inner loops.
-- [ ] `gorm_debug_enabled_in_request_path`: detect `Debug()` or verbose query logger enabling inside hot request paths.
+- [x] `gorm_debug_enabled_in_request_path`: detect `Debug()` or verbose query logger enabling inside hot request paths.
 - [ ] `connection_pool_reconfigured_per_request`: detect `SetMaxOpenConns`, `SetMaxIdleConns`, or `SetConnMaxLifetime` being changed at request time.
 
 ### Round-Trip Amplification And Missing Batch Paths
@@ -48,24 +71,24 @@ Move from method-name-only query spotting to framework-aware DB performance heur
 - [ ] `preload_inside_loop`: detect GORM `Preload` setup or execution inside loops rather than once on the broader query.
 - [ ] `first_or_create_in_loop`: detect `FirstOrCreate` style ORM calls inside loops because each iteration can hide multiple queries.
 - [ ] `save_in_loop_full_model`: detect `Save` on full models per iteration when only a subset of columns actually changes.
-- [ ] `create_single_in_loop_instead_of_batches`: detect repeated `Create` of single rows when `CreateInBatches` or driver batching is a better fit.
+- [x] `create_single_in_loop_instead_of_batches`: detect repeated `Create` of single rows when `CreateInBatches` or driver batching is a better fit.
 - [ ] `update_single_row_in_loop_without_batch`: detect repeated `Updates`, `UpdateColumn`, or raw `UPDATE` statements in loops.
 - [ ] `delete_single_row_in_loop_without_batch`: detect repeated row deletes in loops when a set-based delete is available.
 - [ ] `row_by_row_upsert_loop`: detect repeated upsert-style writes rather than bulk conflict handling.
 - [ ] `repeated_same_query_template_same_function`: detect the same query template executed multiple times with only scalar parameter changes and no batching.
-- [ ] `count_then_find_same_filter`: detect a `Count` followed by `Find` or `Select` with effectively the same filter chain in one request path.
+- [x] `count_then_find_same_filter`: detect a `Count` followed by `Find` or `Select` with effectively the same filter chain in one request path.
 - [ ] `exists_via_count_star`: detect `COUNT(*)` usage where the call site only needs a boolean existence answer.
 - [ ] `find_all_then_manual_paginate_in_go`: detect unbounded fetches followed by in-memory page slicing in Go.
 - [ ] `duplicate_find_then_preload_followup`: detect an initial ORM fetch followed by separate follow-up fetches for associations that could be folded into one query plan.
 
 ### Query Shape, Pagination, And Result Width
 
-- [ ] `gorm_find_without_limit_on_handler_path`: detect request-path `Find` chains with no visible `Limit`, `First`, `Take`, `Rows`, or batching marker.
-- [ ] `gorm_preload_clause_associations_on_wide_graph`: detect `Preload(clause.Associations)` or very broad preload graphs on handler-backed queries.
+- [x] `gorm_find_without_limit_on_handler_path`: detect request-path `Find` chains with no visible `Limit`, `First`, `Take`, `Rows`, or batching marker.
+- [x] `gorm_preload_clause_associations_on_wide_graph`: detect `Preload(clause.Associations)` or very broad preload graphs on handler-backed queries.
 - [ ] `gorm_select_missing_projection_on_wide_model`: detect wide model fetches with no `Select` or `Omit` when the handler only reads a narrow field subset.
 - [ ] `gorm_joins_plus_preload_plus_find_without_limit`: detect expensive query chains that combine `Joins`, `Preload`, and broad `Find` terminals without bounding the result set.
 - [ ] `order_by_without_limit_orm_chain`: detect `.Order(...)` chains with no bounding clause on latency-sensitive reads.
-- [ ] `offset_pagination_on_large_table`: detect `.Offset(...)` pagination without keyset cues on obviously hot list endpoints.
+- [x] `offset_pagination_on_large_table`: detect `.Offset(...)` pagination without keyset cues on obviously hot list endpoints.
 - [ ] `order_by_random_request_path`: detect `ORDER BY RAND()`, `ORDER BY RANDOM()`, or equivalent random ordering in request paths.
 - [ ] `distinct_wide_row_request_path`: detect `Distinct` on wide row projections in request handlers where a key-only subquery would be cheaper.
 - [ ] `lower_or_func_wrapped_indexed_column`: detect GORM or query-builder filter expressions that wrap columns in `LOWER`, `UPPER`, `COALESCE`, or similar functions in ways that often defeat indexes.
@@ -89,14 +112,15 @@ Move from method-name-only query spotting to framework-aware DB performance heur
 ## Shared Implementation Checklist
 
 - [ ] Replace the current method-name-only DB classifier with an import-aware classifier keyed by `database/sql`, `sqlx`, `pgx`, and `gorm` symbols.
-- [ ] Add a `GoQueryChainStep` style summary so GORM call sequences can be analyzed as ordered chains instead of isolated calls.
-- [ ] Capture terminal operations, pagination clauses, preload breadth, projection clauses, and write-batch cues for ORM chains.
-- [ ] Add request-path detection so `missing limit` and broad materialization findings can stay quiet for CLI tools, migrations, and offline jobs.
+- [x] Add a `GoQueryChainStep` style summary so GORM call sequences can be analyzed as ordered chains instead of isolated calls.
+- [x] Capture terminal operations, pagination clauses, preload breadth, projection clauses, and write-batch cues for ORM chains.
+- [x] Add request-path detection so `missing limit` and broad materialization findings can stay quiet for CLI tools, migrations, and offline jobs.
 - [ ] Add representative fixtures for `database/sql`, `sqlx`, `pgx`, and `gorm` separately so false positives can be isolated by framework.
 - [ ] Validate on at least one real GORM-heavy repo and one lower-level SQL repo before enabling any new rule set by default.
+- [x] Validate the ordered GORM chain rules on at least one real GORM-heavy repository before expanding their scope.
 
 ## Acceptance Criteria
 
-- [ ] Each new rule explains whether the cost comes from connection churn, query multiplicity, result width, pagination choice, or ORM chain breadth.
-- [ ] Clean fixtures that already use batching, keyset pagination, explicit projection, or process-level pool reuse stay quiet.
-- [ ] No rule claims to prove missing indexes or wrong schema design; all messages remain heuristic and explainable.
+- [x] Each new rule explains whether the cost comes from connection churn, query multiplicity, result width, pagination choice, or ORM chain breadth.
+- [x] Clean fixtures that already use batching, keyset pagination, explicit projection, or process-level pool reuse stay quiet.
+- [x] No rule claims to prove missing indexes or wrong schema design; all messages remain heuristic and explainable.

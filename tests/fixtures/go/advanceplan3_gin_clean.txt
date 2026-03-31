@@ -1,0 +1,19 @@
+package sample
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+type requestPayload struct {
+	Name string `json:"name"`
+}
+
+func Handle(c *gin.Context) {
+	var payload requestPayload
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"name": payload.Name})
+}

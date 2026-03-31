@@ -1,0 +1,38 @@
+package sample
+
+import (
+	"encoding/json"
+	"io"
+
+	"github.com/gin-gonic/gin"
+)
+
+func DuplicateBody(c *gin.Context) {
+	raw, _ := c.GetRawData()
+	_ = raw
+	var payload map[string]any
+	_ = c.ShouldBindJSON(&payload)
+}
+
+func ReadThenBind(c *gin.Context) {
+	body, _ := io.ReadAll(c.Request.Body)
+	_ = body
+	var payload map[string]any
+	_ = c.ShouldBind(&payload)
+}
+
+func MultiBind(c *gin.Context) {
+	var first map[string]any
+	var second map[string]any
+	_ = c.ShouldBindJSON(&first)
+	_ = c.ShouldBindJSON(&second)
+}
+
+func Pretty(c *gin.Context) {
+	c.IndentedJSON(200, gin.H{"ok": true})
+}
+
+func ManualMarshal(c *gin.Context) {
+	payload, _ := json.Marshal(gin.H{"ok": true})
+	c.Data(200, "application/json", payload)
+}

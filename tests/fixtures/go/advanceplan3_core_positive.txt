@@ -1,0 +1,42 @@
+package sample
+
+import (
+	"compress/gzip"
+	"encoding/csv"
+	"encoding/json"
+	"html/template"
+	"net/http"
+	"regexp"
+)
+
+func RenderList(w http.ResponseWriter, r *http.Request) {
+	_, _ = template.ParseFiles("list.tmpl")
+	_, _ = w.Write([]byte("ok"))
+	_ = r
+}
+
+func CompileRows(rows []string, w http.ResponseWriter) {
+	for _, row := range rows {
+		compiled, _ := regexp.Compile("^" + row + "$")
+		_ = compiled
+		encoder := json.NewEncoder(w)
+		_ = encoder.Encode(map[string]string{"row": row})
+		zipWriter := gzip.NewWriter(w)
+		_, _ = zipWriter.Write([]byte(row))
+	}
+}
+
+func ExportRows(w http.ResponseWriter, rows [][]string) {
+	writer := csv.NewWriter(w)
+	for _, row := range rows {
+		_ = writer.Write(row)
+		writer.Flush()
+	}
+}
+
+func DecodeTwice(body []byte) {
+	var first map[string]string
+	var second map[string]string
+	_ = json.Unmarshal(body, &first)
+	_ = json.Unmarshal(body, &second)
+}

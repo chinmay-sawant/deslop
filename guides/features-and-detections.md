@@ -254,6 +254,12 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `likely_n_squared_allocation`: opt-in deeper semantic signal for allocation churn that also appears inside nested loop structure.
 - `fmt_hot_path`: `fmt` formatting calls such as `Sprintf` inside loops.
 - `reflection_hot_path`: `reflect` package calls inside loops.
+- `regexp_compile_in_hot_path`: `regexp.Compile` or `regexp.MustCompile` observed inside obvious iterative paths.
+- `template_parse_in_hot_path`: `html/template` or `text/template` parse calls observed on request-style paths instead of startup-time caching.
+- `json_unmarshal_same_payload_multiple_times`: the same local JSON payload binding is unmarshaled into multiple targets in one function.
+- `json_encoder_recreated_per_item`: `json.NewEncoder(...)` constructed repeatedly inside loops instead of reusing a stable encoder per stream.
+- `gzip_reader_writer_recreated_per_item`: `gzip.NewReader(...)` or `gzip.NewWriter(...)` recreated inside iterative paths instead of per stream.
+- `csv_writer_flush_per_row`: `csv.Writer.Flush()` called inside per-row loops, reducing buffering effectiveness.
 - `full_dataset_load`: calls such as `io.ReadAll`, `ioutil.ReadAll`, or `os.ReadFile` that load an entire payload into memory instead of streaming it.
 
 ### Concurrency signals
@@ -281,6 +287,14 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `http_status_ignored_before_decode`: response decoding or body consumption happens with no visible `StatusCode` check.
 - `http_writeheader_after_write`: a handler writes the response body before calling `WriteHeader(...)`, making the later status-setting call misleading.
 
+### Gin request-path signals
+
+- `get_raw_data_then_should_bindjson_duplicate_body`: a Gin handler reads `GetRawData()` and later binds JSON from the same request body.
+- `readall_body_then_bind_duplicate_deserialize`: a Gin handler materializes `c.Request.Body` with `io.ReadAll(...)` and then binds the same body again.
+- `multiple_shouldbind_calls_same_handler`: a Gin handler binds the request body multiple times.
+- `indentedjson_in_hot_path`: a Gin handler uses `IndentedJSON(...)` on a request path instead of compact JSON rendering.
+- `json_marshaled_manually_then_c_data`: a Gin handler manually marshals JSON and then writes it through `gin.Context.Data(...)` instead of using a direct JSON renderer.
+
 ### Resource cleanup signals
 
 - `file_handle_without_close`: a file handle opened via `os.Open`, `os.Create`, or `os.OpenFile` lacks an observed `Close()` path in the owning function.
@@ -302,6 +316,15 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `n_plus_one_query`: database-style query calls issued inside loops. When `go_semantic_experimental = true` or `--enable-semantic` is enabled, nested-loop correlation can raise severity and add stronger evidence.
 - `wide_select_query`: literal `SELECT *` query shapes.
 - `likely_unindexed_query`: query shapes such as leading-wildcard `LIKE` or `ORDER BY` without `LIMIT` that often scale poorly.
+- `sql_open_per_request`: `database/sql` pools opened on request paths instead of process-level setup.
+- `gorm_open_per_request`: `gorm.Open(...)` called on request paths instead of process-level setup.
+- `prepare_inside_loop`: `Prepare(...)` or `PrepareContext(...)` observed inside loops.
+- `gorm_debug_enabled_in_request_path`: GORM debug logging enabled on request paths.
+- `create_single_in_loop_instead_of_batches`: GORM `.Create(...)` used inside loops with no visible `CreateInBatches(...)` path in the same function.
+- `gorm_find_without_limit_on_handler_path`: request-path GORM `Find(...)` chains with no visible `Limit(...)` step.
+- `offset_pagination_on_large_table`: request-path GORM `Find(...)` chains that page with `Offset(...)`, which often scales poorly on large lists.
+- `gorm_preload_clause_associations_on_wide_graph`: request-path GORM chains that use `Preload(clause.Associations)` or other broad preload graphs.
+- `count_then_find_same_filter`: request-path GORM flows that run `Count(...)` and then a broad `Find(...)` with the same filter shape.
 
 ### Local hallucination signals
 

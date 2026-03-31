@@ -4,9 +4,10 @@ Date: 2026-03-31
 
 ## Status
 
-- [ ] Drafted only; not implemented yet.
-- [ ] This plan is intentionally scoped to performance patterns that are not already covered by the current Go heuristics.
-- [ ] The target set is biased toward signals that usually sit outside common `golangci-lint` bundles and style linters because they require loop-shape, binding-reuse, or hot-path reasoning.
+- [x] Initial slice implemented on 2026-03-31.
+- [x] Parser-backed repeated-input follow-up implemented on 2026-03-31.
+- [x] This plan is intentionally scoped to performance patterns that are not already covered by the current Go heuristics.
+- [x] The target set is biased toward signals that usually sit outside common `golangci-lint` bundles and style linters because they require loop-shape, binding-reuse, or hot-path reasoning.
 
 ## Already Covered And Excluded From This Plan
 
@@ -23,6 +24,23 @@ Date: 2026-03-31
 ## Objective
 
 Build the next generic Go performance pack around hot-path allocation shape, repeated parsing work, duplicate materialization, and algorithmic waste that looks plausible in generated code but normally escapes mainstream linting. The emphasis is on conservative, explainable findings that can be supported by parser evidence already close to what `ParsedFunction` exposes today.
+
+## Shipped Rules
+
+- [x] `regexp_compile_in_hot_path`
+- [x] `template_parse_in_hot_path`
+- [x] `json_encoder_recreated_per_item`
+- [x] `gzip_reader_writer_recreated_per_item`
+- [x] `csv_writer_flush_per_row`
+- [x] `json_unmarshal_same_payload_multiple_times`
+
+## Fixtures And Verification
+
+- [x] Added `tests/fixtures/go/advanceplan3_core_positive.txt`.
+- [x] Added `tests/fixtures/go/advanceplan3_core_clean.txt`.
+- [x] Added `tests/integration_scan/go_advanceplan3.rs` coverage for the core hot-path family.
+- [x] Expanded the core fixtures with repeated JSON input decoding cases backed by parser summaries.
+- [x] Verified with `cargo test --test integration_scan go_advanceplan3` and the full `cargo test --test integration_scan` suite.
 
 ## Candidate Scenario Backlog (37 scenarios)
 
@@ -43,11 +61,11 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 
 ### Repeated Parse, Compile, And Normalize Work
 
-- [ ] `regexp_compile_in_hot_path`: detect `regexp.Compile` or `regexp.MustCompile` inside handlers, middleware, or obvious iterative paths.
-- [ ] `template_parse_in_hot_path`: detect `html/template` or `text/template` parse calls inside request or export paths instead of startup-time caching.
+- [x] `regexp_compile_in_hot_path`: detect `regexp.Compile` or `regexp.MustCompile` inside handlers, middleware, or obvious iterative paths.
+- [x] `template_parse_in_hot_path`: detect `html/template` or `text/template` parse calls inside request or export paths instead of startup-time caching.
 - [ ] `url_parse_in_loop_on_invariant_base`: detect repeated `url.Parse` or reference-resolution work on the same invariant base value inside loops.
 - [ ] `time_parse_layout_in_loop`: detect `time.Parse` or `ParseInLocation` in hot loops when the layout and input family are clearly repetitive.
-- [ ] `json_unmarshal_same_payload_multiple_times`: detect the same local payload binding being unmarshaled into multiple targets in one function.
+- [x] `json_unmarshal_same_payload_multiple_times`: detect the same local payload binding being unmarshaled into multiple targets in one function.
 - [ ] `xml_unmarshal_same_payload_multiple_times`: detect duplicate XML decoding against the same local payload.
 - [ ] `yaml_unmarshal_same_payload_multiple_times`: detect repeated YAML or TOML decoding on the same raw bytes or string binding.
 - [ ] `proto_unmarshal_same_payload_multiple_times`: detect protobuf payloads that are decoded multiple times in one request path.
@@ -59,10 +77,10 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 
 ### Serialization, Compression, And Stream Shaping
 
-- [ ] `json_encoder_recreated_per_item`: detect `json.NewEncoder` being created for each item or sub-loop on the same writer instead of reusing a stable encoder.
+- [x] `json_encoder_recreated_per_item`: detect `json.NewEncoder` being created for each item or sub-loop on the same writer instead of reusing a stable encoder.
 - [ ] `json_decoder_recreated_per_item`: detect `json.NewDecoder` being rebuilt repeatedly on short-lived readers inside inner loops.
-- [ ] `gzip_reader_writer_recreated_per_item`: detect `gzip.NewReader` or `gzip.NewWriter` per element instead of per stream or pooled reuse.
-- [ ] `csv_writer_flush_per_row`: detect `csv.Writer.Flush()` or equivalent buffer flushes inside per-row export loops.
+- [x] `gzip_reader_writer_recreated_per_item`: detect `gzip.NewReader` or `gzip.NewWriter` per element instead of per stream or pooled reuse.
+- [x] `csv_writer_flush_per_row`: detect `csv.Writer.Flush()` or equivalent buffer flushes inside per-row export loops.
 - [ ] `bufio_writer_missing_in_bulk_export`: detect large write loops to files or sockets without a visible buffered writer.
 - [ ] `bufio_reader_missing_for_small_read_loop`: detect repeated tiny reads from files or sockets in loops without `bufio.Reader` style buffering.
 - [ ] `read_then_decode_duplicate_materialization`: detect `io.ReadAll` plus a second decode/materialization stage when a streaming decoder could serve the same path.
@@ -78,6 +96,7 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 ## Shared Implementation Checklist
 
 - [ ] Extend Go parser evidence so append targets, `make` capacity hints, builder writes, flush sites, and repeated decode targets can be summarized instead of re-derived from raw `body_text` each time.
+- [x] Added repeated parse-input summaries so same-input JSON decode rules no longer rely on raw body-text matching.
 - [ ] Add import-aware alias helpers for `strings`, `bytes`, `regexp`, `encoding/json`, `encoding/xml`, `compress/gzip`, `bufio`, `encoding/csv`, `strconv`, `net/url`, and `time`.
 - [ ] Prefer `Info` severity for micro-optimization candidates and require multiple corroborating signals before escalating to `Warning`.
 - [ ] Add one positive and one clean fixture for every scenario family before enabling any new rule by default.
@@ -85,6 +104,6 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 
 ## Acceptance Criteria
 
-- [ ] Every shipped rule anchors to a concrete line and points at the expensive operation, collection growth site, or repeated parse target.
-- [ ] Clean fixtures for deliberate buffering, preallocation, or cached parsing stay quiet.
-- [ ] The first wave remains function-local unless repo-aware correlation clearly improves precision.
+- [x] Every shipped rule anchors to a concrete line and points at the expensive operation, collection growth site, or repeated parse target.
+- [x] Clean fixtures for deliberate buffering, preallocation, or cached parsing stay quiet.
+- [x] The first wave remains function-local unless repo-aware correlation clearly improves precision.

@@ -1,0 +1,48 @@
+package sample
+
+import (
+	"database/sql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+type User struct {
+	ID int
+}
+
+func OpenSQLPool() (*sql.DB, error) {
+	return sql.Open("sqlite3", "file:test.db")
+}
+
+func OpenGormOnce() (*gorm.DB, error) {
+	return gorm.Open(nil, nil)
+}
+
+func BuildStatement(db *sql.DB) error {
+	stmt, err := db.PrepareContext(nil, "SELECT * FROM users WHERE id = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	return nil
+}
+
+func CreateUsers(c *gin.Context, db *gorm.DB, users []User) {
+	_ = db.CreateInBatches(users, 100)
+	_ = c
+}
+
+func ListUsers(c *gin.Context, db *gorm.DB) {
+	var users []User
+	_ = db.Preload("Profile").Limit(20).Find(&users)
+	_ = c
+}
+
+func CountAndFindUsers(c *gin.Context, db *gorm.DB, status string) {
+	var total int64
+	var users []User
+	_ = db.Model(&User{}).Where("status = ?", status).Count(&total)
+	_ = db.Model(&User{}).Where("status = ?", status).Limit(20).Find(&users)
+	_ = c
+}

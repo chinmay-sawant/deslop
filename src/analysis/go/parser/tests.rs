@@ -389,3 +389,95 @@ func Run(items []string, dryRun bool) error {
     assert!(run.signature_text.contains("dryRun bool"));
     assert_eq!(run.body_start_line, 16);
 }
+
+#[test]
+fn test_collects_gorm_query_chain_summaries() {
+    let source = r#"package sample
+
+import (
+    "gorm.io/gorm"
+    "gorm.io/gorm/clause"
+)
+
+type User struct{}
+
+func Handle(db *gorm.DB, page int) {
+    var users []User
+    var total int64
+    _ = db.Model(&User{}).Where("status = ?", "open").Count(&total)
+    _ = db.Model(&User{}).Preload(clause.Associations).Offset(page).Limit(20).Find(&users)
+}
+"#;
+
+    let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
+    let handle = parsed
+        .functions
+        .iter()
+        .find(|function| function.fingerprint.name == "Handle")
+        .expect("Handle should be parsed");
+
+    assert_eq!(handle.gorm_query_chains.len(), 2);
+    assert_eq!(handle.gorm_query_chains[0].terminal_method, "Count");
+    assert_eq!(handle.gorm_query_chains[1].terminal_method, "Find");
+    assert_eq!(
+        handle.gorm_query_chains[1]
+            .steps
+            .iter()
+            .map(|step| step.method_name.as_str())
+            .collect::<Vec<_>>(),
+        vec!["Model", "Preload", "Offset", "Limit", "Find"]
+    );
+    assert!(handle.gorm_query_chains[1].in_loop == false);
+}
+
+#[test]
+fn test_collects_gin_calls_and_parse_input_summaries() {
+    let source = r#"package sample
+
+import (
+    "encoding/json"
+    "io"
+
+    "github.com/gin-gonic/gin"
+)
+
+func Handle(c *gin.Context, body []byte) {
+    raw, _ := c.GetRawData()
+    _ = raw
+    payload, _ := io.ReadAll(c.Request.Body)
+    _ = payload
+
+    var request map[string]any
+    _ = c.ShouldBindJSON(&request)
+    c.IndentedJSON(200, gin.H{"ok": true})
+
+    var first map[string]string
+    var second map[string]string
+    _ = json.Unmarshal(body, &first)
+    _ = json.Unmarshal(body, &second)
+}
+"#;
+
+    let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
+    let handle = parsed
+        .functions
+        .iter()
+        .find(|function| function.fingerprint.name == "Handle")
+        .expect("Handle should be parsed");
+
+    assert_eq!(
+        handle
+            .gin_calls
+            .iter()
+            .map(|call| call.operation.as_str())
+            .collect::<Vec<_>>(),
+        vec!["get_raw_data", "read_request_body", "should_bind_json", "indented_json"]
+    );
+    assert_eq!(handle.gin_calls[0].assigned_binding.as_deref(), Some("raw"));
+    assert_eq!(handle.gin_calls[1].assigned_binding.as_deref(), Some("payload"));
+    assert_eq!(handle.parse_input_calls.len(), 2);
+    assert!(handle
+        .parse_input_calls
+        .iter()
+        .all(|call| call.input_binding.as_deref() == Some("body")));
+}

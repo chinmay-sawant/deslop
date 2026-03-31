@@ -1,0 +1,54 @@
+package sample
+
+import (
+	"database/sql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+)
+
+type User struct {
+	ID int
+}
+
+func OpenSQL(c *gin.Context) {
+	db, _ := sql.Open("sqlite3", "file:test.db")
+	_ = db
+	_ = c
+}
+
+func OpenGorm(c *gin.Context) {
+	gormDB, _ := gorm.Open(nil, nil)
+	_ = gormDB
+	_ = c
+}
+
+func BuildStatements(db *sql.DB, ids []int) {
+	for _, id := range ids {
+		stmt, _ := db.PrepareContext(nil, "SELECT * FROM users WHERE id = ?")
+		_ = stmt
+		_ = id
+	}
+}
+
+func CreateUsers(c *gin.Context, db *gorm.DB, users []User) {
+	for _, user := range users {
+		db.Debug().Create(&user)
+	}
+	_ = c
+}
+
+func ListUsers(c *gin.Context, db *gorm.DB, page int) {
+	var users []User
+	_ = db.Preload(clause.Associations).Offset(page * 20).Find(&users)
+	_ = c
+}
+
+func CountAndFindUsers(c *gin.Context, db *gorm.DB, status string) {
+	var total int64
+	var users []User
+	_ = db.Model(&User{}).Where("status = ?", status).Count(&total)
+	_ = db.Model(&User{}).Where("status = ?", status).Find(&users)
+	_ = c
+}

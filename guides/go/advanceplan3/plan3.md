@@ -4,9 +4,10 @@ Date: 2026-03-31
 
 ## Status
 
-- [ ] Drafted only; not implemented yet.
-- [ ] This plan targets `gin-gonic/gin` and HTTP handler performance patterns that are currently outside the shipped Go heuristics.
-- [ ] The emphasis is on request-body duplication, response shaping, request-scope allocation churn, and handler fanout patterns that typical lint packs rarely model.
+- [x] Initial slice implemented on 2026-03-31.
+- [x] Parser-backed Gin body and render summaries replaced the original body-text matching on 2026-03-31.
+- [x] This plan targets `gin-gonic/gin` and HTTP handler performance patterns that are currently outside the shipped Go heuristics.
+- [x] The emphasis is on request-body duplication, response shaping, request-scope allocation churn, and handler fanout patterns that typical lint packs rarely model.
 
 ## Already Covered And Excluded From This Plan
 
@@ -21,14 +22,30 @@ Date: 2026-03-31
 
 Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/render helpers, body reuse, export patterns, and handler-driven upstream fanout. These rules should stay focused on obvious throughput regressions rather than stylistic concerns.
 
+## Shipped Rules
+
+- [x] `get_raw_data_then_should_bindjson_duplicate_body`
+- [x] `readall_body_then_bind_duplicate_deserialize`
+- [x] `multiple_shouldbind_calls_same_handler`
+- [x] `indentedjson_in_hot_path`
+- [x] `json_marshaled_manually_then_c_data`
+
+## Fixtures And Verification
+
+- [x] Added `tests/fixtures/go/advanceplan3_gin_positive.txt`.
+- [x] Added `tests/fixtures/go/advanceplan3_gin_clean.txt`.
+- [x] Added `tests/integration_scan/go_advanceplan3.rs` coverage for the first Gin request-path family.
+- [x] Verified with `cargo test --test integration_scan go_advanceplan3` and the full `cargo test --test integration_scan` suite.
+- [x] Validated the shipped Gin request-path rules against `eddycjy/go-gin-example`; the application code stayed quiet for the new rule IDs.
+
 ## Candidate Scenario Backlog (34 scenarios)
 
 ### Request Body Duplication And Binding Waste
 
-- [ ] `get_raw_data_then_should_bindjson_duplicate_body`: detect `c.GetRawData()` followed by `ShouldBindJSON`, `BindJSON`, or equivalent body parsing in the same handler.
-- [ ] `readall_body_then_bind_duplicate_deserialize`: detect `io.ReadAll(c.Request.Body)` followed by a second bind or decode path.
+- [x] `get_raw_data_then_should_bindjson_duplicate_body`: detect `c.GetRawData()` followed by `ShouldBindJSON`, `BindJSON`, or equivalent body parsing in the same handler.
+- [x] `readall_body_then_bind_duplicate_deserialize`: detect `io.ReadAll(c.Request.Body)` followed by a second bind or decode path.
 - [ ] `shouldbindbodywith_when_single_bind_is_enough`: detect `ShouldBindBodyWith` in handlers that only bind once and therefore pay for an unnecessary body copy.
-- [ ] `multiple_shouldbind_calls_same_handler`: detect multiple Gin bind helpers on the same request body in one handler.
+- [x] `multiple_shouldbind_calls_same_handler`: detect multiple Gin bind helpers on the same request body in one handler.
 - [ ] `bindjson_into_map_any_hot_endpoint`: detect body binding into `map[string]any` or similarly dynamic containers on hot request paths.
 - [ ] `bindquery_into_map_any_hot_endpoint`: detect repeated query binding into dynamic maps or wide generic containers when a stable struct contract exists.
 - [ ] `parsemultipartform_large_default_memory`: detect `ParseMultipartForm` with large in-memory thresholds on regular request handlers.
@@ -38,8 +55,8 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 
 ### Response Construction And Rendering Cost
 
-- [ ] `indentedjson_in_hot_path`: detect `IndentedJSON` or pretty-print JSON rendering in non-debug request paths.
-- [ ] `json_marshaled_manually_then_c_data`: detect `json.Marshal` followed by `c.Data` or `c.Writer.Write` instead of a direct Gin JSON renderer.
+- [x] `indentedjson_in_hot_path`: detect `IndentedJSON` or pretty-print JSON rendering in non-debug request paths.
+- [x] `json_marshaled_manually_then_c_data`: detect `json.Marshal` followed by `c.Data` or `c.Writer.Write` instead of a direct Gin JSON renderer.
 - [ ] `repeated_c_json_inside_stream_loop`: detect `c.JSON` or `c.PureJSON` inside streaming loops where encoder-based streaming would be more stable.
 - [ ] `no_streaming_for_large_export_handler`: detect large list/export handlers that materialize everything before writing rather than using chunked or streaming output.
 - [ ] `template_parse_in_handler`: detect template parsing or loading directly inside handlers.
@@ -74,11 +91,12 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 - [ ] Add `GinHandlerSummary` style parser evidence using `*gin.Context` parameters plus router registration cues where available.
 - [ ] Capture request-body access summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ReadAll(c.Request.Body)`, `ParseMultipartForm`, and `FormFile`.
 - [ ] Capture render summaries for `JSON`, `PureJSON`, `IndentedJSON`, `Data`, streaming helpers, template load helpers, and response-writer flush/write sites.
-- [ ] Reuse the generic import-alias machinery so Gin-specific rules can still understand mixed `net/http` and Gin code in the same handler.
+- [x] Added Gin call summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `IndentedJSON`, `Data`, and request-body reads so the shipped rules no longer rely on raw body-text matching.
+- [x] Reuse the generic import-alias machinery so Gin-specific rules can still understand mixed `net/http` and Gin code in the same handler.
 - [ ] Add positive and clean fixtures for body-duplication, export, middleware-allocation, and upstream-fanout families before promoting any rule.
 
 ## Acceptance Criteria
 
-- [ ] Each new rule explains whether the cost comes from duplicate body reads, repeated binding, response materialization, request-scope allocation churn, or handler fanout.
-- [ ] Clean handlers that bind once, stream large exports, and reuse process-level clients stay quiet.
-- [ ] Startup-only template loading or router setup should not trigger request-path findings.
+- [x] Each new rule explains whether the cost comes from duplicate body reads, repeated binding, response materialization, request-scope allocation churn, or handler fanout.
+- [x] Clean handlers that bind once, stream large exports, and reuse process-level clients stay quiet.
+- [x] Startup-only template loading or router setup should not trigger request-path findings.

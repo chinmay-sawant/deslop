@@ -5,6 +5,7 @@ mod consistency;
 mod context;
 mod errors;
 mod go_advanceplan2;
+mod go_advanceplan3;
 mod hallucination;
 mod naming;
 mod performance;
@@ -31,6 +32,7 @@ use self::context::{
 };
 use self::errors::error_findings;
 use self::go_advanceplan2::{go_file_findings, go_repo_findings};
+use self::go_advanceplan3::go_advanceplan3_file_findings;
 use self::hallucination::hallucination_findings;
 use self::naming::{generic_finding, overlong_finding, weak_finding};
 use self::performance::{
@@ -76,6 +78,7 @@ pub(crate) fn evaluate_go_file(
     analysis_config: &AnalysisConfig,
 ) -> Vec<Finding> {
     let mut findings = go_file_findings(file);
+    findings.extend(go_advanceplan3_file_findings(file));
 
     findings.extend(tag_findings(file));
     findings.extend(import_grouping_findings(file));

@@ -1,6 +1,7 @@
 mod comments;
 mod context;
 mod errors;
+mod frameworks;
 mod general;
 mod performance;
 #[cfg(test)]
@@ -19,6 +20,7 @@ use self::context::{
     collect_mutex_loops, collect_sleep_loops, collect_unmanaged_goroutines, has_ctx_param,
 };
 use self::errors::{collect_dropped_errors, collect_errorf_calls, collect_panic_errors};
+use self::frameworks::{collect_gin_calls, collect_gorm_query_chains, collect_parse_input_calls};
 use self::general::{
     build_test_summary, collect_calls, collect_go_structs, collect_imports,
     collect_interface_summaries, collect_local_strings, collect_package_vars,
@@ -155,6 +157,9 @@ fn parse_function_node(
     let string_concat_in_loop_lines = collect_concat_loops(body_node, source);
     let json_marshal_in_loop_lines = collect_json_loops(body_node, source, imports);
     let db_query_calls = collect_db_query_calls(body_node, source);
+    let gorm_query_chains = collect_gorm_query_chains(body_node, source, imports);
+    let parse_input_calls = collect_parse_input_calls(body_node, source, imports);
+    let gin_calls = collect_gin_calls(body_node, source, imports);
     let body_text = source
         .get(body_node.byte_range())
         .unwrap_or_default()
@@ -205,6 +210,9 @@ fn parse_function_node(
         concat_loops: string_concat_in_loop_lines,
         json_loops: json_marshal_in_loop_lines,
         db_query_calls,
+        gorm_query_chains,
+        parse_input_calls,
+        gin_calls,
         none_comparison_lines: Vec::new(),
         side_effect_comprehension_lines: Vec::new(),
         redundant_return_none_lines: Vec::new(),
