@@ -133,42 +133,42 @@ export const detectionFamilies: DetectionFamily[] = [
   {
     title: 'Code clarity',
     description:
-      'Surface vague naming, overdescribed helpers, and weakly signaled interfaces before they spread through a codebase.',
+      'Surface vague naming, overdescribed helpers, and weakly typed interfaces before they spread.',
     rules: ['Generic naming', 'Overlong identifiers', 'Weak typing'],
     icon: CodeBracketSquareIcon,
   },
   {
     title: 'Reliability',
     description:
-      'Catch the failure-handling shortcuts that make code look complete while hiding operational risk.',
+      'Catch failure-handling shortcuts that make code look complete while hiding operational risk.',
     rules: ['Dropped errors', 'Panic-first branches', 'Weak wrapping'],
     icon: ExclamationTriangleIcon,
   },
   {
     title: 'Security',
     description:
-      'Highlight secrets, weak crypto choices, and query-construction patterns that deserve a closer review.',
+      'Highlight secrets, weak crypto, and query-construction patterns that deserve a closer look.',
     rules: ['Secret literals', 'Weak crypto', 'Unsafe query strings'],
     icon: ShieldCheckIcon,
   },
   {
     title: 'Coordination',
     description:
-      'Find shutdown, cancellation, wrapper propagation, and blocking decisions that often look harmless until systems are under load.',
+      'Flag shutdown, cancellation, and blocking patterns that look harmless until systems are under load.',
     rules: ['Receiver wrapper propagation', 'Derived-context goroutines', 'Busy waiting'],
     icon: BoltIcon,
   },
   {
     title: 'Performance',
     description:
-      'Flag repeated work inside loops, duplicate decode work, repeated split and strconv churn, scratch container and slice-clone churn, loop-local URL and time parsing, parser-backed GORM and Gin request-path waste, multipart upload churn, dynamic Gin binding churn, looped GORM CRUD and association churn, request-path DB churn, full-payload reads, formatting-heavy hot paths, body-rewind duplication, large dynamic map responses, export streaming gaps, debug-body logging, upstream decode duplication, and handler-driven batch gaps before they harden into defaults, with an opt-in semantic pass for nested-loop pressure.',
-    rules: ['Duplicate decode work', 'Multipart upload churn', 'GORM loop churn', 'Body rewind waste', 'Large map responses', 'Handler batch gaps'],
+      'Flag repeated work, duplicate decoding, ORM loop waste, and request-path allocation churn before it hardens into defaults.',
+    rules: ['Duplicate decode work', 'GORM loop churn', 'Body rewind waste', 'Handler batch gaps'],
     icon: CpuChipIcon,
   },
   {
     title: 'Tests and repo-local context',
     description:
-      'Differentiate between tests that only gesture at safety and repository-local code paths that appear to reference symbols the scanned project cannot resolve.',
+      'Distinguish tests that only gesture at safety from code paths referencing symbols the project cannot resolve.',
     rules: ['Placeholder tests', 'Happy-path-only tests', 'Repo-local symbol misses'],
     icon: CircleStackIcon,
   },
