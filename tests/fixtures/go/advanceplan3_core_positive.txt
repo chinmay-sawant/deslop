@@ -4,10 +4,21 @@ import (
 	"compress/gzip"
 	"encoding/csv"
 	"encoding/json"
+	"encoding/xml"
 	"html/template"
 	"net/http"
 	"regexp"
+	"strings"
+
+	proto "google.golang.org/protobuf/proto"
+	yaml "gopkg.in/yaml.v3"
 )
+
+type xmlPayload struct {
+	Name string `xml:"name"`
+}
+
+type protoPayload struct{}
 
 func RenderList(w http.ResponseWriter, r *http.Request) {
 	_, _ = template.ParseFiles("list.tmpl")
@@ -39,4 +50,26 @@ func DecodeTwice(body []byte) {
 	var second map[string]string
 	_ = json.Unmarshal(body, &first)
 	_ = json.Unmarshal(body, &second)
+}
+
+func DecodeMore(rows []string, body []byte) {
+	var xmlFirst xmlPayload
+	var xmlSecond xmlPayload
+	_ = xml.Unmarshal(body, &xmlFirst)
+	_ = xml.Unmarshal(body, &xmlSecond)
+
+	var yamlFirst map[string]any
+	var yamlSecond map[string]any
+	_ = yaml.Unmarshal(body, &yamlFirst)
+	_ = yaml.Unmarshal(body, &yamlSecond)
+
+	var protoFirst protoPayload
+	var protoSecond protoPayload
+	_ = proto.Unmarshal(body, &protoFirst)
+	_ = proto.Unmarshal(body, &protoSecond)
+
+	for _, row := range rows {
+		decoder := json.NewDecoder(strings.NewReader(row))
+		_ = decoder
+	}
 }

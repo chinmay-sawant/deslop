@@ -4,11 +4,22 @@ import (
 	"compress/gzip"
 	"encoding/csv"
 	"encoding/json"
+	"encoding/xml"
 	"html/template"
 	"io"
 	"net/http"
 	"regexp"
+	"strings"
+
+	proto "google.golang.org/protobuf/proto"
+	yaml "gopkg.in/yaml.v3"
 )
+
+type xmlPayload struct {
+	Name string `xml:"name"`
+}
+
+type protoPayload struct{}
 
 var rowPattern = regexp.MustCompile("^[a-z]+$")
 
@@ -38,4 +49,18 @@ func ExportRows(w http.ResponseWriter, rows [][]string) {
 func DecodeOnce(body []byte) {
 	var first map[string]string
 	_ = json.Unmarshal(body, &first)
+}
+
+func DecodeVariants(body []byte, row string) {
+	var xmlDoc xmlPayload
+	_ = xml.Unmarshal(body, &xmlDoc)
+
+	var yamlDoc map[string]any
+	_ = yaml.Unmarshal(body, &yamlDoc)
+
+	var protoDoc protoPayload
+	_ = proto.Unmarshal(body, &protoDoc)
+
+	decoder := json.NewDecoder(strings.NewReader(row))
+	_ = decoder
 }

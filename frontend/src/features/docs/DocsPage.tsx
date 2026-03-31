@@ -78,8 +78,16 @@ const goRules: Rule[] = [
   { id: 'get_raw_data_then_should_bindjson_duplicate_body', description: 'Gin handlers that read GetRawData() and later bind JSON from the same request body.' },
   { id: 'readall_body_then_bind_duplicate_deserialize', description: 'Gin handlers that materialize c.Request.Body with io.ReadAll(...) and then bind the same body again.' },
   { id: 'multiple_shouldbind_calls_same_handler', description: 'Gin handlers that bind the request body multiple times in one function.' },
+  { id: 'bindjson_into_map_any_hot_endpoint', description: 'Gin handlers that bind JSON into map[string]any or map[string]interface{} on hot request paths.' },
+  { id: 'bindquery_into_map_any_hot_endpoint', description: 'Gin handlers that bind query parameters into map[string]any or map[string]interface{} on hot request paths.' },
+  { id: 'shouldbindbodywith_when_single_bind_is_enough', description: 'Gin handlers that use ShouldBindBodyWith(...) even though only one body bind is observed.' },
   { id: 'indentedjson_in_hot_path', description: 'IndentedJSON(...) used on a request path instead of compact JSON rendering.' },
+  { id: 'repeated_c_json_inside_stream_loop', description: 'Gin handlers that call c.JSON(...) or c.PureJSON(...) from inside loops.' },
   { id: 'json_marshaled_manually_then_c_data', description: 'Handlers that manually marshal JSON and then write it through gin.Context.Data(...).' },
+  { id: 'servefile_via_readfile_then_c_data', description: 'Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming.' },
+  { id: 'dumprequest_or_dumpresponse_in_hot_path', description: 'Request-path handlers that dump full HTTP requests or responses with httputil.' },
+  { id: 'file_or_template_read_per_request', description: 'Request-path handlers that read files directly instead of using startup caching or dedicated file-serving paths.' },
+  { id: 'gin_context_copy_for_each_item_fanout', description: 'Gin handlers that call c.Copy() once per loop iteration before goroutine fanout.' },
   { id: 'file_handle_without_close', description: 'File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path.' },
   { id: 'rows_without_close', description: 'Query result handles that appear locally owned but have no observed rows.Close() call.' },
   { id: 'stmt_without_close', description: 'Prepared statements or similar DB handles without an observed Close() call.' },
@@ -99,7 +107,11 @@ const goRules: Rule[] = [
   { id: 'regexp_compile_in_hot_path', description: 'regexp.Compile or regexp.MustCompile observed inside obvious iterative paths.' },
   { id: 'template_parse_in_hot_path', description: 'html/template or text/template parse calls observed on request-style paths instead of startup-time caching.' },
   { id: 'json_unmarshal_same_payload_multiple_times', description: 'The same local JSON payload binding is unmarshaled into multiple targets in one function.' },
+  { id: 'xml_unmarshal_same_payload_multiple_times', description: 'The same local XML payload binding is unmarshaled into multiple targets in one function.' },
+  { id: 'yaml_unmarshal_same_payload_multiple_times', description: 'The same local YAML payload binding is unmarshaled into multiple targets in one function.' },
+  { id: 'proto_unmarshal_same_payload_multiple_times', description: 'The same local protobuf payload binding is unmarshaled into multiple targets in one function.' },
   { id: 'json_encoder_recreated_per_item', description: 'json.NewEncoder(...) constructed repeatedly inside loops instead of reusing a stable encoder per stream.' },
+  { id: 'json_decoder_recreated_per_item', description: 'json.NewDecoder(...) constructed repeatedly inside loops instead of reusing a stable decoder per stream.' },
   { id: 'gzip_reader_writer_recreated_per_item', description: 'gzip.NewReader(...) or gzip.NewWriter(...) recreated inside iterative paths instead of per stream.' },
   { id: 'csv_writer_flush_per_row', description: 'csv.Writer.Flush() called inside per-row loops, reducing buffering effectiveness.' },
   { id: 'n_plus_one_query', description: 'Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.' },
@@ -107,7 +119,22 @@ const goRules: Rule[] = [
   { id: 'likely_unindexed_query', description: 'Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.' },
   { id: 'sql_open_per_request', description: 'database/sql pools opened on request paths instead of process-level setup.' },
   { id: 'gorm_open_per_request', description: 'gorm.Open(...) called on request paths instead of process-level setup.' },
+  { id: 'db_ping_per_request', description: 'database Ping(...) or PingContext(...) called on request paths instead of startup or explicit health checks.' },
+  { id: 'connection_pool_reconfigured_per_request', description: 'DB pool sizing or lifetime settings changed on request paths.' },
   { id: 'prepare_inside_loop', description: 'Prepare(...) or PrepareContext(...) observed inside loops.' },
+  { id: 'prepare_on_every_request_same_sql', description: 'The same literal SQL is prepared multiple times on one request path.' },
+  { id: 'tx_begin_per_item_loop', description: 'Transactions started inside loops instead of once around the wider batch.' },
+  { id: 'exec_inside_loop_without_batch', description: 'Exec(...) or ExecContext(...) used for row-by-row SQL writes inside loops.' },
+  { id: 'queryrow_inside_loop_existence_check', description: 'QueryRow(...) or QueryRowContext(...) used inside loops for point lookups that usually want a bulk prefetch path.' },
+  { id: 'count_inside_loop', description: 'COUNT(...) or GORM Count(...) observed inside loops.' },
+  { id: 'gorm_session_allocated_per_item', description: 'GORM Session(...) chains allocated inside loops before issuing queries.' },
+  { id: 'raw_scan_inside_loop', description: 'GORM Raw(...).Scan(...) chains observed inside loops.' },
+  { id: 'association_find_inside_loop', description: 'GORM Association(...).Find(...) loaders observed inside loops.' },
+  { id: 'preload_inside_loop', description: 'GORM Preload(...) queries configured and executed inside loops.' },
+  { id: 'first_or_create_in_loop', description: 'GORM FirstOrCreate(...) chains observed inside loops.' },
+  { id: 'save_in_loop_full_model', description: 'GORM Save(...) writes full models inside loops.' },
+  { id: 'update_single_row_in_loop_without_batch', description: 'GORM Update(...), UpdateColumn(...), or Updates(...) calls observed inside loops one row at a time.' },
+  { id: 'delete_single_row_in_loop_without_batch', description: 'GORM Delete(...) chains observed inside loops one row at a time.' },
   { id: 'gorm_debug_enabled_in_request_path', description: 'GORM debug logging enabled on request paths.' },
   { id: 'create_single_in_loop_instead_of_batches', description: 'GORM .Create(...) used inside loops with no visible CreateInBatches(...) path in the same function.' },
   { id: 'gorm_find_without_limit_on_handler_path', description: 'Request-path GORM Find(...) chains with no visible Limit(...) step.' },
@@ -386,13 +413,14 @@ function CodeBlock({ code }: { code: string }) {
 const overviewContent = {
   go: {
     title: 'Go Analysis',
-    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and now covers repo-wide style checks, receiver-field and nested wrapper propagation, derived-context goroutine lifetime analysis, security, performance, and an opt-in deeper semantic loop pass with explainable rules.',
+    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and now covers repo-wide style checks, receiver-field and nested wrapper propagation, derived-context goroutine lifetime analysis, parser-backed Gin and GORM request-path performance analysis, duplicate decode hot spots, dynamic Gin bind waste, request-path DB churn, looped GORM CRUD and association churn, security, and an opt-in deeper semantic loop pass with explainable rules.',
     bullets: [
       '.gitignore-aware walk; skips vendor/ and generated files by default',
       'Parses package names, imports, declared symbols, call sites, and function fingerprints',
       'Builds a repository-local symbol index for same-package and import hallucination checks',
       'Includes repo-wide package and import style checks plus wrapper-level context propagation heuristics',
       'Covers receiver-field wrappers, local wrapper chains, and Query versus QueryContext mismatches',
+      'Adds parser-backed Gin request-body and query-bind summaries plus GORM chain summaries for duplicate decode, file-serving, and request-path DB churn findings',
       'Adds an opt-in semantic pack for nested-loop allocation, concat, and stronger N+1 signals',
       'Produces compact text output by default; full detail and JSON via flags',
       'Supports standalone Go repos and mixed Go + Python + Rust repositories',
@@ -700,6 +728,11 @@ export function DocsPage() {
               <h2 className="docs-h2">Detection philosophy</h2>
               <p className="docs-p">Findings are heuristics, not compile-time proof. The analyzer is intentionally conservative where full type information is missing.</p>
               <p className="docs-p">Rules are designed to produce readable evidence so humans can validate them quickly. Local repository context is used where possible, but deslop does not replace go/types.</p>
+              <div className="docs-callout" style={{ borderLeftColor: 'var(--lang-go)', background: 'var(--lang-go-soft)' }}>
+                <p>
+                  The latest Go performance pack now also covers duplicate XML, YAML, and protobuf decode, looped JSON decoder setup, repeated request-path prepares, looped transactions and GORM session or CRUD chains, dynamic Gin map binding, file-serving via Data, c.Copy() fanout churn, request dumps, and request-time file reads.
+                </p>
+              </div>
             </>
           )}
           {activeLang === 'python' && (

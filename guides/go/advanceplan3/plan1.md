@@ -29,7 +29,11 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 
 - [x] `regexp_compile_in_hot_path`
 - [x] `template_parse_in_hot_path`
+- [x] `xml_unmarshal_same_payload_multiple_times`
+- [x] `yaml_unmarshal_same_payload_multiple_times`
+- [x] `proto_unmarshal_same_payload_multiple_times`
 - [x] `json_encoder_recreated_per_item`
+- [x] `json_decoder_recreated_per_item`
 - [x] `gzip_reader_writer_recreated_per_item`
 - [x] `csv_writer_flush_per_row`
 - [x] `json_unmarshal_same_payload_multiple_times`
@@ -40,6 +44,7 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 - [x] Added `tests/fixtures/go/advanceplan3_core_clean.txt`.
 - [x] Added `tests/integration_scan/go_advanceplan3.rs` coverage for the core hot-path family.
 - [x] Expanded the core fixtures with repeated JSON input decoding cases backed by parser summaries.
+- [x] Expanded the core fixtures with duplicate XML/YAML/protobuf decode cases and looped `json.NewDecoder(...)` coverage.
 - [x] Verified with `cargo test --test integration_scan go_advanceplan3` and the full `cargo test --test integration_scan` suite.
 
 ## Candidate Scenario Backlog (37 scenarios)
@@ -66,9 +71,9 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 - [ ] `url_parse_in_loop_on_invariant_base`: detect repeated `url.Parse` or reference-resolution work on the same invariant base value inside loops.
 - [ ] `time_parse_layout_in_loop`: detect `time.Parse` or `ParseInLocation` in hot loops when the layout and input family are clearly repetitive.
 - [x] `json_unmarshal_same_payload_multiple_times`: detect the same local payload binding being unmarshaled into multiple targets in one function.
-- [ ] `xml_unmarshal_same_payload_multiple_times`: detect duplicate XML decoding against the same local payload.
-- [ ] `yaml_unmarshal_same_payload_multiple_times`: detect repeated YAML or TOML decoding on the same raw bytes or string binding.
-- [ ] `proto_unmarshal_same_payload_multiple_times`: detect protobuf payloads that are decoded multiple times in one request path.
+- [x] `xml_unmarshal_same_payload_multiple_times`: detect duplicate XML decoding against the same local payload.
+- [x] `yaml_unmarshal_same_payload_multiple_times`: detect repeated YAML or TOML decoding on the same raw bytes or string binding.
+- [x] `proto_unmarshal_same_payload_multiple_times`: detect protobuf payloads that are decoded multiple times in one request path.
 - [ ] `strings_split_same_input_multiple_times`: detect repeated `strings.Split`, `SplitN`, or `Fields` calls against the same unchanged binding.
 - [ ] `bytes_split_same_input_multiple_times`: detect repeated `bytes.Split*` calls against the same unchanged byte slice.
 - [ ] `stable_value_normalization_in_inner_loop`: detect repeated `strings.ToLower`, `TrimSpace`, `ReplaceAll`, `path.Clean`, or similar normalization calls on invariant values inside nested loops.
@@ -78,7 +83,7 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 ### Serialization, Compression, And Stream Shaping
 
 - [x] `json_encoder_recreated_per_item`: detect `json.NewEncoder` being created for each item or sub-loop on the same writer instead of reusing a stable encoder.
-- [ ] `json_decoder_recreated_per_item`: detect `json.NewDecoder` being rebuilt repeatedly on short-lived readers inside inner loops.
+- [x] `json_decoder_recreated_per_item`: detect `json.NewDecoder` being rebuilt repeatedly on short-lived readers inside inner loops.
 - [x] `gzip_reader_writer_recreated_per_item`: detect `gzip.NewReader` or `gzip.NewWriter` per element instead of per stream or pooled reuse.
 - [x] `csv_writer_flush_per_row`: detect `csv.Writer.Flush()` or equivalent buffer flushes inside per-row export loops.
 - [ ] `bufio_writer_missing_in_bulk_export`: detect large write loops to files or sockets without a visible buffered writer.

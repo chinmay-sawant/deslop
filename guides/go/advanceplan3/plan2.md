@@ -27,7 +27,22 @@ Move from method-name-only query spotting to framework-aware DB performance heur
 
 - [x] `sql_open_per_request`
 - [x] `gorm_open_per_request`
+- [x] `db_ping_per_request`
+- [x] `connection_pool_reconfigured_per_request`
 - [x] `prepare_inside_loop`
+- [x] `prepare_on_every_request_same_sql`
+- [x] `tx_begin_per_item_loop`
+- [x] `exec_inside_loop_without_batch`
+- [x] `queryrow_inside_loop_existence_check`
+- [x] `count_inside_loop`
+- [x] `gorm_session_allocated_per_item`
+- [x] `raw_scan_inside_loop`
+- [x] `association_find_inside_loop`
+- [x] `preload_inside_loop`
+- [x] `first_or_create_in_loop`
+- [x] `save_in_loop_full_model`
+- [x] `update_single_row_in_loop_without_batch`
+- [x] `delete_single_row_in_loop_without_batch`
 - [x] `gorm_debug_enabled_in_request_path`
 - [x] `create_single_in_loop_instead_of_batches`
 - [x] `gorm_find_without_limit_on_handler_path`
@@ -41,6 +56,8 @@ Move from method-name-only query spotting to framework-aware DB performance heur
 - [x] Added `tests/fixtures/go/advanceplan3_data_clean.txt`.
 - [x] Added `tests/integration_scan/go_advanceplan3.rs` coverage for the first SQL/GORM family.
 - [x] Expanded the data fixtures with ordered `Limit`, `Offset`, `Preload`, `Count`, and `Find` chain cases.
+- [x] Expanded the data fixtures with request-path `Ping` and pool-reconfiguration cases plus looped `Exec`, `QueryRow`, and GORM `Count` coverage.
+- [x] Expanded the data fixtures with repeated request-path prepare calls, looped transactions, looped GORM sessions and preloads, raw scans, association loads, `FirstOrCreate`, `Save`, `Update*`, and `Delete` coverage.
 - [x] Added parser regression coverage for ordered GORM chain summaries.
 - [x] Verified with `cargo test --test integration_scan go_advanceplan3` and the full `cargo test --test integration_scan` suite.
 - [x] Validated the second GORM wave against `go-admin-team/go-admin`; only two batch-insert findings surfaced in application code, so no extra suppression was needed before expanding the rule set.
@@ -51,29 +68,29 @@ Move from method-name-only query spotting to framework-aware DB performance heur
 
 - [x] `sql_open_per_request`: detect `sql.Open` or equivalent pool creation inside handlers, middleware, or looped work instead of process-level initialization.
 - [x] `gorm_open_per_request`: detect `gorm.Open` in request or loop paths where the handle should be shared.
-- [ ] `db_ping_per_request`: detect `Ping` or `PingContext` on hot request paths rather than startup or health-check boundaries.
+- [x] `db_ping_per_request`: detect `Ping` or `PingContext` on hot request paths rather than startup or health-check boundaries.
 - [x] `prepare_inside_loop`: detect `Prepare` or `PrepareContext` inside loops where one prepared statement could serve the batch.
-- [ ] `prepare_on_every_request_same_sql`: detect the same literal SQL prepared repeatedly in a single request path.
-- [ ] `tx_begin_per_item_loop`: detect transactions started once per element instead of around the full batch.
+- [x] `prepare_on_every_request_same_sql`: detect the same literal SQL prepared repeatedly in a single request path.
+- [x] `tx_begin_per_item_loop`: detect transactions started once per element instead of around the full batch.
 - [ ] `nested_transaction_in_request_path`: detect nested or repeated transactional scopes in request code without clear batching intent.
-- [ ] `gorm_session_allocated_per_item`: detect `db.Session(...)` or similar GORM session construction inside inner loops.
+- [x] `gorm_session_allocated_per_item`: detect `db.Session(...)` or similar GORM session construction inside inner loops.
 - [x] `gorm_debug_enabled_in_request_path`: detect `Debug()` or verbose query logger enabling inside hot request paths.
-- [ ] `connection_pool_reconfigured_per_request`: detect `SetMaxOpenConns`, `SetMaxIdleConns`, or `SetConnMaxLifetime` being changed at request time.
+- [x] `connection_pool_reconfigured_per_request`: detect `SetMaxOpenConns`, `SetMaxIdleConns`, or `SetConnMaxLifetime` being changed at request time.
 
 ### Round-Trip Amplification And Missing Batch Paths
 
-- [ ] `exec_inside_loop_without_batch`: detect `Exec`, `ExecContext`, or ORM write terminals inside loops when the operation shape is batchable.
-- [ ] `queryrow_inside_loop_existence_check`: detect `QueryRow` / `First` / `Take` style existence checks inside loops when a bulk prefetch or `IN` query is plausible.
+- [x] `exec_inside_loop_without_batch`: detect `Exec`, `ExecContext`, or ORM write terminals inside loops when the operation shape is batchable.
+- [x] `queryrow_inside_loop_existence_check`: detect `QueryRow` / `First` / `Take` style existence checks inside loops when a bulk prefetch or `IN` query is plausible.
 - [ ] `select_or_get_inside_loop_lookup`: detect `sqlx.Get`, `sqlx.Select`, `Find`, or `First` style lookups inside loops over IDs or foreign keys.
-- [ ] `raw_scan_inside_loop`: detect repeated `Raw(...).Scan(...)` or raw-row scans inside loops.
-- [ ] `count_inside_loop`: detect `Count` calls inside loops or repeated paged handlers where a bulk count or cached total is more appropriate.
-- [ ] `association_find_inside_loop`: detect `Association(...).Find(...)` or association loaders inside per-row loops.
-- [ ] `preload_inside_loop`: detect GORM `Preload` setup or execution inside loops rather than once on the broader query.
-- [ ] `first_or_create_in_loop`: detect `FirstOrCreate` style ORM calls inside loops because each iteration can hide multiple queries.
-- [ ] `save_in_loop_full_model`: detect `Save` on full models per iteration when only a subset of columns actually changes.
+- [x] `raw_scan_inside_loop`: detect repeated `Raw(...).Scan(...)` or raw-row scans inside loops.
+- [x] `count_inside_loop`: detect `Count` calls inside loops or repeated paged handlers where a bulk count or cached total is more appropriate.
+- [x] `association_find_inside_loop`: detect `Association(...).Find(...)` or association loaders inside per-row loops.
+- [x] `preload_inside_loop`: detect GORM `Preload` setup or execution inside loops rather than once on the broader query.
+- [x] `first_or_create_in_loop`: detect `FirstOrCreate` style ORM calls inside loops because each iteration can hide multiple queries.
+- [x] `save_in_loop_full_model`: detect `Save` on full models per iteration when only a subset of columns actually changes.
 - [x] `create_single_in_loop_instead_of_batches`: detect repeated `Create` of single rows when `CreateInBatches` or driver batching is a better fit.
-- [ ] `update_single_row_in_loop_without_batch`: detect repeated `Updates`, `UpdateColumn`, or raw `UPDATE` statements in loops.
-- [ ] `delete_single_row_in_loop_without_batch`: detect repeated row deletes in loops when a set-based delete is available.
+- [x] `update_single_row_in_loop_without_batch`: detect repeated `Updates`, `UpdateColumn`, or raw `UPDATE` statements in loops.
+- [x] `delete_single_row_in_loop_without_batch`: detect repeated row deletes in loops when a set-based delete is available.
 - [ ] `row_by_row_upsert_loop`: detect repeated upsert-style writes rather than bulk conflict handling.
 - [ ] `repeated_same_query_template_same_function`: detect the same query template executed multiple times with only scalar parameter changes and no batching.
 - [x] `count_then_find_same_filter`: detect a `Count` followed by `Find` or `Select` with effectively the same filter chain in one request path.

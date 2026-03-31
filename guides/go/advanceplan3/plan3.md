@@ -27,14 +27,24 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 - [x] `get_raw_data_then_should_bindjson_duplicate_body`
 - [x] `readall_body_then_bind_duplicate_deserialize`
 - [x] `multiple_shouldbind_calls_same_handler`
+- [x] `bindjson_into_map_any_hot_endpoint`
+- [x] `bindquery_into_map_any_hot_endpoint`
+- [x] `shouldbindbodywith_when_single_bind_is_enough`
 - [x] `indentedjson_in_hot_path`
+- [x] `repeated_c_json_inside_stream_loop`
 - [x] `json_marshaled_manually_then_c_data`
+- [x] `servefile_via_readfile_then_c_data`
+- [x] `dumprequest_or_dumpresponse_in_hot_path`
+- [x] `file_or_template_read_per_request`
+- [x] `gin_context_copy_for_each_item_fanout`
 
 ## Fixtures And Verification
 
 - [x] Added `tests/fixtures/go/advanceplan3_gin_positive.txt`.
 - [x] Added `tests/fixtures/go/advanceplan3_gin_clean.txt`.
 - [x] Added `tests/integration_scan/go_advanceplan3.rs` coverage for the first Gin request-path family.
+- [x] Expanded the Gin fixtures with `ShouldBindBodyWith(...)`, looped `c.JSON(...)`, request dumps, and request-path file reads.
+- [x] Expanded the Gin fixtures with dynamic `BindJSON` and `BindQuery` targets, file-serving-via-`Data`, and looped `c.Copy()` fanout coverage.
 - [x] Verified with `cargo test --test integration_scan go_advanceplan3` and the full `cargo test --test integration_scan` suite.
 - [x] Validated the shipped Gin request-path rules against `eddycjy/go-gin-example`; the application code stayed quiet for the new rule IDs.
 
@@ -44,10 +54,10 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 
 - [x] `get_raw_data_then_should_bindjson_duplicate_body`: detect `c.GetRawData()` followed by `ShouldBindJSON`, `BindJSON`, or equivalent body parsing in the same handler.
 - [x] `readall_body_then_bind_duplicate_deserialize`: detect `io.ReadAll(c.Request.Body)` followed by a second bind or decode path.
-- [ ] `shouldbindbodywith_when_single_bind_is_enough`: detect `ShouldBindBodyWith` in handlers that only bind once and therefore pay for an unnecessary body copy.
+- [x] `shouldbindbodywith_when_single_bind_is_enough`: detect `ShouldBindBodyWith` in handlers that only bind once and therefore pay for an unnecessary body copy.
 - [x] `multiple_shouldbind_calls_same_handler`: detect multiple Gin bind helpers on the same request body in one handler.
-- [ ] `bindjson_into_map_any_hot_endpoint`: detect body binding into `map[string]any` or similarly dynamic containers on hot request paths.
-- [ ] `bindquery_into_map_any_hot_endpoint`: detect repeated query binding into dynamic maps or wide generic containers when a stable struct contract exists.
+- [x] `bindjson_into_map_any_hot_endpoint`: detect body binding into `map[string]any` or similarly dynamic containers on hot request paths.
+- [x] `bindquery_into_map_any_hot_endpoint`: detect repeated query binding into dynamic maps or wide generic containers when a stable struct contract exists.
 - [ ] `parsemultipartform_large_default_memory`: detect `ParseMultipartForm` with large in-memory thresholds on regular request handlers.
 - [ ] `formfile_open_readall_whole_upload`: detect upload paths that open a form file and immediately `ReadAll` the full payload.
 - [ ] `repeated_body_rewind_for_multiple_decoders`: detect handlers that read, rewind, and decode the same body multiple times.
@@ -57,11 +67,11 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 
 - [x] `indentedjson_in_hot_path`: detect `IndentedJSON` or pretty-print JSON rendering in non-debug request paths.
 - [x] `json_marshaled_manually_then_c_data`: detect `json.Marshal` followed by `c.Data` or `c.Writer.Write` instead of a direct Gin JSON renderer.
-- [ ] `repeated_c_json_inside_stream_loop`: detect `c.JSON` or `c.PureJSON` inside streaming loops where encoder-based streaming would be more stable.
+- [x] `repeated_c_json_inside_stream_loop`: detect `c.JSON` or `c.PureJSON` inside streaming loops where encoder-based streaming would be more stable.
 - [ ] `no_streaming_for_large_export_handler`: detect large list/export handlers that materialize everything before writing rather than using chunked or streaming output.
 - [ ] `template_parse_in_handler`: detect template parsing or loading directly inside handlers.
 - [ ] `loadhtmlglob_or_loadhtmlfiles_in_request_path`: detect Gin HTML template loading APIs called at request time.
-- [ ] `servefile_via_readfile_then_c_data`: detect file-serving paths that load files into memory and then write through Gin instead of using streaming/file helpers.
+- [x] `servefile_via_readfile_then_c_data`: detect file-serving paths that load files into memory and then write through Gin instead of using streaming/file helpers.
 - [ ] `repeated_large_map_literal_response_construction`: detect large map-literal response assembly on hot routes where a stable typed response or reusable encoder path would be cheaper.
 - [ ] `large_h_payload_built_only_for_json_response`: detect large `gin.H` payloads built as transient dynamic maps right before JSON rendering.
 
@@ -70,10 +80,10 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 - [ ] `middleware_allocates_http_client_per_request`: detect `http.Client` or transport construction inside Gin middleware.
 - [ ] `middleware_allocates_db_or_gorm_handle_per_request`: detect DB or GORM handle creation in middleware instead of shared setup.
 - [ ] `middleware_allocates_regex_or_template_per_request`: detect regex or template compile/parse work in middleware.
-- [ ] `dumprequest_or_dumpresponse_in_hot_path`: detect `httputil.DumpRequest`, `DumpRequestOut`, or `DumpResponse` on hot request paths.
+- [x] `dumprequest_or_dumpresponse_in_hot_path`: detect `httputil.DumpRequest`, `DumpRequestOut`, or `DumpResponse` on hot request paths.
 - [ ] `env_or_config_lookup_per_request`: detect repeated config file loads, environment parsing, or heavyweight config decoding in handlers and middleware.
-- [ ] `file_or_template_read_per_request`: detect file reads for templates, policy docs, or static fragments inside handlers.
-- [ ] `gin_context_copy_for_each_item_fanout`: detect `c.Copy()` once per item in fanout loops rather than once per goroutine family or once per request.
+- [x] `file_or_template_read_per_request`: detect file reads for templates, policy docs, or static fragments inside handlers.
+- [x] `gin_context_copy_for_each_item_fanout`: detect `c.Copy()` once per item in fanout loops rather than once per goroutine family or once per request.
 - [ ] `gin_logger_debug_body_logging_on_hot_routes`: detect verbose body or payload logging on likely high-volume routes.
 
 ### Upstream Fanout, Export Paths, And Batch Gaps
@@ -91,7 +101,7 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 - [ ] Add `GinHandlerSummary` style parser evidence using `*gin.Context` parameters plus router registration cues where available.
 - [ ] Capture request-body access summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ReadAll(c.Request.Body)`, `ParseMultipartForm`, and `FormFile`.
 - [ ] Capture render summaries for `JSON`, `PureJSON`, `IndentedJSON`, `Data`, streaming helpers, template load helpers, and response-writer flush/write sites.
-- [x] Added Gin call summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `IndentedJSON`, `Data`, and request-body reads so the shipped rules no longer rely on raw body-text matching.
+- [x] Added Gin call summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ShouldBindQuery`, `Copy`, `IndentedJSON`, `Data`, and request-body reads so the shipped rules no longer rely on raw body-text matching.
 - [x] Reuse the generic import-alias machinery so Gin-specific rules can still understand mixed `net/http` and Gin code in the same handler.
 - [ ] Add positive and clean fixtures for body-duplication, export, middleware-allocation, and upstream-fanout families before promoting any rule.
 

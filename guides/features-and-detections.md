@@ -257,7 +257,11 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `regexp_compile_in_hot_path`: `regexp.Compile` or `regexp.MustCompile` observed inside obvious iterative paths.
 - `template_parse_in_hot_path`: `html/template` or `text/template` parse calls observed on request-style paths instead of startup-time caching.
 - `json_unmarshal_same_payload_multiple_times`: the same local JSON payload binding is unmarshaled into multiple targets in one function.
+- `xml_unmarshal_same_payload_multiple_times`: the same local XML payload binding is unmarshaled into multiple targets in one function.
+- `yaml_unmarshal_same_payload_multiple_times`: the same local YAML payload binding is unmarshaled into multiple targets in one function.
+- `proto_unmarshal_same_payload_multiple_times`: the same local protobuf payload binding is unmarshaled into multiple targets in one function.
 - `json_encoder_recreated_per_item`: `json.NewEncoder(...)` constructed repeatedly inside loops instead of reusing a stable encoder per stream.
+- `json_decoder_recreated_per_item`: `json.NewDecoder(...)` constructed repeatedly inside loops instead of reusing a stable decoder per stream.
 - `gzip_reader_writer_recreated_per_item`: `gzip.NewReader(...)` or `gzip.NewWriter(...)` recreated inside iterative paths instead of per stream.
 - `csv_writer_flush_per_row`: `csv.Writer.Flush()` called inside per-row loops, reducing buffering effectiveness.
 - `full_dataset_load`: calls such as `io.ReadAll`, `ioutil.ReadAll`, or `os.ReadFile` that load an entire payload into memory instead of streaming it.
@@ -292,8 +296,16 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `get_raw_data_then_should_bindjson_duplicate_body`: a Gin handler reads `GetRawData()` and later binds JSON from the same request body.
 - `readall_body_then_bind_duplicate_deserialize`: a Gin handler materializes `c.Request.Body` with `io.ReadAll(...)` and then binds the same body again.
 - `multiple_shouldbind_calls_same_handler`: a Gin handler binds the request body multiple times.
+- `bindjson_into_map_any_hot_endpoint`: a Gin handler binds JSON into `map[string]any` or `map[string]interface{}` on a request path.
+- `bindquery_into_map_any_hot_endpoint`: a Gin handler binds query parameters into `map[string]any` or `map[string]interface{}` on a request path.
+- `shouldbindbodywith_when_single_bind_is_enough`: a Gin handler uses `ShouldBindBodyWith(...)` even though only one body bind is observed.
 - `indentedjson_in_hot_path`: a Gin handler uses `IndentedJSON(...)` on a request path instead of compact JSON rendering.
+- `repeated_c_json_inside_stream_loop`: a Gin handler calls `c.JSON(...)` or `c.PureJSON(...)` from inside a loop.
 - `json_marshaled_manually_then_c_data`: a Gin handler manually marshals JSON and then writes it through `gin.Context.Data(...)` instead of using a direct JSON renderer.
+- `servefile_via_readfile_then_c_data`: a Gin handler reads a file into memory and then writes it through `gin.Context.Data(...)` instead of using file or streaming helpers.
+- `dumprequest_or_dumpresponse_in_hot_path`: a request-path handler calls `httputil.DumpRequest*` or `DumpResponse(...)` in hot code.
+- `file_or_template_read_per_request`: a request-path handler reads files directly instead of using startup caching or a dedicated static-file path.
+- `gin_context_copy_for_each_item_fanout`: a Gin handler calls `c.Copy()` once per loop iteration before goroutine fanout.
 
 ### Resource cleanup signals
 
@@ -318,7 +330,22 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `likely_unindexed_query`: query shapes such as leading-wildcard `LIKE` or `ORDER BY` without `LIMIT` that often scale poorly.
 - `sql_open_per_request`: `database/sql` pools opened on request paths instead of process-level setup.
 - `gorm_open_per_request`: `gorm.Open(...)` called on request paths instead of process-level setup.
+- `db_ping_per_request`: `Ping(...)` or `PingContext(...)` called on request paths instead of startup or explicit health-check boundaries.
+- `connection_pool_reconfigured_per_request`: DB pool sizing or lifetime settings changed on request paths.
 - `prepare_inside_loop`: `Prepare(...)` or `PrepareContext(...)` observed inside loops.
+- `prepare_on_every_request_same_sql`: the same literal SQL string is prepared multiple times on one request path.
+- `tx_begin_per_item_loop`: transactions are begun inside loops instead of once around the broader batch.
+- `exec_inside_loop_without_batch`: `Exec(...)` or `ExecContext(...)` used for row-by-row writes inside loops.
+- `queryrow_inside_loop_existence_check`: `QueryRow(...)` or `QueryRowContext(...)` used inside loops for point lookups that usually want a bulk prefetch path.
+- `count_inside_loop`: `COUNT(...)` or GORM `Count(...)` observed inside loops.
+- `gorm_session_allocated_per_item`: `db.Session(...)` is called inside loops before issuing GORM work.
+- `raw_scan_inside_loop`: `Raw(...).Scan(...)` style GORM chains appear inside loops.
+- `association_find_inside_loop`: `Association(...).Find(...)` style GORM loaders appear inside loops.
+- `preload_inside_loop`: `Preload(...)` is configured and executed inside loops.
+- `first_or_create_in_loop`: `FirstOrCreate(...)` runs inside loops.
+- `save_in_loop_full_model`: `Save(...)` writes full GORM models inside loops.
+- `update_single_row_in_loop_without_batch`: `Update(...)`, `UpdateColumn(...)`, or `Updates(...)` run inside loops one row at a time.
+- `delete_single_row_in_loop_without_batch`: `Delete(...)` runs inside loops one row at a time.
 - `gorm_debug_enabled_in_request_path`: GORM debug logging enabled on request paths.
 - `create_single_in_loop_instead_of_batches`: GORM `.Create(...)` used inside loops with no visible `CreateInBatches(...)` path in the same function.
 - `gorm_find_without_limit_on_handler_path`: request-path GORM `Find(...)` chains with no visible `Limit(...)` step.

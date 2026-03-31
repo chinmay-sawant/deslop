@@ -3,9 +3,16 @@ package sample
 import (
 	"encoding/json"
 	"io"
+	"net/http/httputil"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
+
+type requestPayload struct {
+	Name string `json:"name"`
+}
 
 func DuplicateBody(c *gin.Context) {
 	raw, _ := c.GetRawData()
@@ -35,4 +42,45 @@ func Pretty(c *gin.Context) {
 func ManualMarshal(c *gin.Context) {
 	payload, _ := json.Marshal(gin.H{"ok": true})
 	c.Data(200, "application/json", payload)
+}
+
+func BindBodyCopy(c *gin.Context) {
+	var payload requestPayload
+	_ = c.ShouldBindBodyWith(&payload, binding.JSON)
+}
+
+func BindQueryMap(c *gin.Context) {
+	var filters map[string]any
+	_ = c.ShouldBindQuery(&filters)
+}
+
+func LoopJSON(c *gin.Context, items []string) {
+	for _, item := range items {
+		c.JSON(200, gin.H{"item": item})
+	}
+}
+
+func DumpRequest(c *gin.Context) {
+	_, _ = httputil.DumpRequest(c.Request, true)
+}
+
+func ReadTemplate(c *gin.Context) {
+	blob, _ := os.ReadFile("template.html")
+	_ = blob
+	_ = c
+}
+
+func ServeFile(c *gin.Context) {
+	blob, _ := os.ReadFile("report.pdf")
+	c.Data(200, "application/pdf", blob)
+}
+
+func CopyPerItem(c *gin.Context, items []string) {
+	for _, item := range items {
+		copied := c.Copy()
+		go func(ctx *gin.Context, name string) {
+			_ = ctx
+			_ = name
+		}(copied, item)
+	}
 }

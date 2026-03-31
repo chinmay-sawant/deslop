@@ -11,12 +11,30 @@ type User struct {
 	ID int
 }
 
+type Role struct {
+	ID int
+}
+
 func OpenSQLPool() (*sql.DB, error) {
 	return sql.Open("sqlite3", "file:test.db")
 }
 
 func OpenGormOnce() (*gorm.DB, error) {
 	return gorm.Open(nil, nil)
+}
+
+func PingDatabase(db *sql.DB) error {
+	return db.Ping()
+}
+
+func ConfigurePool(db *sql.DB) {
+	db.SetMaxOpenConns(100)
+}
+
+func PrepareOnce(c *gin.Context, db *sql.DB) {
+	stmt, _ := db.PrepareContext(nil, "SELECT * FROM users WHERE status = ?")
+	_ = stmt
+	_ = c
 }
 
 func BuildStatement(db *sql.DB) error {
@@ -26,6 +44,14 @@ func BuildStatement(db *sql.DB) error {
 	}
 	defer stmt.Close()
 	return nil
+}
+
+func TransactionOnce(db *sql.DB, ids []int) {
+	tx, _ := db.Begin()
+	_ = tx
+	for _, id := range ids {
+		_ = id
+	}
 }
 
 func CreateUsers(c *gin.Context, db *gorm.DB, users []User) {
@@ -39,10 +65,58 @@ func ListUsers(c *gin.Context, db *gorm.DB) {
 	_ = c
 }
 
+func SessionOnce(db *gorm.DB, ids []int) {
+	session := db.Session(&gorm.Session{})
+	var user User
+	for _, id := range ids {
+		_ = session.Where("id = ?", id).First(&user)
+	}
+}
+
+func RawScanOnce(db *gorm.DB, id int) {
+	var user User
+	_ = db.Raw("SELECT id FROM users WHERE id = ?", id).Scan(&user)
+}
+
+func AssociationOnce(db *gorm.DB, user User) {
+	var roles []Role
+	_ = db.Model(&user).Association("Roles").Find(&roles)
+}
+
+func FirstOrCreateOnce(db *gorm.DB, user User) {
+	_ = db.Where("id = ?", user.ID).FirstOrCreate(&user)
+}
+
+func SaveOnce(db *gorm.DB, user User) {
+	_ = db.Save(&user)
+}
+
+func UpdateBulk(db *gorm.DB, ids []int) {
+	_ = db.Model(&User{}).Where("id IN ?", ids).Update("active", true)
+}
+
+func DeleteBulk(db *gorm.DB, ids []int) {
+	_ = db.Where("id IN ?", ids).Delete(&User{})
+}
+
 func CountAndFindUsers(c *gin.Context, db *gorm.DB, status string) {
 	var total int64
 	var users []User
 	_ = db.Model(&User{}).Where("status = ?", status).Count(&total)
 	_ = db.Model(&User{}).Where("status = ?", status).Limit(20).Find(&users)
 	_ = c
+}
+
+func BulkActivate(db *sql.DB, ids []int) {
+	_, _ = db.Exec("UPDATE users SET active = 1 WHERE id IN (?)", ids)
+}
+
+func LookupUsers(db *gorm.DB, ids []int) {
+	var users []User
+	_ = db.Where("id IN ?", ids).Find(&users)
+}
+
+func CountUsers(db *gorm.DB) {
+	var total int64
+	_ = db.Model(&User{}).Count(&total)
 }

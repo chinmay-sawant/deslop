@@ -1,0 +1,13 @@
+package sample
+
+import (
+    "context"
+    "time"
+)
+
+func Poll(ctx context.Context) {
+    for {
+        time.Sleep(time.Second)
+        _ = ctx
+    }
+}

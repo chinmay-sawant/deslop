@@ -1,11 +1,19 @@
 package sample
 
 import (
+	"net/http"
+	"net/http/httputil"
+	"os"
+
 	"github.com/gin-gonic/gin"
 )
 
 type requestPayload struct {
 	Name string `json:"name"`
+}
+
+type queryFilters struct {
+	Name string `form:"name"`
 }
 
 func Handle(c *gin.Context) {
@@ -16,4 +24,32 @@ func Handle(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"name": payload.Name})
+}
+
+func HandleQuery(c *gin.Context) {
+	var filters queryFilters
+	_ = c.ShouldBindQuery(&filters)
+	_ = filters
+}
+
+func DumpRequestForDebug(req *http.Request) {
+	_, _ = httputil.DumpRequest(req, false)
+}
+
+func ServeWithHelper(c *gin.Context) {
+	c.File("report.pdf")
+}
+
+func CopyOnce(c *gin.Context, items []string) {
+	copied := c.Copy()
+	for _, item := range items {
+		go func(ctx *gin.Context, name string) {
+			_ = ctx
+			_ = name
+		}(copied, item)
+	}
+}
+
+func LoadTemplateAtStartup() {
+	_, _ = os.ReadFile("template.html")
 }

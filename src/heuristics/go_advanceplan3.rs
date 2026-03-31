@@ -122,6 +122,26 @@ fn core_hot_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
                     ],
                 });
             }
+
+            if body_line.in_loop && body_line.text.contains(&format!("{alias}.NewDecoder(")) {
+                findings.push(Finding {
+                    rule_id: "json_decoder_recreated_per_item".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: body_line.line,
+                    end_line: body_line.line,
+                    message: format!(
+                        "function {} recreates a JSON decoder inside a loop",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("{}.NewDecoder(...) observed inside a loop at line {}", alias, body_line.line),
+                        "reusing a decoder or restructuring the loop often avoids repeated decode setup work"
+                            .to_string(),
+                    ],
+                });
+            }
         }
     }
 
@@ -276,6 +296,103 @@ fn data_access_performance_findings(file: &ParsedFile, function: &ParsedFunction
             }
         }
 
+        let mut prepare_groups = BTreeMap::<String, Vec<usize>>::new();
+        for (line, query_text) in prepare_like_call_lines(&lines) {
+            prepare_groups.entry(query_text).or_default().push(line);
+        }
+
+        for (query_text, prepare_lines) in prepare_groups {
+            if prepare_lines.len() < 2 {
+                continue;
+            }
+
+            findings.push(Finding {
+                rule_id: "prepare_on_every_request_same_sql".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: prepare_lines[1],
+                end_line: prepare_lines[1],
+                message: format!(
+                    "function {} prepares the same SQL multiple times on a request path",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!(
+                        "Prepare-like calls for the same query were observed at lines {}",
+                        join_lines(&prepare_lines)
+                    ),
+                    format!("query text: {query_text}"),
+                ],
+            });
+        }
+
+        if has_sql_like_import(file) {
+            for call in &function.calls {
+                if matches!(call.name.as_str(), "Ping" | "PingContext") {
+                    findings.push(Finding {
+                        rule_id: "db_ping_per_request".to_string(),
+                        severity: Severity::Info,
+                        path: file.path.clone(),
+                        function_name: Some(function.fingerprint.name.clone()),
+                        start_line: call.line,
+                        end_line: call.line,
+                        message: format!(
+                            "function {} pings a database handle on a request path",
+                            function.fingerprint.name
+                        ),
+                        evidence: vec![
+                            format!(
+                                "{}{} observed at line {}",
+                                call.receiver
+                                    .as_deref()
+                                    .map(|receiver| format!("{receiver}."))
+                                    .unwrap_or_default(),
+                                call.name,
+                                call.line
+                            ),
+                            "database connectivity checks are usually better handled during startup or explicit health checks"
+                                .to_string(),
+                        ],
+                    });
+                }
+
+                if matches!(
+                    call.name.as_str(),
+                    "SetMaxOpenConns"
+                        | "SetMaxIdleConns"
+                        | "SetConnMaxLifetime"
+                        | "SetConnMaxIdleTime"
+                ) {
+                    findings.push(Finding {
+                        rule_id: "connection_pool_reconfigured_per_request".to_string(),
+                        severity: Severity::Warning,
+                        path: file.path.clone(),
+                        function_name: Some(function.fingerprint.name.clone()),
+                        start_line: call.line,
+                        end_line: call.line,
+                        message: format!(
+                            "function {} reconfigures a DB pool on a request path",
+                            function.fingerprint.name
+                        ),
+                        evidence: vec![
+                            format!(
+                                "{}{} observed at line {}",
+                                call.receiver
+                                    .as_deref()
+                                    .map(|receiver| format!("{receiver}."))
+                                    .unwrap_or_default(),
+                                call.name,
+                                call.line
+                            ),
+                            "connection-pool sizing and lifetime settings are usually process-level configuration"
+                                .to_string(),
+                        ],
+                    });
+                }
+            }
+        }
+
         for alias in import_aliases_for(file, "gorm.io/gorm") {
             for body_line in &lines {
                 if body_line.text.contains(&format!("{alias}.Open(")) {
@@ -324,6 +441,316 @@ fn data_access_performance_findings(file: &ParsedFile, function: &ParsedFunction
                     ],
                 });
             }
+
+            if body_line.in_loop
+                && (body_line.text.contains(".Begin(") || body_line.text.contains(".BeginTx("))
+            {
+                findings.push(Finding {
+                    rule_id: "tx_begin_per_item_loop".to_string(),
+                    severity: Severity::Warning,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: body_line.line,
+                    end_line: body_line.line,
+                    message: format!(
+                        "function {} starts transactions inside a loop",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("Begin-like call observed inside a loop at line {}", body_line.line),
+                        "wrapping the whole batch in one transaction is usually cheaper than beginning one per item"
+                            .to_string(),
+                    ],
+                });
+            }
+        }
+
+        let has_bulk_write_escape = function.body_text.contains("CreateInBatches(")
+            || function.body_text.contains("CopyFrom(")
+            || function.body_text.contains("FindInBatches(");
+        if !has_bulk_write_escape {
+            for query_call in function.db_query_calls.iter().filter(|query_call| {
+                query_call.in_loop
+                    && matches!(query_call.method_name.as_str(), "Exec" | "ExecContext")
+                    && query_call
+                        .query_text
+                        .as_deref()
+                        .is_some_and(db_query_text_looks_write)
+            }) {
+                findings.push(Finding {
+                    rule_id: "exec_inside_loop_without_batch".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: query_call.line,
+                    end_line: query_call.line,
+                    message: format!(
+                        "function {} executes per-row SQL writes inside a loop",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!(
+                            "{} observed inside a loop at line {}",
+                            query_call.method_name, query_call.line
+                        ),
+                        format!(
+                            "query text: {}",
+                            query_call.query_text.as_deref().unwrap_or_default()
+                        ),
+                        "a set-based write or batch path is usually cheaper than issuing one Exec per item"
+                            .to_string(),
+                    ],
+                });
+            }
+        }
+
+        for query_call in function.db_query_calls.iter().filter(|query_call| {
+            query_call.in_loop
+                && matches!(query_call.method_name.as_str(), "QueryRow" | "QueryRowContext")
+        }) {
+            findings.push(Finding {
+                rule_id: "queryrow_inside_loop_existence_check".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: query_call.line,
+                end_line: query_call.line,
+                message: format!(
+                    "function {} performs QueryRow-style lookups inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!(
+                        "{} observed inside a loop at line {}",
+                        query_call.method_name, query_call.line
+                    ),
+                    query_call
+                        .query_text
+                        .as_ref()
+                        .map(|query_text| format!("query text: {query_text}"))
+                        .unwrap_or_else(|| {
+                            "loop-local point lookups often want a bulk prefetch path instead"
+                                .to_string()
+                        }),
+                ],
+            });
+        }
+
+        for query_call in function.db_query_calls.iter().filter(|query_call| {
+            query_call.in_loop
+                && query_call
+                    .query_text
+                    .as_deref()
+                    .is_some_and(db_query_text_looks_count)
+        }) {
+            findings.push(Finding {
+                rule_id: "count_inside_loop".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: query_call.line,
+                end_line: query_call.line,
+                message: format!(
+                    "function {} executes COUNT-style SQL inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!(
+                        "{} observed inside a loop at line {}",
+                        query_call.method_name, query_call.line
+                    ),
+                    format!(
+                        "query text: {}",
+                        query_call.query_text.as_deref().unwrap_or_default()
+                    ),
+                ],
+            });
+        }
+
+        for chain in function
+            .gorm_query_chains
+            .iter()
+            .filter(|chain| chain.in_loop && chain.terminal_method == "Count")
+        {
+            findings.push(Finding {
+                rule_id: "count_inside_loop".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: chain.line,
+                end_line: chain.line,
+                message: format!(
+                    "function {} runs a GORM Count chain inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![format!("chain shape: {}", gorm_chain_shape(chain))],
+            });
+        }
+
+        for chain in function
+            .gorm_query_chains
+            .iter()
+            .filter(|chain| chain.in_loop && gorm_chain_has_step(chain, "Session"))
+        {
+            findings.push(Finding {
+                rule_id: "gorm_session_allocated_per_item".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: chain.line,
+                end_line: chain.line,
+                message: format!(
+                    "function {} allocates GORM sessions inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![format!("chain shape: {}", gorm_chain_shape(chain))],
+            });
+        }
+
+        for chain in function
+            .gorm_query_chains
+            .iter()
+            .filter(|chain| chain.in_loop && gorm_chain_has_step(chain, "Preload"))
+        {
+            findings.push(Finding {
+                rule_id: "preload_inside_loop".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: chain.line,
+                end_line: chain.line,
+                message: format!(
+                    "function {} issues preloaded GORM queries inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![format!("chain shape: {}", gorm_chain_shape(chain))],
+            });
+        }
+
+        for chain in function
+            .gorm_query_chains
+            .iter()
+            .filter(|chain| chain.in_loop && chain.terminal_method == "Scan" && gorm_chain_has_step(chain, "Raw"))
+        {
+            findings.push(Finding {
+                rule_id: "raw_scan_inside_loop".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: chain.line,
+                end_line: chain.line,
+                message: format!(
+                    "function {} runs raw SQL scans inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![format!("chain shape: {}", gorm_chain_shape(chain))],
+            });
+        }
+
+        for chain in function
+            .gorm_query_chains
+            .iter()
+            .filter(|chain| chain.in_loop && chain.terminal_method == "Find" && gorm_chain_has_step(chain, "Association"))
+        {
+            findings.push(Finding {
+                rule_id: "association_find_inside_loop".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: chain.line,
+                end_line: chain.line,
+                message: format!(
+                    "function {} loads GORM associations inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![format!("chain shape: {}", gorm_chain_shape(chain))],
+            });
+        }
+
+        for chain in function
+            .gorm_query_chains
+            .iter()
+            .filter(|chain| chain.in_loop && chain.terminal_method == "FirstOrCreate")
+        {
+            findings.push(Finding {
+                rule_id: "first_or_create_in_loop".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: chain.line,
+                end_line: chain.line,
+                message: format!(
+                    "function {} runs FirstOrCreate inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![format!("chain shape: {}", gorm_chain_shape(chain))],
+            });
+        }
+
+        for chain in function
+            .gorm_query_chains
+            .iter()
+            .filter(|chain| chain.in_loop && chain.terminal_method == "Save")
+        {
+            findings.push(Finding {
+                rule_id: "save_in_loop_full_model".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: chain.line,
+                end_line: chain.line,
+                message: format!(
+                    "function {} saves full GORM models inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![format!("chain shape: {}", gorm_chain_shape(chain))],
+            });
+        }
+
+        for chain in function
+            .gorm_query_chains
+            .iter()
+            .filter(|chain| {
+                chain.in_loop
+                    && matches!(
+                        chain.terminal_method.as_str(),
+                        "Update" | "UpdateColumn" | "Updates"
+                    )
+            })
+        {
+            findings.push(Finding {
+                rule_id: "update_single_row_in_loop_without_batch".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: chain.line,
+                end_line: chain.line,
+                message: format!(
+                    "function {} updates rows one at a time inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![format!("chain shape: {}", gorm_chain_shape(chain))],
+            });
+        }
+
+        for chain in function
+            .gorm_query_chains
+            .iter()
+            .filter(|chain| chain.in_loop && chain.terminal_method == "Delete")
+        {
+            findings.push(Finding {
+                rule_id: "delete_single_row_in_loop_without_batch".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: chain.line,
+                end_line: chain.line,
+                message: format!(
+                    "function {} deletes rows one at a time inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![format!("chain shape: {}", gorm_chain_shape(chain))],
+            });
         }
     }
 
@@ -336,6 +763,7 @@ fn gin_request_performance_findings(file: &ParsedFile, function: &ParsedFunction
     }
 
     let mut findings = Vec::new();
+    let lines = body_lines(function);
     let body_bind_calls = function
         .gin_calls
         .iter()
@@ -428,6 +856,87 @@ fn gin_request_performance_findings(file: &ParsedFile, function: &ParsedFunction
         });
     }
 
+    if let Some(bind_body_with_call) = function
+        .gin_calls
+        .iter()
+        .find(|call| call.operation == "should_bind_body_with")
+        && body_bind_calls.len() == 1
+        && raw_data_line.is_none()
+        && readall_body_line.is_none()
+    {
+        findings.push(Finding {
+            rule_id: "shouldbindbodywith_when_single_bind_is_enough".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: bind_body_with_call.line,
+            end_line: bind_body_with_call.line,
+            message: format!(
+                "function {} copies the Gin request body even though only one bind is observed",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("ShouldBindBodyWith(...) observed at line {}", bind_body_with_call.line),
+                "no second body bind or explicit body reread was observed in the same handler"
+                    .to_string(),
+            ],
+        });
+    }
+
+    for call in function
+        .gin_calls
+        .iter()
+        .filter(|call| matches!(call.operation.as_str(), "bind_json" | "should_bind_json"))
+    {
+        if let Some(binding_name) = gin_call_binding_name(call)
+            && is_dynamic_map_binding(function, &binding_name)
+        {
+            findings.push(Finding {
+                rule_id: "bindjson_into_map_any_hot_endpoint".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: call.line,
+                end_line: call.line,
+                message: format!(
+                    "function {} binds JSON into a dynamic map on a request path",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("{} targets binding {binding_name} at line {}", call.operation, call.line),
+                    format!("binding {binding_name} is declared as map[string]any or map[string]interface{{}}"),
+                ],
+            });
+        }
+    }
+
+    for call in function
+        .gin_calls
+        .iter()
+        .filter(|call| matches!(call.operation.as_str(), "bind_query" | "should_bind_query"))
+    {
+        if let Some(binding_name) = gin_call_binding_name(call)
+            && is_dynamic_map_binding(function, &binding_name)
+        {
+            findings.push(Finding {
+                rule_id: "bindquery_into_map_any_hot_endpoint".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: call.line,
+                end_line: call.line,
+                message: format!(
+                    "function {} binds query parameters into a dynamic map on a request path",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("{} targets binding {binding_name} at line {}", call.operation, call.line),
+                    format!("binding {binding_name} is declared as map[string]any or map[string]interface{{}}"),
+                ],
+            });
+        }
+    }
+
     for call in &function.gin_calls {
         if call.operation == "indented_json" {
             findings.push(Finding {
@@ -444,6 +953,49 @@ fn gin_request_performance_findings(file: &ParsedFile, function: &ParsedFunction
                 evidence: vec![
                     format!("IndentedJSON(...) observed at line {}", call.line),
                     "pretty-printed JSON responses are usually more expensive than compact JSON"
+                        .to_string(),
+                ],
+            });
+        }
+
+        if call.in_loop && matches!(call.operation.as_str(), "json" | "pure_json") {
+            findings.push(Finding {
+                rule_id: "repeated_c_json_inside_stream_loop".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: call.line,
+                end_line: call.line,
+                message: format!(
+                    "function {} writes Gin JSON responses from inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("{} observed inside a loop at line {}", call.operation, call.line),
+                    "looped JSON rendering often wants an encoder or streaming response shape instead"
+                        .to_string(),
+                ],
+            });
+        }
+
+        if call.operation == "copy"
+            && call.in_loop
+            && (!function.goroutines.is_empty() || !function.loop_goroutines.is_empty())
+        {
+            findings.push(Finding {
+                rule_id: "gin_context_copy_for_each_item_fanout".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: call.line,
+                end_line: call.line,
+                message: format!(
+                    "function {} copies Gin contexts inside a fanout loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("Copy() observed inside a loop at line {}", call.line),
+                    "copying the request context once per item adds avoidable request-scope allocation churn"
                         .to_string(),
                 ],
             });
@@ -489,7 +1041,173 @@ fn gin_request_performance_findings(file: &ParsedFile, function: &ParsedFunction
         });
     }
 
+    let read_file_lines = request_path_read_file_lines(file, &lines);
+    if let (Some(read_file_line), Some(data_line)) = (read_file_lines.first().copied(), data_line)
+        && data_line > read_file_line
+    {
+        findings.push(Finding {
+            rule_id: "servefile_via_readfile_then_c_data".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: data_line,
+            end_line: data_line,
+            message: format!(
+                "function {} reads a file into memory and then writes it through gin.Context.Data",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("file read observed at line {read_file_line}"),
+                format!("gin Context.Data(...) observed later at line {data_line}"),
+                "Gin file helpers or streaming paths are usually cheaper than read-all-plus-data handlers"
+                    .to_string(),
+            ],
+        });
+    }
+
+    for alias in import_aliases_for(file, "net/http/httputil") {
+        for body_line in &lines {
+            if body_line.text.contains(&format!("{alias}.DumpRequest("))
+                || body_line.text.contains(&format!("{alias}.DumpRequestOut("))
+                || body_line.text.contains(&format!("{alias}.DumpResponse("))
+            {
+                findings.push(Finding {
+                    rule_id: "dumprequest_or_dumpresponse_in_hot_path".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: body_line.line,
+                    end_line: body_line.line,
+                    message: format!(
+                        "function {} dumps full HTTP payloads on a request path",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("httputil dump helper observed at line {}", body_line.line),
+                        "request and response dumps can add avoidable allocation and logging cost on hot paths"
+                            .to_string(),
+                    ],
+                });
+            }
+        }
+    }
+
+    for read_file_line in read_file_lines {
+        findings.push(Finding {
+            rule_id: "file_or_template_read_per_request".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: read_file_line,
+            end_line: read_file_line,
+            message: format!(
+                "function {} reads files directly on a request path",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("file read observed at line {read_file_line}"),
+                "request-time file reads usually want startup caching or a dedicated static-file path"
+                    .to_string(),
+            ],
+        });
+    }
+
     findings
+}
+
+fn request_path_read_file_lines(file: &ParsedFile, lines: &[BodyLine]) -> Vec<usize> {
+    let mut read_file_aliases = import_aliases_for(file, "os")
+        .into_iter()
+        .map(|alias| format!("{alias}.ReadFile("))
+        .collect::<Vec<_>>();
+    read_file_aliases.extend(
+        import_aliases_for(file, "io/ioutil")
+            .into_iter()
+            .map(|alias| format!("{alias}.ReadFile(")),
+    );
+
+    lines
+        .iter()
+        .filter(|body_line| {
+            read_file_aliases
+                .iter()
+                .any(|marker| body_line.text.contains(marker))
+        })
+        .map(|body_line| body_line.line)
+        .collect()
+}
+
+fn prepare_like_call_lines(lines: &[BodyLine]) -> Vec<(usize, String)> {
+    let mut prepare_calls = Vec::new();
+
+    for body_line in lines {
+        for marker in [".PrepareContext(", ".Prepare("] {
+            if body_line.text.contains(marker)
+                && let Some(query_text) = first_string_literal_after_marker(&body_line.text, marker)
+            {
+                prepare_calls.push((body_line.line, query_text));
+                break;
+            }
+        }
+    }
+
+    prepare_calls
+}
+
+fn gin_call_binding_name(call: &crate::analysis::GinCallSummary) -> Option<String> {
+    let argument_text = call.argument_texts.first()?.trim();
+    let binding_name = argument_text
+        .trim_start_matches('&')
+        .trim_start_matches('*')
+        .trim();
+    is_identifier_name(binding_name).then(|| binding_name.to_string())
+}
+
+fn is_dynamic_map_binding(function: &ParsedFunction, binding_name: &str) -> bool {
+    let compact_binding = binding_name.replace(char::is_whitespace, "");
+
+    function.body_text.lines().any(|line| {
+        let compact_line = compact_code_text(strip_line_comment(line));
+        compact_line.contains(&format!("var{compact_binding}map[string]any"))
+            || compact_line.contains(&format!("var{compact_binding}map[string]interface{{}}"))
+            || compact_line.contains(&format!("{compact_binding}:=map[string]any{{"))
+            || compact_line.contains(&format!("{compact_binding}:=map[string]interface{{}}{{"))
+            || compact_line.contains(&format!("{compact_binding}:=make(map[string]any"))
+            || compact_line.contains(&format!("{compact_binding}:=make(map[string]interface{{}}"))
+    })
+}
+
+fn compact_code_text(text: &str) -> String {
+    text.chars().filter(|character| !character.is_whitespace()).collect()
+}
+
+fn first_string_literal_after_marker(text: &str, marker: &str) -> Option<String> {
+    let suffix = text.split_once(marker)?.1;
+    let mut chars = suffix.char_indices();
+    while let Some((index, character)) = chars.next() {
+        if character != '"' && character != '`' {
+            continue;
+        }
+
+        let quote = character;
+        let mut escaped = false;
+        for (end_index, current) in suffix[index + character.len_utf8()..].char_indices() {
+            if quote == '"' && current == '\\' && !escaped {
+                escaped = true;
+                continue;
+            }
+
+            if current == quote && (!escaped || quote == '`') {
+                let start = index + character.len_utf8();
+                let end = index + character.len_utf8() + end_index;
+                return Some(suffix[start..end].to_string());
+            }
+
+            escaped = false;
+        }
+    }
+
+    None
 }
 
 fn is_request_path_function(file: &ParsedFile, function: &ParsedFunction) -> bool {
@@ -686,49 +1404,36 @@ fn strip_line_comment(line: &str) -> &str {
 
 fn repeated_parse_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let mut findings = Vec::new();
-    let mut groups = BTreeMap::<String, Vec<_>>::new();
 
-    for call in function.parse_input_calls.iter().filter(|call| {
-        call.parser_family == "json_unmarshal" && call.input_binding.is_some()
-    }) {
-        groups
-            .entry(call.input_binding.clone().unwrap_or_default())
-            .or_default()
-            .push(call);
-    }
-
-    for (input_binding, calls) in groups {
-        if calls.len() < 2 {
-            continue;
-        }
-
-        let distinct_targets = calls
-            .iter()
-            .filter_map(|call| call.target_text.clone())
-            .collect::<BTreeSet<_>>();
-        if distinct_targets.len() < 2 {
-            continue;
-        }
-
-        let repeated_lines = calls.iter().map(|call| call.line).collect::<Vec<_>>();
-        let anchor_line = repeated_lines[1];
-        findings.push(Finding {
-            rule_id: "json_unmarshal_same_payload_multiple_times".to_string(),
-            severity: Severity::Info,
-            path: file.path.clone(),
-            function_name: Some(function.fingerprint.name.clone()),
-            start_line: anchor_line,
-            end_line: anchor_line,
-            message: format!(
-                "function {} unmarshals the same JSON payload binding multiple times",
-                function.fingerprint.name
-            ),
-            evidence: vec![
-                format!("input binding {input_binding} was unmarshaled at lines {}", join_lines(&repeated_lines)),
-                format!("normalized input text: {}", calls[0].input_text),
-                format!("distinct targets observed: {}", distinct_targets.into_iter().collect::<Vec<_>>().join(", ")),
-            ],
-        });
+    for (parser_family, rule_id, payload_label) in [
+        (
+            "json_unmarshal",
+            "json_unmarshal_same_payload_multiple_times",
+            "JSON",
+        ),
+        (
+            "xml_unmarshal",
+            "xml_unmarshal_same_payload_multiple_times",
+            "XML",
+        ),
+        (
+            "yaml_unmarshal",
+            "yaml_unmarshal_same_payload_multiple_times",
+            "YAML",
+        ),
+        (
+            "proto_unmarshal",
+            "proto_unmarshal_same_payload_multiple_times",
+            "protobuf",
+        ),
+    ] {
+        findings.extend(repeated_parse_family_findings(
+            file,
+            function,
+            parser_family,
+            rule_id,
+            payload_label,
+        ));
     }
 
     findings
@@ -923,6 +1628,68 @@ fn count_then_find_same_filter_findings(file: &ParsedFile, function: &ParsedFunc
     findings
 }
 
+fn repeated_parse_family_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    parser_family: &str,
+    rule_id: &str,
+    payload_label: &str,
+) -> Vec<Finding> {
+    let mut groups = BTreeMap::<String, Vec<_>>::new();
+
+    for call in function.parse_input_calls.iter().filter(|call| {
+        call.parser_family == parser_family && call.input_binding.is_some()
+    }) {
+        groups
+            .entry(call.input_binding.clone().unwrap_or_default())
+            .or_default()
+            .push(call);
+    }
+
+    let mut findings = Vec::new();
+    for (input_binding, calls) in groups {
+        if calls.len() < 2 {
+            continue;
+        }
+
+        let distinct_targets = calls
+            .iter()
+            .filter_map(|call| call.target_text.clone())
+            .collect::<BTreeSet<_>>();
+        if distinct_targets.len() < 2 {
+            continue;
+        }
+
+        let repeated_lines = calls.iter().map(|call| call.line).collect::<Vec<_>>();
+        let anchor_line = repeated_lines[1];
+        findings.push(Finding {
+            rule_id: rule_id.to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: anchor_line,
+            end_line: anchor_line,
+            message: format!(
+                "function {} unmarshals the same {} payload binding multiple times",
+                function.fingerprint.name, payload_label
+            ),
+            evidence: vec![
+                format!(
+                    "input binding {input_binding} was unmarshaled at lines {}",
+                    join_lines(&repeated_lines)
+                ),
+                format!("normalized input text: {}", calls[0].input_text),
+                format!(
+                    "distinct targets observed: {}",
+                    distinct_targets.into_iter().collect::<Vec<_>>().join(", ")
+                ),
+            ],
+        });
+    }
+
+    findings
+}
+
 fn is_wide_preload_chain(chain: &GormQueryChain) -> bool {
     let preload_steps = chain
         .steps
@@ -1003,4 +1770,17 @@ fn is_gin_json_bind_operation(operation: &str) -> bool {
         operation,
         "bind" | "bind_json" | "should_bind" | "should_bind_body_with" | "should_bind_json"
     )
+}
+
+fn db_query_text_looks_write(query_text: &str) -> bool {
+    let normalized = query_text.to_ascii_uppercase();
+    normalized.contains("INSERT ")
+        || normalized.contains("UPDATE ")
+        || normalized.contains("DELETE ")
+        || normalized.contains("REPLACE ")
+}
+
+fn db_query_text_looks_count(query_text: &str) -> bool {
+    let normalized = query_text.to_ascii_uppercase();
+    normalized.contains("COUNT(") || normalized.contains("COUNT (")
 }

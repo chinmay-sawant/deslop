@@ -1,0 +1,34 @@
+package sample
+
+import (
+    "encoding/json"
+    "io"
+
+    "github.com/gin-gonic/gin"
+)
+
+func Handle(c *gin.Context, body []byte) {
+    raw, _ := c.GetRawData()
+    _ = raw
+    payload, _ := io.ReadAll(c.Request.Body)
+    _ = payload
+
+    var request map[string]any
+    _ = c.ShouldBindJSON(&request)
+
+    var filters map[string]any
+    _ = c.ShouldBindQuery(&filters)
+
+    c.IndentedJSON(200, gin.H{"ok": true})
+
+    for _, item := range []string{"first"} {
+        copied := c.Copy()
+        _ = copied
+        _ = item
+    }
+
+    var first map[string]string
+    var second map[string]string
+    _ = json.Unmarshal(body, &first)
+    _ = json.Unmarshal(body, &second)
+}

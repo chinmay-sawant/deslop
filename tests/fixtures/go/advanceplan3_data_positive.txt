@@ -12,6 +12,10 @@ type User struct {
 	ID int
 }
 
+type Role struct {
+	ID int
+}
+
 func OpenSQL(c *gin.Context) {
 	db, _ := sql.Open("sqlite3", "file:test.db")
 	_ = db
@@ -24,10 +28,36 @@ func OpenGorm(c *gin.Context) {
 	_ = c
 }
 
+func PingDatabase(c *gin.Context, db *sql.DB) {
+	_ = db.Ping()
+	_ = c
+}
+
+func ReconfigurePool(c *gin.Context, db *sql.DB) {
+	db.SetMaxOpenConns(100)
+	_ = c
+}
+
+func PrepareSame(c *gin.Context, db *sql.DB) {
+	first, _ := db.PrepareContext(nil, "SELECT * FROM users WHERE status = ?")
+	second, _ := db.PrepareContext(nil, "SELECT * FROM users WHERE status = ?")
+	_ = first
+	_ = second
+	_ = c
+}
+
 func BuildStatements(db *sql.DB, ids []int) {
 	for _, id := range ids {
 		stmt, _ := db.PrepareContext(nil, "SELECT * FROM users WHERE id = ?")
 		_ = stmt
+		_ = id
+	}
+}
+
+func TransactionPerItem(db *sql.DB, ids []int) {
+	for _, id := range ids {
+		tx, _ := db.Begin()
+		_ = tx
 		_ = id
 	}
 }
@@ -45,10 +75,81 @@ func ListUsers(c *gin.Context, db *gorm.DB, page int) {
 	_ = c
 }
 
+func SessionPerItem(db *gorm.DB, ids []int) {
+	var user User
+	for _, id := range ids {
+		_ = db.Session(&gorm.Session{}).Where("id = ?", id).First(&user)
+	}
+}
+
+func PreloadPerItem(db *gorm.DB, ids []int) {
+	var users []User
+	for _, id := range ids {
+		_ = db.Preload(clause.Associations).Where("id = ?", id).Find(&users)
+	}
+}
+
+func RawScanPerItem(db *gorm.DB, ids []int) {
+	var user User
+	for _, id := range ids {
+		_ = db.Raw("SELECT id FROM users WHERE id = ?", id).Scan(&user)
+	}
+}
+
+func AssociationPerItem(db *gorm.DB, users []User) {
+	var roles []Role
+	for _, user := range users {
+		_ = db.Model(&user).Association("Roles").Find(&roles)
+	}
+}
+
+func FirstOrCreatePerItem(db *gorm.DB, users []User) {
+	for _, user := range users {
+		_ = db.Where("id = ?", user.ID).FirstOrCreate(&user)
+	}
+}
+
+func SavePerItem(db *gorm.DB, users []User) {
+	for _, user := range users {
+		_ = db.Save(&user)
+	}
+}
+
+func UpdatePerItem(db *gorm.DB, ids []int) {
+	for _, id := range ids {
+		_ = db.Model(&User{}).Where("id = ?", id).Update("active", true)
+	}
+}
+
+func DeletePerItem(db *gorm.DB, ids []int) {
+	for _, id := range ids {
+		_ = db.Where("id = ?", id).Delete(&User{})
+	}
+}
+
 func CountAndFindUsers(c *gin.Context, db *gorm.DB, status string) {
 	var total int64
 	var users []User
 	_ = db.Model(&User{}).Where("status = ?", status).Count(&total)
 	_ = db.Model(&User{}).Where("status = ?", status).Find(&users)
 	_ = c
+}
+
+func BulkActivate(db *sql.DB, ids []int) {
+	for _, id := range ids {
+		_, _ = db.Exec("UPDATE users SET active = 1 WHERE id = ?", id)
+	}
+}
+
+func LookupUsers(db *sql.DB, ids []int) {
+	for _, id := range ids {
+		_ = db.QueryRow("SELECT id FROM users WHERE id = ?", id)
+	}
+}
+
+func CountUsers(db *gorm.DB, ids []int) {
+	var total int64
+	for _, id := range ids {
+		_ = db.Model(&User{}).Where("id = ?", id).Count(&total)
+	}
 }

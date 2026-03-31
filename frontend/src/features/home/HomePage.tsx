@@ -50,7 +50,7 @@ export function HomePage() {
                     Install it fast. Keep the workflow local. Keep the findings readable.
                   </h2>
                   <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
-                    deslop ships as a Rust CLI for Go, Python, and Rust repositories with explainable static signals, repository-local symbol awareness, receiver-wrapper and context propagation checks for Go, readable output, Cargo installs, published binaries, and GitHub Actions support for automation.
+                    deslop ships as a Rust CLI for Go, Python, and Rust repositories with explainable static signals, repository-local symbol awareness, parser-backed Go request-path packs for GORM and Gin, duplicate decode, dynamic bind, looped GORM CRUD, and request-path DB churn checks for Go, receiver-wrapper and context propagation checks, readable output, Cargo installs, published binaries, and GitHub Actions support for automation.
                   </p>
                 </div>
 
