@@ -5,7 +5,10 @@ use deslop::{ScanOptions, scan_repository};
 use super::{create_temp_workspace, write_fixture};
 
 fn has_rule(report: &deslop::ScanReport, rule_id: &str) -> bool {
-    report.findings.iter().any(|finding| finding.rule_id == rule_id)
+    report
+        .findings
+        .iter()
+        .any(|finding| finding.rule_id == rule_id)
 }
 
 #[test]

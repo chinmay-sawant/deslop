@@ -3,7 +3,13 @@ use std::collections::BTreeSet;
 use crate::analysis::ParsedFile;
 use crate::model::{Finding, Severity};
 
-use super::{is_client_constructor_text, is_config_load_call, is_config_load_text, is_file_io_call, is_network_call_path, is_subprocess_call, mutable_default_kind, mutates_binding, option_bag_boolean_field, option_bag_optional_field, resolve_top_level_call_path, should_skip_wide_contract_rule, wide_contract_markers, OPTION_BAG_FIELD_THRESHOLD, OPTION_BAG_SIGNAL_THRESHOLD};
+use super::{
+    OPTION_BAG_FIELD_THRESHOLD, OPTION_BAG_SIGNAL_THRESHOLD, is_client_constructor_text,
+    is_config_load_call, is_config_load_text, is_file_io_call, is_network_call_path,
+    is_subprocess_call, mutable_default_kind, mutates_binding, option_bag_boolean_field,
+    option_bag_optional_field, resolve_top_level_call_path, should_skip_wide_contract_rule,
+    wide_contract_markers,
+};
 
 pub(super) fn module_state_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
@@ -123,7 +129,11 @@ fn public_any_type_leak_model_findings(file: &ParsedFile) -> Vec<Finding> {
     }
 
     let mut findings = Vec::new();
-    for model in file.python_models.iter().filter(|model| !model.name.starts_with('_')) {
+    for model in file
+        .python_models
+        .iter()
+        .filter(|model| !model.name.starts_with('_'))
+    {
         for field in &model.fields {
             let Some(annotation_text) = field.annotation_text.as_deref() else {
                 continue;
@@ -243,7 +253,12 @@ fn module_singleton_client_side_effect_findings(file: &ParsedFile) -> Vec<Findin
 
     file.top_level_bindings
         .iter()
-        .filter(|binding| !binding.name.chars().all(|character| character.is_ascii_uppercase() || character == '_'))
+        .filter(|binding| {
+            !binding
+                .name
+                .chars()
+                .all(|character| character.is_ascii_uppercase() || character == '_')
+        })
         .filter_map(|binding| {
             let lower_value = binding.value_text.to_ascii_lowercase();
             if !is_client_constructor_text(&lower_value) {
@@ -261,7 +276,11 @@ fn module_singleton_client_side_effect_findings(file: &ParsedFile) -> Vec<Findin
                     "module eagerly constructs client-like global {} at import time",
                     binding.name
                 ),
-                evidence: vec![format!("binding={}= {}", binding.name, binding.value_text.trim())],
+                evidence: vec![format!(
+                    "binding={}= {}",
+                    binding.name,
+                    binding.value_text.trim()
+                )],
             })
         })
         .collect()
@@ -275,14 +294,14 @@ fn mutable_module_global_state_findings(file: &ParsedFile) -> Vec<Finding> {
     file.top_level_bindings
         .iter()
         .filter_map(|binding| {
-            let Some(mutable_kind) = mutable_default_kind(&binding.value_text) else {
-                return None;
-            };
+            let mutable_kind = mutable_default_kind(&binding.value_text)?;
 
             let mutating_functions = file
                 .functions
                 .iter()
-                .filter(|function| !function.is_test_function && mutates_binding(function, &binding.name))
+                .filter(|function| {
+                    !function.is_test_function && mutates_binding(function, &binding.name)
+                })
                 .map(|function| function.fingerprint.name.as_str())
                 .collect::<BTreeSet<_>>();
             if mutating_functions.len() < 2 {
@@ -354,7 +373,11 @@ fn import_time_config_load_findings(file: &ParsedFile) -> Vec<Finding> {
                 "module initializes {} from configuration or secrets at import time",
                 binding.name
             ),
-            evidence: vec![format!("binding={}= {}", binding.name, binding.value_text.trim())],
+            evidence: vec![format!(
+                "binding={}= {}",
+                binding.name,
+                binding.value_text.trim()
+            )],
         });
     }
 

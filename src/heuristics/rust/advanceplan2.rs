@@ -96,7 +96,10 @@ fn api_surface_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Fin
     }
 
     if !builder_internal(function) {
-        for (param_name, type_text) in parameters.iter().filter_map(|entry| parameter_name_and_type(entry)) {
+        for (param_name, type_text) in parameters
+            .iter()
+            .filter_map(|entry| parameter_name_and_type(entry))
+        {
             if is_borrowed_string_type(&type_text) {
                 findings.push(function_finding(
                     file,
@@ -160,7 +163,8 @@ fn shared_state_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for summary in &file.structs {
-        let public_exposure = summary.visibility_pub || summary.fields.iter().any(|field| field.is_pub);
+        let public_exposure =
+            summary.visibility_pub || summary.fields.iter().any(|field| field.is_pub);
 
         for field in &summary.fields {
             let normalized = normalized_type(&field.type_text);
@@ -186,7 +190,11 @@ fn shared_state_findings(file: &ParsedFile) -> Vec<Finding> {
                 findings.push(file_finding(
                     file,
                     "rust_arc_mutex_option_state",
-                    if public_exposure { Severity::Warning } else { Severity::Info },
+                    if public_exposure {
+                        Severity::Warning
+                    } else {
+                        Severity::Info
+                    },
                     field.line,
                     format!(
                         "struct {} hides lifecycle state behind Arc<...Mutex<Option<_>>> layers",
@@ -202,7 +210,11 @@ fn shared_state_findings(file: &ParsedFile) -> Vec<Finding> {
                 findings.push(file_finding(
                     file,
                     "rust_mutex_wrapped_collection",
-                    if public_exposure { Severity::Warning } else { Severity::Info },
+                    if public_exposure {
+                        Severity::Warning
+                    } else {
+                        Severity::Info
+                    },
                     field.line,
                     format!(
                         "struct {} embeds a collection directly inside a lock wrapper",
@@ -277,7 +289,9 @@ fn serde_contract_findings(file: &ParsedFile) -> Vec<Finding> {
         if summary.variant_count >= 2
             && attribute_has(&summary.attributes, "serde(")
             && attribute_has(&summary.attributes, "untagged")
-            && (summary.visibility_pub || summary.has_deserialize_derive || summary.has_serialize_derive)
+            && (summary.visibility_pub
+                || summary.has_deserialize_derive
+                || summary.has_serialize_derive)
         {
             findings.push(file_finding(
                 file,
@@ -382,7 +396,11 @@ fn builder_state_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for summary in &file.structs {
-        let option_fields = summary.fields.iter().filter(|field| field.is_option).count();
+        let option_fields = summary
+            .fields
+            .iter()
+            .filter(|field| field.is_option)
+            .count();
         let bool_fields = summary.fields.iter().filter(|field| field.is_bool).count();
 
         if config_like_name(&summary.name)
@@ -429,7 +447,8 @@ fn builder_state_file_findings(file: &ParsedFile) -> Vec<Finding> {
         }
 
         if bool_fields >= 2
-            && (state_like_name(&summary.name) || summary.fields.iter().any(|field| field.is_option))
+            && (state_like_name(&summary.name)
+                || summary.fields.iter().any(|field| field.is_option))
         {
             findings.push(file_finding(
                 file,
@@ -532,7 +551,11 @@ fn return_type_text(signature_text: &str) -> Option<String> {
     let header = signature_text.replace('\n', " ");
     let (_, return_text) = header.split_once("->")?;
     let return_text = return_text.trim();
-    let return_text = return_text.split(" where ").next().unwrap_or(return_text).trim();
+    let return_text = return_text
+        .split(" where ")
+        .next()
+        .unwrap_or(return_text)
+        .trim();
     (!return_text.is_empty()).then(|| return_text.to_string())
 }
 
@@ -578,7 +601,11 @@ fn split_top_level_commas(text: &str) -> Vec<String> {
             ')' if !in_single_quote => paren_depth = paren_depth.saturating_sub(1),
             '[' if !in_single_quote => bracket_depth += 1,
             ']' if !in_single_quote => bracket_depth = bracket_depth.saturating_sub(1),
-            ',' if !in_single_quote && angle_depth == 0 && paren_depth == 0 && bracket_depth == 0 => {
+            ',' if !in_single_quote
+                && angle_depth == 0
+                && paren_depth == 0
+                && bracket_depth == 0 =>
+            {
                 let piece = current.trim();
                 if !piece.is_empty() {
                     parts.push(piece.to_string());
@@ -671,7 +698,10 @@ fn return_type_uses_box_dyn_error(file: &ParsedFile, return_type: &str) -> bool 
 }
 
 fn is_borrowed_string_type(type_text: &str) -> bool {
-    matches!(normalized_type(type_text).as_str(), "&String" | "&std::string::String")
+    matches!(
+        normalized_type(type_text).as_str(),
+        "&String" | "&std::string::String"
+    )
 }
 
 fn is_borrowed_vec_type(type_text: &str) -> bool {
@@ -691,9 +721,16 @@ fn is_borrowed_pathbuf_type(file: &ParsedFile, type_text: &str) -> bool {
 }
 
 fn contains_interior_mutability(type_text: &str) -> bool {
-    ["Mutex<", "RwLock<", "RefCell<", "Cell<", "OnceCell<", "LazyCell<"]
-        .iter()
-        .any(|needle| type_text.contains(needle))
+    [
+        "Mutex<",
+        "RwLock<",
+        "RefCell<",
+        "Cell<",
+        "OnceCell<",
+        "LazyCell<",
+    ]
+    .iter()
+    .any(|needle| type_text.contains(needle))
 }
 
 fn contains_global_lock_state(type_text: &str) -> bool {
@@ -739,14 +776,19 @@ fn attribute_has(attributes: &[String], needle: &str) -> bool {
 }
 
 fn strict_contract_name(name: &str) -> bool {
-    matches_token(name, &["config", "settings", "request", "options", "params"])
+    matches_token(
+        name,
+        &["config", "settings", "request", "options", "params"],
+    )
 }
 
 fn required_like_field(summary: &StructSummary, field: &FieldSummary) -> bool {
     strict_contract_name(&summary.name)
         || matches_token(
             &field.name,
-            &["id", "kind", "type", "mode", "status", "endpoint", "host", "path", "url", "method"],
+            &[
+                "id", "kind", "type", "mode", "status", "endpoint", "host", "path", "url", "method",
+            ],
         )
 }
 
@@ -759,11 +801,17 @@ fn flatten_catchall_type(type_text: &str) -> bool {
 }
 
 fn enum_like_string_field(name: &str) -> bool {
-    matches_token(name, &["kind", "type", "status", "state", "mode", "role", "level"])
+    matches_token(
+        name,
+        &["kind", "type", "status", "state", "mode", "role", "level"],
+    )
 }
 
 fn config_like_name(name: &str) -> bool {
-    matches_token(name, &["config", "options", "request", "settings", "params"])
+    matches_token(
+        name,
+        &["config", "options", "request", "settings", "params"],
+    )
 }
 
 fn has_validation_method(file: &ParsedFile, type_name: &str) -> bool {
@@ -778,13 +826,33 @@ fn has_validation_method(file: &ParsedFile, type_name: &str) -> bool {
 }
 
 fn body_has_validation_markers(body_text: &str) -> bool {
-    ["validate(", "ensure!", "ok_or", "ok_or_else", "is_none()", "Err(", "bail!", "missing"]
-        .iter()
-        .any(|marker| body_text.contains(marker))
+    [
+        "validate(",
+        "ensure!",
+        "ok_or",
+        "ok_or_else",
+        "is_none()",
+        "Err(",
+        "bail!",
+        "missing",
+    ]
+    .iter()
+    .any(|marker| body_text.contains(marker))
 }
 
 fn state_like_name(name: &str) -> bool {
-    matches_token(name, &["state", "status", "session", "connection", "job", "task", "process"])
+    matches_token(
+        name,
+        &[
+            "state",
+            "status",
+            "session",
+            "connection",
+            "job",
+            "task",
+            "process",
+        ],
+    )
 }
 
 fn constructor_like_name(name: &str) -> bool {

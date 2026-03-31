@@ -2,9 +2,10 @@ use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
 pub(super) fn error_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    let go = function.go_evidence();
     let mut findings = Vec::new();
 
-    for line in &function.dropped_errors {
+    for line in go.dropped_errors {
         findings.push(Finding {
             rule_id: "dropped_error".to_string(),
             severity: Severity::Warning,
@@ -20,7 +21,7 @@ pub(super) fn error_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
         });
     }
 
-    for line in &function.panic_errors {
+    for line in go.panic_errors {
         findings.push(Finding {
             rule_id: "panic_on_error".to_string(),
             severity: Severity::Warning,
@@ -38,7 +39,7 @@ pub(super) fn error_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
         });
     }
 
-    for call in &function.errorf_calls {
+    for call in go.errorf_calls {
         if !call.mentions_err || call.uses_percent_w {
             continue;
         }

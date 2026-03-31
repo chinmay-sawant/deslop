@@ -60,8 +60,9 @@ pub(super) fn ctx_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
 }
 
 pub(super) fn cancel_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .context_factory_calls
+    let go = function.go_evidence();
+
+    go.context_factory_calls
         .iter()
         .filter(|factory_call| {
             !function
@@ -93,6 +94,7 @@ pub(super) fn cancel_findings(file: &ParsedFile, function: &ParsedFunction) -> V
 
 pub(super) fn sleep_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
+        .go_evidence()
         .sleep_loops
         .iter()
         .map(|line| Finding {
@@ -114,8 +116,9 @@ pub(super) fn sleep_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
 }
 
 pub(super) fn busy_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .busy_wait_lines
+    let go = function.go_evidence();
+
+    go.busy_wait_lines
         .iter()
         .map(|line| Finding {
             rule_id: "busy_waiting".to_string(),
@@ -149,6 +152,7 @@ pub(super) fn propagate_findings(
     }
 
     let import_aliases = import_alias_lookup(&file.imports);
+    let go = function.go_evidence();
     let mut findings = Vec::new();
 
     for call in &function.calls {
@@ -235,7 +239,7 @@ pub(super) fn propagate_findings(
         }
     }
 
-    for query_call in &function.db_query_calls {
+    for query_call in go.db_query_calls {
         if !DB_CONTEXTLESS_CALLS.contains(&query_call.method_name.as_str()) {
             continue;
         }

@@ -53,7 +53,8 @@ fn channel_and_timer_findings(file: &ParsedFile, function: &ParsedFunction) -> V
         let range_line = lines
             .iter()
             .find(|body_line| {
-                body_line.text.contains("for") && body_line.text.contains("range")
+                body_line.text.contains("for")
+                    && body_line.text.contains("range")
                     && body_line.text.contains(name)
             })
             .map(|body_line| body_line.line);
@@ -95,7 +96,10 @@ fn channel_and_timer_findings(file: &ParsedFile, function: &ParsedFunction) -> V
                 ),
                 evidence: vec![
                     format!("local channel {name} created at line {line}"),
-                    format!("observed close({name}) at lines {}", join_lines(&close_lines)),
+                    format!(
+                        "observed close({name}) at lines {}",
+                        join_lines(&close_lines)
+                    ),
                 ],
             });
         }
@@ -186,7 +190,8 @@ fn http_boundary_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
 
     let response_bindings = http_response_bindings(&lines, &http_aliases);
     for (name, line, target) in &response_bindings {
-        if !contains_text(&lines, &format!("{name}.Body.Close()")) && !returns_binding(function, name)
+        if !contains_text(&lines, &format!("{name}.Body.Close()"))
+            && !returns_binding(function, name)
         {
             findings.push(Finding {
                 rule_id: "http_response_body_not_closed".to_string(),
@@ -201,7 +206,10 @@ fn http_boundary_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
                 ),
                 evidence: vec![
                     format!("response binding {name} created from {target} at line {line}"),
-                    format!("no {}.Body.Close() call was observed in the owning function", name),
+                    format!(
+                        "no {}.Body.Close() call was observed in the owning function",
+                        name
+                    ),
                 ],
             });
         }
@@ -306,7 +314,9 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
                 &format!("{alias}.OpenFile("),
             ],
         ) {
-            if !contains_text(&lines, &format!("{name}.Close()")) && !returns_binding(function, &name) {
+            if !contains_text(&lines, &format!("{name}.Close()"))
+                && !returns_binding(function, &name)
+            {
                 findings.push(Finding {
                     rule_id: "file_handle_without_close".to_string(),
                     severity: Severity::Warning,
@@ -320,7 +330,10 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
                     ),
                     evidence: vec![
                         format!("file handle {name} created from {target} at line {line}"),
-                        format!("no {}.Close() call was observed in the owning function", name),
+                        format!(
+                            "no {}.Close() call was observed in the owning function",
+                            name
+                        ),
                     ],
                 });
             }
@@ -342,7 +355,10 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
                 ),
                 evidence: vec![
                     format!("rows binding {name} created from {target} at line {line}"),
-                    format!("no {}.Close() call was observed in the owning function", name),
+                    format!(
+                        "no {}.Close() call was observed in the owning function",
+                        name
+                    ),
                 ],
             });
         }
@@ -363,7 +379,10 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
                 ),
                 evidence: vec![
                     format!("statement binding {name} created from {target} at line {line}"),
-                    format!("no {}.Close() call was observed in the owning function", name),
+                    format!(
+                        "no {}.Close() call was observed in the owning function",
+                        name
+                    ),
                 ],
             });
         }
@@ -386,7 +405,10 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
                 ),
                 evidence: vec![
                     format!("transaction binding {name} created from {target} at line {line}"),
-                    format!("{}.Commit() was observed but {}.Rollback() was not", name, name),
+                    format!(
+                        "{}.Commit() was observed but {}.Rollback() was not",
+                        name, name
+                    ),
                 ],
             });
         }
@@ -406,7 +428,10 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
                     function.fingerprint.name
                 ),
                 evidence: vec![
-                    format!("defer statement observed inside a loop at line {}", body_line.line),
+                    format!(
+                        "defer statement observed inside a loop at line {}",
+                        body_line.line
+                    ),
                     "loop-local defer calls can accumulate resources until function exit"
                         .to_string(),
                 ],
@@ -424,14 +449,39 @@ fn init_side_effect_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
 
     let import_aliases = import_alias_lookup(&file.imports);
     for call in &function.calls {
-        let side_effect = match call.receiver.as_deref().and_then(|receiver| import_aliases.get(receiver)) {
-            Some(path) if path == "net/http" && matches!(call.name.as_str(), "Get" | "Post" | "PostForm" | "Head") => {
-                Some(format!("network call via {}.{}", call.receiver.as_deref().unwrap_or("<unknown>"), call.name))
+        let side_effect = match call
+            .receiver
+            .as_deref()
+            .and_then(|receiver| import_aliases.get(receiver))
+        {
+            Some(path)
+                if path == "net/http"
+                    && matches!(call.name.as_str(), "Get" | "Post" | "PostForm" | "Head") =>
+            {
+                Some(format!(
+                    "network call via {}.{}",
+                    call.receiver.as_deref().unwrap_or("<unknown>"),
+                    call.name
+                ))
             }
-            Some(path) if path == "os" && matches!(call.name.as_str(), "Open" | "OpenFile" | "Create" | "ReadFile") => {
-                Some(format!("file-system call via {}.{}", call.receiver.as_deref().unwrap_or("<unknown>"), call.name))
+            Some(path)
+                if path == "os"
+                    && matches!(
+                        call.name.as_str(),
+                        "Open" | "OpenFile" | "Create" | "ReadFile"
+                    ) =>
+            {
+                Some(format!(
+                    "file-system call via {}.{}",
+                    call.receiver.as_deref().unwrap_or("<unknown>"),
+                    call.name
+                ))
             }
-            Some(path) if path == "os/exec" => Some(format!("subprocess setup via {}.{}", call.receiver.as_deref().unwrap_or("<unknown>"), call.name)),
+            Some(path) if path == "os/exec" => Some(format!(
+                "subprocess setup via {}.{}",
+                call.receiver.as_deref().unwrap_or("<unknown>"),
+                call.name
+            )),
             _ => None,
         };
 
@@ -464,7 +514,11 @@ fn public_bool_parameter_findings(file: &ParsedFile, function: &ParsedFunction) 
 
     vec![Finding {
         rule_id: "public_bool_parameter_api".to_string(),
-        severity: if bool_count > 1 { Severity::Warning } else { Severity::Info },
+        severity: if bool_count > 1 {
+            Severity::Warning
+        } else {
+            Severity::Info
+        },
         path: file.path.clone(),
         function_name: Some(function.fingerprint.name.clone()),
         start_line: function.fingerprint.start_line,
@@ -475,8 +529,15 @@ fn public_bool_parameter_findings(file: &ParsedFile, function: &ParsedFunction) 
             if bool_count == 1 { "" } else { "s" }
         ),
         evidence: vec![
-            format!("signature: {}", compact_whitespace(&function.signature_text)),
-            format!("observed {} bool parameter{} in the public API", bool_count, if bool_count == 1 { "" } else { "s" }),
+            format!(
+                "signature: {}",
+                compact_whitespace(&function.signature_text)
+            ),
+            format!(
+                "observed {} bool parameter{} in the public API",
+                bool_count,
+                if bool_count == 1 { "" } else { "s" }
+            ),
         ],
     }]
 }
@@ -501,7 +562,11 @@ fn mutable_package_global_findings(file: &ParsedFile) -> Vec<Finding> {
 
         findings.push(Finding {
             rule_id: "mutable_package_global".to_string(),
-            severity: if package_var.is_pub { Severity::Warning } else { Severity::Info },
+            severity: if package_var.is_pub {
+                Severity::Warning
+            } else {
+                Severity::Info
+            },
             path: file.path.clone(),
             function_name: None,
             start_line: package_var.line,
@@ -543,7 +608,8 @@ fn single_impl_interface_findings(files: &[&ParsedFile]) -> Vec<Finding> {
         for file in &package_files {
             for symbol in &file.symbols {
                 if matches!(symbol.kind, SymbolKind::Method)
-                    && let (Some(receiver), Some(_)) = (&symbol.receiver_type, symbol.receiver_is_pointer)
+                    && let (Some(receiver), Some(_)) =
+                        (&symbol.receiver_type, symbol.receiver_is_pointer)
                 {
                     receiver_methods
                         .entry(receiver.clone())
@@ -610,7 +676,10 @@ fn single_impl_interface_findings(files: &[&ParsedFile]) -> Vec<Finding> {
                     evidence: vec![
                         format!("interface methods: {}", interface.methods.join(", ")),
                         format!("implementation candidate: {}", impl_candidates[0]),
-                        format!("observed consumer count for {}: {}", interface.name, consumer_count),
+                        format!(
+                            "observed consumer count for {}: {}",
+                            interface.name, consumer_count
+                        ),
                     ],
                 });
             }
@@ -625,7 +694,11 @@ fn passthrough_wrapper_interface_findings(files: &[&ParsedFile]) -> Vec<Finding>
     for (_, package_files) in group_by_package(files) {
         let interface_names = package_files
             .iter()
-            .flat_map(|file| file.interfaces.iter().map(|interface| interface.name.clone()))
+            .flat_map(|file| {
+                file.interfaces
+                    .iter()
+                    .map(|interface| interface.name.clone())
+            })
             .collect::<BTreeSet<_>>();
 
         for file in &package_files {
@@ -643,7 +716,8 @@ fn passthrough_wrapper_interface_findings(files: &[&ParsedFile]) -> Vec<Finding>
                     .functions
                     .iter()
                     .filter(|function| {
-                        function.fingerprint.receiver_type.as_deref() == Some(go_struct.name.as_str())
+                        function.fingerprint.receiver_type.as_deref()
+                            == Some(go_struct.name.as_str())
                             && function.fingerprint.line_count <= 6
                             && function.fingerprint.call_count <= 2
                             && interface_fields.iter().any(|field| {
@@ -722,7 +796,9 @@ fn write_header_order_findings(
             .find(|candidate| {
                 candidate.line < body_line.line
                     && (candidate.text.contains(&format!("{receiver}.Write("))
-                        || candidate.text.contains(&format!("NewEncoder({receiver}).Encode("))
+                        || candidate
+                            .text
+                            .contains(&format!("NewEncoder({receiver}).Encode("))
                         || candidate.text.contains(&format!("Fprint({receiver},"))
                         || candidate.text.contains(&format!("Fprintf({receiver},"))
                         || candidate.text.contains(&format!("WriteString({receiver},")))
@@ -743,7 +819,10 @@ fn write_header_order_findings(
                 ),
                 evidence: vec![
                     format!("response body write observed first at line {prior_write_line}"),
-                    format!("{}.WriteHeader(...) observed later at line {}", receiver, body_line.line),
+                    format!(
+                        "{}.WriteHeader(...) observed later at line {}",
+                        receiver, body_line.line
+                    ),
                 ],
             });
         }
@@ -767,7 +846,10 @@ fn mutation_line(function: &ParsedFunction, name: &str) -> Option<usize> {
         .map(|body_line| body_line.line)
 }
 
-fn http_response_bindings(lines: &[BodyLine], http_aliases: &[String]) -> Vec<(String, usize, String)> {
+fn http_response_bindings(
+    lines: &[BodyLine],
+    http_aliases: &[String],
+) -> Vec<(String, usize, String)> {
     let mut patterns = http_aliases
         .iter()
         .flat_map(|alias| {
@@ -836,7 +918,10 @@ fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
     for (offset, raw_line) in function.body_text.lines().enumerate() {
         let line_no = function.body_start_line + offset;
         let stripped = strip_line_comment(raw_line).trim().to_string();
-        let closing_braces = stripped.chars().filter(|character| *character == '}').count();
+        let closing_braces = stripped
+            .chars()
+            .filter(|character| *character == '}')
+            .count();
         for _ in 0..closing_braces {
             brace_depth = brace_depth.saturating_sub(1);
             while loop_exit_depths
@@ -849,7 +934,10 @@ fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
 
         let starts_loop = contains_keyword(&stripped, "for");
         let in_loop = !loop_exit_depths.is_empty() || starts_loop;
-        let opening_braces = stripped.chars().filter(|character| *character == '{').count();
+        let opening_braces = stripped
+            .chars()
+            .filter(|character| *character == '{')
+            .count();
         if starts_loop {
             loop_exit_depths.push(brace_depth + opening_braces.max(1));
         }
@@ -919,7 +1007,9 @@ fn import_aliases_for(file: &ParsedFile, import_path: &str) -> Vec<String> {
 }
 
 fn contains_text(lines: &[BodyLine], needle: &str) -> bool {
-    lines.iter().any(|body_line| body_line.text.contains(needle))
+    lines
+        .iter()
+        .any(|body_line| body_line.text.contains(needle))
 }
 
 fn lines_for(lines: &[BodyLine], needle: &str) -> Vec<usize> {
@@ -964,7 +1054,9 @@ fn is_identifier_name(text: &str) -> bool {
 }
 
 fn is_exported_name(text: &str) -> bool {
-    text.chars().next().is_some_and(|character| character.is_ascii_uppercase())
+    text.chars()
+        .next()
+        .is_some_and(|character| character.is_ascii_uppercase())
 }
 
 fn compact_whitespace(text: &str) -> String {
@@ -972,7 +1064,11 @@ fn compact_whitespace(text: &str) -> String {
 }
 
 fn join_lines(lines: &[usize]) -> String {
-    lines.iter().map(usize::to_string).collect::<Vec<_>>().join(", ")
+    lines
+        .iter()
+        .map(usize::to_string)
+        .collect::<Vec<_>>()
+        .join(", ")
 }
 
 fn contains_keyword(line: &str, keyword: &str) -> bool {
@@ -988,8 +1084,8 @@ fn contains_keyword(line: &str, keyword: &str) -> bool {
             continue;
         }
 
-        let left_ok = start == 0
-            || (!bytes[start - 1].is_ascii_alphanumeric() && bytes[start - 1] != b'_');
+        let left_ok =
+            start == 0 || (!bytes[start - 1].is_ascii_alphanumeric() && bytes[start - 1] != b'_');
         let right_index = start + keyword_bytes.len();
         let right_ok = right_index == bytes.len()
             || (!bytes[right_index].is_ascii_alphanumeric() && bytes[right_index] != b'_');
@@ -1006,16 +1102,20 @@ fn strip_line_comment(line: &str) -> &str {
     line.split("//").next().unwrap_or("")
 }
 
-fn group_by_package<'a>(files: &'a [&'a ParsedFile]) -> BTreeMap<(PathBuf, String), Vec<&'a ParsedFile>> {
+fn group_by_package<'a>(
+    files: &'a [&'a ParsedFile],
+) -> BTreeMap<(PathBuf, String), Vec<&'a ParsedFile>> {
     let mut groups = BTreeMap::<(PathBuf, String), Vec<&ParsedFile>>::new();
     for file in files {
-        let package_name = file.package_name.clone().unwrap_or_else(|| "unknown".to_string());
-        let directory = file
-            .path
-            .parent()
-            .map(PathBuf::from)
-            .unwrap_or_default();
-        groups.entry((directory, package_name)).or_default().push(*file);
+        let package_name = file
+            .package_name
+            .clone()
+            .unwrap_or_else(|| "unknown".to_string());
+        let directory = file.path.parent().map(PathBuf::from).unwrap_or_default();
+        groups
+            .entry((directory, package_name))
+            .or_default()
+            .push(*file);
     }
     groups
 }

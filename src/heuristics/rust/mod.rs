@@ -73,6 +73,7 @@ fn struct_severity(summary: &StructSummary) -> Severity {
 
 fn first_await_after(function: &ParsedFunction, line: usize) -> Option<usize> {
     function
+        .rust_evidence()
         .await_points
         .iter()
         .copied()
@@ -168,10 +169,12 @@ fn is_tokio_mutex(file: &ParsedFile, function: &ParsedFunction) -> bool {
 }
 
 fn has_cancellation_pattern(function: &ParsedFunction) -> bool {
+    let rust = function.rust_evidence();
+
     function.body_text.contains("CancellationToken")
         || function.body_text.contains("cancelled()")
         || function.body_text.contains("shutdown")
-        || function.select_macro_lines.len() > 1
+        || rust.select_macro_lines.len() > 1
 }
 
 fn field_type_mentions(field: &FieldSummary, text: &str) -> bool {

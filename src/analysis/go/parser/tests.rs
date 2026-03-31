@@ -6,7 +6,11 @@ use super::{comments::extract_doc_comment, general::alias_from_path, parse_file}
 
 macro_rules! go_parser_fixture {
     ($name:literal) => {
-        include_str!(concat!("../../../../tests/fixtures/go/parser/", $name, ".txt"))
+        include_str!(concat!(
+            "../../../../tests/fixtures/go/parser/",
+            $name,
+            ".txt"
+        ))
     };
 }
 
@@ -247,7 +251,7 @@ fn test_collects_gorm_query_chain_summaries() {
             .collect::<Vec<_>>(),
         vec!["Model", "Preload", "Offset", "Limit", "Find"]
     );
-    assert!(handle.gorm_query_chains[1].in_loop == false);
+    assert!(!handle.gorm_query_chains[1].in_loop);
 }
 
 #[test]
@@ -279,7 +283,10 @@ fn test_collects_gin_calls_and_parse_input_summaries() {
         ]
     );
     assert_eq!(handle.gin_calls[0].assigned_binding.as_deref(), Some("raw"));
-    assert_eq!(handle.gin_calls[1].assigned_binding.as_deref(), Some("payload"));
+    assert_eq!(
+        handle.gin_calls[1].assigned_binding.as_deref(),
+        Some("payload")
+    );
     assert_eq!(
         handle
             .gin_calls
@@ -297,14 +304,18 @@ fn test_collects_gin_calls_and_parse_input_summaries() {
             .and_then(|call| call.assigned_binding.as_deref()),
         Some("fileHeader")
     );
-    assert!(handle
-        .gin_calls
-        .iter()
-        .find(|call| call.operation == "copy")
-        .is_some_and(|call| call.in_loop));
+    assert!(
+        handle
+            .gin_calls
+            .iter()
+            .find(|call| call.operation == "copy")
+            .is_some_and(|call| call.in_loop)
+    );
     assert_eq!(handle.parse_input_calls.len(), 2);
-    assert!(handle
-        .parse_input_calls
-        .iter()
-        .all(|call| call.input_binding.as_deref() == Some("body")));
+    assert!(
+        handle
+            .parse_input_calls
+            .iter()
+            .all(|call| call.input_binding.as_deref() == Some("body"))
+    );
 }

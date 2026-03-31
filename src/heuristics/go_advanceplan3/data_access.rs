@@ -3,13 +3,17 @@ use std::collections::BTreeMap;
 use crate::analysis::{GormChainStep, GormQueryChain, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-use super::{
-    body_lines, has_import_path, has_sql_like_import, import_aliases_for,
-    is_request_path_function, join_lines,
-};
 use super::gin::prepare_like_call_lines;
+use super::{
+    body_lines, has_import_path, has_sql_like_import, import_aliases_for, is_request_path_function,
+    join_lines,
+};
 
-pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn data_access_performance_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    let go = function.go_evidence();
     let mut findings = Vec::new();
     let lines = body_lines(function);
     let request_path = is_request_path_function(file, function);
@@ -168,7 +172,8 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
     if has_sql_like_import(file) {
         for body_line in &lines {
             if body_line.in_loop
-                && (body_line.text.contains(".Prepare(") || body_line.text.contains(".PrepareContext("))
+                && (body_line.text.contains(".Prepare(")
+                    || body_line.text.contains(".PrepareContext("))
             {
                 findings.push(Finding {
                     rule_id: "prepare_inside_loop".to_string(),
@@ -216,7 +221,7 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             || function.body_text.contains("CopyFrom(")
             || function.body_text.contains("FindInBatches(");
         if !has_bulk_write_escape {
-            for query_call in function.db_query_calls.iter().filter(|query_call| {
+            for query_call in go.db_query_calls.iter().filter(|query_call| {
                 query_call.in_loop
                     && matches!(query_call.method_name.as_str(), "Exec" | "ExecContext")
                     && query_call
@@ -251,9 +256,12 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             }
         }
 
-        for query_call in function.db_query_calls.iter().filter(|query_call| {
+        for query_call in go.db_query_calls.iter().filter(|query_call| {
             query_call.in_loop
-                && matches!(query_call.method_name.as_str(), "QueryRow" | "QueryRowContext")
+                && matches!(
+                    query_call.method_name.as_str(),
+                    "QueryRow" | "QueryRowContext"
+                )
         }) {
             findings.push(Finding {
                 rule_id: "queryrow_inside_loop_existence_check".to_string(),
@@ -283,7 +291,7 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for query_call in function.db_query_calls.iter().filter(|query_call| {
+        for query_call in go.db_query_calls.iter().filter(|query_call| {
             query_call.in_loop
                 && query_call
                     .query_text
@@ -314,7 +322,7 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for chain in function
+        for chain in go
             .gorm_query_chains
             .iter()
             .filter(|chain| chain.in_loop && chain.terminal_method == "Count")
@@ -334,7 +342,7 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for chain in function
+        for chain in go
             .gorm_query_chains
             .iter()
             .filter(|chain| chain.in_loop && gorm_chain_has_step(chain, "Session"))
@@ -354,7 +362,7 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for chain in function
+        for chain in go
             .gorm_query_chains
             .iter()
             .filter(|chain| chain.in_loop && gorm_chain_has_step(chain, "Preload"))
@@ -374,11 +382,9 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for chain in function
-            .gorm_query_chains
-            .iter()
-            .filter(|chain| chain.in_loop && chain.terminal_method == "Scan" && gorm_chain_has_step(chain, "Raw"))
-        {
+        for chain in go.gorm_query_chains.iter().filter(|chain| {
+            chain.in_loop && chain.terminal_method == "Scan" && gorm_chain_has_step(chain, "Raw")
+        }) {
             findings.push(Finding {
                 rule_id: "raw_scan_inside_loop".to_string(),
                 severity: Severity::Info,
@@ -394,11 +400,11 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for chain in function
-            .gorm_query_chains
-            .iter()
-            .filter(|chain| chain.in_loop && chain.terminal_method == "Find" && gorm_chain_has_step(chain, "Association"))
-        {
+        for chain in go.gorm_query_chains.iter().filter(|chain| {
+            chain.in_loop
+                && chain.terminal_method == "Find"
+                && gorm_chain_has_step(chain, "Association")
+        }) {
             findings.push(Finding {
                 rule_id: "association_find_inside_loop".to_string(),
                 severity: Severity::Info,
@@ -414,7 +420,7 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for chain in function
+        for chain in go
             .gorm_query_chains
             .iter()
             .filter(|chain| chain.in_loop && chain.terminal_method == "FirstOrCreate")
@@ -434,7 +440,7 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for chain in function
+        for chain in go
             .gorm_query_chains
             .iter()
             .filter(|chain| chain.in_loop && chain.terminal_method == "Save")
@@ -454,17 +460,13 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for chain in function
-            .gorm_query_chains
-            .iter()
-            .filter(|chain| {
-                chain.in_loop
-                    && matches!(
-                        chain.terminal_method.as_str(),
-                        "Update" | "UpdateColumn" | "Updates"
-                    )
-            })
-        {
+        for chain in go.gorm_query_chains.iter().filter(|chain| {
+            chain.in_loop
+                && matches!(
+                    chain.terminal_method.as_str(),
+                    "Update" | "UpdateColumn" | "Updates"
+                )
+        }) {
             findings.push(Finding {
                 rule_id: "update_single_row_in_loop_without_batch".to_string(),
                 severity: Severity::Info,
@@ -480,7 +482,7 @@ pub(super) fn data_access_performance_findings(file: &ParsedFile, function: &Par
             });
         }
 
-        for chain in function
+        for chain in go
             .gorm_query_chains
             .iter()
             .filter(|chain| chain.in_loop && chain.terminal_method == "Delete")
@@ -515,8 +517,10 @@ fn gorm_chain_findings(
         return findings;
     }
 
+    let go = function.go_evidence();
+
     if request_path {
-        for chain in &function.gorm_query_chains {
+        for chain in go.gorm_query_chains {
             if let Some(debug_step) = gorm_chain_step(chain, "Debug") {
                 findings.push(Finding {
                     rule_id: "gorm_debug_enabled_in_request_path".to_string(),
@@ -608,12 +612,12 @@ fn gorm_chain_findings(
         findings.extend(count_then_find_same_filter_findings(file, function));
     }
 
-    let has_batch_create = function
+    let has_batch_create = go
         .gorm_query_chains
         .iter()
         .any(|chain| chain.terminal_method == "CreateInBatches");
     if !has_batch_create {
-        for chain in function
+        for chain in go
             .gorm_query_chains
             .iter()
             .filter(|chain| chain.in_loop && chain.terminal_method == "Create")
@@ -640,13 +644,17 @@ fn gorm_chain_findings(
     findings
 }
 
-fn count_then_find_same_filter_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    let count_chains = function
+fn count_then_find_same_filter_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    let go = function.go_evidence();
+    let count_chains = go
         .gorm_query_chains
         .iter()
         .filter(|chain| !chain.in_loop && chain.terminal_method == "Count")
         .collect::<Vec<_>>();
-    let find_chains = function
+    let find_chains = go
         .gorm_query_chains
         .iter()
         .filter(|chain| {
@@ -684,8 +692,16 @@ fn count_then_find_same_filter_findings(file: &ParsedFile, function: &ParsedFunc
                 function.fingerprint.name
             ),
             evidence: vec![
-                format!("Count chain at line {}: {}", count_chain.line, gorm_chain_shape(count_chain)),
-                format!("Find chain at line {}: {}", find_chain.line, gorm_chain_shape(find_chain)),
+                format!(
+                    "Count chain at line {}: {}",
+                    count_chain.line,
+                    gorm_chain_shape(count_chain)
+                ),
+                format!(
+                    "Find chain at line {}: {}",
+                    find_chain.line,
+                    gorm_chain_shape(find_chain)
+                ),
             ],
         });
     }
@@ -744,11 +760,17 @@ fn gorm_chain_shape(chain: &GormQueryChain) -> String {
 }
 
 fn gorm_chain_has_step(chain: &GormQueryChain, method_name: &str) -> bool {
-    chain.steps.iter().any(|step| step.method_name == method_name)
+    chain
+        .steps
+        .iter()
+        .any(|step| step.method_name == method_name)
 }
 
 fn gorm_chain_step<'a>(chain: &'a GormQueryChain, method_name: &str) -> Option<&'a GormChainStep> {
-    chain.steps.iter().find(|step| step.method_name == method_name)
+    chain
+        .steps
+        .iter()
+        .find(|step| step.method_name == method_name)
 }
 
 fn db_query_text_looks_write(query_text: &str) -> bool {
@@ -762,5 +784,4 @@ fn db_query_text_looks_write(query_text: &str) -> bool {
 fn db_query_text_looks_count(query_text: &str) -> bool {
     let normalized = query_text.to_ascii_uppercase();
     normalized.contains("COUNT(") || normalized.contains("COUNT (")
-
 }

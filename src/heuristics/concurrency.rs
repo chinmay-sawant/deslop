@@ -8,8 +8,9 @@ use super::common::{import_alias_lookup, is_blocking_call};
 const COORDINATION_METHODS: &[&str] = &["Add", "Done", "Wait", "Go"];
 
 pub(super) fn shutdown_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .unmanaged_goroutines
+    let go = function.go_evidence();
+
+    go.unmanaged_goroutines
         .iter()
         .map(|line| Finding {
             rule_id: "goroutine_without_shutdown_path".to_string(),
@@ -42,7 +43,8 @@ pub(super) fn mutex_findings(
     function: &ParsedFunction,
     imports: &[ImportSpec],
 ) -> Vec<Finding> {
-    let mut findings = function
+    let go = function.go_evidence();
+    let mut findings = go
         .mutex_loops
         .iter()
         .map(|line| Finding {
@@ -108,11 +110,13 @@ pub(super) fn mutex_findings(
 }
 
 pub(super) fn coordination_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    if function.goroutines.is_empty() || has_coordination(function) {
+    let go = function.go_evidence();
+
+    if go.goroutines.is_empty() || has_coordination(function) {
         return Vec::new();
     }
 
-    let mut findings = function
+    let mut findings = go
         .goroutines
         .iter()
         .map(|line| Finding {
@@ -134,7 +138,7 @@ pub(super) fn coordination_findings(file: &ParsedFile, function: &ParsedFunction
         })
         .collect::<Vec<_>>();
 
-    findings.extend(function.loop_goroutines.iter().map(|line| Finding {
+    findings.extend(go.loop_goroutines.iter().map(|line| Finding {
         rule_id: "goroutine_spawn_in_loop".to_string(),
         severity: Severity::Warning,
         path: file.path.clone(),
@@ -159,18 +163,16 @@ pub(super) fn deeper_goroutine_lifetime_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.context_factory_calls.is_empty()
-        || (function.loop_goroutines.is_empty() && function.unmanaged_goroutines.is_empty())
+    let go = function.go_evidence();
+
+    if go.context_factory_calls.is_empty()
+        || (go.loop_goroutines.is_empty() && go.unmanaged_goroutines.is_empty())
     {
         return Vec::new();
     }
 
-    let loop_goroutines = function
-        .loop_goroutines
-        .iter()
-        .copied()
-        .collect::<BTreeSet<_>>();
-    let unmanaged_goroutines = function
+    let loop_goroutines = go.loop_goroutines.iter().copied().collect::<BTreeSet<_>>();
+    let unmanaged_goroutines = go
         .unmanaged_goroutines
         .iter()
         .copied()
@@ -183,7 +185,7 @@ pub(super) fn deeper_goroutine_lifetime_findings(
     let mut findings = Vec::new();
 
     for goroutine_line in candidate_lines {
-        let Some(factory_call) = function
+        let Some(factory_call) = go
             .context_factory_calls
             .iter()
             .filter(|factory_call| factory_call.line < goroutine_line)

@@ -1,12 +1,25 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-use super::{body_lines, constant_async_sleep_line, contains_task_factory, explicit_lock_acquire_name, function_line_text, has_retry_backoff_markers, heavy_post_init_detail, indented_block, is_subprocess_call, is_tempfile_cleanup_line, is_unrelated_await_line, is_valid_identifier, key_guarded_before, looks_like_lock_context, mutable_default_kind, nearby_tar_guard, parameter_entries, resolve_call_path, should_skip_wide_contract_rule, split_assignment, task_factory_marker, task_group_create_task, task_group_receivers, task_handle_observed, temp_resource_cleaned_later, typed_dict_field_is_optional, wide_contract_markers};
+use super::{
+    body_lines, constant_async_sleep_line, contains_task_factory, explicit_lock_acquire_name,
+    function_line_text, has_retry_backoff_markers, heavy_post_init_detail, indented_block,
+    is_subprocess_call, is_tempfile_cleanup_line, is_unrelated_await_line, is_valid_identifier,
+    key_guarded_before, looks_like_lock_context, mutable_default_kind, nearby_tar_guard,
+    parameter_entries, resolve_call_path, should_skip_wide_contract_rule, split_assignment,
+    task_factory_marker, task_group_create_task, task_group_receivers, task_handle_observed,
+    temp_resource_cleaned_later, typed_dict_field_is_optional, wide_contract_markers,
+};
 
-pub(super) fn function_rules_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn function_rules_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     let mut findings = Vec::new();
     findings.extend(untracked_asyncio_task_findings(file, function));
-    findings.extend(background_task_exception_unobserved_findings(file, function));
+    findings.extend(background_task_exception_unobserved_findings(
+        file, function,
+    ));
     findings.extend(async_lock_held_across_await_findings(file, function));
     findings.extend(async_retry_sleep_without_backoff_findings(file, function));
     findings.extend(mutable_default_argument_findings(file, function));
@@ -22,7 +35,7 @@ pub(super) fn function_rules_findings(file: &ParsedFile, function: &ParsedFuncti
 }
 
 fn untracked_asyncio_task_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    if function.is_test_function || !function.is_async {
+    if function.is_test_function || !function.python_evidence().is_async {
         return Vec::new();
     }
 
@@ -31,9 +44,7 @@ fn untracked_asyncio_task_findings(file: &ParsedFile, function: &ParsedFunction)
         .into_iter()
         .filter_map(|(line_no, line)| {
             let trimmed = line.trim();
-            let Some(marker) = task_factory_marker(trimmed) else {
-                return None;
-            };
+            let marker = task_factory_marker(trimmed)?;
             if task_group_create_task(trimmed, &task_groups) {
                 return None;
             }
@@ -67,7 +78,7 @@ fn background_task_exception_unobserved_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.is_test_function || !function.is_async {
+    if function.is_test_function || !function.python_evidence().is_async {
         return Vec::new();
     }
 
@@ -110,7 +121,7 @@ fn async_lock_held_across_await_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.is_test_function || !function.is_async {
+    if function.is_test_function || !function.python_evidence().is_async {
         return Vec::new();
     }
 
@@ -184,7 +195,7 @@ fn async_retry_sleep_without_backoff_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.is_test_function || !function.is_async {
+    if function.is_test_function || !function.python_evidence().is_async {
         return Vec::new();
     }
 
@@ -234,10 +245,7 @@ fn async_retry_sleep_without_backoff_findings(
     findings
 }
 
-fn mutable_default_argument_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+fn mutable_default_argument_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -297,7 +305,11 @@ fn dataclass_heavy_post_init_findings(
     else {
         return Vec::new();
     };
-    if !model.method_names.iter().any(|method_name| method_name == "__post_init__") {
+    if !model
+        .method_names
+        .iter()
+        .any(|method_name| method_name == "__post_init__")
+    {
         return Vec::new();
     }
 
@@ -361,7 +373,11 @@ fn typeddict_unchecked_access_findings(
 
     let entries = body_lines(function);
     let mut findings = Vec::new();
-    for model in file.python_models.iter().filter(|model| model.is_typed_dict) {
+    for model in file
+        .python_models
+        .iter()
+        .filter(|model| model.is_typed_dict)
+    {
         let optional_keys = model
             .fields
             .iter()
@@ -523,7 +539,10 @@ fn subprocess_shell_true_findings(file: &ParsedFile, function: &ParsedFunction) 
         .collect()
 }
 
-fn tar_extractall_unfiltered_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+fn tar_extractall_unfiltered_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if function.is_test_function || file.is_test_file {
         return Vec::new();
     }
@@ -623,4 +642,3 @@ fn tempfile_without_cleanup_findings(file: &ParsedFile, function: &ParsedFunctio
         })
         .collect()
 }
-

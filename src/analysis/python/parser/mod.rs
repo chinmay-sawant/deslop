@@ -1,4 +1,5 @@
 mod comments;
+mod functions;
 mod general;
 mod performance;
 mod phase4;
@@ -12,10 +13,11 @@ use tree_sitter::Parser;
 use crate::analysis::{AnalysisResult, Error, Language, ParsedFile};
 
 use self::comments::collect_comment_summaries;
+use self::functions::collect_functions;
 use self::general::{
-    collect_class_summaries, collect_functions, collect_imports, collect_module_scope_calls,
-    collect_pkg_strings, collect_python_models, collect_symbols, collect_top_level_bindings,
-    is_test_file, module_name_for_path,
+    collect_class_summaries, collect_imports, collect_module_scope_calls, collect_pkg_strings,
+    collect_python_models, collect_symbols, collect_top_level_bindings, is_test_file,
+    module_name_for_path,
 };
 
 pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {

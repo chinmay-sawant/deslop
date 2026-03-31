@@ -58,7 +58,7 @@ pub(super) fn repeated_exception_block_findings(file: &ParsedFile) -> Vec<Findin
 
     let mut occurrences: BTreeMap<String, Vec<usize>> = BTreeMap::new();
     for function in &file.functions {
-        for block in &function.exception_block_signatures {
+        for block in function.python_evidence().exception_block_signatures {
             occurrences
                 .entry(block.signature.clone())
                 .or_default()
@@ -95,7 +95,7 @@ pub(super) fn repeated_validation_pipeline_findings(file: &ParsedFile) -> Vec<Fi
 
     let mut occurrences: BTreeMap<String, Vec<usize>> = BTreeMap::new();
     for function in &file.functions {
-        if let Some(signature) = &function.validation_signature {
+        if let Some(signature) = function.python_evidence().validation_signature {
             occurrences
                 .entry(signature.signature.clone())
                 .or_default()
@@ -437,7 +437,7 @@ fn transform_pipeline_sig(
     staged_calls.sort_by(|left, right| left.0.cmp(&right.0));
 
     let mut stages = Vec::<&'static str>::new();
-    if function.validation_signature.is_some() {
+    if function.python_evidence().validation_signature.is_some() {
         stages.push("validate");
     }
     for (_, stage) in staged_calls {

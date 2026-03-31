@@ -1,18 +1,24 @@
 ## narrowing_as_casts
 
 ## split_at_and_indexing
-src/analysis/python/parser/general.rs:1106:                return &line[..index];
-src/analysis/rust/parser.rs:1055:    text[vec_start + 4..].contains("Box<")
-src/heuristics/go_advanceplan2.rs:947:    let parameters = &signature_text[parameters_start + 1..parameters_end];
-src/heuristics/go_advanceplan2.rs:987:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/go_advanceplan3.rs:665:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/performance.rs:330:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/python/advanceplan2.rs:1153:    split_top_level_commas(&signature_text[start + 1..end])
-src/heuristics/rust/advanceplan2.rs:545:    for (offset, character) in signature_text[start..].char_indices() {
-src/heuristics/rust/advanceplan2.rs:561:    split_top_level_commas(&signature_text[start + 1..end])
-src/heuristics/rust/performance.rs:342:    text[vec_start + 4..].contains("Box<")
-src/heuristics/rust/performance.rs:349:    line[start + marker.len()..].starts_with('/')
-src/heuristics/rust/performance.rs:387:                let receiver = &line[start..index];
+src/analysis/python/parser/general.rs:932:                return &line[..index];
+src/analysis/rust/parser/mod.rs:467:    text[vec_start + 4..].contains("Box<")
+src/heuristics/go_advanceplan2.rs:1037:    let parameters = &signature_text[parameters_start + 1..parameters_end];
+src/heuristics/go_advanceplan2.rs:1083:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/go_advanceplan3/gin.rs:239:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
+src/heuristics/go_advanceplan3/gin.rs:676:        text = text[1..text.len() - 1].trim();
+src/heuristics/go_advanceplan3/gin.rs:746:        for (end_index, current) in suffix[index + character.len_utf8()..].char_indices() {
+src/heuristics/go_advanceplan3/gin.rs:755:                return Some(suffix[start..end].to_string());
+src/heuristics/go_advanceplan3/gin.rs:781:                    return Some(suffix[..index].trim().to_string());
+src/heuristics/go_advanceplan3/gin.rs:785:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
+src/heuristics/go_advanceplan3/mod.rs:239:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/performance.rs:338:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/python/advanceplan2/mod.rs:201:    split_top_level_commas(&signature_text[start + 1..end])
+src/heuristics/rust/advanceplan2.rs:568:    for (offset, character) in signature_text[start..].char_indices() {
+src/heuristics/rust/advanceplan2.rs:584:    split_top_level_commas(&signature_text[start + 1..end])
+src/heuristics/rust/performance.rs:339:    text[vec_start + 4..].contains("Box<")
+src/heuristics/rust/performance.rs:346:    line[start + marker.len()..].starts_with('/')
+src/heuristics/rust/performance.rs:384:                let receiver = &line[start..index];
 
 ## toctou_fs_checks
 src/io.rs:16:        .metadata()
@@ -21,20 +27,20 @@ src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io
 ## toctou_check_then_open
 
 ## secret_comparisons
-src/analysis/rust/parser.rs:1895:                .any(|name| name == "password")
-src/heuristics/rust/mod.rs:153:        .any(|token| normalized == *token || normalized.contains(token))
+src/analysis/rust/parser/tests.rs:133:            .any(|name| name == "password")
+src/heuristics/rust/mod.rs:154:        .any(|token| normalized == *token || normalized.contains(token))
 tests/integration_scan/security.rs:47:            .any(|finding| finding.rule_id == "hardcoded_secret")
 tests/integration_scan/security.rs:72:            .any(|finding| finding.rule_id == "hardcoded_secret")
 
 ## shared_mutability
-src/heuristics/rust/advanceplan2.rs:222:                        "struct {} uses Rc<RefCell<_>> in a domain-style type",
-src/heuristics/rust/advanceplan2.rs:694:    ["Mutex<", "RwLock<", "RefCell<", "Cell<", "OnceCell<", "LazyCell<"]
-src/heuristics/rust/advanceplan2.rs:720:    type_text.contains("Rc<RefCell<") || type_text.contains("Rc<std::cell::RefCell<")
+src/heuristics/rust/advanceplan2.rs:234:                        "struct {} uses Rc<RefCell<_>> in a domain-style type",
+src/heuristics/rust/advanceplan2.rs:727:        "RefCell<",
+src/heuristics/rust/advanceplan2.rs:757:    type_text.contains("Rc<RefCell<") || type_text.contains("Rc<std::cell::RefCell<")
 
 ## unsafe_globals
 
 ## derive_default
-src/analysis/mod.rs:26:#[derive(Debug, Clone, Copy, Default)]
+src/analysis/config.rs:1:#[derive(Debug, Clone, Copy, Default)]
 
 ## thread_spawn_async
 

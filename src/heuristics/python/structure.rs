@@ -646,7 +646,7 @@ fn classify_over_abstracted_shape(
     if methods.iter().any(|method| {
         method.fingerprint.kind.starts_with("async")
             || method.fingerprint.complexity_score > 2
-            || !method.exception_handlers.is_empty()
+            || !method.python_evidence().exception_handlers.is_empty()
             || matches!(
                 method.fingerprint.name.as_str(),
                 "__enter__"

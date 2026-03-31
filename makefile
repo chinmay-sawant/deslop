@@ -5,6 +5,7 @@
 PATH_TO_SCAN_GOPDFSUIT ?= /home/chinmay/ChinmayPersonalProjects/gopdfsuit
 PATH_TO_SCAN_SNAPBACK ?= /home/chinmay/ChinmayPersonalProjects/SnapBack
 PATH_TO_SCAN ?= .
+PATH_TO_SCAN_CLAW ?= /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/claw-code
 
 # Default Target
 all: help
@@ -37,10 +38,13 @@ scan-gopdfsuit:
 scan-snapback:
 	cargo run -- scan $(PATH_TO_SCAN_SNAPBACK) > temp_snapback.txt
 
+scan-claw:
+	cargo run -- scan $(PATH_TO_SCAN_CLAW) > temp_claw.txt
+
 # Clean build artifacts and temporary files
 clean:
 	cargo clean
-	rm -f results.txt temp_gopdfsuit.txt temp_snapback.txt
+	rm -f results.txt temp_gopdfsuit.txt temp_snapback.txt temp_claw.txt
 
 # Display help for make targets
 help:
@@ -55,3 +59,4 @@ help:
 	@echo "  help        - Show this menu"
 	@echo "  scan-gopdfsuit - Scan the gopdfsuit project and save results to temp_gopdfsuit.txt"
 	@echo "  scan-snapback - Scan the snapback project and save results to temp_snapback.txt"
+	@echo "  scan-claw - Scan the claw project and save results to temp_claw.txt"

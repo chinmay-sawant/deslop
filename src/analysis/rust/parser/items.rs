@@ -112,7 +112,11 @@ fn named_string_from_item(node: Node<'_>, source: &str) -> Option<NamedLiteral> 
     })
 }
 
-pub(super) fn collect_trait_impls(root: Node<'_>, source: &str, trait_name: &str) -> BTreeSet<String> {
+pub(super) fn collect_trait_impls(
+    root: Node<'_>,
+    source: &str,
+    trait_name: &str,
+) -> BTreeSet<String> {
     let mut impls = BTreeSet::new();
     visit_trait_impls(root, source, trait_name, &mut impls);
     impls

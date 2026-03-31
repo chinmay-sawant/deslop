@@ -84,7 +84,11 @@ pub(super) fn task_group_create_task(text: &str, task_groups: &BTreeSet<String>)
     task_groups.contains(receiver.trim())
 }
 
-pub(super) fn task_handle_observed(function: &ParsedFunction, task_name: &str, created_line: usize) -> bool {
+pub(super) fn task_handle_observed(
+    function: &ParsedFunction,
+    task_name: &str,
+    created_line: usize,
+) -> bool {
     body_lines(function)
         .into_iter()
         .filter(|(line_no, _)| *line_no > created_line)
@@ -111,7 +115,10 @@ pub(super) fn looks_like_lock_context(line: &str) -> bool {
     lower.contains("lock") || lower.contains("mutex") || lower.contains("semaphore")
 }
 
-pub(super) fn indented_block<'a>(entries: &'a [(usize, &'a str)], header_index: usize) -> Vec<(usize, &'a str)> {
+pub(super) fn indented_block<'a>(
+    entries: &'a [(usize, &'a str)],
+    header_index: usize,
+) -> Vec<(usize, &'a str)> {
     let base_indent = indentation(entries[header_index].1);
     let mut block = Vec::new();
     for (line_no, line) in entries.iter().skip(header_index + 1) {
@@ -124,7 +131,9 @@ pub(super) fn indented_block<'a>(entries: &'a [(usize, &'a str)], header_index: 
 }
 
 fn indentation(line: &str) -> usize {
-    line.chars().take_while(|character| character.is_ascii_whitespace()).count()
+    line.chars()
+        .take_while(|character| character.is_ascii_whitespace())
+        .count()
 }
 
 pub(super) fn explicit_lock_acquire_name(line: &str) -> Option<String> {
@@ -148,7 +157,9 @@ pub(super) fn is_unrelated_await_line(line: &str) -> bool {
 
 pub(super) fn constant_async_sleep_line(line: &str) -> bool {
     let trimmed = line.trim();
-    if !trimmed.starts_with("await ") || (!trimmed.contains("asyncio.sleep(") && !trimmed.contains("sleep(")) {
+    if !trimmed.starts_with("await ")
+        || (!trimmed.contains("asyncio.sleep(") && !trimmed.contains("sleep("))
+    {
         return false;
     }
     let Some((_, rest)) = trimmed.split_once("sleep(") else {
@@ -219,7 +230,8 @@ fn split_top_level_commas(text: &str) -> Vec<String> {
                 && !in_double
                 && paren_depth == 0
                 && bracket_depth == 0
-                && brace_depth == 0 => {
+                && brace_depth == 0 =>
+            {
                 let piece = current.trim();
                 if !piece.is_empty() {
                     parts.push(piece.to_string());
@@ -249,19 +261,27 @@ pub(super) fn mutable_default_kind(default_text: &str) -> Option<&'static str> {
         return Some("list");
     }
     if normalized.starts_with('{') && normalized.ends_with('}') {
-        return Some(if normalized.contains(':') { "dict" } else { "set" });
+        return Some(if normalized.contains(':') {
+            "dict"
+        } else {
+            "set"
+        });
     }
-    matches!(normalized, "list()" | "dict()" | "set()" | "defaultdict()")
-        .then_some(if normalized.starts_with("set") {
+    matches!(normalized, "list()" | "dict()" | "set()" | "defaultdict()").then_some(
+        if normalized.starts_with("set") {
             "set"
         } else if normalized.starts_with("dict") || normalized.starts_with("defaultdict") {
             "dict"
         } else {
             "list"
-        })
+        },
+    )
 }
 
-pub(super) fn heavy_post_init_detail(file: &ParsedFile, function: &ParsedFunction) -> Option<(usize, String)> {
+pub(super) fn heavy_post_init_detail(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Option<(usize, String)> {
     for call in &function.calls {
         let resolved = resolve_call_path(file, call.receiver.as_deref(), &call.name);
         let lower_resolved = resolved.to_ascii_lowercase();
@@ -274,8 +294,10 @@ pub(super) fn heavy_post_init_detail(file: &ParsedFile, function: &ParsedFunctio
         .into_iter()
         .find_map(|(line_no, line)| {
             let lower = line.trim().to_ascii_lowercase();
-            (lower.contains("subprocess.") || lower.contains(" open(") || lower.starts_with("open("))
-                .then(|| (line_no, format!("heavy_line={}", line.trim())))
+            (lower.contains("subprocess.")
+                || lower.contains(" open(")
+                || lower.starts_with("open("))
+            .then(|| (line_no, format!("heavy_line={}", line.trim())))
         })
 }
 
@@ -315,7 +337,10 @@ pub(super) fn wide_contract_markers(text: &str) -> Vec<String> {
 pub(super) fn should_skip_wide_contract_rule(file: &ParsedFile) -> bool {
     file.path.components().any(|component| {
         let part = component.as_os_str().to_string_lossy().to_ascii_lowercase();
-        matches!(part.as_str(), "migrations" | "migration" | "serializers" | "serializer")
+        matches!(
+            part.as_str(),
+            "migrations" | "migration" | "serializers" | "serializer"
+        )
     })
 }
 
@@ -370,7 +395,9 @@ pub(super) fn resolve_top_level_call_path(file: &ParsedFile, call: &TopLevelCall
 pub(super) fn nearby_tar_guard(entries: &[(usize, &str)], line_no: usize) -> bool {
     entries
         .iter()
-        .filter(|(entry_line, _)| *entry_line <= line_no && line_no.saturating_sub(*entry_line) <= 3)
+        .filter(|(entry_line, _)| {
+            *entry_line <= line_no && line_no.saturating_sub(*entry_line) <= 3
+        })
         .any(|(_, line)| {
             let lower = line.trim().to_ascii_lowercase();
             lower.contains("validate")
@@ -393,14 +420,20 @@ pub(super) fn temp_resource_cleaned_later(entries: &[(usize, &str)], line_no: us
         .any(|(_, line)| is_tempfile_cleanup_line(&line.to_ascii_lowercase()))
 }
 
-pub(super) fn option_bag_optional_field(annotation_text: Option<&str>, default_text: Option<&str>) -> bool {
+pub(super) fn option_bag_optional_field(
+    annotation_text: Option<&str>,
+    default_text: Option<&str>,
+) -> bool {
     annotation_text.is_some_and(|annotation| {
         let lower = annotation.to_ascii_lowercase();
         lower.contains("optional[") || lower.contains("| none") || lower.contains("notrequired[")
     }) || default_text.is_some_and(|default| default.trim() == "None")
 }
 
-pub(super) fn option_bag_boolean_field(annotation_text: Option<&str>, default_text: Option<&str>) -> bool {
+pub(super) fn option_bag_boolean_field(
+    annotation_text: Option<&str>,
+    default_text: Option<&str>,
+) -> bool {
     annotation_text.is_some_and(|annotation| annotation.to_ascii_lowercase().contains("bool"))
         || default_text.is_some_and(|default| matches!(default.trim(), "True" | "False"))
 }
@@ -408,10 +441,21 @@ pub(super) fn option_bag_boolean_field(annotation_text: Option<&str>, default_te
 pub(super) fn is_network_call_path(resolved_path: &str, call_name: &str) -> bool {
     let lower = resolved_path.to_ascii_lowercase();
     let lower_name = call_name.to_ascii_lowercase();
-    (lower.starts_with("requests.") || lower.starts_with("httpx.") || lower.starts_with("urllib.") || lower.starts_with("socket."))
+    (lower.starts_with("requests.")
+        || lower.starts_with("httpx.")
+        || lower.starts_with("urllib.")
+        || lower.starts_with("socket."))
         && matches!(
             lower_name.as_str(),
-            "get" | "post" | "put" | "patch" | "delete" | "request" | "urlopen" | "connect" | "create_connection"
+            "get"
+                | "post"
+                | "put"
+                | "patch"
+                | "delete"
+                | "request"
+                | "urlopen"
+                | "connect"
+                | "create_connection"
         )
 }
 
@@ -419,7 +463,17 @@ pub(super) fn is_file_io_call(call: &TopLevelCallSummary, resolved_path: &str) -
     let lower = resolved_path.to_ascii_lowercase();
     matches!(
         call.name.as_str(),
-        "open" | "read_text" | "read_bytes" | "write_text" | "write_bytes" | "listdir" | "scandir" | "walk" | "glob" | "iglob" | "rglob"
+        "open"
+            | "read_text"
+            | "read_bytes"
+            | "write_text"
+            | "write_bytes"
+            | "listdir"
+            | "scandir"
+            | "walk"
+            | "glob"
+            | "iglob"
+            | "rglob"
     ) || lower == "open"
         || lower.ends_with(".read_text")
         || lower.ends_with(".read_bytes")
@@ -429,7 +483,10 @@ pub(super) fn is_file_io_call(call: &TopLevelCallSummary, resolved_path: &str) -
         || lower.ends_with(".scandir")
         || lower.ends_with(".walk")
         || lower.contains("path(")
-            && matches!(call.name.as_str(), "read_text" | "read_bytes" | "write_text" | "write_bytes")
+            && matches!(
+                call.name.as_str(),
+                "read_text" | "read_bytes" | "write_text" | "write_bytes"
+            )
 }
 
 pub(super) fn is_subprocess_call(resolved_path: &str) -> bool {
@@ -475,13 +532,16 @@ pub(super) fn mutates_binding(function: &ParsedFunction, binding_name: &str) -> 
             || line.contains(&format!("{binding_name}.clear("))
             || line.starts_with(&indexed_assignment)
             || line == global_marker
-            || (line.starts_with(&format!("{binding_name} =")) && function.body_text.contains(&global_marker))
+            || (line.starts_with(&format!("{binding_name} ="))
+                && function.body_text.contains(&global_marker))
     })
 }
 
 pub(super) fn is_config_load_call(resolved_path: &str, lower_text: &str) -> bool {
-    matches!(resolved_path, "os.getenv" | "os.environ.get" | "dotenv.load_dotenv" | "dotenv.dotenv_values")
-        || is_config_load_text(lower_text)
+    matches!(
+        resolved_path,
+        "os.getenv" | "os.environ.get" | "dotenv.load_dotenv" | "dotenv.dotenv_values"
+    ) || is_config_load_text(lower_text)
 }
 
 pub(super) fn is_config_load_text(lower_text: &str) -> bool {

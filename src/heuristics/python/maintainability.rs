@@ -9,7 +9,9 @@ pub(super) fn exception_swallowed_findings(
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .exception_handlers
         .iter()
         .filter(|handler| handler.is_broad && handler.suppresses)
@@ -97,6 +99,7 @@ pub(super) fn none_comparison_findings(
     }
 
     function
+        .python_evidence()
         .none_comparison_lines
         .iter()
         .map(|line| Finding {
@@ -126,7 +129,9 @@ pub(super) fn side_effect_comprehension_findings(
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .side_effect_comprehension_lines
         .iter()
         .map(|line| Finding {
@@ -156,7 +161,9 @@ pub(super) fn redundant_return_none_findings(
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .redundant_return_none_lines
         .iter()
         .map(|line| Finding {
@@ -337,10 +344,12 @@ pub(super) fn variadic_public_api_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
+    let python = function.python_evidence();
+
     if function.is_test_function
         || function.fingerprint.receiver_type.is_some()
         || function.fingerprint.name.starts_with('_')
-        || (!function.has_varargs && !function.has_kwargs)
+        || (!python.has_varargs && !python.has_kwargs)
     {
         return Vec::new();
     }
@@ -358,7 +367,7 @@ pub(super) fn variadic_public_api_findings(
         ),
         evidence: vec![format!(
             "signature_flags=has_varargs:{} has_kwargs:{}",
-            function.has_varargs, function.has_kwargs
+            python.has_varargs, python.has_kwargs
         )],
     }]
 }
@@ -372,6 +381,7 @@ pub(super) fn builtin_reduction_findings(
     }
 
     function
+        .python_evidence()
         .builtin_candidate_lines
         .iter()
         .map(|line| Finding {
@@ -530,7 +540,9 @@ pub(super) fn broad_exception_handler_findings(
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .exception_handlers
         .iter()
         .filter(|handler| handler.is_broad && !handler.suppresses)
@@ -564,7 +576,9 @@ pub(super) fn missing_context_manager_findings(
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .missing_context_manager_lines
         .iter()
         .map(|line| Finding {
@@ -588,9 +602,11 @@ pub(super) fn missing_context_manager_findings(
 }
 
 pub(super) fn api_type_hint_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    let python = function.python_evidence();
+
     if function.is_test_function
         || function.fingerprint.name.starts_with('_')
-        || function.has_complete_type_hints
+        || python.has_complete_type_hints
     {
         return Vec::new();
     }
@@ -984,7 +1000,7 @@ fn env_lookup_has_default(line: &str) -> bool {
 }
 
 fn has_validation_markers(function: &ParsedFunction, lower_body: &str) -> bool {
-    !function.exception_handlers.is_empty()
+    !function.python_evidence().exception_handlers.is_empty()
         || lower_body.contains("if not ")
         || lower_body.contains("if len(")
         || lower_body.contains(" is none")

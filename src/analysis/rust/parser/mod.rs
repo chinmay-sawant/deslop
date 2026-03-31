@@ -14,11 +14,11 @@ use crate::analysis::{
 use crate::model::FunctionFingerprint;
 
 use self::imports::collect_imports;
+use self::imports::combine_path_prefix;
 use self::items::{
     collect_enum_summaries, collect_pkg_strings, collect_static_summaries,
     collect_struct_summaries, collect_symbols, collect_trait_impls, trait_impl_type,
 };
-use self::imports::combine_path_prefix;
 
 pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
     let mut parser = Parser::new();

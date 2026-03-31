@@ -93,8 +93,9 @@ pub(super) fn secret_findings(file: &ParsedFile, function: &ParsedFunction) -> V
 }
 
 pub(super) fn sql_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .db_query_calls
+    let go = function.go_evidence();
+
+    go.db_query_calls
         .iter()
         .filter(|query_call| query_call.query_uses_dynamic_construction)
         .map(|query_call| Finding {

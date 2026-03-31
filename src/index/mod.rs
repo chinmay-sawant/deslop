@@ -1,8 +1,13 @@
+mod build;
+mod resolve;
+
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use crate::analysis::{DeclaredSymbol, Language, ParsedFile};
-use crate::model::{IndexSummary, SymbolKind};
+use crate::analysis::{DeclaredSymbol, Language};
+use crate::model::IndexSummary;
+
+pub(crate) use build::build_repository_index;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct PackageKey {
@@ -43,13 +48,7 @@ impl RepositoryIndex {
         file_path: &Path,
         package_name: &str,
     ) -> Option<&PackageIndex> {
-        let key = PackageKey {
-            language,
-            package_name: package_name.to_string(),
-            directory: package_directory(&self.root, file_path),
-        };
-
-        self.packages.get(&key)
+        resolve::package_for_file(self, language, file_path, package_name)
     }
 
     pub fn resolve_import_path(
@@ -57,26 +56,7 @@ impl RepositoryIndex {
         language: Language,
         import_path: &str,
     ) -> ImportResolution<'_> {
-        let mut candidates = self
-            .packages
-            .values()
-            .filter(|package| match language {
-                Language::Python => {
-                    package.language == language
-                        && python_import_matches_module(import_path, package)
-                }
-                _ => {
-                    package.language == language
-                        && import_matches_dir(import_path, &package.directory)
-                }
-            })
-            .collect::<Vec<_>>();
-
-        match candidates.len() {
-            0 => ImportResolution::Unresolved,
-            1 => ImportResolution::Resolved(candidates.remove(0)),
-            _ => ImportResolution::Ambiguous(candidates),
-        }
+        resolve::resolve_import_path(self, language, import_path)
     }
 
     pub fn resolve_rust_import(
@@ -84,119 +64,12 @@ impl RepositoryIndex {
         current_file_path: &Path,
         import_path: &str,
     ) -> ImportResolution<'_> {
-        let Some((crate_root, current_module_segments)) =
-            rust_module_context(&self.root, current_file_path)
-        else {
-            return ImportResolution::Unresolved;
-        };
-        let Some(target_segments) = normalize_rust_path(import_path, &current_module_segments)
-        else {
-            return ImportResolution::Unresolved;
-        };
-        if target_segments.is_empty() {
-            let candidates = self
-                .packages
-                .values()
-                .filter(|package| {
-                    package.language == Language::Rust && package.directory == crate_root
-                })
-                .collect::<Vec<_>>();
-
-            return match candidates.len() {
-                0 => ImportResolution::Unresolved,
-                1 => ImportResolution::Resolved(candidates[0]),
-                _ => ImportResolution::Ambiguous(candidates),
-            };
-        }
-
-        let Some(module_name) = target_segments.last() else {
-            return ImportResolution::Unresolved;
-        };
-        let file_module_directory = rust_file_mod_dir(&crate_root, &target_segments);
-        let mod_module_directory = rust_mod_mod_dir(&crate_root, &target_segments);
-        let mut candidates = self
-            .packages
-            .values()
-            .filter(|package| {
-                package.language == Language::Rust
-                    && package.package_name == *module_name
-                    && (package.directory == file_module_directory
-                        || package.directory == mod_module_directory)
-            })
-            .collect::<Vec<_>>();
-
-        match candidates.len() {
-            0 => ImportResolution::Unresolved,
-            1 => ImportResolution::Resolved(candidates.remove(0)),
-            _ => ImportResolution::Ambiguous(candidates),
-        }
+        resolve::resolve_rust_import(self, current_file_path, import_path)
     }
 
     pub fn summary(&self) -> IndexSummary {
-        let package_count = self.packages.len();
-        let symbol_count = self
-            .packages
-            .values()
-            .map(|package| package.symbols.len())
-            .sum();
-        let import_count = self
-            .packages
-            .values()
-            .map(|package| package.import_count)
-            .sum();
-
-        IndexSummary {
-            package_count,
-            symbol_count,
-            import_count,
-        }
+        resolve::summary(self)
     }
-}
-
-fn python_import_matches_module(import_path: &str, package: &PackageIndex) -> bool {
-    let import_segments = import_path
-        .split('.')
-        .filter(|segment| !segment.is_empty())
-        .collect::<Vec<_>>();
-    if import_segments.is_empty() {
-        return false;
-    }
-
-    let directory_segments = package
-        .directory
-        .components()
-        .map(|component| component.as_os_str().to_string_lossy().into_owned())
-        .collect::<Vec<_>>();
-    let full_import_path = import_segments
-        .iter()
-        .map(|segment| (*segment).to_string())
-        .collect::<Vec<_>>();
-
-    for candidate_index in [
-        import_segments.len().saturating_sub(1),
-        import_segments.len().saturating_sub(2),
-    ] {
-        let Some(candidate_name) = import_segments.get(candidate_index).copied() else {
-            continue;
-        };
-        if candidate_name == "*" || candidate_name != package.package_name {
-            continue;
-        }
-
-        let prefix_without_module = import_segments
-            .get(..candidate_index)
-            .into_iter()
-            .flatten()
-            .map(|segment| (*segment).to_string())
-            .collect::<Vec<_>>();
-        if directory_segments.ends_with(&prefix_without_module)
-            || directory_segments.ends_with(&full_import_path)
-        {
-            return true;
-        }
-    }
-
-    false
 }
 
 impl PackageIndex {
@@ -225,258 +98,6 @@ impl PackageIndex {
     pub fn has_symbol(&self, name: &str) -> bool {
         self.symbols.iter().any(|symbol| symbol.name == name)
     }
-}
-
-pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> RepositoryIndex {
-    let mut packages = BTreeMap::new();
-
-    for file in files {
-        let ParsedFile {
-            language,
-            path,
-            package_name,
-            imports,
-            symbols,
-            ..
-        } = file;
-        let language = *language;
-        let package_name = package_name
-            .clone()
-            .unwrap_or_else(|| "unknown".to_string());
-        let directory = package_directory(root, path);
-        let import_count = imports.len();
-        let key = PackageKey {
-            language,
-            package_name: package_name.clone(),
-            directory: directory.clone(),
-        };
-        let package_entry = packages.entry(key).or_insert_with(|| PackageIndex {
-            language,
-            package_name,
-            directory,
-            functions: BTreeSet::new(),
-            contextless_wrapper_functions: BTreeSet::new(),
-            methods_by_receiver: BTreeMap::new(),
-            symbols: Vec::new(),
-            import_count: 0,
-        });
-
-        package_entry.import_count += import_count;
-
-        for function in &file.functions {
-            if function.fingerprint.receiver_type.is_none()
-                && is_contextless_wrapper_candidate(file, function)
-            {
-                package_entry
-                    .contextless_wrapper_functions
-                    .insert(function.fingerprint.name.clone());
-            }
-        }
-
-        for symbol in symbols {
-            insert_symbol(package_entry, symbol);
-        }
-    }
-
-    RepositoryIndex {
-        root: root.to_path_buf(),
-        packages,
-    }
-}
-
-fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
-    package_entry.symbols.push(symbol.clone());
-
-    match symbol.kind {
-        SymbolKind::Function => {
-            package_entry.functions.insert(symbol.name.clone());
-        }
-        SymbolKind::Method => {
-            if let Some(receiver) = &symbol.receiver_type {
-                package_entry
-                    .methods_by_receiver
-                    .entry(receiver.clone())
-                    .or_default()
-                    .insert(symbol.name.clone());
-            }
-        }
-        _ => {}
-    }
-}
-
-fn is_contextless_wrapper_candidate(
-    file: &ParsedFile,
-    function: &crate::analysis::ParsedFunction,
-) -> bool {
-    if function.has_context_parameter {
-        return false;
-    }
-
-    let import_aliases = file
-        .imports
-        .iter()
-        .map(|import| (import.alias.as_str(), import.path.as_str()))
-        .collect::<BTreeMap<_, _>>();
-
-    function.calls.iter().any(|call| {
-        let Some(receiver) = call.receiver.as_deref() else {
-            return false;
-        };
-        let Some(import_path) = import_aliases.get(receiver) else {
-            return false;
-        };
-
-        matches!(*import_path, "net/http")
-            && matches!(
-                call.name.as_str(),
-                "Get" | "Head" | "Post" | "PostForm" | "NewRequest"
-            )
-            || matches!(*import_path, "os/exec") && call.name == "Command"
-            || matches!(*import_path, "net") && matches!(call.name.as_str(), "Dial" | "DialTimeout")
-    }) || function.db_query_calls.iter().any(|query_call| {
-        matches!(
-            query_call.method_name.as_str(),
-            "Query" | "QueryRow" | "Exec" | "Get" | "Select"
-        )
-    })
-}
-
-fn package_directory(root: &Path, file_path: &Path) -> PathBuf {
-    let Some(parent) = file_path.parent() else {
-        return PathBuf::new();
-    };
-
-    if root.as_os_str().is_empty() {
-        return parent.to_path_buf();
-    }
-
-    parent
-        .strip_prefix(root)
-        .map(Path::to_path_buf)
-        .unwrap_or_else(|_| parent.to_path_buf())
-}
-
-fn import_matches_dir(import_path: &str, directory: &Path) -> bool {
-    let directory_segments = directory
-        .components()
-        .map(|component| component.as_os_str().to_string_lossy().into_owned())
-        .collect::<Vec<_>>();
-
-    if directory_segments.is_empty() {
-        return false;
-    }
-
-    let import_segments = import_path
-        .split('/')
-        .filter(|segment| !segment.is_empty())
-        .collect::<Vec<_>>();
-
-    if directory_segments.len() > import_segments.len() {
-        return false;
-    }
-
-    import_segments
-        .get(import_segments.len() - directory_segments.len()..)
-        .into_iter()
-        .flatten()
-        .zip(directory_segments.iter())
-        .all(|(left, right)| *left == right)
-}
-
-fn rust_module_context(root: &Path, file_path: &Path) -> Option<(PathBuf, Vec<String>)> {
-    let relative_path = file_path.strip_prefix(root).ok()?;
-    let components = relative_path
-        .components()
-        .map(|component| component.as_os_str().to_string_lossy().into_owned())
-        .collect::<Vec<_>>();
-    let crate_root = components.first()?.as_str();
-
-    if crate_root != "src" && crate_root != "tests" {
-        return None;
-    }
-
-    let file_name = components.last()?.as_str();
-    let directory_segments = if components.len() > 2 {
-        components
-            .get(1..components.len() - 1)
-            .map(|segments| segments.to_vec())
-            .unwrap_or_default()
-    } else {
-        Vec::new()
-    };
-    let mut module_segments = directory_segments;
-
-    match file_name {
-        "lib.rs" | "main.rs" | "mod.rs" => {}
-        _ => {
-            let stem = file_name.strip_suffix(".rs")?;
-            if !stem.is_empty() {
-                module_segments.push(stem.to_string());
-            }
-        }
-    }
-
-    Some((PathBuf::from(crate_root), module_segments))
-}
-
-fn normalize_rust_path(
-    import_path: &str,
-    current_module_segments: &[String],
-) -> Option<Vec<String>> {
-    let segments = import_path
-        .split("::")
-        .filter(|segment| !segment.is_empty())
-        .map(str::to_string)
-        .collect::<Vec<_>>();
-    let head = segments.first()?.as_str();
-
-    match head {
-        "crate" => Some(segments.into_iter().skip(1).collect()),
-        "self" => Some(
-            current_module_segments
-                .iter()
-                .cloned()
-                .chain(segments.into_iter().skip(1))
-                .collect(),
-        ),
-        "super" => {
-            let super_count = segments
-                .iter()
-                .take_while(|segment| segment == &&"super".to_string())
-                .count();
-            if super_count > current_module_segments.len() {
-                return None;
-            }
-
-            let mut resolved = current_module_segments
-                .get(..current_module_segments.len() - super_count)
-                .map(|segments| segments.to_vec())
-                .unwrap_or_default();
-            resolved.extend(segments.into_iter().skip(super_count));
-            Some(resolved)
-        }
-        _ => None,
-    }
-}
-
-fn rust_file_mod_dir(crate_root: &Path, target_segments: &[String]) -> PathBuf {
-    if target_segments.len() <= 1 {
-        return crate_root.to_path_buf();
-    }
-
-    let mut directory = crate_root.to_path_buf();
-    for segment in target_segments.iter().take(target_segments.len() - 1) {
-        directory.push(segment);
-    }
-    directory
-}
-
-fn rust_mod_mod_dir(crate_root: &Path, target_segments: &[String]) -> PathBuf {
-    let mut directory = crate_root.to_path_buf();
-    for segment in target_segments {
-        directory.push(segment);
-    }
-    directory
 }
 
 #[cfg(test)]

@@ -23,9 +23,8 @@ use self::errors::{collect_dropped_errors, collect_errorf_calls, collect_panic_e
 use self::frameworks::{collect_gin_calls, collect_gorm_query_chains, collect_parse_input_calls};
 use self::general::{
     build_test_summary, collect_calls, collect_go_structs, collect_imports,
-    collect_interface_summaries, collect_local_strings, collect_package_vars,
-    collect_pkg_strings, collect_struct_tags, collect_symbols, count_descendants,
-    extract_receiver, find_package_name,
+    collect_interface_summaries, collect_local_strings, collect_package_vars, collect_pkg_strings,
+    collect_struct_tags, collect_symbols, count_descendants, extract_receiver, find_package_name,
 };
 use self::performance::{
     collect_alloc_loops, collect_concat_loops, collect_db_query_calls, collect_fmt_loops,

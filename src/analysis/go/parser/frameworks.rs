@@ -62,11 +62,7 @@ const GORM_QUERY_METHODS: &[&str] = &[
     "WithContext",
 ];
 
-const YAML_IMPORT_PATHS: &[&str] = &[
-    "gopkg.in/yaml.v2",
-    "gopkg.in/yaml.v3",
-    "sigs.k8s.io/yaml",
-];
+const YAML_IMPORT_PATHS: &[&str] = &["gopkg.in/yaml.v2", "gopkg.in/yaml.v3", "sigs.k8s.io/yaml"];
 
 const PROTO_IMPORT_PATHS: &[&str] = &[
     "google.golang.org/protobuf/proto",
@@ -331,7 +327,9 @@ fn extract_call_chain(call_node: Node<'_>, source: &str) -> Option<(String, Vec<
 fn is_chained_subcall(node: Node<'_>) -> bool {
     node.parent().is_some_and(|parent| {
         parent.kind() == "selector_expression"
-            && parent.parent().is_some_and(|grandparent| grandparent.kind() == "call_expression")
+            && parent
+                .parent()
+                .is_some_and(|grandparent| grandparent.kind() == "call_expression")
     })
 }
 
@@ -355,7 +353,9 @@ fn collect_argument_texts(arguments_node: Node<'_>, source: &str) -> Vec<String>
 
 fn argument_nodes(arguments_node: Node<'_>) -> Vec<Node<'_>> {
     let mut cursor = arguments_node.walk();
-    let arguments = arguments_node.named_children(&mut cursor).collect::<Vec<_>>();
+    let arguments = arguments_node
+        .named_children(&mut cursor)
+        .collect::<Vec<_>>();
     if arguments.is_empty() {
         collect_expression_nodes(arguments_node)
     } else {
@@ -405,7 +405,7 @@ fn simple_reference_text(text: &str) -> Option<String> {
         && trimmed
             .split('.')
             .all(|segment| is_identifier_name(segment.trim())))
-        .then(|| trimmed.to_string())
+    .then(|| trimmed.to_string())
 }
 
 fn normalize_text(text: &str) -> String {

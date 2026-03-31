@@ -3,35 +3,41 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::analysis::{GinCallSummary, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-use super::{binding_for_patterns, body_lines, import_aliases_for, is_gin_handler, is_identifier_name, join_lines, json_aliases, strip_line_comment, BodyLine, LARGE_MULTIPART_FORM_BYTES};
+use super::{
+    BodyLine, LARGE_MULTIPART_FORM_BYTES, binding_for_patterns, body_lines, import_aliases_for,
+    is_gin_handler, is_identifier_name, join_lines, json_aliases, strip_line_comment,
+};
 
-pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn gin_request_performance_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if !is_gin_handler(file, function) {
         return Vec::new();
     }
 
+    let go = function.go_evidence();
     let mut findings = Vec::new();
     let lines = body_lines(function);
-    let body_bind_calls = function
+    let body_bind_calls = go
         .gin_calls
         .iter()
         .filter(|call| is_gin_body_bind_operation(&call.operation))
         .collect::<Vec<_>>();
-    let json_bind_calls = function
+    let json_bind_calls = go
         .gin_calls
         .iter()
         .filter(|call| is_gin_json_bind_operation(&call.operation))
         .collect::<Vec<_>>();
-    let raw_data_line = function
+    let raw_data_line = go
         .gin_calls
         .iter()
         .find(|call| call.operation == "get_raw_data")
         .map(|call| call.line);
 
-    if let (Some(raw_data_line), Some(bind_line)) = (
-        raw_data_line,
-        json_bind_calls.first().map(|call| call.line),
-    ) {
+    if let (Some(raw_data_line), Some(bind_line)) =
+        (raw_data_line, json_bind_calls.first().map(|call| call.line))
+    {
         findings.push(Finding {
             rule_id: "get_raw_data_then_should_bindjson_duplicate_body".to_string(),
             severity: Severity::Warning,
@@ -52,7 +58,7 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
         });
     }
 
-    let readall_body_line = function
+    let readall_body_line = go
         .gin_calls
         .iter()
         .find(|call| call.operation == "read_request_body")
@@ -104,7 +110,7 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
         });
     }
 
-    if let Some(bind_body_with_call) = function
+    if let Some(bind_body_with_call) = go
         .gin_calls
         .iter()
         .find(|call| call.operation == "should_bind_body_with")
@@ -124,14 +130,17 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
                 function.fingerprint.name
             ),
             evidence: vec![
-                format!("ShouldBindBodyWith(...) observed at line {}", bind_body_with_call.line),
+                format!(
+                    "ShouldBindBodyWith(...) observed at line {}",
+                    bind_body_with_call.line
+                ),
                 "no second body bind or explicit body reread was observed in the same handler"
                     .to_string(),
             ],
         });
     }
 
-    for call in function
+    for call in go
         .gin_calls
         .iter()
         .filter(|call| matches!(call.operation.as_str(), "bind_json" | "should_bind_json"))
@@ -158,7 +167,7 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
         }
     }
 
-    for call in function
+    for call in go
         .gin_calls
         .iter()
         .filter(|call| matches!(call.operation.as_str(), "bind_query" | "should_bind_query"))
@@ -185,7 +194,7 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
         }
     }
 
-    for call in function
+    for call in go
         .gin_calls
         .iter()
         .filter(|call| call.operation == "parse_multipart_form")
@@ -219,7 +228,7 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
         }
     }
 
-    for call in function
+    for call in go
         .gin_calls
         .iter()
         .filter(|call| call.operation == "form_file")
@@ -227,10 +236,7 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
         if let Some((readall_line, readall_binding, open_line)) =
             form_file_readall_flow(file, &lines, call)
         {
-            let mut evidence = vec![format!(
-                "FormFile(...) observed at line {}",
-                call.line
-            )];
+            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
             if let Some(open_line) = open_line {
                 evidence.push(format!(
                     "uploaded file handle opened later at line {}",
@@ -257,7 +263,7 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
         }
     }
 
-    for call in &function.gin_calls {
+    for call in go.gin_calls {
         if call.operation == "indented_json" {
             findings.push(Finding {
                 rule_id: "indentedjson_in_hot_path".to_string(),
@@ -300,7 +306,7 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
 
         if call.operation == "copy"
             && call.in_loop
-            && (!function.goroutines.is_empty() || !function.loop_goroutines.is_empty())
+            && (!go.goroutines.is_empty() || !go.loop_goroutines.is_empty())
         {
             findings.push(Finding {
                 rule_id: "gin_context_copy_for_each_item_fanout".to_string(),
@@ -333,7 +339,7 @@ pub(super) fn gin_request_performance_findings(file: &ParsedFile, function: &Par
         })
         .find(|call| matches!(call.name.as_str(), "Marshal" | "MarshalIndent"))
         .map(|call| call.line);
-    let data_line = function
+    let data_line = go
         .gin_calls
         .iter()
         .find(|call| call.operation == "data")
@@ -463,16 +469,16 @@ pub(super) fn repeated_argument_group_findings(
     lines: &[BodyLine],
     markers: &[(String, String)],
     require_loop: bool,
-    rule_id: &str,
-    message_tail: &str,
-    helper_label: &str,
+    spec: RepeatedArgumentGroupSpec<'_>,
 ) -> Vec<Finding> {
     if markers.is_empty() {
         return Vec::new();
     }
 
     let mut groups = BTreeMap::<String, Vec<(usize, String)>>::new();
-    for (line, label, argument) in collect_labeled_first_argument_calls(lines, markers, require_loop) {
+    for (line, label, argument) in
+        collect_labeled_first_argument_calls(lines, markers, require_loop)
+    {
         groups.entry(argument).or_default().push((line, label));
     }
 
@@ -490,15 +496,22 @@ pub(super) fn repeated_argument_group_findings(
             .join(", ");
         let anchor_line = lines[1];
         findings.push(Finding {
-            rule_id: rule_id.to_string(),
+            rule_id: spec.rule_id.to_string(),
             severity: Severity::Info,
             path: file.path.clone(),
             function_name: Some(function.fingerprint.name.clone()),
             start_line: anchor_line,
             end_line: anchor_line,
-            message: format!("function {} {}", function.fingerprint.name, message_tail),
+            message: format!(
+                "function {} {}",
+                function.fingerprint.name, spec.message_tail
+            ),
             evidence: vec![
-                format!("argument reused by {helper_label} at lines {}", join_lines(&lines)),
+                format!(
+                    "argument reused by {} at lines {}",
+                    spec.helper_label,
+                    join_lines(&lines)
+                ),
                 format!("first argument: {argument}"),
                 format!("operations: {operations}"),
             ],
@@ -593,7 +606,7 @@ fn first_readall_for_bindings(
                 let binding = simple_reference_binding(&argument_text)?;
                 bindings
                     .contains(&binding)
-                    .then(|| (body_line.line, binding))
+                    .then_some((body_line.line, binding))
             })
         })
 }
@@ -668,7 +681,7 @@ fn trim_wrapping_parens(mut text: &str) -> &str {
 
 fn format_size_bytes(bytes: u64) -> String {
     let mib = 1024 * 1024;
-    if bytes % mib == 0 {
+    if bytes.is_multiple_of(mib) {
         format!("{} MiB", bytes / mib)
     } else {
         format!("{bytes} bytes")
@@ -716,13 +729,14 @@ fn is_dynamic_map_binding(function: &ParsedFunction, binding_name: &str) -> bool
 }
 
 fn compact_code_text(text: &str) -> String {
-    text.chars().filter(|character| !character.is_whitespace()).collect()
+    text.chars()
+        .filter(|character| !character.is_whitespace())
+        .collect()
 }
 
 fn first_string_literal_after_marker(text: &str, marker: &str) -> Option<String> {
     let suffix = text.split_once(marker)?.1;
-    let mut chars = suffix.char_indices();
-    while let Some((index, character)) = chars.next() {
+    for (index, character) in suffix.char_indices() {
         if character != '"' && character != '`' {
             continue;
         }
@@ -746,6 +760,13 @@ fn first_string_literal_after_marker(text: &str, marker: &str) -> Option<String>
     }
 
     None
+}
+
+#[derive(Debug, Clone, Copy)]
+pub(super) struct RepeatedArgumentGroupSpec<'a> {
+    pub rule_id: &'a str,
+    pub message_tail: &'a str,
+    pub helper_label: &'a str,
 }
 
 fn first_argument_after_marker(text: &str, marker: &str) -> Option<String> {
@@ -804,7 +825,7 @@ fn simple_reference_binding(text: &str) -> Option<String> {
         && trimmed
             .split('.')
             .all(|segment| is_identifier_name(segment.trim())))
-        .then(|| trimmed.to_string())
+    .then(|| trimmed.to_string())
 }
 
 fn is_gin_body_bind_operation(operation: &str) -> bool {

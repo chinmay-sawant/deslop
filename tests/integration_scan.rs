@@ -54,10 +54,10 @@ mod performance;
 mod python;
 #[path = "integration_scan/rust.rs"]
 mod rust;
-#[path = "integration_scan/rust_advanceplan2.rs"]
-mod rust_advanceplan2;
 #[path = "integration_scan/rust_advanced.rs"]
 mod rust_advanced;
+#[path = "integration_scan/rust_advanceplan2.rs"]
+mod rust_advanceplan2;
 #[path = "integration_scan/security.rs"]
 mod security;
 #[path = "integration_scan/style.rs"]

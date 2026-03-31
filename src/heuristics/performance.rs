@@ -4,8 +4,9 @@ use crate::model::{Finding, Severity};
 use super::common::import_alias_lookup;
 
 pub(super) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .alloc_loops
+    let go = function.go_evidence();
+
+    go.alloc_loops
         .iter()
         .map(|line| Finding {
             rule_id: "allocation_churn_in_loop".to_string(),
@@ -27,8 +28,9 @@ pub(super) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
 }
 
 pub(super) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .fmt_loops
+    let go = function.go_evidence();
+
+    go.fmt_loops
         .iter()
         .map(|line| Finding {
             rule_id: "fmt_hot_path".to_string(),
@@ -50,8 +52,9 @@ pub(super) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
 }
 
 pub(super) fn reflect_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .reflect_loops
+    let go = function.go_evidence();
+
+    go.reflect_loops
         .iter()
         .map(|line| Finding {
             rule_id: "reflection_hot_path".to_string(),
@@ -73,8 +76,9 @@ pub(super) fn reflect_findings(file: &ParsedFile, function: &ParsedFunction) -> 
 }
 
 pub(super) fn concat_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .concat_loops
+    let go = function.go_evidence();
+
+    go.concat_loops
         .iter()
         .map(|line| Finding {
             rule_id: "string_concat_in_loop".to_string(),
@@ -95,8 +99,9 @@ pub(super) fn concat_findings(file: &ParsedFile, function: &ParsedFunction) -> V
 }
 
 pub(super) fn json_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .json_loops
+    let go = function.go_evidence();
+
+    go.json_loops
         .iter()
         .map(|line| Finding {
             rule_id: "repeated_json_marshaling".to_string(),
@@ -123,10 +128,11 @@ pub(super) fn db_findings(
     function: &ParsedFunction,
     enable_go_semantic: bool,
 ) -> Vec<Finding> {
+    let go = function.go_evidence();
     let mut findings = Vec::new();
     let nested_loop_signal = enable_go_semantic && has_nested_loop_signal(&function.body_text);
 
-    for query_call in &function.db_query_calls {
+    for query_call in go.db_query_calls {
         if query_call.in_loop && query_call.method_name != "Preload" {
             let receiver = query_call.receiver.as_deref().unwrap_or("<unknown>");
             findings.push(Finding {
@@ -221,8 +227,9 @@ pub(super) fn n_squared_findings(
 
 /// Flags nested-loop allocation churn when allocation evidence already exists.
 fn nested_loop_alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    function
-        .alloc_loops
+    let go = function.go_evidence();
+
+    go.alloc_loops
         .iter()
         .map(|line| Finding {
             rule_id: "likely_n_squared_allocation".to_string(),
@@ -253,8 +260,9 @@ fn nested_loop_concat_findings(file: &ParsedFile, function: &ParsedFunction) -> 
         return Vec::new();
     }
 
-    function
-        .concat_loops
+    let go = function.go_evidence();
+
+    go.concat_loops
         .iter()
         .map(|line| Finding {
             rule_id: "likely_n_squared_string_concat".to_string(),

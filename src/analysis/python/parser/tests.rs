@@ -419,6 +419,13 @@ fn test_python_advanceplan2_parser_evidence() {
         .find(|function| function.fingerprint.name == "orchestrate")
         .expect("expected async function summary");
     assert!(orchestrate.is_async);
-    assert_eq!(orchestrate.await_points, vec![orchestrate.body_start_line + 2]);
-    assert!(orchestrate.signature_text.contains("async def orchestrate(lock):"));
+    assert_eq!(
+        orchestrate.await_points,
+        vec![orchestrate.body_start_line + 2]
+    );
+    assert!(
+        orchestrate
+            .signature_text
+            .contains("async def orchestrate(lock):")
+    );
 }
