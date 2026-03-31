@@ -1,0 +1,541 @@
+import { currentRelease } from '../../content/site-content'
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type Language = 'go' | 'python' | 'rust' | 'common'
+type SectionId =
+  | 'overview'
+  | 'detection-rules'
+  | 'cli-commands'
+  | 'pipeline'
+  | 'limitations'
+  | 'about'
+
+interface NavSection {
+  id: SectionId
+  label: string
+  icon: string
+}
+
+interface Rule {
+  id: string
+  description: string
+}
+
+interface CliCommand {
+  cmd: string
+  desc: string
+}
+
+// ─── Static Data ──────────────────────────────────────────────────────────────
+
+const languages: { id: Language; label: string }[] = [
+  { id: 'go', label: 'Go' },
+  { id: 'python', label: 'Python' },
+  { id: 'rust', label: 'Rust' },
+  { id: 'common', label: 'Common' },
+]
+
+const sections: NavSection[] = [
+  { id: 'overview', label: 'Overview', icon: '◈' },
+  { id: 'detection-rules', label: 'Detection Rules', icon: '⊹' },
+  { id: 'cli-commands', label: 'CLI Commands', icon: '❯' },
+  { id: 'pipeline', label: 'Pipeline', icon: '◎' },
+  { id: 'limitations', label: 'Limitations', icon: '△' },
+  { id: 'about', label: 'About', icon: '♡' },
+]
+
+// ─── Content Data ────────────────────────────────────────────────────────────
+
+const goRules: Rule[] = [
+  { id: 'dropped_error', description: 'Blank identifier assignments that discard an err-like value.' },
+  { id: 'panic_on_error', description: 'err != nil branches that jump straight to panic or log.Fatal style exits.' },
+  { id: 'error_wrapping_misuse', description: 'fmt.Errorf calls that reference err without %w.' },
+  { id: 'missing_context', description: 'Standard-library context-aware calls from functions that do not accept context.Context.' },
+  { id: 'missing_context_propagation', description: 'Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.' },
+  { id: 'context_background_used', description: 'Functions that already accept context.Context but still create context.Background() or context.TODO() locally.' },
+  { id: 'missing_cancel_call', description: 'Derived contexts where deslop cannot find a local cancel() or defer cancel() call.' },
+  { id: 'sleep_polling', description: 'time.Sleep inside loops — often indicates polling or busy-wait style code.' },
+  { id: 'busy_waiting', description: 'select { default: ... } inside loops, which often spins instead of blocking.' },
+  { id: 'goroutine_without_coordination', description: 'Raw go statements without an obvious context or WaitGroup-like coordination signal.' },
+  { id: 'goroutine_spawn_in_loop', description: 'Raw go statements launched from inside loops without obvious WaitGroup coordination.' },
+  { id: 'goroutine_without_shutdown_path', description: 'Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.' },
+  { id: 'goroutine_derived_context_unmanaged', description: 'Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.' },
+  { id: 'mutex_in_loop', description: 'Repeated Lock or RLock acquisition inside loops.' },
+  { id: 'blocking_call_while_locked', description: 'Potentially blocking calls observed between Lock and Unlock.' },
+  { id: 'range_over_local_channel_without_close', description: 'Functions that range over a locally owned channel without an observed close path.' },
+  { id: 'double_close_local_channel', description: 'The same locally created channel appears to be closed more than once in one function body.' },
+  { id: 'send_after_local_close_risk', description: 'A locally owned channel is closed and later used in a send expression.' },
+  { id: 'time_after_in_loop', description: 'time.After(...) is allocated inside loops instead of reusing a timer or deadline.' },
+  { id: 'ticker_without_stop', description: 'time.NewTicker(...) is created without an observed Stop() call.' },
+  { id: 'http_response_body_not_closed', description: 'HTTP responses acquired locally without an observed resp.Body.Close() call.' },
+  { id: 'http_client_without_timeout', description: 'Local http.Client{} literals constructed without an explicit timeout.' },
+  { id: 'http_server_without_timeouts', description: 'Explicit http.Server{} values that omit common timeout fields.' },
+  { id: 'http_status_ignored_before_decode', description: 'Response decoding or body consumption that happens without an observed StatusCode check.' },
+  { id: 'http_writeheader_after_write', description: 'Handlers that write the response body before calling WriteHeader(...).' },
+  { id: 'get_raw_data_then_should_bindjson_duplicate_body', description: 'Gin handlers that read GetRawData() and later bind JSON from the same request body.' },
+  { id: 'readall_body_then_bind_duplicate_deserialize', description: 'Gin handlers that materialize c.Request.Body with io.ReadAll(...) and then bind the same body again.' },
+  { id: 'multiple_shouldbind_calls_same_handler', description: 'Gin handlers that bind the request body multiple times in one function.' },
+  { id: 'bindjson_into_map_any_hot_endpoint', description: 'Gin handlers that bind JSON into map[string]any or map[string]interface{} on hot request paths.' },
+  { id: 'bindquery_into_map_any_hot_endpoint', description: 'Gin handlers that bind query parameters into map[string]any or map[string]interface{} on hot request paths.' },
+  { id: 'parsemultipartform_large_default_memory', description: 'Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths.' },
+  { id: 'formfile_open_readall_whole_upload', description: 'Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...).' },
+  { id: 'shouldbindbodywith_when_single_bind_is_enough', description: 'Gin handlers that use ShouldBindBodyWith(...) even though only one body bind is observed.' },
+  { id: 'indentedjson_in_hot_path', description: 'IndentedJSON(...) used on a request path instead of compact JSON rendering.' },
+  { id: 'repeated_c_json_inside_stream_loop', description: 'Gin handlers that call c.JSON(...) or c.PureJSON(...) from inside loops.' },
+  { id: 'json_marshaled_manually_then_c_data', description: 'Handlers that manually marshal JSON and then write it through gin.Context.Data(...).' },
+  { id: 'servefile_via_readfile_then_c_data', description: 'Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming.' },
+  { id: 'dumprequest_or_dumpresponse_in_hot_path', description: 'Request-path handlers that dump full HTTP requests or responses with httputil.' },
+  { id: 'file_or_template_read_per_request', description: 'Request-path handlers that read files directly instead of using startup caching or dedicated file-serving paths.' },
+  { id: 'gin_context_copy_for_each_item_fanout', description: 'Gin handlers that call c.Copy() once per loop iteration before goroutine fanout.' },
+  { id: 'file_handle_without_close', description: 'File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path.' },
+  { id: 'rows_without_close', description: 'Query result handles that appear locally owned but have no observed rows.Close() call.' },
+  { id: 'stmt_without_close', description: 'Prepared statements or similar DB handles without an observed Close() call.' },
+  { id: 'tx_without_rollback_guard', description: 'Transactions begun and later committed with no observed rollback guard.' },
+  { id: 'defer_in_loop_resource_growth', description: 'defer statements inside loops that can accumulate resources until function exit.' },
+  { id: 'mutable_package_global', description: 'Package-level variables that are mutated from function bodies instead of kept immutable.' },
+  { id: 'init_side_effect', description: 'init() functions that perform network, file-system, or subprocess side effects.' },
+  { id: 'single_impl_interface', description: 'Repository-local interfaces with one obvious implementation and a very small consumer surface.' },
+  { id: 'passthrough_wrapper_interface', description: 'Wrapper structs that mostly forward one-to-one through an interface field with little added policy.' },
+  { id: 'public_bool_parameter_api', description: 'Exported functions or methods that expose raw boolean mode switches in their signatures.' },
+  { id: 'likely_n_squared_string_concat', description: 'Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.' },
+  { id: 'repeated_json_marshaling', description: 'encoding/json.Marshal or MarshalIndent inside loops — repeated allocation and serialization hot spots.' },
+  { id: 'allocation_churn_in_loop', description: 'Obvious make, new, or buffer-construction calls inside loops.' },
+  { id: 'likely_n_squared_allocation', description: 'Opt-in deeper semantic signal for allocations that also sit inside nested loop structure.' },
+  { id: 'fmt_hot_path', description: 'fmt formatting calls such as Sprintf inside loops.' },
+  { id: 'reflection_hot_path', description: 'reflect package calls inside loops.' },
+  { id: 'regexp_compile_in_hot_path', description: 'regexp.Compile or regexp.MustCompile observed inside obvious iterative paths.' },
+  { id: 'template_parse_in_hot_path', description: 'html/template or text/template parse calls observed on request-style paths instead of startup-time caching.' },
+  { id: 'json_unmarshal_same_payload_multiple_times', description: 'The same local JSON payload binding is unmarshaled into multiple targets in one function.' },
+  { id: 'xml_unmarshal_same_payload_multiple_times', description: 'The same local XML payload binding is unmarshaled into multiple targets in one function.' },
+  { id: 'yaml_unmarshal_same_payload_multiple_times', description: 'The same local YAML payload binding is unmarshaled into multiple targets in one function.' },
+  { id: 'proto_unmarshal_same_payload_multiple_times', description: 'The same local protobuf payload binding is unmarshaled into multiple targets in one function.' },
+  { id: 'builder_or_buffer_recreated_per_iteration', description: 'strings.Builder, bytes.Buffer, or bytes.NewBuffer(...) constructions observed inside loops instead of being reset or reused.' },
+  { id: 'make_slice_inside_hot_loop_same_shape', description: 'make([]T, ...) scratch slices recreated inside loops instead of being reused.' },
+  { id: 'make_map_inside_hot_loop_same_shape', description: 'make(map[K]V, ...) scratch maps recreated inside loops instead of being reused or prebuilt.' },
+  { id: 'repeated_slice_clone_in_loop', description: 'slices.Clone(...) or similar whole-slice cloning observed inside loops.' },
+  { id: 'byte_string_conversion_in_loop', description: 'Byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths.' },
+  { id: 'slice_membership_in_loop_map_candidate', description: 'slices.Contains(...) or slices.Index(...) used inside loops against a stable-looking slice binding.' },
+  { id: 'url_parse_in_loop_on_invariant_base', description: 'url.Parse(...) or ParseRequestURI(...) observed inside loops with a stable-looking base input.' },
+  { id: 'time_parse_layout_in_loop', description: 'time.Parse(...) or ParseInLocation(...) observed inside loops with a stable layout.' },
+  { id: 'strings_split_same_input_multiple_times', description: 'The same string input is passed through strings.Split* or strings.Fields* helpers multiple times in one function.' },
+  { id: 'bytes_split_same_input_multiple_times', description: 'The same byte-slice input is passed through bytes.Split* or bytes.Fields* helpers multiple times in one function.' },
+  { id: 'strconv_repeat_on_same_binding', description: 'The same string binding is converted with strconv parsing helpers multiple times in one function.' },
+  { id: 'json_encoder_recreated_per_item', description: 'json.NewEncoder(...) constructed repeatedly inside loops instead of reusing a stable encoder per stream.' },
+  { id: 'json_decoder_recreated_per_item', description: 'json.NewDecoder(...) constructed repeatedly inside loops instead of reusing a stable decoder per stream.' },
+  { id: 'gzip_reader_writer_recreated_per_item', description: 'gzip.NewReader(...) or gzip.NewWriter(...) recreated inside iterative paths instead of per stream.' },
+  { id: 'csv_writer_flush_per_row', description: 'csv.Writer.Flush() called inside per-row loops, reducing buffering effectiveness.' },
+  { id: 'read_then_decode_duplicate_materialization', description: 'io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.' },
+  { id: 'n_plus_one_query', description: 'Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.' },
+  { id: 'wide_select_query', description: 'Literal SELECT * query shapes.' },
+  { id: 'likely_unindexed_query', description: 'Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.' },
+  { id: 'sql_open_per_request', description: 'database/sql pools opened on request paths instead of process-level setup.' },
+  { id: 'gorm_open_per_request', description: 'gorm.Open(...) called on request paths instead of process-level setup.' },
+  { id: 'db_ping_per_request', description: 'database Ping(...) or PingContext(...) called on request paths instead of startup or explicit health checks.' },
+  { id: 'connection_pool_reconfigured_per_request', description: 'DB pool sizing or lifetime settings changed on request paths.' },
+  { id: 'prepare_inside_loop', description: 'Prepare(...) or PrepareContext(...) observed inside loops.' },
+  { id: 'prepare_on_every_request_same_sql', description: 'The same literal SQL is prepared multiple times on one request path.' },
+  { id: 'tx_begin_per_item_loop', description: 'Transactions started inside loops instead of once around the wider batch.' },
+  { id: 'exec_inside_loop_without_batch', description: 'Exec(...) or ExecContext(...) used for row-by-row SQL writes inside loops.' },
+  { id: 'queryrow_inside_loop_existence_check', description: 'QueryRow(...) or QueryRowContext(...) used inside loops for point lookups that usually want a bulk prefetch path.' },
+  { id: 'count_inside_loop', description: 'COUNT(...) or GORM Count(...) observed inside loops.' },
+  { id: 'gorm_session_allocated_per_item', description: 'GORM Session(...) chains allocated inside loops before issuing queries.' },
+  { id: 'raw_scan_inside_loop', description: 'GORM Raw(...).Scan(...) chains observed inside loops.' },
+  { id: 'association_find_inside_loop', description: 'GORM Association(...).Find(...) loaders observed inside loops.' },
+  { id: 'preload_inside_loop', description: 'GORM Preload(...) queries configured and executed inside loops.' },
+  { id: 'first_or_create_in_loop', description: 'GORM FirstOrCreate(...) chains observed inside loops.' },
+  { id: 'save_in_loop_full_model', description: 'GORM Save(...) writes full models inside loops.' },
+  { id: 'update_single_row_in_loop_without_batch', description: 'GORM Update(...), UpdateColumn(...), or Updates(...) calls observed inside loops one row at a time.' },
+  { id: 'delete_single_row_in_loop_without_batch', description: 'GORM Delete(...) chains observed inside loops one row at a time.' },
+  { id: 'gorm_debug_enabled_in_request_path', description: 'GORM debug logging enabled on request paths.' },
+  { id: 'create_single_in_loop_instead_of_batches', description: 'GORM .Create(...) used inside loops with no visible CreateInBatches(...) path in the same function.' },
+  { id: 'gorm_find_without_limit_on_handler_path', description: 'Request-path GORM Find(...) chains with no visible Limit(...) step.' },
+  { id: 'offset_pagination_on_large_table', description: 'Request-path GORM Find(...) chains that page with Offset(...), which often scales poorly on large lists.' },
+  { id: 'gorm_preload_clause_associations_on_wide_graph', description: 'Request-path GORM chains that use Preload(clause.Associations) or other broad preload graphs.' },
+  { id: 'count_then_find_same_filter', description: 'Request-path GORM flows that run Count(...) and then a broad Find(...) with the same filter shape.' },
+  { id: 'weak_crypto', description: 'Direct use of weak standard-library crypto packages such as crypto/md5, crypto/sha1, crypto/des, and crypto/rc4.' },
+  { id: 'sql_string_concat', description: 'Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf.' },
+  { id: 'inconsistent_package_name', description: 'Directories that mix base Go package names after ignoring the _test suffix.' },
+  { id: 'misgrouped_imports', description: 'Import blocks that place stdlib imports after third-party imports.' },
+  { id: 'mixed_receiver_kinds', description: 'Methods on the same receiver type mix pointer and value receivers.' },
+  { id: 'malformed_struct_tag', description: 'Struct field tags that do not parse as valid Go tag key/value pairs.' },
+  { id: 'duplicate_struct_tag_key', description: 'Struct field tags that repeat the same key more than once.' },
+]
+
+const pythonRules: Rule[] = [
+  { id: 'blocking_sync_io_in_async', description: 'Synchronous network, subprocess, sleep, or file I/O calls made from async def functions.' },
+  { id: 'exception_swallowed', description: 'Broad exception handlers like except: or except Exception: that immediately suppress the error with pass, continue, break, or return.' },
+  { id: 'broad_exception_handler', description: 'Broad except Exception: style handlers that still obscure failure shape even when not fully swallowed.' },
+  { id: 'eval_exec_usage', description: 'Direct eval() or exec() usage in non-test Python code.' },
+  { id: 'print_debugging_leftover', description: 'print() calls left in non-test Python functions that do not look like obvious main-entrypoint output.' },
+  { id: 'none_comparison', description: '== None or != None checks instead of is None or is not None.' },
+  { id: 'side_effect_comprehension', description: 'List, set, or dicit comprehensions used as standalone statements where the result is discarded.' },
+  { id: 'redundant_return_none', description: 'Explicit return None in simple code paths where Python would already return None implicitly.' },
+  { id: 'hardcoded_path_string', description: 'Hardcoded filesystem path literals assigned inside non-test Python functions.' },
+  { id: 'variadic_public_api', description: 'Public Python functions that expose *args or **kwargs instead of a clearer interface.' },
+  { id: 'list_materialization_first_element', description: 'list(...)[0] style access that materializes a whole list just to read the first element.' },
+  { id: 'deque_candidate_queue', description: 'Queue-style list operations like pop(0) or insert(0, ...) that may want collections.deque.' },
+  { id: 'temporary_collection_in_loop', description: 'Loop-local list, dict, or set construction that likely adds avoidable allocation churn.' },
+  { id: 'recursive_traversal_risk', description: 'Direct recursion in traversal-style helpers that may be safer as iterative walks for deep inputs.' },
+  { id: 'list_membership_in_loop', description: 'Repeated membership checks against obviously list-like containers inside loops.' },
+  { id: 'repeated_len_in_loop', description: 'Repeated len(...) checks inside loops when the receiver appears unchanged locally.' },
+  { id: 'untracked_asyncio_task', description: 'asyncio.create_task(...) or similar task creation whose handle is discarded immediately.' },
+  { id: 'background_task_exception_unobserved', description: 'Background task bindings with no obvious await, callback, supervisor, or observation path.' },
+  { id: 'async_lock_held_across_await', description: 'Async lock scopes or explicit acquire/release regions that continue across unrelated await points.' },
+  { id: 'async_retry_sleep_without_backoff', description: 'Retry-style async loops that sleep a fixed interval without visible backoff, jitter, or bounded retry policy.' },
+  { id: 'god_function', description: 'Very large Python functions with high control-flow and call-surface concentration.' },
+  { id: 'god_class', description: 'Python classes that concentrate unusually high method count, public surface area, and mutable instance state.' },
+  { id: 'monolithic_init_module', description: '__init__.py files that carry enough imports and behavior to look like monolithic modules.' },
+  { id: 'monolithic_module', description: 'Non-__init__.py modules that are unusually large and combine many imports with orchestration-heavy behavior.' },
+  { id: 'too_many_instance_attributes', description: 'Classes that assign an unusually large number of instance attributes across their methods.' },
+  { id: 'eager_constructor_collaborators', description: 'Constructors that instantiate several collaborators eagerly inside __init__.' },
+  { id: 'over_abstracted_wrapper', description: 'Ceremonial wrapper-style or tiny data-container classes that add little beyond storing constructor state.' },
+  { id: 'mutable_default_argument', description: 'Function parameters that use mutable defaults such as [], {}, or set() directly in the signature.' },
+  { id: 'dataclass_mutable_default', description: 'Dataclass fields that use mutable defaults instead of default_factory.' },
+  { id: 'dataclass_heavy_post_init', description: 'Dataclass __post_init__ methods that perform I/O, subprocess, network, or heavyweight client setup.' },
+  { id: 'option_bag_model', description: 'Dataclass or TypedDict models that accumulate many optional fields and boolean switches.' },
+  { id: 'public_any_type_leak', description: 'Public functions or model fields that expose Any, object, or similarly wide contracts.' },
+  { id: 'typeddict_unchecked_access', description: 'Direct indexing of optional TypedDict keys without an obvious guard path.' },
+  { id: 'mixed_concerns_function', description: 'Functions that mix HTTP, persistence, and filesystem-style concerns in one body.' },
+  { id: 'name_responsibility_mismatch', description: 'Read-style, transformation-style, or utility-style names that still perform mutation or own multiple infrastructure concerns.' },
+  { id: 'deep_inheritance_hierarchy', description: 'Repository-local Python class chains with unusually deep inheritance depth.' },
+  { id: 'tight_module_coupling', description: 'Modules that depend on a large number of repository-local Python modules.' },
+  { id: 'unrelated_heavy_import', description: 'Heavy ecosystem imports with little local evidence of real need.' },
+  { id: 'public_api_missing_type_hints', description: 'Public Python functions that omit complete parameter or return annotations.' },
+  { id: 'mixed_sync_async_module', description: 'Modules that expose public sync and async entry points together.' },
+  { id: 'duplicate_error_handler_block', description: 'Repeated exception-handling block shapes in one file.' },
+  { id: 'duplicate_validation_pipeline', description: 'Repeated validation guard pipelines across functions in one file.' },
+  { id: 'cross_file_copy_paste_function', description: 'Highly similar non-test function bodies repeated across multiple Python files.' },
+  { id: 'hardcoded_business_rule', description: 'Hardcoded threshold, rate-limit, or pricing-style literals assigned inside non-test Python functions.' },
+  { id: 'magic_value_branching', description: 'Repeated branch-shaping numeric or string literals that likely want an explicit constant or policy name.' },
+  { id: 'reinvented_utility', description: 'Obvious locally implemented utility helpers that overlap with already-imported standard-library style helpers.' },
+  { id: 'builtin_reduction_candidate', description: 'Loop shapes that look like obvious sum, any, or all candidates.' },
+  { id: 'missing_context_manager', description: 'Resource management (files, network connections) inside non-test Python functions that omits with-statement context managers.' },
+  { id: 'environment_boundary_without_fallback', description: 'Environment-variable lookups that omit a default value or explicit failure handler.' },
+  { id: 'mixed_naming_conventions', description: 'File mixes snake_case and camelCase function naming conventions.' },
+  { id: 'textbook_docstring_small_helper', description: 'Very small helper functions that have unusually long, textbook-style docstrings.' },
+  { id: 'obvious_commentary', description: 'Comments that narrate obvious implementation steps instead of explaining intent.' },
+  { id: 'enthusiastic_commentary', description: 'Unusually enthusiastic or emoji-heavy production comments.' },
+  { id: 'commented_out_code', description: 'Blocks of commented-out source code left in production files.' },
+  { id: 'repeated_string_literal', description: 'Project repeats the same long string literal multiple times in one file.' },
+  { id: 'cross_file_repeated_literal', description: 'Project repeats the same long string literal across multiple files.' },
+  { id: 'duplicate_test_utility_logic', description: 'Highly similar utility logic shared between test and production code.' },
+  { id: 'duplicate_query_fragment', description: 'Repository repeats the same SQL-like query fragment across multiple files.' },
+  { id: 'duplicate_transformation_pipeline', description: 'Repository repeats the same data transformation pipeline stages across multiple functions.' },
+  { id: 'network_boundary_without_timeout', description: 'Request, sync, or job-style Python functions that call HTTP boundaries with no obvious timeout or retry policy.' },
+  { id: 'external_input_without_validation', description: 'Request or CLI entry points that trust external input without obvious validation or guard checks.' },
+  { id: 'unsafe_yaml_loader', description: 'yaml.load(...) or full_load(...) style loaders used where safe loading is more appropriate.' },
+  { id: 'pickle_deserialization_boundary', description: 'pickle.load(s) or dill.load(s) style deserialization in production code.' },
+  { id: 'subprocess_shell_true', description: 'Subprocess boundaries that enable shell=True.' },
+  { id: 'tar_extractall_unfiltered', description: 'tarfile.extractall(...) without an obvious filter, members list, or path-validation helper.' },
+  { id: 'tempfile_without_cleanup', description: 'Temporary files or directories created without a visible cleanup or context-manager ownership path.' },
+  { id: 'import_time_network_call', description: 'Module-scope HTTP or socket calls executed while the module is imported.' },
+  { id: 'import_time_file_io', description: 'Module-scope file reads, writes, or directory scans that happen during import.' },
+  { id: 'import_time_subprocess', description: 'Subprocess launches triggered from module scope during import.' },
+  { id: 'module_singleton_client_side_effect', description: 'Eagerly constructed network, database, or cloud clients bound at module scope.' },
+  { id: 'mutable_module_global_state', description: 'Mutable module globals updated from multiple functions.' },
+  { id: 'import_time_config_load', description: 'Module-scope configuration or secret loading that runs during import instead of an explicit startup path.' },
+]
+
+const rustRules: Rule[] = [
+  { id: 'todo_macro_leftover', description: 'todo!() left in non-test Rust code.' },
+  { id: 'unimplemented_macro_leftover', description: 'unimplemented!() left in non-test Rust code.' },
+  { id: 'dbg_macro_leftover', description: 'dbg!() left in non-test Rust code.' },
+  { id: 'panic_macro_leftover', description: 'panic!() left in non-test Rust code.' },
+  { id: 'unreachable_macro_leftover', description: 'unreachable!() left in non-test Rust code.' },
+  { id: 'unwrap_in_non_test_code', description: '.unwrap() used in non-test Rust code.' },
+  { id: 'expect_in_non_test_code', description: '.expect(...) used in non-test Rust code.' },
+  { id: 'unsafe_without_safety_comment', description: 'unsafe fn or unsafe block without a nearby SAFETY: comment within the previous two lines.' },
+  { id: 'todo_doc_comment_leftover', description: 'Rust doc comments that still contain a TODO marker in non-test code.' },
+  { id: 'fixme_doc_comment_leftover', description: 'Rust doc comments that still contain a FIXME marker in non-test code.' },
+  { id: 'rust_blocking_io_in_async', description: 'Blocking I/O or blocking work observed in async Rust code.' },
+  { id: 'rust_unbuffered_file_writes', description: 'File-like writes performed inside a loop without buffering or batching.' },
+  { id: 'rust_lines_allocate_per_line', description: '.lines() iteration used in a loop where per-item allocation may matter.' },
+  { id: 'rust_hashmap_default_hasher', description: 'HashMap default-hasher construction in a likely hot path.' },
+  { id: 'rust_lock_across_await', description: 'A lock appears to be held across an .await boundary.' },
+  { id: 'rust_tokio_mutex_unnecessary', description: 'tokio::sync::Mutex used in a fully synchronous critical path with no await.' },
+  { id: 'rust_blocking_drop', description: 'A Drop implementation performs blocking work.' },
+  { id: 'rust_pointer_chasing_vec_box', description: 'Pointer-heavy boxed vector-style storage that may hurt cache locality.' },
+  { id: 'rust_path_join_absolute', description: 'Path::join used with an absolute segment that discards the existing base path.' },
+  { id: 'rust_utf8_validate_hot_path', description: 'UTF-8 validation appears in a likely hot path and may deserve profiling.' },
+  { id: 'rust_large_future_stack', description: 'Large allocations may be captured across await points and bloat future size.' },
+  { id: 'rust_aos_hot_path', description: 'Repeated struct-field dereferences inside a loop that may indicate an array-of-structs hot path.' },
+  { id: 'rust_async_std_mutex_await', description: 'std::sync::Mutex appears to be held across .await in async code.' },
+  { id: 'rust_async_hold_permit_across_await', description: 'A permit or pooled resource may be held across an .await.' },
+  { id: 'rust_async_spawn_cancel_at_await', description: 'Async work is spawned without an obvious cancellation path.' },
+  { id: 'rust_async_missing_fuse_pin', description: 'select! reuse lacks pinning or fusing markers for repeated polling.' },
+  { id: 'rust_async_recreate_future_in_select', description: 'A select! loop may recreate futures instead of reusing long-lived ones.' },
+  { id: 'rust_async_monopolize_executor', description: 'An async function may monopolize the executor with blocking work and no await.' },
+  { id: 'rust_async_blocking_drop', description: 'A Drop implementation does blocking work that can surface in async contexts.' },
+  { id: 'rust_async_invariant_broken_at_await', description: 'Related state mutations appear split around an await boundary.' },
+  { id: 'rust_async_lock_order_cycle', description: 'Conflicting lock acquisition order suggests a lock-order cycle.' },
+  { id: 'rust_public_anyhow_result', description: 'Public library-facing APIs that return anyhow-style Result types instead of a clearer domain error.' },
+  { id: 'rust_public_box_dyn_error', description: 'Public APIs that expose Box<dyn Error> rather than a clearer error surface.' },
+  { id: 'rust_borrowed_string_api', description: 'Public signatures that borrow &String instead of &str.' },
+  { id: 'rust_borrowed_vec_api', description: 'Public signatures that borrow &Vec<T> instead of &[T].' },
+  { id: 'rust_borrowed_pathbuf_api', description: 'Public signatures that borrow &PathBuf instead of &Path.' },
+  { id: 'rust_public_bool_parameter_api', description: 'Public APIs that expose a raw boolean mode switch.' },
+  { id: 'rust_pub_interior_mutability_field', description: 'Public structs that expose Mutex, RwLock, RefCell, Cell, or similar fields directly.' },
+  { id: 'rust_global_lock_state', description: 'Static or lazy global state wrapped in mutable lock-based containers.' },
+  { id: 'rust_arc_mutex_option_state', description: 'Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers.' },
+  { id: 'rust_mutex_wrapped_collection', description: 'Collection-plus-lock fields embedded directly in public or central state structs.' },
+  { id: 'rust_rc_refcell_domain_model', description: 'Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.' },
+  { id: 'rust_serde_untagged_enum_boundary', description: 'Boundary-facing enums that derive #[serde(untagged)] and risk ambiguous wire formats.' },
+  { id: 'rust_serde_default_on_required_field', description: 'Required-looking contract fields that opt into #[serde(default)].' },
+  { id: 'rust_serde_flatten_catchall', description: '#[serde(flatten)] catch-all maps or loose value bags that absorb unknown fields.' },
+  { id: 'rust_serde_unknown_fields_allowed', description: 'Strict-looking config or request structs that deserialize without deny_unknown_fields.' },
+  { id: 'rust_stringly_typed_enum_boundary', description: 'Enum-like boundary fields kept as String instead of a dedicated enum.' },
+  { id: 'rust_option_bag_config', description: 'Config-like structs with many Option fields and no obvious validation path.' },
+  { id: 'rust_builder_without_validate', description: 'Builders that expose build() without an obvious validation step.' },
+  { id: 'rust_constructor_many_flags', description: 'Constructor-like APIs that use multiple boolean flags.' },
+  { id: 'rust_partial_init_escape', description: 'Constructor-like functions that return or store partially initialized structs.' },
+  { id: 'rust_boolean_state_machine', description: 'State structs encoded with multiple booleans instead of a dedicated enum.' },
+  { id: 'rust_domain_raw_primitive', description: 'Business-facing data is stored as a raw primitive instead of a stronger domain type.' },
+  { id: 'rust_domain_float_for_money', description: 'Floating-point storage is used for money-like values.' },
+  { id: 'rust_domain_impossible_combination', description: 'A boolean toggle is mixed with optional credentials, creating invalid-state combinations.' },
+  { id: 'rust_domain_default_produces_invalid', description: 'Default is derived or implemented on a type that likely cannot have a safe default state.' },
+  { id: 'rust_debug_secret', description: 'Debug is derived on a type that carries secret-like fields.' },
+  { id: 'rust_serde_sensitive_deserialize', description: 'Deserialize is derived for sensitive fields without obvious validation.' },
+  { id: 'rust_serde_sensitive_serialize', description: 'Serialize is derived for secret-like fields that may need redaction or exclusion.' },
+  { id: 'rust_domain_optional_secret_default', description: 'A defaultable type includes optional secret-like fields, which can hide invalid configuration.' },
+  { id: 'rust_unsafe_get_unchecked', description: 'Unsafe use of get_unchecked without proof of bounds invariants.' },
+  { id: 'rust_unsafe_from_raw_parts', description: 'Unsafe raw slice construction that depends on lifetime and length invariants.' },
+  { id: 'rust_unsafe_set_len', description: 'Unsafe Vec::set_len use that requires initialized elements and correct capacity invariants.' },
+  { id: 'rust_unsafe_assume_init', description: 'Unsafe MaybeUninit::assume_init use without proof of full initialization.' },
+  { id: 'rust_unsafe_transmute', description: 'Unsafe transmute use that requires layout and validity proof.' },
+  { id: 'rust_unsafe_raw_pointer_cast', description: 'Unsafe raw pointer cast that depends on aliasing and lifetime guarantees.' },
+  { id: 'rust_unsafe_aliasing_assumption', description: 'Unsafe code mixes interior mutability and mutable references in ways that need careful aliasing review.' },
+]
+
+const commonRules: Rule[] = [
+  { id: 'generic_name', description: 'Function names that are overly generic without stronger contextual signals.' },
+  { id: 'overlong_name', description: 'Very long identifiers with too many descriptive tokens.' },
+  { id: 'weak_typing', description: 'Signatures that rely on any or empty interface types.' },
+  { id: 'hallucinated_import_call', description: 'Package-qualified calls that do not match locally indexed symbols for the imported package.' },
+  { id: 'hallucinated_local_call', description: 'Same-package calls to symbols not present in the scanned local package context.' },
+  { id: 'hardcoded_secret', description: 'Secret-like identifiers assigned direct string literals instead of environment lookups.' },
+  { id: 'test_without_assertion_signal', description: 'Tests that exercise production code without an obvious assertion or failure signal.' },
+  { id: 'happy_path_only_test', description: 'Tests that assert success expectations without any obvious negative-path signal.' },
+  { id: 'placeholder_test_body', description: 'Tests that look skipped, TODO-shaped, or otherwise placeholder-like.' },
+  { id: 'comment_style_title_case', description: 'Heading-like Title Case documentation.' },
+  { id: 'comment_style_tutorial', description: 'Tutorial-style documentation that narrates obvious implementation steps.' },
+  { id: 'full_dataset_load', description: 'Calls that load an entire payload into memory instead of streaming.' },
+  { id: 'string_concat_in_loop', description: 'Repeated string concatenation inside loops (O(n^2) risk).' },
+]
+
+// ─── CLI commands by language ─────────────────────────────────────────────────
+
+const cliCommands: Record<Language, CliCommand[]> = {
+  go: [
+    { cmd: 'cargo run -- scan /path/to/repo', desc: 'Scan a Go repository and print a compact finding summary.' },
+    { cmd: 'cargo run -- scan --details /path/to/repo', desc: 'Include full per-function fingerprint details and detail-only findings.' },
+    { cmd: 'cargo run -- scan --json /path/to/repo', desc: 'Emit structured JSON output for pipeline integration.' },
+    { cmd: 'cargo run -- scan --json --details /path/to/repo', desc: 'Combine JSON and full detail output.' },
+    { cmd: 'cargo run -- scan --enable-semantic /path/to/repo', desc: 'Enable the opt-in deeper semantic Go pack for nested-loop allocation, concat, and stronger N+1 correlation.' },
+    { cmd: 'cargo run -- scan --ignore dropped_error,panic_on_error /path/to/repo', desc: 'Ignore selected Go rule IDs for one run without changing repository config.' },
+    { cmd: 'cargo run -- scan /path/to/repo > results.txt', desc: 'Write the text report directly to a file.' },
+    { cmd: 'cargo run -- scan --no-ignore /path/to/repo', desc: 'Scan without .gitignore filtering.' },
+    { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark the full pipeline against a local repository.' },
+    { cmd: 'cargo run -- bench --enable-semantic /path/to/repo', desc: 'Benchmark the Go pipeline with the opt-in semantic pack enabled.' },
+    { cmd: 'cargo run -- bench --warmups 2 --repeats 5 /path/to/repo', desc: 'Benchmark with explicit warmup and repeat counts.' },
+    { cmd: 'cargo run -- bench --json /path/to/repo', desc: 'Emit benchmarking data as JSON.' },
+  ],
+  python: [
+    { cmd: 'cargo run -- scan /path/to/repo', desc: 'Auto-detect and scan Python files alongside any Go or Rust files in the repository.' },
+    { cmd: 'cargo run -- scan --details /path/to/repo', desc: 'Include full Python per-function fingerprint breakdown.' },
+    { cmd: 'cargo run -- scan --json /path/to/repo', desc: 'Emit findings for Python files in structured JSON.' },
+    { cmd: 'cargo run -- scan --json --details /path/to/repo', desc: 'Combine JSON output with full Python detail-only diagnostics.' },
+    { cmd: 'cargo run -- scan --ignore exception_swallowed,print_debugging_leftover /path/to/repo', desc: 'Ignore selected Python rule IDs for one run without changing repository config.' },
+    { cmd: 'cargo run -- scan /path/to/repo > results.txt', desc: 'Save the Python scan report to a file for review.' },
+    { cmd: 'cargo run -- scan --no-ignore /path/to/repo', desc: 'Override .gitignore filtering when scanning Python projects.' },
+    { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark discovery, parse, index, heuristic, and total runtime stages for a Python-heavy repository.' },
+    { cmd: 'cargo run -- bench --warmups 2 --repeats 5 /path/to/repo', desc: 'Benchmark Python scans with explicit warmup and repeat counts.' },
+    { cmd: 'cargo run -- bench --json /path/to/repo', desc: 'Emit benchmarking data as JSON for CI or local comparisons.' },
+  ],
+  rust: [
+    { cmd: 'cargo run -- scan /path/to/repo', desc: 'Auto-detect and scan Rust files in the repository using the Rust rule pack.' },
+    { cmd: 'cargo run -- scan --details /path/to/repo', desc: 'Include full Rust per-function fingerprint details.' },
+    { cmd: 'cargo run -- scan --json /path/to/repo', desc: 'Emit Rust findings in structured JSON.' },
+    { cmd: 'cargo run -- scan --json --details /path/to/repo', desc: 'Combine JSON output with full Rust detail-only diagnostics.' },
+    { cmd: 'cargo run -- scan --ignore rust_async_std_mutex_await,rust_lock_across_await /path/to/repo', desc: 'Ignore specific rule IDs for one scan invocation without changing repository config.' },
+    { cmd: 'cargo run -- scan /path/to/repo > results.txt', desc: 'Save the Rust scan report to a file.' },
+    { cmd: 'cargo run -- scan --no-ignore /path/to/repo', desc: 'Override .gitignore filtering when scanning Rust projects.' },
+    { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark discovery, parse, index, heuristic, and total runtime stages.' },
+    { cmd: 'cargo run -- bench --warmups 2 --repeats 5 /path/to/repo', desc: 'Benchmark with explicit warmup and repeat counts.' },
+    { cmd: 'cargo run -- bench --json /path/to/repo', desc: 'Emit benchmarking data as JSON.' },
+  ],
+  common: [
+    { cmd: 'cargo run -- scan /path/to/repo', desc: 'Scan any supported repository to trigger the shared heuristic layer.' },
+    { cmd: 'cargo run -- scan --ignore hardcoded_secret,generic_name /path/to/repo', desc: 'Ignore specific shared rules for the current scan.' },
+  ],
+}
+
+const githubActionWorkflow = `name: Deslop
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ${currentRelease.actionRef}
+        with:
+          path: .`
+
+const githubActionJsonExample = `- uses: actions/checkout@v4
+- uses: ${currentRelease.actionRef}
+  with:
+    path: .
+    json: 'true'
+    details: 'true'
+    fail-on-findings: 'false'`
+
+const githubActionBenchExample = `- uses: actions/checkout@v4
+- uses: ${currentRelease.actionRef}
+  with:
+    command: bench
+    path: .
+    repeats: '10'
+    warmups: '2'`
+
+const repositoryConfigExample = `go_semantic_experimental = true
+rust_async_experimental = true
+disabled_rules = ["panic_macro_leftover"]
+suppressed_paths = ["tests/fixtures"]
+
+[severity_overrides]
+unwrap_in_non_test_code = "error"
+missing_context_propagation = "error"`
+
+const overviewContent = {
+  go: {
+    title: 'Go Analysis',
+    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and now covers repo-wide style checks, receiver-field and nested wrapper propagation, derived-context goroutine lifetime analysis, parser-backed Gin and GORM request-path performance analysis, duplicate decode hot spots, multipart upload waste, repeated split and strconv churn, scratch container and slice-clone churn, loop-local URL and time parsing, dynamic Gin bind churn, request-path DB churn, looped GORM CRUD and association churn, security, and an opt-in deeper semantic loop pass with explainable rules.',
+    bullets: [
+      '.gitignore-aware walk; skips vendor/ and generated files by default',
+      'Parses package names, imports, declared symbols, call sites, and function fingerprints',
+      'Builds a repository-local symbol index for same-package and import hallucination checks',
+      'Includes repo-wide package and import style checks plus wrapper-level context propagation heuristics',
+      'Covers receiver-field wrappers, local wrapper chains, and Query versus QueryContext mismatches',
+      'Adds parser-backed Gin request-body, multipart upload, and query-bind summaries plus GORM chain summaries for duplicate decode, file-serving, request-path DB churn, and repeated local transform findings',
+      'Adds an opt-in semantic pack for nested-loop allocation, concat, and stronger N+1 signals',
+      'Produces compact text output by default; full detail and JSON via flags',
+      'Supports standalone Go repos and mixed Go + Python + Rust repositories',
+    ],
+  },
+  python: {
+    title: 'Python Analysis',
+    lead: 'Python support now spans function-level, file-level, and repo-level heuristics backed by fixture-driven parser evidence. The shipped rule pack covers async boundary misuse, exception handling, duplication families, class and module structure smells, AI-style commentary signals, and repository-local hallucination checks without crossing language boundaries in mixed repos.',
+    bullets: [
+      'Parses .py files with tree-sitter-python alongside Go and Rust files',
+      'Extracts imports, declared symbols, call sites, docstrings, class summaries, and phase-4 evidence used by maintainability and structure rules',
+      'Runs 60-plus Python-specific and shared heuristics across function, file, and repository scopes',
+      'Language-scoped local index prevents symbol cross-contamination in mixed repos and powers Python hallucination checks',
+      'Fixture-backed parser and integration coverage keeps rule families stable as the Python surface area grows',
+      'Conservative about flagging policy: favors lower false-positive rates over exhaustive coverage',
+    ],
+  },
+  rust: {
+    title: 'Rust Analysis',
+    lead: 'Rust support now covers hygiene leftovers, crate-local hallucination checks, async/runtime hazards, performance smells, domain-modeling anti-patterns, and unsafe-soundness hot spots. The Rust rule pack runs on the same fast pipeline as Go and Python: tree-sitter parsing, a language-scoped local index, and explainable heuristic output.',
+    bullets: [
+      'Parses .rs files with tree-sitter-rust',
+      'Detects leftovers, unsafe hygiene, crate-local hallucinations, async runtime hazards, and domain-modeling issues',
+      'Flags unsafe blocks and functions without a nearby SAFETY: comment plus soundness-sensitive unsafe operations',
+      'Covers crate::, self::, and super:: import-call hallucinations via a local Rust module index',
+      'Adds Rust-specific async, performance, and domain-modeling heuristics without crossing language boundaries',
+      'Language-scoped index prevents symbol merging with Go or Python in mixed repositories',
+    ],
+  },
+  common: {
+    title: 'Shared Heuristics',
+    lead: 'deslop includes a core layer of cross-language heuristics that apply regardless of the specific source language. These rules focus on naming quality, documentation hygiene, repository-local hallucination checks, and common anti-patterns like hardcoded secrets or unbuffered I/O.',
+    bullets: [
+      'Universal naming quality checks (generic, overlong, or weak identifiers)',
+      'Language-scoped local index for internal symbol hallucination detection',
+      'Documentation-style and commentary hygiene checks',
+      'Basic test quality and placeholder detection',
+      'Common security smells like hardcoded secrets',
+      'General performance signals like unbuffered full-dataset loads',
+    ],
+  },
+}
+
+const pipelineStages = [
+  {
+    name: 'Discover',
+    summary: 'Walk the repository with .gitignore awareness. Skip vendor/ and known generated-code paths. Keep file selection independent from later analysis.',
+    detail: 'Discovery runs before any parsing so the pipeline stays composable. Supported file extensions are routed to the correct language backend. The --no-ignore flag disables .gitignore filtering when needed.',
+  },
+  {
+    name: 'Parse',
+    summary: 'Parse source structure, declared symbols, and call patterns using tree-sitter grammars without forcing a heavy semantic stack.',
+    detail: 'Go files are parsed with tree-sitter-go, Python files with tree-sitter-python, and Rust files with tree-sitter-rust. The parser is syntax-tolerant: even files with errors will still yield partial structure for downstream heuristics.',
+  },
+  {
+    name: 'Index',
+    summary: 'Build a lightweight repository-local symbol index keyed by package plus directory. Scope the index per language for mixed repositories.',
+    detail: 'The index is intentionally modest — it improves same-package and import-qualified call checks without pretending to replace full type analysis. In mixed-language repos, Go, Python, and Rust symbols are tracked separately so hallucination checks stay correct.',
+  },
+  {
+    name: 'Heuristics',
+    summary: 'Run explainable rule families that emit rule IDs, severity, messages, and evidence. Hold detail-only diagnostics back from default output.',
+    detail: 'Each finding includes a rule ID, severity level, file path, line number, and an evidence payload written for human review. The --details flag adds full per-function fingerprint breakdowns. JSON output is available for pipeline integration.',
+  },
+]
+
+const limitations = {
+  go: [
+    'No authoritative Go type checking. Heuristics use structural patterns, not go/types.',
+    'No full interprocedural or type-aware context propagation. Wrapper-chain reasoning stays repository-local and conservative.',
+    'No proof of goroutine leaks, N+1 queries, or runtime performance regressions — only pattern signals.',
+    'Package-method and local-symbol checks are repository-local; external packages are not indexed.',
+    'The opt-in deeper semantic Go pack is still heuristic: it correlates nested-loop structure but does not prove asymptotic complexity or schema-aware DB cost.',
+  ],
+  python: [
+    'No Python module graph resolution or installed-package awareness.',
+    'No authoritative Python type analysis — hints are structural and conservative.',
+    'No interprocedural propagation. Checks are local to individual functions or files.',
+    'No proof of runtime behavior or end-to-end asyncio correctness — async findings remain syntax-driven heuristics.',
+    'Cross-file duplicate detection is conservative and normalized; it is not exhaustive pairwise semantic comparison.',
+  ],
+  rust: [
+    'No Rust trait resolution, cargo workspace modeling, or macro expansion.',
+    'Rust rule pack is still growing, but current coverage already includes hygiene, hallucination, async/runtime, performance, domain-modeling, and unsafe-soundness checks.',
+    'No proof of memory safety violations or lifetime errors from static analysis alone.',
+    'Hallucination checks cover crate-local imports only; external crates are not indexed.',
+    'No interprocedural analysis or cross-crate symbol resolution.',
+  ],
+  common: [
+    'Shared heuristics are strictly syntax-driven and do not perform deep interprocedural data-flow or points-to analysis.',
+    'No cross-language semantic bridge (e.g., deslop does not model Go-to-Python FFI calling conventions).',
+    'Naming and commentary hygiene checks are suggestive and do not account for project-specific jargon or acronyms.',
+    'Hallucination checks are strictly repository-local and scoped by language to prevent false-positive cross-pollination.',
+    'General performance signals like unbuffered I/O are pattern-based and do not account for OS-level buffering or hardware-specific optimizations.',
+  ],
+}
+
+export {
+  cliCommands,
+  commonRules,
+  githubActionBenchExample,
+  githubActionJsonExample,
+  githubActionWorkflow,
+  goRules,
+  languages,
+  limitations,
+  overviewContent,
+  pipelineStages,
+  pythonRules,
+  repositoryConfigExample,
+  rustRules,
+  sections,
+}
+
+export type { CliCommand, Language, NavSection, Rule, SectionId }
+
