@@ -1,6 +1,8 @@
 mod comments;
 mod functions;
 mod general;
+mod hotpath;
+mod hotpath_ext;
 mod performance;
 mod phase4;
 #[cfg(test)]

@@ -2,6 +2,23 @@
 
 ## split_at_and_indexing
 src/analysis/python/parser/general.rs:932:                return &line[..index];
+src/analysis/python/parser/hotpath.rs:100:                        let inner = &after_in[1..after_in.len() - 1];
+src/analysis/python/parser/hotpath.rs:110:                let after_not_in = &trimmed[in_idx + 8..]; // skip " not in "
+src/analysis/python/parser/hotpath.rs:112:                    let inner = &after_not_in[1..after_not_in.len() - 1];
+src/analysis/python/parser/hotpath.rs:191:                let iterable = &trimmed[in_idx + 4..];
+src/analysis/python/parser/hotpath.rs:286:                    let after_open = &trimmed[callee.len() + 1..];
+src/analysis/python/parser/hotpath.rs:288:                        let first_arg = after_open[..end].trim();
+src/analysis/python/parser/hotpath.rs:334:                let iterable_part = &trimmed[in_idx + 4..];
+src/analysis/python/parser/hotpath.rs:36:/// Detect `len([x for x in ... if ...])` patterns — list built only for length.
+src/analysis/python/parser/hotpath.rs:459:                    let first_arg = after_open[..end].trim();
+src/analysis/python/parser/hotpath.rs:58:                let inner = &trimmed[4..trimmed.len() - 1];
+src/analysis/python/parser/hotpath.rs:72:/// Detect `x in [literal, literal, ...]` membership on list literals.
+src/analysis/python/parser/hotpath.rs:92:                let before_in = &trimmed[..in_idx];
+src/analysis/python/parser/hotpath.rs:97:                    let after_in = &trimmed[in_idx + 4..]; // skip " in "
+src/analysis/python/parser/hotpath_ext.rs:193:                    let after_join = &trimmed[join_idx + 6..];
+src/analysis/python/parser/hotpath_ext.rs:246:                    let receiver = &trimmed[..get_idx];
+src/analysis/python/parser/hotpath_ext.rs:247:                    let after = &trimmed[get_idx + 5..];
+src/analysis/python/parser/hotpath_ext.rs:249:                        let key = after[..end].trim();
 src/analysis/rust/parser/mod.rs:433:    text[vec_start + 4..].contains("Box<")
 src/heuristics/go/advanceplan3/data_access.rs:1353:                    let after_like = &upper[like_pos + 4..];
 src/heuristics/go/advanceplan3/gin.rs:239:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
@@ -16,6 +33,13 @@ src/heuristics/go/advanceplan3/mod.rs:263:        if &bytes[start..start + keywo
 src/heuristics/go/idioms.rs:1037:    let parameters = &signature_text[parameters_start + 1..parameters_end];
 src/heuristics/go/idioms.rs:1083:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go/performance.rs:338:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/python/framework.rs:265:            let rhs = &trimmed[eq_idx + 3..];
+src/heuristics/python/framework.rs:267:                let var = trimmed[..eq_idx].trim().to_string();
+src/heuristics/python/hotpath_ext.rs:420:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
+src/heuristics/python/hotpath_ext.rs:422:            if let Some(source_start) = trimmed[in_idx + 5..].find(" in ") {
+src/heuristics/python/hotpath_ext.rs:423:                let after_in = &trimmed[in_idx + 5 + source_start + 4..];
+src/heuristics/python/hotpath_ext.rs:673:                let expr = &trimmed[1..for_idx];
+src/heuristics/python/hotpath_ext.rs:712:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
 src/heuristics/python/quality/mod.rs:201:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:568:    for (offset, character) in signature_text[start..].char_indices() {
 src/heuristics/rust/api_design.rs:584:    split_top_level_commas(&signature_text[start + 1..end])
@@ -24,6 +48,7 @@ src/heuristics/rust/performance.rs:346:    line[start + marker.len()..].starts_w
 src/heuristics/rust/performance.rs:384:                let receiver = &line[start..index];
 
 ## toctou_fs_checks
+src/heuristics/python/framework.rs:77:                    "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
 

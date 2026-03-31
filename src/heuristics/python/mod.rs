@@ -1,7 +1,11 @@
 mod quality;
 mod ai_smells;
 mod duplication;
+mod framework;
+mod hotpath;
+mod hotpath_ext;
 mod maintainability;
+mod mlops;
 mod performance;
 mod structure;
 
@@ -28,6 +32,33 @@ use self::maintainability::{
     network_timeout_findings, none_comparison_findings, print_debugging_findings,
     redundant_return_none_findings, reinvented_utility_findings,
     side_effect_comprehension_findings, sync_async_module_findings, variadic_public_api_findings,
+};
+use self::hotpath::{
+    csv_flush_per_row_findings, dict_materialization_in_loop_findings,
+    enumerate_range_len_findings, in_list_literal_findings, json_repeated_call_findings,
+    len_comprehension_findings, read_splitlines_findings, readlines_then_iterate_findings,
+    regex_compile_in_hotpath_findings, repeated_open_findings, sorted_first_findings,
+    startswith_chain_findings, write_in_loop_findings,
+};
+use self::hotpath_ext::{
+    append_sort_in_loop_findings, concat_in_comprehension_findings, copy_in_loop_findings,
+    datetime_strptime_repeated_findings, filter_count_iterate_findings,
+    gzip_open_per_chunk_findings, hashlib_repeated_findings, index_in_loop_findings,
+    invariant_call_in_loop_findings, isinstance_chain_findings, join_list_comp_findings,
+    json_encoder_recreated_findings, nested_list_search_findings, pickle_in_loop_findings,
+    repeated_format_findings, repeated_subscript_findings, sort_then_first_findings,
+    tuple_unpacking_in_tight_loop_findings, xml_repeated_parse_findings,
+    yaml_repeated_load_findings,
+};
+use self::framework::{
+    django_extra_findings, django_loop_db_findings, django_n_plus_one_findings,
+    django_queryset_findings, django_values_findings, fastapi_handler_findings,
+    flask_handler_findings, handler_fanout_findings, middleware_findings,
+    response_extra_findings, sqlalchemy_findings, template_response_findings,
+};
+use self::mlops::{
+    data_pipeline_findings, llm_findings, mlops_extra_findings, model_inference_findings,
+    numpy_findings, pandas_findings,
 };
 use self::performance::{
     blocking_sync_io_findings, deque_candidate_findings, full_dataset_load_findings,
@@ -76,6 +107,57 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
     findings.extend(mixed_concern_findings(file, function));
     findings.extend(name_responsibility_mismatch_findings(file, function));
     findings.extend(textbook_docstring_findings(file, function));
+    findings.extend(regex_compile_in_hotpath_findings(file, function));
+    findings.extend(json_repeated_call_findings(file, function));
+    findings.extend(sorted_first_findings(file, function));
+    findings.extend(len_comprehension_findings(file, function));
+    findings.extend(readlines_then_iterate_findings(file, function));
+    findings.extend(read_splitlines_findings(file, function));
+    findings.extend(in_list_literal_findings(file, function));
+    findings.extend(startswith_chain_findings(file, function));
+    findings.extend(enumerate_range_len_findings(file, function));
+    findings.extend(csv_flush_per_row_findings(file, function));
+    findings.extend(write_in_loop_findings(file, function));
+    findings.extend(repeated_open_findings(file, function));
+    findings.extend(dict_materialization_in_loop_findings(file, function));
+    findings.extend(yaml_repeated_load_findings(file, function));
+    findings.extend(xml_repeated_parse_findings(file, function));
+    findings.extend(datetime_strptime_repeated_findings(file, function));
+    findings.extend(hashlib_repeated_findings(file, function));
+    findings.extend(copy_in_loop_findings(file, function));
+    findings.extend(invariant_call_in_loop_findings(file, function));
+    findings.extend(index_in_loop_findings(file, function));
+    findings.extend(append_sort_in_loop_findings(file, function));
+    findings.extend(join_list_comp_findings(file, function));
+    findings.extend(repeated_subscript_findings(file, function));
+    findings.extend(nested_list_search_findings(file, function));
+    findings.extend(sort_then_first_findings(file, function));
+    findings.extend(filter_count_iterate_findings(file, function));
+    findings.extend(django_queryset_findings(file, function));
+    findings.extend(django_n_plus_one_findings(file, function));
+    findings.extend(django_loop_db_findings(file, function));
+    findings.extend(django_values_findings(file, function));
+    findings.extend(flask_handler_findings(file, function));
+    findings.extend(fastapi_handler_findings(file, function));
+    findings.extend(sqlalchemy_findings(file, function));
+    findings.extend(middleware_findings(file, function));
+    findings.extend(handler_fanout_findings(file, function));
+    findings.extend(template_response_findings(file, function));
+    findings.extend(pandas_findings(file, function));
+    findings.extend(numpy_findings(file, function));
+    findings.extend(model_inference_findings(file, function));
+    findings.extend(llm_findings(file, function));
+    findings.extend(data_pipeline_findings(file, function));
+    findings.extend(repeated_format_findings(file, function));
+    findings.extend(json_encoder_recreated_findings(file, function));
+    findings.extend(gzip_open_per_chunk_findings(file, function));
+    findings.extend(pickle_in_loop_findings(file, function));
+    findings.extend(isinstance_chain_findings(file, function));
+    findings.extend(concat_in_comprehension_findings(file, function));
+    findings.extend(tuple_unpacking_in_tight_loop_findings(file, function));
+    findings.extend(django_extra_findings(file, function));
+    findings.extend(response_extra_findings(file, function));
+    findings.extend(mlops_extra_findings(file, function));
     findings
 }
 

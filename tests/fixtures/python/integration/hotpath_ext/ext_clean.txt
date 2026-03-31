@@ -1,0 +1,137 @@
+import yaml
+import xml.etree.ElementTree as ET
+from datetime import datetime
+import hashlib
+import gzip
+import pickle
+import json
+
+
+def parse_configs(raw_docs):
+    """Clean: parses each doc only once."""
+    for doc in raw_docs:
+        result = yaml.safe_load(doc)
+        print(result)
+
+
+def parse_xmls(raw_docs):
+    """Clean: parses each doc only once."""
+    for doc in raw_docs:
+        tree = ET.fromstring(doc)
+        print(tree)
+
+
+def convert_dates(date_strings, fmt="%Y-%m-%d"):
+    """Clean: each string parsed once."""
+    for ds in date_strings:
+        d = datetime.strptime(ds, fmt)
+        print(d)
+
+
+def hash_items(items):
+    """Clean: each item hashed once."""
+    for item in items:
+        h = hashlib.sha256(item)
+        print(h)
+
+
+def process_items(items):
+    """Clean: no copy in loop."""
+    results = []
+    for item in items:
+        results.append(item * 2)
+    return results
+
+
+def parse_urls(urls):
+    """Clean: urlparse called per url, not invariant."""
+    from urllib.parse import urlparse
+    for url in urls:
+        parsed = urlparse(url)
+        print(parsed)
+
+
+def process_list(data):
+    """Clean: direct iteration, no index lookup."""
+    for val in data:
+        print(val + 1)
+
+
+def build_sorted(items):
+    """Clean: sort once at the end."""
+    result = []
+    for item in items:
+        result.append(item)
+    result.sort()
+    return result
+
+
+def join_with_generator(words):
+    """Clean: uses generator, not list comprehension."""
+    return ",".join(str(w) for w in words)
+
+
+def use_config(config):
+    """Clean: accesses config only twice (under threshold)."""
+    x = config["database"]["host"]
+    y = config["database"]["port"]
+    return x, y
+
+
+def find_item(items, target):
+    """Clean: uses dict lookup."""
+    lookup = {item: True for item in items}
+    return lookup.get(target)
+
+
+def get_minimum(items):
+    """Clean: uses min() instead of sort+first."""
+    return min(items)
+
+
+def count_positive(items):
+    """Clean: uses sum with generator."""
+    return sum(1 for x in items if x > 0)
+
+
+def format_records(records):
+    """Clean: uses str.join with pre-built list."""
+    msgs = [str(r) for r in records]
+    print("\n".join(msgs))
+
+
+def encode_items(items):
+    """Clean: reuses single encoder."""
+    encoder = json.JSONEncoder()
+    for item in items:
+        encoded = encoder.encode(item)
+        print(encoded)
+
+
+def write_compressed(chunks):
+    """Clean: opens gzip once."""
+    with gzip.open("output.gz", "wb") as f:
+        for chunk in chunks:
+            f.write(chunk)
+
+
+def serialize_once(obj):
+    """Clean: pickle called once, not in loop."""
+    return pickle.dumps(obj)
+
+
+def classify_value(value):
+    """Clean: uses match/dict dispatch."""
+    dispatch = {int: "int", str: "str", float: "float"}
+    return dispatch.get(type(value), "unknown")
+
+
+def build_strings(items):
+    """Clean: uses f-string in comprehension."""
+    return [f"{item} suffix" for item in items]
+
+
+def process_records(records):
+    """Clean: simple tuple unpack with no numeric tight loop."""
+    for a, b in records:
+        print(a, b)

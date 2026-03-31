@@ -9,6 +9,19 @@ use super::general::{
     enclosing_class_name,
 };
 use super::performance::collect_concat_loops;
+use super::hotpath::{
+    collect_csv_flush_per_row_lines, collect_dict_materialization_in_loop_lines,
+    collect_enumerate_range_len_lines, collect_in_list_literal_lines,
+    collect_len_comprehension_lines, collect_read_splitlines_lines,
+    collect_readlines_then_iterate_lines, collect_regex_in_hotpath_lines,
+    collect_repeated_call_same_arg_lines, collect_repeated_open_lines,
+    collect_sorted_first_lines, collect_startswith_chain_lines, collect_write_in_loop_lines,
+};
+use super::hotpath_ext::{
+    collect_append_sort_in_loop_lines, collect_copy_in_loop_lines,
+    collect_index_in_loop_lines, collect_invariant_call_in_loop_lines,
+    collect_join_list_comp_lines, collect_repeated_subscript_lines,
+};
 use super::phase4::{
     collect_builtin_candidate_lines, collect_deque_operation_lines,
     collect_exception_block_signatures, collect_list_materialization_lines,
@@ -71,6 +84,25 @@ struct FunctionEvidence {
     has_varargs: bool,
     has_kwargs: bool,
     await_points: Vec<usize>,
+    sorted_first_lines: Vec<usize>,
+    len_comprehension_lines: Vec<usize>,
+    in_list_literal_lines: Vec<usize>,
+    startswith_chain_lines: Vec<usize>,
+    enumerate_range_len_lines: Vec<usize>,
+    dict_materialization_in_loop_lines: Vec<usize>,
+    readlines_then_iterate_lines: Vec<usize>,
+    read_splitlines_lines: Vec<usize>,
+    write_in_loop_lines: Vec<usize>,
+    csv_flush_per_row_lines: Vec<usize>,
+    regex_in_hotpath_lines: Vec<usize>,
+    repeated_call_same_arg: Vec<(String, usize)>,
+    repeated_open_same_file: Vec<(String, usize)>,
+    copy_in_loop_lines: Vec<usize>,
+    invariant_call_in_loop_lines: Vec<(String, usize)>,
+    index_in_loop_lines: Vec<usize>,
+    append_sort_in_loop_lines: Vec<usize>,
+    join_list_comp_lines: Vec<usize>,
+    repeated_subscript_lines: Vec<usize>,
 }
 
 fn visit_functions(
@@ -131,6 +163,25 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
             has_kwargs: evidence.has_kwargs,
             is_async: shape.is_async,
             await_points: evidence.await_points,
+            sorted_first_lines: evidence.sorted_first_lines,
+            len_comprehension_lines: evidence.len_comprehension_lines,
+            in_list_literal_lines: evidence.in_list_literal_lines,
+            startswith_chain_lines: evidence.startswith_chain_lines,
+            enumerate_range_len_lines: evidence.enumerate_range_len_lines,
+            dict_materialization_in_loop_lines: evidence.dict_materialization_in_loop_lines,
+            readlines_then_iterate_lines: evidence.readlines_then_iterate_lines,
+            read_splitlines_lines: evidence.read_splitlines_lines,
+            write_in_loop_lines: evidence.write_in_loop_lines,
+            csv_flush_per_row_lines: evidence.csv_flush_per_row_lines,
+            regex_in_hotpath_lines: evidence.regex_in_hotpath_lines,
+            repeated_call_same_arg: evidence.repeated_call_same_arg,
+            repeated_open_same_file: evidence.repeated_open_same_file,
+            copy_in_loop_lines: evidence.copy_in_loop_lines,
+            invariant_call_in_loop_lines: evidence.invariant_call_in_loop_lines,
+            index_in_loop_lines: evidence.index_in_loop_lines,
+            append_sort_in_loop_lines: evidence.append_sort_in_loop_lines,
+            join_list_comp_lines: evidence.join_list_comp_lines,
+            repeated_subscript_lines: evidence.repeated_subscript_lines,
         }),
         rust: None,
     })
@@ -181,10 +232,17 @@ fn collect_function_shape(
 
     Some(FunctionShape {
         fingerprint,
-        signature_text: source
-            .get(node.start_byte()..body_node.start_byte())
-            .unwrap_or_default()
-            .to_string(),
+        signature_text: {
+            // Include decorators in signature_text if present.
+            let sig_start = node
+                .parent()
+                .filter(|p| p.kind() == "decorated_definition")
+                .map_or(node.start_byte(), |p| p.start_byte());
+            source
+                .get(sig_start..body_node.start_byte())
+                .unwrap_or_default()
+                .to_string()
+        },
         body_start_line: body_node.start_position().row + 1,
         calls,
         exception_handlers,
@@ -224,9 +282,50 @@ fn collect_function_evidence(
             has_varargs: false,
             has_kwargs: false,
             await_points: Vec::new(),
+            sorted_first_lines: Vec::new(),
+            len_comprehension_lines: Vec::new(),
+            in_list_literal_lines: Vec::new(),
+            startswith_chain_lines: Vec::new(),
+            enumerate_range_len_lines: Vec::new(),
+            dict_materialization_in_loop_lines: Vec::new(),
+            readlines_then_iterate_lines: Vec::new(),
+            read_splitlines_lines: Vec::new(),
+            write_in_loop_lines: Vec::new(),
+            csv_flush_per_row_lines: Vec::new(),
+            regex_in_hotpath_lines: Vec::new(),
+            repeated_call_same_arg: Vec::new(),
+            repeated_open_same_file: Vec::new(),
+            copy_in_loop_lines: Vec::new(),
+            invariant_call_in_loop_lines: Vec::new(),
+            index_in_loop_lines: Vec::new(),
+            append_sort_in_loop_lines: Vec::new(),
+            join_list_comp_lines: Vec::new(),
+            repeated_subscript_lines: Vec::new(),
         };
     };
     let (has_varargs, has_kwargs) = parameter_flags(node, source);
+
+    let repeated_callees: &[&str] = &[
+        "json.loads",
+        "json.load",
+        "json.dumps",
+        "yaml.safe_load",
+        "yaml.load",
+        "ET.fromstring",
+        "ET.parse",
+        "minidom.parseString",
+        "datetime.strptime",
+        "hashlib.sha256",
+        "hashlib.sha512",
+        "hashlib.sha1",
+        "hashlib.md5",
+        "hashlib.new",
+        "hashlib.blake2b",
+        "hashlib.blake2s",
+    ];
+    let repeated_call_same_arg =
+        collect_repeated_call_same_arg_lines(body_node, source, repeated_callees);
+    let repeated_open_same_file = collect_repeated_open_lines(body_node, source);
 
     FunctionEvidence {
         local_strings: collect_local_strings(body_node, source),
@@ -246,6 +345,27 @@ fn collect_function_evidence(
         has_varargs,
         has_kwargs,
         await_points: collect_await_points(body_node),
+        sorted_first_lines: collect_sorted_first_lines(body_node, source),
+        len_comprehension_lines: collect_len_comprehension_lines(body_node, source),
+        in_list_literal_lines: collect_in_list_literal_lines(body_node, source),
+        startswith_chain_lines: collect_startswith_chain_lines(body_node, source),
+        enumerate_range_len_lines: collect_enumerate_range_len_lines(body_node, source),
+        dict_materialization_in_loop_lines: collect_dict_materialization_in_loop_lines(
+            body_node, source,
+        ),
+        readlines_then_iterate_lines: collect_readlines_then_iterate_lines(body_node, source),
+        read_splitlines_lines: collect_read_splitlines_lines(body_node, source),
+        write_in_loop_lines: collect_write_in_loop_lines(body_node, source),
+        csv_flush_per_row_lines: collect_csv_flush_per_row_lines(body_node, source),
+        regex_in_hotpath_lines: collect_regex_in_hotpath_lines(body_node, source),
+        repeated_call_same_arg,
+        repeated_open_same_file,
+        copy_in_loop_lines: collect_copy_in_loop_lines(body_node, source),
+        invariant_call_in_loop_lines: collect_invariant_call_in_loop_lines(body_node, source),
+        index_in_loop_lines: collect_index_in_loop_lines(body_node, source),
+        append_sort_in_loop_lines: collect_append_sort_in_loop_lines(body_node, source),
+        join_list_comp_lines: collect_join_list_comp_lines(body_node, source),
+        repeated_subscript_lines: collect_repeated_subscript_lines(body_node, source),
     }
 }
 

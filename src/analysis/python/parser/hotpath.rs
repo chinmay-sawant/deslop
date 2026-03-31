@@ -372,7 +372,9 @@ fn visit_read_splitlines(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
     if node.kind() == "call" || matches!(node.kind(), "assignment" | "expression_statement") {
         if let Some(text) = source.get(node.byte_range()) {
             let trimmed = text.trim();
-            if (trimmed.contains(".read().splitlines()") || trimmed.contains(".read().split('\\n')") || trimmed.contains(".read().split(\"\\n\")"))
+            if trimmed.contains(".read().splitlines()")
+                || trimmed.contains(".read().split('\\n')")
+                || trimmed.contains(".read().split(\"\\n\")")
             {
                 lines.push(node.start_position().row + 1);
             }
