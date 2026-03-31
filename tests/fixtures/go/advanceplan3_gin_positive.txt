@@ -54,6 +54,17 @@ func BindQueryMap(c *gin.Context) {
 	_ = c.ShouldBindQuery(&filters)
 }
 
+func ParseMultipartLarge(c *gin.Context) {
+	_ = c.Request.ParseMultipartForm(64 << 20)
+}
+
+func UploadReadAll(c *gin.Context) {
+	header, _ := c.FormFile("upload")
+	uploaded, _ := header.Open()
+	blob, _ := io.ReadAll(uploaded)
+	_ = blob
+}
+
 func LoopJSON(c *gin.Context, items []string) {
 	for _, item := range items {
 		c.JSON(200, gin.H{"item": item})

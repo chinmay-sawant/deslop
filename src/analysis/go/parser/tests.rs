@@ -272,12 +272,31 @@ fn test_collects_gin_calls_and_parse_input_summaries() {
             "read_request_body",
             "should_bind_json",
             "should_bind_query",
+            "parse_multipart_form",
+            "form_file",
             "indented_json",
             "copy",
         ]
     );
     assert_eq!(handle.gin_calls[0].assigned_binding.as_deref(), Some("raw"));
     assert_eq!(handle.gin_calls[1].assigned_binding.as_deref(), Some("payload"));
+    assert_eq!(
+        handle
+            .gin_calls
+            .iter()
+            .find(|call| call.operation == "parse_multipart_form")
+            .and_then(|call| call.argument_texts.first())
+            .map(String::as_str),
+        Some("64 << 20")
+    );
+    assert_eq!(
+        handle
+            .gin_calls
+            .iter()
+            .find(|call| call.operation == "form_file")
+            .and_then(|call| call.assigned_binding.as_deref()),
+        Some("fileHeader")
+    );
     assert!(handle
         .gin_calls
         .iter()

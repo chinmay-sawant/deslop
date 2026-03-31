@@ -245,6 +245,8 @@ fn parse_gin_call(
         "GetRawData" => Some("get_raw_data"),
         "ShouldBind" => Some("should_bind"),
         "Bind" => Some("bind"),
+        "ParseMultipartForm" => Some("parse_multipart_form"),
+        "FormFile" => Some("form_file"),
         "ShouldBindQuery" => Some("should_bind_query"),
         "BindQuery" => Some("bind_query"),
         "ShouldBindJSON" => Some("should_bind_json"),

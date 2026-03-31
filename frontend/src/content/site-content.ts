@@ -161,8 +161,8 @@ export const detectionFamilies: DetectionFamily[] = [
   {
     title: 'Performance',
     description:
-      'Flag repeated work inside loops, duplicate decode work, parser-backed GORM and Gin request-path waste, dynamic Gin binding churn, looped GORM CRUD and association churn, request-path DB churn, full-payload reads, and formatting-heavy hot paths before they harden into defaults, with an opt-in semantic pass for nested-loop pressure.',
-    rules: ['Duplicate decode work', 'Gin bind waste', 'GORM loop churn'],
+      'Flag repeated work inside loops, duplicate decode work, repeated split and strconv churn, scratch container and slice-clone churn, loop-local URL and time parsing, parser-backed GORM and Gin request-path waste, multipart upload churn, dynamic Gin binding churn, looped GORM CRUD and association churn, request-path DB churn, full-payload reads, and formatting-heavy hot paths before they harden into defaults, with an opt-in semantic pass for nested-loop pressure.',
+    rules: ['Duplicate decode work', 'Multipart upload churn', 'GORM loop churn'],
     icon: CpuChipIcon,
   },
   {

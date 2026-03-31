@@ -6,6 +6,7 @@ Date: 2026-03-31
 
 - [x] Initial slice implemented on 2026-03-31.
 - [x] Parser-backed Gin body and render summaries replaced the original body-text matching on 2026-03-31.
+- [x] Multipart upload follow-up shipped on 2026-03-31 for large `ParseMultipartForm(...)` thresholds and whole-upload `FormFile` plus `ReadAll(...)` paths.
 - [x] This plan targets `gin-gonic/gin` and HTTP handler performance patterns that are currently outside the shipped Go heuristics.
 - [x] The emphasis is on request-body duplication, response shaping, request-scope allocation churn, and handler fanout patterns that typical lint packs rarely model.
 
@@ -29,6 +30,8 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 - [x] `multiple_shouldbind_calls_same_handler`
 - [x] `bindjson_into_map_any_hot_endpoint`
 - [x] `bindquery_into_map_any_hot_endpoint`
+- [x] `parsemultipartform_large_default_memory`
+- [x] `formfile_open_readall_whole_upload`
 - [x] `shouldbindbodywith_when_single_bind_is_enough`
 - [x] `indentedjson_in_hot_path`
 - [x] `repeated_c_json_inside_stream_loop`
@@ -45,7 +48,9 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 - [x] Added `tests/integration_scan/go_advanceplan3.rs` coverage for the first Gin request-path family.
 - [x] Expanded the Gin fixtures with `ShouldBindBodyWith(...)`, looped `c.JSON(...)`, request dumps, and request-path file reads.
 - [x] Expanded the Gin fixtures with dynamic `BindJSON` and `BindQuery` targets, file-serving-via-`Data`, and looped `c.Copy()` fanout coverage.
+- [x] Expanded the Gin parser and request fixtures with multipart threshold and uploaded-file `ReadAll(...)` coverage.
 - [x] Verified with `cargo test --test integration_scan go_advanceplan3` and the full `cargo test --test integration_scan` suite.
+- [x] Verified the multipart upload follow-up with `cargo test test_collects_gin_calls_and_parse_input_summaries` and `cargo test --test integration_scan go_advanceplan3`.
 - [x] Validated the shipped Gin request-path rules against `eddycjy/go-gin-example`; the application code stayed quiet for the new rule IDs.
 
 ## Candidate Scenario Backlog (34 scenarios)
@@ -58,8 +63,8 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 - [x] `multiple_shouldbind_calls_same_handler`: detect multiple Gin bind helpers on the same request body in one handler.
 - [x] `bindjson_into_map_any_hot_endpoint`: detect body binding into `map[string]any` or similarly dynamic containers on hot request paths.
 - [x] `bindquery_into_map_any_hot_endpoint`: detect repeated query binding into dynamic maps or wide generic containers when a stable struct contract exists.
-- [ ] `parsemultipartform_large_default_memory`: detect `ParseMultipartForm` with large in-memory thresholds on regular request handlers.
-- [ ] `formfile_open_readall_whole_upload`: detect upload paths that open a form file and immediately `ReadAll` the full payload.
+- [x] `parsemultipartform_large_default_memory`: detect `ParseMultipartForm` with large in-memory thresholds on regular request handlers.
+- [x] `formfile_open_readall_whole_upload`: detect upload paths that open a form file and immediately `ReadAll` the full payload.
 - [ ] `repeated_body_rewind_for_multiple_decoders`: detect handlers that read, rewind, and decode the same body multiple times.
 - [ ] `middleware_rebinds_body_after_handler_bind`: detect middleware or helper chains that parse the request body after the main handler has already bound it.
 
@@ -99,9 +104,9 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 ## Shared Implementation Checklist
 
 - [ ] Add `GinHandlerSummary` style parser evidence using `*gin.Context` parameters plus router registration cues where available.
-- [ ] Capture request-body access summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ReadAll(c.Request.Body)`, `ParseMultipartForm`, and `FormFile`.
+- [x] Capture request-body access summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ReadAll(c.Request.Body)`, `ParseMultipartForm`, and `FormFile`.
 - [ ] Capture render summaries for `JSON`, `PureJSON`, `IndentedJSON`, `Data`, streaming helpers, template load helpers, and response-writer flush/write sites.
-- [x] Added Gin call summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ShouldBindQuery`, `Copy`, `IndentedJSON`, `Data`, and request-body reads so the shipped rules no longer rely on raw body-text matching.
+- [x] Added Gin call summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ShouldBindQuery`, `ParseMultipartForm`, `FormFile`, `Copy`, `IndentedJSON`, `Data`, and request-body reads so the shipped rules no longer rely on raw body-text matching.
 - [x] Reuse the generic import-alias machinery so Gin-specific rules can still understand mixed `net/http` and Gin code in the same handler.
 - [ ] Add positive and clean fixtures for body-duplication, export, middleware-allocation, and upstream-fanout families before promoting any rule.
 

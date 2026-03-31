@@ -80,6 +80,8 @@ const goRules: Rule[] = [
   { id: 'multiple_shouldbind_calls_same_handler', description: 'Gin handlers that bind the request body multiple times in one function.' },
   { id: 'bindjson_into_map_any_hot_endpoint', description: 'Gin handlers that bind JSON into map[string]any or map[string]interface{} on hot request paths.' },
   { id: 'bindquery_into_map_any_hot_endpoint', description: 'Gin handlers that bind query parameters into map[string]any or map[string]interface{} on hot request paths.' },
+  { id: 'parsemultipartform_large_default_memory', description: 'Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths.' },
+  { id: 'formfile_open_readall_whole_upload', description: 'Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...).' },
   { id: 'shouldbindbodywith_when_single_bind_is_enough', description: 'Gin handlers that use ShouldBindBodyWith(...) even though only one body bind is observed.' },
   { id: 'indentedjson_in_hot_path', description: 'IndentedJSON(...) used on a request path instead of compact JSON rendering.' },
   { id: 'repeated_c_json_inside_stream_loop', description: 'Gin handlers that call c.JSON(...) or c.PureJSON(...) from inside loops.' },
@@ -110,10 +112,22 @@ const goRules: Rule[] = [
   { id: 'xml_unmarshal_same_payload_multiple_times', description: 'The same local XML payload binding is unmarshaled into multiple targets in one function.' },
   { id: 'yaml_unmarshal_same_payload_multiple_times', description: 'The same local YAML payload binding is unmarshaled into multiple targets in one function.' },
   { id: 'proto_unmarshal_same_payload_multiple_times', description: 'The same local protobuf payload binding is unmarshaled into multiple targets in one function.' },
+  { id: 'builder_or_buffer_recreated_per_iteration', description: 'strings.Builder, bytes.Buffer, or bytes.NewBuffer(...) constructions observed inside loops instead of being reset or reused.' },
+  { id: 'make_slice_inside_hot_loop_same_shape', description: 'make([]T, ...) scratch slices recreated inside loops instead of being reused.' },
+  { id: 'make_map_inside_hot_loop_same_shape', description: 'make(map[K]V, ...) scratch maps recreated inside loops instead of being reused or prebuilt.' },
+  { id: 'repeated_slice_clone_in_loop', description: 'slices.Clone(...) or similar whole-slice cloning observed inside loops.' },
+  { id: 'byte_string_conversion_in_loop', description: 'Byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths.' },
+  { id: 'slice_membership_in_loop_map_candidate', description: 'slices.Contains(...) or slices.Index(...) used inside loops against a stable-looking slice binding.' },
+  { id: 'url_parse_in_loop_on_invariant_base', description: 'url.Parse(...) or ParseRequestURI(...) observed inside loops with a stable-looking base input.' },
+  { id: 'time_parse_layout_in_loop', description: 'time.Parse(...) or ParseInLocation(...) observed inside loops with a stable layout.' },
+  { id: 'strings_split_same_input_multiple_times', description: 'The same string input is passed through strings.Split* or strings.Fields* helpers multiple times in one function.' },
+  { id: 'bytes_split_same_input_multiple_times', description: 'The same byte-slice input is passed through bytes.Split* or bytes.Fields* helpers multiple times in one function.' },
+  { id: 'strconv_repeat_on_same_binding', description: 'The same string binding is converted with strconv parsing helpers multiple times in one function.' },
   { id: 'json_encoder_recreated_per_item', description: 'json.NewEncoder(...) constructed repeatedly inside loops instead of reusing a stable encoder per stream.' },
   { id: 'json_decoder_recreated_per_item', description: 'json.NewDecoder(...) constructed repeatedly inside loops instead of reusing a stable decoder per stream.' },
   { id: 'gzip_reader_writer_recreated_per_item', description: 'gzip.NewReader(...) or gzip.NewWriter(...) recreated inside iterative paths instead of per stream.' },
   { id: 'csv_writer_flush_per_row', description: 'csv.Writer.Flush() called inside per-row loops, reducing buffering effectiveness.' },
+  { id: 'read_then_decode_duplicate_materialization', description: 'io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.' },
   { id: 'n_plus_one_query', description: 'Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.' },
   { id: 'wide_select_query', description: 'Literal SELECT * query shapes.' },
   { id: 'likely_unindexed_query', description: 'Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.' },
@@ -413,14 +427,14 @@ function CodeBlock({ code }: { code: string }) {
 const overviewContent = {
   go: {
     title: 'Go Analysis',
-    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and now covers repo-wide style checks, receiver-field and nested wrapper propagation, derived-context goroutine lifetime analysis, parser-backed Gin and GORM request-path performance analysis, duplicate decode hot spots, dynamic Gin bind waste, request-path DB churn, looped GORM CRUD and association churn, security, and an opt-in deeper semantic loop pass with explainable rules.',
+    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and now covers repo-wide style checks, receiver-field and nested wrapper propagation, derived-context goroutine lifetime analysis, parser-backed Gin and GORM request-path performance analysis, duplicate decode hot spots, multipart upload waste, repeated split and strconv churn, scratch container and slice-clone churn, loop-local URL and time parsing, dynamic Gin bind churn, request-path DB churn, looped GORM CRUD and association churn, security, and an opt-in deeper semantic loop pass with explainable rules.',
     bullets: [
       '.gitignore-aware walk; skips vendor/ and generated files by default',
       'Parses package names, imports, declared symbols, call sites, and function fingerprints',
       'Builds a repository-local symbol index for same-package and import hallucination checks',
       'Includes repo-wide package and import style checks plus wrapper-level context propagation heuristics',
       'Covers receiver-field wrappers, local wrapper chains, and Query versus QueryContext mismatches',
-      'Adds parser-backed Gin request-body and query-bind summaries plus GORM chain summaries for duplicate decode, file-serving, and request-path DB churn findings',
+      'Adds parser-backed Gin request-body, multipart upload, and query-bind summaries plus GORM chain summaries for duplicate decode, file-serving, request-path DB churn, and repeated local transform findings',
       'Adds an opt-in semantic pack for nested-loop allocation, concat, and stronger N+1 signals',
       'Produces compact text output by default; full detail and JSON via flags',
       'Supports standalone Go repos and mixed Go + Python + Rust repositories',
@@ -730,7 +744,7 @@ export function DocsPage() {
               <p className="docs-p">Rules are designed to produce readable evidence so humans can validate them quickly. Local repository context is used where possible, but deslop does not replace go/types.</p>
               <div className="docs-callout" style={{ borderLeftColor: 'var(--lang-go)', background: 'var(--lang-go-soft)' }}>
                 <p>
-                  The latest Go performance pack now also covers duplicate XML, YAML, and protobuf decode, looped JSON decoder setup, repeated request-path prepares, looped transactions and GORM session or CRUD chains, dynamic Gin map binding, file-serving via Data, c.Copy() fanout churn, request dumps, and request-time file reads.
+                  The latest Go performance pack now also covers duplicate XML, YAML, and protobuf decode, looped JSON decoder setup, repeated split and strconv work, scratch slice and map churn, slice cloning, byte-string conversion, loop-local slice membership checks, loop-local URL and time parsing, builder and buffer recreation, repeated request-path prepares, looped transactions and GORM session or CRUD chains, dynamic Gin map binding, large multipart thresholds, whole-upload ReadAll paths, file-serving via Data, c.Copy() fanout churn, request dumps, and request-time file reads.
                 </p>
               </div>
             </>

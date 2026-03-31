@@ -6,6 +6,7 @@ Date: 2026-03-31
 
 - [x] Initial slice implemented on 2026-03-31.
 - [x] Parser-backed repeated-input follow-up implemented on 2026-03-31.
+- [x] Core repeated-transform and loop-local parse follow-up implemented on 2026-03-31.
 - [x] This plan is intentionally scoped to performance patterns that are not already covered by the current Go heuristics.
 - [x] The target set is biased toward signals that usually sit outside common `golangci-lint` bundles and style linters because they require loop-shape, binding-reuse, or hot-path reasoning.
 
@@ -32,10 +33,22 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 - [x] `xml_unmarshal_same_payload_multiple_times`
 - [x] `yaml_unmarshal_same_payload_multiple_times`
 - [x] `proto_unmarshal_same_payload_multiple_times`
+- [x] `builder_or_buffer_recreated_per_iteration`
+- [x] `make_slice_inside_hot_loop_same_shape`
+- [x] `make_map_inside_hot_loop_same_shape`
+- [x] `repeated_slice_clone_in_loop`
+- [x] `byte_string_conversion_in_loop`
+- [x] `slice_membership_in_loop_map_candidate`
+- [x] `url_parse_in_loop_on_invariant_base`
+- [x] `time_parse_layout_in_loop`
+- [x] `strings_split_same_input_multiple_times`
+- [x] `bytes_split_same_input_multiple_times`
+- [x] `strconv_repeat_on_same_binding`
 - [x] `json_encoder_recreated_per_item`
 - [x] `json_decoder_recreated_per_item`
 - [x] `gzip_reader_writer_recreated_per_item`
 - [x] `csv_writer_flush_per_row`
+- [x] `read_then_decode_duplicate_materialization`
 - [x] `json_unmarshal_same_payload_multiple_times`
 
 ## Fixtures And Verification
@@ -45,6 +58,8 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 - [x] Added `tests/integration_scan/go_advanceplan3.rs` coverage for the core hot-path family.
 - [x] Expanded the core fixtures with repeated JSON input decoding cases backed by parser summaries.
 - [x] Expanded the core fixtures with duplicate XML/YAML/protobuf decode cases and looped `json.NewDecoder(...)` coverage.
+- [x] Expanded the core fixtures with repeated string and byte split calls, repeated `strconv` parsing, loop-local URL/time parse calls, loop-local builder and buffer construction, and `ReadAll(...)` plus decode coverage.
+- [x] Expanded the core fixtures with scratch slice and map churn, slice cloning, byte-string conversion, and loop-local slice membership coverage.
 - [x] Verified with `cargo test --test integration_scan go_advanceplan3` and the full `cargo test --test integration_scan` suite.
 
 ## Candidate Scenario Backlog (37 scenarios)
@@ -56,28 +71,28 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 - [ ] `map_growth_without_size_hint`: detect steady-state inserts into a map in hot paths without `make(map[K]V, hint)` when the candidate entry count is locally inferable.
 - [ ] `strings_builder_without_grow_known_bound`: detect `strings.Builder` use that still skips `Grow` even when approximate output size is easy to infer.
 - [ ] `bytes_buffer_without_grow_known_bound`: detect `bytes.Buffer` use that repeatedly expands without a visible `Grow` or initial capacity plan.
-- [ ] `builder_or_buffer_recreated_per_iteration`: detect `strings.Builder`, `bytes.Buffer`, or `bytes.NewBuffer(nil)` being constructed once per item in a loop instead of being reset or reused.
-- [ ] `make_slice_inside_hot_loop_same_shape`: detect short-lived scratch slices recreated on every iteration with the same shape and no sign that they must escape.
-- [ ] `make_map_inside_hot_loop_same_shape`: detect temporary maps recreated in inner loops for normalization, deduplication, or metadata collection.
-- [ ] `repeated_slice_clone_in_loop`: detect `append([]T(nil), src...)`, `slices.Clone`, or `copy`-based cloning inside loops where the cloned slice is used only transiently.
+- [x] `builder_or_buffer_recreated_per_iteration`: detect `strings.Builder`, `bytes.Buffer`, or `bytes.NewBuffer(nil)` being constructed once per item in a loop instead of being reset or reused.
+- [x] `make_slice_inside_hot_loop_same_shape`: detect short-lived scratch slices recreated on every iteration with the same shape and no sign that they must escape.
+- [x] `make_map_inside_hot_loop_same_shape`: detect temporary maps recreated in inner loops for normalization, deduplication, or metadata collection.
+- [x] `repeated_slice_clone_in_loop`: detect `append([]T(nil), src...)`, `slices.Clone`, or `copy`-based cloning inside loops where the cloned slice is used only transiently.
 - [ ] `repeated_map_clone_in_loop`: detect whole-map copies inside loops where a clear read-only source map is being re-cloned for every iteration.
 - [ ] `append_then_trim_each_iteration`: detect buffers or slices that grow and are immediately resliced back down in steady-state loops, which usually indicates a reusable scratch buffer candidate.
-- [ ] `byte_string_conversion_in_loop`: detect `string([]byte)` or `[]byte(string)` conversions inside loops when the converted value is immediately used as a map key, join fragment, or short-lived lookup token.
+- [x] `byte_string_conversion_in_loop`: detect `string([]byte)` or `[]byte(string)` conversions inside loops when the converted value is immediately used as a map key, join fragment, or short-lived lookup token.
 
 ### Repeated Parse, Compile, And Normalize Work
 
 - [x] `regexp_compile_in_hot_path`: detect `regexp.Compile` or `regexp.MustCompile` inside handlers, middleware, or obvious iterative paths.
 - [x] `template_parse_in_hot_path`: detect `html/template` or `text/template` parse calls inside request or export paths instead of startup-time caching.
-- [ ] `url_parse_in_loop_on_invariant_base`: detect repeated `url.Parse` or reference-resolution work on the same invariant base value inside loops.
-- [ ] `time_parse_layout_in_loop`: detect `time.Parse` or `ParseInLocation` in hot loops when the layout and input family are clearly repetitive.
+- [x] `url_parse_in_loop_on_invariant_base`: detect repeated `url.Parse` or reference-resolution work on the same invariant base value inside loops.
+- [x] `time_parse_layout_in_loop`: detect `time.Parse` or `ParseInLocation` in hot loops when the layout and input family are clearly repetitive.
 - [x] `json_unmarshal_same_payload_multiple_times`: detect the same local payload binding being unmarshaled into multiple targets in one function.
 - [x] `xml_unmarshal_same_payload_multiple_times`: detect duplicate XML decoding against the same local payload.
 - [x] `yaml_unmarshal_same_payload_multiple_times`: detect repeated YAML or TOML decoding on the same raw bytes or string binding.
 - [x] `proto_unmarshal_same_payload_multiple_times`: detect protobuf payloads that are decoded multiple times in one request path.
-- [ ] `strings_split_same_input_multiple_times`: detect repeated `strings.Split`, `SplitN`, or `Fields` calls against the same unchanged binding.
-- [ ] `bytes_split_same_input_multiple_times`: detect repeated `bytes.Split*` calls against the same unchanged byte slice.
+- [x] `strings_split_same_input_multiple_times`: detect repeated `strings.Split`, `SplitN`, or `Fields` calls against the same unchanged binding.
+- [x] `bytes_split_same_input_multiple_times`: detect repeated `bytes.Split*` calls against the same unchanged byte slice.
 - [ ] `stable_value_normalization_in_inner_loop`: detect repeated `strings.ToLower`, `TrimSpace`, `ReplaceAll`, `path.Clean`, or similar normalization calls on invariant values inside nested loops.
-- [ ] `strconv_repeat_on_same_binding`: detect repeated `strconv` conversions on the same unchanged binding within a single function body.
+- [x] `strconv_repeat_on_same_binding`: detect repeated `strconv` conversions on the same unchanged binding within a single function body.
 - [ ] `uuid_hash_formatting_only_for_logs`: detect `uuid.String()`, `hex.EncodeToString`, or `base64` formatting inside tight loops when the formatted value only feeds logging or debug strings.
 
 ### Serialization, Compression, And Stream Shaping
@@ -88,11 +103,11 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 - [x] `csv_writer_flush_per_row`: detect `csv.Writer.Flush()` or equivalent buffer flushes inside per-row export loops.
 - [ ] `bufio_writer_missing_in_bulk_export`: detect large write loops to files or sockets without a visible buffered writer.
 - [ ] `bufio_reader_missing_for_small_read_loop`: detect repeated tiny reads from files or sockets in loops without `bufio.Reader` style buffering.
-- [ ] `read_then_decode_duplicate_materialization`: detect `io.ReadAll` plus a second decode/materialization stage when a streaming decoder could serve the same path.
+- [x] `read_then_decode_duplicate_materialization`: detect `io.ReadAll` plus a second decode/materialization stage when a streaming decoder could serve the same path.
 
 ### Algorithmic Waste And Container Shape
 
-- [ ] `slice_membership_in_loop_map_candidate`: detect `slices.Contains` or manual linear membership checks inside loops against a stable slice that could be indexed once.
+- [x] `slice_membership_in_loop_map_candidate`: detect `slices.Contains` or manual linear membership checks inside loops against a stable slice that could be indexed once.
 - [ ] `nested_linear_join_map_candidate`: detect nested-loop lookup joins between two collections when one side is effectively being searched by key each time.
 - [ ] `append_then_sort_each_iteration`: detect result slices that are re-sorted after each append instead of once at the end or through a bounded insertion strategy.
 - [ ] `sort_before_first_or_membership_only`: detect full sorts when the code only uses the first element, min/max, or a yes/no membership outcome afterward.
@@ -102,7 +117,7 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 
 - [ ] Extend Go parser evidence so append targets, `make` capacity hints, builder writes, flush sites, and repeated decode targets can be summarized instead of re-derived from raw `body_text` each time.
 - [x] Added repeated parse-input summaries so same-input JSON decode rules no longer rely on raw body-text matching.
-- [ ] Add import-aware alias helpers for `strings`, `bytes`, `regexp`, `encoding/json`, `encoding/xml`, `compress/gzip`, `bufio`, `encoding/csv`, `strconv`, `net/url`, and `time`.
+- [x] Add import-aware alias helpers for `strings`, `bytes`, `regexp`, `encoding/json`, `encoding/xml`, `compress/gzip`, `bufio`, `encoding/csv`, `strconv`, `net/url`, and `time`.
 - [ ] Prefer `Info` severity for micro-optimization candidates and require multiple corroborating signals before escalating to `Warning`.
 - [ ] Add one positive and one clean fixture for every scenario family before enabling any new rule by default.
 - [ ] Benchmark against at least one generic CLI-style Go repository and one web-service repository to ensure parser enrichment stays cheap.

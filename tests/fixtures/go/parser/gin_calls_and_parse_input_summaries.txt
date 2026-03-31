@@ -19,6 +19,10 @@ func Handle(c *gin.Context, body []byte) {
     var filters map[string]any
     _ = c.ShouldBindQuery(&filters)
 
+    _ = c.Request.ParseMultipartForm(64 << 20)
+    fileHeader, _ := c.FormFile("upload")
+    _ = fileHeader
+
     c.IndentedJSON(200, gin.H{"ok": true})
 
     for _, item := range []string{"first"} {

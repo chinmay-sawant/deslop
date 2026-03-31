@@ -10,6 +10,8 @@ struct BodyLine {
     in_loop: bool,
 }
 
+const LARGE_MULTIPART_FORM_BYTES: u64 = 32 * 1024 * 1024;
+
 pub(super) fn go_advanceplan3_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
@@ -36,6 +38,7 @@ fn core_hot_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
     let lines = body_lines(function);
 
     findings.extend(repeated_parse_findings(file, function));
+    findings.extend(core_repeated_work_findings(file, function, &lines));
 
     for alias in import_aliases_for(file, "regexp") {
         for body_line in &lines {
@@ -257,6 +260,489 @@ fn core_hot_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
                 });
             }
         }
+    }
+
+    findings
+}
+
+fn core_repeated_work_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    findings.extend(builder_buffer_recreated_findings(file, function, lines));
+    findings.extend(scratch_container_churn_findings(file, function, lines));
+    findings.extend(repeated_slice_clone_findings(file, function, lines));
+    findings.extend(byte_string_conversion_findings(file, function, lines));
+    findings.extend(slice_membership_findings(file, function, lines));
+    findings.extend(url_parse_in_loop_findings(file, function, lines));
+    findings.extend(time_parse_in_loop_findings(file, function, lines));
+    findings.extend(repeated_strings_split_findings(file, function, lines));
+    findings.extend(repeated_bytes_split_findings(file, function, lines));
+    findings.extend(repeated_strconv_findings(file, function, lines));
+    findings.extend(read_then_decode_duplicate_materialization_findings(
+        file, function, lines,
+    ));
+    findings
+}
+
+fn builder_buffer_recreated_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for body_line in lines.iter().filter(|body_line| body_line.in_loop) {
+        for alias in import_aliases_for(file, "strings") {
+            if body_line.text.contains(&format!("{alias}.Builder")) {
+                findings.push(Finding {
+                    rule_id: "builder_or_buffer_recreated_per_iteration".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: body_line.line,
+                    end_line: body_line.line,
+                    message: format!(
+                        "function {} recreates a strings.Builder inside a loop",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("{} observed inside a loop at line {}", body_line.text, body_line.line),
+                        "reusing one builder or resetting it between iterations is usually cheaper than constructing a new builder per item"
+                            .to_string(),
+                    ],
+                });
+                break;
+            }
+        }
+
+        for alias in import_aliases_for(file, "bytes") {
+            if body_line.text.contains(&format!("{alias}.Buffer"))
+                || body_line.text.contains(&format!("{alias}.NewBuffer("))
+                || body_line.text.contains(&format!("{alias}.NewBufferString("))
+            {
+                findings.push(Finding {
+                    rule_id: "builder_or_buffer_recreated_per_iteration".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: body_line.line,
+                    end_line: body_line.line,
+                    message: format!(
+                        "function {} recreates a bytes.Buffer inside a loop",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("{} observed inside a loop at line {}", body_line.text, body_line.line),
+                        "reusing one buffer or resetting it between iterations is usually cheaper than constructing a new buffer per item"
+                            .to_string(),
+                    ],
+                });
+                break;
+            }
+        }
+    }
+
+    findings
+}
+
+fn scratch_container_churn_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for body_line in lines.iter().filter(|body_line| body_line.in_loop) {
+        if body_line.text.contains("make([]") {
+            findings.push(Finding {
+                rule_id: "make_slice_inside_hot_loop_same_shape".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: body_line.line,
+                end_line: body_line.line,
+                message: format!(
+                    "function {} recreates scratch slices inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("{} observed inside a loop at line {}", body_line.text, body_line.line),
+                    "a reusable scratch slice is often cheaper than recreating the same shape every iteration"
+                        .to_string(),
+                ],
+            });
+        }
+
+        if body_line.text.contains("make(map[") {
+            findings.push(Finding {
+                rule_id: "make_map_inside_hot_loop_same_shape".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: body_line.line,
+                end_line: body_line.line,
+                message: format!(
+                    "function {} recreates scratch maps inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("{} observed inside a loop at line {}", body_line.text, body_line.line),
+                    "a reusable map or prebuilt index is often cheaper than recreating the same map shape every iteration"
+                        .to_string(),
+                ],
+            });
+        }
+    }
+
+    findings
+}
+
+fn repeated_slice_clone_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    lines
+        .iter()
+        .filter(|body_line| {
+            body_line.in_loop
+                && (body_line.text.contains("slices.Clone(")
+                    || (body_line.text.contains("append([]") && body_line.text.contains("...)")))
+        })
+        .map(|body_line| Finding {
+            rule_id: "repeated_slice_clone_in_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: body_line.line,
+            end_line: body_line.line,
+            message: format!(
+                "function {} clones slices inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("{} observed inside a loop at line {}", body_line.text, body_line.line),
+                "reusing or reshaping one slice is often cheaper than cloning on every iteration"
+                    .to_string(),
+            ],
+        })
+        .collect()
+}
+
+fn byte_string_conversion_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    lines
+        .iter()
+        .filter(|body_line| {
+            body_line.in_loop
+                && (body_line.text.contains("string([]byte(")
+                    || body_line.text.contains("[]byte(string(")
+                    || (body_line.text.contains("[string(") && body_line.text.contains("[]byte("))
+                    || (body_line.text.contains("append(")
+                        && (body_line.text.contains("string(") || body_line.text.contains("[]byte("))))
+        })
+        .map(|body_line| Finding {
+            rule_id: "byte_string_conversion_in_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: body_line.line,
+            end_line: body_line.line,
+            message: format!(
+                "function {} converts between bytes and strings inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("{} observed inside a loop at line {}", body_line.text, body_line.line),
+                "repeated byte-string conversion can add avoidable allocation churn in iterative paths"
+                    .to_string(),
+            ],
+        })
+        .collect()
+}
+
+fn slice_membership_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let markers = import_aliases_for(file, "slices")
+        .into_iter()
+        .flat_map(|alias| {
+            [
+                (format!("{alias}.Contains("), "Contains".to_string()),
+                (format!("{alias}.Index("), "Index".to_string()),
+            ]
+        })
+        .collect::<Vec<_>>();
+    if markers.is_empty() {
+        return Vec::new();
+    }
+
+    collect_labeled_first_argument_calls(lines, &markers, true)
+        .into_iter()
+        .filter(|(_, _, argument)| simple_local_binding(argument).is_some())
+        .map(|(line, label, argument)| Finding {
+            rule_id: "slice_membership_in_loop_map_candidate".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} checks slice membership inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("slices.{label}(...) observed inside a loop at line {line}"),
+                format!("searched slice binding: {argument}"),
+                "a one-time set or map index is often cheaper than repeated linear membership checks"
+                    .to_string(),
+            ],
+        })
+        .collect()
+}
+
+fn url_parse_in_loop_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let markers = import_aliases_for(file, "net/url")
+        .into_iter()
+        .flat_map(|alias| {
+            [
+                (format!("{alias}.Parse("), "Parse".to_string()),
+                (format!("{alias}.ParseRequestURI("), "ParseRequestURI".to_string()),
+            ]
+        })
+        .collect::<Vec<_>>();
+    if markers.is_empty() {
+        return Vec::new();
+    }
+
+    collect_labeled_first_argument_calls(lines, &markers, true)
+        .into_iter()
+        .filter(|(_, _, argument)| url_parse_argument_looks_stable(argument))
+        .map(|(line, label, argument)| Finding {
+            rule_id: "url_parse_in_loop_on_invariant_base".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} parses the same base-like URL input inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("url.{label}(...) observed inside a loop at line {line}"),
+                format!("first argument: {argument}"),
+            ],
+        })
+        .collect()
+}
+
+fn time_parse_in_loop_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let markers = import_aliases_for(file, "time")
+        .into_iter()
+        .flat_map(|alias| {
+            [
+                (format!("{alias}.Parse("), "Parse".to_string()),
+                (
+                    format!("{alias}.ParseInLocation("),
+                    "ParseInLocation".to_string(),
+                ),
+            ]
+        })
+        .collect::<Vec<_>>();
+    if markers.is_empty() {
+        return Vec::new();
+    }
+
+    collect_labeled_first_argument_calls(lines, &markers, true)
+        .into_iter()
+        .filter(|(_, _, layout)| layout_argument_looks_stable(layout))
+        .map(|(line, label, layout)| Finding {
+            rule_id: "time_parse_layout_in_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} parses time values with a stable layout inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("time.{label}(...) observed inside a loop at line {line}"),
+                format!("layout argument: {layout}"),
+            ],
+        })
+        .collect()
+}
+
+fn repeated_strings_split_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let markers = import_aliases_for(file, "strings")
+        .into_iter()
+        .flat_map(|alias| {
+            [
+                (format!("{alias}.Split("), "Split".to_string()),
+                (format!("{alias}.SplitN("), "SplitN".to_string()),
+                (format!("{alias}.SplitAfter("), "SplitAfter".to_string()),
+                (format!("{alias}.SplitAfterN("), "SplitAfterN".to_string()),
+                (format!("{alias}.Fields("), "Fields".to_string()),
+                (format!("{alias}.FieldsFunc("), "FieldsFunc".to_string()),
+            ]
+        })
+        .collect::<Vec<_>>();
+
+    repeated_argument_group_findings(
+        file,
+        function,
+        lines,
+        &markers,
+        false,
+        "strings_split_same_input_multiple_times",
+        "splits the same string input multiple times",
+        "string split helpers",
+    )
+}
+
+fn repeated_bytes_split_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let markers = import_aliases_for(file, "bytes")
+        .into_iter()
+        .flat_map(|alias| {
+            [
+                (format!("{alias}.Split("), "Split".to_string()),
+                (format!("{alias}.SplitN("), "SplitN".to_string()),
+                (format!("{alias}.SplitAfter("), "SplitAfter".to_string()),
+                (format!("{alias}.SplitAfterN("), "SplitAfterN".to_string()),
+                (format!("{alias}.Fields("), "Fields".to_string()),
+                (format!("{alias}.FieldsFunc("), "FieldsFunc".to_string()),
+            ]
+        })
+        .collect::<Vec<_>>();
+
+    repeated_argument_group_findings(
+        file,
+        function,
+        lines,
+        &markers,
+        false,
+        "bytes_split_same_input_multiple_times",
+        "splits the same byte slice input multiple times",
+        "byte split helpers",
+    )
+}
+
+fn repeated_strconv_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let markers = import_aliases_for(file, "strconv")
+        .into_iter()
+        .flat_map(|alias| {
+            [
+                (format!("{alias}.Atoi("), "Atoi".to_string()),
+                (format!("{alias}.ParseBool("), "ParseBool".to_string()),
+                (format!("{alias}.ParseFloat("), "ParseFloat".to_string()),
+                (format!("{alias}.ParseInt("), "ParseInt".to_string()),
+                (format!("{alias}.ParseUint("), "ParseUint".to_string()),
+            ]
+        })
+        .collect::<Vec<_>>();
+
+    repeated_argument_group_findings(
+        file,
+        function,
+        lines,
+        &markers,
+        false,
+        "strconv_repeat_on_same_binding",
+        "converts the same string input with strconv multiple times",
+        "strconv helpers",
+    )
+}
+
+fn read_then_decode_duplicate_materialization_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut readall_markers = import_aliases_for(file, "io")
+        .into_iter()
+        .map(|alias| format!("{alias}.ReadAll("))
+        .collect::<Vec<_>>();
+    readall_markers.extend(
+        import_aliases_for(file, "io/ioutil")
+            .into_iter()
+            .map(|alias| format!("{alias}.ReadAll(")),
+    );
+    if readall_markers.is_empty() {
+        return Vec::new();
+    }
+
+    let marker_refs = readall_markers.iter().map(String::as_str).collect::<Vec<_>>();
+    let mut findings = Vec::new();
+
+    for (binding, readall_line, _) in binding_matches(lines, &marker_refs) {
+        let decode_calls = function
+            .parse_input_calls
+            .iter()
+            .filter(|call| {
+                call.line > readall_line && call.input_binding.as_deref() == Some(binding.as_str())
+            })
+            .collect::<Vec<_>>();
+        if decode_calls.is_empty() {
+            continue;
+        }
+
+        let anchor_line = decode_calls[0].line;
+        let parser_families = decode_calls
+            .iter()
+            .map(|call| call.parser_family.clone())
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>()
+            .join(", ");
+        let decode_lines = decode_calls.iter().map(|call| call.line).collect::<Vec<_>>();
+        findings.push(Finding {
+            rule_id: "read_then_decode_duplicate_materialization".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: anchor_line,
+            end_line: anchor_line,
+            message: format!(
+                "function {} reads a payload fully and then decodes the same binding",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("io.ReadAll(...) assigned binding {binding} at line {readall_line}"),
+                format!("decode calls observed at lines {}", join_lines(&decode_lines)),
+                format!("decoder families: {parser_families}"),
+            ],
+        });
     }
 
     findings
@@ -937,6 +1423,78 @@ fn gin_request_performance_findings(file: &ParsedFile, function: &ParsedFunction
         }
     }
 
+    for call in function
+        .gin_calls
+        .iter()
+        .filter(|call| call.operation == "parse_multipart_form")
+    {
+        if let Some(threshold_bytes) = gin_call_threshold_bytes(call)
+            && threshold_bytes >= LARGE_MULTIPART_FORM_BYTES
+        {
+            findings.push(Finding {
+                rule_id: "parsemultipartform_large_default_memory".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: call.line,
+                end_line: call.line,
+                message: format!(
+                    "function {} parses multipart uploads with a large in-memory threshold on a request path",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!(
+                        "ParseMultipartForm(...) observed at line {} with threshold {}",
+                        call.line,
+                        format_size_bytes(threshold_bytes)
+                    ),
+                    format!(
+                        "threshold expression: {}",
+                        call.argument_texts.first().cloned().unwrap_or_default()
+                    ),
+                ],
+            });
+        }
+    }
+
+    for call in function
+        .gin_calls
+        .iter()
+        .filter(|call| call.operation == "form_file")
+    {
+        if let Some((readall_line, readall_binding, open_line)) =
+            form_file_readall_flow(file, &lines, call)
+        {
+            let mut evidence = vec![format!(
+                "FormFile(...) observed at line {}",
+                call.line
+            )];
+            if let Some(open_line) = open_line {
+                evidence.push(format!(
+                    "uploaded file handle opened later at line {}",
+                    open_line
+                ));
+            }
+            evidence.push(format!(
+                "io.ReadAll(...) consumes upload binding {readall_binding} at line {readall_line}"
+            ));
+
+            findings.push(Finding {
+                rule_id: "formfile_open_readall_whole_upload".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: readall_line,
+                end_line: readall_line,
+                message: format!(
+                    "function {} reads an uploaded form file fully into memory",
+                    function.fingerprint.name
+                ),
+                evidence,
+            });
+        }
+    }
+
     for call in &function.gin_calls {
         if call.operation == "indented_json" {
             findings.push(Finding {
@@ -1137,6 +1695,224 @@ fn request_path_read_file_lines(file: &ParsedFile, lines: &[BodyLine]) -> Vec<us
         .collect()
 }
 
+fn repeated_argument_group_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+    markers: &[(String, String)],
+    require_loop: bool,
+    rule_id: &str,
+    message_tail: &str,
+    helper_label: &str,
+) -> Vec<Finding> {
+    if markers.is_empty() {
+        return Vec::new();
+    }
+
+    let mut groups = BTreeMap::<String, Vec<(usize, String)>>::new();
+    for (line, label, argument) in collect_labeled_first_argument_calls(lines, markers, require_loop) {
+        groups.entry(argument).or_default().push((line, label));
+    }
+
+    let mut findings = Vec::new();
+    for (argument, calls) in groups {
+        if calls.len() < 2 {
+            continue;
+        }
+
+        let lines = calls.iter().map(|(line, _)| *line).collect::<Vec<_>>();
+        let operations = calls
+            .iter()
+            .map(|(line, label)| format!("{label} at line {line}"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let anchor_line = lines[1];
+        findings.push(Finding {
+            rule_id: rule_id.to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: anchor_line,
+            end_line: anchor_line,
+            message: format!("function {} {}", function.fingerprint.name, message_tail),
+            evidence: vec![
+                format!("argument reused by {helper_label} at lines {}", join_lines(&lines)),
+                format!("first argument: {argument}"),
+                format!("operations: {operations}"),
+            ],
+        });
+    }
+
+    findings
+}
+
+fn collect_labeled_first_argument_calls(
+    lines: &[BodyLine],
+    markers: &[(String, String)],
+    require_loop: bool,
+) -> Vec<(usize, String, String)> {
+    let mut calls = Vec::new();
+
+    for body_line in lines {
+        if require_loop && !body_line.in_loop {
+            continue;
+        }
+
+        for (marker, label) in markers {
+            if !body_line.text.contains(marker) {
+                continue;
+            }
+
+            if let Some(argument) = first_argument_after_marker(&body_line.text, marker) {
+                calls.push((body_line.line, label.clone(), argument));
+                break;
+            }
+        }
+    }
+
+    calls
+}
+
+fn form_file_readall_flow(
+    file: &ParsedFile,
+    lines: &[BodyLine],
+    call: &crate::analysis::GinCallSummary,
+) -> Option<(usize, String, Option<usize>)> {
+    let form_file_binding = call.assigned_binding.as_deref()?;
+    let mut candidate_bindings = BTreeSet::from([form_file_binding.to_string()]);
+    let open_binding = open_form_file_binding(lines, form_file_binding, call.line);
+    let open_line = open_binding.as_ref().map(|(_, line)| *line);
+    if let Some((binding, _)) = open_binding {
+        candidate_bindings.insert(binding);
+    }
+
+    first_readall_for_bindings(file, lines, &candidate_bindings, call.line)
+        .map(|(readall_line, binding)| (readall_line, binding, open_line))
+}
+
+fn open_form_file_binding(
+    lines: &[BodyLine],
+    form_file_binding: &str,
+    after_line: usize,
+) -> Option<(String, usize)> {
+    let open_marker = format!("{form_file_binding}.Open(");
+
+    lines
+        .iter()
+        .filter(|body_line| body_line.line > after_line)
+        .find_map(|body_line| {
+            binding_for_patterns(&body_line.text, &[open_marker.as_str()])
+                .map(|(binding, _)| (binding, body_line.line))
+        })
+}
+
+fn first_readall_for_bindings(
+    file: &ParsedFile,
+    lines: &[BodyLine],
+    bindings: &BTreeSet<String>,
+    after_line: usize,
+) -> Option<(usize, String)> {
+    let mut readall_markers = import_aliases_for(file, "io")
+        .into_iter()
+        .map(|alias| format!("{alias}.ReadAll("))
+        .collect::<Vec<_>>();
+    readall_markers.extend(
+        import_aliases_for(file, "io/ioutil")
+            .into_iter()
+            .map(|alias| format!("{alias}.ReadAll(")),
+    );
+
+    lines
+        .iter()
+        .filter(|body_line| body_line.line > after_line)
+        .find_map(|body_line| {
+            readall_markers.iter().find_map(|marker| {
+                let argument_text = first_argument_after_marker(&body_line.text, marker)?;
+                let binding = simple_reference_binding(&argument_text)?;
+                bindings
+                    .contains(&binding)
+                    .then(|| (body_line.line, binding))
+            })
+        })
+}
+
+fn gin_call_threshold_bytes(call: &crate::analysis::GinCallSummary) -> Option<u64> {
+    call.argument_texts
+        .first()
+        .and_then(|argument_text| parse_go_size_expr_bytes(argument_text))
+}
+
+fn parse_go_size_expr_bytes(expression: &str) -> Option<u64> {
+    let trimmed = trim_wrapping_parens(expression.trim());
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    for prefix in ["int(", "int64(", "uint(", "uint64("] {
+        if let Some(inner) = trimmed
+            .strip_prefix(prefix)
+            .and_then(|value| value.strip_suffix(')'))
+        {
+            return parse_go_size_expr_bytes(inner);
+        }
+    }
+
+    if let Some((left, right)) = trimmed.split_once("<<") {
+        let left_value = parse_go_size_expr_bytes(left)?;
+        let shift_value = parse_go_size_expr_bytes(right)?;
+        let shift = u32::try_from(shift_value).ok()?;
+        return left_value.checked_shl(shift);
+    }
+
+    if trimmed.contains('*') {
+        let mut product = 1u64;
+        for part in trimmed.split('*') {
+            product = product.checked_mul(parse_go_size_expr_bytes(part)?)?;
+        }
+        return Some(product);
+    }
+
+    trimmed.replace('_', "").parse::<u64>().ok()
+}
+
+fn trim_wrapping_parens(mut text: &str) -> &str {
+    while text.starts_with('(') && text.ends_with(')') {
+        let mut depth = 0usize;
+        let mut wraps = true;
+
+        for (index, character) in text.char_indices() {
+            match character {
+                '(' => depth += 1,
+                ')' => {
+                    depth = depth.saturating_sub(1);
+                    if depth == 0 && index != text.len() - 1 {
+                        wraps = false;
+                        break;
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        if !wraps {
+            break;
+        }
+
+        text = text[1..text.len() - 1].trim();
+    }
+
+    text
+}
+
+fn format_size_bytes(bytes: u64) -> String {
+    let mib = 1024 * 1024;
+    if bytes % mib == 0 {
+        format!("{} MiB", bytes / mib)
+    } else {
+        format!("{bytes} bytes")
+    }
+}
+
 fn prepare_like_call_lines(lines: &[BodyLine]) -> Vec<(usize, String)> {
     let mut prepare_calls = Vec::new();
 
@@ -1208,6 +1984,65 @@ fn first_string_literal_after_marker(text: &str, marker: &str) -> Option<String>
     }
 
     None
+}
+
+fn first_argument_after_marker(text: &str, marker: &str) -> Option<String> {
+    let suffix = text.split_once(marker)?.1;
+    let mut depth = 0usize;
+
+    for (index, character) in suffix.char_indices() {
+        match character {
+            '(' | '[' | '{' => depth += 1,
+            ')' | ']' | '}' => {
+                if depth == 0 {
+                    return Some(suffix[..index].trim().to_string());
+                }
+                depth = depth.saturating_sub(1);
+            }
+            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
+            _ => {}
+        }
+    }
+
+    let trimmed = suffix.trim();
+    (!trimmed.is_empty()).then(|| trimmed.to_string())
+}
+
+fn url_parse_argument_looks_stable(text: &str) -> bool {
+    simple_local_binding(text).is_some() || looks_like_string_literal(text)
+}
+
+fn layout_argument_looks_stable(text: &str) -> bool {
+    simple_reference_binding(text).is_some() || looks_like_string_literal(text)
+}
+
+fn simple_local_binding(text: &str) -> Option<String> {
+    let trimmed = text
+        .trim()
+        .trim_start_matches('&')
+        .trim_start_matches('*')
+        .trim();
+    is_identifier_name(trimmed).then(|| trimmed.to_string())
+}
+
+fn looks_like_string_literal(text: &str) -> bool {
+    let trimmed = text.trim();
+    (trimmed.starts_with('"') && trimmed.ends_with('"'))
+        || (trimmed.starts_with('`') && trimmed.ends_with('`'))
+}
+
+fn simple_reference_binding(text: &str) -> Option<String> {
+    let trimmed = text
+        .trim()
+        .trim_start_matches('&')
+        .trim_start_matches('*')
+        .trim();
+
+    (!trimmed.is_empty()
+        && trimmed
+            .split('.')
+            .all(|segment| is_identifier_name(segment.trim())))
+        .then(|| trimmed.to_string())
 }
 
 fn is_request_path_function(file: &ParsedFile, function: &ParsedFunction) -> bool {

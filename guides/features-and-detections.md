@@ -260,10 +260,22 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `xml_unmarshal_same_payload_multiple_times`: the same local XML payload binding is unmarshaled into multiple targets in one function.
 - `yaml_unmarshal_same_payload_multiple_times`: the same local YAML payload binding is unmarshaled into multiple targets in one function.
 - `proto_unmarshal_same_payload_multiple_times`: the same local protobuf payload binding is unmarshaled into multiple targets in one function.
+- `builder_or_buffer_recreated_per_iteration`: `strings.Builder`, `bytes.Buffer`, or `bytes.NewBuffer(...)` constructions observed inside loops instead of being reset or reused.
+- `make_slice_inside_hot_loop_same_shape`: `make([]T, ...)` style scratch slices recreated inside loops instead of being reused.
+- `make_map_inside_hot_loop_same_shape`: `make(map[K]V, ...)` style scratch maps recreated inside loops instead of being reused or prebuilt.
+- `repeated_slice_clone_in_loop`: `slices.Clone(...)` or similar whole-slice cloning observed inside loops.
+- `byte_string_conversion_in_loop`: byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths.
+- `slice_membership_in_loop_map_candidate`: `slices.Contains(...)` or `slices.Index(...)` used inside loops against a stable-looking slice binding.
+- `url_parse_in_loop_on_invariant_base`: `url.Parse(...)` or `ParseRequestURI(...)` appears inside a loop with a stable-looking base input.
+- `time_parse_layout_in_loop`: `time.Parse(...)` or `ParseInLocation(...)` appears inside a loop with a stable layout.
+- `strings_split_same_input_multiple_times`: the same string input is passed through `strings.Split*` or `strings.Fields*` helpers multiple times in one function.
+- `bytes_split_same_input_multiple_times`: the same byte-slice input is passed through `bytes.Split*` or `bytes.Fields*` helpers multiple times in one function.
+- `strconv_repeat_on_same_binding`: the same string binding is converted with `strconv` parsing helpers multiple times in one function.
 - `json_encoder_recreated_per_item`: `json.NewEncoder(...)` constructed repeatedly inside loops instead of reusing a stable encoder per stream.
 - `json_decoder_recreated_per_item`: `json.NewDecoder(...)` constructed repeatedly inside loops instead of reusing a stable decoder per stream.
 - `gzip_reader_writer_recreated_per_item`: `gzip.NewReader(...)` or `gzip.NewWriter(...)` recreated inside iterative paths instead of per stream.
 - `csv_writer_flush_per_row`: `csv.Writer.Flush()` called inside per-row loops, reducing buffering effectiveness.
+- `read_then_decode_duplicate_materialization`: `io.ReadAll(...)` materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.
 - `full_dataset_load`: calls such as `io.ReadAll`, `ioutil.ReadAll`, or `os.ReadFile` that load an entire payload into memory instead of streaming it.
 
 ### Concurrency signals
@@ -298,6 +310,8 @@ Python also reuses shared signals when the parser evidence supports them, includ
 - `multiple_shouldbind_calls_same_handler`: a Gin handler binds the request body multiple times.
 - `bindjson_into_map_any_hot_endpoint`: a Gin handler binds JSON into `map[string]any` or `map[string]interface{}` on a request path.
 - `bindquery_into_map_any_hot_endpoint`: a Gin handler binds query parameters into `map[string]any` or `map[string]interface{}` on a request path.
+- `parsemultipartform_large_default_memory`: a Gin handler calls `ParseMultipartForm(...)` with a large in-memory threshold on a request path.
+- `formfile_open_readall_whole_upload`: a Gin handler opens an uploaded form file and then materializes it with `io.ReadAll(...)`.
 - `shouldbindbodywith_when_single_bind_is_enough`: a Gin handler uses `ShouldBindBodyWith(...)` even though only one body bind is observed.
 - `indentedjson_in_hot_path`: a Gin handler uses `IndentedJSON(...)` on a request path instead of compact JSON rendering.
 - `repeated_c_json_inside_stream_loop`: a Gin handler calls `c.JSON(...)` or `c.PureJSON(...)` from inside a loop.

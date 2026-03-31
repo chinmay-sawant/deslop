@@ -1,6 +1,7 @@
 package sample
 
 import (
+	"io"
 	"net/http"
 	"net/http/httputil"
 	"os"
@@ -30,6 +31,17 @@ func HandleQuery(c *gin.Context) {
 	var filters queryFilters
 	_ = c.ShouldBindQuery(&filters)
 	_ = filters
+}
+
+func ParseMultipartSmall(c *gin.Context) {
+	_ = c.Request.ParseMultipartForm(4 << 20)
+}
+
+func UploadStream(c *gin.Context) {
+	header, _ := c.FormFile("upload")
+	uploaded, _ := header.Open()
+	defer uploaded.Close()
+	_, _ = io.Copy(io.Discard, uploaded)
 }
 
 func DumpRequestForDebug(req *http.Request) {

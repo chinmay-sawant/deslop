@@ -8,14 +8,16 @@ Date: 2026-03-31
 - [x] Parser-backed follow-up shipped on 2026-03-31 for ordered GORM chains, Gin call summaries, and repeated-input parse grouping.
 - [x] A third backlog-reduction batch shipped on 2026-03-31 for duplicate XML/YAML/protobuf decode, looped JSON decoder, request-path DB churn, looped SQL writes and counts, and Gin request-path body-copy or output waste.
 - [x] A fourth backlog-reduction batch shipped on 2026-03-31 for repeated request-path prepares, looped transactions and GORM session/preload/query terminals, dynamic Gin map binding, file-serving via `Data`, and `c.Copy()` fanout churn.
+- [x] A fifth backlog-reduction batch shipped on 2026-03-31 for multipart upload thresholds and whole-upload `FormFile` plus `ReadAll(...)` paths.
+- [x] A sixth backlog-reduction batch shipped on 2026-03-31 for repeated split and `strconv` work, scratch slice and map churn, slice cloning, byte-string conversion, loop-local URL and time parsing, builder and buffer recreation, slice membership checks, and generic `ReadAll(...)` plus decode churn.
 - [x] This file is the execution roadmap for `advanceplan3` and ties the scenario backlog to the current Rust parser and heuristics architecture.
 
 ## First Slice Delivered
 
 - [x] Plan 1 shipped `regexp_compile_in_hot_path`, `template_parse_in_hot_path`, `json_encoder_recreated_per_item`, `gzip_reader_writer_recreated_per_item`, and `csv_writer_flush_per_row`.
-- [x] Plan 1 also now ships `xml_unmarshal_same_payload_multiple_times`, `yaml_unmarshal_same_payload_multiple_times`, `proto_unmarshal_same_payload_multiple_times`, and `json_decoder_recreated_per_item`.
+- [x] Plan 1 also now ships `xml_unmarshal_same_payload_multiple_times`, `yaml_unmarshal_same_payload_multiple_times`, `proto_unmarshal_same_payload_multiple_times`, `json_decoder_recreated_per_item`, `builder_or_buffer_recreated_per_iteration`, `make_slice_inside_hot_loop_same_shape`, `make_map_inside_hot_loop_same_shape`, `repeated_slice_clone_in_loop`, `byte_string_conversion_in_loop`, `slice_membership_in_loop_map_candidate`, `url_parse_in_loop_on_invariant_base`, `time_parse_layout_in_loop`, `strings_split_same_input_multiple_times`, `bytes_split_same_input_multiple_times`, `strconv_repeat_on_same_binding`, and `read_then_decode_duplicate_materialization`.
 - [x] Plan 2 shipped `sql_open_per_request`, `gorm_open_per_request`, `db_ping_per_request`, `connection_pool_reconfigured_per_request`, `prepare_inside_loop`, `prepare_on_every_request_same_sql`, `tx_begin_per_item_loop`, `exec_inside_loop_without_batch`, `queryrow_inside_loop_existence_check`, `count_inside_loop`, `gorm_session_allocated_per_item`, `raw_scan_inside_loop`, `association_find_inside_loop`, `preload_inside_loop`, `first_or_create_in_loop`, `save_in_loop_full_model`, `update_single_row_in_loop_without_batch`, `delete_single_row_in_loop_without_batch`, `gorm_debug_enabled_in_request_path`, and `create_single_in_loop_instead_of_batches`.
-- [x] Plan 3 shipped `get_raw_data_then_should_bindjson_duplicate_body`, `readall_body_then_bind_duplicate_deserialize`, `multiple_shouldbind_calls_same_handler`, `bindjson_into_map_any_hot_endpoint`, `bindquery_into_map_any_hot_endpoint`, `shouldbindbodywith_when_single_bind_is_enough`, `indentedjson_in_hot_path`, `repeated_c_json_inside_stream_loop`, `json_marshaled_manually_then_c_data`, `servefile_via_readfile_then_c_data`, `dumprequest_or_dumpresponse_in_hot_path`, `file_or_template_read_per_request`, and `gin_context_copy_for_each_item_fanout`.
+- [x] Plan 3 shipped `get_raw_data_then_should_bindjson_duplicate_body`, `readall_body_then_bind_duplicate_deserialize`, `multiple_shouldbind_calls_same_handler`, `bindjson_into_map_any_hot_endpoint`, `bindquery_into_map_any_hot_endpoint`, `parsemultipartform_large_default_memory`, `formfile_open_readall_whole_upload`, `shouldbindbodywith_when_single_bind_is_enough`, `indentedjson_in_hot_path`, `repeated_c_json_inside_stream_loop`, `json_marshaled_manually_then_c_data`, `servefile_via_readfile_then_c_data`, `dumprequest_or_dumpresponse_in_hot_path`, `file_or_template_read_per_request`, and `gin_context_copy_for_each_item_fanout`.
 - [x] The second parser-backed follow-up shipped `json_unmarshal_same_payload_multiple_times`, ordered GORM chain rules, and Gin body/render summaries without relying on raw body-text matching.
 
 ## Backlog Summary
@@ -34,9 +36,9 @@ Date: 2026-03-31
 - [ ] Add import-aware framework classification for `database/sql`, `sqlx`, `pgx`, `gorm`, `gin`, `html/template`, `text/template`, `regexp`, `encoding/json`, `encoding/xml`, `bufio`, `compress/gzip`, and `encoding/csv`.
 - [x] Add ordered GORM chain summaries that preserve steps such as `Model`, `Table`, `Where`, `Joins`, `Preload`, `Scopes`, `Select`, `Omit`, `Limit`, `Offset`, `Order`, `Distinct`, `Group`, `Count`, `Find`, `First`, `Take`, `Scan`, `Rows`, `Create`, `Save`, `Updates`, `Delete`, `Raw`, and `Exec`.
 - [ ] Add Gin handler summaries using `*gin.Context` parameters, router-registration cues, and render/body helper calls.
-- [ ] Add request-body summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ParseMultipartForm`, `FormFile`, `ReadAll(c.Request.Body)`, and manual decoder creation.
+- [x] Add request-body summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ParseMultipartForm`, `FormFile`, `ReadAll(c.Request.Body)`, and manual decoder creation.
 - [x] Added Gin call summaries keyed off `*gin.Context` parameters so shipped body/read/render/query-bind and `Copy()` fanout rules no longer depend on raw body-text scans.
-- [x] Added request-body summaries for `GetRawData`, `ShouldBind*`, `Bind*`, and `ReadAll(c.Request.Body)` for the shipped duplication rules.
+- [x] Added request-body summaries for `GetRawData`, `ShouldBind*`, `Bind*`, `ParseMultipartForm`, `FormFile`, and `ReadAll(c.Request.Body)` for the shipped duplication and upload rules.
 - [ ] Add response/export summaries for `JSON`, `PureJSON`, `IndentedJSON`, `Data`, file-serving helpers, streaming helpers, and row-wise response writes.
 - [x] Added response-helper summaries for `IndentedJSON` and `Data` so the shipped render rules use structured evidence.
 

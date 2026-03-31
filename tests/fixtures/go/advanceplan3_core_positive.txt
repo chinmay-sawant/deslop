@@ -1,14 +1,20 @@
 package sample
 
 import (
+	"bytes"
 	"compress/gzip"
 	"encoding/csv"
 	"encoding/json"
 	"encoding/xml"
 	"html/template"
+	"io"
 	"net/http"
+	"net/url"
 	"regexp"
+	"slices"
+	"strconv"
 	"strings"
+	"time"
 
 	proto "google.golang.org/protobuf/proto"
 	yaml "gopkg.in/yaml.v3"
@@ -71,5 +77,55 @@ func DecodeMore(rows []string, body []byte) {
 	for _, row := range rows {
 		decoder := json.NewDecoder(strings.NewReader(row))
 		_ = decoder
+	}
+}
+
+func SplitSameInput(value string, payload []byte, raw string) {
+	left := strings.Split(value, ",")
+	right := strings.Fields(value)
+	first := bytes.Split(payload, []byte(","))
+	second := bytes.Fields(payload)
+	id, _ := strconv.Atoi(raw)
+	count, _ := strconv.ParseInt(raw, 10, 64)
+	_ = left
+	_ = right
+	_ = first
+	_ = second
+	_ = id
+	_ = count
+}
+
+func ParseLoop(rows []string, baseURL string, raw string) {
+	for _, row := range rows {
+		parsed, _ := url.Parse(baseURL)
+		_ = parsed
+		when, _ := time.Parse(time.RFC3339, raw)
+		_ = when
+
+		var builder strings.Builder
+		_, _ = builder.WriteString(row)
+
+		var buffer bytes.Buffer
+		_, _ = buffer.WriteString(row)
+	}
+}
+
+func ReadAllThenDecode(reader io.Reader) {
+	body, _ := io.ReadAll(reader)
+	var payload map[string]any
+	_ = json.Unmarshal(body, &payload)
+}
+
+func CloneAndScratch(rows []string, payload []byte) {
+	lookup := map[string]int{"alpha": 1}
+	for _, row := range rows {
+		scratch := make([]byte, 0, 16)
+		tags := make(map[string]int)
+		clone := slices.Clone(payload)
+		_ = scratch
+		_ = clone
+		tags[row] = len(row)
+		_, _ = lookup[string([]byte(row))]
+		_ = slices.Contains(rows, row)
 	}
 }
