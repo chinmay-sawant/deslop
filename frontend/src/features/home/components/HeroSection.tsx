@@ -3,6 +3,7 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline'
 
 import { currentRelease, siteMetadata, trustPillars } from '../../../content/site-content'
 import { Container } from '../../../shared/ui/Container'
+import heroImage from '../../../assets/hero.png'
 
 export function HeroSection() {
   const [isReady, setIsReady] = useState(false)
@@ -55,6 +56,16 @@ export function HeroSection() {
           <p className="mt-10 mx-auto w-full max-w-2xl text-[1.15rem] leading-[1.8] text-[var(--muted)] sm:text-[1.35rem] text-center">
             A lightning-fast static analyzer that flags AI-generated code smells across Python, Rust, and Go. It surfaces suspicious patterns with readable evidence, including Go wrapper propagation and opt-in nested-loop pressure checks when you want stronger review signal.
           </p>
+        </div>
+
+        <div className="mt-16 flex justify-center">
+          <img
+            src={heroImage}
+            alt="deslop — static analysis for AI-generated code"
+            width={280}
+            height={280}
+            className="pointer-events-none select-none opacity-90"
+          />
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-center gap-5 sm:flex-row">

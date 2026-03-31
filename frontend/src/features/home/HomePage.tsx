@@ -79,7 +79,7 @@ export function HomePage() {
                 Install it fast. Keep the workflow local. Keep the findings readable.
               </h2>
               <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
-                deslop ships as a Rust CLI with explainable static signals and repository-local symbol awareness. It covers Go request-path packs for GORM and Gin, duplicate decode and multipart upload churn, repeated split and strconv work, loop-local URL and time parsing, looped GORM CRUD and DB churn, receiver-wrapper and context propagation checks—plus Cargo installs, prebuilt release binaries, and GitHub Actions support for automation.
+                deslop ships as a Rust CLI with explainable static signals and repository-local symbol awareness. It covers Go request-path packs for GORM and Gin, duplicate decode and multipart upload churn, repeated split and strconv work, loop-local URL and time parsing, looped GORM CRUD and DB churn, body-rewind duplication, large dynamic map response detection, export streaming gaps, debug-body logging, upstream decode duplication, handler-driven batch gaps, receiver-wrapper and context propagation checks—plus Cargo installs, prebuilt release binaries, and GitHub Actions support for automation.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">

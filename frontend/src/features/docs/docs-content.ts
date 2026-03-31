@@ -218,6 +218,14 @@ const goRules: Rule[] = [
   { id: 'errgroup_fanout_without_limit_in_handler', description: 'errgroup goroutine fanout without a visible concurrency limit in handlers.' },
   { id: 'large_csv_or_json_export_without_bufio', description: 'Export data written in loops without visible buffering in handlers.' },
   { id: 'gzip_or_zip_writer_created_per_chunk', description: 'Gzip or zip writers recreated per chunk inside handler loops instead of reusing per stream.' },
+  { id: 'repeated_body_rewind_for_multiple_decoders', description: 'Gin handlers that read, rewind, and decode the same request body multiple times.' },
+  { id: 'middleware_rebinds_body_after_handler_bind', description: 'Middleware or helper chains that parse the request body after the main handler has already bound it.' },
+  { id: 'no_streaming_for_large_export_handler', description: 'Large list or export handlers that materialize everything before writing rather than using chunked or streaming output.' },
+  { id: 'large_h_payload_built_only_for_json_response', description: 'Large gin.H payloads built as transient dynamic maps right before JSON rendering.' },
+  { id: 'repeated_large_map_literal_response_construction', description: 'Large map-literal response assembly on hot routes where a stable typed response would be cheaper.' },
+  { id: 'gin_logger_debug_body_logging_on_hot_routes', description: 'Verbose body or payload logging observed on likely high-volume Gin routes.' },
+  { id: 'upstream_json_decode_same_response_multiple_times', description: 'One upstream HTTP response body decoded into multiple targets in the same handler.' },
+  { id: 'no_batching_on_handler_driven_db_write_loop', description: 'Request handlers that drive row-by-row DB writes with no batch path.' },
 ]
 
 const pythonRules: Rule[] = [
@@ -473,14 +481,14 @@ missing_context_propagation = "error"`
 const overviewContent = {
   go: {
     title: 'Go Analysis',
-    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and now covers repo-wide style checks, receiver-field and nested wrapper propagation, derived-context goroutine lifetime analysis, parser-backed Gin and GORM request-path performance analysis, duplicate decode hot spots, multipart upload waste, repeated split and strconv churn, scratch container and slice-clone churn, loop-local URL and time parsing, dynamic Gin bind churn, request-path DB churn, looped GORM CRUD and association churn, security, and an opt-in deeper semantic loop pass with explainable rules.',
+    lead: 'deslop ships its broadest heuristic surface area for Go. It walks the repository with .gitignore awareness, parses source structure with tree-sitter-go, builds a local package index keyed by package plus directory, and now covers repo-wide style checks, receiver-field and nested wrapper propagation, derived-context goroutine lifetime analysis, parser-backed Gin and GORM request-path performance analysis, duplicate decode hot spots, multipart upload waste, repeated split and strconv churn, scratch container and slice-clone churn, loop-local URL and time parsing, dynamic Gin bind churn, request-path DB churn, looped GORM CRUD and association churn, body-rewind duplication, large dynamic map response construction, export streaming gaps, debug-body logging on hot routes, upstream response decode duplication, handler-driven DB write batch gaps, non-request workload suppression for missing-limit findings, security, and an opt-in deeper semantic loop pass with explainable rules.',
     bullets: [
       '.gitignore-aware walk; skips vendor/ and generated files by default',
       'Parses package names, imports, declared symbols, call sites, and function fingerprints',
       'Builds a repository-local symbol index for same-package and import hallucination checks',
       'Includes repo-wide package and import style checks plus wrapper-level context propagation heuristics',
       'Covers receiver-field wrappers, local wrapper chains, and Query versus QueryContext mismatches',
-      'Adds parser-backed Gin request-body, multipart upload, and query-bind summaries plus GORM chain summaries for duplicate decode, file-serving, request-path DB churn, and repeated local transform findings',
+      'Adds parser-backed Gin request-body, multipart upload, and query-bind summaries plus GORM chain summaries for duplicate decode, file-serving, request-path DB churn, body-rewind detection, large dynamic map response detection, export streaming gaps, debug-body logging, upstream decode duplication, handler-driven batch gaps, and repeated local transform findings',
       'Adds an opt-in semantic pack for nested-loop allocation, concat, and stronger N+1 signals',
       'Produces compact text output by default; full detail and JSON via flags',
       'Supports standalone Go repos and mixed Go + Python + Rust repositories',
