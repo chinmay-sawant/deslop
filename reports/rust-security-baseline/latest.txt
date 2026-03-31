@@ -3,12 +3,15 @@
 ## split_at_and_indexing
 src/analysis/python/parser/general.rs:932:                return &line[..index];
 src/analysis/rust/parser/mod.rs:433:    text[vec_start + 4..].contains("Box<")
+src/heuristics/go/advanceplan3/data_access.rs:1350:                    let after_like = &upper[like_pos + 4..];
 src/heuristics/go/advanceplan3/gin.rs:239:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
-src/heuristics/go/advanceplan3/gin.rs:676:        text = text[1..text.len() - 1].trim();
-src/heuristics/go/advanceplan3/gin.rs:746:        for (end_index, current) in suffix[index + character.len_utf8()..].char_indices() {
-src/heuristics/go/advanceplan3/gin.rs:755:                return Some(suffix[start..end].to_string());
-src/heuristics/go/advanceplan3/gin.rs:781:                    return Some(suffix[..index].trim().to_string());
-src/heuristics/go/advanceplan3/gin.rs:785:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
+src/heuristics/go/advanceplan3/gin.rs:683:        text = text[1..text.len() - 1].trim();
+src/heuristics/go/advanceplan3/gin.rs:753:        for (end_index, current) in suffix[index + character.len_utf8()..].char_indices() {
+src/heuristics/go/advanceplan3/gin.rs:762:                return Some(suffix[start..end].to_string());
+src/heuristics/go/advanceplan3/gin.rs:788:                    return Some(suffix[..index].trim().to_string());
+src/heuristics/go/advanceplan3/gin.rs:792:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
+src/heuristics/go/advanceplan3/hot_path.rs:1478:                    return Some(suffix[..index].trim().to_string());
+src/heuristics/go/advanceplan3/hot_path.rs:1482:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
 src/heuristics/go/advanceplan3/mod.rs:239:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go/idioms.rs:1037:    let parameters = &signature_text[parameters_start + 1..parameters_end];
 src/heuristics/go/idioms.rs:1083:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {

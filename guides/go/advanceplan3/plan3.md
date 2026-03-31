@@ -74,32 +74,32 @@ Add a Gin-aware request-path pack that understands `*gin.Context`, common bind/r
 - [x] `json_marshaled_manually_then_c_data`: detect `json.Marshal` followed by `c.Data` or `c.Writer.Write` instead of a direct Gin JSON renderer.
 - [x] `repeated_c_json_inside_stream_loop`: detect `c.JSON` or `c.PureJSON` inside streaming loops where encoder-based streaming would be more stable.
 - [ ] `no_streaming_for_large_export_handler`: detect large list/export handlers that materialize everything before writing rather than using chunked or streaming output.
-- [ ] `template_parse_in_handler`: detect template parsing or loading directly inside handlers.
-- [ ] `loadhtmlglob_or_loadhtmlfiles_in_request_path`: detect Gin HTML template loading APIs called at request time.
+- [x] `template_parse_in_handler`: detect template parsing or loading directly inside handlers.
+- [x] `loadhtmlglob_or_loadhtmlfiles_in_request_path`: detect Gin HTML template loading APIs called at request time.
 - [x] `servefile_via_readfile_then_c_data`: detect file-serving paths that load files into memory and then write through Gin instead of using streaming/file helpers.
 - [ ] `repeated_large_map_literal_response_construction`: detect large map-literal response assembly on hot routes where a stable typed response or reusable encoder path would be cheaper.
 - [ ] `large_h_payload_built_only_for_json_response`: detect large `gin.H` payloads built as transient dynamic maps right before JSON rendering.
 
 ### Middleware And Request-Scope Allocation Churn
 
-- [ ] `middleware_allocates_http_client_per_request`: detect `http.Client` or transport construction inside Gin middleware.
-- [ ] `middleware_allocates_db_or_gorm_handle_per_request`: detect DB or GORM handle creation in middleware instead of shared setup.
-- [ ] `middleware_allocates_regex_or_template_per_request`: detect regex or template compile/parse work in middleware.
+- [x] `middleware_allocates_http_client_per_request`: detect `http.Client` or transport construction inside Gin middleware.
+- [x] `middleware_allocates_db_or_gorm_handle_per_request`: detect DB or GORM handle creation in middleware instead of shared setup.
+- [x] `middleware_allocates_regex_or_template_per_request`: detect regex or template compile/parse work in middleware.
 - [x] `dumprequest_or_dumpresponse_in_hot_path`: detect `httputil.DumpRequest`, `DumpRequestOut`, or `DumpResponse` on hot request paths.
-- [ ] `env_or_config_lookup_per_request`: detect repeated config file loads, environment parsing, or heavyweight config decoding in handlers and middleware.
+- [x] `env_or_config_lookup_per_request`: detect repeated config file loads, environment parsing, or heavyweight config decoding in handlers and middleware.
 - [x] `file_or_template_read_per_request`: detect file reads for templates, policy docs, or static fragments inside handlers.
 - [x] `gin_context_copy_for_each_item_fanout`: detect `c.Copy()` once per item in fanout loops rather than once per goroutine family or once per request.
 - [ ] `gin_logger_debug_body_logging_on_hot_routes`: detect verbose body or payload logging on likely high-volume routes.
 
 ### Upstream Fanout, Export Paths, And Batch Gaps
 
-- [ ] `upstream_http_call_per_item_in_handler_loop`: detect one upstream HTTP call per element in a request loop.
-- [ ] `duplicate_upstream_calls_same_url_same_handler`: detect the same upstream URL or request template being called multiple times in one handler.
+- [x] `upstream_http_call_per_item_in_handler_loop`: detect one upstream HTTP call per element in a request loop.
+- [x] `duplicate_upstream_calls_same_url_same_handler`: detect the same upstream URL or request template being called multiple times in one handler.
 - [ ] `upstream_json_decode_same_response_multiple_times`: detect one upstream response body decoded into multiple targets in the same handler.
-- [ ] `errgroup_fanout_without_limit_in_handler`: detect `errgroup.Go` or goroutine fanout in handlers without a visible concurrency limit when the fanout size is request-driven.
+- [x] `errgroup_fanout_without_limit_in_handler`: detect `errgroup.Go` or goroutine fanout in handlers without a visible concurrency limit when the fanout size is request-driven.
 - [ ] `no_batching_on_handler_driven_db_write_loop`: detect request handlers that drive row-by-row DB writes with no batch path.
-- [ ] `gzip_or_zip_writer_created_per_chunk`: detect compression writers being recreated repeatedly during chunked response generation.
-- [ ] `large_csv_or_json_export_without_bufio`: detect export handlers that write row-by-row to the response writer without buffering.
+- [x] `gzip_or_zip_writer_created_per_chunk`: detect compression writers being recreated repeatedly during chunked response generation.
+- [x] `large_csv_or_json_export_without_bufio`: detect export handlers that write row-by-row to the response writer without buffering.
 
 ## Shared Implementation Checklist
 

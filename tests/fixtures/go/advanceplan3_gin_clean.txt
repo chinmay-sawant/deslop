@@ -1,12 +1,17 @@
 package sample
 
 import (
+	"bufio"
+	"compress/gzip"
+	"html/template"
 	"io"
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/errgroup"
 )
 
 type requestPayload struct {
@@ -64,4 +69,65 @@ func CopyOnce(c *gin.Context, items []string) {
 
 func LoadTemplateAtStartup() {
 	_, _ = os.ReadFile("template.html")
+}
+
+func TemplateParseOnInit() {
+	tmpl, _ := template.New("page").Parse("<html>{{.}}</html>")
+	_ = tmpl
+}
+
+func LoadHTMLOnInit(r *gin.Engine) {
+	r.LoadHTMLGlob("templates/*")
+}
+
+func MiddlewareReusesClient() gin.HandlerFunc {
+	client := &http.Client{}
+	return func(c *gin.Context) {
+		_ = client
+		c.Next()
+	}
+}
+
+func MiddlewareReusesRegex() gin.HandlerFunc {
+	re := regexp.MustCompile("^test$")
+	return func(c *gin.Context) {
+		_ = re
+		c.Next()
+	}
+}
+
+func EnvOnInit() string {
+	return os.Getenv("API_KEY")
+}
+
+func BatchUpstream(c *gin.Context, ids []string) {
+	resp, _ := http.Get("https://api.example.com/users?ids=" + ids[0])
+	_ = resp
+}
+
+func FanoutWithLimit(c *gin.Context, ids []string) {
+	eg := errgroup.Group{}
+	eg.SetLimit(5)
+	for _, id := range ids {
+		id := id
+		eg.Go(func() error {
+			_ = id
+			return nil
+		})
+	}
+	_ = eg.Wait()
+}
+
+func ExportWithBufio(c *gin.Context, rows []string) {
+	bw := bufio.NewWriter(c.Writer)
+	defer bw.Flush()
+	for _, row := range rows {
+		_, _ = bw.WriteString(row + "\n")
+	}
+}
+
+func GzipOnce(c *gin.Context, data []byte) {
+	gz := gzip.NewWriter(c.Writer)
+	_, _ = gz.Write(data)
+	gz.Close()
 }

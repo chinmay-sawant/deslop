@@ -66,17 +66,17 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 
 ### Capacity And Growth Planning
 
-- [ ] `slice_append_without_prealloc_known_bound`: detect `append` into nil or zero-capacity slices when the enclosing loop clearly ranges over a source with a visible length and no capacity hint is present.
-- [ ] `nested_append_without_outer_capacity`: detect nested loops that build an output slice without preallocating even though both outer and inner bounds are visible locally.
-- [ ] `map_growth_without_size_hint`: detect steady-state inserts into a map in hot paths without `make(map[K]V, hint)` when the candidate entry count is locally inferable.
-- [ ] `strings_builder_without_grow_known_bound`: detect `strings.Builder` use that still skips `Grow` even when approximate output size is easy to infer.
-- [ ] `bytes_buffer_without_grow_known_bound`: detect `bytes.Buffer` use that repeatedly expands without a visible `Grow` or initial capacity plan.
+- [x] `slice_append_without_prealloc_known_bound`: detect `append` into nil or zero-capacity slices when the enclosing loop clearly ranges over a source with a visible length and no capacity hint is present.
+- [x] `nested_append_without_outer_capacity`: detect nested loops that build an output slice without preallocating even though both outer and inner bounds are visible locally.
+- [x] `map_growth_without_size_hint`: detect steady-state inserts into a map in hot paths without `make(map[K]V, hint)` when the candidate entry count is locally inferable.
+- [x] `strings_builder_without_grow_known_bound`: detect `strings.Builder` use that still skips `Grow` even when approximate output size is easy to infer.
+- [x] `bytes_buffer_without_grow_known_bound`: detect `bytes.Buffer` use that repeatedly expands without a visible `Grow` or initial capacity plan.
 - [x] `builder_or_buffer_recreated_per_iteration`: detect `strings.Builder`, `bytes.Buffer`, or `bytes.NewBuffer(nil)` being constructed once per item in a loop instead of being reset or reused.
 - [x] `make_slice_inside_hot_loop_same_shape`: detect short-lived scratch slices recreated on every iteration with the same shape and no sign that they must escape.
 - [x] `make_map_inside_hot_loop_same_shape`: detect temporary maps recreated in inner loops for normalization, deduplication, or metadata collection.
 - [x] `repeated_slice_clone_in_loop`: detect `append([]T(nil), src...)`, `slices.Clone`, or `copy`-based cloning inside loops where the cloned slice is used only transiently.
-- [ ] `repeated_map_clone_in_loop`: detect whole-map copies inside loops where a clear read-only source map is being re-cloned for every iteration.
-- [ ] `append_then_trim_each_iteration`: detect buffers or slices that grow and are immediately resliced back down in steady-state loops, which usually indicates a reusable scratch buffer candidate.
+- [x] `repeated_map_clone_in_loop`: detect whole-map copies inside loops where a clear read-only source map is being re-cloned for every iteration.
+- [x] `append_then_trim_each_iteration`: detect buffers or slices that grow and are immediately resliced back down in steady-state loops, which usually indicates a reusable scratch buffer candidate.
 - [x] `byte_string_conversion_in_loop`: detect `string([]byte)` or `[]byte(string)` conversions inside loops when the converted value is immediately used as a map key, join fragment, or short-lived lookup token.
 
 ### Repeated Parse, Compile, And Normalize Work
@@ -91,7 +91,7 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 - [x] `proto_unmarshal_same_payload_multiple_times`: detect protobuf payloads that are decoded multiple times in one request path.
 - [x] `strings_split_same_input_multiple_times`: detect repeated `strings.Split`, `SplitN`, or `Fields` calls against the same unchanged binding.
 - [x] `bytes_split_same_input_multiple_times`: detect repeated `bytes.Split*` calls against the same unchanged byte slice.
-- [ ] `stable_value_normalization_in_inner_loop`: detect repeated `strings.ToLower`, `TrimSpace`, `ReplaceAll`, `path.Clean`, or similar normalization calls on invariant values inside nested loops.
+- [x] `stable_value_normalization_in_inner_loop`: detect repeated `strings.ToLower`, `TrimSpace`, `ReplaceAll`, `path.Clean`, or similar normalization calls on invariant values inside nested loops.
 - [x] `strconv_repeat_on_same_binding`: detect repeated `strconv` conversions on the same unchanged binding within a single function body.
 - [ ] `uuid_hash_formatting_only_for_logs`: detect `uuid.String()`, `hex.EncodeToString`, or `base64` formatting inside tight loops when the formatted value only feeds logging or debug strings.
 
@@ -101,17 +101,17 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 - [x] `json_decoder_recreated_per_item`: detect `json.NewDecoder` being rebuilt repeatedly on short-lived readers inside inner loops.
 - [x] `gzip_reader_writer_recreated_per_item`: detect `gzip.NewReader` or `gzip.NewWriter` per element instead of per stream or pooled reuse.
 - [x] `csv_writer_flush_per_row`: detect `csv.Writer.Flush()` or equivalent buffer flushes inside per-row export loops.
-- [ ] `bufio_writer_missing_in_bulk_export`: detect large write loops to files or sockets without a visible buffered writer.
-- [ ] `bufio_reader_missing_for_small_read_loop`: detect repeated tiny reads from files or sockets in loops without `bufio.Reader` style buffering.
+- [x] `bufio_writer_missing_in_bulk_export`: detect large write loops to files or sockets without a visible buffered writer.
+- [x] `bufio_reader_missing_for_small_read_loop`: detect repeated tiny reads from files or sockets in loops without `bufio.Reader` style buffering.
 - [x] `read_then_decode_duplicate_materialization`: detect `io.ReadAll` plus a second decode/materialization stage when a streaming decoder could serve the same path.
 
 ### Algorithmic Waste And Container Shape
 
 - [x] `slice_membership_in_loop_map_candidate`: detect `slices.Contains` or manual linear membership checks inside loops against a stable slice that could be indexed once.
-- [ ] `nested_linear_join_map_candidate`: detect nested-loop lookup joins between two collections when one side is effectively being searched by key each time.
-- [ ] `append_then_sort_each_iteration`: detect result slices that are re-sorted after each append instead of once at the end or through a bounded insertion strategy.
-- [ ] `sort_before_first_or_membership_only`: detect full sorts when the code only uses the first element, min/max, or a yes/no membership outcome afterward.
-- [ ] `filter_then_count_then_iterate`: detect repeated full traversals over the same slice or array for filter, count, and process phases inside one function.
+- [x] `nested_linear_join_map_candidate`: detect nested-loop lookup joins between two collections when one side is effectively being searched by key each time.
+- [x] `append_then_sort_each_iteration`: detect result slices that are re-sorted after each append instead of once at the end or through a bounded insertion strategy.
+- [x] `sort_before_first_or_membership_only`: detect full sorts when the code only uses the first element, min/max, or a yes/no membership outcome afterward.
+- [x] `filter_then_count_then_iterate`: detect repeated full traversals over the same slice or array for filter, count, and process phases inside one function.
 
 ## Shared Implementation Checklist
 

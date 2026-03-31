@@ -268,6 +268,18 @@ fn core_repeated_work_findings(
     findings.extend(read_then_decode_duplicate_materialization_findings(
         file, function, lines,
     ));
+    findings.extend(slice_append_without_prealloc_findings(file, function, lines));
+    findings.extend(nested_append_without_outer_capacity_findings(file, function, lines));
+    findings.extend(map_growth_without_size_hint_findings(file, function, lines));
+    findings.extend(builder_without_grow_findings(file, function, lines));
+    findings.extend(repeated_map_clone_findings(file, function, lines));
+    findings.extend(append_then_trim_findings(file, function, lines));
+    findings.extend(stable_value_normalization_findings(file, function, lines));
+    findings.extend(bufio_missing_findings(file, function, lines));
+    findings.extend(nested_linear_join_findings(file, function, lines));
+    findings.extend(append_then_sort_findings(file, function, lines));
+    findings.extend(sort_before_first_or_membership_findings(file, function, lines));
+    findings.extend(filter_count_iterate_findings(file, function, lines));
     findings
 }
 
@@ -754,4 +766,727 @@ fn read_then_decode_duplicate_materialization_findings(
     }
 
     findings
+}
+
+fn slice_append_without_prealloc_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for body_line in lines.iter().filter(|bl| bl.in_loop) {
+        if body_line.text.contains("append(")
+            && !body_line.text.contains("make(")
+            && !body_line.text.contains("cap(")
+        {
+            if let Some(target) = append_target(&body_line.text) {
+                let has_prealloc = lines.iter().any(|prior| {
+                    prior.line < body_line.line
+                        && prior.text.contains("make([]")
+                        && prior.text.contains(&target)
+                });
+                if !has_prealloc {
+                    let has_range_bound = lines.iter().any(|prior| {
+                        prior.line < body_line.line
+                            && prior.text.contains("range ")
+                            && prior.text.contains("for ")
+                    });
+                    if has_range_bound {
+                        findings.push(Finding {
+                            rule_id: "slice_append_without_prealloc_known_bound".to_string(),
+                            severity: Severity::Info,
+                            path: file.path.clone(),
+                            function_name: Some(function.fingerprint.name.clone()),
+                            start_line: body_line.line,
+                            end_line: body_line.line,
+                            message: format!(
+                                "function {} appends to a slice inside a range loop without visible preallocation",
+                                function.fingerprint.name
+                            ),
+                            evidence: vec![
+                                format!("append to {target} observed inside a loop at line {}", body_line.line),
+                                "preallocating with make([]T, 0, len(source)) usually reduces growth-related copying".to_string(),
+                            ],
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    findings
+}
+
+fn nested_append_without_outer_capacity_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    let mut loop_depth = 0usize;
+
+    for body_line in lines {
+        if body_line.text.contains("for ") && body_line.text.contains("{") {
+            loop_depth += 1;
+        }
+        if body_line.text.contains("}") && loop_depth > 0 {
+            loop_depth = loop_depth.saturating_sub(body_line.text.matches('}').count());
+        }
+
+        if loop_depth >= 2
+            && body_line.text.contains("append(")
+            && !function.body_text.contains("make([]")
+        {
+            findings.push(Finding {
+                rule_id: "nested_append_without_outer_capacity".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: body_line.line,
+                end_line: body_line.line,
+                message: format!(
+                    "function {} appends inside nested loops without visible preallocation",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("nested-loop append observed at line {}", body_line.line),
+                    "preallocating the output slice before nested loops usually avoids repeated growth copies".to_string(),
+                ],
+            });
+            break;
+        }
+    }
+
+    findings
+}
+
+fn map_growth_without_size_hint_findings(
+    _file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for body_line in lines.iter().filter(|bl| bl.in_loop) {
+        if (body_line.text.contains("[") && body_line.text.contains("] ="))
+            || (body_line.text.contains("[") && body_line.text.contains("] +="))
+        {
+            let has_map_decl_without_hint = lines.iter().any(|prior| {
+                prior.line < body_line.line
+                    && prior.text.contains("make(map[")
+                    && !prior.text.contains(',')
+            });
+            let has_bare_map_literal = lines.iter().any(|prior| {
+                prior.line < body_line.line
+                    && prior.text.contains("map[")
+                    && prior.text.contains("{}")
+                    && !prior.text.contains("make(")
+            });
+            if has_map_decl_without_hint || has_bare_map_literal {
+                findings.push(Finding {
+                    rule_id: "map_growth_without_size_hint".to_string(),
+                    severity: Severity::Info,
+                    path: _file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: body_line.line,
+                    end_line: body_line.line,
+                    message: format!(
+                        "function {} inserts into a map in a loop without a visible size hint",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("map insertion observed inside a loop at line {}", body_line.line),
+                        "make(map[K]V, expectedSize) usually reduces rehashing during hot-path growth".to_string(),
+                    ],
+                });
+                break;
+            }
+        }
+    }
+
+    findings
+}
+
+fn builder_without_grow_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for alias in import_aliases_for(file, "strings") {
+        let builder_marker = format!("{alias}.Builder");
+        for body_line in lines {
+            if body_line.text.contains(&builder_marker) {
+                let has_grow = lines.iter().any(|other| other.text.contains(".Grow("));
+                if !has_grow && lines.iter().any(|other| other.in_loop && other.text.contains(".WriteString(")) {
+                    findings.push(Finding {
+                        rule_id: "strings_builder_without_grow_known_bound".to_string(),
+                        severity: Severity::Info,
+                        path: file.path.clone(),
+                        function_name: Some(function.fingerprint.name.clone()),
+                        start_line: body_line.line,
+                        end_line: body_line.line,
+                        message: format!(
+                            "function {} uses strings.Builder without Grow when approximate size is locally visible",
+                            function.fingerprint.name
+                        ),
+                        evidence: vec![
+                            format!("strings.Builder declared at line {} without Grow", body_line.line),
+                            "calling Grow(estimatedSize) before looped writes avoids repeated buffer expansion".to_string(),
+                        ],
+                    });
+                    break;
+                }
+            }
+        }
+    }
+
+    for alias in import_aliases_for(file, "bytes") {
+        let buffer_marker = format!("{alias}.Buffer");
+        for body_line in lines {
+            if body_line.text.contains(&buffer_marker)
+                && !body_line.text.contains(&format!("{alias}.NewBuffer("))
+            {
+                let has_grow = lines.iter().any(|other| other.text.contains(".Grow("));
+                if !has_grow && lines.iter().any(|other| other.in_loop && other.text.contains(".Write")) {
+                    findings.push(Finding {
+                        rule_id: "bytes_buffer_without_grow_known_bound".to_string(),
+                        severity: Severity::Info,
+                        path: file.path.clone(),
+                        function_name: Some(function.fingerprint.name.clone()),
+                        start_line: body_line.line,
+                        end_line: body_line.line,
+                        message: format!(
+                            "function {} uses bytes.Buffer without Grow when approximate size is locally visible",
+                            function.fingerprint.name
+                        ),
+                        evidence: vec![
+                            format!("bytes.Buffer declared at line {} without Grow", body_line.line),
+                            "calling Grow(estimatedSize) before looped writes avoids repeated buffer expansion".to_string(),
+                        ],
+                    });
+                    break;
+                }
+            }
+        }
+    }
+
+    findings
+}
+
+fn repeated_map_clone_findings(
+    _file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for body_line in lines.iter().filter(|bl| bl.in_loop) {
+        if body_line.text.contains("for ")
+            && body_line.text.contains("range ")
+            && body_line.text.contains("{")
+        {
+            continue;
+        }
+
+        let is_map_copy_loop = body_line.text.contains("make(map[")
+            && lines
+                .iter()
+                .any(|other| other.in_loop && other.line > body_line.line && other.text.contains("] ="));
+
+        if is_map_copy_loop {
+            findings.push(Finding {
+                rule_id: "repeated_map_clone_in_loop".to_string(),
+                severity: Severity::Info,
+                path: _file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: body_line.line,
+                end_line: body_line.line,
+                message: format!(
+                    "function {} clones maps inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("map construction inside a loop at line {}", body_line.line),
+                    "cloning a read-only map on every iteration is usually avoidable".to_string(),
+                ],
+            });
+            break;
+        }
+    }
+
+    findings
+}
+
+fn append_then_trim_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for body_line in lines.iter().filter(|bl| bl.in_loop) {
+        if body_line.text.contains("append(") {
+            if let Some(target) = append_target(&body_line.text) {
+                let has_trim = lines.iter().any(|other| {
+                    other.in_loop
+                        && other.line > body_line.line
+                        && other.text.contains(&format!("{target}["))
+                        && other.text.contains(":]")
+                });
+                let has_reslice = lines.iter().any(|other| {
+                    other.in_loop
+                        && other.line > body_line.line
+                        && other.text.contains(&format!("{target} = {target}[:"))
+                });
+                if has_trim || has_reslice {
+                    findings.push(Finding {
+                        rule_id: "append_then_trim_each_iteration".to_string(),
+                        severity: Severity::Info,
+                        path: file.path.clone(),
+                        function_name: Some(function.fingerprint.name.clone()),
+                        start_line: body_line.line,
+                        end_line: body_line.line,
+                        message: format!(
+                            "function {} appends and then reslices in a loop",
+                            function.fingerprint.name
+                        ),
+                        evidence: vec![
+                            format!("append to {target} followed by reslice inside a loop at line {}", body_line.line),
+                            "a reusable scratch buffer with reset is usually cheaper than grow-then-trim per iteration".to_string(),
+                        ],
+                    });
+                    break;
+                }
+            }
+        }
+    }
+
+    findings
+}
+
+fn stable_value_normalization_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    let normalization_markers: Vec<(String, &str)> = import_aliases_for(file, "strings")
+        .into_iter()
+        .flat_map(|alias| {
+            vec![
+                (format!("{alias}.ToLower("), "ToLower"),
+                (format!("{alias}.ToUpper("), "ToUpper"),
+                (format!("{alias}.TrimSpace("), "TrimSpace"),
+                (format!("{alias}.ReplaceAll("), "ReplaceAll"),
+            ]
+        })
+        .chain(
+            import_aliases_for(file, "path")
+                .into_iter()
+                .flat_map(|alias| vec![(format!("{alias}.Clean("), "Clean")]),
+        )
+        .chain(
+            import_aliases_for(file, "path/filepath")
+                .into_iter()
+                .flat_map(|alias| vec![(format!("{alias}.Clean("), "Clean")]),
+        )
+        .collect();
+
+    if normalization_markers.is_empty() {
+        return findings;
+    }
+
+    for body_line in lines.iter().filter(|bl| bl.in_loop) {
+        for (marker, method) in &normalization_markers {
+            if body_line.text.contains(marker) {
+                if let Some(argument) = first_argument_after_marker_simple(&body_line.text, marker) {
+                    if simple_local_binding(&argument).is_some()
+                        && !lines.iter().any(|other| {
+                            other.in_loop && other.text.contains(&format!("{argument} ="))
+                        })
+                    {
+                        findings.push(Finding {
+                            rule_id: "stable_value_normalization_in_inner_loop".to_string(),
+                            severity: Severity::Info,
+                            path: file.path.clone(),
+                            function_name: Some(function.fingerprint.name.clone()),
+                            start_line: body_line.line,
+                            end_line: body_line.line,
+                            message: format!(
+                                "function {} normalizes a stable value inside a loop",
+                                function.fingerprint.name
+                            ),
+                            evidence: vec![
+                                format!("{method}({argument}) observed inside a loop at line {}", body_line.line),
+                                "normalizing an invariant value before the loop avoids repeated work".to_string(),
+                            ],
+                        });
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    findings
+}
+
+fn bufio_missing_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    let has_bufio = import_aliases_for(file, "bufio").len() > 0
+        || function.body_text.contains("bufio.");
+
+    if has_bufio {
+        return findings;
+    }
+
+    let write_in_loop = lines.iter().any(|bl| {
+        bl.in_loop
+            && (bl.text.contains(".Write(") || bl.text.contains(".WriteString("))
+            && !bl.text.contains("Builder")
+            && !bl.text.contains("Buffer")
+    });
+
+    let has_os_file_or_socket = import_aliases_for(file, "os")
+        .iter()
+        .any(|alias| {
+            function.body_text.contains(&format!("{alias}.Create("))
+                || function.body_text.contains(&format!("{alias}.File"))
+                || function.signature_text.contains(&format!("{alias}.File"))
+        })
+        || import_aliases_for(file, "os")
+            .iter()
+            .any(|alias| function.body_text.contains(&format!("{alias}.OpenFile(")))
+        || function.body_text.contains("net.Conn")
+        || function.body_text.contains("net.Dial");
+
+    if write_in_loop && has_os_file_or_socket {
+        let anchor_line = lines
+            .iter()
+            .find(|bl| {
+                bl.in_loop
+                    && (bl.text.contains(".Write(") || bl.text.contains(".WriteString("))
+            })
+            .map(|bl| bl.line)
+            .unwrap_or(function.body_start_line);
+
+        findings.push(Finding {
+            rule_id: "bufio_writer_missing_in_bulk_export".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: anchor_line,
+            end_line: anchor_line,
+            message: format!(
+                "function {} writes to a file or socket in a loop without visible buffering",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("direct .Write(...) observed in a loop at line {anchor_line}"),
+                "wrapping the writer in bufio.NewWriter usually improves throughput for looped writes".to_string(),
+            ],
+        });
+    }
+
+    let read_in_loop = lines.iter().any(|bl| {
+        bl.in_loop
+            && (bl.text.contains(".Read(") || bl.text.contains(".ReadByte("))
+            && !bl.text.contains("ReadAll(")
+            && !bl.text.contains("ReadFile(")
+    });
+
+    if read_in_loop && has_os_file_or_socket {
+        let anchor_line = lines
+            .iter()
+            .find(|bl| {
+                bl.in_loop
+                    && (bl.text.contains(".Read(") || bl.text.contains(".ReadByte("))
+            })
+            .map(|bl| bl.line)
+            .unwrap_or(function.body_start_line);
+
+        findings.push(Finding {
+            rule_id: "bufio_reader_missing_for_small_read_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: anchor_line,
+            end_line: anchor_line,
+            message: format!(
+                "function {} reads from a file or socket in a loop without visible buffering",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("direct .Read(...) observed in a loop at line {anchor_line}"),
+                "wrapping the reader in bufio.NewReader usually improves throughput for looped reads".to_string(),
+            ],
+        });
+    }
+
+    findings
+}
+
+fn nested_linear_join_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    let mut outer_loop_depth = 0usize;
+    let mut inner_loop_starts = Vec::new();
+
+    for body_line in lines {
+        if contains_for_keyword(&body_line.text) {
+            outer_loop_depth += 1;
+            if outer_loop_depth >= 2 {
+                inner_loop_starts.push(body_line.line);
+            }
+        }
+    }
+
+    if inner_loop_starts.is_empty() {
+        return findings;
+    }
+
+    let has_lookup_in_inner = lines.iter().any(|bl| {
+        bl.in_loop
+            && (bl.text.contains("== ")
+                || bl.text.contains("!= "))
+            && !bl.text.contains("err ")
+            && !bl.text.contains("nil")
+    });
+
+    if has_lookup_in_inner && inner_loop_starts.len() >= 1 {
+        let slices_import = import_aliases_for(file, "slices");
+        let has_linear_search = lines.iter().any(|bl| {
+            bl.in_loop
+                && slices_import.iter().any(|alias| {
+                    bl.text.contains(&format!("{alias}.Contains("))
+                        || bl.text.contains(&format!("{alias}.Index("))
+                })
+        });
+
+        if has_linear_search {
+            let anchor = inner_loop_starts[0];
+            findings.push(Finding {
+                rule_id: "nested_linear_join_map_candidate".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: anchor,
+                end_line: anchor,
+                message: format!(
+                    "function {} performs nested-loop lookups that could use a map index",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("nested loop with linear search observed near line {anchor}"),
+                    "indexing one collection into a map before the join loop usually avoids O(n*m) scans".to_string(),
+                ],
+            });
+        }
+    }
+
+    findings
+}
+
+fn append_then_sort_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let sort_aliases = import_aliases_for(file, "sort");
+    let slices_aliases = import_aliases_for(file, "slices");
+    if sort_aliases.is_empty() && slices_aliases.is_empty() {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+
+    for body_line in lines.iter().filter(|bl| bl.in_loop) {
+        let has_sort = sort_aliases.iter().any(|alias| {
+            body_line.text.contains(&format!("{alias}.Sort("))
+                || body_line.text.contains(&format!("{alias}.Slice("))
+                || body_line.text.contains(&format!("{alias}.Strings("))
+                || body_line.text.contains(&format!("{alias}.Ints("))
+        }) || slices_aliases.iter().any(|alias| {
+            body_line.text.contains(&format!("{alias}.Sort("))
+                || body_line.text.contains(&format!("{alias}.SortFunc("))
+        });
+
+        if has_sort {
+            findings.push(Finding {
+                rule_id: "append_then_sort_each_iteration".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: body_line.line,
+                end_line: body_line.line,
+                message: format!(
+                    "function {} sorts inside a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("sort call observed inside a loop at line {}", body_line.line),
+                    "sorting once after all insertions is usually cheaper than re-sorting each iteration".to_string(),
+                ],
+            });
+            break;
+        }
+    }
+
+    findings
+}
+
+fn sort_before_first_or_membership_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let sort_aliases = import_aliases_for(file, "sort");
+    let slices_aliases = import_aliases_for(file, "slices");
+    if sort_aliases.is_empty() && slices_aliases.is_empty() {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+
+    let sort_line = lines.iter().find(|bl| {
+        sort_aliases.iter().any(|alias| {
+            bl.text.contains(&format!("{alias}.Sort("))
+                || bl.text.contains(&format!("{alias}.Slice("))
+                || bl.text.contains(&format!("{alias}.Strings("))
+                || bl.text.contains(&format!("{alias}.Ints("))
+                || bl.text.contains(&format!("{alias}.Float64s("))
+        }) || slices_aliases.iter().any(|alias| {
+            bl.text.contains(&format!("{alias}.Sort("))
+                || bl.text.contains(&format!("{alias}.SortFunc("))
+        })
+    });
+
+    if let Some(sort_bl) = sort_line {
+        let only_uses_first = lines.iter().any(|bl| {
+            bl.line > sort_bl.line && (bl.text.contains("[0]") || bl.text.contains("[:1]"))
+        });
+        let only_uses_min_max = lines.iter().any(|bl| {
+            bl.line > sort_bl.line
+                && (bl.text.contains("[0]") || bl.text.contains("[len("))
+                && !bl.text.contains("range ")
+        });
+
+        if only_uses_first || only_uses_min_max {
+            let no_range_after = !lines
+                .iter()
+                .any(|bl| bl.line > sort_bl.line && bl.text.contains("range ") && bl.text.contains("for "));
+
+            if no_range_after {
+                findings.push(Finding {
+                    rule_id: "sort_before_first_or_membership_only".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: sort_bl.line,
+                    end_line: sort_bl.line,
+                    message: format!(
+                        "function {} sorts a collection but appears to only use the first element or min/max",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("sort observed at line {}", sort_bl.line),
+                        "using slices.Min, slices.Max, or a single-pass scan is cheaper when only one element is needed".to_string(),
+                    ],
+                });
+            }
+        }
+    }
+
+    findings
+}
+
+fn filter_count_iterate_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut range_blocks = Vec::new();
+    for body_line in lines {
+        if body_line.text.contains("for ") && body_line.text.contains("range ") {
+            range_blocks.push(body_line.line);
+        }
+    }
+
+    if range_blocks.len() < 3 {
+        return Vec::new();
+    }
+
+    let has_filter_count_iterate_pattern = range_blocks.windows(3).any(|window| {
+        let gap1 = window[1] - window[0];
+        let gap2 = window[2] - window[1];
+        gap1 < 15 && gap2 < 15
+    });
+
+    if has_filter_count_iterate_pattern {
+        let anchor = range_blocks[2];
+        vec![Finding {
+            rule_id: "filter_then_count_then_iterate".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: anchor,
+            end_line: anchor,
+            message: format!(
+                "function {} traverses the same collection multiple times for filter, count, and process",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("multiple range loops over collections near lines {}", join_lines(&range_blocks)),
+                "combining filter, count, and processing into a single pass is usually more efficient".to_string(),
+            ],
+        }]
+    } else {
+        Vec::new()
+    }
+}
+
+fn append_target(text: &str) -> Option<String> {
+    let (left, right) = text.split_once('=')?;
+    if right.trim_start().starts_with("append(") || right.contains("= append(") {
+        let binding = left.trim().split_whitespace().last()?.trim();
+        if super::is_identifier_name(binding) {
+            return Some(binding.to_string());
+        }
+    }
+    None
+}
+
+fn first_argument_after_marker_simple(text: &str, marker: &str) -> Option<String> {
+    let suffix = text.split_once(marker)?.1;
+    let mut depth = 0usize;
+    for (index, character) in suffix.char_indices() {
+        match character {
+            '(' | '[' | '{' => depth += 1,
+            ')' | ']' | '}' => {
+                if depth == 0 {
+                    return Some(suffix[..index].trim().to_string());
+                }
+                depth = depth.saturating_sub(1);
+            }
+            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
+            _ => {}
+        }
+    }
+    let trimmed = suffix.trim();
+    (!trimmed.is_empty()).then(|| trimmed.to_string())
+}
+
+fn contains_for_keyword(line: &str) -> bool {
+    line.contains("for ") && (line.contains("range ") || line.contains("{") || line.contains("; "))
 }
