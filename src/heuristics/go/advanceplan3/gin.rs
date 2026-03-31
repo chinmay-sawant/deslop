@@ -8,7 +8,7 @@ use super::{
     is_gin_handler, is_identifier_name, join_lines, json_aliases, strip_line_comment,
 };
 
-pub(super) fn gin_request_performance_findings(
+pub(crate) fn gin_request_performance_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
@@ -463,7 +463,7 @@ fn request_path_read_file_lines(file: &ParsedFile, lines: &[BodyLine]) -> Vec<us
         .collect()
 }
 
-pub(super) fn repeated_argument_group_findings(
+pub(crate) fn repeated_argument_group_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     lines: &[BodyLine],
@@ -521,7 +521,7 @@ pub(super) fn repeated_argument_group_findings(
     findings
 }
 
-pub(super) fn collect_labeled_first_argument_calls(
+pub(crate) fn collect_labeled_first_argument_calls(
     lines: &[BodyLine],
     markers: &[(String, String)],
     require_loop: bool,
@@ -688,7 +688,7 @@ fn format_size_bytes(bytes: u64) -> String {
     }
 }
 
-pub(super) fn prepare_like_call_lines(lines: &[BodyLine]) -> Vec<(usize, String)> {
+pub(crate) fn prepare_like_call_lines(lines: &[BodyLine]) -> Vec<(usize, String)> {
     let mut prepare_calls = Vec::new();
 
     for body_line in lines {
@@ -791,15 +791,15 @@ fn first_argument_after_marker(text: &str, marker: &str) -> Option<String> {
     (!trimmed.is_empty()).then(|| trimmed.to_string())
 }
 
-pub(super) fn url_parse_argument_looks_stable(text: &str) -> bool {
+pub(crate) fn url_parse_argument_looks_stable(text: &str) -> bool {
     simple_local_binding(text).is_some() || looks_like_string_literal(text)
 }
 
-pub(super) fn layout_argument_looks_stable(text: &str) -> bool {
+pub(crate) fn layout_argument_looks_stable(text: &str) -> bool {
     simple_reference_binding(text).is_some() || looks_like_string_literal(text)
 }
 
-pub(super) fn simple_local_binding(text: &str) -> Option<String> {
+pub(crate) fn simple_local_binding(text: &str) -> Option<String> {
     let trimmed = text
         .trim()
         .trim_start_matches('&')

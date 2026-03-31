@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use crate::analysis::{ImportSpec, ParsedFile};
 use crate::model::{Finding, Severity};
 
-pub(super) fn package_name_consistency(files: &[&ParsedFile]) -> Vec<Finding> {
+pub(crate) fn package_name_consistency(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut files_by_directory = BTreeMap::<PathBuf, Vec<&ParsedFile>>::new();
 
     for file in files {
@@ -81,7 +81,7 @@ pub(super) fn package_name_consistency(files: &[&ParsedFile]) -> Vec<Finding> {
     findings
 }
 
-pub(super) fn import_grouping_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn import_grouping_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut imports_by_group = BTreeMap::<usize, Vec<&ImportSpec>>::new();
 
     for import in &file.imports {

@@ -9,7 +9,7 @@ use super::{
     join_lines,
 };
 
-pub(super) fn data_access_performance_findings(
+pub(crate) fn data_access_performance_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {

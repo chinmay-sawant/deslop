@@ -1,4 +1,4 @@
-mod advanceplan2;
+mod quality;
 mod ai_smells;
 mod duplication;
 mod maintainability;
@@ -9,7 +9,7 @@ use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
-use self::advanceplan2::{advanceplan2_file_findings, advanceplan2_function_findings};
+use self::quality::{quality_file_findings, quality_function_findings};
 use self::ai_smells::{
     enthusiastic_commentary_findings, mixed_naming_convention_findings,
     obvious_commentary_findings, textbook_docstring_findings, unrelated_heavy_import_findings,
@@ -44,7 +44,7 @@ use self::structure::{
 
 pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let mut findings = Vec::new();
-    findings.extend(advanceplan2_function_findings(file, function));
+    findings.extend(quality_function_findings(file, function));
     findings.extend(string_concat_findings(file, function));
     findings.extend(blocking_sync_io_findings(file, function));
     findings.extend(full_dataset_load_findings(file, function));
@@ -81,7 +81,7 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
 
 pub(crate) fn python_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
-    findings.extend(advanceplan2_file_findings(file));
+    findings.extend(quality_file_findings(file));
     findings.extend(monolithic_init_module_findings(file));
     findings.extend(monolithic_module_findings(file));
     findings.extend(too_many_attributes_findings(file));

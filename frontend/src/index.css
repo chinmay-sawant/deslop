@@ -298,6 +298,31 @@ button:focus-visible {
   border-radius: 0;
 }
 
+/* ===== Accessibility: skip to main content ===== */
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0.75rem;
+  z-index: 9999;
+  padding: 0.65rem 1.25rem;
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  font-family: var(--heading-font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 120ms ease;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ===== Eyebrow decorative mark ===== */
+
 .text-muted {
   color: var(--muted);
 }
@@ -336,6 +361,7 @@ button:focus-visible {
   background: transparent;
   color: var(--text);
   padding: 0.65rem 0.95rem;
+  cursor: pointer;
   transition:
     border-color 220ms ease,
     background-color 220ms ease,
@@ -454,6 +480,11 @@ button:focus-visible {
   background: var(--accent-soft);
 }
 
+.docs-lang-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 .docs-lang-tab:hover .docs-lang-tab-dot {
   opacity: 0.75;
 }
@@ -530,6 +561,11 @@ button:focus-visible {
 .docs-nav-item:hover {
   color: var(--text);
   background: var(--accent-soft);
+}
+
+.docs-nav-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .docs-nav-item.active {
@@ -714,6 +750,55 @@ button:focus-visible {
   color: var(--muted);
   user-select: none;
   margin-right: 0.5rem;
+}
+
+/* ===== CodeBlock copy button ===== */
+
+.docs-code-block-wrapper {
+  position: relative;
+  margin: 1rem 0 1.5rem;
+}
+
+.docs-code-block-wrapper .docs-code-block {
+  margin: 0;
+}
+
+.docs-copy-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  font-family: var(--mono-font);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.docs-code-block-wrapper:hover .docs-copy-btn,
+.docs-copy-btn:focus-visible {
+  opacity: 1;
+}
+
+.docs-copy-btn:hover {
+  color: var(--text-strong);
+  border-color: var(--border-strong);
+}
+
+.docs-copy-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .docs-link {

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use crate::analysis::{InterfaceSummary, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity, SymbolKind};
 
-use super::common::import_alias_lookup;
+use super::super::common::import_alias_lookup;
 
 #[derive(Debug, Clone)]
 struct BodyLine {
@@ -13,7 +13,7 @@ struct BodyLine {
     in_loop: bool,
 }
 
-pub(super) fn go_file_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn go_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = mutable_package_global_findings(file);
 
     for function in &file.functions {
@@ -23,7 +23,7 @@ pub(super) fn go_file_findings(file: &ParsedFile) -> Vec<Finding> {
     findings
 }
 
-pub(super) fn go_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn go_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if file.is_test_file || function.is_test_function {
         return Vec::new();
     }
@@ -36,7 +36,7 @@ pub(super) fn go_function_findings(file: &ParsedFile, function: &ParsedFunction)
     findings
 }
 
-pub(super) fn go_repo_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+pub(crate) fn go_repo_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut findings = single_impl_interface_findings(files);
     findings.extend(passthrough_wrapper_interface_findings(files));
     findings

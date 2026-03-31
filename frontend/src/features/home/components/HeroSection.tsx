@@ -8,15 +8,15 @@ export function HeroSection() {
   const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
-    // Delay animation start by 3 seconds after mount
-    const timer = setTimeout(() => setIsReady(true), 3000)
+    // Short delay lets the page paint before the sweep animation starts
+    const timer = setTimeout(() => setIsReady(true), 300)
     return () => clearTimeout(timer)
   }, [])
 
   return (
     <section id="top" className="section-anchor relative pt-24 pb-24 sm:pt-32 sm:pb-32 lg:pt-40 lg:pb-40">
       <Container className="max-w-5xl mx-auto text-center">
-        <span className="eyebrow mx-auto mb-8">Static analysis. Human insight.</span>
+        <span className="eyebrow mx-auto mb-8">Static analysis Human insight</span>
         <div className="flex flex-col items-center justify-center text-center w-full">
           <h1 className="mt-6 text-[clamp(2.5rem,7vw,5rem)] leading-[0.95] font-medium tracking-[-0.03em] text-[var(--text-strong)] flex flex-col items-center justify-center w-full relative">
             {/* Line 1 */}

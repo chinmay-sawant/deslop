@@ -12,14 +12,14 @@ use self::module_state::module_state_findings;
 pub(super) const OPTION_BAG_FIELD_THRESHOLD: usize = 6;
 pub(super) const OPTION_BAG_SIGNAL_THRESHOLD: usize = 4;
 
-pub(super) fn advanceplan2_function_findings(
+pub(super) fn quality_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     function_rules_findings(file, function)
 }
 
-pub(super) fn advanceplan2_file_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(super) fn quality_file_findings(file: &ParsedFile) -> Vec<Finding> {
     module_state_findings(file)
 }
 

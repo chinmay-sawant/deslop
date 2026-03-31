@@ -12,7 +12,7 @@ use super::{
     import_aliases_for, is_request_path_function, join_lines, repeated_parse_findings,
 };
 
-pub(super) fn core_hot_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn core_hot_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let mut findings = Vec::new();
     let lines = body_lines(function);
 

@@ -20,7 +20,7 @@ pub(super) struct BodyLine {
 
 pub(super) const LARGE_MULTIPART_FORM_BYTES: u64 = 32 * 1024 * 1024;
 
-pub(super) fn go_advanceplan3_file_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn go_advanceplan3_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for function in &file.functions {
@@ -45,11 +45,11 @@ fn core_hot_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
     run_hot_path_findings(file, function)
 }
 
-pub(super) fn is_request_path_function(file: &ParsedFile, function: &ParsedFunction) -> bool {
+pub(crate) fn is_request_path_function(file: &ParsedFile, function: &ParsedFunction) -> bool {
     is_gin_handler(file, function) || is_http_handler(file, function)
 }
 
-pub(super) fn is_gin_handler(file: &ParsedFile, function: &ParsedFunction) -> bool {
+pub(crate) fn is_gin_handler(file: &ParsedFile, function: &ParsedFunction) -> bool {
     import_aliases_for(file, "github.com/gin-gonic/gin")
         .into_iter()
         .any(|alias| {
@@ -59,7 +59,7 @@ pub(super) fn is_gin_handler(file: &ParsedFile, function: &ParsedFunction) -> bo
         })
 }
 
-pub(super) fn is_http_handler(file: &ParsedFile, function: &ParsedFunction) -> bool {
+pub(crate) fn is_http_handler(file: &ParsedFile, function: &ParsedFunction) -> bool {
     import_aliases_for(file, "net/http")
         .into_iter()
         .any(|alias| {
@@ -72,7 +72,7 @@ pub(super) fn is_http_handler(file: &ParsedFile, function: &ParsedFunction) -> b
         })
 }
 
-pub(super) fn has_sql_like_import(file: &ParsedFile) -> bool {
+pub(crate) fn has_sql_like_import(file: &ParsedFile) -> bool {
     [
         "database/sql",
         "github.com/jmoiron/sqlx",
@@ -85,11 +85,11 @@ pub(super) fn has_sql_like_import(file: &ParsedFile) -> bool {
     .any(|path| has_import_path(file, path))
 }
 
-pub(super) fn has_import_path(file: &ParsedFile, path: &str) -> bool {
+pub(crate) fn has_import_path(file: &ParsedFile, path: &str) -> bool {
     file.imports.iter().any(|import| import.path == path)
 }
 
-pub(super) fn binding_matches(
+pub(crate) fn binding_matches(
     lines: &[BodyLine],
     patterns: &[&str],
 ) -> Vec<(String, usize, String)> {
@@ -104,7 +104,7 @@ pub(super) fn binding_matches(
     matches
 }
 
-pub(super) fn binding_for_patterns(text: &str, patterns: &[&str]) -> Option<(String, String)> {
+pub(crate) fn binding_for_patterns(text: &str, patterns: &[&str]) -> Option<(String, String)> {
     let (left, right) = split_assignment(text)?;
     let target = patterns
         .iter()
@@ -121,7 +121,7 @@ pub(super) fn binding_for_patterns(text: &str, patterns: &[&str]) -> Option<(Str
     is_identifier_name(binding).then(|| (binding.to_string(), target))
 }
 
-pub(super) fn split_assignment(text: &str) -> Option<(&str, &str)> {
+pub(crate) fn split_assignment(text: &str) -> Option<(&str, &str)> {
     if let Some((left, right)) = text.split_once(":=") {
         return Some((left, right));
     }
@@ -135,7 +135,7 @@ pub(super) fn split_assignment(text: &str) -> Option<(&str, &str)> {
         .filter(|(left, _)| !left.trim_start().starts_with("if "))
 }
 
-pub(super) fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
+pub(crate) fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
     let mut brace_depth = 0usize;
     let mut loop_exit_depths = Vec::new();
     let mut lines = Vec::new();
@@ -178,7 +178,7 @@ pub(super) fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
     lines
 }
 
-pub(super) fn import_aliases_for(file: &ParsedFile, import_path: &str) -> Vec<String> {
+pub(crate) fn import_aliases_for(file: &ParsedFile, import_path: &str) -> Vec<String> {
     file.imports
         .iter()
         .filter(|import| import.path == import_path)
@@ -186,11 +186,11 @@ pub(super) fn import_aliases_for(file: &ParsedFile, import_path: &str) -> Vec<St
         .collect()
 }
 
-pub(super) fn json_aliases(file: &ParsedFile) -> Vec<String> {
+pub(crate) fn json_aliases(file: &ParsedFile) -> Vec<String> {
     import_aliases_for(file, "encoding/json")
 }
 
-pub(super) fn first_line_with_any(function: &ParsedFunction, markers: &[&str]) -> Option<usize> {
+pub(crate) fn first_line_with_any(function: &ParsedFunction, markers: &[&str]) -> Option<usize> {
     function
         .body_text
         .lines()
@@ -199,7 +199,7 @@ pub(super) fn first_line_with_any(function: &ParsedFunction, markers: &[&str]) -
         .map(|(offset, _)| function.body_start_line + offset)
 }
 
-pub(super) fn has_prior_loop_line(function: &ParsedFunction, line_no: usize) -> bool {
+pub(crate) fn has_prior_loop_line(function: &ParsedFunction, line_no: usize) -> bool {
     function
         .body_text
         .lines()
@@ -208,7 +208,7 @@ pub(super) fn has_prior_loop_line(function: &ParsedFunction, line_no: usize) -> 
         .any(|(_, line)| contains_keyword(strip_line_comment(line), "for"))
 }
 
-pub(super) fn is_identifier_name(text: &str) -> bool {
+pub(crate) fn is_identifier_name(text: &str) -> bool {
     !text.is_empty()
         && text
             .chars()
@@ -219,7 +219,7 @@ pub(super) fn is_identifier_name(text: &str) -> bool {
             .is_some_and(|character| character == '_' || character.is_ascii_alphabetic())
 }
 
-pub(super) fn join_lines(lines: &[usize]) -> String {
+pub(crate) fn join_lines(lines: &[usize]) -> String {
     lines
         .iter()
         .map(usize::to_string)
@@ -254,11 +254,11 @@ fn contains_keyword(line: &str, keyword: &str) -> bool {
     false
 }
 
-pub(super) fn strip_line_comment(line: &str) -> &str {
+pub(crate) fn strip_line_comment(line: &str) -> &str {
     line.split("//").next().unwrap_or("")
 }
 
-pub(super) fn repeated_parse_findings(
+pub(crate) fn repeated_parse_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {

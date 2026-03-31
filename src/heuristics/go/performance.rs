@@ -1,9 +1,9 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-use super::common::import_alias_lookup;
+use super::super::common::import_alias_lookup;
 
-pub(super) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
 
     go.alloc_loops
@@ -27,7 +27,7 @@ pub(super) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
         .collect()
 }
 
-pub(super) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
 
     go.fmt_loops
@@ -51,7 +51,7 @@ pub(super) fn fmt_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
         .collect()
 }
 
-pub(super) fn reflect_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn reflect_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
 
     go.reflect_loops
@@ -75,7 +75,7 @@ pub(super) fn reflect_findings(file: &ParsedFile, function: &ParsedFunction) -> 
         .collect()
 }
 
-pub(super) fn concat_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn concat_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
 
     go.concat_loops
@@ -98,7 +98,7 @@ pub(super) fn concat_findings(file: &ParsedFile, function: &ParsedFunction) -> V
         .collect()
 }
 
-pub(super) fn json_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn json_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
 
     go.json_loops
@@ -123,7 +123,7 @@ pub(super) fn json_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
         .collect()
 }
 
-pub(super) fn db_findings(
+pub(crate) fn db_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     enable_go_semantic: bool,
@@ -211,7 +211,7 @@ pub(super) fn db_findings(
 }
 
 /// Returns conservative nested-loop findings when Go semantic analysis is enabled.
-pub(super) fn n_squared_findings(
+pub(crate) fn n_squared_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     enable_go_semantic: bool,
@@ -353,7 +353,7 @@ fn contains_keyword(line: &str, keyword: &str) -> bool {
     false
 }
 
-pub(super) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let import_aliases = import_alias_lookup(&file.imports);
 
     function

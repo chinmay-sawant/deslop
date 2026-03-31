@@ -5,7 +5,7 @@ use super::{file_finding, function_finding, matches_token, struct_severity};
 
 const OPTION_BAG_THRESHOLD: usize = 4;
 
-pub(crate) fn advanceplan2_file_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn api_design_file_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file {
         return Vec::new();
     }
@@ -17,7 +17,7 @@ pub(crate) fn advanceplan2_file_findings(file: &ParsedFile) -> Vec<Finding> {
     findings
 }
 
-pub(crate) fn advanceplan2_function_findings(
+pub(crate) fn api_design_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {

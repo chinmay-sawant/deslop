@@ -3,11 +3,11 @@ use std::collections::BTreeSet;
 use crate::analysis::{ImportSpec, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-use super::common::{import_alias_lookup, is_blocking_call};
+use super::super::common::{import_alias_lookup, is_blocking_call};
 
 const COORDINATION_METHODS: &[&str] = &["Add", "Done", "Wait", "Go"];
 
-pub(super) fn shutdown_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn shutdown_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
 
     go.unmanaged_goroutines
@@ -38,7 +38,7 @@ pub(super) fn shutdown_findings(file: &ParsedFile, function: &ParsedFunction) ->
         .collect()
 }
 
-pub(super) fn mutex_findings(
+pub(crate) fn mutex_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     imports: &[ImportSpec],
@@ -109,7 +109,7 @@ pub(super) fn mutex_findings(
     findings
 }
 
-pub(super) fn coordination_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn coordination_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
 
     if go.goroutines.is_empty() || has_coordination(function) {
@@ -159,7 +159,7 @@ pub(super) fn coordination_findings(file: &ParsedFile, function: &ParsedFunction
     findings
 }
 
-pub(super) fn deeper_goroutine_lifetime_findings(
+pub(crate) fn deeper_goroutine_lifetime_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {

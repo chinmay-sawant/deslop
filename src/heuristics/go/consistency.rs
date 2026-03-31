@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use crate::analysis::ParsedFile;
 use crate::model::{Finding, Severity};
 
-pub(super) fn receiver_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+pub(crate) fn receiver_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut methods_by_receiver =
         BTreeMap::<(Option<String>, PathBuf, String), Vec<MethodRecord>>::new();
 
@@ -91,7 +91,7 @@ pub(super) fn receiver_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     findings
 }
 
-pub(super) fn tag_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn tag_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for tag in &file.struct_tags {

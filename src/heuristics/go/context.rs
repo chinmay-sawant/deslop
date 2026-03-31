@@ -3,7 +3,7 @@ use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::{Finding, Severity};
 
-use super::common::import_alias_lookup;
+use super::super::common::import_alias_lookup;
 
 const CONTEXT_FACTORY_ESCAPES: &[&str] = &["Background", "TODO"];
 const HTTP_CONTEXTLESS_CALLS: &[&str] = &["Get", "Head", "Post", "PostForm", "NewRequest"];
@@ -11,7 +11,7 @@ const EXEC_CONTEXTLESS_CALLS: &[&str] = &["Command"];
 const NET_CONTEXTLESS_CALLS: &[&str] = &["Dial", "DialTimeout"];
 const DB_CONTEXTLESS_CALLS: &[&str] = &["Query", "QueryRow", "Exec", "Get", "Select"];
 
-pub(super) fn ctx_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn ctx_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.go_evidence().has_context_parameter {
         return Vec::new();
     }
@@ -59,7 +59,7 @@ pub(super) fn ctx_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
         .collect()
 }
 
-pub(super) fn cancel_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn cancel_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
 
     go.context_factory_calls
@@ -92,7 +92,7 @@ pub(super) fn cancel_findings(file: &ParsedFile, function: &ParsedFunction) -> V
         .collect()
 }
 
-pub(super) fn sleep_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn sleep_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .go_evidence()
         .sleep_loops
@@ -115,7 +115,7 @@ pub(super) fn sleep_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
         .collect()
 }
 
-pub(super) fn busy_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn busy_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
 
     go.busy_wait_lines
@@ -139,7 +139,7 @@ pub(super) fn busy_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
         .collect()
 }
 
-pub(super) fn propagate_findings(
+pub(crate) fn propagate_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
     index: &RepositoryIndex,

@@ -3,7 +3,7 @@ use std::path::Path;
 
 use crate::analysis::{ImportSpec, Language, ParsedFile, ParsedFunction};
 use crate::heuristics::rust::{
-    advanceplan2_file_findings, advanceplan2_function_findings, async_file_findings,
+    api_design_file_findings, api_design_function_findings, async_file_findings,
     async_function_findings, domain_findings, performance_file_findings,
     performance_function_findings, unsafe_soundness_findings,
 };
@@ -14,7 +14,7 @@ pub(super) fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex)
     let mut findings = Vec::new();
 
     findings.extend(domain_findings(file));
-    findings.extend(advanceplan2_file_findings(file));
+    findings.extend(api_design_file_findings(file));
     findings.extend(performance_file_findings(file));
     findings.extend(async_file_findings(file));
 
@@ -70,7 +70,7 @@ pub(super) fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex)
         ));
         findings.extend(unsafe_findings(file, function));
         findings.extend(unsafe_soundness_findings(file, function));
-        findings.extend(advanceplan2_function_findings(file, function));
+        findings.extend(api_design_function_findings(file, function));
         findings.extend(doc_marker_findings(file, function));
         findings.extend(performance_function_findings(file, function));
         findings.extend(async_function_findings(file, function));

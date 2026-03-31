@@ -1,20 +1,13 @@
 mod comments;
 mod common;
-mod concurrency;
-mod consistency;
-mod context;
 mod engine;
-mod errors;
-mod go_advanceplan2;
-mod go_advanceplan3;
+mod go;
 mod hallucination;
 mod naming;
-mod performance;
 mod python;
 mod registry;
 pub(crate) mod rust;
 mod security;
-mod style;
 mod test_quality;
 #[cfg(test)]
 mod tests;

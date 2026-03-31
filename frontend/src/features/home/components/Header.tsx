@@ -29,6 +29,9 @@ A minimal way to detect SLOP
 const navLinkClassName =
   'px-4 py-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]'
 
+const navLinkActiveClassName =
+  'px-4 py-2 text-sm font-medium text-[var(--text-strong)] transition hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]'
+
 type HeaderProps = {
   theme: Theme
   onToggleTheme: () => void
@@ -105,7 +108,11 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
                     {item.label}
                   </a>
                 ) : (
-                  <Link key={item.href} to={item.href} className={navLinkClassName}>
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className={location.pathname === item.href ? navLinkActiveClassName : navLinkClassName}
+                  >
                     {item.label}
                   </Link>
                 )

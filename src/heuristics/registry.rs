@@ -3,25 +3,18 @@ use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
 use super::comments::comment_findings;
-use super::concurrency::{
-    coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, shutdown_findings,
+use super::go::{
+    alloc_findings, busy_findings, cancel_findings, concat_findings, coordination_findings,
+    ctx_findings, db_findings, deeper_goroutine_lifetime_findings, error_findings, fmt_findings,
+    go_advanceplan3_file_findings, go_file_findings, go_repo_findings, import_grouping_findings,
+    json_findings, load_findings, mutex_findings, n_squared_findings, package_name_consistency,
+    propagate_findings, receiver_findings, reflect_findings, shutdown_findings, sleep_findings,
+    tag_findings,
 };
-use super::consistency::{receiver_findings, tag_findings};
-use super::context::{
-    busy_findings, cancel_findings, ctx_findings, propagate_findings, sleep_findings,
-};
-use super::errors::error_findings;
-use super::go_advanceplan2::{go_file_findings, go_repo_findings};
-use super::go_advanceplan3::go_advanceplan3_file_findings;
 use super::hallucination::hallucination_findings;
 use super::naming::{generic_finding, overlong_finding, weak_finding};
-use super::performance::{
-    alloc_findings, concat_findings, db_findings, fmt_findings, json_findings, load_findings,
-    n_squared_findings, reflect_findings,
-};
 use super::python::{python_file_findings, python_findings, python_repo_findings};
 use super::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};
-use super::style::{import_grouping_findings, package_name_consistency};
 use super::test_quality::test_findings;
 
 pub(super) type FileRule = fn(&ParsedFile) -> Vec<Finding>;
