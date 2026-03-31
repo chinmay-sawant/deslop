@@ -1,5 +1,62 @@
 use super::common::BlockFingerprint;
 
+// ── Owned evidence storage ────────────────────────────────────────────────────
+
+#[derive(Debug, Clone)]
+pub(crate) struct PythonFunctionEvidence {
+    pub exception_handlers: Vec<ExceptionHandler>,
+    pub validation_signature: Option<BlockFingerprint>,
+    pub exception_block_signatures: Vec<BlockFingerprint>,
+    pub normalized_body: String,
+    pub concat_loops: Vec<usize>,
+    pub none_comparison_lines: Vec<usize>,
+    pub side_effect_comprehension_lines: Vec<usize>,
+    pub redundant_return_none_lines: Vec<usize>,
+    pub list_materialization_lines: Vec<usize>,
+    pub deque_operation_lines: Vec<usize>,
+    pub temp_collection_lines: Vec<usize>,
+    pub recursive_call_lines: Vec<usize>,
+    pub list_membership_loop_lines: Vec<usize>,
+    pub repeated_len_loop_lines: Vec<usize>,
+    pub builtin_candidate_lines: Vec<usize>,
+    pub missing_context_manager_lines: Vec<usize>,
+    pub has_complete_type_hints: bool,
+    pub has_varargs: bool,
+    pub has_kwargs: bool,
+    pub is_async: bool,
+    pub await_points: Vec<usize>,
+}
+
+impl PythonFunctionEvidence {
+    pub(crate) fn as_view(&self) -> PythonFunctionEvidenceView<'_> {
+        PythonFunctionEvidenceView {
+            exception_handlers: &self.exception_handlers,
+            validation_signature: self.validation_signature.as_ref(),
+            exception_block_signatures: &self.exception_block_signatures,
+            normalized_body: &self.normalized_body,
+            concat_loops: &self.concat_loops,
+            none_comparison_lines: &self.none_comparison_lines,
+            side_effect_comprehension_lines: &self.side_effect_comprehension_lines,
+            redundant_return_none_lines: &self.redundant_return_none_lines,
+            list_materialization_lines: &self.list_materialization_lines,
+            deque_operation_lines: &self.deque_operation_lines,
+            temp_collection_lines: &self.temp_collection_lines,
+            recursive_call_lines: &self.recursive_call_lines,
+            list_membership_loop_lines: &self.list_membership_loop_lines,
+            repeated_len_loop_lines: &self.repeated_len_loop_lines,
+            builtin_candidate_lines: &self.builtin_candidate_lines,
+            missing_context_manager_lines: &self.missing_context_manager_lines,
+            has_complete_type_hints: self.has_complete_type_hints,
+            has_varargs: self.has_varargs,
+            has_kwargs: self.has_kwargs,
+            is_async: self.is_async,
+            await_points: &self.await_points,
+        }
+    }
+}
+
+// ── Borrowed evidence view (read-only, zero-copy) ─────────────────────────────
+
 #[derive(Debug, Clone)]
 pub(crate) struct ClassSummary {
     pub name: String,
@@ -47,6 +104,7 @@ pub(crate) struct PythonFunctionEvidenceView<'a> {
     pub exception_handlers: &'a [ExceptionHandler],
     pub validation_signature: Option<&'a BlockFingerprint>,
     pub exception_block_signatures: &'a [BlockFingerprint],
+    pub normalized_body: &'a str,
     pub concat_loops: &'a [usize],
     pub none_comparison_lines: &'a [usize],
     pub side_effect_comprehension_lines: &'a [usize],
@@ -64,4 +122,32 @@ pub(crate) struct PythonFunctionEvidenceView<'a> {
     pub has_kwargs: bool,
     pub is_async: bool,
     pub await_points: &'a [usize],
+}
+
+impl<'a> PythonFunctionEvidenceView<'a> {
+    pub(crate) fn empty() -> Self {
+        PythonFunctionEvidenceView {
+            exception_handlers: &[],
+            validation_signature: None,
+            exception_block_signatures: &[],
+            normalized_body: "",
+            concat_loops: &[],
+            none_comparison_lines: &[],
+            side_effect_comprehension_lines: &[],
+            redundant_return_none_lines: &[],
+            list_materialization_lines: &[],
+            deque_operation_lines: &[],
+            temp_collection_lines: &[],
+            recursive_call_lines: &[],
+            list_membership_loop_lines: &[],
+            repeated_len_loop_lines: &[],
+            builtin_candidate_lines: &[],
+            missing_context_manager_lines: &[],
+            has_complete_type_hints: false,
+            has_varargs: false,
+            has_kwargs: false,
+            is_async: false,
+            await_points: &[],
+        }
+    }
 }

@@ -27,7 +27,7 @@ pub(super) fn shutdown_findings(file: &ParsedFile, function: &ParsedFunction) ->
                 "go func literal contains a loop".to_string(),
                 "no ctx.Done() or done-channel shutdown signal was observed in the goroutine body"
                     .to_string(),
-                if function.has_context_parameter {
+                if function.go_evidence().has_context_parameter {
                     "the parent function already accepts context.Context, so the goroutine likely skipped an available shutdown signal"
                         .to_string()
                 } else {
@@ -257,7 +257,7 @@ pub(super) fn deeper_goroutine_lifetime_findings(
 }
 
 fn has_coordination(function: &ParsedFunction) -> bool {
-    function.has_context_parameter
+    function.go_evidence().has_context_parameter
         || function.calls.iter().any(|call| {
             call.receiver.as_ref().is_some_and(|receiver| {
                 COORDINATION_METHODS.contains(&call.name.as_str())

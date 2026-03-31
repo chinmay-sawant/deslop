@@ -99,7 +99,7 @@ fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
 }
 
 fn is_contextless_wrapper_candidate(file: &ParsedFile, function: &ParsedFunction) -> bool {
-    if function.has_context_parameter {
+    if function.go_evidence().has_context_parameter {
         return false;
     }
 

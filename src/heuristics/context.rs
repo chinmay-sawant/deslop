@@ -12,7 +12,7 @@ const NET_CONTEXTLESS_CALLS: &[&str] = &["Dial", "DialTimeout"];
 const DB_CONTEXTLESS_CALLS: &[&str] = &["Query", "QueryRow", "Exec", "Get", "Select"];
 
 pub(super) fn ctx_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    if function.has_context_parameter {
+    if function.go_evidence().has_context_parameter {
         return Vec::new();
     }
 
@@ -144,7 +144,7 @@ pub(super) fn propagate_findings(
     function: &ParsedFunction,
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
-    if !function.has_context_parameter
+    if !function.go_evidence().has_context_parameter
         || file.is_test_file
         || has_documented_context_decoupling(function)
     {

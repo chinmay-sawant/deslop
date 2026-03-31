@@ -130,19 +130,17 @@ pub(super) fn test_utility_logic_findings(files: &[&ParsedFile]) -> Vec<Finding>
 
     for file in files {
         for function in &file.functions {
-            if function.normalized_body.len() < 40 || function.fingerprint.line_count < 3 {
+            let norm = function.python_evidence().normalized_body;
+            if norm.len() < 40 || function.fingerprint.line_count < 3 {
                 continue;
             }
 
-            shapes
-                .entry(function.normalized_body.clone())
-                .or_default()
-                .push((
-                    *file,
-                    function.fingerprint.name.clone(),
-                    function.fingerprint.start_line,
-                    file.is_test_file || function.is_test_function,
-                ));
+            shapes.entry(norm.to_owned()).or_default().push((
+                *file,
+                function.fingerprint.name.clone(),
+                function.fingerprint.start_line,
+                file.is_test_file || function.is_test_function,
+            ));
         }
     }
 
@@ -184,21 +182,21 @@ pub(super) fn cross_file_dupe_findings(files: &[&ParsedFile]) -> Vec<Finding> {
         }
 
         for function in &file.functions {
-            if function.is_test_function
-                || function.normalized_body.len() < CROSS_FILE_COPY_PASTE_MIN_BODY_LENGTH
+            if function.is_test_function {
+                continue;
+            }
+            let norm = function.python_evidence().normalized_body;
+            if norm.len() < CROSS_FILE_COPY_PASTE_MIN_BODY_LENGTH
                 || function.fingerprint.line_count < CROSS_FILE_COPY_PASTE_MIN_LINE_COUNT
             {
                 continue;
             }
 
-            shapes
-                .entry(function.normalized_body.clone())
-                .or_default()
-                .push((
-                    *file,
-                    function.fingerprint.name.clone(),
-                    function.fingerprint.start_line,
-                ));
+            shapes.entry(norm.to_owned()).or_default().push((
+                *file,
+                function.fingerprint.name.clone(),
+                function.fingerprint.start_line,
+            ));
         }
     }
 

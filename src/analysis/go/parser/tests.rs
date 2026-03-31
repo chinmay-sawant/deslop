@@ -62,12 +62,12 @@ fn test_error_handling() {
         .find(|function| function.fingerprint.name == "LogOnly")
         .expect("LogOnly should be parsed");
 
-    assert_eq!(run.dropped_errors, vec![9]);
-    assert_eq!(run.panic_errors, vec![10]);
-    assert_eq!(run.errorf_calls.len(), 1);
-    assert!(run.errorf_calls[0].mentions_err);
-    assert!(!run.errorf_calls[0].uses_percent_w);
-    assert_eq!(log_only.panic_errors, vec![17]);
+    assert_eq!(run.go_evidence().dropped_errors, vec![9]);
+    assert_eq!(run.go_evidence().panic_errors, vec![10]);
+    assert_eq!(run.go_evidence().errorf_calls.len(), 1);
+    assert!(run.go_evidence().errorf_calls[0].mentions_err);
+    assert!(!run.go_evidence().errorf_calls[0].uses_percent_w);
+    assert_eq!(log_only.go_evidence().panic_errors, vec![17]);
 }
 
 #[test]
@@ -81,8 +81,8 @@ fn test_ctx_sleep() {
         .find(|function| function.fingerprint.name == "Poll")
         .expect("Poll should be parsed");
 
-    assert!(poll.has_context_parameter);
-    assert_eq!(poll.sleep_loops, vec![10]);
+    assert!(poll.go_evidence().has_context_parameter);
+    assert_eq!(poll.go_evidence().sleep_loops, vec![10]);
 }
 
 #[test]
@@ -96,11 +96,17 @@ fn test_ctx_busy_json() {
         .find(|function| function.fingerprint.name == "Run")
         .expect("Run should be parsed");
 
-    assert_eq!(run.context_factory_calls.len(), 1);
-    assert_eq!(run.context_factory_calls[0].cancel_name, "cancel");
-    assert_eq!(run.context_factory_calls[0].factory_name, "WithTimeout");
-    assert_eq!(run.busy_wait_lines, vec![14]);
-    assert_eq!(run.json_loops, vec![21]);
+    assert_eq!(run.go_evidence().context_factory_calls.len(), 1);
+    assert_eq!(
+        run.go_evidence().context_factory_calls[0].cancel_name,
+        "cancel"
+    );
+    assert_eq!(
+        run.go_evidence().context_factory_calls[0].factory_name,
+        "WithTimeout"
+    );
+    assert_eq!(run.go_evidence().busy_wait_lines, vec![14]);
+    assert_eq!(run.go_evidence().json_loops, vec![21]);
 }
 
 #[test]
@@ -114,15 +120,15 @@ fn test_concurrency_db() {
         .find(|function| function.fingerprint.name == "Run")
         .expect("Run should be parsed");
 
-    assert_eq!(run.unmanaged_goroutines, vec![11]);
-    assert_eq!(run.mutex_loops, vec![18]);
-    assert_eq!(run.alloc_loops, vec![23]);
-    assert_eq!(run.fmt_loops, vec![21]);
-    assert_eq!(run.reflect_loops, vec![22]);
-    assert_eq!(run.db_query_calls.len(), 1);
-    assert!(run.db_query_calls[0].in_loop);
+    assert_eq!(run.go_evidence().unmanaged_goroutines, vec![11]);
+    assert_eq!(run.go_evidence().mutex_loops, vec![18]);
+    assert_eq!(run.go_evidence().alloc_loops, vec![23]);
+    assert_eq!(run.go_evidence().fmt_loops, vec![21]);
+    assert_eq!(run.go_evidence().reflect_loops, vec![22]);
+    assert_eq!(run.go_evidence().db_query_calls.len(), 1);
+    assert!(run.go_evidence().db_query_calls[0].in_loop);
     assert_eq!(
-        run.db_query_calls[0].query_text.as_deref(),
+        run.go_evidence().db_query_calls[0].query_text.as_deref(),
         Some("SELECT * FROM widgets WHERE name LIKE '%foo%'")
     );
 }
@@ -138,9 +144,9 @@ fn test_concat_goroutine() {
         .find(|function| function.fingerprint.name == "Build")
         .expect("Build should be parsed");
 
-    assert_eq!(build.concat_loops, vec![6]);
-    assert_eq!(build.goroutines, vec![7]);
-    assert_eq!(build.loop_goroutines, vec![7]);
+    assert_eq!(build.go_evidence().concat_loops, vec![6]);
+    assert_eq!(build.go_evidence().goroutines, vec![7]);
+    assert_eq!(build.go_evidence().loop_goroutines, vec![7]);
 }
 
 #[test]
@@ -240,18 +246,24 @@ fn test_collects_gorm_query_chain_summaries() {
         .find(|function| function.fingerprint.name == "Handle")
         .expect("Handle should be parsed");
 
-    assert_eq!(handle.gorm_query_chains.len(), 2);
-    assert_eq!(handle.gorm_query_chains[0].terminal_method, "Count");
-    assert_eq!(handle.gorm_query_chains[1].terminal_method, "Find");
+    assert_eq!(handle.go_evidence().gorm_query_chains.len(), 2);
     assert_eq!(
-        handle.gorm_query_chains[1]
+        handle.go_evidence().gorm_query_chains[0].terminal_method,
+        "Count"
+    );
+    assert_eq!(
+        handle.go_evidence().gorm_query_chains[1].terminal_method,
+        "Find"
+    );
+    assert_eq!(
+        handle.go_evidence().gorm_query_chains[1]
             .steps
             .iter()
             .map(|step| step.method_name.as_str())
             .collect::<Vec<_>>(),
         vec!["Model", "Preload", "Offset", "Limit", "Find"]
     );
-    assert!(!handle.gorm_query_chains[1].in_loop);
+    assert!(!handle.go_evidence().gorm_query_chains[1].in_loop);
 }
 
 #[test]
@@ -267,6 +279,7 @@ fn test_collects_gin_calls_and_parse_input_summaries() {
 
     assert_eq!(
         handle
+            .go_evidence()
             .gin_calls
             .iter()
             .map(|call| call.operation.as_str())
@@ -282,13 +295,21 @@ fn test_collects_gin_calls_and_parse_input_summaries() {
             "copy",
         ]
     );
-    assert_eq!(handle.gin_calls[0].assigned_binding.as_deref(), Some("raw"));
     assert_eq!(
-        handle.gin_calls[1].assigned_binding.as_deref(),
+        handle.go_evidence().gin_calls[0]
+            .assigned_binding
+            .as_deref(),
+        Some("raw")
+    );
+    assert_eq!(
+        handle.go_evidence().gin_calls[1]
+            .assigned_binding
+            .as_deref(),
         Some("payload")
     );
     assert_eq!(
         handle
+            .go_evidence()
             .gin_calls
             .iter()
             .find(|call| call.operation == "parse_multipart_form")
@@ -298,6 +319,7 @@ fn test_collects_gin_calls_and_parse_input_summaries() {
     );
     assert_eq!(
         handle
+            .go_evidence()
             .gin_calls
             .iter()
             .find(|call| call.operation == "form_file")
@@ -306,14 +328,16 @@ fn test_collects_gin_calls_and_parse_input_summaries() {
     );
     assert!(
         handle
+            .go_evidence()
             .gin_calls
             .iter()
             .find(|call| call.operation == "copy")
             .is_some_and(|call| call.in_loop)
     );
-    assert_eq!(handle.parse_input_calls.len(), 2);
+    assert_eq!(handle.go_evidence().parse_input_calls.len(), 2);
     assert!(
         handle
+            .go_evidence()
             .parse_input_calls
             .iter()
             .all(|call| call.input_binding.as_deref() == Some("body"))

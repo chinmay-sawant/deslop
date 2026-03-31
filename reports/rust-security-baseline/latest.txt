@@ -2,7 +2,7 @@
 
 ## split_at_and_indexing
 src/analysis/python/parser/general.rs:932:                return &line[..index];
-src/analysis/rust/parser/mod.rs:467:    text[vec_start + 4..].contains("Box<")
+src/analysis/rust/parser/mod.rs:433:    text[vec_start + 4..].contains("Box<")
 src/heuristics/go_advanceplan2.rs:1037:    let parameters = &signature_text[parameters_start + 1..parameters_end];
 src/heuristics/go_advanceplan2.rs:1083:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go_advanceplan3/gin.rs:239:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];

@@ -12,13 +12,16 @@ pub(crate) use common::{
 };
 pub(crate) use core::{ParsedFile, ParsedFunction};
 pub(crate) use go::{
-    ContextFactoryCall, DbQueryCall, GinCallSummary, GoFieldSummary, GoStructSummary,
-    GormChainStep, GormQueryChain, InterfaceSummary, PackageVarSummary, ParseInputCall, StructTag,
+    ContextFactoryCall, DbQueryCall, GinCallSummary, GoFieldSummary, GoFunctionEvidence,
+    GoStructSummary, GormChainStep, GormQueryChain, InterfaceSummary, PackageVarSummary,
+    ParseInputCall, StructTag,
 };
-pub(crate) use python::{ClassSummary, ExceptionHandler, PythonFieldSummary, PythonModelSummary};
+pub(crate) use python::{
+    ClassSummary, ExceptionHandler, PythonFieldSummary, PythonFunctionEvidence, PythonModelSummary,
+};
 pub(crate) use rust::{
-    FieldSummary, MacroCall, RuntimeCall, RustEnumSummary, RustStaticSummary, StructSummary,
-    UnsafePattern, UnsafePatternKind,
+    FieldSummary, MacroCall, RuntimeCall, RustEnumSummary, RustFunctionEvidence, RustStaticSummary,
+    StructSummary, UnsafePattern, UnsafePatternKind,
 };
 
 impl ParsedFile {

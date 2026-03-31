@@ -1,5 +1,60 @@
 use super::common::FormattedErrorCall;
 
+// ── Owned evidence storage ────────────────────────────────────────────────────
+
+#[derive(Debug, Clone)]
+pub(crate) struct GoFunctionEvidence {
+    pub has_context_parameter: bool,
+    pub context_factory_calls: Vec<ContextFactoryCall>,
+    pub dropped_errors: Vec<usize>,
+    pub panic_errors: Vec<usize>,
+    pub errorf_calls: Vec<FormattedErrorCall>,
+    pub goroutines: Vec<usize>,
+    pub loop_goroutines: Vec<usize>,
+    pub unmanaged_goroutines: Vec<usize>,
+    pub sleep_loops: Vec<usize>,
+    pub busy_wait_lines: Vec<usize>,
+    pub mutex_loops: Vec<usize>,
+    pub alloc_loops: Vec<usize>,
+    pub fmt_loops: Vec<usize>,
+    pub reflect_loops: Vec<usize>,
+    pub concat_loops: Vec<usize>,
+    pub json_loops: Vec<usize>,
+    pub db_query_calls: Vec<DbQueryCall>,
+    pub gorm_query_chains: Vec<GormQueryChain>,
+    pub parse_input_calls: Vec<ParseInputCall>,
+    pub gin_calls: Vec<GinCallSummary>,
+}
+
+impl GoFunctionEvidence {
+    pub(crate) fn as_view(&self) -> GoFunctionEvidenceView<'_> {
+        GoFunctionEvidenceView {
+            has_context_parameter: self.has_context_parameter,
+            context_factory_calls: &self.context_factory_calls,
+            dropped_errors: &self.dropped_errors,
+            panic_errors: &self.panic_errors,
+            errorf_calls: &self.errorf_calls,
+            goroutines: &self.goroutines,
+            loop_goroutines: &self.loop_goroutines,
+            unmanaged_goroutines: &self.unmanaged_goroutines,
+            sleep_loops: &self.sleep_loops,
+            busy_wait_lines: &self.busy_wait_lines,
+            mutex_loops: &self.mutex_loops,
+            alloc_loops: &self.alloc_loops,
+            fmt_loops: &self.fmt_loops,
+            reflect_loops: &self.reflect_loops,
+            concat_loops: &self.concat_loops,
+            json_loops: &self.json_loops,
+            db_query_calls: &self.db_query_calls,
+            gorm_query_chains: &self.gorm_query_chains,
+            parse_input_calls: &self.parse_input_calls,
+            gin_calls: &self.gin_calls,
+        }
+    }
+}
+
+// ── Borrowed evidence view (read-only, zero-copy) ─────────────────────────────
+
 #[derive(Debug, Clone)]
 pub(crate) struct StructTag {
     pub line: usize,
@@ -102,6 +157,7 @@ pub(crate) struct GoStructSummary {
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct GoFunctionEvidenceView<'a> {
+    pub has_context_parameter: bool,
     pub context_factory_calls: &'a [ContextFactoryCall],
     pub dropped_errors: &'a [usize],
     pub panic_errors: &'a [usize],
@@ -121,4 +177,31 @@ pub(crate) struct GoFunctionEvidenceView<'a> {
     pub gorm_query_chains: &'a [GormQueryChain],
     pub parse_input_calls: &'a [ParseInputCall],
     pub gin_calls: &'a [GinCallSummary],
+}
+
+impl<'a> GoFunctionEvidenceView<'a> {
+    pub(crate) fn empty() -> Self {
+        GoFunctionEvidenceView {
+            has_context_parameter: false,
+            context_factory_calls: &[],
+            dropped_errors: &[],
+            panic_errors: &[],
+            errorf_calls: &[],
+            goroutines: &[],
+            loop_goroutines: &[],
+            unmanaged_goroutines: &[],
+            sleep_loops: &[],
+            busy_wait_lines: &[],
+            mutex_loops: &[],
+            alloc_loops: &[],
+            fmt_loops: &[],
+            reflect_loops: &[],
+            concat_loops: &[],
+            json_loops: &[],
+            db_query_calls: &[],
+            gorm_query_chains: &[],
+            parse_input_calls: &[],
+            gin_calls: &[],
+        }
+    }
 }

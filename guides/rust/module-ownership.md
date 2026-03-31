@@ -12,7 +12,7 @@ This note documents the refactor seams introduced in the Rust codebase so future
 - `src/index/mod.rs` owns repository-index types. Build logic lives in `src/index/build.rs`, and resolution logic lives in `src/index/resolve.rs`.
 - `src/heuristics/mod.rs` is the heuristics facade. Dispatch logic lives in `src/heuristics/engine.rs`, and grouped rule registration lives in `src/heuristics/registry.rs`.
 - `src/heuristics/go_advanceplan3/mod.rs` is now a family facade. Gin request rules live in `gin.rs`, data-access rules live in `data_access.rs`, and hot-path or repeated-work rules live in `hot_path.rs`.
-- `ParsedFunction::{go_evidence, python_evidence, rust_evidence}` is the preferred boundary for language-specific rule reads. The flat fields remain transitional storage, not the API new rule code should target.
+- `ParsedFunction` stores language-specific evidence in nested owned structs — `go: Option<GoFunctionEvidence>`, `python: Option<PythonFunctionEvidence>`, `rust: Option<RustFunctionEvidence>`. Each parser populates exactly one. The borrow-view accessors `go_evidence()`, `python_evidence()`, `rust_evidence()` delegate to the owned struct and return empty views for the `None` case.
 
 ## Rules For Future Changes
 
@@ -21,10 +21,10 @@ This note documents the refactor seams introduced in the Rust codebase so future
 - Add evaluation orchestration in `heuristics/engine.rs` or `analysis/<language>/evaluate.rs`, not in backend registration modules.
 - Add repository symbol construction in `index/build.rs` and symbol resolution rules in `index/resolve.rs`.
 - Keep `scan/mod.rs`, `analysis/mod.rs`, `index/mod.rs`, and `heuristics/mod.rs` as facades rather than implementation dumps.
-- Prefer typed evidence accessors, such as `ParsedFunction::go_evidence()`, over adding more direct field consumers to new code.
+- All language-specific evidence must go in `GoFunctionEvidence`, `PythonFunctionEvidence`, or `RustFunctionEvidence`. Adding flat fields to `ParsedFunction` directly is not allowed.
+- All heuristic/evaluator/index code must read language-specific evidence through `go_evidence()`, `python_evidence()`, or `rust_evidence()`.
 
 ## Near-Term Follow-Up
 
-- Continue migrating the remaining production-code direct `ParsedFunction` field reads to typed language evidence views.
-- Continue shrinking other oversized Go-specific rule files using the same facade plus family-module split now used in `heuristics/go_advanceplan3/`.
-- Consider a second-stage split of the analysis IR so language-specific evidence becomes nested storage rather than a flat transitional struct.
+- The second-stage IR storage split (flat → nested owned structs) is complete.
+- Continue shrinking other oversized Go-specific rule files using the facade plus family-module split used in `heuristics/go_advanceplan3/`.

@@ -140,8 +140,8 @@ mod tests {
             .iter()
             .any(|call| { call.receiver.as_deref() == Some("value") && call.name == "unwrap" })
     );
-    assert!(execute.safety_comment_lines.is_empty());
-    assert_eq!(execute.unsafe_lines.len(), 2);
+    assert!(execute.rust_evidence().safety_comment_lines.is_empty());
+    assert_eq!(execute.rust_evidence().unsafe_lines.len(), 2);
 
     let test_fn = parsed
         .functions
