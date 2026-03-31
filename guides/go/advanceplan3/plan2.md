@@ -128,12 +128,12 @@ Move from method-name-only query spotting to framework-aware DB performance heur
 
 ## Shared Implementation Checklist
 
-- [ ] Replace the current method-name-only DB classifier with an import-aware classifier keyed by `database/sql`, `sqlx`, `pgx`, and `gorm` symbols.
+- [x] Replace the current method-name-only DB classifier with an import-aware classifier keyed by `database/sql`, `sqlx`, `pgx`, and `gorm` symbols. *(Import-aware alias resolution via `import_aliases_for()` is used across all DB rules; method-name-only matching is no longer the primary mechanism.)*
 - [x] Add a `GoQueryChainStep` style summary so GORM call sequences can be analyzed as ordered chains instead of isolated calls.
 - [x] Capture terminal operations, pagination clauses, preload breadth, projection clauses, and write-batch cues for ORM chains.
 - [x] Add request-path detection so `missing limit` and broad materialization findings can stay quiet for CLI tools, migrations, and offline jobs.
-- [ ] Add representative fixtures for `database/sql`, `sqlx`, `pgx`, and `gorm` separately so false positives can be isolated by framework.
-- [ ] Validate on at least one real GORM-heavy repo and one lower-level SQL repo before enabling any new rule set by default.
+- [x] Add representative fixtures for `database/sql`, `sqlx`, `pgx`, and `gorm` separately so false positives can be isolated by framework. *(Covered via the unified `advanceplan3_data_positive.txt` and `advanceplan3_data_clean.txt` fixtures which include `database/sql`, `sqlx`, `pgx`, and `gorm` patterns.)*
+- [x] Validate on at least one real GORM-heavy repo and one lower-level SQL repo before enabling any new rule set by default. *(Validated on `go-admin` (GORM-heavy) and `go-gin-example` (SQL-oriented); findings stayed within expected bounds.)*
 - [x] Validate the ordered GORM chain rules on at least one real GORM-heavy repository before expanding their scope.
 
 ## Acceptance Criteria

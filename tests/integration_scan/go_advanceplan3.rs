@@ -63,6 +63,7 @@ fn test_go_advanceplan3_core_hot_path_rules() {
         "append_then_sort_each_iteration",
         "sort_before_first_or_membership_only",
         "filter_then_count_then_iterate",
+        "uuid_hash_formatting_only_for_logs",
     ] {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
     }
@@ -122,6 +123,7 @@ fn test_go_advanceplan3_core_hot_path_clean() {
         "append_then_sort_each_iteration",
         "sort_before_first_or_membership_only",
         "filter_then_count_then_iterate",
+        "uuid_hash_formatting_only_for_logs",
     ] {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
     }
@@ -297,6 +299,14 @@ fn test_go_advanceplan3_gin_request_rules() {
         "errgroup_fanout_without_limit_in_handler",
         "large_csv_or_json_export_without_bufio",
         "gzip_or_zip_writer_created_per_chunk",
+        "repeated_body_rewind_for_multiple_decoders",
+        "middleware_rebinds_body_after_handler_bind",
+        "no_streaming_for_large_export_handler",
+        "large_h_payload_built_only_for_json_response",
+        "repeated_large_map_literal_response_construction",
+        "gin_logger_debug_body_logging_on_hot_routes",
+        "upstream_json_decode_same_response_multiple_times",
+        "no_batching_on_handler_driven_db_write_loop",
     ] {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
     }
@@ -346,6 +356,14 @@ fn test_go_advanceplan3_gin_request_clean() {
         "errgroup_fanout_without_limit_in_handler",
         "large_csv_or_json_export_without_bufio",
         "gzip_or_zip_writer_created_per_chunk",
+        "repeated_body_rewind_for_multiple_decoders",
+        "middleware_rebinds_body_after_handler_bind",
+        "no_streaming_for_large_export_handler",
+        "large_h_payload_built_only_for_json_response",
+        "repeated_large_map_literal_response_construction",
+        "gin_logger_debug_body_logging_on_hot_routes",
+        "upstream_json_decode_same_response_multiple_times",
+        "no_batching_on_handler_driven_db_write_loop",
     ] {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
     }

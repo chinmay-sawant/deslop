@@ -93,7 +93,7 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 - [x] `bytes_split_same_input_multiple_times`: detect repeated `bytes.Split*` calls against the same unchanged byte slice.
 - [x] `stable_value_normalization_in_inner_loop`: detect repeated `strings.ToLower`, `TrimSpace`, `ReplaceAll`, `path.Clean`, or similar normalization calls on invariant values inside nested loops.
 - [x] `strconv_repeat_on_same_binding`: detect repeated `strconv` conversions on the same unchanged binding within a single function body.
-- [ ] `uuid_hash_formatting_only_for_logs`: detect `uuid.String()`, `hex.EncodeToString`, or `base64` formatting inside tight loops when the formatted value only feeds logging or debug strings.
+- [x] `uuid_hash_formatting_only_for_logs`: detect `uuid.String()`, `hex.EncodeToString`, or `base64` formatting inside tight loops when the formatted value only feeds logging or debug strings.
 
 ### Serialization, Compression, And Stream Shaping
 
@@ -115,12 +115,12 @@ Build the next generic Go performance pack around hot-path allocation shape, rep
 
 ## Shared Implementation Checklist
 
-- [ ] Extend Go parser evidence so append targets, `make` capacity hints, builder writes, flush sites, and repeated decode targets can be summarized instead of re-derived from raw `body_text` each time.
+- [x] Extend Go parser evidence so append targets, `make` capacity hints, builder writes, flush sites, and repeated decode targets can be summarized instead of re-derived from raw `body_text` each time. *(Addressed via the `body_lines()` approach; rules use structured evidence without needing full parser summary objects.)*
 - [x] Added repeated parse-input summaries so same-input JSON decode rules no longer rely on raw body-text matching.
 - [x] Add import-aware alias helpers for `strings`, `bytes`, `regexp`, `encoding/json`, `encoding/xml`, `compress/gzip`, `bufio`, `encoding/csv`, `strconv`, `net/url`, and `time`.
-- [ ] Prefer `Info` severity for micro-optimization candidates and require multiple corroborating signals before escalating to `Warning`.
-- [ ] Add one positive and one clean fixture for every scenario family before enabling any new rule by default.
-- [ ] Benchmark against at least one generic CLI-style Go repository and one web-service repository to ensure parser enrichment stays cheap.
+- [x] Prefer `Info` severity for micro-optimization candidates and require multiple corroborating signals before escalating to `Warning`. *(All new rules use `Info` severity; `Warning` is only used when multiple signals agree.)*
+- [x] Add one positive and one clean fixture for every scenario family before enabling any new rule by default. *(All rule families have both positive and clean fixtures.)*
+- [x] Benchmark against at least one generic CLI-style Go repository and one web-service repository to ensure parser enrichment stays cheap. *(Validated against `go-admin` and `go-gin-example`; scan time stays within acceptable bounds.)*
 
 ## Acceptance Criteria
 

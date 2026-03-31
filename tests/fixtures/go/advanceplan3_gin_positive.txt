@@ -1,11 +1,13 @@
 package sample
 
 import (
+	"bytes"
 	"compress/gzip"
 	"encoding/csv"
 	"encoding/json"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"os"
@@ -182,4 +184,75 @@ func GzipPerChunk(c *gin.Context, chunks [][]byte) {
 		_, _ = gz.Write(chunk)
 		gz.Close()
 	}
+}
+
+func RewindBody(c *gin.Context) {
+	body, _ := io.ReadAll(c.Request.Body)
+	c.Request.Body = io.NopCloser(bytes.NewReader(body))
+	var first map[string]any
+	_ = json.NewDecoder(c.Request.Body).Decode(&first)
+	c.Request.Body = io.NopCloser(bytes.NewReader(body))
+	var second map[string]any
+	_ = json.NewDecoder(c.Request.Body).Decode(&second)
+}
+
+func MiddlewareRebind(c *gin.Context) {
+	var before requestPayload
+	_ = c.ShouldBindJSON(&before)
+	c.Next()
+	var after requestPayload
+	_ = c.ShouldBindJSON(&after)
+}
+
+func ExportNoStream(c *gin.Context, items []string) {
+	var all []map[string]string
+	for _, item := range items {
+		all = append(all, map[string]string{"name": item})
+	}
+	payload, _ := json.Marshal(all)
+	c.Data(200, "application/json", payload)
+}
+
+func LargeHPayload(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"id":         1,
+		"name":       "test",
+		"email":      "test@example.com",
+		"role":       "admin",
+		"status":     "active",
+	})
+}
+
+func LargeMapMarshal(c *gin.Context) {
+	resp := map[string]any{
+		"id":     1,
+		"name":   "test",
+		"email":  "test@example.com",
+		"role":   "admin",
+		"status": "active",
+	}
+	payload, _ := json.Marshal(resp)
+	c.Data(200, "application/json", payload)
+}
+
+func LogBody(c *gin.Context) {
+	body, _ := c.GetRawData()
+	log.Debug("request body: " + string(body))
+}
+
+func DecodeUpstreamTwice(c *gin.Context) {
+	resp, _ := http.Get("https://api.example.com/data")
+	body, _ := io.ReadAll(resp.Body)
+	var first map[string]any
+	_ = json.Unmarshal(body, &first)
+	var second map[string]string
+	_ = json.Unmarshal(body, &second)
+}
+
+func WritesInHandlerLoop(c *gin.Context, db *gorm.DB, ids []int) {
+	for _, id := range ids {
+		db.Exec("INSERT INTO users (id) VALUES (?)", id)
+		db.Exec("UPDATE users SET active = true WHERE id = ?", id)
+	}
+}
 }

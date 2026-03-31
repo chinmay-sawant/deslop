@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/csv"
+	"encoding/hex"
 	"encoding/json"
 	"encoding/xml"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -254,4 +256,12 @@ func FilterCountIterate(rows []string) {
 		_ = row
 	}
 	_ = count
+}
+
+func FormatForLogs(ids []string) {
+	for _, id := range ids {
+		formatted := hex.EncodeToString([]byte(id))
+		log.Debug("processing id: " + formatted)
+	}
+}
 }

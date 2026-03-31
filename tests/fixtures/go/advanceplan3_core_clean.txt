@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/csv"
+	"encoding/hex"
 	"encoding/json"
 	"encoding/xml"
 	"html/template"
@@ -221,5 +222,14 @@ func SinglePassProcess(rows []string) int {
 		}
 	}
 	return count
+}
+
+func FormatForActualUse(ids []string) map[string]string {
+	result := make(map[string]string, len(ids))
+	for _, id := range ids {
+		formatted := hex.EncodeToString([]byte(id))
+		result[id] = formatted
+	}
+	return result
 }
 }

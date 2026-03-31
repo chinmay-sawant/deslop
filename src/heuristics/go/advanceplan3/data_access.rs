@@ -5,8 +5,8 @@ use crate::model::{Finding, Severity};
 
 use super::gin::prepare_like_call_lines;
 use super::{
-    body_lines, has_import_path, has_sql_like_import, import_aliases_for, is_request_path_function,
-    join_lines, BodyLine,
+    body_lines, has_import_path, has_sql_like_import, import_aliases_for, is_likely_non_request_workload,
+    is_request_path_function, join_lines, BodyLine,
 };
 
 pub(crate) fn data_access_performance_findings(
@@ -554,7 +554,9 @@ fn gorm_chain_findings(
                 });
             }
 
-            if chain.terminal_method == "Find" && !gorm_chain_has_step(chain, "Limit") {
+            let suppress_limit_rules = is_likely_non_request_workload(file, function);
+
+            if chain.terminal_method == "Find" && !gorm_chain_has_step(chain, "Limit") && !suppress_limit_rules {
                 findings.push(Finding {
                     rule_id: "gorm_find_without_limit_on_handler_path".to_string(),
                     severity: Severity::Info,
@@ -574,6 +576,7 @@ fn gorm_chain_findings(
             }
 
             if chain.terminal_method == "Find"
+                && !suppress_limit_rules
                 && let Some(offset_step) = gorm_chain_step(chain, "Offset")
                 && offset_step
                     .argument_texts

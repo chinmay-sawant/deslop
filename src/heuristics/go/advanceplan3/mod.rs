@@ -49,6 +49,30 @@ pub(crate) fn is_request_path_function(file: &ParsedFile, function: &ParsedFunct
     is_gin_handler(file, function) || is_http_handler(file, function)
 }
 
+pub(crate) fn is_likely_non_request_workload(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    let path_str = file.path.to_string_lossy();
+    let name_lower = function.fingerprint.name.to_ascii_lowercase();
+
+    let non_request_path_hints = [
+        "cmd/", "migrate", "migration", "seed", "cli",
+        "cron", "job", "worker", "batch", "offline", "script",
+        "tool", "setup", "init", "bootstrap",
+    ];
+
+    let non_request_name_hints = [
+        "migrate", "seed", "setup", "init", "bootstrap",
+        "main", "run", "execute", "process", "cron",
+        "worker", "job", "batch", "export", "import",
+    ];
+
+    non_request_path_hints
+        .iter()
+        .any(|hint| path_str.contains(hint))
+        || non_request_name_hints
+            .iter()
+            .any(|hint| name_lower.contains(hint))
+}
+
 pub(crate) fn is_gin_handler(file: &ParsedFile, function: &ParsedFunction) -> bool {
     import_aliases_for(file, "github.com/gin-gonic/gin")
         .into_iter()

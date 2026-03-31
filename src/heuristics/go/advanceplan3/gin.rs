@@ -444,6 +444,13 @@ pub(crate) fn gin_request_performance_findings(
     findings.extend(env_config_per_request_findings(file, function, &lines));
     findings.extend(upstream_fanout_findings(file, function, &lines));
     findings.extend(export_buffering_findings(file, function, &lines));
+    findings.extend(repeated_body_rewind_findings(file, function, &lines));
+    findings.extend(middleware_rebinds_body_findings(file, function, &lines));
+    findings.extend(no_streaming_for_large_export_findings(file, function, &lines));
+    findings.extend(large_map_response_findings(file, function, &lines));
+    findings.extend(gin_logger_debug_body_findings(file, function, &lines));
+    findings.extend(upstream_json_decode_same_response_findings(file, function, &lines));
+    findings.extend(no_batching_db_write_loop_findings(file, function, &lines));
 
     findings
 }
@@ -1281,6 +1288,422 @@ fn export_buffering_findings(
                 break;
             }
         }
+    }
+
+    findings
+}
+
+fn repeated_body_rewind_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    let mut body_read_count = 0usize;
+    let mut rewind_lines = Vec::new();
+
+    for body_line in lines {
+        if body_line.text.contains("c.Request.Body")
+            && (body_line.text.contains("ReadAll(")
+                || body_line.text.contains("NewDecoder(")
+                || body_line.text.contains(".Read("))
+        {
+            body_read_count += 1;
+        }
+        if body_line.text.contains("NopCloser(")
+            || (body_line.text.contains("NewReader(")
+                && body_line.text.contains("c.Request.Body"))
+            || body_line.text.contains("c.Request.Body =")
+        {
+            rewind_lines.push(body_line.line);
+        }
+    }
+
+    if body_read_count >= 2 && !rewind_lines.is_empty() {
+        let anchor = rewind_lines[0];
+        findings.push(Finding {
+            rule_id: "repeated_body_rewind_for_multiple_decoders".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: anchor,
+            end_line: anchor,
+            message: format!(
+                "function {} reads, rewinds, and decodes the request body multiple times",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("body rewind observed at line {anchor}"),
+                format!("{body_read_count} body read operations observed in the same handler"),
+                "reading the body once and decoding from the buffered copy avoids repeated rewind overhead".to_string(),
+            ],
+        });
+    }
+
+    findings
+}
+
+fn middleware_rebinds_body_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let go = function.go_evidence();
+    let mut findings = Vec::new();
+
+    let handler_bind_calls: Vec<_> = go
+        .gin_calls
+        .iter()
+        .filter(|call| is_gin_body_bind_operation(&call.operation))
+        .collect();
+
+    if handler_bind_calls.is_empty() {
+        return findings;
+    }
+
+    let next_line = lines.iter().find(|bl| bl.text.contains("c.Next()"));
+
+    if let Some(next_bl) = next_line {
+        let bind_after_next = handler_bind_calls.iter().find(|call| call.line > next_bl.line);
+
+        if let Some(rebind_call) = bind_after_next {
+            findings.push(Finding {
+                rule_id: "middleware_rebinds_body_after_handler_bind".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: rebind_call.line,
+                end_line: rebind_call.line,
+                message: format!(
+                    "function {} binds the request body after c.Next() when the handler may have already consumed it",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("body bind observed after c.Next() at line {}", rebind_call.line),
+                    "the request body is single-pass; binding after the handler has already consumed it will fail or produce empty results".to_string(),
+                ],
+            });
+        }
+    }
+
+    findings
+}
+
+fn no_streaming_for_large_export_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let go = function.go_evidence();
+    let mut findings = Vec::new();
+
+    let ja = json_aliases(file);
+    let has_marshal_before_write = ja.iter().any(|alias| {
+        function.body_text.contains(&format!("{alias}.Marshal("))
+    });
+
+    let has_collection_marshal = has_marshal_before_write
+        && lines.iter().any(|bl| bl.text.contains("append(") || bl.text.contains("range "));
+
+    let data_call = go.gin_calls.iter().find(|call| call.operation == "data");
+
+    if has_collection_marshal {
+        if let Some(data_c) = data_call {
+            let marshal_line = lines.iter().find(|bl| {
+                ja.iter().any(|alias| bl.text.contains(&format!("{alias}.Marshal(")))
+            }).map(|bl| bl.line);
+
+            if let Some(marshal_line) = marshal_line
+                && data_c.line > marshal_line
+            {
+                findings.push(Finding {
+                    rule_id: "no_streaming_for_large_export_handler".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: data_c.line,
+                    end_line: data_c.line,
+                    message: format!(
+                        "function {} materializes a collection into memory before writing the response",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("json.Marshal observed at line {marshal_line}"),
+                        format!("c.Data observed at line {}", data_c.line),
+                        "streaming with json.NewEncoder or chunked writes avoids materializing the full payload in memory".to_string(),
+                    ],
+                });
+            }
+        }
+    }
+
+    findings
+}
+
+fn large_map_response_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let go = function.go_evidence();
+    let mut findings = Vec::new();
+
+    let map_literal_lines: Vec<_> = lines.iter().filter(|bl| {
+        (bl.text.contains("map[string]any{")
+            || bl.text.contains("map[string]interface{}{")
+            || bl.text.contains("gin.H{"))
+            && !bl.in_loop
+    }).collect();
+
+    if map_literal_lines.is_empty() {
+        return findings;
+    }
+
+    let json_render_call = go.gin_calls.iter().find(|call| {
+        matches!(call.operation.as_str(), "json" | "pure_json" | "indented_json")
+    });
+
+    let ja = json_aliases(file);
+    let data_call = go.gin_calls.iter().find(|call| call.operation == "data");
+    let has_json_marshal = ja.iter().any(|alias| {
+        function.body_text.contains(&format!("{alias}.Marshal("))
+    });
+
+    let mut map_key_count = 0usize;
+    let mut counting = false;
+    for body_line in lines {
+        if map_literal_lines.iter().any(|ml| ml.line == body_line.line) {
+            counting = true;
+            map_key_count = 0;
+        }
+        if counting {
+            if body_line.text.contains(":") && !body_line.text.starts_with("//") {
+                map_key_count += 1;
+            }
+            if body_line.text.contains("}") {
+                counting = false;
+            }
+        }
+    }
+
+    let large_map = map_key_count >= 5 || map_literal_lines.len() >= 3;
+
+    if large_map {
+        if let Some(json_call) = json_render_call {
+            let map_line = map_literal_lines[0].line;
+            findings.push(Finding {
+                rule_id: "large_h_payload_built_only_for_json_response".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: json_call.line,
+                end_line: json_call.line,
+                message: format!(
+                    "function {} builds a large dynamic map payload for JSON rendering",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("large map literal observed near line {map_line}"),
+                    format!("JSON render at line {}", json_call.line),
+                    "a typed response struct avoids transient map allocation and provides compile-time field safety".to_string(),
+                ],
+            });
+        }
+
+        if has_json_marshal && data_call.is_some() && json_render_call.is_none() {
+            let map_line = map_literal_lines[0].line;
+            findings.push(Finding {
+                rule_id: "repeated_large_map_literal_response_construction".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: map_line,
+                end_line: map_line,
+                message: format!(
+                    "function {} builds large dynamic map responses for manual marshaling",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("large map literal near line {map_line}"),
+                    "a typed response struct avoids repeated transient map allocation".to_string(),
+                ],
+            });
+        }
+    }
+
+    findings
+}
+
+fn gin_logger_debug_body_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let go = function.go_evidence();
+    let mut findings = Vec::new();
+
+    let log_markers = [
+        "log.Print", "log.Info", "log.Debug", "log.Warn",
+        "logger.Info", "logger.Debug", "logger.Warn",
+        "fmt.Print", "fmt.Sprint", "logrus.", "slog.",
+        "zap.String(", "zap.Any(",
+    ];
+
+    let body_dump_in_log = lines.iter().find(|bl| {
+        let has_log = log_markers.iter().any(|m| bl.text.contains(m));
+        let has_body_ref = bl.text.contains("body")
+            || bl.text.contains("payload")
+            || bl.text.contains("raw")
+            || bl.text.contains("c.Request.Body");
+        has_log && has_body_ref
+    });
+
+    let raw_data_read = go.gin_calls.iter().any(|c| c.operation == "get_raw_data")
+        || go.gin_calls.iter().any(|c| c.operation == "read_request_body");
+
+    if let Some(log_line) = body_dump_in_log
+        && raw_data_read
+    {
+        findings.push(Finding {
+            rule_id: "gin_logger_debug_body_logging_on_hot_routes".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: log_line.line,
+            end_line: log_line.line,
+            message: format!(
+                "function {} logs request body content on a request path",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("body logging observed at line {}", log_line.line),
+                "logging full request bodies on hot routes adds allocation and I/O cost; consider conditional debug logging".to_string(),
+            ],
+        });
+    }
+
+    findings
+}
+
+fn upstream_json_decode_same_response_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    let ja = json_aliases(file);
+    if ja.is_empty() {
+        return findings;
+    }
+
+    let http_response_bindings: Vec<(String, usize)> = lines.iter()
+        .filter_map(|bl| {
+            if bl.text.contains("http.Get(")
+                || bl.text.contains("http.Post(")
+                || bl.text.contains(".Do(")
+            {
+                let assignment = super::split_assignment(&bl.text)?;
+                let binding = assignment.0.trim().split(',').next()?.trim().to_string();
+                if super::is_identifier_name(&binding) {
+                    return Some((binding, bl.line));
+                }
+            }
+            None
+        })
+        .collect();
+
+    for (resp_binding, resp_line) in &http_response_bindings {
+        let body_binding_text = format!("{resp_binding}.Body");
+        let decode_lines: Vec<usize> = lines.iter()
+            .filter(|bl| {
+                bl.line > *resp_line
+                    && (bl.text.contains(&body_binding_text) || bl.text.contains("body"))
+                    && ja.iter().any(|alias| {
+                        bl.text.contains(&format!("{alias}.Unmarshal("))
+                            || bl.text.contains(&format!("{alias}.NewDecoder("))
+                    })
+            })
+            .map(|bl| bl.line)
+            .collect();
+
+        if decode_lines.len() >= 2 {
+            findings.push(Finding {
+                rule_id: "upstream_json_decode_same_response_multiple_times".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: decode_lines[1],
+                end_line: decode_lines[1],
+                message: format!(
+                    "function {} decodes the same upstream response body multiple times",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("upstream response from line {resp_line}"),
+                    format!("decode operations at lines {}", join_lines(&decode_lines)),
+                    "decoding once into a shared intermediate representation avoids duplicate deserialization".to_string(),
+                ],
+            });
+        }
+    }
+
+    findings
+}
+
+fn no_batching_db_write_loop_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    let has_gorm = super::has_import_path(file, "gorm.io/gorm");
+    let has_sql = super::has_sql_like_import(file);
+
+    if !has_gorm && !has_sql {
+        return findings;
+    }
+
+    let has_bulk_escape = function.body_text.contains("CreateInBatches(")
+        || function.body_text.contains("CopyFrom(")
+        || function.body_text.contains("FindInBatches(")
+        || function.body_text.contains("COPY ")
+        || function.body_text.contains("bulk");
+
+    if has_bulk_escape {
+        return findings;
+    }
+
+    let write_markers = [
+        ".Create(", ".Save(", ".Update(", ".Updates(",
+        ".Delete(", ".Exec(",
+    ];
+
+    let loop_writes: Vec<usize> = lines.iter()
+        .filter(|bl| {
+            bl.in_loop && write_markers.iter().any(|m| bl.text.contains(m))
+        })
+        .map(|bl| bl.line)
+        .collect();
+
+    if loop_writes.len() >= 2 {
+        let anchor = loop_writes[0];
+        findings.push(Finding {
+            rule_id: "no_batching_on_handler_driven_db_write_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: anchor,
+            end_line: anchor,
+            message: format!(
+                "function {} performs row-by-row database writes in a handler loop without batching",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("looped write operations at lines {}", join_lines(&loop_writes)),
+                "batch writes via CreateInBatches, bulk inserts, or set-based operations are usually faster".to_string(),
+            ],
+        });
     }
 
     findings

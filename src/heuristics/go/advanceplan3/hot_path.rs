@@ -280,6 +280,7 @@ fn core_repeated_work_findings(
     findings.extend(append_then_sort_findings(file, function, lines));
     findings.extend(sort_before_first_or_membership_findings(file, function, lines));
     findings.extend(filter_count_iterate_findings(file, function, lines));
+    findings.extend(uuid_hash_formatting_only_for_logs_findings(file, function, lines));
     findings
 }
 
@@ -1485,6 +1486,67 @@ fn first_argument_after_marker_simple(text: &str, marker: &str) -> Option<String
     }
     let trimmed = suffix.trim();
     (!trimmed.is_empty()).then(|| trimmed.to_string())
+}
+
+fn uuid_hash_formatting_only_for_logs_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    let format_markers = [
+        ("uuid.String(", "uuid.String()"),
+        (".String()", ".String()"),
+        ("hex.EncodeToString(", "hex.EncodeToString"),
+        ("base64.StdEncoding.EncodeToString(", "base64.EncodeToString"),
+        ("base64.URLEncoding.EncodeToString(", "base64.EncodeToString"),
+        ("base64.RawStdEncoding.EncodeToString(", "base64.EncodeToString"),
+    ];
+
+    let log_markers = [
+        "log.Print", "log.Info", "log.Debug", "log.Warn", "log.Error",
+        "log.Fatal", "log.Trace", "fmt.Print", "fmt.Sprint",
+        "logger.Info", "logger.Debug", "logger.Warn", "logger.Error",
+        "zap.String(", "zap.Any(", "logrus.", "slog.",
+    ];
+
+    for body_line in lines.iter().filter(|bl| bl.in_loop) {
+        let has_format = format_markers.iter().any(|(marker, _)| body_line.text.contains(marker));
+        if !has_format {
+            continue;
+        }
+        let only_feeds_logging = log_markers.iter().any(|marker| body_line.text.contains(marker))
+            || lines.iter().any(|other| {
+                other.line == body_line.line + 1
+                    && log_markers.iter().any(|marker| other.text.contains(marker))
+            });
+        if only_feeds_logging {
+            let label = format_markers.iter()
+                .find(|(marker, _)| body_line.text.contains(marker))
+                .map(|(_, label)| *label)
+                .unwrap_or("formatting call");
+            findings.push(Finding {
+                rule_id: "uuid_hash_formatting_only_for_logs".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: body_line.line,
+                end_line: body_line.line,
+                message: format!(
+                    "function {} formats identifiers inside a loop only for logging",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("{label} observed inside a loop at line {}", body_line.line),
+                    "formatting UUIDs, hashes, or base64 values only for debug strings adds avoidable allocation churn in tight loops".to_string(),
+                ],
+            });
+            break;
+        }
+    }
+
+    findings
 }
 
 fn contains_for_keyword(line: &str) -> bool {
