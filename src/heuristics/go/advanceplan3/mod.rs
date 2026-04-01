@@ -54,15 +54,39 @@ pub(crate) fn is_likely_non_request_workload(file: &ParsedFile, function: &Parse
     let name_lower = function.fingerprint.name.to_ascii_lowercase();
 
     let non_request_path_hints = [
-        "cmd/", "migrate", "migration", "seed", "cli",
-        "cron", "job", "worker", "batch", "offline", "script",
-        "tool", "setup", "init", "bootstrap",
+        "cmd/",
+        "migrate",
+        "migration",
+        "seed",
+        "cli",
+        "cron",
+        "job",
+        "worker",
+        "batch",
+        "offline",
+        "script",
+        "tool",
+        "setup",
+        "init",
+        "bootstrap",
     ];
 
     let non_request_name_hints = [
-        "migrate", "seed", "setup", "init", "bootstrap",
-        "main", "run", "execute", "process", "cron",
-        "worker", "job", "batch", "export", "import",
+        "migrate",
+        "seed",
+        "setup",
+        "init",
+        "bootstrap",
+        "main",
+        "run",
+        "execute",
+        "process",
+        "cron",
+        "worker",
+        "job",
+        "batch",
+        "export",
+        "import",
     ];
 
     non_request_path_hints

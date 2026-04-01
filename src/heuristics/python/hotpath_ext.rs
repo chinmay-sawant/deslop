@@ -125,10 +125,7 @@ pub(super) fn hashlib_repeated_findings(
 
 // ── Rules using new loop-body evidence ────────────────────────────────────────
 
-pub(super) fn copy_in_loop_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn copy_in_loop_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -202,10 +199,7 @@ pub(super) fn invariant_call_in_loop_findings(
         .collect()
 }
 
-pub(super) fn index_in_loop_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn index_in_loop_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -352,11 +346,13 @@ pub(super) fn nested_list_search_findings(
                 outer_for_line = Some(i);
             }
         }
-        if trimmed.is_empty() && !trimmed.starts_with("for ") {
-            if !trimmed.starts_with(' ') && !trimmed.starts_with('\t') {
-                outer_for_line = None;
-                inner_for_depth = 0;
-            }
+        if trimmed.is_empty()
+            && !trimmed.starts_with("for ")
+            && !trimmed.starts_with(' ')
+            && !trimmed.starts_with('\t')
+        {
+            outer_for_line = None;
+            inner_for_depth = 0;
         }
     }
     findings
@@ -377,8 +373,8 @@ pub(super) fn sort_then_first_findings(
         // Detect .sort() followed by [0] or [-1] usage on the same list
         if trimmed.contains(".sort(") {
             // Check next few lines for [0] or [-1] access
-            for j in (i + 1)..std::cmp::min(i + 4, lines.len()) {
-                let next = lines[j].trim();
+            for next in lines.iter().skip(i + 1).take(3) {
+                let next = next.trim();
                 if next.contains("[0]") || next.contains("[-1]") {
                     findings.push(Finding {
                         rule_id: "sort_then_first_or_membership_only".to_string(),
@@ -418,20 +414,20 @@ pub(super) fn filter_count_iterate_findings(
     for (i, line) in body.lines().enumerate() {
         let trimmed = line.trim();
         // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
-        if let Some(in_idx) = trimmed.find(" for ") {
-            if let Some(source_start) = trimmed[in_idx + 5..].find(" in ") {
-                let after_in = &trimmed[in_idx + 5 + source_start + 4..];
-                let target = after_in
-                    .split([' ', ')', ']', ':'])
-                    .next()
-                    .unwrap_or("")
-                    .trim();
-                if !target.is_empty() && target.len() < 40 {
-                    comprehension_targets
-                        .entry(target.to_string())
-                        .or_default()
-                        .push(function.fingerprint.start_line + i);
-                }
+        if let Some(in_idx) = trimmed.find(" for ")
+            && let Some(source_start) = trimmed[in_idx + 5..].find(" in ")
+        {
+            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
+            let target = after_in
+                .split([' ', ')', ']', ':'])
+                .next()
+                .unwrap_or("")
+                .trim();
+            if !target.is_empty() && target.len() < 40 {
+                comprehension_targets
+                    .entry(target.to_string())
+                    .or_default()
+                    .push(function.fingerprint.start_line + i);
             }
         }
     }
@@ -474,7 +470,10 @@ pub(super) fn repeated_format_findings(
             loop_indent = Some(indent_level(line));
             continue;
         }
-        if loop_indent.is_some() && !trimmed.is_empty() && (trimmed.contains(".format(") || trimmed.contains("f\"") || trimmed.contains("f'")) {
+        if loop_indent.is_some()
+            && !trimmed.is_empty()
+            && (trimmed.contains(".format(") || trimmed.contains("f\"") || trimmed.contains("f'"))
+        {
             findings.push(Finding {
                 rule_id: "repeated_string_format_invariant_template".to_string(),
                 severity: Severity::Info,
@@ -490,10 +489,12 @@ pub(super) fn repeated_format_findings(
             });
             break;
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
     findings
@@ -515,7 +516,10 @@ pub(super) fn json_encoder_recreated_findings(
             loop_indent = Some(indent_level(line));
             continue;
         }
-        if loop_indent.is_some() && !trimmed.is_empty() && (trimmed.contains("JSONEncoder(") || trimmed.contains("JSONDecoder(")) {
+        if loop_indent.is_some()
+            && !trimmed.is_empty()
+            && (trimmed.contains("JSONEncoder(") || trimmed.contains("JSONDecoder("))
+        {
             findings.push(Finding {
                 rule_id: "json_encoder_recreated_per_item".to_string(),
                 severity: Severity::Info,
@@ -530,10 +534,12 @@ pub(super) fn json_encoder_recreated_findings(
                 evidence: vec!["pattern=encoder_per_iteration".to_string()],
             });
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
     findings
@@ -555,7 +561,10 @@ pub(super) fn gzip_open_per_chunk_findings(
             loop_indent = Some(indent_level(line));
             continue;
         }
-        if loop_indent.is_some() && !trimmed.is_empty() && (trimmed.contains("gzip.open(") || trimmed.contains("GzipFile(")) {
+        if loop_indent.is_some()
+            && !trimmed.is_empty()
+            && (trimmed.contains("gzip.open(") || trimmed.contains("GzipFile("))
+        {
             findings.push(Finding {
                 rule_id: "gzip_open_per_chunk".to_string(),
                 severity: Severity::Info,
@@ -570,10 +579,12 @@ pub(super) fn gzip_open_per_chunk_findings(
                 evidence: vec!["pattern=gzip_per_chunk".to_string()],
             });
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
     findings
@@ -610,10 +621,12 @@ pub(super) fn pickle_in_loop_findings(
                 evidence: vec!["pattern=pickle_per_iteration".to_string()],
             });
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
     findings
@@ -628,28 +641,28 @@ pub(super) fn isinstance_chain_findings(
     }
     let body = &function.body_text;
     let isinstance_count = body.matches("isinstance(").count();
-    if isinstance_count >= 4 {
-        if let Some(first_line) = body.lines().enumerate().find_map(|(i, line)| {
+    if isinstance_count >= 4
+        && let Some(first_line) = body.lines().enumerate().find_map(|(i, line)| {
             if line.contains("isinstance(") {
                 Some(function.fingerprint.start_line + i)
             } else {
                 None
             }
-        }) {
-            return vec![Finding {
-                rule_id: "repeated_isinstance_chain_same_object".to_string(),
-                severity: Severity::Info,
-                path: file.path.clone(),
-                function_name: Some(function.fingerprint.name.clone()),
-                start_line: first_line,
-                end_line: first_line,
-                message: format!(
-                    "function {} has {} isinstance() checks; use isinstance(obj, (T1, T2, ...)) or dispatch",
-                    function.fingerprint.name, isinstance_count
-                ),
-                evidence: vec![format!("isinstance_count={isinstance_count}")],
-            }];
-        }
+        })
+    {
+        return vec![Finding {
+            rule_id: "repeated_isinstance_chain_same_object".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: first_line,
+            end_line: first_line,
+            message: format!(
+                "function {} has {} isinstance() checks; use isinstance(obj, (T1, T2, ...)) or dispatch",
+                function.fingerprint.name, isinstance_count
+            ),
+            evidence: vec![format!("isinstance_count={isinstance_count}")],
+        }];
     }
     Vec::new()
 }
@@ -668,11 +681,11 @@ pub(super) fn concat_in_comprehension_findings(
         if (trimmed.starts_with('[') || trimmed.starts_with('{'))
             && trimmed.contains(" for ")
             && trimmed.contains(" in ")
+            && let Some(for_idx) = trimmed.find(" for ")
         {
-            if let Some(for_idx) = trimmed.find(" for ") {
-                let expr = &trimmed[1..for_idx];
-                if expr.contains(" + ") && (expr.contains('"') || expr.contains('\'')) {
-                    findings.push(Finding {
+            let expr = &trimmed[1..for_idx];
+            if expr.contains(" + ") && (expr.contains('"') || expr.contains('\'')) {
+                findings.push(Finding {
                         rule_id: "concatenation_in_comprehension_body".to_string(),
                         severity: Severity::Info,
                         path: file.path.clone(),
@@ -685,7 +698,6 @@ pub(super) fn concat_in_comprehension_findings(
                         ),
                         evidence: vec!["pattern=string_concat_in_comprehension".to_string()],
                     });
-                }
             }
         }
     }
@@ -712,8 +724,11 @@ pub(super) fn tuple_unpacking_in_tight_loop_findings(
                 let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
                 let is_numeric = next_lines.iter().any(|l| {
                     let t = l.trim();
-                    t.contains("np.") || t.contains("math.") || t.contains("sum(")
-                        || t.contains("float(") || t.contains("int(")
+                    t.contains("np.")
+                        || t.contains("math.")
+                        || t.contains("sum(")
+                        || t.contains("float(")
+                        || t.contains("int(")
                 });
                 if is_numeric {
                     findings.push(Finding {

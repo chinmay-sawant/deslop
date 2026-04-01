@@ -8,20 +8,20 @@ use super::general::{
     collect_exception_handlers, collect_local_bindings, collect_local_strings,
     enclosing_class_name,
 };
-use super::performance::collect_concat_loops;
 use super::hotpath::{
     collect_csv_flush_per_row_lines, collect_dict_materialization_in_loop_lines,
     collect_enumerate_range_len_lines, collect_in_list_literal_lines,
     collect_len_comprehension_lines, collect_read_splitlines_lines,
     collect_readlines_then_iterate_lines, collect_regex_in_hotpath_lines,
-    collect_repeated_call_same_arg_lines, collect_repeated_open_lines,
-    collect_sorted_first_lines, collect_startswith_chain_lines, collect_write_in_loop_lines,
+    collect_repeated_call_same_arg_lines, collect_repeated_open_lines, collect_sorted_first_lines,
+    collect_startswith_chain_lines, collect_write_in_loop_lines,
 };
 use super::hotpath_ext::{
-    collect_append_sort_in_loop_lines, collect_copy_in_loop_lines,
-    collect_index_in_loop_lines, collect_invariant_call_in_loop_lines,
-    collect_join_list_comp_lines, collect_repeated_subscript_lines,
+    collect_append_sort_in_loop_lines, collect_copy_in_loop_lines, collect_index_in_loop_lines,
+    collect_invariant_call_in_loop_lines, collect_join_list_comp_lines,
+    collect_repeated_subscript_lines,
 };
+use super::performance::collect_concat_loops;
 use super::phase4::{
     collect_builtin_candidate_lines, collect_deque_operation_lines,
     collect_exception_block_signatures, collect_list_materialization_lines,

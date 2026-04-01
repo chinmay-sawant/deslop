@@ -71,10 +71,7 @@ pub(super) fn json_repeated_call_findings(
     findings
 }
 
-pub(super) fn sorted_first_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn sorted_first_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -193,7 +190,8 @@ pub(super) fn read_splitlines_findings(
             ),
             evidence: vec![
                 "pattern=read_then_split_into_lines".to_string(),
-                "suggestion=for line in file: avoids reading the entire file into memory".to_string(),
+                "suggestion=for line in file: avoids reading the entire file into memory"
+                    .to_string(),
             ],
         })
         .collect()
@@ -327,10 +325,7 @@ pub(super) fn csv_flush_per_row_findings(
         .collect()
 }
 
-pub(super) fn write_in_loop_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn write_in_loop_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -359,10 +354,7 @@ pub(super) fn write_in_loop_findings(
         .collect()
 }
 
-pub(super) fn repeated_open_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn repeated_open_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }

@@ -10,12 +10,7 @@ pub(super) fn collect_copy_in_loop_lines(body_node: Node<'_>, source: &str) -> V
     lines
 }
 
-fn visit_copy_in_loop(
-    node: Node<'_>,
-    source: &str,
-    inside_loop: bool,
-    lines: &mut Vec<usize>,
-) {
+fn visit_copy_in_loop(node: Node<'_>, source: &str, inside_loop: bool, lines: &mut Vec<usize>) {
     if should_skip_nested_scope(node) {
         return;
     }
@@ -23,19 +18,19 @@ fn visit_copy_in_loop(
     let next_inside_loop =
         inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
 
-    if next_inside_loop {
-        if let Some(text) = source.get(node.byte_range()) {
-            let trimmed = text.trim();
-            // list(source) or dict(source) or set(source) inside loop
-            if (trimmed.starts_with("list(") || trimmed.starts_with("dict(") || trimmed.starts_with("set("))
-                && node.kind() == "call"
-            {
-                lines.push(node.start_position().row + 1);
-            }
-            // x.copy() inside loop
-            if trimmed.ends_with(".copy()") && node.kind() == "call" {
-                lines.push(node.start_position().row + 1);
-            }
+    if next_inside_loop && let Some(text) = source.get(node.byte_range()) {
+        let trimmed = text.trim();
+        // list(source) or dict(source) or set(source) inside loop
+        if (trimmed.starts_with("list(")
+            || trimmed.starts_with("dict(")
+            || trimmed.starts_with("set("))
+            && node.kind() == "call"
+        {
+            lines.push(node.start_position().row + 1);
+        }
+        // x.copy() inside loop
+        if trimmed.ends_with(".copy()") && node.kind() == "call" {
+            lines.push(node.start_position().row + 1);
         }
     }
 
@@ -85,15 +80,16 @@ fn visit_invariant_call_in_loop(
     let next_inside_loop =
         inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
 
-    if next_inside_loop && node.kind() == "call" {
-        if let Some(text) = source.get(node.byte_range()) {
-            let trimmed = text.trim();
-            for pattern in INVARIANT_CALLS {
-                if trimmed.contains(pattern) {
-                    let callee = pattern.trim_end_matches('(').trim_end_matches(')');
-                    results.push((callee.to_string(), node.start_position().row + 1));
-                    break;
-                }
+    if next_inside_loop
+        && node.kind() == "call"
+        && let Some(text) = source.get(node.byte_range())
+    {
+        let trimmed = text.trim();
+        for pattern in INVARIANT_CALLS {
+            if trimmed.contains(pattern) {
+                let callee = pattern.trim_end_matches('(').trim_end_matches(')');
+                results.push((callee.to_string(), node.start_position().row + 1));
+                break;
             }
         }
     }
@@ -113,12 +109,7 @@ pub(super) fn collect_index_in_loop_lines(body_node: Node<'_>, source: &str) -> 
     lines
 }
 
-fn visit_index_in_loop(
-    node: Node<'_>,
-    source: &str,
-    inside_loop: bool,
-    lines: &mut Vec<usize>,
-) {
+fn visit_index_in_loop(node: Node<'_>, source: &str, inside_loop: bool, lines: &mut Vec<usize>) {
     if should_skip_nested_scope(node) {
         return;
     }
@@ -126,12 +117,13 @@ fn visit_index_in_loop(
     let next_inside_loop =
         inside_loop || matches!(node.kind(), "for_statement" | "while_statement");
 
-    if next_inside_loop && node.kind() == "call" {
-        if let Some(text) = source.get(node.byte_range()) {
-            let trimmed = text.trim();
-            if trimmed.contains(".index(") && !trimmed.starts_with('#') {
-                lines.push(node.start_position().row + 1);
-            }
+    if next_inside_loop
+        && node.kind() == "call"
+        && let Some(text) = source.get(node.byte_range())
+    {
+        let trimmed = text.trim();
+        if trimmed.contains(".index(") && !trimmed.starts_with('#') {
+            lines.push(node.start_position().row + 1);
         }
     }
 
@@ -155,12 +147,12 @@ fn visit_append_sort_in_loop(node: Node<'_>, source: &str, lines: &mut Vec<usize
         return;
     }
 
-    if matches!(node.kind(), "for_statement" | "while_statement") {
-        if let Some(text) = source.get(node.byte_range()) {
-            let trimmed = text.trim();
-            if trimmed.contains(".append(") && trimmed.contains(".sort(") {
-                lines.push(node.start_position().row + 1);
-            }
+    if matches!(node.kind(), "for_statement" | "while_statement")
+        && let Some(text) = source.get(node.byte_range())
+    {
+        let trimmed = text.trim();
+        if trimmed.contains(".append(") && trimmed.contains(".sort(") {
+            lines.push(node.start_position().row + 1);
         }
     }
 
@@ -184,19 +176,19 @@ fn visit_join_list_comp(node: Node<'_>, source: &str, lines: &mut Vec<usize>) {
         return;
     }
 
-    if node.kind() == "call" {
-        if let Some(text) = source.get(node.byte_range()) {
-            let trimmed = text.trim();
-            if trimmed.contains(".join(") {
-                // Check if the argument is a list comprehension [... for ... in ...]
-                if let Some(join_idx) = trimmed.find(".join(") {
-                    let after_join = &trimmed[join_idx + 6..];
-                    if after_join.starts_with('[')
-                        && after_join.contains(" for ")
-                        && after_join.contains(" in ")
-                    {
-                        lines.push(node.start_position().row + 1);
-                    }
+    if node.kind() == "call"
+        && let Some(text) = source.get(node.byte_range())
+    {
+        let trimmed = text.trim();
+        if trimmed.contains(".join(") {
+            // Check if the argument is a list comprehension [... for ... in ...]
+            if let Some(join_idx) = trimmed.find(".join(") {
+                let after_join = &trimmed[join_idx + 6..];
+                if after_join.starts_with('[')
+                    && after_join.contains(" for ")
+                    && after_join.contains(" in ")
+                {
+                    lines.push(node.start_position().row + 1);
                 }
             }
         }
@@ -216,7 +208,7 @@ pub(super) fn collect_repeated_subscript_lines(body_node: Node<'_>, source: &str
         std::collections::BTreeMap::new();
     visit_repeated_subscripts(body_node, source, &mut seen_gets);
 
-    for (_key, key_lines) in &seen_gets {
+    for key_lines in seen_gets.values() {
         if key_lines.len() >= 3 {
             for line in key_lines {
                 lines.push(*line);
@@ -237,23 +229,23 @@ fn visit_repeated_subscripts(
         return;
     }
 
-    if node.kind() == "call" {
-        if let Some(text) = source.get(node.byte_range()) {
-            let trimmed = text.trim();
-            // Detect d.get(key) pattern
-            if trimmed.contains(".get(") {
-                if let Some(get_idx) = trimmed.find(".get(") {
-                    let receiver = &trimmed[..get_idx];
-                    let after = &trimmed[get_idx + 5..];
-                    if let Some(end) = after.find([',', ')']) {
-                        let key = after[..end].trim();
-                        if !key.is_empty() {
-                            let full_key = format!("{receiver}.get({key})");
-                            seen.entry(full_key)
-                                .or_default()
-                                .push(node.start_position().row + 1);
-                        }
-                    }
+    if node.kind() == "call"
+        && let Some(text) = source.get(node.byte_range())
+    {
+        let trimmed = text.trim();
+        // Detect d.get(key) pattern
+        if trimmed.contains(".get(")
+            && let Some(get_idx) = trimmed.find(".get(")
+        {
+            let receiver = &trimmed[..get_idx];
+            let after = &trimmed[get_idx + 5..];
+            if let Some(end) = after.find([',', ')']) {
+                let key = after[..end].trim();
+                if !key.is_empty() {
+                    let full_key = format!("{receiver}.get({key})");
+                    seen.entry(full_key)
+                        .or_default()
+                        .push(node.start_position().row + 1);
                 }
             }
         }

@@ -5,8 +5,8 @@ use crate::model::{Finding, Severity};
 
 use super::gin::prepare_like_call_lines;
 use super::{
-    body_lines, has_import_path, has_sql_like_import, import_aliases_for, is_likely_non_request_workload,
-    is_request_path_function, join_lines, BodyLine,
+    BodyLine, body_lines, has_import_path, has_sql_like_import, import_aliases_for,
+    is_likely_non_request_workload, is_request_path_function, join_lines,
 };
 
 pub(crate) fn data_access_performance_findings(
@@ -24,13 +24,25 @@ pub(crate) fn data_access_performance_findings(
     findings.extend(exists_via_count_star_findings(file, function));
     findings.extend(duplicate_find_then_preload_findings(file, function));
     findings.extend(gorm_query_shape_findings(file, function, request_path));
-    findings.extend(sql_query_shape_findings(file, function, &lines, request_path));
+    findings.extend(sql_query_shape_findings(
+        file,
+        function,
+        &lines,
+        request_path,
+    ));
     findings.extend(unbounded_in_clause_findings(file, function, &lines));
     findings.extend(scan_into_map_findings(file, function, &lines));
     findings.extend(rows_to_struct_per_row_findings(file, function, &lines));
-    findings.extend(sqlx_select_unbounded_findings(file, function, &lines, request_path));
+    findings.extend(sqlx_select_unbounded_findings(
+        file,
+        function,
+        &lines,
+        request_path,
+    ));
     findings.extend(orm_tuning_findings(file, function, &lines, request_path));
-    findings.extend(find_all_then_manual_paginate_findings(file, function, &lines));
+    findings.extend(find_all_then_manual_paginate_findings(
+        file, function, &lines,
+    ));
     findings.extend(row_by_row_upsert_findings(file, function, &lines));
 
     if request_path {
@@ -556,7 +568,10 @@ fn gorm_chain_findings(
 
             let suppress_limit_rules = is_likely_non_request_workload(file, function);
 
-            if chain.terminal_method == "Find" && !gorm_chain_has_step(chain, "Limit") && !suppress_limit_rules {
+            if chain.terminal_method == "Find"
+                && !gorm_chain_has_step(chain, "Limit")
+                && !suppress_limit_rules
+            {
                 findings.push(Finding {
                     rule_id: "gorm_find_without_limit_on_handler_path".to_string(),
                     severity: Severity::Info,
@@ -864,14 +879,18 @@ fn select_or_get_inside_loop_findings(
             ),
             evidence: vec![
                 format!("chain shape: {}", gorm_chain_shape(chain)),
-                "bulk prefetch with IN or Preload is usually cheaper than per-item lookups".to_string(),
+                "bulk prefetch with IN or Preload is usually cheaper than per-item lookups"
+                    .to_string(),
             ],
         });
     }
 
     for query_call in go.db_query_calls.iter().filter(|qc| {
         qc.in_loop
-            && matches!(qc.method_name.as_str(), "Query" | "QueryContext" | "Get" | "Select")
+            && matches!(
+                qc.method_name.as_str(),
+                "Query" | "QueryContext" | "Get" | "Select"
+            )
     }) {
         findings.push(Finding {
             rule_id: "select_or_get_inside_loop_lookup".to_string(),
@@ -885,7 +904,10 @@ fn select_or_get_inside_loop_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                format!("{} observed inside a loop at line {}", query_call.method_name, query_call.line),
+                format!(
+                    "{} observed inside a loop at line {}",
+                    query_call.method_name, query_call.line
+                ),
                 "bulk prefetch with IN clause is usually cheaper than per-item lookups".to_string(),
             ],
         });
@@ -916,8 +938,12 @@ fn row_by_row_upsert_findings(
                     function.fingerprint.name
                 ),
                 evidence: vec![
-                    format!("upsert query observed inside a loop at line {}", body_line.line),
-                    "bulk conflict-handling inserts are usually cheaper than row-by-row upserts".to_string(),
+                    format!(
+                        "upsert query observed inside a loop at line {}",
+                        body_line.line
+                    ),
+                    "bulk conflict-handling inserts are usually cheaper than row-by-row upserts"
+                        .to_string(),
                 ],
             });
             break;
@@ -944,7 +970,10 @@ fn row_by_row_upsert_findings(
                 function.fingerprint.name
             ),
             evidence: vec![
-                format!("{} observed inside a loop at line {}", query_call.method_name, query_call.line),
+                format!(
+                    "{} observed inside a loop at line {}",
+                    query_call.method_name, query_call.line
+                ),
                 "bulk conflict-handling is usually cheaper than per-row upserts".to_string(),
             ],
         });
@@ -964,7 +993,10 @@ fn repeated_same_query_template_findings(
         if let Some(query_text) = &query_call.query_text {
             let normalized = query_text.trim().to_ascii_uppercase();
             if !normalized.is_empty() {
-                query_groups.entry(normalized).or_default().push(query_call.line);
+                query_groups
+                    .entry(normalized)
+                    .or_default()
+                    .push(query_call.line);
             }
         }
     }
@@ -995,18 +1027,20 @@ fn repeated_same_query_template_findings(
     findings
 }
 
-fn exists_via_count_star_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+fn exists_via_count_star_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
     let mut findings = Vec::new();
 
     for query_call in go.db_query_calls.iter().filter(|qc| {
-        qc.query_text.as_deref().is_some_and(db_query_text_looks_count)
+        qc.query_text
+            .as_deref()
+            .is_some_and(db_query_text_looks_count)
     }) {
         let count_line = query_call.line;
-        let lines_after: Vec<_> = function.body_text.lines().enumerate()
+        let lines_after: Vec<_> = function
+            .body_text
+            .lines()
+            .enumerate()
             .filter(|(offset, _)| function.body_start_line + offset > count_line)
             .take(5)
             .collect();
@@ -1030,16 +1064,27 @@ fn exists_via_count_star_findings(
                     function.fingerprint.name
                 ),
                 evidence: vec![
-                    format!("COUNT query at line {} compared to zero afterwards", count_line),
-                    "EXISTS or LIMIT 1 is usually cheaper when only a boolean answer is needed".to_string(),
+                    format!(
+                        "COUNT query at line {} compared to zero afterwards",
+                        count_line
+                    ),
+                    "EXISTS or LIMIT 1 is usually cheaper when only a boolean answer is needed"
+                        .to_string(),
                 ],
             });
         }
     }
 
-    for chain in go.gorm_query_chains.iter().filter(|c| c.terminal_method == "Count") {
+    for chain in go
+        .gorm_query_chains
+        .iter()
+        .filter(|c| c.terminal_method == "Count")
+    {
         let count_line = chain.line;
-        let lines_after: Vec<_> = function.body_text.lines().enumerate()
+        let lines_after: Vec<_> = function
+            .body_text
+            .lines()
+            .enumerate()
             .filter(|(offset, _)| function.body_start_line + offset > count_line)
             .take(5)
             .collect();
@@ -1088,7 +1133,9 @@ fn find_all_then_manual_paginate_findings(
     }) {
         let has_manual_slice = lines.iter().any(|bl| {
             bl.line > chain.line
-                && (bl.text.contains("[:") || bl.text.contains("[offset:") || bl.text.contains("[start:"))
+                && (bl.text.contains("[:")
+                    || bl.text.contains("[offset:")
+                    || bl.text.contains("[start:"))
         });
 
         if has_manual_slice {
@@ -1121,19 +1168,24 @@ fn duplicate_find_then_preload_findings(
     let go = function.go_evidence();
     let mut findings = Vec::new();
 
-    let plain_finds: Vec<_> = go.gorm_query_chains.iter().filter(|c| {
-        c.terminal_method == "Find" && !gorm_chain_has_step(c, "Preload")
-    }).collect();
+    let plain_finds: Vec<_> = go
+        .gorm_query_chains
+        .iter()
+        .filter(|c| c.terminal_method == "Find" && !gorm_chain_has_step(c, "Preload"))
+        .collect();
 
-    let preload_finds: Vec<_> = go.gorm_query_chains.iter().filter(|c| {
-        (c.terminal_method == "Find" || c.terminal_method == "First") && gorm_chain_has_step(c, "Preload")
-    }).collect();
+    let preload_finds: Vec<_> = go
+        .gorm_query_chains
+        .iter()
+        .filter(|c| {
+            (c.terminal_method == "Find" || c.terminal_method == "First")
+                && gorm_chain_has_step(c, "Preload")
+        })
+        .collect();
 
     for plain in &plain_finds {
         for preload in &preload_finds {
-            if preload.line > plain.line
-                && preload.root_text == plain.root_text
-            {
+            if preload.line > plain.line && preload.root_text == plain.root_text {
                 findings.push(Finding {
                     rule_id: "duplicate_find_then_preload_followup".to_string(),
                     severity: Severity::Info,
@@ -1220,7 +1272,8 @@ fn gorm_query_shape_findings(
             });
         }
 
-        if gorm_chain_has_step(chain, "Order") && !gorm_chain_has_step(chain, "Limit")
+        if gorm_chain_has_step(chain, "Order")
+            && !gorm_chain_has_step(chain, "Limit")
             && matches!(chain.terminal_method.as_str(), "Find" | "Scan")
         {
             findings.push(Finding {
@@ -1242,7 +1295,12 @@ fn gorm_query_shape_findings(
         }
 
         if let Some(order_step) = gorm_chain_step(chain, "Order") {
-            let order_text = order_step.argument_texts.first().cloned().unwrap_or_default().to_ascii_uppercase();
+            let order_text = order_step
+                .argument_texts
+                .first()
+                .cloned()
+                .unwrap_or_default()
+                .to_ascii_uppercase();
             if order_text.contains("RAND()") || order_text.contains("RANDOM()") {
                 findings.push(Finding {
                     rule_id: "order_by_random_request_path".to_string(),
@@ -1280,7 +1338,8 @@ fn gorm_query_shape_findings(
                 ),
                 evidence: vec![
                     format!("chain shape: {}", gorm_chain_shape(chain)),
-                    "Distinct on wide rows is expensive; a key-only subquery is usually cheaper".to_string(),
+                    "Distinct on wide rows is expensive; a key-only subquery is usually cheaper"
+                        .to_string(),
                 ],
             });
         }
@@ -1306,53 +1365,57 @@ fn sql_query_shape_findings(
         if let Some(query_text) = &query_call.query_text {
             let upper: String = query_text.to_ascii_uppercase();
 
-            if upper.contains("LOWER(") || upper.contains("UPPER(") || upper.contains("COALESCE(") {
-                if upper.contains("WHERE") {
-                    findings.push(Finding {
-                        rule_id: "lower_or_func_wrapped_indexed_column".to_string(),
-                        severity: Severity::Info,
-                        path: file.path.clone(),
-                        function_name: Some(function.fingerprint.name.clone()),
-                        start_line: query_call.line,
-                        end_line: query_call.line,
-                        message: format!(
-                            "function {} uses function-wrapped columns in WHERE clauses",
-                            function.fingerprint.name
-                        ),
-                        evidence: vec![
-                            format!("query at line {}: {}", query_call.line, query_text),
-                            "LOWER/UPPER/COALESCE on indexed columns often defeats index usage".to_string(),
-                        ],
-                    });
-                }
+            if (upper.contains("LOWER(") || upper.contains("UPPER(") || upper.contains("COALESCE("))
+                && upper.contains("WHERE")
+            {
+                findings.push(Finding {
+                    rule_id: "lower_or_func_wrapped_indexed_column".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: query_call.line,
+                    end_line: query_call.line,
+                    message: format!(
+                        "function {} uses function-wrapped columns in WHERE clauses",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("query at line {}: {}", query_call.line, query_text),
+                        "LOWER/UPPER/COALESCE on indexed columns often defeats index usage"
+                            .to_string(),
+                    ],
+                });
             }
 
-            if upper.contains("DATE(") || upper.contains("CAST(") {
-                if upper.contains("WHERE") {
-                    findings.push(Finding {
-                        rule_id: "date_or_cast_wrapped_indexed_column".to_string(),
-                        severity: Severity::Info,
-                        path: file.path.clone(),
-                        function_name: Some(function.fingerprint.name.clone()),
-                        start_line: query_call.line,
-                        end_line: query_call.line,
-                        message: format!(
-                            "function {} uses DATE/CAST on columns in WHERE clauses",
-                            function.fingerprint.name
-                        ),
-                        evidence: vec![
-                            format!("query at line {}: {}", query_call.line, query_text),
-                            "wrapping indexed columns in DATE/CAST often prevents index usage".to_string(),
-                        ],
-                    });
-                }
+            if (upper.contains("DATE(") || upper.contains("CAST(")) && upper.contains("WHERE") {
+                findings.push(Finding {
+                    rule_id: "date_or_cast_wrapped_indexed_column".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: query_call.line,
+                    end_line: query_call.line,
+                    message: format!(
+                        "function {} uses DATE/CAST on columns in WHERE clauses",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("query at line {}: {}", query_call.line, query_text),
+                        "wrapping indexed columns in DATE/CAST often prevents index usage"
+                            .to_string(),
+                    ],
+                });
             }
 
-            if upper.contains("LIKE") && upper.contains("WHERE") {
-                if let Some(like_pos) = upper.find("LIKE") {
-                    let after_like = &upper[like_pos + 4..];
-                    if after_like.trim_start().starts_with("'%") || after_like.trim_start().starts_with("\"%") {
-                        findings.push(Finding {
+            if upper.contains("LIKE")
+                && upper.contains("WHERE")
+                && let Some(like_pos) = upper.find("LIKE")
+            {
+                let after_like = &upper[like_pos + 4..];
+                if after_like.trim_start().starts_with("'%")
+                    || after_like.trim_start().starts_with("\"%")
+                {
+                    findings.push(Finding {
                             rule_id: "leading_wildcard_builder_chain".to_string(),
                             severity: Severity::Info,
                             path: file.path.clone(),
@@ -1368,11 +1431,12 @@ fn sql_query_shape_findings(
                                 "leading wildcards prevent index usage; consider full-text search or trigram indexes".to_string(),
                             ],
                         });
-                    }
                 }
             }
 
-            if upper.contains("ORDER BY") && (upper.contains("RAND()") || upper.contains("RANDOM()")) {
+            if upper.contains("ORDER BY")
+                && (upper.contains("RAND()") || upper.contains("RANDOM()"))
+            {
                 findings.push(Finding {
                     rule_id: "order_by_random_request_path".to_string(),
                     severity: Severity::Warning,
@@ -1395,11 +1459,16 @@ fn sql_query_shape_findings(
 
     for body_line in lines {
         if body_line.text.contains("LIKE") && body_line.text.contains("\"%") {
-            let already_found = findings.iter().any(|f| f.rule_id == "leading_wildcard_builder_chain");
+            let already_found = findings
+                .iter()
+                .any(|f| f.rule_id == "leading_wildcard_builder_chain");
             if !already_found {
                 let upper_text = body_line.text.to_ascii_uppercase();
                 if upper_text.contains("WHERE") || upper_text.contains("LIKE") {
-                    let has_where_context = go.gorm_query_chains.iter().any(|c| gorm_chain_has_step(c, "Where"));
+                    let has_where_context = go
+                        .gorm_query_chains
+                        .iter()
+                        .any(|c| gorm_chain_has_step(c, "Where"));
                     if has_where_context {
                         findings.push(Finding {
                             rule_id: "leading_wildcard_builder_chain".to_string(),
@@ -1460,9 +1529,12 @@ fn unbounded_in_clause_findings(
 
     for body_line in lines {
         let text_upper = body_line.text.to_ascii_uppercase();
-        if text_upper.contains(" IN (") || text_upper.contains(" IN(") {
-            if body_line.text.contains("...") || body_line.text.contains("ids)") || body_line.text.contains("items)") {
-                findings.push(Finding {
+        if (text_upper.contains(" IN (") || text_upper.contains(" IN("))
+            && (body_line.text.contains("...")
+                || body_line.text.contains("ids)")
+                || body_line.text.contains("items)"))
+        {
+            findings.push(Finding {
                     rule_id: "unbounded_in_clause_expansion".to_string(),
                     severity: Severity::Info,
                     path: file.path.clone(),
@@ -1478,8 +1550,7 @@ fn unbounded_in_clause_findings(
                         "unbounded IN clauses can cause query plan instability; consider batching or temp tables".to_string(),
                     ],
                 });
-                break;
-            }
+            break;
         }
     }
 
@@ -1527,7 +1598,10 @@ fn scan_into_map_findings(
     if has_dynamic_scan_binding {
         for body_line in lines.iter().filter(|bl| bl.in_loop) {
             if body_line.text.contains(".Scan(") || body_line.text.contains(".MapScan(") {
-                let already_found = findings.iter().any(|f| f.rule_id == "scan_into_map_string_any_hot_path" && f.start_line == body_line.line);
+                let already_found = findings.iter().any(|f| {
+                    f.rule_id == "scan_into_map_string_any_hot_path"
+                        && f.start_line == body_line.line
+                });
                 if !already_found {
                     findings.push(Finding {
                         rule_id: "scan_into_map_string_any_hot_path".to_string(),
@@ -1623,8 +1697,12 @@ fn sqlx_select_unbounded_findings(
                         function.fingerprint.name
                     ),
                     evidence: vec![
-                        format!("sqlx.Select observed at line {} without LIMIT in query", body_line.line),
-                        "unbounded selects can materialize large slices; add LIMIT or pagination".to_string(),
+                        format!(
+                            "sqlx.Select observed at line {} without LIMIT in query",
+                            body_line.line
+                        ),
+                        "unbounded selects can materialize large slices; add LIMIT or pagination"
+                            .to_string(),
                     ],
                 });
                 break;
@@ -1680,14 +1758,18 @@ fn orm_tuning_findings(
     let has_bulk_create = go.gorm_query_chains.iter().any(|c| {
         c.terminal_method == "Create"
             && c.steps.iter().any(|s| {
-                s.argument_texts.first().is_some_and(|a| a.contains("[]") || a.contains("..."))
+                s.argument_texts
+                    .first()
+                    .is_some_and(|a| a.contains("[]") || a.contains("..."))
             })
     });
     if has_bulk_create {
         let uses_default_tx = !function.body_text.contains("SkipDefaultTransaction")
             && !function.body_text.contains("Session(");
         if uses_default_tx {
-            let anchor = go.gorm_query_chains.iter()
+            let anchor = go
+                .gorm_query_chains
+                .iter()
                 .find(|c| c.terminal_method == "Create")
                 .map(|c| c.line)
                 .unwrap_or(function.body_start_line);
@@ -1711,11 +1793,19 @@ fn orm_tuning_findings(
         }
     }
 
-    for chain in go.gorm_query_chains.iter().filter(|c| c.terminal_method == "Save") {
-        let update_count = function.body_text.lines().filter(|line| {
-            let trimmed = line.trim();
-            trimmed.contains(". =") || trimmed.contains(" = ")
-        }).count();
+    for chain in go
+        .gorm_query_chains
+        .iter()
+        .filter(|c| c.terminal_method == "Save")
+    {
+        let update_count = function
+            .body_text
+            .lines()
+            .filter(|line| {
+                let trimmed = line.trim();
+                trimmed.contains(". =") || trimmed.contains(" = ")
+            })
+            .count();
 
         if update_count <= 2 && update_count > 0 {
             findings.push(Finding {
@@ -1760,7 +1850,10 @@ fn orm_tuning_findings(
     }
 
     if request_path {
-        let has_findinbatches = go.gorm_query_chains.iter().any(|c| c.terminal_method == "FindInBatches");
+        let has_findinbatches = go
+            .gorm_query_chains
+            .iter()
+            .any(|c| c.terminal_method == "FindInBatches");
         if !has_findinbatches {
             for chain in go.gorm_query_chains.iter().filter(|c| {
                 c.terminal_method == "Find"

@@ -446,10 +446,14 @@ pub(crate) fn gin_request_performance_findings(
     findings.extend(export_buffering_findings(file, function, &lines));
     findings.extend(repeated_body_rewind_findings(file, function, &lines));
     findings.extend(middleware_rebinds_body_findings(file, function, &lines));
-    findings.extend(no_streaming_for_large_export_findings(file, function, &lines));
+    findings.extend(no_streaming_for_large_export_findings(
+        file, function, &lines,
+    ));
     findings.extend(large_map_response_findings(file, function, &lines));
     findings.extend(gin_logger_debug_body_findings(file, function, &lines));
-    findings.extend(upstream_json_decode_same_response_findings(file, function, &lines));
+    findings.extend(upstream_json_decode_same_response_findings(
+        file, function, &lines,
+    ));
     findings.extend(no_batching_db_write_loop_findings(file, function, &lines));
 
     findings
@@ -894,7 +898,8 @@ fn template_parse_in_handler_findings(
                     ),
                     evidence: vec![
                         format!("template construction observed at line {}", body_line.line),
-                        "templates should be parsed at startup and cached, not created per request".to_string(),
+                        "templates should be parsed at startup and cached, not created per request"
+                            .to_string(),
                     ],
                 });
                 break;
@@ -913,9 +918,7 @@ fn loadhtml_in_request_path_findings(
     let mut findings = Vec::new();
 
     for body_line in lines {
-        if body_line.text.contains(".LoadHTMLGlob(")
-            || body_line.text.contains(".LoadHTMLFiles(")
-        {
+        if body_line.text.contains(".LoadHTMLGlob(") || body_line.text.contains(".LoadHTMLFiles(") {
             findings.push(Finding {
                 rule_id: "loadhtmlglob_or_loadhtmlfiles_in_request_path".to_string(),
                 severity: Severity::Warning,
@@ -964,7 +967,8 @@ fn middleware_allocation_findings(
                     ),
                     evidence: vec![
                         format!("http.Client allocation observed at line {}", body_line.line),
-                        "HTTP clients should be reused across requests; allocate once and share".to_string(),
+                        "HTTP clients should be reused across requests; allocate once and share"
+                            .to_string(),
                     ],
                 });
                 break;
@@ -1058,12 +1062,7 @@ fn env_config_per_request_findings(
 
     let config_markers: Vec<String> = import_aliases_for(file, "os")
         .into_iter()
-        .flat_map(|alias| {
-            vec![
-                format!("{alias}.Getenv("),
-                format!("{alias}.LookupEnv("),
-            ]
-        })
+        .flat_map(|alias| vec![format!("{alias}.Getenv("), format!("{alias}.LookupEnv(")])
         .collect();
 
     if config_markers.is_empty() {
@@ -1140,14 +1139,15 @@ fn upstream_fanout_findings(
     let mut http_call_urls = BTreeMap::<String, Vec<usize>>::new();
     for body_line in lines {
         for alias in import_aliases_for(file, "net/http") {
-            if body_line.text.contains(&format!("{alias}.Get("))
-                || body_line.text.contains(&format!("{alias}.Post("))
-            {
-                if let Some(url_arg) = first_argument_after_marker(&body_line.text, ".Get(")
+            if (body_line.text.contains(&format!("{alias}.Get("))
+                || body_line.text.contains(&format!("{alias}.Post(")))
+                && let Some(url_arg) = first_argument_after_marker(&body_line.text, ".Get(")
                     .or_else(|| first_argument_after_marker(&body_line.text, ".Post("))
-                {
-                    http_call_urls.entry(url_arg).or_default().push(body_line.line);
-                }
+            {
+                http_call_urls
+                    .entry(url_arg)
+                    .or_default()
+                    .push(body_line.line);
             }
         }
     }
@@ -1174,11 +1174,12 @@ fn upstream_fanout_findings(
         }
     }
 
-    if !go.goroutines.is_empty() || !go.loop_goroutines.is_empty()
+    if !go.goroutines.is_empty()
+        || !go.loop_goroutines.is_empty()
         || function.body_text.contains(".Go(func")
     {
-        let has_errgroup = function.body_text.contains("errgroup")
-            || function.body_text.contains("Group{");
+        let has_errgroup =
+            function.body_text.contains("errgroup") || function.body_text.contains("Group{");
         let has_concurrency_limit = function.body_text.contains("SetLimit(")
             || function.body_text.contains("make(chan")
             || function.body_text.contains("semaphore");
@@ -1217,17 +1218,21 @@ fn export_buffering_findings(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
-    let has_bufio = import_aliases_for(file, "bufio").len() > 0
-        || function.body_text.contains("bufio.");
+    let has_bufio =
+        !import_aliases_for(file, "bufio").is_empty() || function.body_text.contains("bufio.");
 
     let csv_aliases = import_aliases_for(file, "encoding/csv");
     let json_aliases = import_aliases_for(file, "encoding/json");
 
     if !has_bufio {
         let has_csv_loop_write = !csv_aliases.is_empty()
-            && lines.iter().any(|bl| bl.in_loop && bl.text.contains(".Write("));
+            && lines
+                .iter()
+                .any(|bl| bl.in_loop && bl.text.contains(".Write("));
         let has_json_loop_encode = !json_aliases.is_empty()
-            && lines.iter().any(|bl| bl.in_loop && bl.text.contains(".Encode("));
+            && lines
+                .iter()
+                .any(|bl| bl.in_loop && bl.text.contains(".Encode("));
 
         if has_csv_loop_write || has_json_loop_encode {
             let writes_to_response = function.body_text.contains("ResponseWriter")
@@ -1237,7 +1242,9 @@ fn export_buffering_findings(
             if writes_to_response {
                 let anchor = lines
                     .iter()
-                    .find(|bl| bl.in_loop && (bl.text.contains(".Write(") || bl.text.contains(".Encode(")))
+                    .find(|bl| {
+                        bl.in_loop && (bl.text.contains(".Write(") || bl.text.contains(".Encode("))
+                    })
                     .map(|bl| bl.line)
                     .unwrap_or(function.body_start_line);
 
@@ -1311,8 +1318,7 @@ fn repeated_body_rewind_findings(
             body_read_count += 1;
         }
         if body_line.text.contains("NopCloser(")
-            || (body_line.text.contains("NewReader(")
-                && body_line.text.contains("c.Request.Body"))
+            || (body_line.text.contains("NewReader(") && body_line.text.contains("c.Request.Body"))
             || body_line.text.contains("c.Request.Body =")
         {
             rewind_lines.push(body_line.line);
@@ -1364,7 +1370,9 @@ fn middleware_rebinds_body_findings(
     let next_line = lines.iter().find(|bl| bl.text.contains("c.Next()"));
 
     if let Some(next_bl) = next_line {
-        let bind_after_next = handler_bind_calls.iter().find(|call| call.line > next_bl.line);
+        let bind_after_next = handler_bind_calls
+            .iter()
+            .find(|call| call.line > next_bl.line);
 
         if let Some(rebind_call) = bind_after_next {
             findings.push(Finding {
@@ -1398,25 +1406,30 @@ fn no_streaming_for_large_export_findings(
     let mut findings = Vec::new();
 
     let ja = json_aliases(file);
-    let has_marshal_before_write = ja.iter().any(|alias| {
-        function.body_text.contains(&format!("{alias}.Marshal("))
-    });
+    let has_marshal_before_write = ja
+        .iter()
+        .any(|alias| function.body_text.contains(&format!("{alias}.Marshal(")));
 
     let has_collection_marshal = has_marshal_before_write
-        && lines.iter().any(|bl| bl.text.contains("append(") || bl.text.contains("range "));
+        && lines
+            .iter()
+            .any(|bl| bl.text.contains("append(") || bl.text.contains("range "));
 
     let data_call = go.gin_calls.iter().find(|call| call.operation == "data");
 
-    if has_collection_marshal {
-        if let Some(data_c) = data_call {
-            let marshal_line = lines.iter().find(|bl| {
-                ja.iter().any(|alias| bl.text.contains(&format!("{alias}.Marshal(")))
-            }).map(|bl| bl.line);
+    if has_collection_marshal && let Some(data_c) = data_call {
+        let marshal_line = lines
+            .iter()
+            .find(|bl| {
+                ja.iter()
+                    .any(|alias| bl.text.contains(&format!("{alias}.Marshal(")))
+            })
+            .map(|bl| bl.line);
 
-            if let Some(marshal_line) = marshal_line
-                && data_c.line > marshal_line
-            {
-                findings.push(Finding {
+        if let Some(marshal_line) = marshal_line
+            && data_c.line > marshal_line
+        {
+            findings.push(Finding {
                     rule_id: "no_streaming_for_large_export_handler".to_string(),
                     severity: Severity::Info,
                     path: file.path.clone(),
@@ -1433,7 +1446,6 @@ fn no_streaming_for_large_export_findings(
                         "streaming with json.NewEncoder or chunked writes avoids materializing the full payload in memory".to_string(),
                     ],
                 });
-            }
         }
     }
 
@@ -1448,26 +1460,32 @@ fn large_map_response_findings(
     let go = function.go_evidence();
     let mut findings = Vec::new();
 
-    let map_literal_lines: Vec<_> = lines.iter().filter(|bl| {
-        (bl.text.contains("map[string]any{")
-            || bl.text.contains("map[string]interface{}{")
-            || bl.text.contains("gin.H{"))
-            && !bl.in_loop
-    }).collect();
+    let map_literal_lines: Vec<_> = lines
+        .iter()
+        .filter(|bl| {
+            (bl.text.contains("map[string]any{")
+                || bl.text.contains("map[string]interface{}{")
+                || bl.text.contains("gin.H{"))
+                && !bl.in_loop
+        })
+        .collect();
 
     if map_literal_lines.is_empty() {
         return findings;
     }
 
     let json_render_call = go.gin_calls.iter().find(|call| {
-        matches!(call.operation.as_str(), "json" | "pure_json" | "indented_json")
+        matches!(
+            call.operation.as_str(),
+            "json" | "pure_json" | "indented_json"
+        )
     });
 
     let ja = json_aliases(file);
     let data_call = go.gin_calls.iter().find(|call| call.operation == "data");
-    let has_json_marshal = ja.iter().any(|alias| {
-        function.body_text.contains(&format!("{alias}.Marshal("))
-    });
+    let has_json_marshal = ja
+        .iter()
+        .any(|alias| function.body_text.contains(&format!("{alias}.Marshal(")));
 
     let mut map_key_count = 0usize;
     let mut counting = false;
@@ -1543,10 +1561,19 @@ fn gin_logger_debug_body_findings(
     let mut findings = Vec::new();
 
     let log_markers = [
-        "log.Print", "log.Info", "log.Debug", "log.Warn",
-        "logger.Info", "logger.Debug", "logger.Warn",
-        "fmt.Print", "fmt.Sprint", "logrus.", "slog.",
-        "zap.String(", "zap.Any(",
+        "log.Print",
+        "log.Info",
+        "log.Debug",
+        "log.Warn",
+        "logger.Info",
+        "logger.Debug",
+        "logger.Warn",
+        "fmt.Print",
+        "fmt.Sprint",
+        "logrus.",
+        "slog.",
+        "zap.String(",
+        "zap.Any(",
     ];
 
     let body_dump_in_log = lines.iter().find(|bl| {
@@ -1559,7 +1586,10 @@ fn gin_logger_debug_body_findings(
     });
 
     let raw_data_read = go.gin_calls.iter().any(|c| c.operation == "get_raw_data")
-        || go.gin_calls.iter().any(|c| c.operation == "read_request_body");
+        || go
+            .gin_calls
+            .iter()
+            .any(|c| c.operation == "read_request_body");
 
     if let Some(log_line) = body_dump_in_log
         && raw_data_read
@@ -1596,7 +1626,8 @@ fn upstream_json_decode_same_response_findings(
         return findings;
     }
 
-    let http_response_bindings: Vec<(String, usize)> = lines.iter()
+    let http_response_bindings: Vec<(String, usize)> = lines
+        .iter()
         .filter_map(|bl| {
             if bl.text.contains("http.Get(")
                 || bl.text.contains("http.Post(")
@@ -1614,7 +1645,8 @@ fn upstream_json_decode_same_response_findings(
 
     for (resp_binding, resp_line) in &http_response_bindings {
         let body_binding_text = format!("{resp_binding}.Body");
-        let decode_lines: Vec<usize> = lines.iter()
+        let decode_lines: Vec<usize> = lines
+            .iter()
             .filter(|bl| {
                 bl.line > *resp_line
                     && (bl.text.contains(&body_binding_text) || bl.text.contains("body"))
@@ -1675,14 +1707,17 @@ fn no_batching_db_write_loop_findings(
     }
 
     let write_markers = [
-        ".Create(", ".Save(", ".Update(", ".Updates(",
-        ".Delete(", ".Exec(",
+        ".Create(",
+        ".Save(",
+        ".Update(",
+        ".Updates(",
+        ".Delete(",
+        ".Exec(",
     ];
 
-    let loop_writes: Vec<usize> = lines.iter()
-        .filter(|bl| {
-            bl.in_loop && write_markers.iter().any(|m| bl.text.contains(m))
-        })
+    let loop_writes: Vec<usize> = lines
+        .iter()
+        .filter(|bl| bl.in_loop && write_markers.iter().any(|m| bl.text.contains(m)))
         .map(|bl| bl.line)
         .collect();
 

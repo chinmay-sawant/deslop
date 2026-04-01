@@ -268,8 +268,12 @@ fn core_repeated_work_findings(
     findings.extend(read_then_decode_duplicate_materialization_findings(
         file, function, lines,
     ));
-    findings.extend(slice_append_without_prealloc_findings(file, function, lines));
-    findings.extend(nested_append_without_outer_capacity_findings(file, function, lines));
+    findings.extend(slice_append_without_prealloc_findings(
+        file, function, lines,
+    ));
+    findings.extend(nested_append_without_outer_capacity_findings(
+        file, function, lines,
+    ));
     findings.extend(map_growth_without_size_hint_findings(file, function, lines));
     findings.extend(builder_without_grow_findings(file, function, lines));
     findings.extend(repeated_map_clone_findings(file, function, lines));
@@ -278,9 +282,13 @@ fn core_repeated_work_findings(
     findings.extend(bufio_missing_findings(file, function, lines));
     findings.extend(nested_linear_join_findings(file, function, lines));
     findings.extend(append_then_sort_findings(file, function, lines));
-    findings.extend(sort_before_first_or_membership_findings(file, function, lines));
+    findings.extend(sort_before_first_or_membership_findings(
+        file, function, lines,
+    ));
     findings.extend(filter_count_iterate_findings(file, function, lines));
-    findings.extend(uuid_hash_formatting_only_for_logs_findings(file, function, lines));
+    findings.extend(uuid_hash_formatting_only_for_logs_findings(
+        file, function, lines,
+    ));
     findings
 }
 
@@ -780,21 +788,21 @@ fn slice_append_without_prealloc_findings(
         if body_line.text.contains("append(")
             && !body_line.text.contains("make(")
             && !body_line.text.contains("cap(")
+            && let Some(target) = append_target(&body_line.text)
         {
-            if let Some(target) = append_target(&body_line.text) {
-                let has_prealloc = lines.iter().any(|prior| {
+            let has_prealloc = lines.iter().any(|prior| {
+                prior.line < body_line.line
+                    && prior.text.contains("make([]")
+                    && prior.text.contains(&target)
+            });
+            if !has_prealloc {
+                let has_range_bound = lines.iter().any(|prior| {
                     prior.line < body_line.line
-                        && prior.text.contains("make([]")
-                        && prior.text.contains(&target)
+                        && prior.text.contains("range ")
+                        && prior.text.contains("for ")
                 });
-                if !has_prealloc {
-                    let has_range_bound = lines.iter().any(|prior| {
-                        prior.line < body_line.line
-                            && prior.text.contains("range ")
-                            && prior.text.contains("for ")
-                    });
-                    if has_range_bound {
-                        findings.push(Finding {
+                if has_range_bound {
+                    findings.push(Finding {
                             rule_id: "slice_append_without_prealloc_known_bound".to_string(),
                             severity: Severity::Info,
                             path: file.path.clone(),
@@ -810,7 +818,6 @@ fn slice_append_without_prealloc_findings(
                                 "preallocating with make([]T, 0, len(source)) usually reduces growth-related copying".to_string(),
                             ],
                         });
-                    }
                 }
             }
         }
@@ -921,7 +928,11 @@ fn builder_without_grow_findings(
         for body_line in lines {
             if body_line.text.contains(&builder_marker) {
                 let has_grow = lines.iter().any(|other| other.text.contains(".Grow("));
-                if !has_grow && lines.iter().any(|other| other.in_loop && other.text.contains(".WriteString(")) {
+                if !has_grow
+                    && lines
+                        .iter()
+                        .any(|other| other.in_loop && other.text.contains(".WriteString("))
+                {
                     findings.push(Finding {
                         rule_id: "strings_builder_without_grow_known_bound".to_string(),
                         severity: Severity::Info,
@@ -951,7 +962,11 @@ fn builder_without_grow_findings(
                 && !body_line.text.contains(&format!("{alias}.NewBuffer("))
             {
                 let has_grow = lines.iter().any(|other| other.text.contains(".Grow("));
-                if !has_grow && lines.iter().any(|other| other.in_loop && other.text.contains(".Write")) {
+                if !has_grow
+                    && lines
+                        .iter()
+                        .any(|other| other.in_loop && other.text.contains(".Write"))
+                {
                     findings.push(Finding {
                         rule_id: "bytes_buffer_without_grow_known_bound".to_string(),
                         severity: Severity::Info,
@@ -993,9 +1008,9 @@ fn repeated_map_clone_findings(
         }
 
         let is_map_copy_loop = body_line.text.contains("make(map[")
-            && lines
-                .iter()
-                .any(|other| other.in_loop && other.line > body_line.line && other.text.contains("] ="));
+            && lines.iter().any(|other| {
+                other.in_loop && other.line > body_line.line && other.text.contains("] =")
+            });
 
         if is_map_copy_loop {
             findings.push(Finding {
@@ -1029,21 +1044,22 @@ fn append_then_trim_findings(
     let mut findings = Vec::new();
 
     for body_line in lines.iter().filter(|bl| bl.in_loop) {
-        if body_line.text.contains("append(") {
-            if let Some(target) = append_target(&body_line.text) {
-                let has_trim = lines.iter().any(|other| {
-                    other.in_loop
-                        && other.line > body_line.line
-                        && other.text.contains(&format!("{target}["))
-                        && other.text.contains(":]")
-                });
-                let has_reslice = lines.iter().any(|other| {
-                    other.in_loop
-                        && other.line > body_line.line
-                        && other.text.contains(&format!("{target} = {target}[:"))
-                });
-                if has_trim || has_reslice {
-                    findings.push(Finding {
+        if body_line.text.contains("append(")
+            && let Some(target) = append_target(&body_line.text)
+        {
+            let has_trim = lines.iter().any(|other| {
+                other.in_loop
+                    && other.line > body_line.line
+                    && other.text.contains(&format!("{target}["))
+                    && other.text.contains(":]")
+            });
+            let has_reslice = lines.iter().any(|other| {
+                other.in_loop
+                    && other.line > body_line.line
+                    && other.text.contains(&format!("{target} = {target}[:"))
+            });
+            if has_trim || has_reslice {
+                findings.push(Finding {
                         rule_id: "append_then_trim_each_iteration".to_string(),
                         severity: Severity::Info,
                         path: file.path.clone(),
@@ -1059,8 +1075,7 @@ fn append_then_trim_findings(
                             "a reusable scratch buffer with reset is usually cheaper than grow-then-trim per iteration".to_string(),
                         ],
                     });
-                    break;
-                }
+                break;
             }
         }
     }
@@ -1103,32 +1118,34 @@ fn stable_value_normalization_findings(
 
     for body_line in lines.iter().filter(|bl| bl.in_loop) {
         for (marker, method) in &normalization_markers {
-            if body_line.text.contains(marker) {
-                if let Some(argument) = first_argument_after_marker_simple(&body_line.text, marker) {
-                    if simple_local_binding(&argument).is_some()
-                        && !lines.iter().any(|other| {
-                            other.in_loop && other.text.contains(&format!("{argument} ="))
-                        })
-                    {
-                        findings.push(Finding {
-                            rule_id: "stable_value_normalization_in_inner_loop".to_string(),
-                            severity: Severity::Info,
-                            path: file.path.clone(),
-                            function_name: Some(function.fingerprint.name.clone()),
-                            start_line: body_line.line,
-                            end_line: body_line.line,
-                            message: format!(
-                                "function {} normalizes a stable value inside a loop",
-                                function.fingerprint.name
-                            ),
-                            evidence: vec![
-                                format!("{method}({argument}) observed inside a loop at line {}", body_line.line),
-                                "normalizing an invariant value before the loop avoids repeated work".to_string(),
-                            ],
-                        });
-                        break;
-                    }
-                }
+            if body_line.text.contains(marker)
+                && let Some(argument) = first_argument_after_marker_simple(&body_line.text, marker)
+                && simple_local_binding(&argument).is_some()
+                && !lines
+                    .iter()
+                    .any(|other| other.in_loop && other.text.contains(&format!("{argument} =")))
+            {
+                findings.push(Finding {
+                    rule_id: "stable_value_normalization_in_inner_loop".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: body_line.line,
+                    end_line: body_line.line,
+                    message: format!(
+                        "function {} normalizes a stable value inside a loop",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!(
+                            "{method}({argument}) observed inside a loop at line {}",
+                            body_line.line
+                        ),
+                        "normalizing an invariant value before the loop avoids repeated work"
+                            .to_string(),
+                    ],
+                });
+                break;
             }
         }
     }
@@ -1142,8 +1159,8 @@ fn bufio_missing_findings(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
-    let has_bufio = import_aliases_for(file, "bufio").len() > 0
-        || function.body_text.contains("bufio.");
+    let has_bufio =
+        !import_aliases_for(file, "bufio").is_empty() || function.body_text.contains("bufio.");
 
     if has_bufio {
         return findings;
@@ -1156,16 +1173,13 @@ fn bufio_missing_findings(
             && !bl.text.contains("Buffer")
     });
 
-    let has_os_file_or_socket = import_aliases_for(file, "os")
+    let has_os_file_or_socket = import_aliases_for(file, "os").iter().any(|alias| {
+        function.body_text.contains(&format!("{alias}.Create("))
+            || function.body_text.contains(&format!("{alias}.File"))
+            || function.signature_text.contains(&format!("{alias}.File"))
+    }) || import_aliases_for(file, "os")
         .iter()
-        .any(|alias| {
-            function.body_text.contains(&format!("{alias}.Create("))
-                || function.body_text.contains(&format!("{alias}.File"))
-                || function.signature_text.contains(&format!("{alias}.File"))
-        })
-        || import_aliases_for(file, "os")
-            .iter()
-            .any(|alias| function.body_text.contains(&format!("{alias}.OpenFile(")))
+        .any(|alias| function.body_text.contains(&format!("{alias}.OpenFile(")))
         || function.body_text.contains("net.Conn")
         || function.body_text.contains("net.Dial");
 
@@ -1173,8 +1187,7 @@ fn bufio_missing_findings(
         let anchor_line = lines
             .iter()
             .find(|bl| {
-                bl.in_loop
-                    && (bl.text.contains(".Write(") || bl.text.contains(".WriteString("))
+                bl.in_loop && (bl.text.contains(".Write(") || bl.text.contains(".WriteString("))
             })
             .map(|bl| bl.line)
             .unwrap_or(function.body_start_line);
@@ -1207,10 +1220,7 @@ fn bufio_missing_findings(
     if read_in_loop && has_os_file_or_socket {
         let anchor_line = lines
             .iter()
-            .find(|bl| {
-                bl.in_loop
-                    && (bl.text.contains(".Read(") || bl.text.contains(".ReadByte("))
-            })
+            .find(|bl| bl.in_loop && (bl.text.contains(".Read(") || bl.text.contains(".ReadByte(")))
             .map(|bl| bl.line)
             .unwrap_or(function.body_start_line);
 
@@ -1259,13 +1269,12 @@ fn nested_linear_join_findings(
 
     let has_lookup_in_inner = lines.iter().any(|bl| {
         bl.in_loop
-            && (bl.text.contains("== ")
-                || bl.text.contains("!= "))
+            && (bl.text.contains("== ") || bl.text.contains("!= "))
             && !bl.text.contains("err ")
             && !bl.text.contains("nil")
     });
 
-    if has_lookup_in_inner && inner_loop_starts.len() >= 1 {
+    if has_lookup_in_inner && !inner_loop_starts.is_empty() {
         let slices_import = import_aliases_for(file, "slices");
         let has_linear_search = lines.iter().any(|bl| {
             bl.in_loop
@@ -1384,9 +1393,9 @@ fn sort_before_first_or_membership_findings(
         });
 
         if only_uses_first || only_uses_min_max {
-            let no_range_after = !lines
-                .iter()
-                .any(|bl| bl.line > sort_bl.line && bl.text.contains("range ") && bl.text.contains("for "));
+            let no_range_after = !lines.iter().any(|bl| {
+                bl.line > sort_bl.line && bl.text.contains("range ") && bl.text.contains("for ")
+            });
 
             if no_range_after {
                 findings.push(Finding {
@@ -1460,7 +1469,7 @@ fn filter_count_iterate_findings(
 fn append_target(text: &str) -> Option<String> {
     let (left, right) = text.split_once('=')?;
     if right.trim_start().starts_with("append(") || right.contains("= append(") {
-        let binding = left.trim().split_whitespace().last()?.trim();
+        let binding = left.split_whitespace().last()?.trim();
         if super::is_identifier_name(binding) {
             return Some(binding.to_string());
         }
@@ -1499,30 +1508,57 @@ fn uuid_hash_formatting_only_for_logs_findings(
         ("uuid.String(", "uuid.String()"),
         (".String()", ".String()"),
         ("hex.EncodeToString(", "hex.EncodeToString"),
-        ("base64.StdEncoding.EncodeToString(", "base64.EncodeToString"),
-        ("base64.URLEncoding.EncodeToString(", "base64.EncodeToString"),
-        ("base64.RawStdEncoding.EncodeToString(", "base64.EncodeToString"),
+        (
+            "base64.StdEncoding.EncodeToString(",
+            "base64.EncodeToString",
+        ),
+        (
+            "base64.URLEncoding.EncodeToString(",
+            "base64.EncodeToString",
+        ),
+        (
+            "base64.RawStdEncoding.EncodeToString(",
+            "base64.EncodeToString",
+        ),
     ];
 
     let log_markers = [
-        "log.Print", "log.Info", "log.Debug", "log.Warn", "log.Error",
-        "log.Fatal", "log.Trace", "fmt.Print", "fmt.Sprint",
-        "logger.Info", "logger.Debug", "logger.Warn", "logger.Error",
-        "zap.String(", "zap.Any(", "logrus.", "slog.",
+        "log.Print",
+        "log.Info",
+        "log.Debug",
+        "log.Warn",
+        "log.Error",
+        "log.Fatal",
+        "log.Trace",
+        "fmt.Print",
+        "fmt.Sprint",
+        "logger.Info",
+        "logger.Debug",
+        "logger.Warn",
+        "logger.Error",
+        "zap.String(",
+        "zap.Any(",
+        "logrus.",
+        "slog.",
     ];
 
     for body_line in lines.iter().filter(|bl| bl.in_loop) {
-        let has_format = format_markers.iter().any(|(marker, _)| body_line.text.contains(marker));
+        let has_format = format_markers
+            .iter()
+            .any(|(marker, _)| body_line.text.contains(marker));
         if !has_format {
             continue;
         }
-        let only_feeds_logging = log_markers.iter().any(|marker| body_line.text.contains(marker))
+        let only_feeds_logging = log_markers
+            .iter()
+            .any(|marker| body_line.text.contains(marker))
             || lines.iter().any(|other| {
                 other.line == body_line.line + 1
                     && log_markers.iter().any(|marker| other.text.contains(marker))
             });
         if only_feeds_logging {
-            let label = format_markers.iter()
+            let label = format_markers
+                .iter()
                 .find(|(marker, _)| body_line.text.contains(marker))
                 .map(|(_, label)| *label)
                 .unwrap_or("formatting call");

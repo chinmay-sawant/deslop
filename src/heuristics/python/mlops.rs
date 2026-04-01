@@ -29,10 +29,7 @@ fn is_handler_or_view(function: &ParsedFunction) -> bool {
 
 // ── Pandas rules ─────────────────────────────────────────────────────────────
 
-pub(super) fn pandas_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn pandas_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function || !has_any_import(file, &["pandas", "pd"]) {
         return Vec::new();
     }
@@ -40,13 +37,13 @@ pub(super) fn pandas_findings(
     let mut findings = Vec::new();
 
     // pandas_iterrows_in_loop
-    if body.contains(".iterrows()") {
-        if let Some(line) = find_line(body, ".iterrows()", function.fingerprint.start_line) {
-            findings.push(make_finding(
+    if body.contains(".iterrows()")
+        && let Some(line) = find_line(body, ".iterrows()", function.fingerprint.start_line)
+    {
+        findings.push(make_finding(
                 "pandas_iterrows_in_loop", Severity::Info, file, function, line,
                 "uses df.iterrows() which is very slow; prefer vectorized ops, .apply(), or .itertuples()",
             ));
-        }
     }
 
     // pandas_apply_with_simple_vectorizable_op
@@ -68,7 +65,10 @@ pub(super) fn pandas_findings(
                     || trimmed.contains("float(x)");
                 if has_simple_op {
                     findings.push(make_finding(
-                        "pandas_apply_with_simple_vectorizable_op", Severity::Info, file, function,
+                        "pandas_apply_with_simple_vectorizable_op",
+                        Severity::Info,
+                        file,
+                        function,
                         function.fingerprint.start_line + i,
                         "uses .apply(lambda) for a simple operation with a vectorized equivalent",
                     ));
@@ -86,19 +86,27 @@ pub(super) fn pandas_findings(
             loop_indent = Some(indent_level(line));
             continue;
         }
-        if loop_indent.is_some() && !trimmed.is_empty() {
-            if trimmed.contains("pd.concat(") || trimmed.contains("df.append(") || trimmed.contains(".append(") && trimmed.contains("DataFrame") {
-                findings.push(make_finding(
-                    "pandas_concat_in_loop", Severity::Info, file, function,
-                    function.fingerprint.start_line + i,
-                    "concatenates DataFrames inside a loop; collect all and concat once",
-                ));
-            }
+        if loop_indent.is_some()
+            && !trimmed.is_empty()
+            && (trimmed.contains("pd.concat(")
+                || trimmed.contains("df.append(")
+                || trimmed.contains(".append(") && trimmed.contains("DataFrame"))
+        {
+            findings.push(make_finding(
+                "pandas_concat_in_loop",
+                Severity::Info,
+                file,
+                function,
+                function.fingerprint.start_line + i,
+                "concatenates DataFrames inside a loop; collect all and concat once",
+            ));
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
 
@@ -123,7 +131,10 @@ pub(super) fn pandas_findings(
         // Detect df['a']['b'] = or df.col1.col2 = chained assignment
         if trimmed.contains("']['") && trimmed.contains(" = ") && !trimmed.contains("==") {
             findings.push(make_finding(
-                "pandas_chain_assignment_warning", Severity::Info, file, function,
+                "pandas_chain_assignment_warning",
+                Severity::Info,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "uses chained indexing which may cause SettingWithCopyWarning; use .loc[] instead",
             ));
@@ -133,7 +144,10 @@ pub(super) fn pandas_findings(
     // pandas_inplace_false_reassignment_missing
     for (i, line) in body.lines().enumerate() {
         let trimmed = line.trim();
-        if (trimmed.contains(".drop(") || trimmed.contains(".rename(") || trimmed.contains(".fillna(") || trimmed.contains(".dropna("))
+        if (trimmed.contains(".drop(")
+            || trimmed.contains(".rename(")
+            || trimmed.contains(".fillna(")
+            || trimmed.contains(".dropna("))
             && !trimmed.contains("inplace=True")
             && !trimmed.contains(" = ")
             && !trimmed.starts_with("return")
@@ -156,15 +170,20 @@ pub(super) fn pandas_findings(
         }
         if loop_indent.is_some() && !trimmed.is_empty() && trimmed.contains(".to_dict(") {
             findings.push(make_finding(
-                "pandas_to_dict_records_in_loop", Severity::Info, file, function,
+                "pandas_to_dict_records_in_loop",
+                Severity::Info,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "calls .to_dict() inside a loop; use vectorized access or .itertuples()",
             ));
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
 
@@ -174,7 +193,10 @@ pub(super) fn pandas_findings(
             let trimmed = line.trim();
             if trimmed.contains(".merge(") && !trimmed.contains("validate") {
                 findings.push(make_finding(
-                    "pandas_merge_without_validation", Severity::Info, file, function,
+                    "pandas_merge_without_validation",
+                    Severity::Info,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "merges DataFrames without validate parameter; risk of silent row duplication",
                 ));
@@ -186,12 +208,17 @@ pub(super) fn pandas_findings(
     if !function.is_test_function {
         for (i, line) in body.lines().enumerate() {
             let trimmed = line.trim();
-            if (trimmed.starts_with("print(df") || trimmed.starts_with("display(df") || trimmed.contains(".to_string()"))
+            if (trimmed.starts_with("print(df")
+                || trimmed.starts_with("display(df")
+                || trimmed.contains(".to_string()"))
                 && !file.path.ends_with("notebook.py")
                 && !file.path.to_string_lossy().contains("notebook")
             {
                 findings.push(make_finding(
-                    "pandas_full_dataframe_print_in_production", Severity::Info, file, function,
+                    "pandas_full_dataframe_print_in_production",
+                    Severity::Info,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "prints/displays a full DataFrame in production code; use logging or head()",
                 ));
@@ -221,17 +248,26 @@ pub(super) fn pandas_findings(
             loop_indent = Some(indent_level(line));
             continue;
         }
-        if loop_indent.is_some() && !trimmed.is_empty() && trimmed.contains(".copy()") && (trimmed.contains("df") || trimmed.contains("DataFrame")) {
+        if loop_indent.is_some()
+            && !trimmed.is_empty()
+            && trimmed.contains(".copy()")
+            && (trimmed.contains("df") || trimmed.contains("DataFrame"))
+        {
             findings.push(make_finding(
-                "pandas_copy_in_loop", Severity::Info, file, function,
+                "pandas_copy_in_loop",
+                Severity::Info,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "copies a DataFrame inside a loop; consider using views or method chaining",
             ));
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
 
@@ -240,10 +276,7 @@ pub(super) fn pandas_findings(
 
 // ── NumPy rules ──────────────────────────────────────────────────────────────
 
-pub(super) fn numpy_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn numpy_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function || !has_any_import(file, &["numpy", "np"]) {
         return Vec::new();
     }
@@ -255,9 +288,15 @@ pub(super) fn numpy_findings(
         let trimmed = line.trim();
         if trimmed.starts_with("for ") && trimmed.ends_with(':') {
             // Check if iterating over something that looks like a numpy array
-            if trimmed.contains("np.") || trimmed.contains("array") || trimmed.contains("range(len(") {
+            if trimmed.contains("np.")
+                || trimmed.contains("array")
+                || trimmed.contains("range(len(")
+            {
                 findings.push(make_finding(
-                    "numpy_python_loop_over_array", Severity::Info, file, function,
+                    "numpy_python_loop_over_array",
+                    Severity::Info,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "uses Python loop over array; prefer vectorized NumPy operations",
                 ));
@@ -275,38 +314,50 @@ pub(super) fn numpy_findings(
         }
         if loop_indent.is_some() && !trimmed.is_empty() && trimmed.contains("np.append(") {
             findings.push(make_finding(
-                "numpy_append_in_loop", Severity::Info, file, function,
+                "numpy_append_in_loop",
+                Severity::Info,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "uses np.append() in a loop; pre-allocate with np.zeros/np.empty and fill",
             ));
         }
-        if loop_indent.is_some() && !trimmed.is_empty() && (trimmed.contains("np.vstack(") || trimmed.contains("np.hstack(") || trimmed.contains("np.concatenate(")) {
+        if loop_indent.is_some()
+            && !trimmed.is_empty()
+            && (trimmed.contains("np.vstack(")
+                || trimmed.contains("np.hstack(")
+                || trimmed.contains("np.concatenate("))
+        {
             findings.push(make_finding(
-                "numpy_vstack_hstack_in_loop", Severity::Info, file, function,
+                "numpy_vstack_hstack_in_loop",
+                Severity::Info,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "stacks arrays in a loop; collect and stack once after the loop",
             ));
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
 
     // numpy_tolist_in_hot_path
     if body.contains(".tolist()") {
-        let in_loop = body.lines().enumerate().any(|(_, line)| {
+        let in_loop = body.lines().any(|line| {
             let t = line.trim();
             t.contains(".tolist()") && (body.contains("for ") || body.contains("while "))
         });
-        if in_loop {
-            if let Some(line) = find_line(body, ".tolist()", function.fingerprint.start_line) {
-                findings.push(make_finding(
+        if in_loop && let Some(line) = find_line(body, ".tolist()", function.fingerprint.start_line)
+        {
+            findings.push(make_finding(
                     "numpy_tolist_in_hot_path", Severity::Info, file, function, line,
                     "calls .tolist() in hot path; keep data as NumPy arrays to avoid Python object overhead",
                 ));
-            }
         }
     }
 
@@ -325,7 +376,17 @@ pub(super) fn model_inference_findings(
     let body = &function.body_text;
     let mut findings = Vec::new();
 
-    let ml_imports = has_any_import(file, &["torch", "tensorflow", "tf", "sklearn", "transformers", "joblib"]);
+    let ml_imports = has_any_import(
+        file,
+        &[
+            "torch",
+            "tensorflow",
+            "tf",
+            "sklearn",
+            "transformers",
+            "joblib",
+        ],
+    );
     if !ml_imports {
         return Vec::new();
     }
@@ -337,18 +398,25 @@ pub(super) fn model_inference_findings(
         ("joblib.load(", "model_loaded_per_request"),
         ("AutoModel.from_pretrained(", "model_loaded_per_request"),
         ("pipeline(", "model_loaded_per_request"),
-        ("AutoTokenizer.from_pretrained(", "tokenizer_loaded_per_request"),
+        (
+            "AutoTokenizer.from_pretrained(",
+            "tokenizer_loaded_per_request",
+        ),
     ];
 
     if is_handler_or_view(function) {
         for (pattern, rule_id) in model_load_patterns {
-            if body.contains(pattern) {
-                if let Some(line) = find_line(body, pattern, function.fingerprint.start_line) {
-                    findings.push(make_finding(
-                        rule_id, Severity::Warning, file, function, line,
-                        "loads model/tokenizer per request; load once at startup",
-                    ));
-                }
+            if body.contains(pattern)
+                && let Some(line) = find_line(body, pattern, function.fingerprint.start_line)
+            {
+                findings.push(make_finding(
+                    rule_id,
+                    Severity::Warning,
+                    file,
+                    function,
+                    line,
+                    "loads model/tokenizer per request; load once at startup",
+                ));
             }
         }
     }
@@ -366,94 +434,132 @@ pub(super) fn model_inference_findings(
             for (pattern, rule_id) in model_load_patterns {
                 if trimmed.contains(pattern) {
                     findings.push(make_finding(
-                        rule_id, Severity::Warning, file, function,
+                        rule_id,
+                        Severity::Warning,
+                        file,
+                        function,
                         function.fingerprint.start_line + i,
                         "loads model/tokenizer inside a loop; load once and reuse",
                     ));
                 }
             }
             // model_to_device_in_loop
-            if trimmed.contains(".to(device)") || trimmed.contains(".to(\"cuda\")") || trimmed.contains(".to('cuda')") {
+            if trimmed.contains(".to(device)")
+                || trimmed.contains(".to(\"cuda\")")
+                || trimmed.contains(".to('cuda')")
+            {
                 findings.push(make_finding(
-                    "model_to_device_in_loop", Severity::Info, file, function,
+                    "model_to_device_in_loop",
+                    Severity::Info,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "moves model/tensor to device inside a loop; move once before the loop",
                 ));
             }
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
 
     // model_eval_mode_missing
     if has_import(file, "torch") && (body.contains("model(") || body.contains("model.forward(")) {
         let has_eval = body.contains("model.eval()") || body.contains(".eval()");
-        let has_no_grad = body.contains("torch.no_grad()") || body.contains("torch.inference_mode()");
-        if !has_eval && !has_no_grad && !body.contains("model.train()") && !body.contains("optimizer") {
-            if let Some(line) = find_line(body, "model(", function.fingerprint.start_line)
+        let has_no_grad =
+            body.contains("torch.no_grad()") || body.contains("torch.inference_mode()");
+        if !has_eval
+            && !has_no_grad
+            && !body.contains("model.train()")
+            && !body.contains("optimizer")
+            && let Some(line) = find_line(body, "model(", function.fingerprint.start_line)
                 .or_else(|| find_line(body, "model.forward(", function.fingerprint.start_line))
-            {
-                findings.push(make_finding(
-                    "model_eval_mode_missing", Severity::Info, file, function, line,
-                    "runs model inference without model.eval() or torch.no_grad()",
-                ));
-            }
+        {
+            findings.push(make_finding(
+                "model_eval_mode_missing",
+                Severity::Info,
+                file,
+                function,
+                line,
+                "runs model inference without model.eval() or torch.no_grad()",
+            ));
         }
     }
 
     // torch_no_grad_missing_in_inference
     if has_import(file, "torch")
         && (body.contains("model(") || body.contains("model.forward("))
-        && !body.contains("torch.no_grad()") && !body.contains("torch.inference_mode()")
-        && !body.contains("optimizer") && !body.contains(".backward()")
+        && !body.contains("torch.no_grad()")
+        && !body.contains("torch.inference_mode()")
+        && !body.contains("optimizer")
+        && !body.contains(".backward()")
+        && let Some(line) = find_line(body, "model(", function.fingerprint.start_line)
     {
-        if let Some(line) = find_line(body, "model(", function.fingerprint.start_line) {
-            findings.push(make_finding(
-                "torch_no_grad_missing_in_inference", Severity::Info, file, function, line,
-                "model inference without torch.no_grad(); add context manager to save memory",
-            ));
-        }
+        findings.push(make_finding(
+            "torch_no_grad_missing_in_inference",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "model inference without torch.no_grad(); add context manager to save memory",
+        ));
     }
 
     // training_loop_without_zero_grad
-    if has_import(file, "torch") && body.contains("optimizer.step()") && !body.contains("zero_grad()") {
-        if let Some(line) = find_line(body, "optimizer.step()", function.fingerprint.start_line) {
-            findings.push(make_finding(
-                "training_loop_without_zero_grad", Severity::Warning, file, function, line,
-                "calls optimizer.step() without zero_grad(); gradients will accumulate",
-            ));
-        }
+    if has_import(file, "torch")
+        && body.contains("optimizer.step()")
+        && !body.contains("zero_grad()")
+        && let Some(line) = find_line(body, "optimizer.step()", function.fingerprint.start_line)
+    {
+        findings.push(make_finding(
+            "training_loop_without_zero_grad",
+            Severity::Warning,
+            file,
+            function,
+            line,
+            "calls optimizer.step() without zero_grad(); gradients will accumulate",
+        ));
     }
 
     // dataset_not_using_dataloader
-    if has_import(file, "torch") && body.contains("for ")
-        && !body.contains("DataLoader") && body.contains("dataset")
+    if has_import(file, "torch")
+        && body.contains("for ")
+        && !body.contains("DataLoader")
+        && body.contains("dataset")
         && (body.contains("[i:") || body.contains("batch_size"))
+        && let Some(line) = find_line(body, "for ", function.fingerprint.start_line)
     {
-        if let Some(line) = find_line(body, "for ", function.fingerprint.start_line) {
-            findings.push(make_finding(
-                "dataset_not_using_dataloader", Severity::Info, file, function, line,
-                "manually batches dataset; use torch.utils.data.DataLoader instead",
-            ));
-        }
+        findings.push(make_finding(
+            "dataset_not_using_dataloader",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "manually batches dataset; use torch.utils.data.DataLoader instead",
+        ));
     }
 
     // embedding_computed_per_request
     if is_handler_or_view(function)
-        && (body.contains("model.encode(") || body.contains("Embedding.create(") || body.contains(".embed("))
-    {
-        if let Some(line) = find_line(body, "encode(", function.fingerprint.start_line)
+        && (body.contains("model.encode(")
+            || body.contains("Embedding.create(")
+            || body.contains(".embed("))
+        && let Some(line) = find_line(body, "encode(", function.fingerprint.start_line)
             .or_else(|| find_line(body, "Embedding.create(", function.fingerprint.start_line))
             .or_else(|| find_line(body, ".embed(", function.fingerprint.start_line))
-        {
-            findings.push(make_finding(
-                "embedding_computed_per_request", Severity::Info, file, function, line,
-                "computes embeddings per request; pre-compute and cache for static text",
-            ));
-        }
+    {
+        findings.push(make_finding(
+            "embedding_computed_per_request",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "computes embeddings per request; pre-compute and cache for static text",
+        ));
     }
 
     findings
@@ -461,15 +567,15 @@ pub(super) fn model_inference_findings(
 
 // ── LLM / Prompt rules ──────────────────────────────────────────────────────
 
-pub(super) fn llm_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn llm_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
     let body = &function.body_text;
-    let has_llm = has_any_import(file, &["openai", "anthropic", "langchain", "litellm", "cohere"]);
+    let has_llm = has_any_import(
+        file,
+        &["openai", "anthropic", "langchain", "litellm", "cohere"],
+    );
     if !has_llm {
         return Vec::new();
     }
@@ -498,7 +604,10 @@ pub(super) fn llm_findings(
             for pattern in llm_call_patterns {
                 if trimmed.contains(pattern) {
                     findings.push(make_finding(
-                        "llm_api_call_in_loop_without_batching", Severity::Warning, file, function,
+                        "llm_api_call_in_loop_without_batching",
+                        Severity::Warning,
+                        file,
+                        function,
                         function.fingerprint.start_line + i,
                         "calls LLM API inside a loop; batch requests to reduce cost and latency",
                     ));
@@ -510,28 +619,41 @@ pub(super) fn llm_findings(
                 && (trimmed.contains('"') || trimmed.contains('\''))
             {
                 findings.push(make_finding(
-                    "prompt_template_string_concat_in_loop", Severity::Info, file, function,
+                    "prompt_template_string_concat_in_loop",
+                    Severity::Info,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "concatenates prompt string inside a loop; build template once",
                 ));
             }
         }
-        if let Some(li) = loop_indent {
-            if !trimmed.is_empty() && indent_level(line) <= li && !trimmed.starts_with('#') {
-                loop_indent = None;
-            }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
         }
     }
 
     // hardcoded_api_key_in_source
     for (i, line) in body.lines().enumerate() {
         let trimmed = line.trim();
-        if (trimmed.contains("api_key") || trimmed.contains("API_KEY") || trimmed.contains("OPENAI_API_KEY"))
+        if (trimmed.contains("api_key")
+            || trimmed.contains("API_KEY")
+            || trimmed.contains("OPENAI_API_KEY"))
             && trimmed.contains(" = ")
-            && (trimmed.contains("\"sk-") || trimmed.contains("'sk-") || trimmed.contains("\"key-") || trimmed.contains("'key-"))
+            && (trimmed.contains("\"sk-")
+                || trimmed.contains("'sk-")
+                || trimmed.contains("\"key-")
+                || trimmed.contains("'key-"))
         {
             findings.push(make_finding(
-                "hardcoded_api_key_in_source", Severity::Warning, file, function,
+                "hardcoded_api_key_in_source",
+                Severity::Warning,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "hardcodes API key in source; use environment variables or secret management",
             ));
@@ -540,14 +662,21 @@ pub(super) fn llm_findings(
 
     // retry_on_rate_limit_without_backoff
     if body.contains("retry") || body.contains("RateLimitError") || body.contains("rate_limit") {
-        let has_backoff = body.contains("backoff") || body.contains("exponential") || body.contains("Retry-After");
-        if !has_backoff && body.contains("sleep(") {
-            if let Some(line) = find_line(body, "sleep(", function.fingerprint.start_line) {
-                findings.push(make_finding(
-                    "retry_on_rate_limit_without_backoff", Severity::Info, file, function, line,
-                    "retries without exponential backoff; implement backoff to respect rate limits",
-                ));
-            }
+        let has_backoff = body.contains("backoff")
+            || body.contains("exponential")
+            || body.contains("Retry-After");
+        if !has_backoff
+            && body.contains("sleep(")
+            && let Some(line) = find_line(body, "sleep(", function.fingerprint.start_line)
+        {
+            findings.push(make_finding(
+                "retry_on_rate_limit_without_backoff",
+                Severity::Info,
+                file,
+                function,
+                line,
+                "retries without exponential backoff; implement backoff to respect rate limits",
+            ));
         }
     }
 
@@ -560,7 +689,11 @@ pub(super) fn llm_findings(
         {
             if let Some(line) = find_line(body, pattern, function.fingerprint.start_line) {
                 findings.push(make_finding(
-                    "token_count_not_checked_before_api_call", Severity::Info, file, function, line,
+                    "token_count_not_checked_before_api_call",
+                    Severity::Info,
+                    file,
+                    function,
+                    line,
                     "sends prompt to LLM without token counting; risk of context window overflow",
                 ));
             }
@@ -573,10 +706,7 @@ pub(super) fn llm_findings(
 
 // ── Data pipeline rules ──────────────────────────────────────────────────────
 
-pub(super) fn data_pipeline_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn data_pipeline_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -586,12 +716,20 @@ pub(super) fn data_pipeline_findings(
     // random_seed_not_set
     let has_random = has_any_import(file, &["random", "numpy", "torch"]);
     if has_random
-        && (body.contains("random.") || body.contains("np.random.") || body.contains("torch.manual_seed"))
-        && !body.contains("seed(") && !body.contains("manual_seed(")
-        && (function.fingerprint.name.contains("train") || function.fingerprint.name.contains("eval") || function.fingerprint.name == "main")
+        && (body.contains("random.")
+            || body.contains("np.random.")
+            || body.contains("torch.manual_seed"))
+        && !body.contains("seed(")
+        && !body.contains("manual_seed(")
+        && (function.fingerprint.name.contains("train")
+            || function.fingerprint.name.contains("eval")
+            || function.fingerprint.name == "main")
     {
         findings.push(make_finding(
-            "random_seed_not_set", Severity::Info, file, function,
+            "random_seed_not_set",
+            Severity::Info,
+            file,
+            function,
             function.fingerprint.start_line,
             "uses random operations without setting seed; experiments may not be reproducible",
         ));
@@ -607,14 +745,17 @@ pub(super) fn data_pipeline_findings(
             if trimmed.starts_with("for ") && trimmed.ends_with(':') {
                 loop_depth += 1;
             }
-            if loop_depth >= 2 {
-                if trimmed.contains("wandb.log(") || trimmed.contains("mlflow.log_metric(") {
-                    findings.push(make_finding(
-                        "wandb_mlflow_log_in_tight_loop", Severity::Info, file, function,
-                        function.fingerprint.start_line + i,
-                        "logs metrics in inner loop; batch or log at epoch level",
-                    ));
-                }
+            if loop_depth >= 2
+                && (trimmed.contains("wandb.log(") || trimmed.contains("mlflow.log_metric("))
+            {
+                findings.push(make_finding(
+                    "wandb_mlflow_log_in_tight_loop",
+                    Severity::Info,
+                    file,
+                    function,
+                    function.fingerprint.start_line + i,
+                    "logs metrics in inner loop; batch or log at epoch level",
+                ));
             }
         }
     }
@@ -626,18 +767,22 @@ pub(super) fn data_pipeline_findings(
         || function.fingerprint.name.starts_with("load")
         || function.fingerprint.name.starts_with("extract"))
         && body.contains("global ")
+        && let Some(line) = find_line(body, "global ", function.fingerprint.start_line)
     {
-        if let Some(line) = find_line(body, "global ", function.fingerprint.start_line) {
-            findings.push(make_finding(
-                "global_state_in_data_pipeline", Severity::Warning, file, function, line,
-                "modifies global state in data pipeline; use function parameters for thread safety",
-            ));
-        }
+        findings.push(make_finding(
+            "global_state_in_data_pipeline",
+            Severity::Warning,
+            file,
+            function,
+            line,
+            "modifies global state in data pipeline; use function parameters for thread safety",
+        ));
     }
 
     // print_metrics_instead_of_logging
     if has_any_import(file, &["torch", "tensorflow", "sklearn"])
-        && (function.fingerprint.name.contains("train") || function.fingerprint.name.contains("eval"))
+        && (function.fingerprint.name.contains("train")
+            || function.fingerprint.name.contains("eval"))
     {
         for (i, line) in body.lines().enumerate() {
             let trimmed = line.trim();
@@ -649,7 +794,10 @@ pub(super) fn data_pipeline_findings(
                     || trimmed.contains("f1"))
             {
                 findings.push(make_finding(
-                    "print_metrics_instead_of_logging", Severity::Info, file, function,
+                    "print_metrics_instead_of_logging",
+                    Severity::Info,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "prints metrics instead of using logging/experiment tracking framework",
                 ));
@@ -662,10 +810,7 @@ pub(super) fn data_pipeline_findings(
 
 // ── Remaining Plan 3 Wave 5 rules ────────────────────────────────────────────
 
-pub(super) fn mlops_extra_findings(
-    file: &ParsedFile,
-    function: &ParsedFunction,
-) -> Vec<Finding> {
+pub(super) fn mlops_extra_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.is_test_function {
         return Vec::new();
     }
@@ -678,7 +823,10 @@ pub(super) fn mlops_extra_findings(
             let trimmed = line.trim();
             if trimmed.contains("np.array(") && trimmed.contains(".astype(") {
                 findings.push(make_finding(
-                    "numpy_dtype_mismatch_implicit_cast", Severity::Info, file, function,
+                    "numpy_dtype_mismatch_implicit_cast",
+                    Severity::Info,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "creates array then immediately casts dtype; specify dtype= in np.array()",
                 ));
@@ -698,7 +846,9 @@ pub(super) fn mlops_extra_findings(
             }
             if loop_indent.is_some()
                 && (trimmed.contains(".create(") || trimmed.contains(".completions.create("))
-                && !body.contains("cache") && !body.contains("lru_cache") && !body.contains("@cache")
+                && !body.contains("cache")
+                && !body.contains("lru_cache")
+                && !body.contains("@cache")
             {
                 findings.push(make_finding(
                     "llm_response_not_cached_same_input", Severity::Info, file, function,
@@ -706,38 +856,51 @@ pub(super) fn mlops_extra_findings(
                     "calls LLM API in loop without caching; repeated identical prompts waste tokens",
                 ));
             }
-            if loop_indent.is_some() && !trimmed.is_empty() && !trimmed.starts_with(' ') && !trimmed.starts_with('\t') && !trimmed.is_empty() && !trimmed.starts_with('#') {
+            if loop_indent.is_some()
+                && !trimmed.is_empty()
+                && !trimmed.starts_with(' ')
+                && !trimmed.starts_with('\t')
+                && !trimmed.is_empty()
+                && !trimmed.starts_with('#')
+            {
                 loop_indent = None;
             }
         }
     }
 
     // llm_full_response_loaded_into_memory
-    if has_any_import(file, &["openai", "anthropic", "langchain"]) {
-        if body.contains(".choices") && body.contains("json()") {
-            if let Some(line) = find_line(body, "json()", function.fingerprint.start_line) {
-                if !body.contains("stream") {
-                    findings.push(make_finding(
-                        "llm_full_response_loaded_into_memory", Severity::Info, file, function, line,
-                        "loads full LLM response into memory; consider streaming for large responses",
-                    ));
-                }
-            }
-        }
+    if has_any_import(file, &["openai", "anthropic", "langchain"])
+        && body.contains(".choices")
+        && body.contains("json()")
+        && let Some(line) = find_line(body, "json()", function.fingerprint.start_line)
+        && !body.contains("stream")
+    {
+        findings.push(make_finding(
+            "llm_full_response_loaded_into_memory",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "loads full LLM response into memory; consider streaming for large responses",
+        ));
     }
 
     // embedding_dimension_mismatch_silent
-    if has_any_import(file, &["sentence_transformers", "openai", "torch"]) {
-        if body.contains("embedding") && body.contains("cosine_similarity") {
-            // Heuristic: using cosine_similarity without shape/dim check
-            if !body.contains(".shape") && !body.contains(".size(") && !body.contains("assert") {
-                if let Some(line) = find_line(body, "cosine_similarity", function.fingerprint.start_line) {
-                    findings.push(make_finding(
+    if has_any_import(file, &["sentence_transformers", "openai", "torch"])
+        && body.contains("embedding")
+        && body.contains("cosine_similarity")
+    {
+        // Heuristic: using cosine_similarity without shape/dim check
+        if !body.contains(".shape")
+            && !body.contains(".size(")
+            && !body.contains("assert")
+            && let Some(line) =
+                find_line(body, "cosine_similarity", function.fingerprint.start_line)
+        {
+            findings.push(make_finding(
                         "embedding_dimension_mismatch_silent", Severity::Info, file, function, line,
                         "compares embeddings without dimension validation; mismatched dims silently produce garbage",
                     ));
-                }
-            }
         }
     }
 
@@ -745,8 +908,11 @@ pub(super) fn mlops_extra_findings(
     if has_import(file, "pandas") {
         for (i, line) in body.lines().enumerate() {
             let trimmed = line.trim();
-            if (trimmed.contains("pd.read_csv(") || trimmed.contains("pd.read_parquet(") || trimmed.contains("pd.read_json("))
-                && !trimmed.contains("chunksize") && !trimmed.contains("nrows")
+            if (trimmed.contains("pd.read_csv(")
+                || trimmed.contains("pd.read_parquet(")
+                || trimmed.contains("pd.read_json("))
+                && !trimmed.contains("chunksize")
+                && !trimmed.contains("nrows")
             {
                 // Check if file path hints at large data
                 if function.fingerprint.name.contains("load")
@@ -792,15 +958,19 @@ pub(super) fn mlops_extra_findings(
             || body.contains("jsonschema")
             || body.contains("validate(")
             || body.contains("Schema(");
-        if !has_validation && (body.contains(".json()") || body.contains("json.load")) {
-            if let Some(line) = find_line(body, ".json()", function.fingerprint.start_line)
+        if !has_validation
+            && (body.contains(".json()") || body.contains("json.load"))
+            && let Some(line) = find_line(body, ".json()", function.fingerprint.start_line)
                 .or_else(|| find_line(body, "json.load", function.fingerprint.start_line))
-            {
-                findings.push(make_finding(
-                    "no_schema_validation_on_external_data", Severity::Info, file, function, line,
-                    "parses external data without schema validation; corrupt input propagates silently",
-                ));
-            }
+        {
+            findings.push(make_finding(
+                "no_schema_validation_on_external_data",
+                Severity::Info,
+                file,
+                function,
+                line,
+                "parses external data without schema validation; corrupt input propagates silently",
+            ));
         }
     }
 
@@ -810,7 +980,8 @@ pub(super) fn mlops_extra_findings(
         || function.fingerprint.name.contains("process"))
         && has_any_import(file, &["pandas", "numpy", "spark"])
     {
-        let has_error_handling = body.contains("try:") || body.contains("except ") || body.contains("raise ");
+        let has_error_handling =
+            body.contains("try:") || body.contains("except ") || body.contains("raise ");
         if !has_error_handling && body.lines().count() > 10 {
             findings.push(make_finding(
                 "data_pipeline_no_error_handling", Severity::Info, file, function,
@@ -822,15 +993,21 @@ pub(super) fn mlops_extra_findings(
 
     // intermediate_dataframe_not_freed
     if has_import(file, "pandas") {
-        let assign_count = body.lines().filter(|l| {
-            let t = l.trim();
-            (t.contains("= pd.") || t.contains("= df.") || t.contains("= data."))
-                && t.contains('=')
-                && !t.starts_with('#')
-        }).count();
+        let assign_count = body
+            .lines()
+            .filter(|l| {
+                let t = l.trim();
+                (t.contains("= pd.") || t.contains("= df.") || t.contains("= data."))
+                    && t.contains('=')
+                    && !t.starts_with('#')
+            })
+            .count();
         if assign_count >= 4 && !body.contains("del ") && !body.contains("gc.collect") {
             findings.push(make_finding(
-                "intermediate_dataframe_not_freed", Severity::Info, file, function,
+                "intermediate_dataframe_not_freed",
+                Severity::Info,
+                file,
+                function,
                 function.fingerprint.start_line,
                 "creates multiple intermediate DataFrames without freeing; memory builds up",
             ));
@@ -839,25 +1016,24 @@ pub(super) fn mlops_extra_findings(
 
     // gpu_memory_not_cleared_between_experiments
     if has_any_import(file, &["torch", "tensorflow"]) {
-        let has_cuda_ops = body.contains(".cuda()") || body.contains(".to(device") || body.contains("tf.device");
+        let has_cuda_ops =
+            body.contains(".cuda()") || body.contains(".to(device") || body.contains("tf.device");
         let has_cleanup = body.contains("torch.cuda.empty_cache()")
             || body.contains("gc.collect")
             || body.contains("tf.keras.backend.clear_session");
-        if has_cuda_ops && !has_cleanup {
-            if function.fingerprint.name.contains("train")
+        if has_cuda_ops
+            && !has_cleanup
+            && (function.fingerprint.name.contains("train")
                 || function.fingerprint.name.contains("experiment")
-                || function.fingerprint.name.contains("run")
-            {
-                if let Some(line) = find_line(body, ".cuda()", function.fingerprint.start_line)
-                    .or_else(|| find_line(body, ".to(device", function.fingerprint.start_line))
-                    .or_else(|| find_line(body, "tf.device", function.fingerprint.start_line))
-                {
-                    findings.push(make_finding(
+                || function.fingerprint.name.contains("run"))
+            && let Some(line) = find_line(body, ".cuda()", function.fingerprint.start_line)
+                .or_else(|| find_line(body, ".to(device", function.fingerprint.start_line))
+                .or_else(|| find_line(body, "tf.device", function.fingerprint.start_line))
+        {
+            findings.push(make_finding(
                         "gpu_memory_not_cleared_between_experiments", Severity::Info, file, function, line,
                         "uses GPU without clearing memory; call torch.cuda.empty_cache() between experiments",
                     ));
-                }
-            }
         }
     }
 

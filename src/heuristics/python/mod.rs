@@ -1,4 +1,3 @@
-mod quality;
 mod ai_smells;
 mod duplication;
 mod framework;
@@ -7,13 +6,13 @@ mod hotpath_ext;
 mod maintainability;
 mod mlops;
 mod performance;
+mod quality;
 mod structure;
 
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
-use self::quality::{quality_file_findings, quality_function_findings};
 use self::ai_smells::{
     enthusiastic_commentary_findings, mixed_naming_convention_findings,
     obvious_commentary_findings, textbook_docstring_findings, unrelated_heavy_import_findings,
@@ -24,14 +23,11 @@ use self::duplication::{
     repeated_string_literal_findings, repeated_validation_pipeline_findings,
     test_utility_logic_findings,
 };
-use self::maintainability::{
-    api_type_hint_findings, broad_exception_handler_findings, builtin_reduction_findings,
-    commented_out_code_findings, env_fallback_findings, eval_exec_findings,
-    exception_swallowed_findings, hardcoded_business_rule_findings, hardcoded_path_findings,
-    input_validation_findings, magic_value_branching_findings, missing_context_manager_findings,
-    network_timeout_findings, none_comparison_findings, print_debugging_findings,
-    redundant_return_none_findings, reinvented_utility_findings,
-    side_effect_comprehension_findings, sync_async_module_findings, variadic_public_api_findings,
+use self::framework::{
+    django_extra_findings, django_loop_db_findings, django_n_plus_one_findings,
+    django_queryset_findings, django_values_findings, fastapi_handler_findings,
+    flask_handler_findings, handler_fanout_findings, middleware_findings, response_extra_findings,
+    sqlalchemy_findings, template_response_findings,
 };
 use self::hotpath::{
     csv_flush_per_row_findings, dict_materialization_in_loop_findings,
@@ -50,11 +46,14 @@ use self::hotpath_ext::{
     tuple_unpacking_in_tight_loop_findings, xml_repeated_parse_findings,
     yaml_repeated_load_findings,
 };
-use self::framework::{
-    django_extra_findings, django_loop_db_findings, django_n_plus_one_findings,
-    django_queryset_findings, django_values_findings, fastapi_handler_findings,
-    flask_handler_findings, handler_fanout_findings, middleware_findings,
-    response_extra_findings, sqlalchemy_findings, template_response_findings,
+use self::maintainability::{
+    api_type_hint_findings, broad_exception_handler_findings, builtin_reduction_findings,
+    commented_out_code_findings, env_fallback_findings, eval_exec_findings,
+    exception_swallowed_findings, hardcoded_business_rule_findings, hardcoded_path_findings,
+    input_validation_findings, magic_value_branching_findings, missing_context_manager_findings,
+    network_timeout_findings, none_comparison_findings, print_debugging_findings,
+    redundant_return_none_findings, reinvented_utility_findings,
+    side_effect_comprehension_findings, sync_async_module_findings, variadic_public_api_findings,
 };
 use self::mlops::{
     data_pipeline_findings, llm_findings, mlops_extra_findings, model_inference_findings,
@@ -65,6 +64,7 @@ use self::performance::{
     list_materialization_findings, list_membership_findings, recursive_traversal_findings,
     repeated_len_findings, string_concat_findings, temp_collection_findings,
 };
+use self::quality::{quality_file_findings, quality_function_findings};
 use self::structure::{
     deep_inheritance_findings, eager_constructor_collaborator_findings, god_class_findings,
     god_function_findings, mixed_concern_findings, module_name_mismatch_findings,
