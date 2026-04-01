@@ -4,6 +4,16 @@ use crate::model::SymbolKind;
 
 use super::{comments::extract_doc_comment, general::alias_from_path, parse_file};
 
+macro_rules! go_parser_fixture {
+    ($name:literal) => {
+        include_str!(concat!(
+            "../../../../tests/fixtures/go/parser/",
+            $name,
+            ".txt"
+        ))
+    };
+}
+
 #[test]
 fn test_import_alias() {
     assert_eq!(alias_from_path("github.com/acme/utils"), "utils");
@@ -11,19 +21,7 @@ fn test_import_alias() {
 
 #[test]
 fn test_alias_symbols() {
-    let source = r#"package pdf
-
-import font "example.com/font"
-
-var (
-    IsCustomFont = font.IsCustomFont
-    PlainValue = 42
-)
-
-func collectAllStandardFontsInTemplate() {
-    IsCustomFont("Helvetica")
-}
-"#;
+    let source = go_parser_fixture!("alias_symbols");
 
     let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
     assert!(parsed.symbols.iter().any(|symbol| {
@@ -39,8 +37,7 @@ func collectAllStandardFontsInTemplate() {
 
 #[test]
 fn test_doc_comment() {
-    let source =
-        "// Run Processes The Input\n// This function does X by doing Y because Z\nfunc Run() {}\n";
+    let source = go_parser_fixture!("doc_comment");
 
     let comment = extract_doc_comment(source, 2).expect("doc comment should exist");
     assert_eq!(
@@ -51,27 +48,7 @@ fn test_doc_comment() {
 
 #[test]
 fn test_error_handling() {
-    let source = r#"package sample
-
-import (
-    "fmt"
-    "log"
-)
-
-func Run(err error) error {
-    _ = err
-    if err != nil {
-        panic(err)
-    }
-    return fmt.Errorf("wrap: %v", err)
-}
-
-func LogOnly(err error) {
-    if err != nil {
-        log.Fatal(err)
-    }
-}
-"#;
+    let source = go_parser_fixture!("error_handling");
 
     let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
     let run = parsed
@@ -85,30 +62,17 @@ func LogOnly(err error) {
         .find(|function| function.fingerprint.name == "LogOnly")
         .expect("LogOnly should be parsed");
 
-    assert_eq!(run.dropped_errors, vec![9]);
-    assert_eq!(run.panic_errors, vec![10]);
-    assert_eq!(run.errorf_calls.len(), 1);
-    assert!(run.errorf_calls[0].mentions_err);
-    assert!(!run.errorf_calls[0].uses_percent_w);
-    assert_eq!(log_only.panic_errors, vec![17]);
+    assert_eq!(run.go_evidence().dropped_errors, vec![9]);
+    assert_eq!(run.go_evidence().panic_errors, vec![10]);
+    assert_eq!(run.go_evidence().errorf_calls.len(), 1);
+    assert!(run.go_evidence().errorf_calls[0].mentions_err);
+    assert!(!run.go_evidence().errorf_calls[0].uses_percent_w);
+    assert_eq!(log_only.go_evidence().panic_errors, vec![17]);
 }
 
 #[test]
 fn test_ctx_sleep() {
-    let source = r#"package sample
-
-import (
-    "context"
-    "time"
-)
-
-func Poll(ctx context.Context) {
-    for {
-        time.Sleep(time.Second)
-        _ = ctx
-    }
-}
-"#;
+    let source = go_parser_fixture!("ctx_sleep");
 
     let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
     let poll = parsed
@@ -117,38 +81,13 @@ func Poll(ctx context.Context) {
         .find(|function| function.fingerprint.name == "Poll")
         .expect("Poll should be parsed");
 
-    assert!(poll.has_context_parameter);
-    assert_eq!(poll.sleep_loops, vec![10]);
+    assert!(poll.go_evidence().has_context_parameter);
+    assert_eq!(poll.go_evidence().sleep_loops, vec![10]);
 }
 
 #[test]
 fn test_ctx_busy_json() {
-    let source = r#"package sample
-
-import (
-    "context"
-    "encoding/json"
-    "time"
-)
-
-func Run(parent context.Context, items []string) {
-    ctx, cancel := context.WithTimeout(parent, time.Second)
-    _ = ctx
-
-    for {
-        select {
-        default:
-            return
-        }
-    }
-
-    for _, item := range items {
-        _, _ = json.Marshal(item)
-    }
-
-    _ = cancel
-}
-"#;
+    let source = go_parser_fixture!("ctx_busy_json");
 
     let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
     let run = parsed
@@ -157,51 +96,22 @@ func Run(parent context.Context, items []string) {
         .find(|function| function.fingerprint.name == "Run")
         .expect("Run should be parsed");
 
-    assert_eq!(run.context_factory_calls.len(), 1);
-    assert_eq!(run.context_factory_calls[0].cancel_name, "cancel");
-    assert_eq!(run.context_factory_calls[0].factory_name, "WithTimeout");
-    assert_eq!(run.busy_wait_lines, vec![14]);
-    assert_eq!(run.json_loops, vec![21]);
+    assert_eq!(run.go_evidence().context_factory_calls.len(), 1);
+    assert_eq!(
+        run.go_evidence().context_factory_calls[0].cancel_name,
+        "cancel"
+    );
+    assert_eq!(
+        run.go_evidence().context_factory_calls[0].factory_name,
+        "WithTimeout"
+    );
+    assert_eq!(run.go_evidence().busy_wait_lines, vec![14]);
+    assert_eq!(run.go_evidence().json_loops, vec![21]);
 }
 
 #[test]
 fn test_concurrency_db() {
-    let source = r#"package sample
-
-import (
-    "context"
-    "fmt"
-    "reflect"
-    "time"
-)
-
-func Run(ctx context.Context, db Queryer, items []string, mu MutexLike) {
-    go func() {
-        for {
-            _ = ctx
-        }
-    }()
-
-    for _, item := range items {
-        mu.Lock()
-        time.Sleep(time.Millisecond)
-        _, _ = db.QueryContext(ctx, "SELECT * FROM widgets WHERE name LIKE '%foo%'")
-        _ = fmt.Sprintf("%s", item)
-        _ = reflect.TypeOf(item)
-        _ = make([]byte, 16)
-        mu.Unlock()
-    }
-}
-
-type Queryer interface {
-    QueryContext(context.Context, string) (any, error)
-}
-
-type MutexLike interface {
-    Lock()
-    Unlock()
-}
-"#;
+    let source = go_parser_fixture!("concurrency_db");
 
     let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
     let run = parsed
@@ -210,34 +120,22 @@ type MutexLike interface {
         .find(|function| function.fingerprint.name == "Run")
         .expect("Run should be parsed");
 
-    assert_eq!(run.unmanaged_goroutines, vec![11]);
-    assert_eq!(run.mutex_loops, vec![18]);
-    assert_eq!(run.alloc_loops, vec![23]);
-    assert_eq!(run.fmt_loops, vec![21]);
-    assert_eq!(run.reflect_loops, vec![22]);
-    assert_eq!(run.db_query_calls.len(), 1);
-    assert!(run.db_query_calls[0].in_loop);
+    assert_eq!(run.go_evidence().unmanaged_goroutines, vec![11]);
+    assert_eq!(run.go_evidence().mutex_loops, vec![18]);
+    assert_eq!(run.go_evidence().alloc_loops, vec![23]);
+    assert_eq!(run.go_evidence().fmt_loops, vec![21]);
+    assert_eq!(run.go_evidence().reflect_loops, vec![22]);
+    assert_eq!(run.go_evidence().db_query_calls.len(), 1);
+    assert!(run.go_evidence().db_query_calls[0].in_loop);
     assert_eq!(
-        run.db_query_calls[0].query_text.as_deref(),
+        run.go_evidence().db_query_calls[0].query_text.as_deref(),
         Some("SELECT * FROM widgets WHERE name LIKE '%foo%'")
     );
 }
 
 #[test]
 fn test_concat_goroutine() {
-    let source = r#"package sample
-
-func Build(parts []string) string {
-    out := ""
-    for _, part := range parts {
-        out += part
-        go notify(part)
-    }
-    return out
-}
-
-func notify(value string) {}
-"#;
+    let source = go_parser_fixture!("concat_goroutine");
 
     let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
     let build = parsed
@@ -246,40 +144,14 @@ func notify(value string) {}
         .find(|function| function.fingerprint.name == "Build")
         .expect("Build should be parsed");
 
-    assert_eq!(build.concat_loops, vec![6]);
-    assert_eq!(build.goroutines, vec![7]);
-    assert_eq!(build.loop_goroutines, vec![7]);
+    assert_eq!(build.go_evidence().concat_loops, vec![6]);
+    assert_eq!(build.go_evidence().goroutines, vec![7]);
+    assert_eq!(build.go_evidence().loop_goroutines, vec![7]);
 }
 
 #[test]
 fn test_pkg_literals() {
-    let source = r#"package sample
-
-const apiToken = "sk_test_1234567890"
-
-type User struct {
-    Name string `json:"name" db:"users.name" db:"duplicate"`
-}
-
-func (u User) NameValue() string {
-    return u.Name
-}
-
-func (u *User) SetName(value string) {
-    u.Name = value
-}
-
-func TestUser(t *testing.T) {
-    token := "super-secret-value"
-    _ = token
-    got := buildUser()
-    if err := got.Validate(); err != nil {
-        t.Fatal(err)
-    }
-}
-
-func buildUser() *User { return &User{} }
-"#;
+    let source = go_parser_fixture!("pkg_literals");
 
     let parsed = parse_file(Path::new("sample_test.go"), source).expect("parse should work");
     let test_fn = parsed
@@ -317,16 +189,7 @@ func buildUser() *User { return &User{} }
 
 #[test]
 fn test_imports_preserve_source_order_and_lines() {
-    let source = r#"package sample
-
-import (
-    "github.com/acme/widgets"
-    "fmt"
-    "strings"
-)
-
-func Run() {}
-"#;
+    let source = go_parser_fixture!("imports_preserve_source_order");
 
     let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
     let imports = parsed
@@ -347,25 +210,7 @@ func Run() {}
 
 #[test]
 fn test_collects_package_vars_interfaces_structs_and_signature_text() {
-    let source = r#"package sample
-
-var DefaultStore = newStore()
-var maxRetries int = 3
-
-type Store interface {
-    Save(item string) error
-    Load(id string) (string, error)
-}
-
-type Service struct {
-    store Store
-    logger Logger
-}
-
-func Run(items []string, dryRun bool) error {
-    return nil
-}
-"#;
+    let source = go_parser_fixture!("package_vars_interfaces_structs_signature");
 
     let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
     assert_eq!(parsed.package_vars.len(), 2);
@@ -388,4 +233,113 @@ func Run(items []string, dryRun bool) error {
         .expect("Run should be parsed");
     assert!(run.signature_text.contains("dryRun bool"));
     assert_eq!(run.body_start_line, 16);
+}
+
+#[test]
+fn test_collects_gorm_query_chain_summaries() {
+    let source = go_parser_fixture!("gorm_query_chains");
+
+    let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
+    let handle = parsed
+        .functions
+        .iter()
+        .find(|function| function.fingerprint.name == "Handle")
+        .expect("Handle should be parsed");
+
+    assert_eq!(handle.go_evidence().gorm_query_chains.len(), 2);
+    assert_eq!(
+        handle.go_evidence().gorm_query_chains[0].terminal_method,
+        "Count"
+    );
+    assert_eq!(
+        handle.go_evidence().gorm_query_chains[1].terminal_method,
+        "Find"
+    );
+    assert_eq!(
+        handle.go_evidence().gorm_query_chains[1]
+            .steps
+            .iter()
+            .map(|step| step.method_name.as_str())
+            .collect::<Vec<_>>(),
+        vec!["Model", "Preload", "Offset", "Limit", "Find"]
+    );
+    assert!(!handle.go_evidence().gorm_query_chains[1].in_loop);
+}
+
+#[test]
+fn test_collects_gin_calls_and_parse_input_summaries() {
+    let source = go_parser_fixture!("gin_calls_and_parse_input_summaries");
+
+    let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
+    let handle = parsed
+        .functions
+        .iter()
+        .find(|function| function.fingerprint.name == "Handle")
+        .expect("Handle should be parsed");
+
+    assert_eq!(
+        handle
+            .go_evidence()
+            .gin_calls
+            .iter()
+            .map(|call| call.operation.as_str())
+            .collect::<Vec<_>>(),
+        vec![
+            "get_raw_data",
+            "read_request_body",
+            "should_bind_json",
+            "should_bind_query",
+            "parse_multipart_form",
+            "form_file",
+            "indented_json",
+            "copy",
+        ]
+    );
+    assert_eq!(
+        handle.go_evidence().gin_calls[0]
+            .assigned_binding
+            .as_deref(),
+        Some("raw")
+    );
+    assert_eq!(
+        handle.go_evidence().gin_calls[1]
+            .assigned_binding
+            .as_deref(),
+        Some("payload")
+    );
+    assert_eq!(
+        handle
+            .go_evidence()
+            .gin_calls
+            .iter()
+            .find(|call| call.operation == "parse_multipart_form")
+            .and_then(|call| call.argument_texts.first())
+            .map(String::as_str),
+        Some("64 << 20")
+    );
+    assert_eq!(
+        handle
+            .go_evidence()
+            .gin_calls
+            .iter()
+            .find(|call| call.operation == "form_file")
+            .and_then(|call| call.assigned_binding.as_deref()),
+        Some("fileHeader")
+    );
+    assert!(
+        handle
+            .go_evidence()
+            .gin_calls
+            .iter()
+            .find(|call| call.operation == "copy")
+            .is_some_and(|call| call.in_loop)
+    );
+    assert_eq!(handle.go_evidence().parse_input_calls.len(), 2);
+    assert!(
+        handle
+            .go_evidence()
+            .parse_input_calls
+            .iter()
+            .all(|call| call.input_binding.as_deref() == Some("body"))
+    );
 }

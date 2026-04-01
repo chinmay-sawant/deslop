@@ -8,7 +8,10 @@ use super::write_files;
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
         assert!(
-            report.findings.iter().any(|finding| finding.rule_id == *rule_id),
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == *rule_id),
             "expected rule {rule_id} to fire"
         );
     }
@@ -17,7 +20,10 @@ fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
 fn assert_rules_absent(report: &deslop::ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
         assert!(
-            !report.findings.iter().any(|finding| finding.rule_id == *rule_id),
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == *rule_id),
             "did not expect rule {rule_id} to fire"
         );
     }

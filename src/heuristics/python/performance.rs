@@ -15,7 +15,9 @@ pub(super) fn string_concat_findings(file: &ParsedFile, function: &ParsedFunctio
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .concat_loops
         .iter()
         .map(|line| Finding {
@@ -41,7 +43,9 @@ pub(super) fn blocking_sync_io_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.is_test_function || !function.fingerprint.kind.starts_with("async") {
+    let python = function.python_evidence();
+
+    if function.is_test_function || !python.is_async {
         return Vec::new();
     }
 
@@ -134,7 +138,9 @@ pub(super) fn list_materialization_findings(
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .list_materialization_lines
         .iter()
         .map(|line| Finding {
@@ -164,7 +170,9 @@ pub(super) fn deque_candidate_findings(
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .deque_operation_lines
         .iter()
         .map(|line| Finding {
@@ -194,7 +202,9 @@ pub(super) fn temp_collection_findings(
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .temp_collection_lines
         .iter()
         .map(|line| Finding {
@@ -220,14 +230,16 @@ pub(super) fn recursive_traversal_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
+    let python = function.python_evidence();
+
     if function.is_test_function
-        || function.recursive_call_lines.is_empty()
+        || python.recursive_call_lines.is_empty()
         || function.fingerprint.line_count < 12
     {
         return Vec::new();
     }
 
-    function
+    python
         .recursive_call_lines
         .iter()
         .map(|line| Finding {
@@ -243,7 +255,7 @@ pub(super) fn recursive_traversal_findings(
             ),
             evidence: vec![format!(
                 "recursive_calls={}",
-                function.recursive_call_lines.len()
+                python.recursive_call_lines.len()
             ), format!("line_count={}", function.fingerprint.line_count)],
         })
         .collect()
@@ -257,7 +269,9 @@ pub(super) fn list_membership_findings(
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .list_membership_loop_lines
         .iter()
         .map(|line| Finding {
@@ -284,7 +298,9 @@ pub(super) fn repeated_len_findings(file: &ParsedFile, function: &ParsedFunction
         return Vec::new();
     }
 
-    function
+    let python = function.python_evidence();
+
+    python
         .repeated_len_loop_lines
         .iter()
         .map(|line| Finding {

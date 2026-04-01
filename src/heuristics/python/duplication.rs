@@ -58,7 +58,7 @@ pub(super) fn repeated_exception_block_findings(file: &ParsedFile) -> Vec<Findin
 
     let mut occurrences: BTreeMap<String, Vec<usize>> = BTreeMap::new();
     for function in &file.functions {
-        for block in &function.exception_block_signatures {
+        for block in function.python_evidence().exception_block_signatures {
             occurrences
                 .entry(block.signature.clone())
                 .or_default()
@@ -95,7 +95,7 @@ pub(super) fn repeated_validation_pipeline_findings(file: &ParsedFile) -> Vec<Fi
 
     let mut occurrences: BTreeMap<String, Vec<usize>> = BTreeMap::new();
     for function in &file.functions {
-        if let Some(signature) = &function.validation_signature {
+        if let Some(signature) = function.python_evidence().validation_signature {
             occurrences
                 .entry(signature.signature.clone())
                 .or_default()
@@ -130,19 +130,17 @@ pub(super) fn test_utility_logic_findings(files: &[&ParsedFile]) -> Vec<Finding>
 
     for file in files {
         for function in &file.functions {
-            if function.normalized_body.len() < 40 || function.fingerprint.line_count < 3 {
+            let norm = function.python_evidence().normalized_body;
+            if norm.len() < 40 || function.fingerprint.line_count < 3 {
                 continue;
             }
 
-            shapes
-                .entry(function.normalized_body.clone())
-                .or_default()
-                .push((
-                    *file,
-                    function.fingerprint.name.clone(),
-                    function.fingerprint.start_line,
-                    file.is_test_file || function.is_test_function,
-                ));
+            shapes.entry(norm.to_owned()).or_default().push((
+                *file,
+                function.fingerprint.name.clone(),
+                function.fingerprint.start_line,
+                file.is_test_file || function.is_test_function,
+            ));
         }
     }
 
@@ -184,21 +182,21 @@ pub(super) fn cross_file_dupe_findings(files: &[&ParsedFile]) -> Vec<Finding> {
         }
 
         for function in &file.functions {
-            if function.is_test_function
-                || function.normalized_body.len() < CROSS_FILE_COPY_PASTE_MIN_BODY_LENGTH
+            if function.is_test_function {
+                continue;
+            }
+            let norm = function.python_evidence().normalized_body;
+            if norm.len() < CROSS_FILE_COPY_PASTE_MIN_BODY_LENGTH
                 || function.fingerprint.line_count < CROSS_FILE_COPY_PASTE_MIN_LINE_COUNT
             {
                 continue;
             }
 
-            shapes
-                .entry(function.normalized_body.clone())
-                .or_default()
-                .push((
-                    *file,
-                    function.fingerprint.name.clone(),
-                    function.fingerprint.start_line,
-                ));
+            shapes.entry(norm.to_owned()).or_default().push((
+                *file,
+                function.fingerprint.name.clone(),
+                function.fingerprint.start_line,
+            ));
         }
     }
 
@@ -437,7 +435,7 @@ fn transform_pipeline_sig(
     staged_calls.sort_by(|left, right| left.0.cmp(&right.0));
 
     let mut stages = Vec::<&'static str>::new();
-    if function.validation_signature.is_some() {
+    if function.python_evidence().validation_signature.is_some() {
         stages.push("validate");
     }
     for (_, stage) in staged_calls {

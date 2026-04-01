@@ -1,0 +1,258 @@
+package sample
+
+import (
+	"bytes"
+	"compress/gzip"
+	"encoding/csv"
+	"encoding/json"
+	"html/template"
+	"io"
+	"log"
+	"net/http"
+	"net/http/httputil"
+	"os"
+	"regexp"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"golang.org/x/sync/errgroup"
+	"gorm.io/gorm"
+)
+
+type requestPayload struct {
+	Name string `json:"name"`
+}
+
+func DuplicateBody(c *gin.Context) {
+	raw, _ := c.GetRawData()
+	_ = raw
+	var payload map[string]any
+	_ = c.ShouldBindJSON(&payload)
+}
+
+func ReadThenBind(c *gin.Context) {
+	body, _ := io.ReadAll(c.Request.Body)
+	_ = body
+	var payload map[string]any
+	_ = c.ShouldBind(&payload)
+}
+
+func MultiBind(c *gin.Context) {
+	var first map[string]any
+	var second map[string]any
+	_ = c.ShouldBindJSON(&first)
+	_ = c.ShouldBindJSON(&second)
+}
+
+func Pretty(c *gin.Context) {
+	c.IndentedJSON(200, gin.H{"ok": true})
+}
+
+func ManualMarshal(c *gin.Context) {
+	payload, _ := json.Marshal(gin.H{"ok": true})
+	c.Data(200, "application/json", payload)
+}
+
+func BindBodyCopy(c *gin.Context) {
+	var payload requestPayload
+	_ = c.ShouldBindBodyWith(&payload, binding.JSON)
+}
+
+func BindQueryMap(c *gin.Context) {
+	var filters map[string]any
+	_ = c.ShouldBindQuery(&filters)
+}
+
+func ParseMultipartLarge(c *gin.Context) {
+	_ = c.Request.ParseMultipartForm(64 << 20)
+}
+
+func UploadReadAll(c *gin.Context) {
+	header, _ := c.FormFile("upload")
+	uploaded, _ := header.Open()
+	blob, _ := io.ReadAll(uploaded)
+	_ = blob
+}
+
+func LoopJSON(c *gin.Context, items []string) {
+	for _, item := range items {
+		c.JSON(200, gin.H{"item": item})
+	}
+}
+
+func DumpRequest(c *gin.Context) {
+	_, _ = httputil.DumpRequest(c.Request, true)
+}
+
+func ReadTemplate(c *gin.Context) {
+	blob, _ := os.ReadFile("template.html")
+	_ = blob
+	_ = c
+}
+
+func ServeFile(c *gin.Context) {
+	blob, _ := os.ReadFile("report.pdf")
+	c.Data(200, "application/pdf", blob)
+}
+
+func CopyPerItem(c *gin.Context, items []string) {
+	for _, item := range items {
+		copied := c.Copy()
+		go func(ctx *gin.Context, name string) {
+			_ = ctx
+			_ = name
+		}(copied, item)
+	}
+}
+
+func TemplateParse(c *gin.Context) {
+	tmpl, _ := template.New("page").Parse("<html>{{.}}</html>")
+	_ = tmpl
+	_ = c
+}
+
+func LoadHTMLInHandler(c *gin.Context, r *gin.Engine) {
+	r.LoadHTMLGlob("templates/*")
+	_ = c
+}
+
+func AllocsClient(c *gin.Context) {
+	client := &http.Client{}
+	_ = client
+	_ = c
+}
+
+func AllocsDB(c *gin.Context) {
+	db, _ := gorm.Open(nil, nil)
+	_ = db
+	_ = c
+}
+
+func AllocsRegex(c *gin.Context) {
+	re := regexp.MustCompile("^test$")
+	_ = re
+	_ = c
+}
+
+func EnvPerRequest(c *gin.Context) {
+	val := os.Getenv("API_KEY")
+	db := os.Getenv("DB_HOST")
+	secret := os.Getenv("JWT_SECRET")
+	_ = val
+	_ = db
+	_ = secret
+	_ = c
+}
+
+func UpstreamInLoop(c *gin.Context, ids []string) {
+	for _, id := range ids {
+		resp, _ := http.Get("https://api.example.com/user/" + id)
+		_ = resp
+	}
+}
+
+func DuplicateUpstream(c *gin.Context) {
+	resp1, _ := http.Get("https://api.example.com/config")
+	resp2, _ := http.Get("https://api.example.com/config")
+	_ = resp1
+	_ = resp2
+}
+
+func FanoutNoLimit(c *gin.Context, ids []string) {
+	eg := errgroup.Group{}
+	for _, id := range ids {
+		id := id
+		eg.Go(func() error {
+			resp, _ := http.Get("https://api.example.com/" + id)
+			_ = resp
+			return nil
+		})
+	}
+	_ = eg.Wait()
+}
+
+func ExportNoBufio(c *gin.Context, rows []string) {
+	c.Writer.Header().Set("Content-Type", "text/csv")
+	for _, row := range rows {
+		_, _ = c.Writer.Write([]byte(row + "\n"))
+	}
+}
+
+func GzipPerChunk(c *gin.Context, chunks [][]byte) {
+	for _, chunk := range chunks {
+		gz := gzip.NewWriter(c.Writer)
+		_, _ = gz.Write(chunk)
+		gz.Close()
+	}
+}
+
+func RewindBody(c *gin.Context) {
+	body, _ := io.ReadAll(c.Request.Body)
+	c.Request.Body = io.NopCloser(bytes.NewReader(body))
+	var first map[string]any
+	_ = json.NewDecoder(c.Request.Body).Decode(&first)
+	c.Request.Body = io.NopCloser(bytes.NewReader(body))
+	var second map[string]any
+	_ = json.NewDecoder(c.Request.Body).Decode(&second)
+}
+
+func MiddlewareRebind(c *gin.Context) {
+	var before requestPayload
+	_ = c.ShouldBindJSON(&before)
+	c.Next()
+	var after requestPayload
+	_ = c.ShouldBindJSON(&after)
+}
+
+func ExportNoStream(c *gin.Context, items []string) {
+	var all []map[string]string
+	for _, item := range items {
+		all = append(all, map[string]string{"name": item})
+	}
+	payload, _ := json.Marshal(all)
+	c.Data(200, "application/json", payload)
+}
+
+func LargeHPayload(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"id":         1,
+		"name":       "test",
+		"email":      "test@example.com",
+		"role":       "admin",
+		"status":     "active",
+	})
+}
+
+func LargeMapMarshal(c *gin.Context) {
+	resp := map[string]any{
+		"id":     1,
+		"name":   "test",
+		"email":  "test@example.com",
+		"role":   "admin",
+		"status": "active",
+	}
+	payload, _ := json.Marshal(resp)
+	c.Data(200, "application/json", payload)
+}
+
+func LogBody(c *gin.Context) {
+	body, _ := c.GetRawData()
+	log.Debug("request body: " + string(body))
+}
+
+func DecodeUpstreamTwice(c *gin.Context) {
+	resp, _ := http.Get("https://api.example.com/data")
+	body, _ := io.ReadAll(resp.Body)
+	var first map[string]any
+	_ = json.Unmarshal(body, &first)
+	var second map[string]string
+	_ = json.Unmarshal(body, &second)
+}
+
+func WritesInHandlerLoop(c *gin.Context, db *gorm.DB, ids []int) {
+	for _, id := range ids {
+		db.Exec("INSERT INTO users (id) VALUES (?)", id)
+		db.Exec("UPDATE users SET active = true WHERE id = ?", id)
+	}
+}
+}

@@ -1,0 +1,303 @@
+import pandas as pd
+import numpy as np
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset
+import openai
+import wandb
+import random
+
+
+# --- Pandas rules ---
+
+def process_data(df):
+    """Triggers pandas_iterrows_in_loop."""
+    for idx, row in df.iterrows():
+        print(row["name"])
+
+
+def apply_simple(df):
+    """Triggers pandas_apply_with_simple_vectorizable_op."""
+    df["doubled"] = df["value"].apply(lambda x: x * 2)
+
+
+def concat_loop(dfs):
+    """Triggers pandas_concat_in_loop."""
+    result = pd.DataFrame()
+    for df in dfs:
+        result = pd.concat([result, df])
+    return result
+
+
+def read_no_dtypes(path):
+    """Triggers pandas_read_csv_without_dtypes."""
+    df = pd.read_csv(path)
+    return df
+
+
+def chain_assign(df):
+    """Triggers pandas_chain_assignment_warning."""
+    df["col1"]["sub"] = 42
+
+
+def inplace_missing(df):
+    """Triggers pandas_inplace_false_reassignment_missing."""
+    df.drop(columns=["unused"], inplace=False)
+
+
+def to_dict_loop(df):
+    """Triggers pandas_to_dict_records_in_loop."""
+    for i in range(len(df)):
+        row = df.iloc[i].to_dict()
+        print(row)
+
+
+def merge_no_validate(df1, df2):
+    """Triggers pandas_merge_without_validation."""
+    result = pd.merge(df1, df2, on="id")
+    return result
+
+
+def print_df_prod(df):
+    """Triggers pandas_full_dataframe_print_in_production."""
+    print(df)
+    return df
+
+
+def eval_string_bad(df):
+    """Triggers pandas_eval_string_manipulation."""
+    col = "col1"
+    df.eval(f"result = {col} + col2", inplace=True)
+
+
+def copy_loop(dfs):
+    """Triggers pandas_copy_in_loop."""
+    for df in dfs:
+        clone = df.copy()
+        print(clone)
+
+
+# --- NumPy rules ---
+
+def numpy_loop(arr):
+    """Triggers numpy_python_loop_over_array."""
+    for i in range(len(arr)):
+        arr[i] = np.sqrt(arr[i])
+
+
+def numpy_append_loop(items):
+    """Triggers numpy_append_in_loop."""
+    arr = np.array([])
+    for item in items:
+        arr = np.append(arr, item)
+    return arr
+
+
+def numpy_vstack_loop(arrays):
+    """Triggers numpy_vstack_hstack_in_loop."""
+    result = arrays[0]
+    for a in arrays[1:]:
+        result = np.vstack([result, a])
+    return result
+
+
+def numpy_tolist_bad(arr):
+    """Triggers numpy_tolist_in_hot_path."""
+    for batch in batches:
+        lst = arr.tolist()
+        process(lst)
+
+
+# --- Model Inference rules ---
+
+def predict_view(request):
+    """Triggers model_loaded_per_request, tokenizer_loaded_per_request."""
+    model = torch.load("model.pt")
+    from transformers import AutoTokenizer
+    tokenizer = AutoTokenizer.from_pretrained("bert-base")
+    return model(tokenizer(request.text))
+
+
+def inference_no_eval(model, data):
+    """Triggers model_eval_mode_missing, torch_no_grad_missing_in_inference."""
+    output = model(data)
+    return output
+
+
+def device_loop(models, data):
+    """Triggers model_to_device_in_loop."""
+    for m in models:
+        m.to(device)
+        m(data)
+
+
+def train_no_zero_grad(model, optimizer, data):
+    """Triggers training_loop_without_zero_grad."""
+    for batch in data:
+        loss = model(batch)
+        loss.backward()
+        optimizer.step()
+
+
+def no_dataloader(data):
+    """Triggers dataset_not_using_dataloader."""
+    dataset = Dataset()
+    for i in range(len(dataset)):
+        print(dataset[i])
+
+
+def embedding_per_req(request):
+    """Triggers embedding_computed_per_request."""
+    embedding = model.encode(request.text)
+    return embedding
+
+
+# --- LLM rules ---
+
+def llm_loop(prompts):
+    """Triggers llm_api_call_in_loop_without_batching."""
+    for prompt in prompts:
+        response = openai.ChatCompletion.create(model="gpt-4", messages=[{"role": "user", "content": prompt}])
+
+
+def prompt_concat(items):
+    """Triggers prompt_template_string_concat_in_loop."""
+    prompt = ""
+    for item in items:
+        prompt += f"Item: {item}\n"
+    openai.ChatCompletion.create(messages=[{"content": prompt}])
+
+
+def api_key_bad():
+    """Triggers hardcoded_api_key_in_source."""
+    api_key = "sk-abc123def456"
+    openai.api_key = api_key
+
+
+def no_retry(prompt):
+    """Triggers retry_on_rate_limit_without_backoff."""
+    try:
+        return openai.ChatCompletion.create(messages=[{"content": prompt}])
+    except openai.error.RateLimitError:
+        return openai.ChatCompletion.create(messages=[{"content": prompt}])
+
+
+def no_token_count(prompt):
+    """Triggers token_count_not_checked_before_api_call."""
+    response = openai.ChatCompletion.create(messages=[{"content": prompt}])
+    return response
+
+
+def wandb_tight_loop(model, data):
+    """Triggers wandb_mlflow_log_in_tight_loop."""
+    for epoch in range(10):
+        for batch in data:
+            loss = model(batch)
+            wandb.log({"loss": loss})
+
+
+# --- Data Pipeline rules ---
+
+def no_seed():
+    """Triggers random_seed_not_set."""
+    import torch
+    data = torch.randn(100)
+    return data
+
+
+def process_global(data):
+    """Triggers global_state_in_data_pipeline."""
+    global counter
+    counter += 1
+    return data
+
+
+def train_metrics(model, data):
+    """Triggers print_metrics_instead_of_logging."""
+    for epoch in range(10):
+        loss = model(data)
+        print(f"epoch {epoch} loss: {loss}")
+
+
+# --- Wave 5 Plan 3 additions ---
+
+def numpy_cast_bad():
+    """Triggers numpy_dtype_mismatch_implicit_cast."""
+    arr = np.array([1, 2, 3]).astype(np.float32)
+    return arr
+
+
+def llm_no_cache_loop(prompts):
+    """Triggers llm_response_not_cached_same_input."""
+    for p in prompts:
+        resp = openai.ChatCompletion.create(model="gpt-4", messages=[{"content": p}])
+
+
+def llm_full_response():
+    """Triggers llm_full_response_loaded_into_memory."""
+    resp = openai.ChatCompletion.create(messages=[{"content": "hi"}])
+    data = resp.choices[0].message
+    full = resp.json()
+    return data
+
+
+def embedding_dim_bad(a, b):
+    """Triggers embedding_dimension_mismatch_silent."""
+    from sentence_transformers import SentenceTransformer
+    embedding = True
+    score = cosine_similarity(a, b)
+    return score
+
+
+def load_big_csv(path):
+    """Triggers pandas_read_without_chunksize_large_file."""
+    df = pd.read_csv(path)
+    return df
+
+
+def transform_copy(df):
+    """Triggers entire_dataframe_copied_for_transform."""
+    df_copy = df.copy()
+    df_copy["new"] = 1
+    return df_copy
+
+
+def fetch_external():
+    """Triggers no_schema_validation_on_external_data."""
+    import requests
+    resp = requests.get("https://api.example.com/data")
+    data = resp.json()
+    return data
+
+
+def process_pipeline(df):
+    """Triggers data_pipeline_no_error_handling."""
+    step1 = df.dropna()
+    step2 = step1.reset_index()
+    step3 = step2.merge(other_df, on="id")
+    step4 = step3.groupby("cat").sum()
+    step5 = step4.sort_values("total")
+    step6 = step5.head(100)
+    step7 = step6.to_dict()
+    step8 = process_more(step7)
+    step9 = validate(step8)
+    step10 = finalize(step9)
+    step11 = save(step10)
+    return step11
+
+
+def run_experiments(models, data):
+    """Triggers gpu_memory_not_cleared_between_experiments."""
+    for model in models:
+        model.cuda()
+        for batch in data:
+            model(batch)
+
+
+def intermediate_dfs():
+    """Triggers intermediate_dataframe_not_freed."""
+    df1 = pd.read_csv("a.csv")
+    df2 = pd.merge(df1, other)
+    df3 = df2.groupby("cat").sum()
+    df4 = df3.reset_index()
+    return df4

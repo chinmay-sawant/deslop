@@ -42,6 +42,8 @@ mod core;
 mod data_access;
 #[path = "integration_scan/go_advanceplan2.rs"]
 mod go_advanceplan2;
+#[path = "integration_scan/go_advanceplan3.rs"]
+mod go_advanceplan3;
 #[path = "integration_scan/hallucination.rs"]
 mod hallucination;
 #[path = "integration_scan/naming.rs"]
@@ -52,10 +54,10 @@ mod performance;
 mod python;
 #[path = "integration_scan/rust.rs"]
 mod rust;
-#[path = "integration_scan/rust_advanceplan2.rs"]
-mod rust_advanceplan2;
 #[path = "integration_scan/rust_advanced.rs"]
 mod rust_advanced;
+#[path = "integration_scan/rust_advanceplan2.rs"]
+mod rust_advanceplan2;
 #[path = "integration_scan/security.rs"]
 mod security;
 #[path = "integration_scan/style.rs"]

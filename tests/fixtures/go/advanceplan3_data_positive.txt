@@ -1,0 +1,271 @@
+package sample
+
+import (
+	"database/sql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+)
+
+type User struct {
+	ID int
+}
+
+type Role struct {
+	ID int
+}
+
+func OpenSQL(c *gin.Context) {
+	db, _ := sql.Open("sqlite3", "file:test.db")
+	_ = db
+	_ = c
+}
+
+func OpenGorm(c *gin.Context) {
+	gormDB, _ := gorm.Open(nil, nil)
+	_ = gormDB
+	_ = c
+}
+
+func PingDatabase(c *gin.Context, db *sql.DB) {
+	_ = db.Ping()
+	_ = c
+}
+
+func ReconfigurePool(c *gin.Context, db *sql.DB) {
+	db.SetMaxOpenConns(100)
+	_ = c
+}
+
+func PrepareSame(c *gin.Context, db *sql.DB) {
+	first, _ := db.PrepareContext(nil, "SELECT * FROM users WHERE status = ?")
+	second, _ := db.PrepareContext(nil, "SELECT * FROM users WHERE status = ?")
+	_ = first
+	_ = second
+	_ = c
+}
+
+func BuildStatements(db *sql.DB, ids []int) {
+	for _, id := range ids {
+		stmt, _ := db.PrepareContext(nil, "SELECT * FROM users WHERE id = ?")
+		_ = stmt
+		_ = id
+	}
+}
+
+func TransactionPerItem(db *sql.DB, ids []int) {
+	for _, id := range ids {
+		tx, _ := db.Begin()
+		_ = tx
+		_ = id
+	}
+}
+
+func CreateUsers(c *gin.Context, db *gorm.DB, users []User) {
+	for _, user := range users {
+		db.Debug().Create(&user)
+	}
+	_ = c
+}
+
+func ListUsers(c *gin.Context, db *gorm.DB, page int) {
+	var users []User
+	_ = db.Preload(clause.Associations).Offset(page * 20).Find(&users)
+	_ = c
+}
+
+func SessionPerItem(db *gorm.DB, ids []int) {
+	var user User
+	for _, id := range ids {
+		_ = db.Session(&gorm.Session{}).Where("id = ?", id).First(&user)
+	}
+}
+
+func PreloadPerItem(db *gorm.DB, ids []int) {
+	var users []User
+	for _, id := range ids {
+		_ = db.Preload(clause.Associations).Where("id = ?", id).Find(&users)
+	}
+}
+
+func RawScanPerItem(db *gorm.DB, ids []int) {
+	var user User
+	for _, id := range ids {
+		_ = db.Raw("SELECT id FROM users WHERE id = ?", id).Scan(&user)
+	}
+}
+
+func AssociationPerItem(db *gorm.DB, users []User) {
+	var roles []Role
+	for _, user := range users {
+		_ = db.Model(&user).Association("Roles").Find(&roles)
+	}
+}
+
+func FirstOrCreatePerItem(db *gorm.DB, users []User) {
+	for _, user := range users {
+		_ = db.Where("id = ?", user.ID).FirstOrCreate(&user)
+	}
+}
+
+func SavePerItem(db *gorm.DB, users []User) {
+	for _, user := range users {
+		_ = db.Save(&user)
+	}
+}
+
+func UpdatePerItem(db *gorm.DB, ids []int) {
+	for _, id := range ids {
+		_ = db.Model(&User{}).Where("id = ?", id).Update("active", true)
+	}
+}
+
+func DeletePerItem(db *gorm.DB, ids []int) {
+	for _, id := range ids {
+		_ = db.Where("id = ?", id).Delete(&User{})
+	}
+}
+
+func CountAndFindUsers(c *gin.Context, db *gorm.DB, status string) {
+	var total int64
+	var users []User
+	_ = db.Model(&User{}).Where("status = ?", status).Count(&total)
+	_ = db.Model(&User{}).Where("status = ?", status).Find(&users)
+	_ = c
+}
+
+func BulkActivate(db *sql.DB, ids []int) {
+	for _, id := range ids {
+		_, _ = db.Exec("UPDATE users SET active = 1 WHERE id = ?", id)
+	}
+}
+
+func LookupUsers(db *sql.DB, ids []int) {
+	for _, id := range ids {
+		_ = db.QueryRow("SELECT id FROM users WHERE id = ?", id)
+	}
+}
+
+func CountUsers(db *gorm.DB, ids []int) {
+	var total int64
+	for _, id := range ids {
+		_ = db.Model(&User{}).Where("id = ?", id).Count(&total)
+	}
+}
+
+func NestedTx(c *gin.Context, db *sql.DB) {
+	tx1, _ := db.Begin()
+	tx2, _ := db.BeginTx(nil, nil)
+	_ = tx1
+	_ = tx2
+	_ = c
+}
+
+func SelectInLoop(db *gorm.DB, ids []int) {
+	var user User
+	for _, id := range ids {
+		_ = db.Where("id = ?", id).First(&user)
+	}
+}
+
+func UpsertPerRow(db *sql.DB, ids []int) {
+	for _, id := range ids {
+		_, _ = db.Exec("INSERT INTO users (id) VALUES (?) ON CONFLICT DO UPDATE SET active = true", id)
+	}
+}
+
+func RepeatedQuery(c *gin.Context, db *sql.DB) {
+	_ = db.QueryRow("SELECT count(*) FROM users WHERE status = 'active'")
+	_ = db.QueryRow("SELECT count(*) FROM users WHERE status = 'active'")
+	_ = c
+}
+
+func CountForExists(c *gin.Context, db *gorm.DB) {
+	var total int64
+	_ = db.Model(&User{}).Where("status = ?", "active").Count(&total)
+	if total > 0 {
+		_ = "exists"
+	}
+	_ = c
+}
+
+func FetchThenSlice(c *gin.Context, db *gorm.DB, offset int) {
+	var users []User
+	_ = db.Model(&User{}).Where("active = ?", true).Find(&users)
+	page := users[offset:offset+20]
+	_ = page
+	_ = c
+}
+
+func FindThenPreload(c *gin.Context, db *gorm.DB) {
+	var users []User
+	_ = db.Where("active = ?", true).Find(&users)
+	var enriched []User
+	_ = db.Where("active = ?", true).Preload("Profile").Find(&enriched)
+	_ = c
+}
+
+func WideModelNoSelect(c *gin.Context, db *gorm.DB) {
+	var users []User
+	_ = db.Where("active = ?", true).Where("role = ?", "admin").Where("org_id = ?", 1).Find(&users)
+	_ = c
+}
+
+func JoinsPreloadNoLimit(c *gin.Context, db *gorm.DB) {
+	var users []User
+	_ = db.Joins("Profile").Preload("Roles").Find(&users)
+	_ = c
+}
+
+func OrderWithoutLimit(c *gin.Context, db *gorm.DB) {
+	var users []User
+	_ = db.Where("active = ?", true).Order("created_at DESC").Find(&users)
+	_ = c
+}
+
+func OrderByRandom(c *gin.Context, db *gorm.DB) {
+	var users []User
+	_ = db.Order("RAND()").Limit(5).Find(&users)
+	_ = c
+}
+
+func DistinctNoSelect(c *gin.Context, db *gorm.DB) {
+	var users []User
+	_ = db.Distinct().Where("active = ?", true).Find(&users)
+	_ = c
+}
+
+func FuncWrappedColumn(c *gin.Context, db *sql.DB) {
+	_ = db.QueryRow("SELECT * FROM users WHERE LOWER(email) = ?", "test@example.com")
+	_ = c
+}
+
+func DateWrappedColumn(c *gin.Context, db *sql.DB) {
+	_ = db.QueryRow("SELECT * FROM users WHERE DATE(created_at) = ?", "2026-01-01")
+	_ = c
+}
+
+func LeadingWildcard(c *gin.Context, db *sql.DB) {
+	_, _ = db.Query("SELECT * FROM users WHERE name LIKE '%test%'")
+	_ = c
+}
+
+func ScanMap(c *gin.Context, db *sql.DB) {
+	result := map[string]any{}
+	row := db.QueryRow("SELECT * FROM users WHERE id = ?", 1)
+	_ = row.Scan(map[string]any{})
+	_ = result
+	_ = c
+}
+
+func AutoMigrateInHandler(c *gin.Context, db *gorm.DB) {
+	_ = db.AutoMigrate(&User{})
+	_ = c
+}
+
+func UpdatesMapInLoop(db *gorm.DB, ids []int) {
+	for _, id := range ids {
+		_ = db.Model(&User{}).Where("id = ?", id).Updates(map[string]any{"active": true})
+	}
+}

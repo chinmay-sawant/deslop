@@ -1,0 +1,20 @@
+package sample
+
+import (
+    "fmt"
+    "log"
+)
+
+func Run(err error) error {
+    _ = err
+    if err != nil {
+        panic(err)
+    }
+    return fmt.Errorf("wrap: %v", err)
+}
+
+func LogOnly(err error) {
+    if err != nil {
+        log.Fatal(err)
+    }
+}

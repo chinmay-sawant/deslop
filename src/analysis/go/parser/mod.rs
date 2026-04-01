@@ -1,6 +1,7 @@
 mod comments;
 mod context;
 mod errors;
+mod frameworks;
 mod general;
 mod performance;
 #[cfg(test)]
@@ -11,7 +12,9 @@ use std::path::Path;
 use tree_sitter::{Node, Parser};
 
 use crate::analysis::go::fingerprint::build_function_fingerprint;
-use crate::analysis::{AnalysisResult, Error, Language, ParsedFile, ParsedFunction};
+use crate::analysis::{
+    AnalysisResult, Error, GoFunctionEvidence, Language, ParsedFile, ParsedFunction,
+};
 
 use self::comments::extract_doc_comment;
 use self::context::{
@@ -19,11 +22,11 @@ use self::context::{
     collect_mutex_loops, collect_sleep_loops, collect_unmanaged_goroutines, has_ctx_param,
 };
 use self::errors::{collect_dropped_errors, collect_errorf_calls, collect_panic_errors};
+use self::frameworks::{collect_gin_calls, collect_gorm_query_chains, collect_parse_input_calls};
 use self::general::{
     build_test_summary, collect_calls, collect_go_structs, collect_imports,
-    collect_interface_summaries, collect_local_strings, collect_package_vars,
-    collect_pkg_strings, collect_struct_tags, collect_symbols, count_descendants,
-    extract_receiver, find_package_name,
+    collect_interface_summaries, collect_local_strings, collect_package_vars, collect_pkg_strings,
+    collect_struct_tags, collect_symbols, count_descendants, extract_receiver, find_package_name,
 };
 use self::performance::{
     collect_alloc_loops, collect_concat_loops, collect_db_query_calls, collect_fmt_loops,
@@ -155,6 +158,9 @@ fn parse_function_node(
     let string_concat_in_loop_lines = collect_concat_loops(body_node, source);
     let json_marshal_in_loop_lines = collect_json_loops(body_node, source, imports);
     let db_query_calls = collect_db_query_calls(body_node, source);
+    let gorm_query_chains = collect_gorm_query_chains(body_node, source, imports);
+    let parse_input_calls = collect_parse_input_calls(body_node, source, imports);
+    let gin_calls = collect_gin_calls(body_node, source, imports);
     let body_text = source
         .get(body_node.byte_range())
         .unwrap_or_default()
@@ -176,63 +182,35 @@ fn parse_function_node(
         signature_text,
         body_start_line: body_node.start_position().row + 1,
         calls,
-        exception_handlers: Vec::new(),
-        has_context_parameter,
         is_test_function,
         local_binding_names: Vec::new(),
         doc_comment,
         body_text,
         local_strings: local_string_literals,
-        normalized_body: String::new(),
-        validation_signature: None,
-        exception_block_signatures: Vec::new(),
         test_summary,
-        safety_comment_lines: Vec::new(),
-        unsafe_lines: Vec::new(),
-        dropped_errors: dropped_error_lines,
-        panic_errors: panic_on_error_lines,
-        errorf_calls,
-        context_factory_calls,
-        goroutines: goroutine_launch_lines,
-        loop_goroutines: goroutine_in_loop_lines,
-        unmanaged_goroutines: goroutine_without_shutdown_lines,
-        sleep_loops: sleep_in_loop_lines,
-        busy_wait_lines,
-        mutex_loops: mutex_lock_in_loop_lines,
-        alloc_loops: allocation_in_loop_lines,
-        fmt_loops: fmt_in_loop_lines,
-        reflect_loops: reflection_in_loop_lines,
-        concat_loops: string_concat_in_loop_lines,
-        json_loops: json_marshal_in_loop_lines,
-        db_query_calls,
-        none_comparison_lines: Vec::new(),
-        side_effect_comprehension_lines: Vec::new(),
-        redundant_return_none_lines: Vec::new(),
-        list_materialization_lines: Vec::new(),
-        deque_operation_lines: Vec::new(),
-        temp_collection_lines: Vec::new(),
-        recursive_call_lines: Vec::new(),
-        list_membership_loop_lines: Vec::new(),
-        repeated_len_loop_lines: Vec::new(),
-        builtin_candidate_lines: Vec::new(),
-        missing_context_manager_lines: Vec::new(),
-        has_complete_type_hints: false,
-        has_varargs: false,
-        has_kwargs: false,
-        is_async: false,
-        await_points: Vec::new(),
-        macro_calls: Vec::new(),
-        spawn_calls: Vec::new(),
-        lock_calls: Vec::new(),
-        permit_acquires: Vec::new(),
-        futures_created: Vec::new(),
-        blocking_calls: Vec::new(),
-        select_macro_lines: Vec::new(),
-        drop_impl: false,
-        write_loops: Vec::new(),
-        line_iteration_loops: Vec::new(),
-        default_hasher_lines: Vec::new(),
-        boxed_container_lines: Vec::new(),
-        unsafe_soundness: Vec::new(),
+        go: Some(GoFunctionEvidence {
+            has_context_parameter,
+            context_factory_calls,
+            dropped_errors: dropped_error_lines,
+            panic_errors: panic_on_error_lines,
+            errorf_calls,
+            goroutines: goroutine_launch_lines,
+            loop_goroutines: goroutine_in_loop_lines,
+            unmanaged_goroutines: goroutine_without_shutdown_lines,
+            sleep_loops: sleep_in_loop_lines,
+            busy_wait_lines,
+            mutex_loops: mutex_lock_in_loop_lines,
+            alloc_loops: allocation_in_loop_lines,
+            fmt_loops: fmt_in_loop_lines,
+            reflect_loops: reflection_in_loop_lines,
+            concat_loops: string_concat_in_loop_lines,
+            json_loops: json_marshal_in_loop_lines,
+            db_query_calls,
+            gorm_query_chains,
+            parse_input_calls,
+            gin_calls,
+        }),
+        python: None,
+        rust: None,
     })
 }

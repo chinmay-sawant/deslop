@@ -1,4 +1,4 @@
-mod advanceplan2;
+mod api_design;
 mod async_patterns;
 mod domain_modeling;
 mod performance;
@@ -7,7 +7,7 @@ mod unsafe_soundness;
 use crate::analysis::{FieldSummary, ParsedFile, ParsedFunction, StructSummary};
 use crate::model::{Finding, Severity};
 
-pub(crate) use advanceplan2::{advanceplan2_file_findings, advanceplan2_function_findings};
+pub(crate) use api_design::{api_design_file_findings, api_design_function_findings};
 pub(crate) use async_patterns::{async_file_findings, async_function_findings};
 pub(crate) use domain_modeling::domain_findings;
 pub(crate) use performance::{performance_file_findings, performance_function_findings};
@@ -73,6 +73,7 @@ fn struct_severity(summary: &StructSummary) -> Severity {
 
 fn first_await_after(function: &ParsedFunction, line: usize) -> Option<usize> {
     function
+        .rust_evidence()
         .await_points
         .iter()
         .copied()
@@ -168,10 +169,12 @@ fn is_tokio_mutex(file: &ParsedFile, function: &ParsedFunction) -> bool {
 }
 
 fn has_cancellation_pattern(function: &ParsedFunction) -> bool {
+    let rust = function.rust_evidence();
+
     function.body_text.contains("CancellationToken")
         || function.body_text.contains("cancelled()")
         || function.body_text.contains("shutdown")
-        || function.select_macro_lines.len() > 1
+        || rust.select_macro_lines.len() > 1
 }
 
 fn field_type_mentions(field: &FieldSummary, text: &str) -> bool {

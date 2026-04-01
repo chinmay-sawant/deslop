@@ -1,0 +1,182 @@
+package sample
+
+import (
+	"bufio"
+	"compress/gzip"
+	"encoding/json"
+	"html/template"
+	"io"
+	"net/http"
+	"net/http/httputil"
+	"os"
+	"regexp"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/errgroup"
+	"gorm.io/gorm"
+)
+
+type requestPayload struct {
+	Name string `json:"name"`
+}
+
+type queryFilters struct {
+	Name string `form:"name"`
+}
+
+func Handle(c *gin.Context) {
+	var payload requestPayload
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"name": payload.Name})
+}
+
+func HandleQuery(c *gin.Context) {
+	var filters queryFilters
+	_ = c.ShouldBindQuery(&filters)
+	_ = filters
+}
+
+func ParseMultipartSmall(c *gin.Context) {
+	_ = c.Request.ParseMultipartForm(4 << 20)
+}
+
+func UploadStream(c *gin.Context) {
+	header, _ := c.FormFile("upload")
+	uploaded, _ := header.Open()
+	defer uploaded.Close()
+	_, _ = io.Copy(io.Discard, uploaded)
+}
+
+func DumpRequestForDebug(req *http.Request) {
+	_, _ = httputil.DumpRequest(req, false)
+}
+
+func ServeWithHelper(c *gin.Context) {
+	c.File("report.pdf")
+}
+
+func CopyOnce(c *gin.Context, items []string) {
+	copied := c.Copy()
+	for _, item := range items {
+		go func(ctx *gin.Context, name string) {
+			_ = ctx
+			_ = name
+		}(copied, item)
+	}
+}
+
+func LoadTemplateAtStartup() {
+	_, _ = os.ReadFile("template.html")
+}
+
+func TemplateParseOnInit() {
+	tmpl, _ := template.New("page").Parse("<html>{{.}}</html>")
+	_ = tmpl
+}
+
+func LoadHTMLOnInit(r *gin.Engine) {
+	r.LoadHTMLGlob("templates/*")
+}
+
+func MiddlewareReusesClient() gin.HandlerFunc {
+	client := &http.Client{}
+	return func(c *gin.Context) {
+		_ = client
+		c.Next()
+	}
+}
+
+func MiddlewareReusesRegex() gin.HandlerFunc {
+	re := regexp.MustCompile("^test$")
+	return func(c *gin.Context) {
+		_ = re
+		c.Next()
+	}
+}
+
+func EnvOnInit() string {
+	return os.Getenv("API_KEY")
+}
+
+func BatchUpstream(c *gin.Context, ids []string) {
+	resp, _ := http.Get("https://api.example.com/users?ids=" + ids[0])
+	_ = resp
+}
+
+func FanoutWithLimit(c *gin.Context, ids []string) {
+	eg := errgroup.Group{}
+	eg.SetLimit(5)
+	for _, id := range ids {
+		id := id
+		eg.Go(func() error {
+			_ = id
+			return nil
+		})
+	}
+	_ = eg.Wait()
+}
+
+func ExportWithBufio(c *gin.Context, rows []string) {
+	bw := bufio.NewWriter(c.Writer)
+	defer bw.Flush()
+	for _, row := range rows {
+		_, _ = bw.WriteString(row + "\n")
+	}
+}
+
+func GzipOnce(c *gin.Context, data []byte) {
+	gz := gzip.NewWriter(c.Writer)
+	_, _ = gz.Write(data)
+	gz.Close()
+}
+
+func SingleBodyRead(c *gin.Context) {
+	body, _ := io.ReadAll(c.Request.Body)
+	var payload map[string]any
+	_ = json.Unmarshal(body, &payload)
+}
+
+func MiddlewareBeforeHandler(c *gin.Context) {
+	var before requestPayload
+	_ = c.ShouldBindJSON(&before)
+	_ = before
+}
+
+func StreamExport(c *gin.Context, items []string) {
+	encoder := json.NewEncoder(c.Writer)
+	for _, item := range items {
+		_ = encoder.Encode(map[string]string{"name": item})
+	}
+}
+
+func SmallResponse(c *gin.Context) {
+	c.JSON(200, gin.H{"ok": true})
+}
+
+func TypedResponse(c *gin.Context) {
+	type resp struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	}
+	c.JSON(200, resp{ID: 1, Name: "test"})
+}
+
+func NoBodyLogging(c *gin.Context) {
+	body, _ := c.GetRawData()
+	_ = body
+}
+
+func DecodeUpstreamOnce(c *gin.Context) {
+	resp, _ := http.Get("https://api.example.com/data")
+	body, _ := io.ReadAll(resp.Body)
+	var result map[string]any
+	_ = json.Unmarshal(body, &result)
+}
+
+func BatchWrites(c *gin.Context, db *gorm.DB, users []User) {
+	db.CreateInBatches(&users, 100)
+}

@@ -1,102 +1,29 @@
+mod backend;
+mod config;
 mod error;
 mod go;
 mod python;
 mod rust;
 mod types;
 
-use std::path::Path;
-
-use crate::Result;
-use crate::index::RepositoryIndex;
-use crate::model::Finding;
-
+pub(crate) use backend::{
+    Language, LanguageBackend, backend_for_language, backend_for_path, registered_backends,
+    supported_extensions,
+};
+pub(crate) use config::AnalysisConfig;
 pub use error::Error;
 pub(crate) use error::Result as AnalysisResult;
 
 pub(crate) use types::{
     BlockFingerprint, CallSite, ClassSummary, CommentSummary, ContextFactoryCall, DbQueryCall,
-    DeclaredSymbol, ExceptionHandler, FieldSummary, FormattedErrorCall, GoFieldSummary,
-    GoStructSummary, ImportSpec, InterfaceSummary, MacroCall, NamedLiteral, PackageVarSummary,
-    ParsedFile, ParsedFunction, PythonFieldSummary, PythonModelSummary, RuntimeCall,
-    RustEnumSummary, RustStaticSummary, StructSummary, StructTag, TestFunctionSummary, TopLevelBindingSummary,
-    TopLevelCallSummary, UnsafePattern, UnsafePatternKind,
+    DeclaredSymbol, ExceptionHandler, FieldSummary, FormattedErrorCall, GinCallSummary,
+    GoFieldSummary, GoFunctionEvidence, GoStructSummary, GormChainStep, GormQueryChain, ImportSpec,
+    InterfaceSummary, MacroCall, NamedLiteral, PackageVarSummary, ParseInputCall, ParsedFile,
+    ParsedFunction, PythonFieldSummary, PythonFunctionEvidence, PythonModelSummary, RuntimeCall,
+    RustEnumSummary, RustFunctionEvidence, RustStaticSummary, StructSummary, StructTag,
+    TestFunctionSummary, TopLevelBindingSummary, TopLevelCallSummary, UnsafePattern,
+    UnsafePatternKind,
 };
-
-#[derive(Debug, Clone, Copy, Default)]
-pub(crate) struct AnalysisConfig {
-    pub enable_go_semantic: bool,
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum Language {
-    Go,
-    Python,
-    Rust,
-}
-
-pub(crate) trait LanguageBackend: Send + Sync {
-    fn language(&self) -> Language;
-
-    fn supported_extensions(&self) -> &'static [&'static str];
-
-    fn supports_path(&self, path: &Path) -> bool;
-
-    fn parse_file(&self, path: &Path, source: &str) -> Result<ParsedFile>;
-
-    fn evaluate_file(
-        &self,
-        _file: &ParsedFile,
-        _index: &RepositoryIndex,
-        _analysis_config: &AnalysisConfig,
-    ) -> Vec<Finding> {
-        Vec::new()
-    }
-
-    fn evaluate_repo(
-        &self,
-        _files: &[&ParsedFile],
-        _index: &RepositoryIndex,
-        _analysis_config: &AnalysisConfig,
-    ) -> Vec<Finding> {
-        Vec::new()
-    }
-}
-
-pub(crate) fn registered_backends() -> [&'static dyn LanguageBackend; 3] {
-    static GO_BACKEND: go::GoAnalyzer = go::GoAnalyzer;
-    static PYTHON_BACKEND: python::PythonAnalyzer = python::PythonAnalyzer;
-    static RUST_BACKEND: rust::RustAnalyzer = rust::RustAnalyzer;
-
-    [&GO_BACKEND, &PYTHON_BACKEND, &RUST_BACKEND]
-}
-
-pub(crate) fn backend_for_path(path: &Path) -> Option<&'static dyn LanguageBackend> {
-    registered_backends()
-        .into_iter()
-        .find(|backend| backend.supports_path(path))
-}
-
-pub(crate) fn backend_for_language(language: Language) -> Option<&'static dyn LanguageBackend> {
-    registered_backends()
-        .into_iter()
-        .find(|backend| backend.language() == language)
-}
-
-pub(crate) fn supported_extensions() -> Vec<&'static str> {
-    let mut extensions = Vec::new();
-
-    for backend in registered_backends() {
-        for extension in backend.supported_extensions() {
-            if !extensions.contains(extension) {
-                extensions.push(*extension);
-            }
-        }
-    }
-
-    extensions.sort_unstable();
-    extensions
-}
 
 #[cfg(test)]
 mod tests {

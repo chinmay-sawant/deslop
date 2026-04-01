@@ -7,9 +7,10 @@ pub(crate) fn unsafe_soundness_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
+    let rust = function.rust_evidence();
     let mut findings = Vec::new();
 
-    for pattern in &function.unsafe_soundness {
+    for pattern in rust.unsafe_soundness {
         let (rule_id, severity, hint) = match pattern.kind {
             UnsafePatternKind::GetUnchecked => (
                 "rust_unsafe_get_unchecked",
@@ -60,7 +61,7 @@ pub(crate) fn unsafe_soundness_findings(
         ));
     }
 
-    if !function.unsafe_lines.is_empty()
+    if !rust.unsafe_lines.is_empty()
         && function.body_text.contains("UnsafeCell")
         && function.body_text.contains("&mut")
     {
@@ -69,7 +70,7 @@ pub(crate) fn unsafe_soundness_findings(
             function,
             "rust_unsafe_aliasing_assumption",
             Severity::Warning,
-            function.unsafe_lines[0],
+            rust.unsafe_lines[0],
             format!("function {} mixes unsafe code with interior mutability and mutable references", function.fingerprint.name),
             vec!["review aliasing guarantees carefully when UnsafeCell or similar types are involved".to_string()],
         ));

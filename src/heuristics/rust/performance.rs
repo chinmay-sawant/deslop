@@ -11,12 +11,11 @@ pub(crate) fn performance_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
+    let rust = function.rust_evidence();
     let mut findings = Vec::new();
 
-    if (function.is_async || !function.await_points.is_empty())
-        && !function.blocking_calls.is_empty()
-    {
-        for call in &function.blocking_calls {
+    if (rust.is_async || !rust.await_points.is_empty()) && !rust.blocking_calls.is_empty() {
+        for call in rust.blocking_calls {
             findings.push(function_finding(
                 file,
                 function,
@@ -36,7 +35,7 @@ pub(crate) fn performance_function_findings(
         }
     }
 
-    for line in &function.write_loops {
+    for line in rust.write_loops {
         findings.push(function_finding(
             file,
             function,
@@ -54,7 +53,7 @@ pub(crate) fn performance_function_findings(
         ));
     }
 
-    for line in &function.line_iteration_loops {
+    for line in rust.line_iteration_loops {
         findings.push(function_finding(
             file,
             function,
@@ -73,7 +72,7 @@ pub(crate) fn performance_function_findings(
         ));
     }
 
-    for line in &function.default_hasher_lines {
+    for line in rust.default_hasher_lines {
         findings.push(function_finding(
             file,
             function,
@@ -115,7 +114,7 @@ pub(crate) fn performance_function_findings(
         }
     }
 
-    for lock in &function.lock_calls {
+    for lock in rust.lock_calls {
         if let Some(await_line) = first_await_after(function, lock.line) {
             findings.push(function_finding(
                 file,
@@ -135,16 +134,14 @@ pub(crate) fn performance_function_findings(
         }
     }
 
-    if is_tokio_mutex(file, function)
-        && function.await_points.is_empty()
-        && !function.lock_calls.is_empty()
+    if is_tokio_mutex(file, function) && rust.await_points.is_empty() && !rust.lock_calls.is_empty()
     {
         findings.push(function_finding(
             file,
             function,
             "rust_tokio_mutex_unnecessary",
             Severity::Info,
-            function.lock_calls[0].line,
+            rust.lock_calls[0].line,
             format!(
                 "function {} uses tokio::sync::Mutex without any await in the critical path",
                 function.fingerprint.name
@@ -157,13 +154,13 @@ pub(crate) fn performance_function_findings(
         ));
     }
 
-    if function.drop_impl && !function.blocking_calls.is_empty() {
+    if rust.drop_impl && !rust.blocking_calls.is_empty() {
         findings.push(function_finding(
             file,
             function,
             "rust_blocking_drop",
             Severity::Warning,
-            function.blocking_calls[0].line,
+            rust.blocking_calls[0].line,
             format!(
                 "Drop implementation {} performs blocking work",
                 function.fingerprint.name
@@ -175,7 +172,7 @@ pub(crate) fn performance_function_findings(
         ));
     }
 
-    for line in &function.boxed_container_lines {
+    for line in rust.boxed_container_lines {
         findings.push(function_finding(
             file,
             function,
@@ -225,11 +222,11 @@ pub(crate) fn performance_function_findings(
                 ],
             ));
         }
-        if function.is_async
+        if rust.is_async
             && (line.contains("vec![")
                 || line.contains("Vec::with_capacity")
                 || line.contains("String::with_capacity"))
-            && !function.await_points.is_empty()
+            && !rust.await_points.is_empty()
         {
             findings.push(function_finding(
                 file,

@@ -19,6 +19,7 @@ export function FeatureGrid() {
 
               <p className="mt-5 max-w-2xl text-lg leading-relaxed text-[var(--muted)]">{family.description}</p>
 
+              <div className="mt-12 border-t border-[var(--border)]" />
 
               <ul className="mt-10 flex flex-wrap gap-3">
                 {family.rules.map((rule) => (

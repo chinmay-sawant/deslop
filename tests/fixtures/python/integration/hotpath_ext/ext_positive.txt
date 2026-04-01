@@ -1,0 +1,170 @@
+import yaml
+import xml.etree.ElementTree as ET
+from datetime import datetime
+import hashlib
+import copy
+from urllib.parse import urlparse
+import bisect
+import gzip
+import pickle
+import json
+import re
+
+
+def parse_configs(raw_docs):
+    """Triggers yaml_load_same_payload_multiple_times via repeated_call_same_arg."""
+    for doc in raw_docs:
+        result = yaml.safe_load(doc)
+        again = yaml.safe_load(doc)
+        print(result, again)
+
+
+def parse_xmls(raw_docs):
+    """Triggers xml_parse_same_payload_multiple_times via repeated_call_same_arg."""
+    for doc in raw_docs:
+        tree1 = ET.fromstring(doc)
+        tree2 = ET.fromstring(doc)
+        print(tree1, tree2)
+
+
+def convert_dates(date_strings):
+    """Triggers repeated_datetime_strptime_same_format via repeated_call_same_arg."""
+    for ds in date_strings:
+        d1 = datetime.strptime(ds, "%Y-%m-%d")
+        d2 = datetime.strptime(ds, "%Y-%m-%d")
+        print(d1, d2)
+
+
+def hash_items(items):
+    """Triggers repeated_hashlib_new_same_algorithm via repeated_call_same_arg."""
+    for item in items:
+        h1 = hashlib.sha256(item)
+        h2 = hashlib.sha256(item)
+        print(h1, h2)
+
+
+def copy_in_loop_bad(items):
+    """Triggers copy_in_loop."""
+    results = []
+    for item in items:
+        cloned = copy.deepcopy(item)
+        results.append(cloned)
+    return results
+
+
+def invariant_call_loop(urls):
+    """Triggers invariant_call_in_loop."""
+    for url in urls:
+        parsed = urlparse("https://example.com/api")
+        print(parsed, url)
+
+
+def index_in_loop_bad(data, targets):
+    """Triggers repeated_list_index_lookup."""
+    for t in targets:
+        pos = data.index(t)
+        print(pos)
+
+
+def append_then_sort_bad(items):
+    """Triggers append_then_sort_each_iteration."""
+    result = []
+    for item in items:
+        result.append(item)
+        result.sort()
+    return result
+
+
+def join_list_comp_bad(words):
+    """Triggers string_join_without_generator."""
+    return ",".join([str(w) for w in words])
+
+
+def repeated_subscript_bad(config):
+    """Triggers repeated_dict_get_same_key_no_cache."""
+    x = config.get("database")
+    y = config.get("database")
+    z = config.get("database")
+    return x, y, z
+
+
+def nested_search_bad(items, target):
+    """Triggers nested_list_search_map_candidate."""
+    for item in items:
+        if item == target:
+            return item
+    return None
+
+
+def sort_then_first_bad(items):
+    """Triggers sort_then_first_or_membership_only."""
+    items.sort()
+    return items[0]
+
+
+def filter_iterate_bad(items):
+    """Triggers filter_then_count_then_iterate."""
+    filtered = list(filter(lambda x: x > 0, items))
+    count = len(filtered)
+    for item in filtered:
+        print(item)
+    return count
+
+
+def repeated_format_bad(records):
+    """Triggers repeated_string_format_invariant_template."""
+    template = "Name: {}, Age: {}"
+    for r in records:
+        msg = template.format(r.name, r.age)
+        print(msg)
+
+
+def json_encoder_per_item(items):
+    """Triggers json_encoder_recreated_per_item."""
+    for item in items:
+        encoder = json.JSONEncoder()
+        encoded = encoder.encode(item)
+        print(encoded)
+
+
+def gzip_per_chunk_bad(chunks):
+    """Triggers gzip_open_per_chunk."""
+    for chunk in chunks:
+        with gzip.open("output.gz", "ab") as f:
+            f.write(chunk)
+
+
+def pickle_loop_bad(objects):
+    """Triggers pickle_dumps_in_loop_same_structure."""
+    for obj in objects:
+        data = pickle.dumps(obj)
+        print(data)
+
+
+def isinstance_chain_bad(value):
+    """Triggers repeated_isinstance_chain_same_object."""
+    if isinstance(value, int):
+        return "int"
+    elif isinstance(value, str):
+        return "str"
+    elif isinstance(value, float):
+        return "float"
+    elif isinstance(value, list):
+        return "list"
+    elif isinstance(value, dict):
+        return "dict"
+    return "unknown"
+
+
+def concat_in_comp_bad(items):
+    """Triggers concatenation_in_comprehension_body."""
+    [print(item + " done") for item in items]
+
+
+def tuple_unpack_bad(records):
+    """Triggers tuple_unpacking_in_tight_loop."""
+    import numpy as np
+    total = 0
+    for (a, b, c, d) in records:
+        total += np.sum([a, b, c, d])
+    return total

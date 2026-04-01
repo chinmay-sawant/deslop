@@ -1,0 +1,15 @@
+package sample
+
+import (
+    "gorm.io/gorm"
+    "gorm.io/gorm/clause"
+)
+
+type User struct{}
+
+func Handle(db *gorm.DB, page int) {
+    var users []User
+    var total int64
+    _ = db.Model(&User{}).Where("status = ?", "open").Count(&total)
+    _ = db.Model(&User{}).Preload(clause.Associations).Offset(page).Limit(20).Find(&users)
+}

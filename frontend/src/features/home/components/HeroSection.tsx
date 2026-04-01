@@ -8,15 +8,15 @@ export function HeroSection() {
   const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
-    // Delay animation start by 3 seconds after mount
-    const timer = setTimeout(() => setIsReady(true), 3000)
+    // Short delay lets the page paint before the sweep animation starts
+    const timer = setTimeout(() => setIsReady(true), 300)
     return () => clearTimeout(timer)
   }, [])
 
   return (
     <section id="top" className="section-anchor relative pt-24 pb-24 sm:pt-32 sm:pb-32 lg:pt-40 lg:pb-40">
       <Container className="max-w-5xl mx-auto text-center">
-        <span className="eyebrow mx-auto mb-8">Static analysis. Human insight.</span>
+        <span className="eyebrow mx-auto mb-8">Static analysis Human insight</span>
         <div className="flex flex-col items-center justify-center text-center w-full">
           <h1 className="mt-6 text-[clamp(2.5rem,7vw,5rem)] leading-[0.95] font-medium tracking-[-0.03em] text-[var(--text-strong)] flex flex-col items-center justify-center w-full relative">
             {/* Line 1 */}
@@ -53,7 +53,7 @@ export function HeroSection() {
           </h1>
           <br/>
           <p className="mt-10 mx-auto w-full max-w-2xl text-[1.15rem] leading-[1.8] text-[var(--muted)] sm:text-[1.35rem] text-center">
-            A lightning-fast static analyzer that flags AI-generated code smells across Python, Rust, and Go. It surfaces suspicious patterns with readable evidence, including Go wrapper propagation and opt-in nested-loop pressure checks when you want stronger review signal.
+            A fast static analyzer that surfaces AI-generated code smells across Go, Python, and Rust—with explainable findings, not opaque scores.
           </p>
         </div>
 

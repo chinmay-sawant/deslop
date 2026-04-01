@@ -1,0 +1,106 @@
+import re
+import json
+import csv
+
+
+# Clean code: regex compiled once at module level
+PATTERN = re.compile(r"\d+")
+
+
+def process_lines(lines):
+    for line in lines:
+        if PATTERN.match(line):
+            print(line)
+
+
+# Clean code: json.loads called once, result reused
+def parse_config(raw_data):
+    settings = json.loads(raw_data)
+    return {**settings}
+
+
+# Clean code: json.dumps called once, result reused
+def publish_event(event):
+    serialized = json.dumps(event)
+    return serialized, serialized
+
+
+# Clean code: use min() / max() instead of sorted()[0]
+def get_smallest(values):
+    return min(values)
+
+
+def get_largest(values):
+    return max(values)
+
+
+# Clean code: use sum() with generator expression
+def count_active(users):
+    return sum(1 for u in users if u.is_active)
+
+
+# Clean code: iterate file directly
+def load_log_file(path):
+    with open(path) as f:
+        for line in f:
+            process(line)
+
+
+# Clean code: iterate file directly for lines
+def parse_manifest(path):
+    with open(path) as f:
+        return list(f)
+
+
+# Clean code: use a set or tuple for membership checks
+VALID_STATUSES = {"active", "pending", "review", "approved"}
+
+def check_status(status):
+    if status in VALID_STATUSES:
+        return True
+    return False
+
+
+# Clean code: use tuple argument to startswith/endswith
+def is_image_file(name):
+    return name.endswith((".png", ".jpg", ".gif"))
+
+
+# Clean code: use enumerate directly
+def index_items(items):
+    for i, item in enumerate(items):
+        print(i, item)
+
+
+# Clean code: no flush per row, let OS handle buffering
+def export_rows(data, output_path):
+    with open(output_path, "w") as f:
+        writer = csv.writer(f)
+        for row in data:
+            writer.writerow(row)
+
+
+# Clean code: use buffered writes (e.g. writelines or io.BufferedWriter)
+def write_report(records, output_path):
+    with open(output_path, "w") as f:
+        f.writelines(record.to_line() + "\n" for record in records)
+
+
+# Clean code: open file once
+def load_and_validate(config_path):
+    with open(config_path) as f:
+        raw = f.read()
+    parsed = json.loads(raw)
+    return raw, parsed
+
+
+# Clean code: access dict methods outside the loop
+def transform_entries(mapping):
+    key_set = set(mapping.keys())
+    for key in range(10):
+        if key in key_set:
+            print(key)
+
+
+def process(line):
+    pass

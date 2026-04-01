@@ -1,39 +1,74 @@
 ## narrowing_as_casts
 
 ## split_at_and_indexing
-src/analysis/python/parser/general.rs:1103:                return &line[..index];
-src/analysis/rust/parser.rs:1052:    text[vec_start + 4..].contains("Box<")
-src/heuristics/go_advanceplan2.rs:947:    let parameters = &signature_text[parameters_start + 1..parameters_end];
-src/heuristics/go_advanceplan2.rs:987:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/performance.rs:330:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/python/advanceplan2.rs:1153:    split_top_level_commas(&signature_text[start + 1..end])
-src/heuristics/rust/advanceplan2.rs:545:    for (offset, character) in signature_text[start..].char_indices() {
-src/heuristics/rust/advanceplan2.rs:561:    split_top_level_commas(&signature_text[start + 1..end])
-src/heuristics/rust/performance.rs:342:    text[vec_start + 4..].contains("Box<")
-src/heuristics/rust/performance.rs:349:    line[start + marker.len()..].starts_with('/')
-src/heuristics/rust/performance.rs:387:                let receiver = &line[start..index];
+src/analysis/python/parser/general.rs:932:                return &line[..index];
+src/analysis/python/parser/hotpath.rs:100:                    let inner = &after_in[1..after_in.len() - 1];
+src/analysis/python/parser/hotpath.rs:110:            let after_not_in = &trimmed[in_idx + 8..]; // skip " not in "
+src/analysis/python/parser/hotpath.rs:112:                let inner = &after_not_in[1..after_not_in.len() - 1];
+src/analysis/python/parser/hotpath.rs:188:            let iterable = &trimmed[in_idx + 4..];
+src/analysis/python/parser/hotpath.rs:284:                let after_open = &trimmed[callee.len() + 1..];
+src/analysis/python/parser/hotpath.rs:286:                    let first_arg = after_open[..end].trim();
+src/analysis/python/parser/hotpath.rs:332:            let iterable_part = &trimmed[in_idx + 4..];
+src/analysis/python/parser/hotpath.rs:35:/// Detect `len([x for x in ... if ...])` patterns — list built only for length.
+src/analysis/python/parser/hotpath.rs:458:                let first_arg = after_open[..end].trim();
+src/analysis/python/parser/hotpath.rs:58:            let inner = &trimmed[4..trimmed.len() - 1];
+src/analysis/python/parser/hotpath.rs:71:/// Detect `x in [literal, literal, ...]` membership on list literals.
+src/analysis/python/parser/hotpath.rs:92:            let before_in = &trimmed[..in_idx];
+src/analysis/python/parser/hotpath.rs:97:                let after_in = &trimmed[in_idx + 4..]; // skip " in "
+src/analysis/python/parser/hotpath_ext.rs:186:                let after_join = &trimmed[join_idx + 6..];
+src/analysis/python/parser/hotpath_ext.rs:240:            let receiver = &trimmed[..get_idx];
+src/analysis/python/parser/hotpath_ext.rs:241:            let after = &trimmed[get_idx + 5..];
+src/analysis/python/parser/hotpath_ext.rs:243:                let key = after[..end].trim();
+src/analysis/rust/parser/mod.rs:433:    text[vec_start + 4..].contains("Box<")
+src/heuristics/go/advanceplan3/data_access.rs:1414:                let after_like = &upper[like_pos + 4..];
+src/heuristics/go/advanceplan3/gin.rs:239:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
+src/heuristics/go/advanceplan3/gin.rs:694:        text = text[1..text.len() - 1].trim();
+src/heuristics/go/advanceplan3/gin.rs:764:        for (end_index, current) in suffix[index + character.len_utf8()..].char_indices() {
+src/heuristics/go/advanceplan3/gin.rs:773:                return Some(suffix[start..end].to_string());
+src/heuristics/go/advanceplan3/gin.rs:799:                    return Some(suffix[..index].trim().to_string());
+src/heuristics/go/advanceplan3/gin.rs:803:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
+src/heuristics/go/advanceplan3/hot_path.rs:1488:                    return Some(suffix[..index].trim().to_string());
+src/heuristics/go/advanceplan3/hot_path.rs:1492:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
+src/heuristics/go/advanceplan3/mod.rs:287:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/go/idioms.rs:1037:    let parameters = &signature_text[parameters_start + 1..parameters_end];
+src/heuristics/go/idioms.rs:1083:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/go/performance.rs:338:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/python/framework.rs:285:            let rhs = &trimmed[eq_idx + 3..];
+src/heuristics/python/framework.rs:287:                let var = trimmed[..eq_idx].trim().to_string();
+src/heuristics/python/hotpath_ext.rs:416:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
+src/heuristics/python/hotpath_ext.rs:418:            && let Some(source_start) = trimmed[in_idx + 5..].find(" in ")
+src/heuristics/python/hotpath_ext.rs:420:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
+src/heuristics/python/hotpath_ext.rs:686:            let expr = &trimmed[1..for_idx];
+src/heuristics/python/hotpath_ext.rs:724:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
+src/heuristics/python/quality/mod.rs:201:    split_top_level_commas(&signature_text[start + 1..end])
+src/heuristics/rust/api_design.rs:568:    for (offset, character) in signature_text[start..].char_indices() {
+src/heuristics/rust/api_design.rs:584:    split_top_level_commas(&signature_text[start + 1..end])
+src/heuristics/rust/performance.rs:339:    text[vec_start + 4..].contains("Box<")
+src/heuristics/rust/performance.rs:346:    line[start + marker.len()..].starts_with('/')
+src/heuristics/rust/performance.rs:384:                let receiver = &line[start..index];
 
 ## toctou_fs_checks
+src/heuristics/python/framework.rs:77:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
 
 ## toctou_check_then_open
 
 ## secret_comparisons
-src/analysis/rust/parser.rs:1892:                .any(|name| name == "password")
-src/heuristics/rust/mod.rs:153:        .any(|token| normalized == *token || normalized.contains(token))
+src/analysis/rust/parser/tests.rs:133:            .any(|name| name == "password")
+src/heuristics/rust/mod.rs:154:        .any(|token| normalized == *token || normalized.contains(token))
 tests/integration_scan/security.rs:47:            .any(|finding| finding.rule_id == "hardcoded_secret")
 tests/integration_scan/security.rs:72:            .any(|finding| finding.rule_id == "hardcoded_secret")
 
 ## shared_mutability
-src/heuristics/rust/advanceplan2.rs:222:                        "struct {} uses Rc<RefCell<_>> in a domain-style type",
-src/heuristics/rust/advanceplan2.rs:694:    ["Mutex<", "RwLock<", "RefCell<", "Cell<", "OnceCell<", "LazyCell<"]
-src/heuristics/rust/advanceplan2.rs:720:    type_text.contains("Rc<RefCell<") || type_text.contains("Rc<std::cell::RefCell<")
+src/heuristics/rust/api_design.rs:234:                        "struct {} uses Rc<RefCell<_>> in a domain-style type",
+src/heuristics/rust/api_design.rs:727:        "RefCell<",
+src/heuristics/rust/api_design.rs:757:    type_text.contains("Rc<RefCell<") || type_text.contains("Rc<std::cell::RefCell<")
 
 ## unsafe_globals
 
 ## derive_default
-src/analysis/mod.rs:25:#[derive(Debug, Clone, Copy, Default)]
+src/analysis/config.rs:1:#[derive(Debug, Clone, Copy, Default)]
 
 ## thread_spawn_async
 

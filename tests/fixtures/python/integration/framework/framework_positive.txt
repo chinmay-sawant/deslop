@@ -1,0 +1,285 @@
+from django.db import models
+from django.http import JsonResponse
+from django.shortcuts import render
+from flask import Flask, request, jsonify
+from fastapi import FastAPI, Depends, BackgroundTasks
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+import requests
+import re
+import json
+
+
+# --- Django ORM rules ---
+
+class Product(models.Model):
+    name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+@app.route("/products")
+def product_list_view(request):
+    """Triggers django_queryset_evaluated_multiple_times, django_queryset_len_instead_of_count."""
+    qs = Product.objects.filter(active=True)
+    count = len(qs)
+    items = list(qs)
+    return JsonResponse({"count": count, "items": [i.name for i in items]})
+
+
+@app.route("/count")
+def product_count_view(request):
+    """Triggers django_queryset_count_then_exists."""
+    qs = Product.objects.filter(active=True)
+    if qs.count() > 0:
+        return JsonResponse({"exists": True})
+    return JsonResponse({"exists": False})
+
+
+@app.route("/random")
+def random_product_view(request):
+    """Triggers django_queryset_order_by_random."""
+    product = Product.objects.order_by("?").first()
+    return JsonResponse({"name": product.name})
+
+
+@app.route("/all")
+def all_products_view(request):
+    """Triggers django_all_without_limit_in_view."""
+    products = Product.objects.all()
+    return JsonResponse({"products": [p.name for p in products]})
+
+
+@app.route("/related")
+def related_view(request):
+    """Triggers django_n_plus_one_no_select_related."""
+    orders = Order.objects.all()
+    for order in orders:
+        print(order.customer.name)
+
+
+@app.route("/bulk-create")
+def bulk_create_view(request):
+    """Triggers django_create_single_in_loop, django_save_full_model_in_loop."""
+    for name in request.POST.getlist("names"):
+        Product.objects.create(name=name, price=10)
+        p = Product(name=name)
+        p.save()
+
+
+@app.route("/delete-old")
+def delete_old_view(request):
+    """Triggers django_delete_single_in_loop, django_raw_sql_in_loop."""
+    old = Product.objects.filter(active=False)
+    for p in old:
+        p.delete()
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM audit WHERE id=%s", [p.id])
+
+
+@app.route("/partial")
+def partial_update_view(request):
+    """Triggers django_values_vs_full_model_in_loop + django_update_single_in_loop."""
+    for item in Product.objects.filter(active=True).objects.all():
+        item.price = 0
+    for p in Product.objects.filter(price=0):
+        Product.objects.filter(id=p.id).objects.filter(id=p.id).update(price=99)
+
+
+@app.route("/migrate")
+def migration_in_view(request):
+    """Triggers django_migration_code_in_view."""
+    from django.db import schema_editor
+    return JsonResponse({"ok": True})
+
+
+# --- Flask rules ---
+
+app = Flask(__name__)
+
+
+@app.route("/parse", methods=["POST"])
+def flask_parse_view():
+    """Triggers flask_request_body_parsed_multiple_times."""
+    data1 = request.get_json()
+    data2 = request.get_json()
+    return jsonify(data1, data2)
+
+
+@app.route("/db")
+def flask_db_view():
+    """Triggers flask_global_db_connection_per_request."""
+    import sqlite3
+    conn = sqlite3.connect("db.sqlite3")
+    cursor = conn.cursor()
+    return jsonify({"ok": True})
+
+
+@app.route("/config")
+def flask_config_view():
+    """Triggers flask_app_config_read_per_request."""
+    db_host = app.config["DB_HOST"]
+    db_port = app.config["DB_PORT"]
+    return jsonify({"host": db_host, "port": db_port})
+
+
+@app.route("/file")
+def flask_file_view():
+    """Triggers flask_file_read_per_request."""
+    with open("data.json") as f:
+        data = json.load(f)
+    return jsonify(data)
+
+
+@app.route("/template")
+def flask_template_view():
+    """Triggers flask_template_rendered_from_string_in_view."""
+    return render_template_string("<h1>{{ name }}</h1>", name="test")
+
+
+@app.route("/debug")
+def flask_debug_view():
+    """Triggers flask_debug_mode_in_production_code."""
+    app.run(debug=True)
+    return "ok"
+
+
+@app.route("/encoder")
+def flask_encoder_view():
+    """Triggers flask_json_encoder_per_request."""
+    encoder = json.JSONEncoder()
+    return encoder.encode({"key": "value"})
+
+
+@app.route("/large")
+def flask_large_view():
+    """Triggers flask_no_streaming_for_large_response."""
+    data = open("huge_file.csv").read()
+    return data
+
+
+# --- FastAPI rules ---
+
+fastapi_app = FastAPI()
+
+
+@app.get("/sync")
+def fastapi_sync_view():
+    """Triggers fastapi_sync_def_with_blocking_io."""
+    import time
+    time.sleep(1)
+    data = open("data.txt").read()
+    return {"data": data}
+
+
+@app.get("/dep")
+def fastapi_dep_view():
+    """Triggers fastapi_dependency_creates_client_per_request."""
+    client = requests.Session()
+    return {"ok": True}
+
+
+@app.post("/bg")
+def fastapi_bg_view(bg: BackgroundTasks):
+    """Triggers fastapi_background_task_exception_silent."""
+    bg.add_task(lambda: do_work())
+    return {"queued": True}
+
+
+# --- SQLAlchemy rules ---
+
+def sqlalchemy_session_bad():
+    """Triggers sqlalchemy_session_not_closed, sqlalchemy_create_engine_per_request."""
+    engine = create_engine("sqlite:///db.sqlite3")
+    session = Session(engine)
+    session.query(Product).all()
+
+
+def sqlalchemy_loop_bad():
+    """Triggers sqlalchemy_query_in_loop, sqlalchemy_commit_per_row_in_loop."""
+    session = Session()
+    for name in ["a", "b", "c"]:
+        session.query(Product).filter_by(name=name).first()
+        session.add(Product(name=name))
+        session.commit()
+
+
+def sqlalchemy_n_plus_one():
+    """Triggers sqlalchemy_n_plus_one_lazy_load."""
+    session = Session()
+    orders = session.query(Order).all()
+    for order in orders:
+        print(order.items)
+
+
+def sqlalchemy_async_bad():
+    """Triggers sqlalchemy_expire_on_commit_default_in_async."""
+    from sqlalchemy.ext.asyncio import AsyncSession
+    async_session = AsyncSession()
+
+
+# --- Middleware rules ---
+
+class BadMiddleware:
+    def process_request(self, request):
+        """Triggers middleware_creates_http_client_per_request, middleware_compiles_regex_per_request, middleware_loads_config_file_per_request."""
+        client = requests.Session()
+        pattern = re.compile(r"^/api/.*$")
+        with open("middleware_config.yaml") as f:
+            config = json.load(f)
+
+
+# --- Handler fanout rules ---
+
+@app.route("/fanout")
+def fanout_handler(request):
+    """Triggers upstream_http_call_per_item_in_handler, upstream_call_without_timeout_in_handler, upstream_response_not_checked_before_decode."""
+    items = request.get_json()
+    for item in items:
+        resp = requests.get("https://api.example.com/" + str(item["id"]))
+        data = resp.json()
+
+
+# --- Template/Response rules ---
+
+@app.route("/templates")
+def template_loop_handler(request):
+    """Triggers template_render_in_loop."""
+    for item in items:
+        html = render_template_string("<li>{{ name }}</li>", name=item)
+
+
+@app.route("/double")
+def response_double_handler(request):
+    """Triggers response_json_dumps_then_response_object."""
+    data = json.dumps({"key": "value"})
+    return Response(data, mimetype="application/json")
+
+
+# --- Wave 5 Plan 2 additions ---
+
+@app.route("/large-dict")
+def large_response_handler(request):
+    """Triggers large_dict_literal_response_in_handler."""
+    return jsonify({
+        "field1": "value1",
+        "field2": "value2",
+        "field3": "value3",
+        "field4": "value4",
+        "field5": "value5",
+        "field6": "value6",
+        "field7": "value7",
+        "field8": "value8",
+        "field9": "value9",
+    })
+
+
+class OrmModel:
+    pass
+
+
+def fastapi_orm_handler():
+    """Triggers fastapi_response_model_without_orm_mode."""
+    response_model = OrmModel
+    obj = OrmModel.from_orm(db_obj)
+    return obj

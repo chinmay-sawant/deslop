@@ -1,22 +1,26 @@
+mod evaluate;
+mod file_analysis;
+mod suppression;
 mod walker;
 
-use std::collections::BTreeMap;
 use std::env;
-use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use rayon::prelude::*;
-
-use crate::analysis::{
-    AnalysisConfig, ParsedFile, backend_for_language, backend_for_path, supported_extensions,
-};
-use crate::heuristics::evaluate_shared;
+use crate::analysis::{AnalysisConfig, ParsedFile, supported_extensions};
 use crate::index::build_repository_index;
-use crate::io::canonicalize_within_root;
-use crate::model::{Finding, ParseFailure, ScanOptions, ScanReport, TimingBreakdown};
+use crate::model::{ScanOptions, ScanReport, TimingBreakdown};
 use crate::scan::walker::discover_source_files;
-use crate::{
-    DEFAULT_MAX_BYTES, RepoConfig, Result, load_repository_config, read_to_string_limited,
+use crate::{Result, load_repository_config};
+
+#[cfg(test)]
+use self::evaluate::apply_repository_config;
+use self::evaluate::evaluate_findings;
+use self::file_analysis::analyze_discovered_files;
+#[cfg(test)]
+use self::file_analysis::is_generated;
+#[cfg(test)]
+use self::suppression::{
+    SuppressionDirective, next_code_line, parse_rule_ids, parse_suppression_directives,
 };
 
 const GO_SEMANTIC_ENV_VAR: &str = "DESLOP_ENABLE_GO_SEMANTIC";
@@ -39,28 +43,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let discover_ms = discover_start.elapsed().as_millis();
 
     let parse_start = Instant::now();
-    let mut parsed_files = Vec::new();
-    let mut parse_failures = Vec::new();
-    let mut suppressions = BTreeMap::new();
-    let mut outcomes = discovered_files
-        .par_iter()
-        .map(|path| analyze_file(path))
-        .collect::<Vec<_>>();
-    outcomes.sort_by(|left, right| left.path().cmp(right.path()));
-
-    for outcome in outcomes {
-        match outcome {
-            FileOutcome::Parsed {
-                file,
-                suppressions: file_suppressions,
-            } => {
-                suppressions.insert(file.path.clone(), file_suppressions);
-                parsed_files.push(*file);
-            }
-            FileOutcome::Generated(_) => {}
-            FileOutcome::Failed(failure) => parse_failures.push(failure),
-        }
-    }
+    let (parsed_files, parse_failures, suppressions) = analyze_discovered_files(&discovered_files);
     let parse_ms = parse_start.elapsed().as_millis();
 
     let index_start = Instant::now();
@@ -107,42 +90,6 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     })
 }
 
-fn evaluate_findings(
-    files: &[ParsedFile],
-    index: &crate::index::RepositoryIndex,
-    suppressions: &BTreeMap<PathBuf, Vec<SuppressionDirective>>,
-    repo_config: &RepoConfig,
-    root: &Path,
-    analysis_config: &AnalysisConfig,
-) -> Vec<Finding> {
-    let mut findings = evaluate_shared(files, index);
-
-    for file in files {
-        if let Some(backend) = backend_for_language(file.language) {
-            findings.extend(backend.evaluate_file(file, index, analysis_config));
-        }
-    }
-
-    for backend in crate::analysis::registered_backends() {
-        let backend_files = files
-            .iter()
-            .filter(|file| file.language == backend.language())
-            .collect::<Vec<_>>();
-        findings.extend(backend.evaluate_repo(&backend_files, index, analysis_config));
-    }
-
-    findings.retain(|finding| !is_suppressed(finding, suppressions));
-    apply_repository_config(&mut findings, repo_config, root);
-
-    findings.sort_by(|left, right| {
-        left.path
-            .cmp(&right.path)
-            .then(left.start_line.cmp(&right.start_line))
-            .then(left.rule_id.cmp(&right.rule_id))
-    });
-    findings
-}
-
 fn env_flag_enabled(name: &str) -> bool {
     env::var(name).ok().is_some_and(|value| {
         matches!(
@@ -150,181 +97,6 @@ fn env_flag_enabled(name: &str) -> bool {
             "1" | "true" | "yes" | "on"
         )
     })
-}
-
-enum FileOutcome {
-    Parsed {
-        file: Box<ParsedFile>,
-        suppressions: Vec<SuppressionDirective>,
-    },
-    Generated(std::path::PathBuf),
-    Failed(ParseFailure),
-}
-
-impl FileOutcome {
-    fn path(&self) -> &std::path::Path {
-        match self {
-            Self::Parsed { file, .. } => &file.path,
-            Self::Generated(path) => path,
-            Self::Failed(failure) => &failure.path,
-        }
-    }
-}
-
-fn analyze_file(path: &Path) -> FileOutcome {
-    let path = match canonicalize_within_root(path.parent().unwrap_or(path), path) {
-        Ok(path) => path,
-        Err(error) => {
-            return FileOutcome::Failed(ParseFailure {
-                path: path.to_path_buf(),
-                message: error.to_string(),
-            });
-        }
-    };
-
-    match read_to_string_limited(&path, DEFAULT_MAX_BYTES) {
-        Ok(source) => {
-            if is_generated(&source) {
-                return FileOutcome::Generated(path.clone());
-            }
-
-            let suppressions = parse_suppression_directives(&source);
-
-            let Some(analyzer) = backend_for_path(&path) else {
-                return FileOutcome::Failed(ParseFailure {
-                    path: path.clone(),
-                    message: format!("no analyzer registered for {}", path.display()),
-                });
-            };
-
-            match analyzer.parse_file(&path, &source) {
-                Ok(file) => FileOutcome::Parsed {
-                    file: Box::new(file),
-                    suppressions,
-                },
-                Err(error) => FileOutcome::Failed(ParseFailure {
-                    path: path.clone(),
-                    message: error.to_string(),
-                }),
-            }
-        }
-        Err(error) => FileOutcome::Failed(ParseFailure {
-            path,
-            message: error.to_string(),
-        }),
-    }
-}
-
-fn is_generated(source: &str) -> bool {
-    source.lines().take(5).any(|line| {
-        let normalized = line.trim();
-        normalized.contains("Code generated") && normalized.contains("DO NOT EDIT")
-    })
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct SuppressionDirective {
-    rule_id: String,
-    line: usize,
-    next_code_line: Option<usize>,
-}
-
-fn is_suppressed(
-    finding: &Finding,
-    suppressions: &BTreeMap<PathBuf, Vec<SuppressionDirective>>,
-) -> bool {
-    suppressions.get(&finding.path).is_some_and(|directives| {
-        directives.iter().any(|directive| {
-            directive.rule_id == finding.rule_id
-                && (directive.line == finding.start_line
-                    || directive.next_code_line == Some(finding.start_line))
-        })
-    })
-}
-
-fn apply_repository_config(findings: &mut Vec<Finding>, repo_config: &RepoConfig, root: &Path) {
-    findings.retain(|finding| {
-        !repo_config
-            .disabled_rules
-            .iter()
-            .any(|rule_id| rule_id == &finding.rule_id)
-            && (repo_config.rust_async_experimental || !is_async_rollout_rule(&finding.rule_id))
-            && !path_is_suppressed(&finding.path, root, &repo_config.suppressed_paths)
-    });
-
-    for finding in findings.iter_mut() {
-        if let Some(severity) = repo_config.severity_overrides.get(&finding.rule_id) {
-            finding.severity = severity.clone();
-        }
-    }
-}
-
-fn path_is_suppressed(path: &Path, root: &Path, suppressed_paths: &[PathBuf]) -> bool {
-    suppressed_paths.iter().any(|prefix| {
-        if prefix.is_absolute() {
-            path.starts_with(prefix)
-        } else {
-            path.strip_prefix(root)
-                .is_ok_and(|relative_path| relative_path.starts_with(prefix))
-        }
-    })
-}
-
-fn is_async_rollout_rule(rule_id: &str) -> bool {
-    matches!(
-        rule_id,
-        "rust_blocking_io_in_async" | "rust_lock_across_await" | "rust_tokio_mutex_unnecessary"
-    ) || rule_id.starts_with("rust_async_")
-}
-
-fn parse_suppression_directives(source: &str) -> Vec<SuppressionDirective> {
-    let lines = source.lines().collect::<Vec<_>>();
-    let mut directives = Vec::new();
-
-    for (index, line) in lines.iter().enumerate() {
-        let Some((_, tail)) = line.split_once("deslop-ignore:") else {
-            continue;
-        };
-
-        let next_code_line = next_code_line(&lines, index + 1);
-        for rule_id in parse_rule_ids(tail) {
-            directives.push(SuppressionDirective {
-                rule_id,
-                line: index + 1,
-                next_code_line,
-            });
-        }
-    }
-
-    directives
-}
-
-fn parse_rule_ids(tail: &str) -> Vec<String> {
-    tail.split([',', ' ', '\t'])
-        .filter_map(|token| {
-            let trimmed = token
-                .trim_matches(|character: char| !matches!(character, 'a'..='z' | 'A'..='Z' | '0'..='9' | '_' | '-'));
-            (!trimmed.is_empty()).then(|| trimmed.to_string())
-        })
-        .collect()
-}
-
-fn next_code_line(lines: &[&str], start_index: usize) -> Option<usize> {
-    lines
-        .iter()
-        .enumerate()
-        .skip(start_index)
-        .find_map(|(index, line)| is_code_line(line).then_some(index + 1))
-}
-
-fn is_code_line(line: &str) -> bool {
-    let trimmed = line.trim();
-    !trimmed.is_empty()
-        && !trimmed.starts_with("//")
-        && !trimmed.starts_with('#')
-        && !trimmed.starts_with("/*")
-        && !trimmed.starts_with('*')
-        && !trimmed.starts_with("*/")
 }
 
 #[cfg(test)]

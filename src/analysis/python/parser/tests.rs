@@ -29,8 +29,8 @@ fn test_python_parser_extracts_functions_imports_and_strings() {
     assert_eq!(fetch.fingerprint.name, "fetch_profile");
     assert_eq!(fetch.fingerprint.kind, "async_function");
     assert_eq!(fetch.local_strings.len(), 2);
-    assert_eq!(fetch.concat_loops, vec![15]);
-    assert!(fetch.exception_handlers.is_empty());
+    assert_eq!(fetch.python_evidence().concat_loops, vec![15]);
+    assert!(fetch.python_evidence().exception_handlers.is_empty());
     assert!(fetch.doc_comment.is_some());
     assert!(
         fetch
@@ -87,17 +87,19 @@ fn test_python_exception_handler_evidence() {
     .expect("python parsing should succeed");
 
     let load_config = &positive.functions[0];
-    assert_eq!(load_config.exception_handlers.len(), 1);
-    assert!(load_config.exception_handlers[0].is_broad);
-    assert!(load_config.exception_handlers[0].suppresses);
+    assert_eq!(load_config.python_evidence().exception_handlers.len(), 1);
+    assert!(load_config.python_evidence().exception_handlers[0].is_broad);
+    assert!(load_config.python_evidence().exception_handlers[0].suppresses);
     assert_eq!(
-        load_config.exception_handlers[0].action.as_deref(),
+        load_config.python_evidence().exception_handlers[0]
+            .action
+            .as_deref(),
         Some("pass")
     );
 
     let recover_config = &negative.functions[0];
-    assert_eq!(recover_config.exception_handlers.len(), 1);
-    assert!(!recover_config.exception_handlers[0].is_broad);
+    assert_eq!(recover_config.python_evidence().exception_handlers.len(), 1);
+    assert!(!recover_config.python_evidence().exception_handlers[0].is_broad);
 }
 
 #[test]
@@ -115,12 +117,12 @@ fn test_python_async_io_fixture_contract() {
 
     let sync_reports = &positive.functions[0];
     assert!(sync_reports.fingerprint.kind.starts_with("async_"));
-    assert!(sync_reports.is_async);
+    assert!(sync_reports.python_evidence().is_async);
     assert!(sync_reports.calls.iter().any(|call| call.name == "get"));
 
     let async_reports = &negative.functions[0];
     assert!(async_reports.fingerprint.kind.starts_with("async_"));
-    assert!(async_reports.is_async);
+    assert!(async_reports.python_evidence().is_async);
     assert!(async_reports.calls.iter().any(|call| call.name == "get"));
 }
 
@@ -137,8 +139,16 @@ fn test_python_type_hint_fixture_contract() {
     )
     .expect("python parsing should succeed");
 
-    assert!(positive.functions[0].has_complete_type_hints);
-    assert!(!negative.functions[0].has_complete_type_hints);
+    assert!(
+        positive.functions[0]
+            .python_evidence()
+            .has_complete_type_hints
+    );
+    assert!(
+        !negative.functions[0]
+            .python_evidence()
+            .has_complete_type_hints
+    );
 }
 
 #[test]
@@ -149,26 +159,63 @@ fn test_python_phase4_parser_evidence() {
         parse_file(Path::new("pkg/service.py"), source).expect("python parsing should succeed");
 
     let process_items = &parsed.functions[0];
-    assert_eq!(process_items.none_comparison_lines, vec![3]);
-    assert_eq!(process_items.redundant_return_none_lines, vec![4]);
-    assert_eq!(process_items.side_effect_comprehension_lines, vec![6]);
-    assert_eq!(process_items.list_materialization_lines, vec![7]);
-    assert_eq!(process_items.deque_operation_lines, vec![9]);
-    assert_eq!(process_items.temp_collection_lines, vec![13]);
-    assert_eq!(process_items.list_membership_loop_lines, vec![15]);
-    assert_eq!(process_items.repeated_len_loop_lines, vec![12]);
-    assert_eq!(process_items.builtin_candidate_lines, vec![12]);
-    assert!(process_items.has_varargs);
-    assert!(process_items.has_kwargs);
-    assert!(!process_items.has_complete_type_hints);
-    assert!(process_items.validation_signature.is_some());
-    assert!(!process_items.normalized_body.is_empty());
+    assert_eq!(
+        process_items.python_evidence().none_comparison_lines,
+        vec![3]
+    );
+    assert_eq!(
+        process_items.python_evidence().redundant_return_none_lines,
+        vec![4]
+    );
+    assert_eq!(
+        process_items
+            .python_evidence()
+            .side_effect_comprehension_lines,
+        vec![6]
+    );
+    assert_eq!(
+        process_items.python_evidence().list_materialization_lines,
+        vec![7]
+    );
+    assert_eq!(
+        process_items.python_evidence().deque_operation_lines,
+        vec![9]
+    );
+    assert_eq!(
+        process_items.python_evidence().temp_collection_lines,
+        vec![13]
+    );
+    assert_eq!(
+        process_items.python_evidence().list_membership_loop_lines,
+        vec![15]
+    );
+    assert_eq!(
+        process_items.python_evidence().repeated_len_loop_lines,
+        vec![12]
+    );
+    assert_eq!(
+        process_items.python_evidence().builtin_candidate_lines,
+        vec![12]
+    );
+    assert!(process_items.python_evidence().has_varargs);
+    assert!(process_items.python_evidence().has_kwargs);
+    assert!(!process_items.python_evidence().has_complete_type_hints);
+    assert!(
+        process_items
+            .python_evidence()
+            .validation_signature
+            .is_some()
+    );
+    assert!(!process_items.python_evidence().normalized_body.is_empty());
 
     let scan_tree = &parsed.functions[1];
-    assert_eq!(scan_tree.recursive_call_lines, vec![23]);
+    assert_eq!(scan_tree.python_evidence().recursive_call_lines, vec![23]);
 
     let read_config = &parsed.functions[2];
-    assert_eq!(read_config.missing_context_manager_lines, vec![26]);
+    assert_eq!(
+        read_config.python_evidence().missing_context_manager_lines,
+        vec![26]
+    );
 
     assert_eq!(parsed.class_summaries.len(), 2);
     let payload_manager = &parsed.class_summaries[1];
@@ -418,7 +465,14 @@ fn test_python_advanceplan2_parser_evidence() {
         .iter()
         .find(|function| function.fingerprint.name == "orchestrate")
         .expect("expected async function summary");
-    assert!(orchestrate.is_async);
-    assert_eq!(orchestrate.await_points, vec![orchestrate.body_start_line + 2]);
-    assert!(orchestrate.signature_text.contains("async def orchestrate(lock):"));
+    assert!(orchestrate.python_evidence().is_async);
+    assert_eq!(
+        orchestrate.python_evidence().await_points,
+        vec![orchestrate.body_start_line + 2]
+    );
+    assert!(
+        orchestrate
+            .signature_text
+            .contains("async def orchestrate(lock):")
+    );
 }

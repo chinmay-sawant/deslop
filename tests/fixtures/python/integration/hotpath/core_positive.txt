@@ -1,0 +1,134 @@
+import re
+import json
+import csv
+
+
+# === regex_compile_in_hot_path ===
+
+def process_lines(lines):
+    for line in lines:
+        pattern = re.compile(r"\d+")
+        if pattern.match(line):
+            print(line)
+
+
+# === json_loads_same_payload_multiple_times ===
+
+def parse_config(raw_data):
+    settings = json.loads(raw_data)
+    defaults = json.loads(raw_data)
+    return {**defaults, **settings}
+
+
+# === repeated_json_dumps_same_object ===
+
+def publish_event(event):
+    serialized = json.dumps(event)
+    log_payload = json.dumps(event)
+    return serialized, log_payload
+
+
+# === sorted_only_for_first_element ===
+
+def get_smallest(values):
+    return sorted(values)[0]
+
+
+def get_largest(values):
+    return sorted(values)[-1]
+
+
+# === list_comprehension_only_for_length ===
+
+def count_active(users):
+    return len([u for u in users if u.is_active])
+
+
+# === readlines_then_iterate ===
+
+def load_log_file(path):
+    with open(path) as f:
+        lines = f.readlines()
+    for line in lines:
+        process(line)
+
+
+def iterate_readlines(path):
+    with open(path) as f:
+        for line in f.readlines():
+            process(line)
+
+
+# === read_then_splitlines ===
+
+def parse_manifest(path):
+    with open(path) as f:
+        lines = f.read().splitlines()
+    return lines
+
+
+# === in_check_on_list_literal ===
+
+def check_status(status):
+    if status in ["active", "pending", "review", "approved"]:
+        return True
+    return False
+
+
+# === string_startswith_endswith_chain ===
+
+def is_image_file(name):
+    return name.endswith(".png") or name.endswith(".jpg") or name.endswith(".gif")
+
+
+# === enumerate_on_range_len ===
+
+def index_items(items):
+    for i in range(len(items)):
+        print(i, items[i])
+
+
+def index_items_enumerate(items):
+    for i, x in enumerate(range(len(items))):
+        print(i, x)
+
+
+# === csv_writer_flush_per_row ===
+
+def export_rows(data, output_path):
+    with open(output_path, "w") as f:
+        writer = csv.writer(f)
+        for row in data:
+            writer.writerow(row)
+            f.flush()
+
+
+# === write_without_buffering_in_loop ===
+
+def write_report(records, output_path):
+    with open(output_path, "w") as f:
+        for record in records:
+            f.write(record.to_line())
+
+
+# === repeated_open_same_file_in_function ===
+
+def load_and_validate(config_path):
+    with open(config_path) as f:
+        raw = f.read()
+    with open(config_path) as f:
+        parsed = json.load(f)
+    return raw, parsed
+
+
+# === dict_items_or_keys_materialized_in_loop ===
+
+def transform_entries(mapping):
+    for key in range(10):
+        all_keys = list(mapping.keys())
+        if key in all_keys:
+            print(key)
+
+
+def process(line):
+    pass

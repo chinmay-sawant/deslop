@@ -1,0 +1,100 @@
+import pandas as pd
+import numpy as np
+import torch
+import openai
+
+
+def process_vectorized(df):
+    """Clean: uses vectorized operations."""
+    df["doubled"] = df["value"] * 2
+    return df
+
+
+def concat_once(dfs):
+    """Clean: concat once, not in loop."""
+    return pd.concat(dfs)
+
+
+def read_with_dtypes(path):
+    """Clean: specifies dtypes."""
+    df = pd.read_csv(path, dtype={"id": int, "name": str})
+    return df
+
+
+def safe_assign(df):
+    """Clean: uses .loc for assignment."""
+    df.loc[:, "col1"] = 42
+
+
+def merge_validate(df1, df2):
+    """Clean: merge with validate."""
+    return pd.merge(df1, df2, on="id", validate="one_to_one")
+
+
+def numpy_vectorized(arr):
+    """Clean: uses vectorized numpy."""
+    return np.sqrt(arr)
+
+
+def numpy_preallocate(items):
+    """Clean: preallocates array."""
+    arr = np.zeros(len(items))
+    for i, item in enumerate(items):
+        arr[i] = item
+    return arr
+
+
+def predict_cached(data):
+    """Clean: model loaded at module level."""
+    return _inference_runner(data)
+
+
+def inference_correct(model, data):
+    """Clean: uses eval mode and no_grad."""
+    model.eval()
+    with torch.no_grad():
+        return model(data)
+
+
+def train_correct(model, optimizer, data):
+    """Clean: has zero_grad."""
+    for batch in data:
+        optimizer.zero_grad()
+        loss = model(batch)
+        loss.backward()
+        optimizer.step()
+
+
+def llm_batch(prompts):
+    """Clean: not in a loop."""
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": p} for p in prompts]
+    )
+    return response
+
+
+def pipeline_with_try(df):
+    """Clean: has error handling."""
+    try:
+        step1 = df.dropna()
+        step2 = step1.reset_index()
+        return step2
+    except Exception as e:
+        raise ValueError(f"Pipeline failed: {e}")
+
+
+def run_with_cache_clear(models, data):
+    """Clean: clears GPU memory."""
+    for model in models:
+        model.eval()
+        model.cuda()
+        with torch.no_grad():
+            model(data)
+        torch.cuda.empty_cache()
+
+
+def load_chunked(path):
+    """Clean: uses chunksize."""
+    for chunk in pd.read_csv(path, chunksize=1000, dtype={"id": int}):
+        process(chunk)

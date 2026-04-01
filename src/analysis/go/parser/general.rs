@@ -155,11 +155,7 @@ pub(super) fn collect_interface_summaries(root: Node<'_>, source: &str) -> Vec<I
     summaries
 }
 
-fn visit_interface_summaries(
-    node: Node<'_>,
-    source: &str,
-    summaries: &mut Vec<InterfaceSummary>,
-) {
+fn visit_interface_summaries(node: Node<'_>, source: &str, summaries: &mut Vec<InterfaceSummary>) {
     if node.kind() == "type_spec"
         && let Some(summary) = extract_interface_summary(node, source)
     {
@@ -185,7 +181,11 @@ fn extract_interface_summary(node: Node<'_>, source: &str) -> Option<InterfaceSu
         .lines()
         .filter_map(|line| {
             let trimmed = line.trim();
-            if trimmed.is_empty() || trimmed == "interface{" || trimmed == "interface {" || trimmed == "}" {
+            if trimmed.is_empty()
+                || trimmed == "interface{"
+                || trimmed == "interface {"
+                || trimmed == "}"
+            {
                 return None;
             }
             let name = trimmed.split('(').next()?.trim();
@@ -253,7 +253,11 @@ fn extract_go_struct_summary(node: Node<'_>, source: &str) -> Option<GoStructSum
             continue;
         }
 
-        for field_name in first.split(',').map(str::trim).filter(|name| !name.is_empty()) {
+        for field_name in first
+            .split(',')
+            .map(str::trim)
+            .filter(|name| !name.is_empty())
+        {
             fields.push(GoFieldSummary {
                 name: field_name.to_string(),
                 line: base_line + offset,
@@ -557,7 +561,9 @@ pub(super) fn is_identifier_name(text: &str) -> bool {
 }
 
 fn is_exported_name(text: &str) -> bool {
-    text.chars().next().is_some_and(|character| character.is_ascii_uppercase())
+    text.chars()
+        .next()
+        .is_some_and(|character| character.is_ascii_uppercase())
 }
 
 pub(super) fn collect_pkg_strings(root: Node<'_>, source: &str) -> Vec<NamedLiteral> {

@@ -8,18 +8,23 @@ export default function App() {
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <div className="page-viewport">
-      <div className="page-shell flex flex-col min-h-screen">
-        <Header theme={theme} onToggleTheme={toggleTheme} />
-        <div className="flex-1">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route index element={<HomePage />} />
-            <Route path="/docs" element={<DocsPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+    <>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      <div className="page-viewport">
+        <div className="page-shell flex flex-col min-h-screen">
+          <Header theme={theme} onToggleTheme={toggleTheme} />
+          <div id="main-content" className="flex-1">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route index element={<HomePage />} />
+              <Route path="/docs" element={<DocsPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

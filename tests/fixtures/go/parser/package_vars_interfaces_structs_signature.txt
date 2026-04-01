@@ -1,0 +1,18 @@
+package sample
+
+var DefaultStore = newStore()
+var maxRetries int = 3
+
+type Store interface {
+    Save(item string) error
+    Load(id string) (string, error)
+}
+
+type Service struct {
+    store Store
+    logger Logger
+}
+
+func Run(items []string, dryRun bool) error {
+    return nil
+}

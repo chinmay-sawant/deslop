@@ -12,10 +12,11 @@ pub(crate) fn async_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
+    let rust = function.rust_evidence();
     let mut findings = Vec::new();
 
-    if (function.is_async || !function.await_points.is_empty()) && is_std_mutex(file, function) {
-        for lock in &function.lock_calls {
+    if (rust.is_async || !rust.await_points.is_empty()) && is_std_mutex(file, function) {
+        for lock in rust.lock_calls {
             if let Some(await_line) = first_await_after(function, lock.line) {
                 findings.push(function_finding(
                     file,
@@ -36,7 +37,7 @@ pub(crate) fn async_function_findings(
         }
     }
 
-    for permit in &function.permit_acquires {
+    for permit in rust.permit_acquires {
         if let Some(await_line) = first_await_after(function, permit.line) {
             findings.push(function_finding(
                 file,
@@ -56,8 +57,8 @@ pub(crate) fn async_function_findings(
         }
     }
 
-    if !function.spawn_calls.is_empty()
-        && !function.await_points.is_empty()
+    if !rust.spawn_calls.is_empty()
+        && !rust.await_points.is_empty()
         && !has_cancellation_pattern(function)
     {
         findings.push(function_finding(
@@ -65,7 +66,7 @@ pub(crate) fn async_function_findings(
             function,
             "rust_async_spawn_cancel_at_await",
             Severity::Warning,
-            function.spawn_calls[0].line,
+            rust.spawn_calls[0].line,
             format!(
                 "function {} spawns async work without an obvious cancellation path",
                 function.fingerprint.name
@@ -74,20 +75,20 @@ pub(crate) fn async_function_findings(
         ));
     }
 
-    if !function.select_macro_lines.is_empty() && function.body_text.contains("loop") {
+    if !rust.select_macro_lines.is_empty() && function.body_text.contains("loop") {
         if !function.body_text.contains("pin_mut!") && !function.body_text.contains(".fuse()") {
             findings.push(function_finding(
                 file,
                 function,
                 "rust_async_missing_fuse_pin",
                 Severity::Warning,
-                function.select_macro_lines[0],
+                rust.select_macro_lines[0],
                 format!(
                     "function {} reuses select! without fuse/pin markers",
                     function.fingerprint.name
                 ),
                 vec![
-                    format!("macro calls observed={}", function.macro_calls.len()),
+                    format!("macro calls observed={}", rust.macro_calls.len()),
                     "consider pinning and fusing reused futures before select! loops".to_string(),
                 ],
             ));
@@ -99,7 +100,7 @@ pub(crate) fn async_function_findings(
                 function,
                 "rust_async_recreate_future_in_select",
                 Severity::Info,
-                function.select_macro_lines[0],
+                rust.select_macro_lines[0],
                 format!(
                     "function {} may recreate futures inside a select! loop",
                     function.fingerprint.name
@@ -107,7 +108,7 @@ pub(crate) fn async_function_findings(
                 vec![
                     format!(
                         "tracked future-like bindings={}",
-                        function.futures_created.len()
+                        rust.futures_created.len()
                     ),
                     "move long-lived futures outside the loop when they are polled repeatedly"
                         .to_string(),
@@ -116,29 +117,29 @@ pub(crate) fn async_function_findings(
         }
     }
 
-    if function.is_async
-        && function.await_points.is_empty()
+    if rust.is_async
+        && rust.await_points.is_empty()
         && (function.body_text.contains("loop {") || function.body_text.contains("while "))
-        && !function.blocking_calls.is_empty()
+        && !rust.blocking_calls.is_empty()
     {
         findings.push(function_finding(
             file,
             function,
             "rust_async_monopolize_executor",
             Severity::Warning,
-            function.blocking_calls[0].line,
+            rust.blocking_calls[0].line,
             format!("async function {} may monopolize the executor", function.fingerprint.name),
             vec!["long-running loops with blocking work and no await can starve cooperative scheduling".to_string()],
         ));
     }
 
-    if function.drop_impl && !function.blocking_calls.is_empty() {
+    if rust.drop_impl && !rust.blocking_calls.is_empty() {
         findings.push(function_finding(
             file,
             function,
             "rust_async_blocking_drop",
             Severity::Warning,
-            function.blocking_calls[0].line,
+            rust.blocking_calls[0].line,
             format!(
                 "Drop implementation {} does blocking work that may surface in async code",
                 function.fingerprint.name
@@ -150,7 +151,7 @@ pub(crate) fn async_function_findings(
         ));
     }
 
-    if !function.await_points.is_empty() {
+    if !rust.await_points.is_empty() {
         let lines = function.body_text.lines().collect::<Vec<_>>();
         for (index, line) in lines.iter().enumerate() {
             if line.contains(".await")
@@ -181,7 +182,8 @@ pub(crate) fn async_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut order_edges = BTreeMap::<(String, String), usize>::new();
 
     for function in &file.functions {
-        let receivers = function
+        let rust = function.rust_evidence();
+        let receivers = rust
             .lock_calls
             .iter()
             .filter(|call| is_lock_order_call(call))
