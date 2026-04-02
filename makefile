@@ -6,44 +6,52 @@ PATH_TO_SCAN_GOPDFSUIT ?= /home/chinmay/ChinmayPersonalProjects/gopdfsuit
 PATH_TO_SCAN_SNAPBACK ?= /home/chinmay/ChinmayPersonalProjects/SnapBack
 PATH_TO_SCAN ?= .
 PATH_TO_SCAN_CLAW ?= /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/claw-code-main
+WSL_REPO_ROOT ?= /home/chinmay/ChinmayPersonalProjects/deslop-codex
+CARGO ?= cargo
+
+ifeq ($(OS),Windows_NT)
+ifeq ($(shell where cargo 2>NUL),)
+CARGO := C:\\Windows\\Sysnative\\wsl.exe --cd $(WSL_REPO_ROOT) cargo
+endif
+endif
 
 # Default Target
 all: help
 
 # Build the project
 build:
-	cargo build
+	$(CARGO) build
 
 # Run project tests
 test:
-	cargo test
+	$(CARGO) test
 
 # Check code for linting issues using clippy
 lint:
-	cargo clippy --all-targets --all-features
-	cargo fmt
+	$(CARGO) clippy --all-targets --all-features
+	$(CARGO) fmt
 
 # Apply code formatting
 fmt:
-	cargo fmt
+	$(CARGO) fmt
 
 # Run the analyzer on the target path
 # deslop exits with a non-zero status code (1) whenever it detects an issue
 scan:
-	cargo run -- scan $(PATH_TO_SCAN) > results.txt
+	$(CARGO) run -- scan $(PATH_TO_SCAN) > results.txt
 
 scan-gopdfsuit:
-	cargo run -- scan $(PATH_TO_SCAN_GOPDFSUIT) > temp_gopdfsuit.txt
+	$(CARGO) run -- scan $(PATH_TO_SCAN_GOPDFSUIT) > temp_gopdfsuit.txt
 
 scan-snapback:
-	cargo run -- scan $(PATH_TO_SCAN_SNAPBACK) > temp_snapback.txt
+	$(CARGO) run -- scan $(PATH_TO_SCAN_SNAPBACK) > temp_snapback.txt
 
 scan-claw:
-	cargo run -- scan $(PATH_TO_SCAN_CLAW) --ignore hallucinated_import_call > temp_claw.txt
+	$(CARGO) run -- scan $(PATH_TO_SCAN_CLAW) --ignore hallucinated_import_call > temp_claw.txt
 
 # Clean build artifacts and temporary files
 clean:
-	cargo clean
+	$(CARGO) clean
 	rm -f results.txt temp_gopdfsuit.txt temp_snapback.txt temp_claw.txt
 
 # Display help for make targets

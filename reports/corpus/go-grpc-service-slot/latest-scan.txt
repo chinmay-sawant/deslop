@@ -1,0 +1,8 @@
+deslop scan root: /home/chinmay/ChinmayPersonalProjects/TwirpUnderstanding
+Source files discovered: 4
+Source files analyzed: 2
+Functions fingerprinted: 3
+Findings: 0
+Index summary: packages=2 symbols=4 imports=7
+Parse failures: 0
+Timings: discover=1ms parse=5ms index=0ms heuristics=1ms total=8ms

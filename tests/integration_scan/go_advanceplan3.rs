@@ -370,3 +370,143 @@ fn test_go_advanceplan3_gin_request_clean() {
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn test_go_advanceplan3_request_path_framework_expansion_rules() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "request_paths_positive.go",
+        go_fixture!("advanceplan3_request_paths_positive.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "middleware_allocates_http_client_per_request",
+        "middleware_allocates_db_or_gorm_handle_per_request",
+        "middleware_allocates_regex_or_template_per_request",
+        "env_or_config_lookup_per_request",
+        "template_parse_in_handler",
+        "file_or_template_read_per_request",
+        "upstream_http_call_per_item_in_handler_loop",
+        "duplicate_upstream_calls_same_url_same_handler",
+        "errgroup_fanout_without_limit_in_handler",
+        "large_csv_or_json_export_without_bufio",
+        "gzip_or_zip_writer_created_per_chunk",
+        "no_streaming_for_large_export_handler",
+        "repeated_large_map_literal_response_construction",
+        "upstream_json_decode_same_response_multiple_times",
+        "no_batching_on_handler_driven_db_write_loop",
+    ] {
+        assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_go_advanceplan3_request_path_framework_expansion_clean() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "request_paths_clean.go",
+        go_fixture!("advanceplan3_request_paths_clean.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "middleware_allocates_http_client_per_request",
+        "middleware_allocates_db_or_gorm_handle_per_request",
+        "middleware_allocates_regex_or_template_per_request",
+        "env_or_config_lookup_per_request",
+        "template_parse_in_handler",
+        "file_or_template_read_per_request",
+        "upstream_http_call_per_item_in_handler_loop",
+        "duplicate_upstream_calls_same_url_same_handler",
+        "errgroup_fanout_without_limit_in_handler",
+        "large_csv_or_json_export_without_bufio",
+        "gzip_or_zip_writer_created_per_chunk",
+        "no_streaming_for_large_export_handler",
+        "repeated_large_map_literal_response_construction",
+        "upstream_json_decode_same_response_multiple_times",
+        "no_batching_on_handler_driven_db_write_loop",
+    ] {
+        assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_go_advanceplan3_client_lifecycle_rules() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "client_positive.go",
+        go_fixture!("advanceplan3_clients_positive.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "pgxpool_new_per_request",
+        "pgxpool_ping_per_request",
+        "pgxpool_acquire_in_loop",
+        "redis_client_created_per_request",
+        "redis_ping_per_request",
+        "redis_command_loop_without_pipeline",
+        "bun_newdb_per_request",
+        "bun_select_scan_without_limit",
+        "ent_open_per_request",
+    ] {
+        assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_go_advanceplan3_client_lifecycle_clean() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "client_clean.go",
+        go_fixture!("advanceplan3_clients_clean.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "pgxpool_new_per_request",
+        "pgxpool_ping_per_request",
+        "pgxpool_acquire_in_loop",
+        "redis_client_created_per_request",
+        "redis_ping_per_request",
+        "redis_command_loop_without_pipeline",
+        "bun_newdb_per_request",
+        "bun_select_scan_without_limit",
+        "ent_open_per_request",
+    ] {
+        assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

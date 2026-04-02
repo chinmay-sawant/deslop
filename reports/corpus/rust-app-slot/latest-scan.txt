@@ -1,0 +1,19 @@
+deslop scan root: /home/chinmay/ChinmayPersonalProjects/rusize
+Source files discovered: 9
+Source files analyzed: 9
+Functions fingerprinted: 28
+Findings: 9
+Index summary: packages=9 symbols=35 imports=40
+Parse failures: 0
+Timings: discover=5ms parse=35ms index=0ms heuristics=5ms total=46ms
+
+Findings:
+  - /home/chinmay/ChinmayPersonalProjects/rusize/src/lib.rs:12 public API run returns an application-edge anyhow-style Result [rust_public_anyhow_result]
+  - /home/chinmay/ChinmayPersonalProjects/rusize/src/lib.rs:12 public API run exposes a raw boolean mode switch [rust_public_bool_parameter_api]
+  - /home/chinmay/ChinmayPersonalProjects/rusize/src/main.rs:38 function should_generate_report_before_gui uses an overly descriptive name [overlong_name]
+  - /home/chinmay/ChinmayPersonalProjects/rusize/src/services/gui.rs:86 function parse_text_report uses .lines() inside a loop [rust_lines_allocate_per_line]
+  - /home/chinmay/ChinmayPersonalProjects/rusize/src/services/gui.rs:229 function handle_connection validates UTF-8 in a likely hot path [rust_utf8_validate_hot_path]
+  - /home/chinmay/ChinmayPersonalProjects/rusize/src/services/gui.rs:260 public API start returns an application-edge anyhow-style Result [rust_public_anyhow_result]
+  - /home/chinmay/ChinmayPersonalProjects/rusize/src/services/report.rs:16 public API generate_report returns an application-edge anyhow-style Result [rust_public_anyhow_result]
+  - /home/chinmay/ChinmayPersonalProjects/rusize/src/services/report.rs:101 function generate_text writes to a file-like sink inside a loop [rust_unbuffered_file_writes]
+  - /home/chinmay/ChinmayPersonalProjects/rusize/src/services/report.rs:101 function write_tree writes to a file-like sink inside a loop [rust_unbuffered_file_writes]

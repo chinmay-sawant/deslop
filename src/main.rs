@@ -1,12 +1,17 @@
 use anyhow::{Context, Result};
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 
 mod cli;
 
 use std::path::PathBuf;
 
-use crate::cli::{format_scan_report, format_scan_report_json, print_benchmark_report};
-use deslop::{BenchmarkOptions, ScanOptions, benchmark_repository, scan_repository};
+use crate::cli::{
+    filtered_rules, format_rules_report, format_rules_report_json, format_scan_report,
+    format_scan_report_json, print_benchmark_report,
+};
+use deslop::{
+    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions, benchmark_repository, scan_repository,
+};
 
 const GO_SEMANTIC_ENV_VAR: &str = "DESLOP_ENABLE_GO_SEMANTIC";
 
@@ -14,7 +19,7 @@ const GO_SEMANTIC_ENV_VAR: &str = "DESLOP_ENABLE_GO_SEMANTIC";
 #[command(
     author,
     version,
-    about = "Scan Go and Rust repositories for likely AI slop patterns"
+    about = "Scan Go, Python, and Rust repositories for likely AI slop patterns"
 )]
 struct Cli {
     #[command(subcommand)]
@@ -51,6 +56,14 @@ enum Command {
         no_ignore: bool,
         #[arg(long)]
         enable_semantic: bool,
+    },
+    Rules {
+        #[arg(long)]
+        json: bool,
+        #[arg(long, value_enum)]
+        language: Option<RuleLanguageArg>,
+        #[arg(long, value_enum)]
+        status: Option<RuleStatusArg>,
     },
 }
 
@@ -122,9 +135,60 @@ fn main() -> Result<()> {
                 print_benchmark_report(&report);
             }
         }
+        Command::Rules {
+            json,
+            language,
+            status,
+        } => {
+            let language = language.map(Into::into);
+            let status = status.map(Into::into);
+            let rules = filtered_rules(language.clone(), status.clone());
+
+            if json {
+                println!("{}", format_rules_report_json(&rules)?);
+            } else {
+                print!("{}", format_rules_report(&rules, language, status));
+            }
+        }
     }
 
     Ok(())
+}
+
+#[derive(Debug, Clone, ValueEnum)]
+enum RuleLanguageArg {
+    Common,
+    Go,
+    Python,
+    Rust,
+}
+
+impl From<RuleLanguageArg> for RuleLanguage {
+    fn from(value: RuleLanguageArg) -> Self {
+        match value {
+            RuleLanguageArg::Common => RuleLanguage::Common,
+            RuleLanguageArg::Go => RuleLanguage::Go,
+            RuleLanguageArg::Python => RuleLanguage::Python,
+            RuleLanguageArg::Rust => RuleLanguage::Rust,
+        }
+    }
+}
+
+#[derive(Debug, Clone, ValueEnum)]
+enum RuleStatusArg {
+    Stable,
+    Experimental,
+    Research,
+}
+
+impl From<RuleStatusArg> for RuleStatus {
+    fn from(value: RuleStatusArg) -> Self {
+        match value {
+            RuleStatusArg::Stable => RuleStatus::Stable,
+            RuleStatusArg::Experimental => RuleStatus::Experimental,
+            RuleStatusArg::Research => RuleStatus::Research,
+        }
+    }
 }
 
 fn set_go_semantic_env(enable_semantic: bool) {

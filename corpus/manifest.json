@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "targets": [
+    {
+      "id": "gopdfsuit",
+      "language": "go",
+      "category": "service",
+      "availability": "active",
+      "description": "Existing Go comparison target used for finding-diff validation and benchmark sanity checks.",
+      "relative_path": "../gopdfsuit",
+      "scan_baseline": "verified_gopdfsuit_results.txt",
+      "reports_dir": "reports/corpus/gopdfsuit",
+      "promotion_note": "reports/corpus/gopdfsuit/promotion-notes.md",
+      "scan": {
+        "enable_semantic": true
+      },
+      "bench": {
+        "warmups": 2,
+        "repeats": 5
+      }
+    },
+    {
+      "id": "snapback",
+      "language": "python",
+      "category": "web_app",
+      "availability": "active",
+      "description": "FastAPI-based application target that also exercises LLM-adjacent and export-heavy Python behavior.",
+      "relative_path": "../SnapBack",
+      "scan_baseline": "verified_snapback_results.txt",
+      "reports_dir": "reports/corpus/snapback",
+      "promotion_note": "reports/corpus/snapback/promotion-notes.md",
+      "scan": {
+        "enable_semantic": false
+      },
+      "bench": {
+        "warmups": 2,
+        "repeats": 5
+      }
+    },
+    {
+      "id": "go-http-service-slot",
+      "language": "go",
+      "category": "service",
+      "availability": "active",
+      "description": "Local Gin-backed service repository used as an additional HTTP-style Go corpus target.",
+      "relative_path": "../OneForAll",
+      "scan_baseline": null,
+      "reports_dir": "reports/corpus/go-http-service-slot",
+      "promotion_note": "reports/corpus/go-http-service-slot/promotion-notes.md",
+      "scan": {
+        "enable_semantic": true
+      },
+      "bench": {
+        "warmups": 2,
+        "repeats": 5
+      }
+    },
+    {
+      "id": "go-grpc-service-slot",
+      "language": "go",
+      "category": "service",
+      "availability": "active",
+      "description": "Local Twirp and Protobuf service repository used as the current RPC-style Go corpus target.",
+      "relative_path": "../TwirpUnderstanding",
+      "scan_baseline": null,
+      "reports_dir": "reports/corpus/go-grpc-service-slot",
+      "promotion_note": "reports/corpus/go-grpc-service-slot/promotion-notes.md",
+      "scan": {
+        "enable_semantic": true
+      },
+      "bench": {
+        "warmups": 2,
+        "repeats": 5
+      }
+    },
+    {
+      "id": "python-web-slot",
+      "language": "python",
+      "category": "web_app",
+      "availability": "active",
+      "description": "Current Python web/application slot backed by SnapBack until a second distinct web target is added.",
+      "relative_path": "../SnapBack",
+      "scan_baseline": null,
+      "reports_dir": "reports/corpus/python-web-slot",
+      "promotion_note": "reports/corpus/python-web-slot/promotion-notes.md",
+      "scan": {
+        "enable_semantic": false
+      },
+      "bench": {
+        "warmups": 2,
+        "repeats": 5
+      }
+    },
+    {
+      "id": "python-ml-slot",
+      "language": "python",
+      "category": "ml_or_llm",
+      "availability": "active",
+      "description": "Temporary Python ML/LLM slot backed by SnapBack because it exercises summarization and model-oriented paths.",
+      "relative_path": "../SnapBack",
+      "scan_baseline": null,
+      "reports_dir": "reports/corpus/python-ml-slot",
+      "promotion_note": "reports/corpus/python-ml-slot/promotion-notes.md",
+      "scan": {
+        "enable_semantic": false
+      },
+      "bench": {
+        "warmups": 2,
+        "repeats": 5
+      }
+    },
+    {
+      "id": "rust-app-slot",
+      "language": "rust",
+      "category": "service_or_cli",
+      "availability": "active",
+      "description": "Local Rust CLI application used as the current representative Rust corpus target.",
+      "relative_path": "../rusize",
+      "scan_baseline": null,
+      "reports_dir": "reports/corpus/rust-app-slot",
+      "promotion_note": "reports/corpus/rust-app-slot/promotion-notes.md",
+      "scan": {
+        "enable_semantic": false
+      },
+      "bench": {
+        "warmups": 2,
+        "repeats": 5
+      }
+    }
+  ]
+}

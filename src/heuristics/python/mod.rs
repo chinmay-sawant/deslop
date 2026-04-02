@@ -5,6 +5,7 @@ mod hotpath;
 mod hotpath_ext;
 mod maintainability;
 mod mlops;
+mod packaging;
 mod performance;
 mod quality;
 mod structure;
@@ -24,10 +25,11 @@ use self::duplication::{
     test_utility_logic_findings,
 };
 use self::framework::{
-    django_extra_findings, django_loop_db_findings, django_n_plus_one_findings,
-    django_queryset_findings, django_values_findings, fastapi_handler_findings,
-    flask_handler_findings, handler_fanout_findings, middleware_findings, response_extra_findings,
-    sqlalchemy_findings, template_response_findings,
+    celery_task_findings, click_typer_command_findings, django_extra_findings,
+    django_loop_db_findings, django_n_plus_one_findings, django_queryset_findings,
+    django_values_findings, fastapi_handler_findings, flask_handler_findings,
+    handler_fanout_findings, middleware_findings, pydantic_v2_findings, response_extra_findings,
+    sqlalchemy_findings, sqlmodel_findings, template_response_findings,
 };
 use self::hotpath::{
     csv_flush_per_row_findings, dict_materialization_in_loop_findings,
@@ -59,6 +61,7 @@ use self::mlops::{
     data_pipeline_findings, llm_findings, mlops_extra_findings, model_inference_findings,
     numpy_findings, pandas_findings,
 };
+use self::packaging::{public_api_any_contract_findings, pyproject_repo_findings};
 use self::performance::{
     blocking_sync_io_findings, deque_candidate_findings, full_dataset_load_findings,
     list_materialization_findings, list_membership_findings, recursive_traversal_findings,
@@ -103,6 +106,7 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
     findings.extend(input_validation_findings(file, function));
     findings.extend(api_type_hint_findings(file, function));
     findings.extend(variadic_public_api_findings(file, function));
+    findings.extend(public_api_any_contract_findings(file, function));
     findings.extend(god_function_findings(file, function));
     findings.extend(mixed_concern_findings(file, function));
     findings.extend(name_responsibility_mismatch_findings(file, function));
@@ -140,6 +144,10 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
     findings.extend(flask_handler_findings(file, function));
     findings.extend(fastapi_handler_findings(file, function));
     findings.extend(sqlalchemy_findings(file, function));
+    findings.extend(sqlmodel_findings(file, function));
+    findings.extend(celery_task_findings(file, function));
+    findings.extend(click_typer_command_findings(file, function));
+    findings.extend(pydantic_v2_findings(file, function));
     findings.extend(middleware_findings(file, function));
     findings.extend(handler_fanout_findings(file, function));
     findings.extend(template_response_findings(file, function));
@@ -192,5 +200,6 @@ pub(crate) fn python_repo_findings(files: &[&ParsedFile], index: &RepositoryInde
     findings.extend(cross_file_literal_findings(files));
     findings.extend(duplicate_query_fragment_findings(files));
     findings.extend(duplicate_transformation_pipeline_findings(files));
+    findings.extend(pyproject_repo_findings(files, index));
     findings
 }

@@ -12,7 +12,7 @@ inputs:
     required: false
     default: scan
   path:
-    description: Path to the Go repository to analyze.
+    description: Path to the repository to analyze.
     required: false
     default: .
   json:

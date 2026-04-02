@@ -1,6 +1,7 @@
 import {
   cliCommands,
   commonRules,
+  githubActionInputs,
   githubActionBenchExample,
   githubActionJsonExample,
   githubActionWorkflow,
@@ -182,16 +183,12 @@ export function DocsLayout({
               </tr>
             </thead>
             <tbody>
-              <tr><td>version</td><td>Release tag to install. When omitted, deslop uses the action ref if it is a full release tag; otherwise it downloads the latest release binary.</td></tr>
-              <tr><td>command</td><td>Subcommand to run: <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>scan</code> or <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>bench</code>.</td></tr>
-              <tr><td>path</td><td>Path to the repository you want to analyze. Defaults to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>.</code></td></tr>
-              <tr><td>json</td><td>Set to true to emit JSON output.</td></tr>
-              <tr><td>details</td><td>Set to true to include detail-only findings for scan.</td></tr>
-              <tr><td>no-ignore</td><td>Set to true to disable .gitignore filtering.</td></tr>
-              <tr><td>enable-semantic</td><td>Set to true to enable the opt-in deeper semantic Go rule pack.</td></tr>
-              <tr><td>fail-on-findings</td><td>Set to false to exit 0 even when scan findings are present.</td></tr>
-              <tr><td>repeats</td><td>Benchmark repeat count for bench. Defaults to 5.</td></tr>
-              <tr><td>warmups</td><td>Benchmark warmup count for bench. Defaults to 1.</td></tr>
+              {githubActionInputs.map((input) => (
+                <tr key={input.name}>
+                  <td>{input.name}</td>
+                  <td>{input.description}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

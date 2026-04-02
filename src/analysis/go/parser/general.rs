@@ -533,7 +533,19 @@ pub(super) fn extract_receiver(receiver_node: Node<'_>, source: &str) -> Option<
 }
 
 pub(super) fn alias_from_path(path: &str) -> String {
-    path.rsplit('/').next().unwrap_or(path).to_string()
+    let mut segments = path.rsplit('/');
+    let last = segments.next().unwrap_or(path);
+    if is_go_module_major_version(last) {
+        return segments.next().unwrap_or(last).to_string();
+    }
+    last.to_string()
+}
+
+fn is_go_module_major_version(segment: &str) -> bool {
+    let mut characters = segment.chars();
+    matches!(characters.next(), Some('v'))
+        && characters.next().is_some()
+        && characters.all(|character| character.is_ascii_digit())
 }
 
 pub(super) fn count_descendants(node: Node<'_>, kind: &str) -> usize {

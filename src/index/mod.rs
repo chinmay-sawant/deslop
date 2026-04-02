@@ -42,6 +42,10 @@ pub(crate) struct RepositoryIndex {
 }
 
 impl RepositoryIndex {
+    pub fn root(&self) -> &Path {
+        &self.root
+    }
+
     pub fn package_for_file(
         &self,
         language: Language,

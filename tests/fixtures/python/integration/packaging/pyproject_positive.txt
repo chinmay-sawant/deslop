@@ -1,0 +1,6 @@
+[project]
+name = "packaged-demo"
+version = "0.1.0"
+
+[project.scripts]
+demo = "pkg.cli:missing_main"

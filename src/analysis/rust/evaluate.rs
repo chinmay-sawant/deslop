@@ -5,7 +5,8 @@ use crate::analysis::{ImportSpec, Language, ParsedFile, ParsedFunction};
 use crate::heuristics::rust::{
     api_design_file_findings, api_design_function_findings, async_file_findings,
     async_function_findings, domain_findings, performance_file_findings,
-    performance_function_findings, unsafe_soundness_findings,
+    performance_function_findings, runtime_file_findings, runtime_function_findings,
+    unsafe_soundness_findings,
 };
 use crate::index::{ImportResolution, PackageIndex, RepositoryIndex};
 use crate::model::{Finding, Severity};
@@ -17,6 +18,7 @@ pub(super) fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex)
     findings.extend(api_design_file_findings(file));
     findings.extend(performance_file_findings(file));
     findings.extend(async_file_findings(file));
+    findings.extend(runtime_file_findings(file, index));
 
     for function in &file.functions {
         findings.extend(non_test_macro_findings(
@@ -74,6 +76,7 @@ pub(super) fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex)
         findings.extend(doc_marker_findings(file, function));
         findings.extend(performance_function_findings(file, function));
         findings.extend(async_function_findings(file, function));
+        findings.extend(runtime_function_findings(file, function));
         let Some(package_name) = &file.package_name else {
             continue;
         };

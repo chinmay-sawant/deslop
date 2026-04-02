@@ -5,14 +5,14 @@ use crate::model::{Finding, Severity};
 
 use super::{
     BodyLine, LARGE_MULTIPART_FORM_BYTES, binding_for_patterns, body_lines, import_aliases_for,
-    is_gin_handler, is_identifier_name, join_lines, json_aliases, strip_line_comment,
+    is_identifier_name, is_request_path_function, join_lines, json_aliases, strip_line_comment,
 };
 
 pub(crate) fn gin_request_performance_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if !is_gin_handler(file, function) {
+    if !is_request_path_function(file, function) {
         return Vec::new();
     }
 
@@ -893,7 +893,7 @@ fn template_parse_in_handler_findings(
                     start_line: body_line.line,
                     end_line: body_line.line,
                     message: format!(
-                        "function {} creates or parses templates inside a Gin handler",
+                        "function {} creates or parses templates inside a request handler",
                         function.fingerprint.name
                     ),
                     evidence: vec![
@@ -962,7 +962,7 @@ fn middleware_allocation_findings(
                     start_line: body_line.line,
                     end_line: body_line.line,
                     message: format!(
-                        "function {} allocates an HTTP client inside a Gin handler",
+                        "function {} allocates an HTTP client inside a request handler",
                         function.fingerprint.name
                     ),
                     evidence: vec![
@@ -1037,7 +1037,7 @@ fn middleware_allocation_findings(
                     start_line: body_line.line,
                     end_line: body_line.line,
                     message: format!(
-                        "function {} compiles regexps inside a Gin handler",
+                        "function {} compiles regexps inside a request handler",
                         function.fingerprint.name
                     ),
                     evidence: vec![
@@ -1235,7 +1235,8 @@ fn export_buffering_findings(
                 .any(|bl| bl.in_loop && bl.text.contains(".Encode("));
 
         if has_csv_loop_write || has_json_loop_encode {
-            let writes_to_response = function.body_text.contains("ResponseWriter")
+            let writes_to_response = is_request_path_function(file, function)
+                || function.signature_text.contains("ResponseWriter")
                 || function.body_text.contains("c.Writer")
                 || function.body_text.contains("gin.Context");
 
@@ -1402,7 +1403,6 @@ fn no_streaming_for_large_export_findings(
     function: &ParsedFunction,
     lines: &[BodyLine],
 ) -> Vec<Finding> {
-    let go = function.go_evidence();
     let mut findings = Vec::new();
 
     let ja = json_aliases(file);
@@ -1415,9 +1415,9 @@ fn no_streaming_for_large_export_findings(
             .iter()
             .any(|bl| bl.text.contains("append(") || bl.text.contains("range "));
 
-    let data_call = go.gin_calls.iter().find(|call| call.operation == "data");
+    let response_write_line = response_write_line(function, lines);
 
-    if has_collection_marshal && let Some(data_c) = data_call {
+    if has_collection_marshal && let Some(response_write_line) = response_write_line {
         let marshal_line = lines
             .iter()
             .find(|bl| {
@@ -1427,22 +1427,22 @@ fn no_streaming_for_large_export_findings(
             .map(|bl| bl.line);
 
         if let Some(marshal_line) = marshal_line
-            && data_c.line > marshal_line
+            && response_write_line > marshal_line
         {
             findings.push(Finding {
                     rule_id: "no_streaming_for_large_export_handler".to_string(),
                     severity: Severity::Info,
                     path: file.path.clone(),
                     function_name: Some(function.fingerprint.name.clone()),
-                    start_line: data_c.line,
-                    end_line: data_c.line,
+                    start_line: response_write_line,
+                    end_line: response_write_line,
                     message: format!(
                         "function {} materializes a collection into memory before writing the response",
                         function.fingerprint.name
                     ),
                     evidence: vec![
                         format!("json.Marshal observed at line {marshal_line}"),
-                        format!("c.Data observed at line {}", data_c.line),
+                        format!("response write observed at line {response_write_line}"),
                         "streaming with json.NewEncoder or chunked writes avoids materializing the full payload in memory".to_string(),
                     ],
                 });
@@ -1482,7 +1482,7 @@ fn large_map_response_findings(
     });
 
     let ja = json_aliases(file);
-    let data_call = go.gin_calls.iter().find(|call| call.operation == "data");
+    let response_write_line = response_write_line(function, lines);
     let has_json_marshal = ja
         .iter()
         .any(|alias| function.body_text.contains(&format!("{alias}.Marshal(")));
@@ -1528,15 +1528,16 @@ fn large_map_response_findings(
             });
         }
 
-        if has_json_marshal && data_call.is_some() && json_render_call.is_none() {
+        if has_json_marshal && response_write_line.is_some() && json_render_call.is_none() {
             let map_line = map_literal_lines[0].line;
+            let anchor = response_write_line.unwrap_or(map_line);
             findings.push(Finding {
                 rule_id: "repeated_large_map_literal_response_construction".to_string(),
                 severity: Severity::Info,
                 path: file.path.clone(),
                 function_name: Some(function.fingerprint.name.clone()),
-                start_line: map_line,
-                end_line: map_line,
+                start_line: anchor,
+                end_line: anchor,
                 message: format!(
                     "function {} builds large dynamic map responses for manual marshaling",
                     function.fingerprint.name
@@ -1550,6 +1551,26 @@ fn large_map_response_findings(
     }
 
     findings
+}
+
+fn response_write_line(function: &ParsedFunction, lines: &[BodyLine]) -> Option<usize> {
+    if let Some(line) = function
+        .go_evidence()
+        .gin_calls
+        .iter()
+        .find(|call| call.operation == "data")
+        .map(|call| call.line)
+    {
+        return Some(line);
+    }
+
+    lines.iter().find_map(|body_line| {
+        (body_line.text.contains(".Write(")
+            || body_line.text.contains(".Send(")
+            || body_line.text.contains(".Blob(")
+            || body_line.text.contains(".SendString("))
+        .then_some(body_line.line)
+    })
 }
 
 fn gin_logger_debug_body_findings(

@@ -1,0 +1,12 @@
+use axum::{extract::State, Json};
+
+#[derive(Clone)]
+struct AppState {
+    token: String,
+    state: std::sync::Arc<Vec<String>>,
+}
+
+async fn http_handler(State(app): State<AppState>) -> Json<String> {
+    let shared_state = app.state.clone();
+    Json(format!("{}:{}", app.token, shared_state.len()))
+}
