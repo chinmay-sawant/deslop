@@ -5,7 +5,7 @@
 PATH_TO_SCAN_GOPDFSUIT ?= /home/chinmay/ChinmayPersonalProjects/gopdfsuit
 PATH_TO_SCAN_SNAPBACK ?= /home/chinmay/ChinmayPersonalProjects/SnapBack
 PATH_TO_SCAN ?= .
-PATH_TO_SCAN_CLAW ?= /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/claw-code
+PATH_TO_SCAN_CLAW ?= /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/claw-code-main
 
 # Default Target
 all: help
@@ -39,7 +39,7 @@ scan-snapback:
 	cargo run -- scan $(PATH_TO_SCAN_SNAPBACK) > temp_snapback.txt
 
 scan-claw:
-	cargo run -- scan $(PATH_TO_SCAN_CLAW) > temp_claw.txt
+	cargo run -- scan $(PATH_TO_SCAN_CLAW) --ignore hallucinated_import_call > temp_claw.txt
 
 # Clean build artifacts and temporary files
 clean:
