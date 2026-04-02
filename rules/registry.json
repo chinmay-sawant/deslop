@@ -364,6 +364,32 @@
     "description": "AutoMigrate or schema probes running on request paths instead of startup."
   },
   {
+    "id": "bun_newdb_per_request",
+    "language": "go",
+    "family": "data_access",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Bun DB handles created directly on request paths instead of reused process-level state."
+  },
+  {
+    "id": "bun_select_scan_without_limit",
+    "language": "go",
+    "family": "data_access",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Bun select-and-scan request paths without a visible limit or pagination marker."
+  },
+  {
     "id": "connection_pool_reconfigured_per_request",
     "language": "go",
     "family": "data_access",
@@ -492,6 +518,19 @@
       "severity_override"
     ],
     "description": "Initial Find followed by a separate Preload query that could be folded into one."
+  },
+  {
+    "id": "ent_open_per_request",
+    "language": "go",
+    "family": "data_access",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "ent clients opened directly inside request handlers instead of shared startup wiring."
   },
   {
     "id": "exec_inside_loop_without_batch",
@@ -754,6 +793,45 @@
     "description": "pgx.CollectRows used on request paths without a visible LIMIT in the query."
   },
   {
+    "id": "pgxpool_acquire_in_loop",
+    "language": "go",
+    "family": "data_access",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Repeated pgxpool acquire calls inside loops that may churn pooled resources."
+  },
+  {
+    "id": "pgxpool_new_per_request",
+    "language": "go",
+    "family": "data_access",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "pgxpool pools created on request paths instead of reused application-level state."
+  },
+  {
+    "id": "pgxpool_ping_per_request",
+    "language": "go",
+    "family": "data_access",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Per-request pgxpool connectivity probes that add latency outside health-check boundaries."
+  },
+  {
     "id": "preload_inside_loop",
     "language": "go",
     "family": "data_access",
@@ -817,6 +895,45 @@
       "severity_override"
     ],
     "description": "GORM Raw(...).Scan(...) chains observed inside loops."
+  },
+  {
+    "id": "redis_client_created_per_request",
+    "language": "go",
+    "family": "data_access",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Redis clients created per request instead of reused as shared process infrastructure."
+  },
+  {
+    "id": "redis_command_loop_without_pipeline",
+    "language": "go",
+    "family": "data_access",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Redis command loops that issue round-trips without pipeline or batch usage."
+  },
+  {
+    "id": "redis_ping_per_request",
+    "language": "go",
+    "family": "data_access",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Per-request Redis ping checks instead of startup or explicit health-probe validation."
   },
   {
     "id": "repeated_same_query_template_same_function",
@@ -3890,6 +4007,97 @@
     "description": "Public Python functions that expose *args or **kwargs instead of a clearer interface."
   },
   {
+    "id": "langchain_chain_built_per_request",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path."
+  },
+  {
+    "id": "tokenizer_encode_in_loop_without_cache",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Tokenizer encode calls repeated inside loops without caching or batching signals."
+  },
+  {
+    "id": "vector_store_client_created_per_request",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Vector-store clients created on request paths instead of reused application state."
+  },
+  {
+    "id": "cross_package_internal_import",
+    "language": "python",
+    "family": "packaging",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Local Python packages reaching into another package's internal or private modules."
+  },
+  {
+    "id": "pyproject_missing_requires_python",
+    "language": "python",
+    "family": "packaging",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "pyproject metadata missing an explicit Python runtime requirement."
+  },
+  {
+    "id": "pyproject_script_entrypoint_unresolved",
+    "language": "python",
+    "family": "packaging",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "pyproject script entrypoints that do not resolve to a locally indexed module callable."
+  },
+  {
+    "id": "python_public_api_any_contract",
+    "language": "python",
+    "family": "packaging",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Public Python APIs that expose Any in parameter or return contracts."
+  },
+  {
     "id": "blocking_sync_io_in_async",
     "language": "python",
     "family": "performance",
@@ -5227,6 +5435,84 @@
       "severity_override"
     ],
     "description": "UTF-8 validation appears in a likely hot path and may deserve profiling."
+  },
+  {
+    "id": "rust_axum_router_built_in_handler",
+    "language": "rust",
+    "family": "runtime_boundary",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Axum routers assembled inside handler call paths instead of startup wiring."
+  },
+  {
+    "id": "rust_clone_heavy_state_in_loop",
+    "language": "rust",
+    "family": "runtime_boundary",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Likely heavy state cloned repeatedly inside loops in Rust application code."
+  },
+  {
+    "id": "rust_env_var_read_in_request_path",
+    "language": "rust",
+    "family": "runtime_boundary",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Rust request handlers reading environment configuration on the hot request path."
+  },
+  {
+    "id": "rust_tokio_runtime_built_per_call",
+    "language": "rust",
+    "family": "runtime_boundary",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Tokio runtimes created per call instead of being owned at process or bootstrap boundaries."
+  },
+  {
+    "id": "rust_tonic_channel_connect_per_request",
+    "language": "rust",
+    "family": "runtime_boundary",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "tonic transport channels dialed on request paths instead of reusing configured clients."
+  },
+  {
+    "id": "rust_workspace_missing_resolver",
+    "language": "rust",
+    "family": "runtime_boundary",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Workspace Cargo manifests with multiple members but no explicit resolver version."
   },
   {
     "id": "rust_unsafe_aliasing_assumption",

@@ -1,0 +1,5 @@
+from pkg.internal.admin import load_settings
+
+
+def consume() -> dict[str, str]:
+    return load_settings()

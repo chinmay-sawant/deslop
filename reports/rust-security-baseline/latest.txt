@@ -20,7 +20,7 @@ src/analysis/python/parser/hotpath_ext.rs:240:            let receiver = &trimme
 src/analysis/python/parser/hotpath_ext.rs:241:            let after = &trimmed[get_idx + 5..];
 src/analysis/python/parser/hotpath_ext.rs:243:                let key = after[..end].trim();
 src/analysis/rust/parser/mod.rs:433:    text[vec_start + 4..].contains("Box<")
-src/heuristics/go/advanceplan3/data_access.rs:1414:                let after_like = &upper[like_pos + 4..];
+src/heuristics/go/advanceplan3/data_access.rs:1420:                let after_like = &upper[like_pos + 4..];
 src/heuristics/go/advanceplan3/gin.rs:239:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
 src/heuristics/go/advanceplan3/gin.rs:694:        text = text[1..text.len() - 1].trim();
 src/heuristics/go/advanceplan3/gin.rs:764:        for (end_index, current) in suffix[index + character.len_utf8()..].char_indices() {
@@ -40,16 +40,20 @@ src/heuristics/python/hotpath_ext.rs:418:            && let Some(source_start) =
 src/heuristics/python/hotpath_ext.rs:420:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
 src/heuristics/python/hotpath_ext.rs:686:            let expr = &trimmed[1..for_idx];
 src/heuristics/python/hotpath_ext.rs:724:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
+src/heuristics/python/packaging.rs:315:        [first, ..] => Some(*first),
 src/heuristics/python/quality/mod.rs:201:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:568:    for (offset, character) in signature_text[start..].char_indices() {
 src/heuristics/rust/api_design.rs:584:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/performance.rs:339:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:346:    line[start + marker.len()..].starts_with('/')
 src/heuristics/rust/performance.rs:384:                let receiver = &line[start..index];
+src/heuristics/rust/runtime_boundary.rs:267:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
 src/heuristics/python/framework.rs:312:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
+src/heuristics/python/packaging.rs:235:    candidate.exists().then_some(candidate)
+src/heuristics/rust/runtime_boundary.rs:169:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
 src/rules.rs:128:    fn finds_known_rule_metadata() {
@@ -62,7 +66,7 @@ src/rules.rs:69:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> O
 
 ## secret_comparisons
 src/analysis/rust/parser/tests.rs:133:            .any(|name| name == "password")
-src/heuristics/rust/mod.rs:154:        .any(|token| normalized == *token || normalized.contains(token))
+src/heuristics/rust/mod.rs:156:        .any(|token| normalized == *token || normalized.contains(token))
 tests/integration_scan/security.rs:47:            .any(|finding| finding.rule_id == "hardcoded_secret")
 tests/integration_scan/security.rs:72:            .any(|finding| finding.rule_id == "hardcoded_secret")
 

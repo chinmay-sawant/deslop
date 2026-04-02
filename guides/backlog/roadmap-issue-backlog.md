@@ -270,3 +270,6 @@ Validation:
 - roadmap review
 - backlog review
 - no active backend scaffold without an explicit roadmap update
+
+Supporting guide:
+- [`typescript-backend-research-spike.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/typescript-backend-research-spike.md)

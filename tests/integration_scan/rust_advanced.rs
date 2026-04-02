@@ -198,6 +198,140 @@ fn test_rust_advanced_negative_fixtures() {
 }
 
 #[test]
+fn test_rust_phase4_runtime_boundary_rules() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("phase4/positive.txt"));
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "rust_tokio_runtime_built_per_call",
+        "rust_env_var_read_in_request_path",
+        "rust_axum_router_built_in_handler",
+        "rust_tonic_channel_connect_per_request",
+        "rust_clone_heavy_state_in_loop",
+    ] {
+        assert!(
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "expected finding {rule_id:?}, got {:?}",
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_rust_phase4_runtime_boundary_clean() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("phase4/negative.txt"));
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "rust_tokio_runtime_built_per_call",
+        "rust_env_var_read_in_request_path",
+        "rust_axum_router_built_in_handler",
+        "rust_tonic_channel_connect_per_request",
+        "rust_clone_heavy_state_in_loop",
+    ] {
+        assert!(
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == rule_id),
+            "unexpected finding {rule_id:?}, got {:?}",
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
+        );
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_rust_phase4_workspace_manifest_rule() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "Cargo.toml",
+        "[workspace]\nmembers = [\"app\", \"lib\"]\n",
+    );
+    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("phase4/negative.txt"));
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "rust_workspace_missing_resolver"),
+        "expected rust_workspace_missing_resolver, got {:?}",
+        report
+            .findings
+            .iter()
+            .map(|finding| finding.rule_id.as_str())
+            .collect::<Vec<_>>()
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_rust_phase4_workspace_manifest_clean() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "Cargo.toml",
+        "[workspace]\nresolver = \"2\"\nmembers = [\"app\", \"lib\"]\n",
+    );
+    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("phase4/negative.txt"));
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "rust_workspace_missing_resolver"),
+        "unexpected rust_workspace_missing_resolver, got {:?}",
+        report
+            .findings
+            .iter()
+            .map(|finding| finding.rule_id.as_str())
+            .collect::<Vec<_>>()
+    );
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
 fn test_rust_hygiene_script() {
     let status = Command::new("bash")
         .arg("scripts/check_rust_hygiene.sh")

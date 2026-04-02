@@ -50,6 +50,7 @@ These documents are retained because they explain how major rule families were s
 Backlog planning now belongs in the master roadmap first.
 
 Canonical backlog issue definitions live in [`guides/backlog/roadmap-issue-backlog.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/roadmap-issue-backlog.md).
+The deferred fourth-backend spike is tracked in [`guides/backlog/typescript-backend-research-spike.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/typescript-backend-research-spike.md).
 
 If a new language, rule family, or evaluation workflow needs a dedicated guide:
 

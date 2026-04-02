@@ -1,0 +1,18 @@
+from fastapi import FastAPI
+from langchain.chains import LLMChain
+from langchain.prompts import ChatPromptTemplate
+from qdrant_client import QdrantClient
+from transformers import AutoTokenizer
+
+app = FastAPI()
+llm = object()
+vector_client = QdrantClient(url="http://localhost:6333")
+prompt = ChatPromptTemplate.from_template("Summarize {text}")
+chain = LLMChain(llm=llm, prompt=prompt)
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+
+
+@app.post("/search")
+def search(texts: list[str]):
+    token_batch = tokenizer.batch_encode_plus(texts)
+    return {"tokens": token_batch["input_ids"], "client": vector_client, "chain": chain}

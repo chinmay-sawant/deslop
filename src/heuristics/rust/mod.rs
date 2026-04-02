@@ -2,6 +2,7 @@ mod api_design;
 mod async_patterns;
 mod domain_modeling;
 mod performance;
+mod runtime_boundary;
 mod unsafe_soundness;
 
 use crate::analysis::{FieldSummary, ParsedFile, ParsedFunction, StructSummary};
@@ -11,6 +12,7 @@ pub(crate) use api_design::{api_design_file_findings, api_design_function_findin
 pub(crate) use async_patterns::{async_file_findings, async_function_findings};
 pub(crate) use domain_modeling::domain_findings;
 pub(crate) use performance::{performance_file_findings, performance_function_findings};
+pub(crate) use runtime_boundary::{runtime_file_findings, runtime_function_findings};
 pub(crate) use unsafe_soundness::unsafe_soundness_findings;
 
 const RUST_GUIDE_REFERENCE: &str =

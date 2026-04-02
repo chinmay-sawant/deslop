@@ -54,6 +54,12 @@ const MLOPS_RULES: &[&str] = &[
     "entire_dataframe_copied_for_transform",
 ];
 
+const ADVANCED_MLOPS_RULES: &[&str] = &[
+    "vector_store_client_created_per_request",
+    "langchain_chain_built_per_request",
+    "tokenizer_encode_in_loop_without_cache",
+];
+
 #[test]
 fn test_python_mlops_positive() {
     let temp_dir = create_temp_workspace();
@@ -94,6 +100,50 @@ fn test_python_mlops_clean() {
     .expect("scan should succeed");
 
     assert_rules_absent(&report, MLOPS_RULES);
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_mlops_phase3_advanced_positive() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/mlops_phase3_advanced.py",
+            python_fixture!("integration/mlops/mlops_phase3_advanced_positive.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert_rules_present(&report, ADVANCED_MLOPS_RULES);
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_mlops_phase3_advanced_clean() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/mlops_phase3_advanced.py",
+            python_fixture!("integration/mlops/mlops_phase3_advanced_clean.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert_rules_absent(&report, ADVANCED_MLOPS_RULES);
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

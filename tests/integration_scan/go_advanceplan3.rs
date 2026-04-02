@@ -446,3 +446,67 @@ fn test_go_advanceplan3_request_path_framework_expansion_clean() {
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
+
+#[test]
+fn test_go_advanceplan3_client_lifecycle_rules() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "client_positive.go",
+        go_fixture!("advanceplan3_clients_positive.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "pgxpool_new_per_request",
+        "pgxpool_ping_per_request",
+        "pgxpool_acquire_in_loop",
+        "redis_client_created_per_request",
+        "redis_ping_per_request",
+        "redis_command_loop_without_pipeline",
+        "bun_newdb_per_request",
+        "bun_select_scan_without_limit",
+        "ent_open_per_request",
+    ] {
+        assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_go_advanceplan3_client_lifecycle_clean() {
+    let temp_dir = create_temp_workspace();
+    write_fixture(
+        &temp_dir,
+        "client_clean.go",
+        go_fixture!("advanceplan3_clients_clean.txt"),
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    for rule_id in [
+        "pgxpool_new_per_request",
+        "pgxpool_ping_per_request",
+        "pgxpool_acquire_in_loop",
+        "redis_client_created_per_request",
+        "redis_ping_per_request",
+        "redis_command_loop_without_pipeline",
+        "bun_newdb_per_request",
+        "bun_select_scan_without_limit",
+        "ent_open_per_request",
+    ] {
+        assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
+    }
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}

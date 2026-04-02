@@ -5,6 +5,7 @@ mod hotpath;
 mod hotpath_ext;
 mod maintainability;
 mod mlops;
+mod packaging;
 mod performance;
 mod quality;
 mod structure;
@@ -60,6 +61,7 @@ use self::mlops::{
     data_pipeline_findings, llm_findings, mlops_extra_findings, model_inference_findings,
     numpy_findings, pandas_findings,
 };
+use self::packaging::{public_api_any_contract_findings, pyproject_repo_findings};
 use self::performance::{
     blocking_sync_io_findings, deque_candidate_findings, full_dataset_load_findings,
     list_materialization_findings, list_membership_findings, recursive_traversal_findings,
@@ -104,6 +106,7 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
     findings.extend(input_validation_findings(file, function));
     findings.extend(api_type_hint_findings(file, function));
     findings.extend(variadic_public_api_findings(file, function));
+    findings.extend(public_api_any_contract_findings(file, function));
     findings.extend(god_function_findings(file, function));
     findings.extend(mixed_concern_findings(file, function));
     findings.extend(name_responsibility_mismatch_findings(file, function));
@@ -197,5 +200,6 @@ pub(crate) fn python_repo_findings(files: &[&ParsedFile], index: &RepositoryInde
     findings.extend(cross_file_literal_findings(files));
     findings.extend(duplicate_query_fragment_findings(files));
     findings.extend(duplicate_transformation_pipeline_findings(files));
+    findings.extend(pyproject_repo_findings(files, index));
     findings
 }

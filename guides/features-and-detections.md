@@ -32,14 +32,14 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **408 language-scoped rule entries** in deslop `0.1.0`.
+The shipped registry currently tracks **430 language-scoped rule entries** in deslop `0.1.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 172 | 2 | 0 | 174 |
-| python | 155 | 0 | 0 | 155 |
-| rust | 56 | 12 | 0 | 68 |
+| go | 181 | 2 | 0 | 183 |
+| python | 162 | 0 | 0 | 162 |
+| rust | 62 | 12 | 0 | 74 |
 
 The sections below are generated from the rule registry and grouped by language and family.
 When the same rule ID is implemented in more than one backend, it appears once in each relevant language section.
@@ -67,7 +67,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `placeholder_test_body`: Tests that look skipped, TODO-shaped, or otherwise placeholder-like.
 - `test_without_assertion_signal`: Tests that exercise production code without an obvious assertion or failure signal.
 
-### Go rules (174)
+### Go rules (183)
 
 #### Concurrency (6)
 - `blocking_call_while_locked`: Potentially blocking calls observed between Lock and Unlock.
@@ -90,9 +90,11 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `missing_context_propagation`: Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.
 - `sleep_polling`: time.Sleep inside loops — often indicates polling or busy-wait style code.
 
-#### Data Access (50)
+#### Data Access (59)
 - `association_find_inside_loop`: GORM Association(...).Find(...) loaders observed inside loops.
 - `automigrate_or_schema_probe_in_request_path`: AutoMigrate or schema probes running on request paths instead of startup.
+- `bun_newdb_per_request`: Bun DB handles created directly on request paths instead of reused process-level state.
+- `bun_select_scan_without_limit`: Bun select-and-scan request paths without a visible limit or pagination marker.
 - `connection_pool_reconfigured_per_request`: DB pool sizing or lifetime settings changed on request paths.
 - `count_inside_loop`: COUNT(...) or GORM Count(...) observed inside loops.
 - `count_then_find_same_filter`: Request-path GORM flows that run Count(...) and then a broad Find(...) with the same filter shape.
@@ -103,6 +105,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `delete_single_row_in_loop_without_batch`: GORM Delete(...) chains observed inside loops one row at a time.
 - `distinct_wide_row_request_path`: Distinct on wide rows without Select projection — a key-only subquery is usually cheaper.
 - `duplicate_find_then_preload_followup`: Initial Find followed by a separate Preload query that could be folded into one.
+- `ent_open_per_request`: ent clients opened directly inside request handlers instead of shared startup wiring.
 - `exec_inside_loop_without_batch`: Exec(...) or ExecContext(...) used for row-by-row SQL writes inside loops.
 - `exists_via_count_star`: COUNT(*) used for an existence check instead of EXISTS or LIMIT 1.
 - `find_all_then_manual_paginate_in_go`: All rows fetched and then sliced in Go instead of using database-level pagination.
@@ -123,11 +126,17 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `order_by_random_request_path`: ORDER BY RAND()/RANDOM() observed on request paths.
 - `order_by_without_limit_orm_chain`: ORM chains that order results without a Limit on request paths.
 - `pgx_collectrows_unbounded_materialization`: pgx.CollectRows used on request paths without a visible LIMIT in the query.
+- `pgxpool_acquire_in_loop`: Repeated pgxpool acquire calls inside loops that may churn pooled resources.
+- `pgxpool_new_per_request`: pgxpool pools created on request paths instead of reused application-level state.
+- `pgxpool_ping_per_request`: Per-request pgxpool connectivity probes that add latency outside health-check boundaries.
 - `preload_inside_loop`: GORM Preload(...) queries configured and executed inside loops.
 - `prepare_inside_loop`: Prepare(...) or PrepareContext(...) observed inside loops.
 - `prepare_on_every_request_same_sql`: The same literal SQL is prepared multiple times on one request path.
 - `queryrow_inside_loop_existence_check`: QueryRow(...) or QueryRowContext(...) used inside loops for point lookups that usually want a bulk prefetch path.
 - `raw_scan_inside_loop`: GORM Raw(...).Scan(...) chains observed inside loops.
+- `redis_client_created_per_request`: Redis clients created per request instead of reused as shared process infrastructure.
+- `redis_command_loop_without_pipeline`: Redis command loops that issue round-trips without pipeline or batch usage.
+- `redis_ping_per_request`: Per-request Redis ping checks instead of startup or explicit health-probe validation.
 - `repeated_same_query_template_same_function`: The same query template executed multiple times in one function.
 - `row_by_row_upsert_loop`: Upsert-style writes executed row by row inside loops instead of batched.
 - `rows_to_struct_allocation_per_row_without_reuse`: New struct allocated for each row scan instead of reusing a scratch variable.
@@ -267,7 +276,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `inconsistent_package_name`: Directories that mix base Go package names after ignoring the _test suffix.
 - `misgrouped_imports`: Import blocks that place stdlib imports after third-party imports.
 
-### Python rules (155)
+### Python rules (162)
 
 #### Ai Smells (5)
 - `enthusiastic_commentary`: Unusually enthusiastic or emoji-heavy production comments.
@@ -397,6 +406,17 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `side_effect_comprehension`: List, set, or dicit comprehensions used as standalone statements where the result is discarded.
 - `variadic_public_api`: Public Python functions that expose *args or **kwargs instead of a clearer interface.
 
+#### Mlops (3)
+- `langchain_chain_built_per_request`: LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path.
+- `tokenizer_encode_in_loop_without_cache`: Tokenizer encode calls repeated inside loops without caching or batching signals.
+- `vector_store_client_created_per_request`: Vector-store clients created on request paths instead of reused application state.
+
+#### Packaging (4)
+- `cross_package_internal_import`: Local Python packages reaching into another package's internal or private modules.
+- `pyproject_missing_requires_python`: pyproject metadata missing an explicit Python runtime requirement.
+- `pyproject_script_entrypoint_unresolved`: pyproject script entrypoints that do not resolve to a locally indexed module callable.
+- `python_public_api_any_contract`: Public Python APIs that expose Any in parameter or return contracts.
+
 #### Performance (9)
 - `blocking_sync_io_in_async`: Synchronous network, subprocess, sleep, or file I/O calls made from async def functions.
 - `deque_candidate_queue`: Queue-style list operations like pop(0) or insert(0, ...) that may want collections.deque.
@@ -444,7 +464,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `tight_module_coupling`: Modules that depend on a large number of repository-local Python modules.
 - `too_many_instance_attributes`: Classes that assign an unusually large number of instance attributes across their methods.
 
-### Rust rules (68)
+### Rust rules (74)
 
 #### Api Design (21)
 - `rust_arc_mutex_option_state`: Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers.
@@ -516,6 +536,14 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_tokio_mutex_unnecessary`: tokio::sync::Mutex used in a fully synchronous critical path with no await. *(status: experimental)*
 - `rust_unbuffered_file_writes`: File-like writes performed inside a loop without buffering or batching.
 - `rust_utf8_validate_hot_path`: UTF-8 validation appears in a likely hot path and may deserve profiling.
+
+#### Runtime Boundary (6)
+- `rust_axum_router_built_in_handler`: Axum routers assembled inside handler call paths instead of startup wiring.
+- `rust_clone_heavy_state_in_loop`: Likely heavy state cloned repeatedly inside loops in Rust application code.
+- `rust_env_var_read_in_request_path`: Rust request handlers reading environment configuration on the hot request path.
+- `rust_tokio_runtime_built_per_call`: Tokio runtimes created per call instead of being owned at process or bootstrap boundaries.
+- `rust_tonic_channel_connect_per_request`: tonic transport channels dialed on request paths instead of reusing configured clients.
+- `rust_workspace_missing_resolver`: Workspace Cargo manifests with multiple members but no explicit resolver version.
 
 #### Unsafe Soundness (7)
 - `rust_unsafe_aliasing_assumption`: Unsafe code mixes interior mutability and mutable references in ways that need careful aliasing review.

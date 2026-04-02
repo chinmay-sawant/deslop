@@ -701,6 +701,110 @@ pub(super) fn llm_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
         }
     }
 
+    if is_handler_or_view(function)
+        && has_any_import(
+            file,
+            &[
+                "qdrant_client",
+                "chromadb",
+                "pinecone",
+                "weaviate",
+                "faiss",
+                "lancedb",
+                "milvus",
+            ],
+        )
+    {
+        for pattern in [
+            "QdrantClient(",
+            "PersistentClient(",
+            "chromadb.Client(",
+            "Pinecone(",
+            "weaviate.Client(",
+            "faiss.Index",
+            "lancedb.connect(",
+            "MilvusClient(",
+        ] {
+            if let Some(line) = find_line(body, pattern, function.fingerprint.start_line) {
+                findings.push(make_finding(
+                    "vector_store_client_created_per_request",
+                    Severity::Warning,
+                    file,
+                    function,
+                    line,
+                    "creates a vector-store client on a request path; reuse the client across requests",
+                ));
+                break;
+            }
+        }
+    }
+
+    if is_handler_or_view(function)
+        && has_any_import(file, &["langchain", "langchain_core", "llama_index"])
+    {
+        for pattern in [
+            "LLMChain(",
+            "RetrievalQA.from_chain_type(",
+            "ChatPromptTemplate.from_template(",
+            "PromptTemplate.from_template(",
+            "VectorStoreIndex.from_documents(",
+            "ServiceContext.from_defaults(",
+        ] {
+            if let Some(line) = find_line(body, pattern, function.fingerprint.start_line) {
+                findings.push(make_finding(
+                    "langchain_chain_built_per_request",
+                    Severity::Info,
+                    file,
+                    function,
+                    line,
+                    "builds a LangChain/LlamaIndex-style chain on a request path; cache reusable prompt and chain wiring",
+                ));
+                break;
+            }
+        }
+    }
+
+    if has_any_import(file, &["transformers", "tokenizers", "tiktoken"]) {
+        let lines: Vec<&str> = body.lines().collect();
+        let mut loop_indent: Option<usize> = None;
+        let has_cache_signal = body.contains("cache")
+            || body.contains("lru_cache")
+            || body.contains("@cache")
+            || body.contains("batch_encode_plus(")
+            || body.contains("encode_batch(");
+
+        for (i, line) in lines.iter().enumerate() {
+            let trimmed = line.trim();
+            if trimmed.starts_with("for ") && trimmed.ends_with(':') {
+                loop_indent = Some(indent_level(line));
+                continue;
+            }
+            if loop_indent.is_some()
+                && !has_cache_signal
+                && (trimmed.contains("tokenizer.encode(")
+                    || trimmed.contains("encoding.encode(")
+                    || trimmed.contains(".encode(") && trimmed.contains("token"))
+            {
+                findings.push(make_finding(
+                    "tokenizer_encode_in_loop_without_cache",
+                    Severity::Info,
+                    file,
+                    function,
+                    function.fingerprint.start_line + i,
+                    "encodes tokens inside a loop without caching or batching; reuse token counts or batch the call",
+                ));
+                break;
+            }
+            if let Some(li) = loop_indent
+                && !trimmed.is_empty()
+                && indent_level(line) <= li
+                && !trimmed.starts_with('#')
+            {
+                loop_indent = None;
+            }
+        }
+    }
+
     findings
 }
 

@@ -21,6 +21,7 @@ deslop uses three planning buckets:
 ## Backlog
 
 - [`backlog/roadmap-issue-backlog.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/roadmap-issue-backlog.md): canonical issue backlog derived from the master roadmap
+- [`backlog/typescript-backend-research-spike.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/typescript-backend-research-spike.md): deferred research contract for the first new backend after Go, Python, and Rust governance work settles
 
 ## Completed Or Historical
 

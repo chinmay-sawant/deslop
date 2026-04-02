@@ -1,0 +1,43 @@
+package sample
+
+import (
+	"context"
+	"database/sql"
+	"net/http"
+
+	"entgo.io/ent"
+	"github.com/jackc/pgx/v5/pgxpool"
+	redis "github.com/redis/go-redis/v9"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+)
+
+type Server struct{}
+
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	pool, _ := pgxpool.New(ctx, "postgres://demo")
+	_ = pool.Ping(ctx)
+
+	keys := []string{"a", "b"}
+	for _, key := range keys {
+		conn, _ := pool.Acquire(ctx)
+		_ = conn
+		_ = key
+	}
+
+	redisClient := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_ = redisClient.Ping(ctx)
+	for _, key := range keys {
+		_ = redisClient.Get(ctx, key)
+	}
+
+	sqlDB, _ := sql.Open("pgx", "postgres://demo")
+	bunDB := bun.NewDB(sqlDB, pgdialect.New())
+	rows := make([]struct{ ID int }, 0)
+	_ = bunDB.NewSelect().Model(&rows).Scan(context.Background())
+
+	entClient, _ := ent.Open("postgres", "postgres://demo")
+	_ = entClient
+	w.WriteHeader(http.StatusOK)
+}
