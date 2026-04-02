@@ -33,8 +33,8 @@ src/heuristics/go/advanceplan3/mod.rs:309:        if &bytes[start..start + keywo
 src/heuristics/go/idioms.rs:1037:    let parameters = &signature_text[parameters_start + 1..parameters_end];
 src/heuristics/go/idioms.rs:1083:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go/performance.rs:338:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/python/framework.rs:285:            let rhs = &trimmed[eq_idx + 3..];
-src/heuristics/python/framework.rs:287:                let var = trimmed[..eq_idx].trim().to_string();
+src/heuristics/python/framework.rs:520:            let rhs = &trimmed[eq_idx + 3..];
+src/heuristics/python/framework.rs:522:                let var = trimmed[..eq_idx].trim().to_string();
 src/heuristics/python/hotpath_ext.rs:416:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
 src/heuristics/python/hotpath_ext.rs:418:            && let Some(source_start) = trimmed[in_idx + 5..].find(" in ")
 src/heuristics/python/hotpath_ext.rs:420:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
@@ -49,7 +49,7 @@ src/heuristics/rust/performance.rs:384:                let receiver = &line[star
 
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
-src/heuristics/python/framework.rs:77:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
+src/heuristics/python/framework.rs:312:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
 src/rules.rs:128:    fn finds_known_rule_metadata() {

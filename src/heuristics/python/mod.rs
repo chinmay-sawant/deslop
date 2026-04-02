@@ -24,10 +24,11 @@ use self::duplication::{
     test_utility_logic_findings,
 };
 use self::framework::{
-    django_extra_findings, django_loop_db_findings, django_n_plus_one_findings,
-    django_queryset_findings, django_values_findings, fastapi_handler_findings,
-    flask_handler_findings, handler_fanout_findings, middleware_findings, response_extra_findings,
-    sqlalchemy_findings, template_response_findings,
+    celery_task_findings, click_typer_command_findings, django_extra_findings,
+    django_loop_db_findings, django_n_plus_one_findings, django_queryset_findings,
+    django_values_findings, fastapi_handler_findings, flask_handler_findings,
+    handler_fanout_findings, middleware_findings, pydantic_v2_findings, response_extra_findings,
+    sqlalchemy_findings, sqlmodel_findings, template_response_findings,
 };
 use self::hotpath::{
     csv_flush_per_row_findings, dict_materialization_in_loop_findings,
@@ -140,6 +141,10 @@ pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> V
     findings.extend(flask_handler_findings(file, function));
     findings.extend(fastapi_handler_findings(file, function));
     findings.extend(sqlalchemy_findings(file, function));
+    findings.extend(sqlmodel_findings(file, function));
+    findings.extend(celery_task_findings(file, function));
+    findings.extend(click_typer_command_findings(file, function));
+    findings.extend(pydantic_v2_findings(file, function));
     findings.extend(middleware_findings(file, function));
     findings.extend(handler_fanout_findings(file, function));
     findings.extend(template_response_findings(file, function));

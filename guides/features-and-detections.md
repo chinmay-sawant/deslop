@@ -32,13 +32,13 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **362 language-scoped rule entries** in deslop `0.1.0`.
+The shipped registry currently tracks **408 language-scoped rule entries** in deslop `0.1.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
 | go | 172 | 2 | 0 | 174 |
-| python | 109 | 0 | 0 | 109 |
+| python | 155 | 0 | 0 | 155 |
 | rust | 56 | 12 | 0 | 68 |
 
 The sections below are generated from the rule registry and grouped by language and family.
@@ -267,7 +267,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `inconsistent_package_name`: Directories that mix base Go package names after ignoring the _test suffix.
 - `misgrouped_imports`: Import blocks that place stdlib imports after third-party imports.
 
-### Python rules (109)
+### Python rules (155)
 
 #### Ai Smells (5)
 - `enthusiastic_commentary`: Unusually enthusiastic or emoji-heavy production comments.
@@ -286,12 +286,58 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `duplicate_validation_pipeline`: Repeated validation guard pipelines across functions in one file.
 - `repeated_string_literal`: Project repeats the same long string literal multiple times in one file.
 
-#### Framework (5)
+#### Framework (51)
+- `celery_delay_in_loop_without_canvas`: Celery tasks dispatch .delay(...) or .apply_async(...) inside loops without an obvious canvas primitive such as group() or chord().
+- `celery_result_get_inside_task`: Celery tasks synchronously wait on AsyncResult.get(...) instead of handing work off asynchronously.
+- `celery_task_reads_env_per_invocation`: Celery task bodies repeatedly read environment configuration instead of using startup-time bootstrap.
+- `click_typer_config_file_loaded_per_command`: click or typer commands parse config files on each invocation instead of using shared bootstrap or dependency setup.
+- `click_typer_env_lookup_per_command`: click or typer commands scatter repeated environment lookups through the command body.
+- `click_typer_http_client_created_per_command`: click or typer commands allocate HTTP clients inside command bodies instead of reusing a shared client factory.
 - `django_all_without_limit_in_view`: Django views call .all() without visible pagination, slicing, or limiting.
+- `django_create_single_in_loop`: Django code creates one model at a time inside loops instead of using bulk_create().
+- `django_delete_single_in_loop`: Django code deletes individual models inside loops instead of using set-based queryset deletion.
+- `django_migration_code_in_view`: Django views or request paths reference schema or migration operations that belong in migrations.
 - `django_n_plus_one_no_select_related`: Django queryset iteration shows N+1 risk with no visible select_related(...) or prefetch_related(...).
 - `django_queryset_count_then_exists`: Django querysets use count() for existence checks instead of exists().
+- `django_queryset_evaluated_multiple_times`: The same Django queryset appears to be evaluated multiple times in one function.
 - `django_queryset_len_instead_of_count`: len(queryset) is used where queryset.count() would avoid loading every row.
 - `django_queryset_order_by_random`: Django querysets use order_by(\"?\") or equivalent random ordering on request paths.
+- `django_raw_sql_in_loop`: Django request or service code executes raw SQL inside loops instead of batching.
+- `django_save_full_model_in_loop`: Django code saves full model instances in loops without update_fields or bulk updates.
+- `django_update_single_in_loop`: Django code updates one row at a time inside loops instead of using bulk or set-based updates.
+- `django_values_vs_full_model_in_loop`: Django loops hydrate full model instances where values(), values_list(), or only() would likely be cheaper.
+- `fastapi_background_task_exception_silent`: FastAPI background task dispatches appear to rely on default exception behavior without visible error handling.
+- `fastapi_dependency_creates_client_per_request`: FastAPI dependencies construct HTTP clients per request instead of using app lifespan or shared setup.
+- `fastapi_response_model_without_orm_mode`: FastAPI response models use ORM conversion paths without visible ORM compatibility configuration.
+- `fastapi_sync_def_with_blocking_io`: FastAPI sync route handlers perform blocking I/O instead of using async routes or executor offload.
+- `flask_app_config_read_per_request`: Flask views repeatedly read app.config on request paths instead of consuming bootstrapped settings.
+- `flask_debug_mode_in_production_code`: Flask code enables debug=True in application runtime paths.
+- `flask_file_read_per_request`: Flask views read files directly on request paths instead of using cached or static responses.
+- `flask_global_db_connection_per_request`: Flask views create database connections per request instead of using pooled or app-scoped access.
+- `flask_json_encoder_per_request`: Flask views instantiate JSON encoders per request instead of reusing app-level serialization setup.
+- `flask_no_streaming_for_large_response`: Flask views build large in-memory responses where generator or streaming responses would fit better.
+- `flask_request_body_parsed_multiple_times`: Flask request handlers parse the same request body multiple times.
+- `flask_template_rendered_from_string_in_view`: Flask views render templates from inline strings instead of using file-backed templates.
+- `large_dict_literal_response_in_handler`: Handlers build large inline dict responses where typed response models would be clearer and cheaper.
+- `middleware_compiles_regex_per_request`: Middleware compiles regex patterns per request instead of precompiling them.
+- `middleware_creates_http_client_per_request`: Middleware creates HTTP clients per request instead of reusing app-scoped clients.
+- `middleware_loads_config_file_per_request`: Middleware loads config files on request paths instead of using startup configuration.
+- `pydantic_model_dump_then_json_dumps`: Pydantic v2 code serializes model_dump() output through json.dumps(...) instead of using model_dump_json().
+- `pydantic_model_validate_after_json_loads`: Pydantic v2 validation is preceded by json.loads(...) even though model_validate_json() could validate raw JSON directly.
+- `response_json_dumps_then_response_object`: Handlers manually json.dumps(...) payloads and then wrap them in framework Response objects.
+- `sqlalchemy_commit_per_row_in_loop`: SQLAlchemy sessions commit inside loops instead of batching changes and committing once.
+- `sqlalchemy_create_engine_per_request`: SQLAlchemy engines are created on request or handler paths instead of being process-scoped.
+- `sqlalchemy_expire_on_commit_default_in_async`: Async SQLAlchemy sessions rely on the default expire_on_commit behavior instead of making the async access pattern explicit.
+- `sqlalchemy_n_plus_one_lazy_load`: SQLAlchemy query shapes suggest lazy-loaded N+1 access with no visible eager loading.
+- `sqlalchemy_query_in_loop`: SQLAlchemy code issues queries inside loops instead of batching or prefetching.
+- `sqlalchemy_session_not_closed`: SQLAlchemy Session objects are created without context-manager or close handling.
+- `sqlmodel_commit_per_row_in_loop`: SQLModel sessions commit inside loops instead of applying one transaction after batched updates.
+- `sqlmodel_session_exec_in_loop`: SQLModel Session.exec(...) is called inside loops instead of combining the query shape.
+- `sqlmodel_unbounded_select_in_handler`: Handlers execute SQLModel select().all() paths without visible limits or pagination.
+- `template_render_in_loop`: Template rendering appears inside loops instead of rendering once over prepared data.
+- `upstream_call_without_timeout_in_handler`: Request handlers issue upstream HTTP calls without visible timeout configuration.
+- `upstream_http_call_per_item_in_handler`: Request handlers make sequential upstream HTTP calls inside loops instead of batching or bounded concurrency.
+- `upstream_response_not_checked_before_decode`: Handlers decode upstream responses without visible status checks such as raise_for_status() or status_code guards.
 
 #### Hot Path (4)
 - `append_then_sort_each_iteration`: A collection is appended to and then sorted on each iteration instead of sorting once after accumulation.

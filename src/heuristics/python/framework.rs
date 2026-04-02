@@ -48,6 +48,241 @@ fn is_middleware(function: &ParsedFunction) -> bool {
         || sig.contains("process_view")
 }
 
+fn is_celery_task(function: &ParsedFunction, file: &ParsedFile) -> bool {
+    if !has_import(file, "celery") {
+        return false;
+    }
+
+    let sig = &function.signature_text;
+    sig.contains("@shared_task")
+        || sig.contains(".task(")
+        || sig.contains(".task\n")
+        || sig.contains(".task\r\n")
+}
+
+fn is_click_or_typer_command(function: &ParsedFunction, file: &ParsedFile) -> bool {
+    if !(has_import(file, "click") || has_import(file, "typer")) {
+        return false;
+    }
+
+    let sig = &function.signature_text;
+    sig.contains("@click.command")
+        || sig.contains("@click.group")
+        || sig.contains(".command(")
+        || sig.contains(".callback(")
+}
+
+fn env_lookup_lines(body: &str, base_line: usize) -> Vec<usize> {
+    body.lines()
+        .enumerate()
+        .filter_map(|(i, line)| {
+            let trimmed = line.trim();
+            (trimmed.contains("os.getenv(")
+                || trimmed.contains("os.environ[")
+                || trimmed.contains("os.environ.get("))
+            .then_some(base_line + i)
+        })
+        .collect()
+}
+
+fn collect_loop_lines<'a>(body: &'a str, base_line: usize) -> Vec<(usize, &'a str)> {
+    let lines: Vec<&'a str> = body.lines().collect();
+    let mut loop_indent: Option<usize> = None;
+    let mut loop_lines = Vec::new();
+
+    for (i, line) in lines.iter().enumerate() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("for ") && trimmed.ends_with(':') {
+            loop_indent = Some(indent_level(line));
+            continue;
+        }
+        if let Some(li) = loop_indent
+            && !trimmed.is_empty()
+            && indent_level(line) <= li
+            && !trimmed.starts_with('#')
+        {
+            loop_indent = None;
+        }
+        if loop_indent.is_some() && !trimmed.is_empty() {
+            loop_lines.push((base_line + i, trimmed));
+        }
+    }
+
+    loop_lines
+}
+
+fn python_binding_name(text: &str) -> Option<&str> {
+    let (left, _) = text.split_once(" = ")?;
+    let binding = left.trim().split(',').next()?.trim();
+    (!binding.is_empty()
+        && binding
+            .chars()
+            .all(|character| character == '_' || character.is_ascii_alphanumeric()))
+    .then_some(binding)
+}
+
+// ── Celery rules ─────────────────────────────────────────────────────────────
+
+pub(super) fn celery_task_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if function.is_test_function || !is_celery_task(function, file) {
+        return Vec::new();
+    }
+
+    let body = &function.body_text;
+    let mut findings = Vec::new();
+
+    let loop_lines = collect_loop_lines(body, function.fingerprint.start_line);
+    let has_canvas_escape = body.contains("group(")
+        || body.contains("chord(")
+        || body.contains("chunks(")
+        || body.contains("starmap(")
+        || body.contains(".map(");
+    if !has_canvas_escape
+        && let Some((line, _)) = loop_lines
+            .iter()
+            .find(|(_, text)| text.contains(".delay(") || text.contains(".apply_async("))
+    {
+        findings.push(make_finding(
+            "celery_delay_in_loop_without_canvas",
+            Severity::Warning,
+            file,
+            function,
+            *line,
+            "dispatches Celery tasks inside a loop without an obvious canvas primitive like group() or chord()",
+        ));
+    }
+
+    let mut async_result_bindings = Vec::<(String, usize)>::new();
+    for (i, line) in body.lines().enumerate() {
+        let trimmed = line.trim();
+        if (trimmed.contains(".delay(") || trimmed.contains(".apply_async("))
+            && let Some(binding) = python_binding_name(trimmed)
+        {
+            async_result_bindings.push((binding.to_string(), function.fingerprint.start_line + i));
+        }
+    }
+    for (binding, assigned_line) in async_result_bindings {
+        if let Some(line) = find_line(
+            body,
+            &format!("{binding}.get("),
+            function.fingerprint.start_line,
+        ) {
+            findings.push(Finding {
+                rule_id: "celery_result_get_inside_task".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: line,
+                end_line: line,
+                message: format!(
+                    "function {} waits on a Celery result inside a task",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("AsyncResult-like binding {binding} assigned at line {assigned_line}"),
+                    format!("{binding}.get(...) observed at line {line}"),
+                ],
+            });
+            break;
+        }
+    }
+
+    let env_reads = env_lookup_lines(body, function.fingerprint.start_line);
+    if env_reads.len() >= 3 {
+        findings.push(Finding {
+            rule_id: "celery_task_reads_env_per_invocation".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: env_reads[0],
+            end_line: env_reads[0],
+            message: format!(
+                "function {} reads environment configuration repeatedly inside a Celery task",
+                function.fingerprint.name
+            ),
+            evidence: vec![format!("environment reads observed at lines {env_reads:?}")],
+        });
+    }
+
+    findings
+}
+
+// ── Click / Typer rules ──────────────────────────────────────────────────────
+
+pub(super) fn click_typer_command_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function || !is_click_or_typer_command(function, file) {
+        return Vec::new();
+    }
+
+    let body = &function.body_text;
+    let mut findings = Vec::new();
+
+    for pattern in &[
+        "json.load(",
+        "yaml.safe_load(",
+        "toml.load(",
+        "configparser.",
+        ".read_text()",
+    ] {
+        if body.contains(pattern)
+            && let Some(line) = find_line(body, pattern, function.fingerprint.start_line)
+        {
+            findings.push(make_finding(
+                "click_typer_config_file_loaded_per_command",
+                Severity::Info,
+                file,
+                function,
+                line,
+                "loads config or settings files inside a click/typer command; centralize config bootstrap instead",
+            ));
+            break;
+        }
+    }
+
+    let env_reads = env_lookup_lines(body, function.fingerprint.start_line);
+    if env_reads.len() >= 3 {
+        findings.push(Finding {
+            rule_id: "click_typer_env_lookup_per_command".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: env_reads[0],
+            end_line: env_reads[0],
+            message: format!(
+                "function {} scatters environment lookups across one command invocation",
+                function.fingerprint.name
+            ),
+            evidence: vec![format!("environment reads observed at lines {env_reads:?}")],
+        });
+    }
+
+    for pattern in &[
+        "requests.Session(",
+        "httpx.Client(",
+        "httpx.AsyncClient(",
+        "aiohttp.ClientSession(",
+    ] {
+        if body.contains(pattern)
+            && let Some(line) = find_line(body, pattern, function.fingerprint.start_line)
+        {
+            findings.push(make_finding(
+                "click_typer_http_client_created_per_command",
+                Severity::Info,
+                file,
+                function,
+                line,
+                "creates an HTTP client inside a click/typer command instead of reusing a shared client factory",
+            ));
+            break;
+        }
+    }
+
+    findings
+}
+
 // ── Django ORM rules ──────────────────────────────────────────────────────────
 
 pub(super) fn django_queryset_findings(
@@ -670,6 +905,107 @@ pub(super) fn sqlalchemy_findings(file: &ParsedFile, function: &ParsedFunction) 
             function,
             line,
             "async session uses expire_on_commit=True (default); set False to avoid implicit I/O",
+        ));
+    }
+
+    findings
+}
+
+// ── SQLModel rules ───────────────────────────────────────────────────────────
+
+pub(super) fn sqlmodel_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if function.is_test_function || !has_import(file, "sqlmodel") {
+        return Vec::new();
+    }
+
+    let body = &function.body_text;
+    let mut findings = Vec::new();
+
+    for (line, trimmed) in collect_loop_lines(body, function.fingerprint.start_line) {
+        if trimmed.contains(".exec(") {
+            findings.push(make_finding(
+                "sqlmodel_session_exec_in_loop",
+                Severity::Info,
+                file,
+                function,
+                line,
+                "calls Session.exec(...) inside a loop; batch the query or fetch rows in one statement",
+            ));
+            break;
+        }
+    }
+
+    for (line, trimmed) in collect_loop_lines(body, function.fingerprint.start_line) {
+        if trimmed.contains(".commit(") {
+            findings.push(make_finding(
+                "sqlmodel_commit_per_row_in_loop",
+                Severity::Info,
+                file,
+                function,
+                line,
+                "commits inside a loop; accumulate changes and commit once after the loop",
+            ));
+            break;
+        }
+    }
+
+    if is_handler_or_view(function, file)
+        && body.contains(".exec(")
+        && (body.contains(".all(") || body.contains(".all()"))
+        && body.contains("select(")
+        && !body.contains(".limit(")
+        && let Some(line) = find_line(body, ".exec(", function.fingerprint.start_line)
+    {
+        findings.push(make_finding(
+            "sqlmodel_unbounded_select_in_handler",
+            Severity::Warning,
+            file,
+            function,
+            line,
+            "executes a SQLModel select().all() path in a handler without an obvious limit or pagination boundary",
+        ));
+    }
+
+    findings
+}
+
+// ── Pydantic v2 rules ────────────────────────────────────────────────────────
+
+pub(super) fn pydantic_v2_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if function.is_test_function || !has_import(file, "pydantic") {
+        return Vec::new();
+    }
+
+    let body = &function.body_text;
+    let mut findings = Vec::new();
+
+    if body.contains("json.loads(")
+        && body.contains("model_validate(")
+        && !body.contains("model_validate_json(")
+        && let Some(line) = find_line(body, "json.loads(", function.fingerprint.start_line)
+    {
+        findings.push(make_finding(
+            "pydantic_model_validate_after_json_loads",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "parses JSON with json.loads(...) before Pydantic validation; prefer model_validate_json(...) when validating raw JSON payloads",
+        ));
+    }
+
+    if body.contains("model_dump(")
+        && body.contains("json.dumps(")
+        && !body.contains("model_dump_json(")
+        && let Some(line) = find_line(body, "json.dumps(", function.fingerprint.start_line)
+    {
+        findings.push(make_finding(
+            "pydantic_model_dump_then_json_dumps",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "serializes model_dump() through json.dumps(...); prefer model_dump_json(...) when producing JSON directly",
         ));
     }
 

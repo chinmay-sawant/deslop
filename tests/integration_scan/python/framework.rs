@@ -53,6 +53,20 @@ const FRAMEWORK_RULES: &[&str] = &[
     "response_json_dumps_then_response_object",
 ];
 
+const PHASE3_FRAMEWORK_RULES: &[&str] = &[
+    "celery_delay_in_loop_without_canvas",
+    "celery_result_get_inside_task",
+    "celery_task_reads_env_per_invocation",
+    "click_typer_config_file_loaded_per_command",
+    "click_typer_env_lookup_per_command",
+    "click_typer_http_client_created_per_command",
+    "pydantic_model_dump_then_json_dumps",
+    "pydantic_model_validate_after_json_loads",
+    "sqlmodel_commit_per_row_in_loop",
+    "sqlmodel_session_exec_in_loop",
+    "sqlmodel_unbounded_select_in_handler",
+];
+
 #[test]
 fn test_python_framework_positive() {
     let temp_dir = create_temp_workspace();
@@ -93,6 +107,50 @@ fn test_python_framework_clean() {
     .expect("scan should succeed");
 
     assert_rules_absent(&report, FRAMEWORK_RULES);
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_framework_phase3_positive() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/framework_phase3.py",
+            python_fixture!("integration/framework/framework_phase3_positive.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert_rules_present(&report, PHASE3_FRAMEWORK_RULES);
+
+    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
+}
+
+#[test]
+fn test_python_framework_phase3_clean() {
+    let temp_dir = create_temp_workspace();
+    write_files(
+        &temp_dir,
+        &[(
+            "pkg/framework_phase3.py",
+            python_fixture!("integration/framework/framework_phase3_clean.txt"),
+        )],
+    );
+
+    let report = scan_repository(&ScanOptions {
+        root: temp_dir.clone(),
+        respect_ignore: true,
+    })
+    .expect("scan should succeed");
+
+    assert_rules_absent(&report, PHASE3_FRAMEWORK_RULES);
 
     fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
