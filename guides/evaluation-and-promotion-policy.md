@@ -28,13 +28,23 @@ deslop now keeps a dedicated corpus manifest in `corpus/manifest.json` and a har
 Current workflow goals:
 
 - keep `gopdfsuit` and `SnapBack` as active comparison targets
-- reserve planned slots for:
-  - one additional Go HTTP-style service
-  - one additional Go gRPC-style service
+- keep additional active local corpus targets for:
+  - one Go HTTP-style service
+  - one Go RPC-style service
   - one Python web or API application
   - one Python ML or LLM application
   - one Rust application
 - make scan and benchmark conventions explicit and repeatable
+
+Current active local assignments:
+
+- `gopdfsuit`: Go service baseline and comparison target
+- `snapback`: Python web application target with LLM-adjacent behavior
+- `go-http-service-slot`: local Go HTTP-style service backed by `OneForAll`
+- `go-grpc-service-slot`: local Twirp and Protobuf RPC-style service backed by `TwirpUnderstanding`
+- `python-web-slot`: temporary Python web slot backed by `SnapBack`
+- `python-ml-slot`: temporary Python ML/LLM slot backed by `SnapBack`
+- `rust-app-slot`: Rust CLI application backed by `rusize`
 
 ## Harness Commands
 
