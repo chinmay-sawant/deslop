@@ -202,6 +202,21 @@ Run the test suite:
 cargo test
 ```
 
+Validate the documentation sync and corpus manifest:
+
+```bash
+python3 scripts/sync_docs.py --check
+python3 scripts/corpus_harness.py validate
+```
+
+List or run the real-repository evaluation corpus:
+
+```bash
+python3 scripts/corpus_harness.py list
+python3 scripts/corpus_harness.py run --target gopdfsuit --scan
+python3 scripts/corpus_harness.py run --target gopdfsuit --bench
+```
+
 Build release executables for your current platform or cross-compile for other supported platforms:
 
 ```bash
@@ -220,6 +235,7 @@ rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin x86_64-unknown-linux
 The native release binary is written to `target/release/`. Cross-compiled binaries are written under `target/<target-triple>/release/` and are named `deslop` on Unix-like systems and `deslop.exe` on Windows.
 
 For a detailed architecture and roadmap guide, see `guides/implementation-guide.md`.
+For the corpus workflow and promotion contract, see `guides/evaluation-and-promotion-policy.md`.
 For a detector-oriented overview, see `guides/features-and-detections.md`.
 
 Library code uses typed errors internally and keeps `anyhow` at the CLI edge. The scanner also uses bounded file reads by default so repository scans do not rely on unbounded `read_to_string` calls.

@@ -19,6 +19,9 @@ jobs:
       - name: Check docs and action sync
         run: python3 scripts/sync_docs.py --check
 
+      - name: Check corpus manifest
+        run: python3 scripts/corpus_harness.py validate
+
       - name: Test
         run: cargo test --locked
 

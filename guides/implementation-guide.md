@@ -21,6 +21,7 @@ deslop now treats planning material in three buckets:
 ## Active Guides
 
 - [`master-roadmap.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/master-roadmap.md): current multi-phase roadmap for rule governance, docs sync, evaluation, and language expansion
+- [`evaluation-and-promotion-policy.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/evaluation-and-promotion-policy.md): operational contract for corpus evaluation, rule stability tiers, and promotion evidence
 - [`features-and-detections.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/features-and-detections.md): user-facing inventory of shipped detections and current limitations
 - [`release-checklist.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/release-checklist.md): rollout and release validation checklist
 
