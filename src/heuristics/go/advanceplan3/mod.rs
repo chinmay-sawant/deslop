@@ -46,7 +46,10 @@ fn core_hot_path_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
 }
 
 pub(crate) fn is_request_path_function(file: &ParsedFile, function: &ParsedFunction) -> bool {
-    is_gin_handler(file, function) || is_http_handler(file, function)
+    is_gin_handler(file, function)
+        || is_http_handler(file, function)
+        || is_echo_handler(file, function)
+        || is_fiber_handler(file, function)
 }
 
 pub(crate) fn is_likely_non_request_workload(file: &ParsedFile, function: &ParsedFunction) -> bool {
@@ -117,6 +120,25 @@ pub(crate) fn is_http_handler(file: &ParsedFile, function: &ParsedFunction) -> b
                 && function
                     .signature_text
                     .contains(&format!("*{alias}.Request"))
+        })
+}
+
+pub(crate) fn is_echo_handler(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    import_aliases_for(file, "github.com/labstack/echo/v4")
+        .into_iter()
+        .any(|alias| {
+            function
+                .signature_text
+                .contains(&format!("{alias}.Context"))
+        })
+}
+
+pub(crate) fn is_fiber_handler(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    import_aliases_for(file, "github.com/gofiber/fiber/v2")
+        .into_iter()
+        .any(|alias| {
+            function.signature_text.contains(&format!("*{alias}.Ctx"))
+                || function.signature_text.contains(&format!("{alias}.Ctx"))
         })
 }
 

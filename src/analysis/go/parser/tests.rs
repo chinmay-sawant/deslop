@@ -17,6 +17,8 @@ macro_rules! go_parser_fixture {
 #[test]
 fn test_import_alias() {
     assert_eq!(alias_from_path("github.com/acme/utils"), "utils");
+    assert_eq!(alias_from_path("github.com/labstack/echo/v4"), "echo");
+    assert_eq!(alias_from_path("github.com/gofiber/fiber/v2"), "fiber");
 }
 
 #[test]

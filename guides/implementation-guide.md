@@ -20,6 +20,7 @@ deslop now treats planning material in three buckets:
 
 ## Active Guides
 
+- [`README.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/README.md): guide index and taxonomy entry point
 - [`master-roadmap.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/master-roadmap.md): current multi-phase roadmap for rule governance, docs sync, evaluation, and language expansion
 - [`evaluation-and-promotion-policy.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/evaluation-and-promotion-policy.md): operational contract for corpus evaluation, rule stability tiers, and promotion evidence
 - [`features-and-detections.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/features-and-detections.md): user-facing inventory of shipped detections and current limitations
@@ -47,6 +48,8 @@ These documents are retained because they explain how major rule families were s
 ## Backlog And Future Work
 
 Backlog planning now belongs in the master roadmap first.
+
+Canonical backlog issue definitions live in [`guides/backlog/roadmap-issue-backlog.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/roadmap-issue-backlog.md).
 
 If a new language, rule family, or evaluation workflow needs a dedicated guide:
 
