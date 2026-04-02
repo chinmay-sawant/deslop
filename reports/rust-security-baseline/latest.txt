@@ -48,9 +48,15 @@ src/heuristics/rust/performance.rs:346:    line[start + marker.len()..].starts_w
 src/heuristics/rust/performance.rs:384:                let receiver = &line[start..index];
 
 ## toctou_fs_checks
+src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
 src/heuristics/python/framework.rs:77:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
+src/rules.rs:128:    fn finds_known_rule_metadata() {
+src/rules.rs:129:        let metadata = rule_metadata("dropped_error", RuleLanguage::Go)
+src/rules.rs:162:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
+src/rules.rs:171:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
+src/rules.rs:69:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
 
 ## toctou_check_then_open
 

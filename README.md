@@ -93,65 +93,100 @@ Benchmark with JSON output:
 cargo run -- bench --json /path/to/repo
 ```
 
+List rules from the central registry:
+
+```bash
+cargo run -- rules
+cargo run -- rules --language go
+cargo run -- rules --status experimental --json
+```
+
+## Rule Inventory
+
+<!-- GENERATED_RULE_SUMMARY_START -->
+deslop now publishes a central rule registry that drives the CLI and the synced docs surfaces.
+
+| Language | Stable | Experimental | Research | Total |
+| --- | ---: | ---: | ---: | ---: |
+| common | 11 | 0 | 0 | 11 |
+| go | 172 | 2 | 0 | 174 |
+| python | 109 | 0 | 0 | 109 |
+| rust | 56 | 12 | 0 | 68 |
+| total | 348 | 14 | 0 | 362 |
+
+The totals above are language-scoped rule entries, so a shared rule ID implemented in more than one backend appears in each relevant language bucket.
+The registry is now the source of truth for `deslop rules`, the frontend rule catalog, and the generated detection inventory guide.
+<!-- GENERATED_RULE_SUMMARY_END -->
+
 ## GitHub Action
 
 Use deslop directly in GitHub Actions without installing Rust. The action downloads the matching release binary for the current runner, adds it to the PATH, and runs either `deslop scan` or `deslop bench`.
 
 Scan the checked out repository with the defaults:
 
+<!-- GENERATED_ACTION_SCAN_EXAMPLE_START -->
 ```yaml
 name: Deslop
 
 on:
-	pull_request:
-	push:
-		branches:
-			- main
+  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
-	scan:
-		runs-on: ubuntu-latest
-		steps:
-			- uses: actions/checkout@v4
-			- uses: chinmay-sawant/deslop@v0.1.0
-				with:
-					path: .
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chinmay-sawant/deslop@v0.1.0
+        with:
+          path: .
 ```
+<!-- GENERATED_ACTION_SCAN_EXAMPLE_END -->
 
 Emit JSON and include detail-only findings:
 
+<!-- GENERATED_ACTION_JSON_EXAMPLE_START -->
 ```yaml
 - uses: actions/checkout@v4
 - uses: chinmay-sawant/deslop@v0.1.0
-	with:
-		path: .
-		json: 'true'
-		details: 'true'
+  with:
+    path: .
+    json: 'true'
+    details: 'true'
+    fail-on-findings: 'false'
 ```
+<!-- GENERATED_ACTION_JSON_EXAMPLE_END -->
 
 Run a benchmark job instead of a scan:
 
+<!-- GENERATED_ACTION_BENCH_EXAMPLE_START -->
 ```yaml
 - uses: actions/checkout@v4
 - uses: chinmay-sawant/deslop@v0.1.0
-	with:
-		command: bench
-		path: .
-		repeats: '10'
-		warmups: '2'
+  with:
+    command: bench
+    path: .
+    repeats: '10'
+    warmups: '2'
 ```
+<!-- GENERATED_ACTION_BENCH_EXAMPLE_END -->
 
 Inputs:
 
-- `version`: Release tag to install, for example `v0.1.0`. When omitted, deslop uses the action ref if it is a full release tag such as `v0.1.0`; otherwise it downloads the latest release binary.
-- `command`: `scan` or `bench`. Defaults to `scan`.
-- `path`: Path to the repository you want to analyze. Defaults to `.`.
-- `json`: Set to `true` to emit JSON output.
-- `details`: Set to `true` to include detail-only findings for `scan`.
-- `no-ignore`: Set to `true` to ignore `.gitignore` filtering.
-- `enable-semantic`: Set to `true` to enable the opt-in deeper semantic Go rule pack.
-- `repeats`: Benchmark repeat count for `bench`. Defaults to `5`.
-- `warmups`: Benchmark warmup count for `bench`. Defaults to `1`.
+<!-- GENERATED_ACTION_INPUTS_START -->
+- `version`: Release tag to install, for example v0.1.0. Defaults to the current action ref when it is a full release tag, otherwise latest. Optional.
+- `command`: Subcommand to run. Supported values are scan and bench. Defaults to `scan`. Optional.
+- `path`: Path to the repository to analyze. Defaults to `.`. Optional.
+- `json`: Emit JSON output. Defaults to `false`. Optional.
+- `details`: Include detail-only scan findings. Applies only to the scan command. Defaults to `false`. Optional.
+- `no-ignore`: Scan without respecting .gitignore. Defaults to `false`. Optional.
+- `enable-semantic`: Enable the opt-in deeper semantic Go heuristics. Defaults to `false`. Optional.
+- `fail-on-findings`: Exit with a non-zero status code when scan findings are present. Applies only to the scan command. Defaults to `true`. Optional.
+- `repeats`: Benchmark repeat count. Applies only to the bench command. Defaults to `5`. Optional.
+- `warmups`: Benchmark warmup count. Applies only to the bench command. Defaults to `1`. Optional.
+<!-- GENERATED_ACTION_INPUTS_END -->
 
 ## Recent Go additions
 
