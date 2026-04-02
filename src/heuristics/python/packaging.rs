@@ -60,7 +60,12 @@ pub(super) fn pyproject_repo_findings(
 
     let mut findings = Vec::new();
     findings.extend(pyproject_requires_python_findings(&pyproject_path, &parsed));
-    findings.extend(pyproject_script_findings(&pyproject_path, &parsed, files, index));
+    findings.extend(pyproject_script_findings(
+        &pyproject_path,
+        &parsed,
+        files,
+        index,
+    ));
     findings.extend(cross_package_internal_import_findings(files, index));
     findings
 }
@@ -87,10 +92,12 @@ fn pyproject_requires_python_findings(pyproject_path: &Path, parsed: &Value) -> 
         .and_then(Value::as_table)
         .and_then(|dependencies| dependencies.get("python"))
         .and_then(|python| {
-            python
-                .as_str()
-                .map(str::to_string)
-                .or_else(|| python.get("version").and_then(Value::as_str).map(str::to_string))
+            python.as_str().map(str::to_string).or_else(|| {
+                python
+                    .get("version")
+                    .and_then(Value::as_str)
+                    .map(str::to_string)
+            })
         });
 
     if pep621_requires_python.is_some() || poetry_python.is_some() {

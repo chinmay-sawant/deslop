@@ -200,7 +200,11 @@ fn test_rust_advanced_negative_fixtures() {
 #[test]
 fn test_rust_phase4_runtime_boundary_rules() {
     let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("phase4/positive.txt"));
+    write_fixture(
+        &temp_dir,
+        "src/lib.rs",
+        rust_fixture!("phase4/positive.txt"),
+    );
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -235,7 +239,11 @@ fn test_rust_phase4_runtime_boundary_rules() {
 #[test]
 fn test_rust_phase4_runtime_boundary_clean() {
     let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("phase4/negative.txt"));
+    write_fixture(
+        &temp_dir,
+        "src/lib.rs",
+        rust_fixture!("phase4/negative.txt"),
+    );
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -275,7 +283,11 @@ fn test_rust_phase4_workspace_manifest_rule() {
         "Cargo.toml",
         "[workspace]\nmembers = [\"app\", \"lib\"]\n",
     );
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("phase4/negative.txt"));
+    write_fixture(
+        &temp_dir,
+        "src/lib.rs",
+        rust_fixture!("phase4/negative.txt"),
+    );
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),
@@ -307,7 +319,11 @@ fn test_rust_phase4_workspace_manifest_clean() {
         "Cargo.toml",
         "[workspace]\nresolver = \"2\"\nmembers = [\"app\", \"lib\"]\n",
     );
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("phase4/negative.txt"));
+    write_fixture(
+        &temp_dir,
+        "src/lib.rs",
+        rust_fixture!("phase4/negative.txt"),
+    );
 
     let report = scan_repository(&ScanOptions {
         root: temp_dir.clone(),

@@ -138,10 +138,9 @@ pub(crate) fn runtime_function_findings(
         }
     }
 
-    for line in lines
-        .iter()
-        .filter(|line| line.in_loop && line.text.contains(".clone()") && looks_like_heavy_clone(line.text.as_str()))
-    {
+    if let Some(line) = lines.iter().find(|line| {
+        line.in_loop && line.text.contains(".clone()") && looks_like_heavy_clone(line.text.as_str())
+    }) {
         findings.push(function_finding(
             file,
             function,
@@ -158,7 +157,6 @@ pub(crate) fn runtime_function_findings(
                     .to_string(),
             ],
         ));
-        break;
     }
 
     findings

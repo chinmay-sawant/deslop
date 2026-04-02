@@ -1775,7 +1775,10 @@ fn service_client_lifecycle_findings(
                             function.fingerprint.name
                         ),
                         evidence: vec![
-                            format!("{}.New-like call observed at line {}", alias, body_line.line),
+                            format!(
+                                "{}.New-like call observed at line {}",
+                                alias, body_line.line
+                            ),
                             "pgxpool pools are usually initialized once and reused across requests"
                                 .to_string(),
                         ],
@@ -1838,8 +1841,12 @@ fn service_client_lifecycle_findings(
         for alias in &redis_aliases {
             for body_line in lines {
                 if body_line.text.contains(&format!("{alias}.NewClient("))
-                    || body_line.text.contains(&format!("{alias}.NewClusterClient("))
-                    || body_line.text.contains(&format!("{alias}.NewFailoverClient("))
+                    || body_line
+                        .text
+                        .contains(&format!("{alias}.NewClusterClient("))
+                    || body_line
+                        .text
+                        .contains(&format!("{alias}.NewFailoverClient("))
                     || body_line.text.contains(&format!("{alias}.NewRing("))
                 {
                     findings.push(Finding {
@@ -1897,13 +1904,7 @@ fn service_client_lifecycle_findings(
     {
         for body_line in lines.iter().filter(|line| line.in_loop) {
             if [
-                ".Get(",
-                ".Set(",
-                ".Del(",
-                ".HGet(",
-                ".HSet(",
-                ".Incr(",
-                ".Exists(",
+                ".Get(", ".Set(", ".Del(", ".HGet(", ".HSet(", ".Incr(", ".Exists(",
             ]
             .iter()
             .any(|marker| body_line.text.contains(marker))
@@ -1959,30 +1960,28 @@ fn service_client_lifecycle_findings(
             && function.body_text.contains("NewSelect(")
             && function.body_text.contains(".Scan(")
             && !function.body_text.contains(".Limit(")
-        {
-            if let Some(line) = lines
+            && let Some(line) = lines
                 .iter()
                 .find(|line| line.text.contains("NewSelect("))
                 .map(|line| line.line)
-            {
-                findings.push(Finding {
-                    rule_id: "bun_select_scan_without_limit".to_string(),
-                    severity: Severity::Info,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: line,
-                    end_line: line,
-                    message: format!(
-                        "function {} scans a Bun select without a visible limit on a request path",
-                        function.fingerprint.name
-                    ),
-                    evidence: vec![
-                        format!("NewSelect/Scan chain observed at line {}", line),
-                        "request-path scans usually benefit from LIMIT, pagination, or cursor iteration"
-                            .to_string(),
-                    ],
-                });
-            }
+        {
+            findings.push(Finding {
+                rule_id: "bun_select_scan_without_limit".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: line,
+                end_line: line,
+                message: format!(
+                    "function {} scans a Bun select without a visible limit on a request path",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("NewSelect/Scan chain observed at line {}", line),
+                    "request-path scans usually benefit from LIMIT, pagination, or cursor iteration"
+                        .to_string(),
+                ],
+            });
         }
 
         for alias in ent_import_aliases(file) {
