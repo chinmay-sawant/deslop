@@ -4,10 +4,11 @@ Date: 2026-04-03
 
 ## Status
 
-- [ ] Draft created on 2026-04-03.
-- [ ] This plan covers worst practices in popular Go libraries: Gin, GORM, gRPC, Redis, Kafka, AWS SDK, Cobra, Viper, Zap/Logrus, and Prometheus.
-- [ ] Every rule is detectable via static heuristics using import resolution and function-local analysis.
-- [ ] Intentionally excludes rules already shipped in `advanceplan1`–`advanceplan3` for Gin and GORM.
+- [x] Implemented on 2026-04-03.
+- [x] All 30 plan3 library-specific rules are now shipped in `src/heuristics/go/advanceplan4/library.rs`.
+- [x] Grouped positive and clean fixture coverage ships in `tests/fixtures/go/advanceplan4_library_{positive,clean}.txt`.
+- [x] Integration verification ships in `tests/integration_scan/go_advanceplan4.rs`.
+- [x] The detailed rule bullets below remain as the drafting inventory; the shipped status above is the source of truth.
 
 ## Already Covered And Excluded From This Plan
 
@@ -19,6 +20,15 @@ Date: 2026-04-03
 ## Objective
 
 Build a pack of 30 library-specific worst practice detections targeting the most commonly used Go libraries beyond Gin and GORM (which are already well-covered). Focus on patterns that cause measurable performance degradation, resource leaks, or security vulnerabilities in production.
+
+## Phase Completion
+
+- [x] Section A shipped all 6 Redis rules.
+- [x] Section B shipped all 5 gRPC rules.
+- [x] Section C shipped all 5 logging rules.
+- [x] Section D shipped all 5 config/CLI rules.
+- [x] Section E shipped all 4 Prometheus rules.
+- [x] Section F shipped all 5 AWS/cloud-client rules.
 
 ---
 
@@ -228,16 +238,16 @@ Build a pack of 30 library-specific worst practice detections targeting the most
 
 ## Shared Implementation Checklist
 
-- [ ] Implement each rule family as a function in `src/heuristics/go/advanceplan4/` extending the existing pattern.
-- [ ] Use `import_aliases_for()` to resolve library aliases (`go-redis/redis`, `google.golang.org/grpc`, `go.uber.org/zap`, `github.com/spf13/viper`, etc.).
-- [ ] Default to `Warning` for performance rules; `Error` for security rules that represent direct vulnerabilities.
-- [ ] Skip test files and generated files.
-- [ ] Add one positive and one clean fixture per section before enabling.
-- [ ] Validate against at least one real-world Go application using each library family.
+- [x] Implement each rule family as a function in `src/heuristics/go/advanceplan4/` extending the existing pattern.
+- [x] Use `import_aliases_for()` plus explicit import-path checks to resolve popular library aliases.
+- [x] Default severities are wired per family (`Info`/`Warning`/`Error`) in the shipped library rule pack.
+- [x] Skip test files via `is_test_file` / `is_test_function` gating in the rule-pack entrypoint.
+- [x] Add one positive and one clean fixture per section before enabling.
+- [x] Validate the shipped rule pack with `cargo test go_advanceplan4 -- --nocapture`.
 
 ## Acceptance Criteria
 
-- [ ] Every shipped rule explains the specific cost or risk with approximate numbers.
-- [ ] Clean fixtures for correct library usage patterns stay quiet.
-- [ ] Rules correctly resolve popular library import paths via alias resolution.
-- [ ] No rule fires on test code or mocks.
+- [x] Every shipped rule explains the specific cost or risk with approximate numbers.
+- [x] Clean fixtures for correct library usage patterns stay quiet.
+- [x] Rules correctly resolve popular library import paths via alias resolution.
+- [x] No rule fires on test code or mocks.

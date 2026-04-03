@@ -1,0 +1,112 @@
+package sample
+
+import (
+	"bytes"
+	"compress/gzip"
+	"context"
+	"encoding/json"
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/go-redis/redis/v8"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/spf13/cobra"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
+
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+)
+
+var rdb = redis.NewClient(&redis.Options{})
+var sess, _ = session.NewSession()
+var logger, _ = zap.NewProduction()
+var conn, _ = grpc.Dial("localhost:50051")
+
+var reqCounter = promauto.NewCounter(prometheus.CounterOpts{Name: "requests_total"})
+
+type Config struct {
+	APIKey string
+}
+
+var cfg = Config{APIKey: os.Getenv("API_KEY")}
+
+func RedisClean(w http.ResponseWriter, r *http.Request) {
+	pipe := rdb.Pipeline()
+	pipe.Get(r.Context(), "key1")
+	pipe.Get(r.Context(), "key2")
+	pipe.Exec(r.Context())
+	_ = w
+}
+
+func GRPCClean(w http.ResponseWriter, r *http.Request) {
+	_ = conn
+	_ = w
+}
+
+func LogClean(w http.ResponseWriter, r *http.Request) {
+	logger.Info("request received", zap.String("path", r.URL.Path))
+	reqCounter.Inc()
+	_ = w
+}
+
+func PromClean(w http.ResponseWriter, r *http.Request) {
+	reqCounter.WithLabelValues("GET", "200")
+	_ = w
+}
+
+func AWSClean(w http.ResponseWriter, r *http.Request) {
+	_ = sess
+	_ = w
+}
+
+var flagOutput string
+
+func CobraClean(cmd *cobra.Command) {
+	cmd.Flags().StringVar(&flagOutput, "output", "", "output path")
+}
+
+type ListRequest struct{}
+
+type ListItem struct {
+	Name string
+}
+
+func RedisCompressed(w http.ResponseWriter, r *http.Request) {
+	var buf bytes.Buffer
+	gz := gzip.NewWriter(&buf)
+	payload, _ := json.Marshal(map[string]any{"name": "big"})
+	gz.Write(payload)
+	gz.Close()
+	rdb.Set(r.Context(), "profile", buf.Bytes(), time.Hour)
+	_ = w
+}
+
+func GRPCStreamSafe(ctx context.Context, req *ListRequest, stream interface{ Send(*ListItem) error }) error {
+	return stream.Send(&ListItem{Name: "ok"})
+}
+
+func GRPCServerKeepalive() {
+	_ = grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{}))
+}
+
+func PromTimer(w http.ResponseWriter, r *http.Request) {
+	timer := prometheus.NewTimer(reqCounter)
+	defer timer.ObserveDuration()
+	_ = w
+	_ = r
+}
+
+func S3RangeRead() {
+	s3.New(sess).GetObject(&s3.GetObjectInput{Range: aws.String("bytes=0-1023")})
+}
+
+func S3ListPages(w http.ResponseWriter, r *http.Request) {
+	s3.New(sess).ListObjectsV2Pages(&s3.ListObjectsV2Input{}, nil)
+	_ = w
+	_ = r
+}

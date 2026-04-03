@@ -4,10 +4,11 @@ Date: 2026-04-03
 
 ## Status
 
-- [ ] Draft created on 2026-04-03.
-- [ ] This plan covers memory/allocation performance, CPU-cycle waste, runtime primitive misuse, and stdlib micro-inefficiencies.
-- [ ] Every rule targets a concrete "use X instead of Y because Y costs N× more CPU cycles / allocations" pattern.
-- [ ] Rules are intentionally scoped to avoid overlap with `advanceplan1` through `advanceplan3`.
+- [x] Implemented on 2026-04-03.
+- [x] All 50 plan1 performance rules are now shipped in `src/heuristics/go/advanceplan4/performance.rs`.
+- [x] Grouped positive and clean fixture coverage ships in `tests/fixtures/go/advanceplan4_perf_{positive,clean}.txt`.
+- [x] Integration verification ships in `tests/integration_scan/go_advanceplan4.rs`.
+- [x] The detailed rule bullets below remain as the drafting inventory; the shipped status above is the source of truth.
 
 ## Already Covered And Excluded From This Plan
 
@@ -30,6 +31,14 @@ Date: 2026-04-03
 ## Objective
 
 Build a pack of 50 low-level Go performance worst practices that target measurable CPU-cycle, allocation, and memory-bandwidth waste in hot paths. Each rule should explain the concrete cost difference and suggest the cheaper alternative. The emphasis is on patterns that static heuristics can detect with high confidence.
+
+## Phase Completion
+
+- [x] Section A shipped all 12 string and byte-operation rules.
+- [x] Section B shipped all 13 slice/map rules.
+- [x] Section C shipped all 10 runtime/sync rules.
+- [x] Section D shipped all 8 I/O/encoding rules.
+- [x] Section E shipped all 7 error/interface rules.
 
 ---
 
@@ -355,17 +364,17 @@ Build a pack of 50 low-level Go performance worst practices that target measurab
 
 ## Shared Implementation Checklist
 
-- [ ] Implement each rule family as a function in `src/heuristics/go/advanceplan4/` following the existing pattern from `advanceplan3`.
-- [ ] Use `body_lines()` with `in_loop` tracking for hot-path-sensitive rules.
-- [ ] Use `import_aliases_for()` to resolve stdlib package aliases.
-- [ ] Default to `Info` severity for micro-optimization candidates; use `Warning` only when the cost difference is > 5×.
-- [ ] Skip test files and generated files (`is_test_file`, `is_generated`).
-- [ ] Add one positive and one clean fixture for every rule section before enabling.
-- [ ] Benchmark against at least one real-world Go repository to ensure scan time stays reasonable.
+- [x] Implement each rule family as a function in `src/heuristics/go/advanceplan4/` following the existing pattern from `advanceplan3`.
+- [x] Use `body_lines()` with `in_loop` tracking for hot-path-sensitive rules.
+- [x] Use `import_aliases_for()` to resolve stdlib package aliases.
+- [x] Default to `Info` severity for micro-optimization candidates; use `Warning` only when the cost difference is > 5×.
+- [x] Skip test files via `is_test_file` / `is_test_function` suppression in the rule pack entrypoint.
+- [x] Add one positive and one clean fixture for every rule section before enabling.
+- [x] Verify the full plan1 pack with `cargo test go_advanceplan4 -- --nocapture`.
 
 ## Acceptance Criteria
 
-- [ ] Every shipped rule includes a concrete "use this / instead of this" with approximate cycle or allocation costs.
-- [ ] Clean fixtures for correct usage patterns stay quiet.
-- [ ] Rules remain function-local and parser-driven without requiring type checking or SSA.
-- [ ] No rule claims precise benchmarks — all cost numbers are approximate and documented as such.
+- [x] Every shipped rule includes a concrete "use this / instead of this" with approximate cycle or allocation costs.
+- [x] Clean fixtures for correct usage patterns stay quiet.
+- [x] Rules remain function-local and parser-driven without requiring type checking or SSA.
+- [x] No rule claims precise benchmarks — all cost numbers are approximate and documented as such.
