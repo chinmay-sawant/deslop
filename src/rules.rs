@@ -55,13 +55,19 @@ pub fn rule_registry() -> &'static [RuleMetadata] {
 
     REGISTRY
         .get_or_init(|| {
-            serde_json::from_str(include_str!(concat!(
+            let mut registry: Vec<RuleMetadata> = serde_json::from_str(include_str!(concat!(
                 env!("CARGO_MANIFEST_DIR"),
                 "/rules/registry.json"
             )))
             .unwrap_or_else(|error| {
                 unreachable!("rules/registry.json should be valid registry metadata: {error}")
-            })
+            });
+
+            for metadata in &mut registry {
+                apply_runtime_policy(metadata);
+            }
+
+            registry
         })
         .as_slice()
 }
@@ -85,6 +91,71 @@ pub fn is_detail_only_rule(rule_id: &str) -> bool {
             .configurability
             .contains(&RuleConfigurability::DetailsOnly)
     })
+}
+
+fn apply_runtime_policy(metadata: &mut RuleMetadata) {
+    metadata.status = status_for_rule(&metadata.language, metadata.id.as_str());
+    metadata.configurability = configurability_for_rule(&metadata.language, metadata.id.as_str());
+}
+
+fn status_for_rule(language: &RuleLanguage, rule_id: &str) -> RuleStatus {
+    if matches!(
+        (language, rule_id),
+        (RuleLanguage::Go, "likely_n_squared_allocation")
+            | (RuleLanguage::Go, "likely_n_squared_string_concat")
+            | (RuleLanguage::Rust, "rust_async_blocking_drop")
+            | (RuleLanguage::Rust, "rust_async_hold_permit_across_await")
+            | (RuleLanguage::Rust, "rust_async_invariant_broken_at_await")
+            | (RuleLanguage::Rust, "rust_async_lock_order_cycle")
+            | (RuleLanguage::Rust, "rust_async_missing_fuse_pin")
+            | (RuleLanguage::Rust, "rust_async_monopolize_executor")
+            | (RuleLanguage::Rust, "rust_async_recreate_future_in_select")
+            | (RuleLanguage::Rust, "rust_async_spawn_cancel_at_await")
+            | (RuleLanguage::Rust, "rust_async_std_mutex_await")
+            | (RuleLanguage::Rust, "rust_blocking_io_in_async")
+            | (RuleLanguage::Rust, "rust_lock_across_await")
+            | (RuleLanguage::Rust, "rust_tokio_mutex_unnecessary")
+    ) {
+        RuleStatus::Experimental
+    } else {
+        RuleStatus::Stable
+    }
+}
+
+fn configurability_for_rule(language: &RuleLanguage, rule_id: &str) -> Vec<RuleConfigurability> {
+    let mut configurability = vec![
+        RuleConfigurability::Disable,
+        RuleConfigurability::Ignore,
+        RuleConfigurability::SeverityOverride,
+    ];
+
+    if matches!(
+        (language, rule_id),
+        (RuleLanguage::Go, "likely_n_squared_allocation")
+            | (RuleLanguage::Go, "likely_n_squared_string_concat")
+    ) {
+        configurability.push(RuleConfigurability::GoSemanticExperimental);
+    }
+
+    if matches!(
+        (language, rule_id),
+        (RuleLanguage::Rust, "rust_async_blocking_drop")
+            | (RuleLanguage::Rust, "rust_async_hold_permit_across_await")
+            | (RuleLanguage::Rust, "rust_async_invariant_broken_at_await")
+            | (RuleLanguage::Rust, "rust_async_lock_order_cycle")
+            | (RuleLanguage::Rust, "rust_async_missing_fuse_pin")
+            | (RuleLanguage::Rust, "rust_async_monopolize_executor")
+            | (RuleLanguage::Rust, "rust_async_recreate_future_in_select")
+            | (RuleLanguage::Rust, "rust_async_spawn_cancel_at_await")
+            | (RuleLanguage::Rust, "rust_async_std_mutex_await")
+            | (RuleLanguage::Rust, "rust_blocking_io_in_async")
+            | (RuleLanguage::Rust, "rust_lock_across_await")
+            | (RuleLanguage::Rust, "rust_tokio_mutex_unnecessary")
+    ) {
+        configurability.push(RuleConfigurability::RustAsyncExperimental);
+    }
+
+    configurability
 }
 
 #[cfg(test)]
@@ -203,6 +274,82 @@ mod tests {
                     .configurability
                     .contains(&RuleConfigurability::DetailsOnly))
         );
+    }
+
+    #[test]
+    fn runtime_policy_marks_experimental_rules_and_configurability() {
+        let registry = rule_registry();
+        let experimental_rules = registry
+            .iter()
+            .filter(|metadata| metadata.status == RuleStatus::Experimental)
+            .map(|metadata| (metadata.language.clone(), metadata.id.as_str()))
+            .collect::<BTreeSet<_>>();
+
+        let expected = BTreeSet::from([
+            (RuleLanguage::Go, "likely_n_squared_allocation"),
+            (RuleLanguage::Go, "likely_n_squared_string_concat"),
+            (RuleLanguage::Rust, "rust_async_blocking_drop"),
+            (RuleLanguage::Rust, "rust_async_hold_permit_across_await"),
+            (RuleLanguage::Rust, "rust_async_invariant_broken_at_await"),
+            (RuleLanguage::Rust, "rust_async_lock_order_cycle"),
+            (RuleLanguage::Rust, "rust_async_missing_fuse_pin"),
+            (RuleLanguage::Rust, "rust_async_monopolize_executor"),
+            (RuleLanguage::Rust, "rust_async_recreate_future_in_select"),
+            (RuleLanguage::Rust, "rust_async_spawn_cancel_at_await"),
+            (RuleLanguage::Rust, "rust_async_std_mutex_await"),
+            (RuleLanguage::Rust, "rust_blocking_io_in_async"),
+            (RuleLanguage::Rust, "rust_lock_across_await"),
+            (RuleLanguage::Rust, "rust_tokio_mutex_unnecessary"),
+        ]);
+
+        assert_eq!(experimental_rules, expected);
+
+        for metadata in registry {
+            match (metadata.language.clone(), metadata.id.as_str()) {
+                (RuleLanguage::Go, "likely_n_squared_allocation")
+                | (RuleLanguage::Go, "likely_n_squared_string_concat") => {
+                    assert_eq!(metadata.status, RuleStatus::Experimental);
+                    assert!(
+                        metadata
+                            .configurability
+                            .contains(&RuleConfigurability::GoSemanticExperimental)
+                    );
+                }
+                (
+                    RuleLanguage::Rust,
+                    "rust_async_blocking_drop"
+                    | "rust_async_hold_permit_across_await"
+                    | "rust_async_invariant_broken_at_await"
+                    | "rust_async_lock_order_cycle"
+                    | "rust_async_missing_fuse_pin"
+                    | "rust_async_monopolize_executor"
+                    | "rust_async_recreate_future_in_select"
+                    | "rust_async_spawn_cancel_at_await"
+                    | "rust_async_std_mutex_await"
+                    | "rust_blocking_io_in_async"
+                    | "rust_lock_across_await"
+                    | "rust_tokio_mutex_unnecessary",
+                ) => {
+                    assert_eq!(metadata.status, RuleStatus::Experimental);
+                    assert!(
+                        metadata
+                            .configurability
+                            .contains(&RuleConfigurability::RustAsyncExperimental)
+                    );
+                }
+                _ => {
+                    assert_eq!(metadata.status, RuleStatus::Stable);
+                    assert_eq!(
+                        metadata.configurability,
+                        vec![
+                            RuleConfigurability::Disable,
+                            RuleConfigurability::Ignore,
+                            RuleConfigurability::SeverityOverride,
+                        ]
+                    );
+                }
+            }
+        }
     }
 
     #[test]

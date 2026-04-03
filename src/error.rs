@@ -30,6 +30,8 @@ pub enum Error {
     SymlinkRejected { path: PathBuf },
     #[error("path {path} resolves outside scan root {root}")]
     PathOutsideRoot { path: PathBuf, root: PathBuf },
+    #[error("no parser backend is registered for {path}")]
+    UnsupportedParserPath { path: PathBuf },
     #[error("byte count conversion overflowed for {path}: {value}")]
     ByteCountOverflow { path: PathBuf, value: usize },
 }
@@ -68,6 +70,12 @@ impl Error {
         Self::PathOutsideRoot {
             path: path.as_ref().to_path_buf(),
             root: root.as_ref().to_path_buf(),
+        }
+    }
+
+    pub(crate) fn unsupported_parser_path(path: impl AsRef<Path>) -> Self {
+        Self::UnsupportedParserPath {
+            path: path.as_ref().to_path_buf(),
         }
     }
 }

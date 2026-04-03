@@ -6,13 +6,13 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REGISTRY_PATH = ROOT / "rules" / "registry.json"
 README_PATH = ROOT / "README.md"
 FEATURES_PATH = ROOT / "guides" / "features-and-detections.md"
 DOCS_CONTENT_PATH = ROOT / "frontend" / "src" / "features" / "docs" / "docs-content.ts"
@@ -137,7 +137,14 @@ def main() -> int:
 
 
 def load_registry() -> list[dict]:
-    return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    result = subprocess.run(
+        ["cargo", "run", "--quiet", "--", "rules", "--json"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(result.stdout)
 
 
 def validate_registry(registry: list[dict]) -> None:
@@ -167,7 +174,7 @@ def validate_registry(registry: list[dict]) -> None:
         ),
     )
     if registry != expected:
-        raise SystemExit("rules/registry.json must stay sorted by language, family, then id")
+        raise SystemExit("registry must stay sorted by language, family, then id")
 
 
 def load_cargo_version() -> str:

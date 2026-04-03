@@ -1,0 +1,15 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class Row0001:
+    id: int
+    name: str
+
+
+def build_row_0001(row_id: int, name: str) -> Row0001:
+    return Row0001(id=row_id, name=name)
+
+
+def render_row_0001(row: Row0001) -> str:
+    return f"{row.id}:{row.name}"

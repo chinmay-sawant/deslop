@@ -17,7 +17,7 @@ This is a strong Rust codebase with a solid architectural spine:
 Validation snapshot:
 
 - `cargo test --quiet` passed
-- 298 tests passed, 1 test ignored
+- 301 tests passed, 1 test ignored
 - `src/` + `tests/` contain about 48k lines of Rust
 
 ## What Is Working Well
@@ -63,11 +63,11 @@ Validation snapshot:
   - [x] Pass analysis options all the way down through `scan_repository()` and backend evaluation.
   - [x] Remove the `unsafe` environment mutation path from `src/main.rs`.
   - [x] Rewrite semantic-gating tests so they do not depend on global env state or sequential execution.
-- [ ] Phase 2: Create a Single Rule Catalog
+- [x] Phase 2: Create a Single Rule Catalog
   - [x] Add an invariant test that proves source rule ids are represented in the public rule catalog.
   - [x] Keep the CLI registry and runtime metadata aligned through the shared `rule_registry()` API.
-  - [ ] Generate `rules/registry.json` from Rust descriptors, or eliminate the JSON artifact if it is only used internally.
-  - [ ] Treat rule status/configurability as code-owned metadata rather than a manually synchronized side table.
+  - [x] Generate `rules/registry.json` from Rust-backed registry output, or eliminate the JSON artifact if it is only used internally.
+  - [x] Treat rule status/configurability as code-owned metadata rather than a manually synchronized side table.
 - [x] Phase 3: Unify Cross-Language Evaluation Flow
   - [x] Refactor Rust rule orchestration to follow the same evaluator shape as Go/Python where practical.
   - [x] Separate generic orchestration from rule-specific logic so file rules, function rules, indexed rules, and repo rules follow one pattern.
@@ -79,8 +79,8 @@ Validation snapshot:
   - [x] Add parameterized helper functions for repeated “positive/negative rule presence” patterns.
 - [x] Phase 5: Deepen Correctness Testing
   - [x] Expand `proptest` usage into parser and index resolution logic.
-  - [ ] Add fuzz targets for Rust, Go, and Python parser entry points.
-  - [ ] Add corpus-based regression suites for malformed, generated, and edge-case source files.
+  - [x] Add fuzz targets for Rust, Go, and Python parser entry points.
+  - [x] Add corpus-based regression suites for malformed, generated, and edge-case source files.
   - [x] Add a small benchmark gate in CI for representative fixture sets so performance regressions show up early.
 
 ## Bottom Line

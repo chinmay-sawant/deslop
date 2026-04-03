@@ -335,7 +335,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "time.Sleep inside loops \u2014 often indicates polling or busy-wait style code."
+    "description": "time.Sleep inside loops — often indicates polling or busy-wait style code."
   },
   {
     "id": "association_find_inside_loop",
@@ -478,7 +478,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "Bulk creates performed with GORM default transaction enabled \u2014 SkipDefaultTransaction improves throughput."
+    "description": "Bulk creates performed with GORM default transaction enabled — SkipDefaultTransaction improves throughput."
   },
   {
     "id": "delete_single_row_in_loop_without_batch",
@@ -504,7 +504,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "Distinct on wide rows without Select projection \u2014 a key-only subquery is usually cheaper."
+    "description": "Distinct on wide rows without Select projection — a key-only subquery is usually cheaper."
   },
   {
     "id": "duplicate_find_then_preload_followup",
@@ -1596,7 +1596,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "Slice sorting observed inside loops \u2014 often cheaper to sort once after the loop."
+    "description": "Slice sorting observed inside loops — often cheaper to sort once after the loop."
   },
   {
     "id": "append_then_trim_each_iteration",
@@ -2363,7 +2363,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "`log.Error(err); return err` or `logger.Error(\"failed\", zap.Error(err)); return fmt.Errorf(\"failed: %w\", err)` \u2014 logging the error then returning it"
+    "description": "`log.Error(err); return err` or `logger.Error(\"failed\", zap.Error(err)); return fmt.Errorf(\"failed: %w\", err)` — logging the error then returning it"
   },
   {
     "id": "grpc_context_not_propagated",
@@ -3028,7 +3028,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "`if _, ok := m[k]; ok { v := m[k] }` \u2014 two map lookups for the same key"
+    "description": "`if _, ok := m[k]; ok { v := m[k] }` — two map lookups for the same key"
   },
   {
     "id": "map_of_slices_prealloc",
@@ -3132,7 +3132,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "encoding/json.Marshal or MarshalIndent inside loops \u2014 repeated allocation and serialization hot spots."
+    "description": "encoding/json.Marshal or MarshalIndent inside loops — repeated allocation and serialization hot spots."
   },
   {
     "id": "repeated_string_trim_normalize",

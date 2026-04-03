@@ -1,0 +1,15 @@
+from contextlib import asynccontextmanager
+
+
+class Client:
+    def __init__(self, base_url: str) -> None:
+        self.base_url = base_url
+
+
+@asynccontextmanager
+async def open_client(base_url: str):
+    client = Client(base_url)
+    try:
+        yield client
+    finally:
+        _ = client

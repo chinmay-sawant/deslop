@@ -10,6 +10,8 @@ mod rules;
 mod scan;
 
 pub use analysis::Error as AnalysisError;
+pub use analysis::syntax_error_for_source;
+pub use analysis::validate_source;
 pub use benchmark::{
     BenchmarkOptions, benchmark_repository, benchmark_repository_with_go_semantic,
 };

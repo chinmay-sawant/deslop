@@ -1,0 +1,33 @@
+[package]
+name = "deslop-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+deslop = { path = ".." }
+libfuzzer-sys = "0.4"
+
+[[bin]]
+name = "rust_parser"
+path = "fuzz_targets/rust_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "go_parser"
+path = "fuzz_targets/go_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "python_parser"
+path = "fuzz_targets/python_parser.rs"
+test = false
+doc = false
+bench = false

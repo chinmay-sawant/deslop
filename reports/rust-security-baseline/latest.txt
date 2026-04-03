@@ -51,9 +51,9 @@ src/heuristics/rust/performance.rs:339:    text[vec_start + 4..].contains("Box<"
 src/heuristics/rust/performance.rs:346:    line[start + marker.len()..].starts_with('/')
 src/heuristics/rust/performance.rs:387:                let receiver = &line[start..index];
 src/heuristics/rust/runtime_boundary.rs:265:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/rules.rs:260:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
-src/rules.rs:262:            let Some(end_offset) = source[start..].find('\"') else {
-src/rules.rs:266:            ids.insert(source[start..start + end_offset].to_string());
+src/rules.rs:407:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
+src/rules.rs:409:            let Some(end_offset) = source[start..].find('\"') else {
+src/rules.rs:413:            ids.insert(source[start..start + end_offset].to_string());
 
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
@@ -62,11 +62,11 @@ src/heuristics/python/packaging.rs:242:    candidate.exists().then_some(candidat
 src/heuristics/rust/runtime_boundary.rs:167:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
-src/rules.rs:139:    fn finds_known_rule_metadata() {
-src/rules.rs:140:        let metadata = rule_metadata("dropped_error", RuleLanguage::Go)
-src/rules.rs:173:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
-src/rules.rs:182:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
-src/rules.rs:69:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
+src/rules.rs:210:    fn finds_known_rule_metadata() {
+src/rules.rs:211:        let metadata = rule_metadata("dropped_error", RuleLanguage::Go)
+src/rules.rs:244:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
+src/rules.rs:253:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
+src/rules.rs:75:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
 
 ## toctou_check_then_open
 
