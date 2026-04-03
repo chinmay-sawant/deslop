@@ -60,33 +60,32 @@ fn toctou_file_check_then_open(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for (index, bl) in lines.iter().enumerate() {
-        if bl.text.contains("os.Stat(") || bl.text.contains("os.Lstat(") {
-            if let Some(next) =
+        if (bl.text.contains("os.Stat(") || bl.text.contains("os.Lstat("))
+            && let Some(next) =
                 lines.iter().skip(index + 1).take(5).find(|line| {
                     line.text.contains("os.OpenFile(") || line.text.contains("os.Create(")
                 })
-            {
-                findings.push(Finding {
-                    rule_id: "toctou_file_check_then_open".into(),
-                    severity: Severity::Warning,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: bl.line,
-                    end_line: next.line,
-                    message: format!(
-                        "function {} checks a path before opening it",
-                        function.fingerprint.name
+        {
+            findings.push(Finding {
+                rule_id: "toctou_file_check_then_open".into(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: bl.line,
+                end_line: next.line,
+                message: format!(
+                    "function {} checks a path before opening it",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!(
+                        "file check at line {}, open/create at line {}",
+                        bl.line, next.line
                     ),
-                    evidence: vec![
-                        format!(
-                            "file check at line {}, open/create at line {}",
-                            bl.line, next.line
-                        ),
-                        "the file can change between the check and the open, enabling TOCTOU races"
-                            .into(),
-                    ],
-                });
-            }
+                    "the file can change between the check and the open, enabling TOCTOU races"
+                        .into(),
+                ],
+            });
         }
     }
     findings

@@ -60,27 +60,28 @@ fn map_delete_loop(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for (i, bl) in lines.iter().enumerate() {
-        if bl.in_loop && bl.text.contains("delete(") {
-            if let Some(prev) = lines.get(i.wrapping_sub(1)) {
-                if prev.text.contains("for") && prev.text.contains("range") {
-                    findings.push(Finding {
-                        rule_id: "map_delete_in_loop_vs_new_map".into(),
-                        severity: Severity::Info,
-                        path: file.path.clone(),
-                        function_name: Some(function.fingerprint.name.clone()),
-                        start_line: bl.line,
-                        end_line: bl.line,
-                        message: format!(
-                            "function {} deletes map entries in a loop",
-                            function.fingerprint.name
-                        ),
-                        evidence: vec![
-                            format!("delete() in range loop at line {}", bl.line),
-                            "creating a new map is O(1) vs O(n) iterative delete".into(),
-                        ],
-                    });
-                }
-            }
+        if bl.in_loop
+            && bl.text.contains("delete(")
+            && let Some(prev) = lines.get(i.wrapping_sub(1))
+            && prev.text.contains("for")
+            && prev.text.contains("range")
+        {
+            findings.push(Finding {
+                rule_id: "map_delete_in_loop_vs_new_map".into(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: bl.line,
+                end_line: bl.line,
+                message: format!(
+                    "function {} deletes map entries in a loop",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("delete() in range loop at line {}", bl.line),
+                    "creating a new map is O(1) vs O(n) iterative delete".into(),
+                ],
+            });
         }
     }
     findings
@@ -224,25 +225,25 @@ fn interface_slice_alloc(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for bl in lines {
-        if bl.text.contains("[]interface{}") || bl.text.contains("[]any{") {
-            if bl.text.contains("make(") || bl.text.contains(":=") || bl.text.contains("var ") {
-                findings.push(Finding {
-                    rule_id: "interface_slice_allocation".into(),
-                    severity: Severity::Info,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: bl.line,
-                    end_line: bl.line,
-                    message: format!(
-                        "function {} uses []interface{{}} or []any for homogeneous data",
-                        function.fingerprint.name
-                    ),
-                    evidence: vec![
-                        format!("interface slice at line {}", bl.line),
-                        "typed slices or generics avoid heap escape per element".into(),
-                    ],
-                });
-            }
+        if (bl.text.contains("[]interface{}") || bl.text.contains("[]any{"))
+            && (bl.text.contains("make(") || bl.text.contains(":=") || bl.text.contains("var "))
+        {
+            findings.push(Finding {
+                rule_id: "interface_slice_allocation".into(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: bl.line,
+                end_line: bl.line,
+                message: format!(
+                    "function {} uses []interface{{}} or []any for homogeneous data",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("interface slice at line {}", bl.line),
+                    "typed slices or generics avoid heap escape per element".into(),
+                ],
+            });
         }
     }
     findings
@@ -340,30 +341,31 @@ fn clear_map_go121(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for (i, bl) in lines.iter().enumerate() {
-        if bl.in_loop && bl.text.contains("delete(") {
-            if let Some(prev) = lines.get(i.wrapping_sub(1)) {
-                if prev.text.contains("for") && prev.text.contains("range") {
-                    findings.push(Finding {
-                        rule_id: "clear_map_go121".into(),
-                        severity: Severity::Info,
-                        path: file.path.clone(),
-                        function_name: Some(function.fingerprint.name.clone()),
-                        start_line: prev.line,
-                        end_line: bl.line,
-                        message: format!(
-                            "function {} clears a map with per-key delete calls",
-                            function.fingerprint.name
-                        ),
-                        evidence: vec![
-                            format!(
-                                "range/delete clear pattern at lines {}-{}",
-                                prev.line, bl.line
-                            ),
-                            "clear(m) (Go 1.21+) resets the map in a single runtime call".into(),
-                        ],
-                    });
-                }
-            }
+        if bl.in_loop
+            && bl.text.contains("delete(")
+            && let Some(prev) = lines.get(i.wrapping_sub(1))
+            && prev.text.contains("for")
+            && prev.text.contains("range")
+        {
+            findings.push(Finding {
+                rule_id: "clear_map_go121".into(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: prev.line,
+                end_line: bl.line,
+                message: format!(
+                    "function {} clears a map with per-key delete calls",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!(
+                        "range/delete clear pattern at lines {}-{}",
+                        prev.line, bl.line
+                    ),
+                    "clear(m) (Go 1.21+) resets the map in a single runtime call".into(),
+                ],
+            });
         }
     }
     findings
@@ -380,8 +382,8 @@ fn unnecessary_slice_copy(
         let Some((left, right)) = split_assignment(&bl.text) else {
             continue;
         };
-        if !(right.contains("append([]") && right.contains("(nil),") && right.contains("...)"))
-            && !right.contains("slices.Clone(")
+        if !(right.contains("slices.Clone(")
+            || (right.contains("append([]") && right.contains("(nil),") && right.contains("...)")))
         {
             continue;
         }
@@ -516,41 +518,43 @@ fn range_copy_large_struct(
             && !bl.text.contains("string")
             && !bl.text.contains("int")
             && !bl.text.contains("byte")
-        {
-            if let Some(slice_name) = bl
+            && let Some(slice_name) = bl
                 .text
                 .split("range ")
                 .nth(1)
                 .map(|s| s.trim().trim_end_matches(" {").trim())
+            && !slice_name.contains("map[")
+            && !slice_name.contains("chan ")
+        {
+            // heuristic: we flag when the variable name suggests a struct slice
+            let name_lower = slice_name.to_lowercase();
+            if name_lower.ends_with("items")
+                || name_lower.ends_with("records")
+                || name_lower.ends_with("entries")
+                || name_lower.ends_with("objects")
+                || name_lower.ends_with("models")
+                || name_lower.ends_with("rows")
+                || name_lower.ends_with("users")
+                || name_lower.ends_with("events")
+                || name_lower.ends_with("results")
+                || name_lower.ends_with("nodes")
             {
-                if !slice_name.contains("map[") && !slice_name.contains("chan ") {
-                    // heuristic: we flag when the variable name suggests a struct slice
-                    let name_lower = slice_name.to_lowercase();
-                    if name_lower.ends_with("items")
-                        || name_lower.ends_with("records")
-                        || name_lower.ends_with("entries")
-                        || name_lower.ends_with("objects")
-                        || name_lower.ends_with("models")
-                        || name_lower.ends_with("rows")
-                        || name_lower.ends_with("users")
-                        || name_lower.ends_with("events")
-                        || name_lower.ends_with("results")
-                        || name_lower.ends_with("nodes")
-                    {
-                        findings.push(Finding {
-                            rule_id: "range_copy_large_struct".into(),
-                            severity: Severity::Info,
-                            path: file.path.clone(),
-                            function_name: Some(function.fingerprint.name.clone()),
-                            start_line: bl.line, end_line: bl.line,
-                            message: format!("function {} may copy large structs in range loop", function.fingerprint.name),
-                            evidence: vec![
-                                format!("for _, v := range {} at line {}", slice_name, bl.line),
-                                "use index access for i := range s {{ v := &s[i] }} to avoid copies".into(),
-                            ],
-                        });
-                    }
-                }
+                findings.push(Finding {
+                    rule_id: "range_copy_large_struct".into(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: bl.line,
+                    end_line: bl.line,
+                    message: format!(
+                        "function {} may copy large structs in range loop",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("for _, v := range {} at line {}", slice_name, bl.line),
+                        "use index access for i := range s {{ v := &s[i] }} to avoid copies".into(),
+                    ],
+                });
             }
         }
     }

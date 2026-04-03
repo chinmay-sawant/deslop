@@ -193,29 +193,28 @@ fn constant_iv_nonce(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for bl in lines {
-        if bl.text.contains(".Seal(") || bl.text.contains("NewCBCEncrypter(") {
-            if bl.text.contains("make([]byte,")
+        if (bl.text.contains(".Seal(") || bl.text.contains("NewCBCEncrypter("))
+            && (bl.text.contains("make([]byte,")
                 || bl.text.contains("var iv")
                 || bl.text.contains("[16]byte{}")
-                || bl.text.contains("[]byte{0")
-            {
-                findings.push(Finding {
-                    rule_id: "constant_iv_or_nonce".into(),
-                    severity: Severity::Error,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: bl.line,
-                    end_line: bl.line,
-                    message: format!(
-                        "function {} uses constant or zero IV/nonce",
-                        function.fingerprint.name
-                    ),
-                    evidence: vec![
-                        format!("static IV/nonce at line {}", bl.line),
-                        "reusing nonces with AES-GCM breaks authenticity".into(),
-                    ],
-                });
-            }
+                || bl.text.contains("[]byte{0"))
+        {
+            findings.push(Finding {
+                rule_id: "constant_iv_or_nonce".into(),
+                severity: Severity::Error,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: bl.line,
+                end_line: bl.line,
+                message: format!(
+                    "function {} uses constant or zero IV/nonce",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("static IV/nonce at line {}", bl.line),
+                    "reusing nonces with AES-GCM breaks authenticity".into(),
+                ],
+            });
         }
     }
     findings
@@ -305,32 +304,31 @@ fn bcrypt_cost_low(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for bl in lines {
-        if bl.text.contains("GenerateFromPassword(") {
-            if bl.text.contains("MinCost")
+        if bl.text.contains("GenerateFromPassword(")
+            && (bl.text.contains("MinCost")
                 || bl.text.contains(", 4)")
                 || bl.text.contains(", 5)")
                 || bl.text.contains(", 6)")
                 || bl.text.contains(", 7)")
                 || bl.text.contains(", 8)")
-                || bl.text.contains(", 9)")
-            {
-                findings.push(Finding {
-                    rule_id: "bcrypt_cost_too_low".into(),
-                    severity: Severity::Warning,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: bl.line,
-                    end_line: bl.line,
-                    message: format!(
-                        "function {} uses low bcrypt cost",
-                        function.fingerprint.name
-                    ),
-                    evidence: vec![
-                        format!("low bcrypt cost at line {}", bl.line),
-                        "cost >= 12 recommended for production".into(),
-                    ],
-                });
-            }
+                || bl.text.contains(", 9)"))
+        {
+            findings.push(Finding {
+                rule_id: "bcrypt_cost_too_low".into(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: bl.line,
+                end_line: bl.line,
+                message: format!(
+                    "function {} uses low bcrypt cost",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("low bcrypt cost at line {}", bl.line),
+                    "cost >= 12 recommended for production".into(),
+                ],
+            });
         }
     }
     findings
@@ -339,25 +337,25 @@ fn bcrypt_cost_low(
 fn rsa_key_small(file: &ParsedFile, function: &ParsedFunction, lines: &[BodyLine]) -> Vec<Finding> {
     let mut findings = Vec::new();
     for bl in lines {
-        if bl.text.contains("rsa.GenerateKey(") {
-            if bl.text.contains(", 512)") || bl.text.contains(", 1024)") {
-                findings.push(Finding {
-                    rule_id: "rsa_key_size_too_small".into(),
-                    severity: Severity::Warning,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: bl.line,
-                    end_line: bl.line,
-                    message: format!(
-                        "function {} generates RSA key smaller than 2048 bits",
-                        function.fingerprint.name
-                    ),
-                    evidence: vec![
-                        format!("small RSA key at line {}", bl.line),
-                        "NIST recommends 2048-bit minimum".into(),
-                    ],
-                });
-            }
+        if bl.text.contains("rsa.GenerateKey(")
+            && (bl.text.contains(", 512)") || bl.text.contains(", 1024)"))
+        {
+            findings.push(Finding {
+                rule_id: "rsa_key_size_too_small".into(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: bl.line,
+                end_line: bl.line,
+                message: format!(
+                    "function {} generates RSA key smaller than 2048 bits",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("small RSA key at line {}", bl.line),
+                    "NIST recommends 2048-bit minimum".into(),
+                ],
+            });
         }
     }
     findings

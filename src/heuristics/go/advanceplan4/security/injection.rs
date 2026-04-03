@@ -168,28 +168,27 @@ fn url_redirect_open(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for bl in lines {
-        if bl.text.contains("http.Redirect(") || bl.text.contains(".Redirect(") {
-            if bl.text.contains("FormValue(")
+        if (bl.text.contains("http.Redirect(") || bl.text.contains(".Redirect("))
+            && (bl.text.contains("FormValue(")
                 || bl.text.contains("Query(")
-                || bl.text.contains("Param(")
-            {
-                findings.push(Finding {
-                    rule_id: "url_redirect_without_validation".into(),
-                    severity: Severity::Warning,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: bl.line,
-                    end_line: bl.line,
-                    message: format!(
-                        "function {} redirects to user-provided URL",
-                        function.fingerprint.name
-                    ),
-                    evidence: vec![
-                        format!("unvalidated redirect at line {}", bl.line),
-                        "open redirect enables phishing attacks".into(),
-                    ],
-                });
-            }
+                || bl.text.contains("Param("))
+        {
+            findings.push(Finding {
+                rule_id: "url_redirect_without_validation".into(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: bl.line,
+                end_line: bl.line,
+                message: format!(
+                    "function {} redirects to user-provided URL",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("unvalidated redirect at line {}", bl.line),
+                    "open redirect enables phishing attacks".into(),
+                ],
+            });
         }
     }
     findings
@@ -202,30 +201,28 @@ fn ssrf_user_url(file: &ParsedFile, function: &ParsedFunction, lines: &[BodyLine
     }
     for alias in import_aliases_for(file, "net/http") {
         for bl in lines {
-            if bl.text.contains(&format!("{alias}.Get("))
-                || bl.text.contains(&format!("{alias}.NewRequest("))
-            {
-                if bl.text.contains("FormValue(")
+            if (bl.text.contains(&format!("{alias}.Get("))
+                || bl.text.contains(&format!("{alias}.NewRequest(")))
+                && (bl.text.contains("FormValue(")
                     || bl.text.contains("Query(")
-                    || bl.text.contains("Param(")
-                {
-                    findings.push(Finding {
-                        rule_id: "ssrf_via_user_controlled_url".into(),
-                        severity: Severity::Error,
-                        path: file.path.clone(),
-                        function_name: Some(function.fingerprint.name.clone()),
-                        start_line: bl.line,
-                        end_line: bl.line,
-                        message: format!(
-                            "function {} makes HTTP request to user-controlled URL",
-                            function.fingerprint.name
-                        ),
-                        evidence: vec![
-                            format!("SSRF vector at line {}", bl.line),
-                            "validate URL against allowlist; block private IPs".into(),
-                        ],
-                    });
-                }
+                    || bl.text.contains("Param("))
+            {
+                findings.push(Finding {
+                    rule_id: "ssrf_via_user_controlled_url".into(),
+                    severity: Severity::Error,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: bl.line,
+                    end_line: bl.line,
+                    message: format!(
+                        "function {} makes HTTP request to user-controlled URL",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("SSRF vector at line {}", bl.line),
+                        "validate URL against allowlist; block private IPs".into(),
+                    ],
+                });
             }
         }
     }
