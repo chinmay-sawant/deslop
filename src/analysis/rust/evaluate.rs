@@ -8,75 +8,98 @@ use crate::heuristics::rust::{
     performance_function_findings, runtime_file_findings, runtime_function_findings,
     unsafe_soundness_findings,
 };
+use crate::heuristics::{extend_file_rules, extend_function_rules};
 use crate::index::{ImportResolution, PackageIndex, RepositoryIndex};
 use crate::model::{Finding, Severity};
 
 pub(super) fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    findings.extend(domain_findings(file));
-    findings.extend(api_design_file_findings(file));
-    findings.extend(performance_file_findings(file));
-    findings.extend(async_file_findings(file));
+    extend_file_rules(
+        &mut findings,
+        file,
+        &[
+            domain_findings,
+            api_design_file_findings,
+            performance_file_findings,
+            async_file_findings,
+        ],
+    );
     findings.extend(runtime_file_findings(file, index));
 
     for function in &file.functions {
-        findings.extend(non_test_macro_findings(
-            file,
-            function,
-            "todo!",
-            "todo_macro_leftover",
-            "leaves todo! in non-test Rust code",
-        ));
-        findings.extend(non_test_macro_findings(
-            file,
-            function,
-            "unimplemented!",
-            "unimplemented_macro_leftover",
-            "leaves unimplemented! in non-test Rust code",
-        ));
-        findings.extend(non_test_macro_findings(
-            file,
-            function,
-            "dbg!",
-            "dbg_macro_leftover",
-            "leaves dbg! in non-test Rust code",
-        ));
-        findings.extend(non_test_macro_findings(
-            file,
-            function,
-            "panic!",
-            "panic_macro_leftover",
-            "leaves panic! in non-test Rust code",
-        ));
-        findings.extend(non_test_macro_findings(
-            file,
-            function,
-            "unreachable!",
-            "unreachable_macro_leftover",
-            "leaves unreachable! in non-test Rust code",
-        ));
-        findings.extend(non_test_call_findings(
-            file,
-            function,
-            "unwrap",
-            "unwrap_in_non_test_code",
-            "calls unwrap() in non-test Rust code",
-        ));
-        findings.extend(non_test_call_findings(
-            file,
-            function,
-            "expect",
-            "expect_in_non_test_code",
-            "calls expect() in non-test Rust code",
-        ));
+        for (macro_name, rule_id, message_suffix) in [
+            (
+                "todo!",
+                "todo_macro_leftover",
+                "leaves todo! in non-test Rust code",
+            ),
+            (
+                "unimplemented!",
+                "unimplemented_macro_leftover",
+                "leaves unimplemented! in non-test Rust code",
+            ),
+            (
+                "dbg!",
+                "dbg_macro_leftover",
+                "leaves dbg! in non-test Rust code",
+            ),
+            (
+                "panic!",
+                "panic_macro_leftover",
+                "leaves panic! in non-test Rust code",
+            ),
+            (
+                "unreachable!",
+                "unreachable_macro_leftover",
+                "leaves unreachable! in non-test Rust code",
+            ),
+        ] {
+            findings.extend(non_test_macro_findings(
+                file,
+                function,
+                macro_name,
+                rule_id,
+                message_suffix,
+            ));
+        }
+
+        for (call_name, rule_id, message_suffix) in [
+            (
+                "unwrap",
+                "unwrap_in_non_test_code",
+                "calls unwrap() in non-test Rust code",
+            ),
+            (
+                "expect",
+                "expect_in_non_test_code",
+                "calls expect() in non-test Rust code",
+            ),
+        ] {
+            findings.extend(non_test_call_findings(
+                file,
+                function,
+                call_name,
+                rule_id,
+                message_suffix,
+            ));
+        }
+
         findings.extend(unsafe_findings(file, function));
-        findings.extend(unsafe_soundness_findings(file, function));
-        findings.extend(api_design_function_findings(file, function));
-        findings.extend(doc_marker_findings(file, function));
-        findings.extend(performance_function_findings(file, function));
-        findings.extend(async_function_findings(file, function));
-        findings.extend(runtime_function_findings(file, function));
+
+        extend_function_rules(
+            &mut findings,
+            file,
+            function,
+            &[
+                unsafe_soundness_findings,
+                api_design_function_findings,
+                doc_marker_findings,
+                performance_function_findings,
+                async_function_findings,
+                runtime_function_findings,
+            ],
+        );
         let Some(package_name) = &file.package_name else {
             continue;
         };
@@ -96,6 +119,35 @@ pub(super) fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex)
     }
 
     findings
+}
+
+fn unsafe_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    let rust = function.rust_evidence();
+
+    rust.unsafe_lines
+        .iter()
+        .filter(|unsafe_line| !has_safety_comment(**unsafe_line, rust.safety_comment_lines))
+        .map(|unsafe_line| Finding {
+            rule_id: "unsafe_without_safety_comment".to_string(),
+            severity: Severity::Warning,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: *unsafe_line,
+            end_line: *unsafe_line,
+            message: format!(
+                "function {} uses unsafe without a nearby SAFETY comment",
+                function.fingerprint.name
+            ),
+            evidence: vec![format!("unsafe usage line: {unsafe_line}")],
+        })
+        .collect()
+}
+
+fn has_safety_comment(unsafe_line: usize, safety_comment_lines: &[usize]) -> bool {
+    let min_line = unsafe_line.saturating_sub(2);
+    safety_comment_lines
+        .iter()
+        .any(|comment_line| *comment_line >= min_line && *comment_line <= unsafe_line)
 }
 
 fn non_test_macro_findings(
@@ -155,35 +207,6 @@ fn non_test_call_findings(
             }],
         })
         .collect()
-}
-
-fn unsafe_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    let rust = function.rust_evidence();
-
-    rust.unsafe_lines
-        .iter()
-        .filter(|unsafe_line| !has_safety_comment(**unsafe_line, rust.safety_comment_lines))
-        .map(|unsafe_line| Finding {
-            rule_id: "unsafe_without_safety_comment".to_string(),
-            severity: Severity::Warning,
-            path: file.path.clone(),
-            function_name: Some(function.fingerprint.name.clone()),
-            start_line: *unsafe_line,
-            end_line: *unsafe_line,
-            message: format!(
-                "function {} uses unsafe without a nearby SAFETY comment",
-                function.fingerprint.name
-            ),
-            evidence: vec![format!("unsafe usage line: {unsafe_line}")],
-        })
-        .collect()
-}
-
-fn has_safety_comment(unsafe_line: usize, safety_comment_lines: &[usize]) -> bool {
-    let min_line = unsafe_line.saturating_sub(2);
-    safety_comment_lines
-        .iter()
-        .any(|comment_line| *comment_line >= min_line && *comment_line <= unsafe_line)
 }
 
 fn doc_marker_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {

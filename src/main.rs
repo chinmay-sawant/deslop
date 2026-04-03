@@ -10,11 +10,9 @@ use crate::cli::{
     format_scan_report_json, print_benchmark_report,
 };
 use deslop::{
-    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions, benchmark_repository,
-    is_detail_only_rule, scan_repository,
+    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions, benchmark_repository_with_go_semantic,
+    is_detail_only_rule, scan_repository_with_go_semantic,
 };
-
-const GO_SEMANTIC_ENV_VAR: &str = "DESLOP_ENABLE_GO_SEMANTIC";
 
 #[derive(Debug, Parser)]
 #[command(
@@ -81,12 +79,14 @@ fn main() -> Result<()> {
             ignore,
             no_fail,
         } => {
-            set_go_semantic_env(enable_semantic);
             let scan_root = path.clone();
-            let mut report = scan_repository(&ScanOptions {
-                root: path,
-                respect_ignore: !no_ignore,
-            })
+            let mut report = scan_repository_with_go_semantic(
+                &ScanOptions {
+                    root: path,
+                    respect_ignore: !no_ignore,
+                },
+                enable_semantic,
+            )
             .with_context(|| format!("scan failed for {}", scan_root.display()))?;
 
             if !ignore.is_empty() {
@@ -120,14 +120,16 @@ fn main() -> Result<()> {
             no_ignore,
             enable_semantic,
         } => {
-            set_go_semantic_env(enable_semantic);
             let bench_root = path.clone();
-            let report = benchmark_repository(&BenchmarkOptions {
-                root: path,
-                repeats,
-                warmups,
-                respect_ignore: !no_ignore,
-            })
+            let report = benchmark_repository_with_go_semantic(
+                &BenchmarkOptions {
+                    root: path,
+                    repeats,
+                    warmups,
+                    respect_ignore: !no_ignore,
+                },
+                enable_semantic,
+            )
             .with_context(|| format!("benchmark failed for {}", bench_root.display()))?;
 
             if json {
@@ -188,16 +190,6 @@ impl From<RuleStatusArg> for RuleStatus {
             RuleStatusArg::Stable => RuleStatus::Stable,
             RuleStatusArg::Experimental => RuleStatus::Experimental,
             RuleStatusArg::Research => RuleStatus::Research,
-        }
-    }
-}
-
-fn set_go_semantic_env(enable_semantic: bool) {
-    if enable_semantic {
-        // SAFETY: This CLI sets the process environment before starting repository work,
-        // and the variable is used as a simple opt-in flag for child logic in the same process.
-        unsafe {
-            std::env::set_var(GO_SEMANTIC_ENV_VAR, "1");
         }
     }
 }

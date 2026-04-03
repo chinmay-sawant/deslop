@@ -51,6 +51,9 @@ src/heuristics/rust/performance.rs:339:    text[vec_start + 4..].contains("Box<"
 src/heuristics/rust/performance.rs:346:    line[start + marker.len()..].starts_with('/')
 src/heuristics/rust/performance.rs:387:                let receiver = &line[start..index];
 src/heuristics/rust/runtime_boundary.rs:265:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/rules.rs:260:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
+src/rules.rs:262:            let Some(end_offset) = source[start..].find('\"') else {
+src/rules.rs:266:            ids.insert(source[start..start + end_offset].to_string());
 
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
@@ -59,16 +62,16 @@ src/heuristics/python/packaging.rs:242:    candidate.exists().then_some(candidat
 src/heuristics/rust/runtime_boundary.rs:167:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
-src/rules.rs:136:    fn finds_known_rule_metadata() {
-src/rules.rs:137:        let metadata = rule_metadata("dropped_error", RuleLanguage::Go)
-src/rules.rs:170:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
-src/rules.rs:179:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
+src/rules.rs:139:    fn finds_known_rule_metadata() {
+src/rules.rs:140:        let metadata = rule_metadata("dropped_error", RuleLanguage::Go)
+src/rules.rs:173:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
+src/rules.rs:182:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
 src/rules.rs:69:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
 
 ## toctou_check_then_open
 
 ## secret_comparisons
-src/analysis/rust/parser/tests.rs:133:            .any(|name| name == "password")
+src/analysis/rust/parser/tests.rs:135:            .any(|name| name == "password")
 src/heuristics/rust/mod.rs:156:        .any(|token| normalized == *token || normalized.contains(token))
 tests/integration_scan/security.rs:47:            .any(|finding| finding.rule_id == "hardcoded_secret")
 tests/integration_scan/security.rs:72:            .any(|finding| finding.rule_id == "hardcoded_secret")

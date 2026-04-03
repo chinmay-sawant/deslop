@@ -1,35 +1,24 @@
-use std::fs;
-use std::path::Path;
 use std::process::Command;
-use std::time::{SystemTime, UNIX_EPOCH};
+
+#[path = "support/mod.rs"]
+mod support;
+
+use support::FixtureWorkspace;
 
 fn cargo_bin() -> String {
-    let output = Command::new("cargo")
-        .args(["build", "--quiet"])
-        .output()
-        .expect("cargo build should succeed");
-    assert!(output.status.success(), "cargo build failed");
-    // Return the path to the binary
-    let target_dir = std::env::var("CARGO_TARGET_DIR").unwrap_or_else(|_| "target".to_string());
-    format!("{}/debug/deslop", target_dir)
-}
-
-fn temp_dir(name: &str) -> std::path::PathBuf {
-    let nonce = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock should be after unix epoch")
-        .as_nanos();
-    let path = std::env::temp_dir().join(format!("deslop-cli-{name}-{nonce}"));
-    fs::create_dir_all(&path).expect("temp dir creation should succeed");
-    path
-}
-
-fn write_fixture(root: &Path, relative_path: &str, contents: &str) {
-    let path = root.join(relative_path);
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent).expect("parent dir creation should succeed");
+    if let Ok(path) = std::env::var("CARGO_BIN_EXE_deslop") {
+        return path;
     }
-    fs::write(path, contents).expect("fixture write should succeed");
+
+    let mut path = std::env::current_exe().expect("test binary path should be available");
+    path.pop();
+    path.pop();
+    path.push("deslop");
+    path.to_string_lossy().into_owned()
+}
+
+fn write_fixture(workspace: &FixtureWorkspace, relative_path: &str, contents: &str) {
+    workspace.write_file(relative_path, contents);
 }
 
 // ── Scan subcommand tests ──
@@ -37,11 +26,11 @@ fn write_fixture(root: &Path, relative_path: &str, contents: &str) {
 #[test]
 fn cli_scan_exits_zero_for_clean_code() {
     let bin = cargo_bin();
-    let root = temp_dir("clean");
-    write_fixture(&root, "main.go", "package main\n\nfunc main() {\n}\n");
+    let workspace = FixtureWorkspace::new();
+    write_fixture(&workspace, "main.go", "package main\n\nfunc main() {\n}\n");
 
     let output = Command::new(&bin)
-        .args(["scan", root.to_str().unwrap()])
+        .args(["scan", workspace.root().to_str().unwrap()])
         .output()
         .expect("scan should execute");
 
@@ -50,23 +39,21 @@ fn cli_scan_exits_zero_for_clean_code() {
         "clean scan should exit 0: {}",
         String::from_utf8_lossy(&output.stderr)
     );
-
-    fs::remove_dir_all(root).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn cli_scan_exits_nonzero_for_findings() {
     let bin = cargo_bin();
-    let root = temp_dir("findings");
+    let workspace = FixtureWorkspace::new();
     // Overlong name + fmt.Sprintf in loop → guaranteed findings.
     write_fixture(
-        &root,
+        &workspace,
         "bad.go",
         "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
     );
 
     let output = Command::new(&bin)
-        .args(["scan", root.to_str().unwrap()])
+        .args(["scan", workspace.root().to_str().unwrap()])
         .output()
         .expect("scan should execute");
 
@@ -74,22 +61,20 @@ fn cli_scan_exits_nonzero_for_findings() {
         !output.status.success(),
         "findings scan should exit non-zero"
     );
-
-    fs::remove_dir_all(root).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn cli_scan_no_fail_exits_zero_even_with_findings() {
     let bin = cargo_bin();
-    let root = temp_dir("nofail");
+    let workspace = FixtureWorkspace::new();
     write_fixture(
-        &root,
+        &workspace,
         "bad.go",
         "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
     );
 
     let output = Command::new(&bin)
-        .args(["scan", root.to_str().unwrap(), "--no-fail"])
+        .args(["scan", workspace.root().to_str().unwrap(), "--no-fail"])
         .output()
         .expect("scan should execute");
 
@@ -98,18 +83,21 @@ fn cli_scan_no_fail_exits_zero_even_with_findings() {
         "--no-fail should exit 0 even with findings: {}",
         String::from_utf8_lossy(&output.stderr)
     );
-
-    fs::remove_dir_all(root).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn cli_scan_json_produces_valid_json() {
     let bin = cargo_bin();
-    let root = temp_dir("json");
-    write_fixture(&root, "main.go", "package main\n\nfunc main() {\n}\n");
+    let workspace = FixtureWorkspace::new();
+    write_fixture(&workspace, "main.go", "package main\n\nfunc main() {\n}\n");
 
     let output = Command::new(&bin)
-        .args(["scan", root.to_str().unwrap(), "--json", "--no-fail"])
+        .args([
+            "scan",
+            workspace.root().to_str().unwrap(),
+            "--json",
+            "--no-fail",
+        ])
         .output()
         .expect("scan should execute");
 
@@ -128,16 +116,14 @@ fn cli_scan_json_produces_valid_json() {
         parsed.get("timings").is_some(),
         "JSON should contain 'timings' field"
     );
-
-    fs::remove_dir_all(root).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn cli_scan_ignore_flag_suppresses_specific_rules() {
     let bin = cargo_bin();
-    let root = temp_dir("ignore");
+    let workspace = FixtureWorkspace::new();
     write_fixture(
-        &root,
+        &workspace,
         "bad.go",
         "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
     );
@@ -145,7 +131,7 @@ fn cli_scan_ignore_flag_suppresses_specific_rules() {
     let output = Command::new(&bin)
         .args([
             "scan",
-            root.to_str().unwrap(),
+            workspace.root().to_str().unwrap(),
             "--json",
             "--no-fail",
             "--ignore",
@@ -162,8 +148,6 @@ fn cli_scan_ignore_flag_suppresses_specific_rules() {
         !findings.iter().any(|f| f["rule_id"] == "overlong_name"),
         "--ignore should suppress the specified rule"
     );
-
-    fs::remove_dir_all(root).expect("temp dir cleanup should succeed");
 }
 
 // ── Rules subcommand tests ──

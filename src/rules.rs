@@ -90,11 +90,14 @@ pub fn is_detail_only_rule(rule_id: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeSet;
+    use std::fs;
+    use std::path::{Path, PathBuf};
 
     use super::{
         RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule, rule_metadata,
         rule_metadata_variants, rule_registry,
     };
+    use crate::{DEFAULT_MAX_BYTES, read_to_string_limited};
 
     #[test]
     fn registry_is_unique_per_language_and_sorted() {
@@ -200,5 +203,68 @@ mod tests {
                     .configurability
                     .contains(&RuleConfigurability::DetailsOnly))
         );
+    }
+
+    #[test]
+    fn source_rule_ids_match_public_registry() {
+        let source_rule_ids =
+            collect_source_rule_ids(Path::new(env!("CARGO_MANIFEST_DIR")).join("src"));
+        let registry_rule_ids = rule_registry()
+            .iter()
+            .map(|metadata| metadata.id.clone())
+            .collect::<BTreeSet<_>>();
+
+        assert!(
+            source_rule_ids.is_subset(&registry_rule_ids),
+            "source contains rule ids that are missing from the public registry"
+        );
+    }
+
+    fn collect_source_rule_ids(root: PathBuf) -> BTreeSet<String> {
+        let mut ids = BTreeSet::new();
+        collect_rule_ids_from_dir(&root, &mut ids);
+        ids
+    }
+
+    fn collect_rule_ids_from_dir(dir: &Path, ids: &mut BTreeSet<String>) {
+        let entries = match fs::read_dir(dir) {
+            Ok(entries) => entries,
+            Err(_) => return,
+        };
+
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                collect_rule_ids_from_dir(&path, ids);
+                continue;
+            }
+
+            if path.extension().and_then(|ext| ext.to_str()) != Some("rs") {
+                continue;
+            }
+
+            let Ok(source) = read_to_string_limited(&path, DEFAULT_MAX_BYTES) else {
+                continue;
+            };
+            let production_source = source
+                .split_once("#[cfg(test)]")
+                .map(|(production, _)| production)
+                .unwrap_or(&source);
+            extract_rule_ids(production_source, ids);
+        }
+    }
+
+    fn extract_rule_ids(source: &str, ids: &mut BTreeSet<String>) {
+        let mut search_start = 0;
+
+        while let Some(offset) = source[search_start..].find("rule_id: \"") {
+            let start = search_start + offset + "rule_id: \"".len();
+            let Some(end_offset) = source[start..].find('\"') else {
+                break;
+            };
+
+            ids.insert(source[start..start + end_offset].to_string());
+            search_start = start + end_offset + 1;
+        }
     }
 }

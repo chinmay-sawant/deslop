@@ -10,7 +10,9 @@ mod rules;
 mod scan;
 
 pub use analysis::Error as AnalysisError;
-pub use benchmark::{BenchmarkOptions, benchmark_repository};
+pub use benchmark::{
+    BenchmarkOptions, benchmark_repository, benchmark_repository_with_go_semantic,
+};
 pub use config::Error as ConfigError;
 pub(crate) use config::{RepoConfig, load_repository_config};
 pub use error::{Error, Result};
@@ -23,4 +25,4 @@ pub use rules::{
     RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleMetadata, RuleStatus,
     is_detail_only_rule, rule_metadata, rule_metadata_variants, rule_registry,
 };
-pub use scan::scan_repository;
+pub use scan::{scan_repository, scan_repository_with_go_semantic};

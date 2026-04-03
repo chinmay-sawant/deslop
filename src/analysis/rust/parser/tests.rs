@@ -1,5 +1,7 @@
 use std::path::Path;
 
+use proptest::prelude::*;
+
 use super::parse_file;
 use crate::analysis::Language;
 
@@ -218,6 +220,22 @@ pub static CACHE: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
     assert_eq!(parsed.rust_statics().len(), 1);
     assert_eq!(parsed.rust_statics()[0].name, "CACHE");
     assert!(parsed.rust_statics()[0].type_text.contains("OnceLock"));
+}
+
+proptest! {
+    #[test]
+    fn parses_valid_function_names(name in "[a-z][a-z0-9_]{0,12}") {
+        let source = format!(
+            "pub fn {name}() -> usize {{\n    1\n}}\n"
+        );
+
+        let parsed = parse_file(Path::new("src/lib.rs"), &source)
+            .expect("generated Rust source should parse successfully");
+
+        prop_assert_eq!(parsed.functions.len(), 1);
+        prop_assert_eq!(&parsed.functions[0].fingerprint.name, &name);
+        prop_assert!(!parsed.syntax_error);
+    }
 }
 
 #[test]

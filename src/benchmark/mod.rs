@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use crate::Result;
 use crate::model::{BenchmarkReport, BenchmarkRun, StageStats};
-use crate::{ScanOptions, scan_repository};
+use crate::{ScanOptions, scan_repository_with_go_semantic};
 
 #[derive(Debug, Clone)]
 pub struct BenchmarkOptions {
@@ -13,20 +13,33 @@ pub struct BenchmarkOptions {
 }
 
 pub fn benchmark_repository(options: &BenchmarkOptions) -> Result<BenchmarkReport> {
+    benchmark_repository_with_go_semantic(options, false)
+}
+
+pub fn benchmark_repository_with_go_semantic(
+    options: &BenchmarkOptions,
+    enable_go_semantic: bool,
+) -> Result<BenchmarkReport> {
     for _ in 0..options.warmups {
-        let _ = scan_repository(&ScanOptions {
-            root: options.root.clone(),
-            respect_ignore: options.respect_ignore,
-        })?;
+        let _ = scan_repository_with_go_semantic(
+            &ScanOptions {
+                root: options.root.clone(),
+                respect_ignore: options.respect_ignore,
+            },
+            enable_go_semantic,
+        )?;
     }
 
     let mut runs = Vec::new();
 
     for iteration in 0..options.repeats {
-        let report = scan_repository(&ScanOptions {
-            root: options.root.clone(),
-            respect_ignore: options.respect_ignore,
-        })?;
+        let report = scan_repository_with_go_semantic(
+            &ScanOptions {
+                root: options.root.clone(),
+                respect_ignore: options.respect_ignore,
+            },
+            enable_go_semantic,
+        )?;
 
         runs.push(BenchmarkRun {
             iteration: iteration + 1,
