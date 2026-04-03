@@ -10,7 +10,8 @@ use crate::cli::{
     format_scan_report_json, print_benchmark_report,
 };
 use deslop::{
-    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions, benchmark_repository, scan_repository,
+    BenchmarkOptions, RuleConfigurability, RuleLanguage, RuleStatus, ScanOptions,
+    benchmark_repository, rule_metadata_variants, scan_repository,
 };
 
 const GO_SEMANTIC_ENV_VAR: &str = "DESLOP_ENABLE_GO_SEMANTIC";
@@ -104,7 +105,7 @@ fn main() -> Result<()> {
                 let finding_count = report
                     .findings
                     .iter()
-                    .filter(|f| details || f.rule_id != "full_dataset_load")
+                    .filter(|f| details || !is_detail_only_rule(f.rule_id.as_str()))
                     .count();
                 if finding_count > 0 {
                     std::process::exit(1);
@@ -199,4 +200,12 @@ fn set_go_semantic_env(enable_semantic: bool) {
             std::env::set_var(GO_SEMANTIC_ENV_VAR, "1");
         }
     }
+}
+
+fn is_detail_only_rule(rule_id: &str) -> bool {
+    rule_metadata_variants(rule_id).iter().any(|metadata| {
+        metadata
+            .configurability
+            .contains(&RuleConfigurability::DetailsOnly)
+    })
 }

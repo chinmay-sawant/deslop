@@ -2,6 +2,7 @@ use std::fmt::Write as _;
 use std::path::PathBuf;
 
 use anyhow::Result;
+use deslop::{RuleConfigurability, rule_metadata_variants};
 use serde::Serialize;
 
 pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> String {
@@ -139,7 +140,11 @@ fn visible_findings(report: &deslop::ScanReport, details: bool) -> Vec<&deslop::
 }
 
 fn is_detail_only_finding(rule_id: &str) -> bool {
-    matches!(rule_id, "full_dataset_load")
+    rule_metadata_variants(rule_id).iter().any(|metadata| {
+        metadata
+            .configurability
+            .contains(&RuleConfigurability::DetailsOnly)
+    })
 }
 
 pub(crate) fn print_benchmark_report(report: &deslop::BenchmarkReport) {
@@ -323,8 +328,8 @@ mod tests {
     fn test_text_output() {
         let output = format_scan_report(&sample_report(), false);
 
-        assert!(output.contains("Findings: 1"));
-        assert!(!output.contains("full_dataset_load"));
+        assert!(output.contains("Findings: 2"));
+        assert!(output.contains("full_dataset_load"));
         assert!(output.contains("placeholder_test_body"));
         assert!(!output.contains("package=main syntax_error=false functions=1"));
         assert!(!output.contains("  - Run [10:24]"));
@@ -348,7 +353,7 @@ mod tests {
 
         assert!(output.contains("\"name\": \"Run\""));
         assert!(output.contains("\"function_count\": 1"));
-        assert!(!output.contains("full_dataset_load"));
+        assert!(output.contains("full_dataset_load"));
         assert!(output.contains("placeholder_test_body"));
         assert!(!output.contains("complexity_score"));
         assert!(!output.contains("call_count"));

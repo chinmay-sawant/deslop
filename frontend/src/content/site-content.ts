@@ -182,8 +182,8 @@ export const pipelineStages: PipelineStage[] = [
       'deslop starts with file selection only. It keeps discovery independent from later analysis so the pipeline stays composable and cheap to run.',
     bullets: [
       '.gitignore-aware by default',
-      'Skips vendor and common generated files in the current implementation',
-      'Keeps discovery separate from parsing',
+      'Skips vendor and common generated files',
+      'Keeps discovery separate from parsing work',
     ],
   },
   {
@@ -193,8 +193,8 @@ export const pipelineStages: PipelineStage[] = [
       'The current implementation uses tree-sitter-go, tree-sitter-python, and tree-sitter-rust while remaining syntax tolerant. Even if a file is imperfect, deslop still tries to recover enough structure to keep signal flowing into the report.',
     bullets: [
       'Package names, imports, and declared symbols',
-      'Call sites, loop markers, and context clues',
-      'Function-, class-, and module-level evidence built for later heuristics',
+      'Call sites plus loop and request-path clues',
+      'Function-, class-, and module-level evidence for later heuristics',
     ],
   },
   {
@@ -204,8 +204,8 @@ export const pipelineStages: PipelineStage[] = [
       'This stage is intentionally modest. It improves same-package, same-module, and import-qualified checks without pretending to replace full semantic analysis or type resolution.',
     bullets: [
       'Functions, methods, and declared symbol counts',
-      'Language-scoped package or module matching to reduce ambiguity in mixed repositories',
-      'Import context reused by hallucination heuristics and repo-local structure checks',
+      'Language-scoped matching for mixed repositories',
+      'Import context reused by hallucination checks',
     ],
   },
   {
@@ -214,10 +214,10 @@ export const pipelineStages: PipelineStage[] = [
     detail:
       'The heuristics layer is designed for human review rather than opaque scoring. Findings stay readable by default, while the opt-in Go semantic pack adds nested-loop correlation only when you explicitly turn it on.',
     bullets: [
-      'Compact text output by default, details opt in',
+      'Compact text output by default',
+      'Optional `--details` adds per-function fingerprints',
       'JSON output for pipeline integration',
-      'Optional `--enable-semantic` or `go_semantic_experimental = true` for deeper Go loop correlation',
-      'Readable evidence payloads instead of black-box scores',
+      'Optional semantic Go loop correlation when enabled',
     ],
   },
 ]
@@ -313,8 +313,8 @@ export const principles: Principle[] = [
 export const metrics: Metric[] = [
   {
     label: 'Documented baseline',
-    value: '180.80 ms',
-    note: 'Preferred local benchmark documented against a realistic Go repository.',
+    value: '1906.20 ms',
+    note: 'Mean total benchmark over 5 repeats after 1 warmup against gopdfsuit on April 3, 2026.',
   },
   {
     label: 'Current implementation',
@@ -323,8 +323,8 @@ export const metrics: Metric[] = [
   },
   {
     label: 'Benchmark repository scale',
-    value: '89 files / 702 functions',
-    note: 'Measured as a full-repository static analysis pass.',
+    value: '125 files / 876 functions',
+    note: 'Measured as a full-repository pass on the gopdfsuit corpus target.',
   },
 ]
 

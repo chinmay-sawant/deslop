@@ -1,4 +1,5 @@
 mod advanceplan3;
+mod advanceplan4;
 mod concurrency;
 mod consistency;
 mod context;
@@ -8,6 +9,7 @@ mod performance;
 mod style;
 
 pub(super) use advanceplan3::go_advanceplan3_file_findings;
+pub(super) use advanceplan4::go_advanceplan4_file_findings;
 pub(super) use concurrency::{
     coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, shutdown_findings,
 };

@@ -144,7 +144,7 @@ mod tests {
         let full_dataset_load = rule_metadata_variants("full_dataset_load");
         assert_eq!(full_dataset_load.len(), 2);
         assert!(full_dataset_load.iter().all(|metadata| {
-            metadata
+            !metadata
                 .configurability
                 .contains(&RuleConfigurability::DetailsOnly)
         }));

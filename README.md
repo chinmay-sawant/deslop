@@ -13,7 +13,7 @@ cargo run -- scan /path/to/repo
 
 deslop auto-detects supported source files under that path. The same command works for Go-only repositories, Python-only repositories, Rust-only repositories, and mixed-language repositories.
 
-By default, scan output prints the scan summary plus the standard finding set. Detail-only diagnostics such as `full_dataset_load` are held back unless you pass `--details`.
+By default, scan output prints the scan summary plus the standard finding set. Pass `--details` when you want the per-function fingerprint breakdown alongside the normal findings.
 
 Repository-local scan behavior can be tuned with a `.deslop.toml` file at the scan root:
 
@@ -53,7 +53,7 @@ Enable the opt-in deeper semantic Go checks for a single run:
 cargo run -- scan --enable-semantic /path/to/go-repo
 ```
 
-Show full per-function fingerprint details and detail-only findings in either text or JSON output:
+Show full per-function fingerprint details in either text or JSON output:
 
 ```bash
 cargo run -- scan --details /path/to/repo
@@ -109,10 +109,10 @@ deslop now publishes a central rule registry that drives the CLI and the synced 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 181 | 2 | 0 | 183 |
+| go | 312 | 2 | 0 | 314 |
 | python | 162 | 0 | 0 | 162 |
 | rust | 62 | 12 | 0 | 74 |
-| total | 416 | 14 | 0 | 430 |
+| total | 547 | 14 | 0 | 561 |
 
 The totals above are language-scoped rule entries, so a shared rule ID implemented in more than one backend appears in each relevant language bucket.
 The registry is now the source of truth for `deslop rules`, the frontend rule catalog, and the generated detection inventory guide.
@@ -145,7 +145,7 @@ jobs:
 ```
 <!-- GENERATED_ACTION_SCAN_EXAMPLE_END -->
 
-Emit JSON and include detail-only findings:
+Emit JSON and include per-function fingerprint details:
 
 <!-- GENERATED_ACTION_JSON_EXAMPLE_START -->
 ```yaml
@@ -180,7 +180,7 @@ Inputs:
 - `command`: Subcommand to run. Supported values are scan and bench. Defaults to `scan`. Optional.
 - `path`: Path to the repository to analyze. Defaults to `.`. Optional.
 - `json`: Emit JSON output. Defaults to `false`. Optional.
-- `details`: Include detail-only scan findings. Applies only to the scan command. Defaults to `false`. Optional.
+- `details`: Include full per-function fingerprint details in scan output. Applies only to the scan command. Defaults to `false`. Optional.
 - `no-ignore`: Scan without respecting .gitignore. Defaults to `false`. Optional.
 - `enable-semantic`: Enable the opt-in deeper semantic Go heuristics. Defaults to `false`. Optional.
 - `fail-on-findings`: Exit with a non-zero status code when scan findings are present. Applies only to the scan command. Defaults to `true`. Optional.

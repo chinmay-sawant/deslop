@@ -262,7 +262,10 @@ def sync_features_inventory(
         r"(## What deslop detects today\n\n)(.*?)(\n## Detection philosophy)",
         re.S,
     )
-    updated, count = pattern.subn(rf"\1{generated}\3", original)
+    updated, count = pattern.subn(
+        lambda match: f"{match.group(1)}{generated}{match.group(3)}",
+        original,
+    )
     if count != 1:
         raise SystemExit("failed to locate inventory section in guides/features-and-detections.md")
 
