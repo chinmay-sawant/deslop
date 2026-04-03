@@ -10,8 +10,8 @@ use crate::cli::{
     format_scan_report_json, print_benchmark_report,
 };
 use deslop::{
-    BenchmarkOptions, RuleConfigurability, RuleLanguage, RuleStatus, ScanOptions,
-    benchmark_repository, rule_metadata_variants, scan_repository,
+    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions, benchmark_repository,
+    is_detail_only_rule, scan_repository,
 };
 
 const GO_SEMANTIC_ENV_VAR: &str = "DESLOP_ENABLE_GO_SEMANTIC";
@@ -200,12 +200,4 @@ fn set_go_semantic_env(enable_semantic: bool) {
             std::env::set_var(GO_SEMANTIC_ENV_VAR, "1");
         }
     }
-}
-
-fn is_detail_only_rule(rule_id: &str) -> bool {
-    rule_metadata_variants(rule_id).iter().any(|metadata| {
-        metadata
-            .configurability
-            .contains(&RuleConfigurability::DetailsOnly)
-    })
 }

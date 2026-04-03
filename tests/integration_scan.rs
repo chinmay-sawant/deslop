@@ -64,6 +64,8 @@ mod rust_advanceplan2;
 mod security;
 #[path = "integration_scan/style.rs"]
 mod style;
+#[path = "support/mod.rs"]
+mod support;
 #[path = "integration_scan/test_quality.rs"]
 mod test_quality;
 
@@ -71,80 +73,26 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use deslop::{ScanOptions, scan_repository};
+use support::{assert_rules_absent, assert_rules_present, scan_files};
 
 #[test]
 fn test_error_slop() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "error_handling.go",
-        go_fixture!("error_handling_slop.txt"),
-    );
+    let report = scan_files(&[("error_handling.go", go_fixture!("error_handling_slop.txt"))]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
-
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "dropped_error")
+    assert_rules_present(
+        &report,
+        &["dropped_error", "panic_on_error", "error_wrapping_misuse"],
     );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "panic_on_error")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "error_wrapping_misuse")
-    );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_error_ok() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "error_handling.go",
-        go_fixture!("error_handling_clean.txt"),
-    );
+    let report = scan_files(&[("error_handling.go", go_fixture!("error_handling_clean.txt"))]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
-
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "error_wrapping_misuse")
+    assert_rules_absent(
+        &report,
+        &["error_wrapping_misuse", "dropped_error", "panic_on_error"],
     );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "dropped_error")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "panic_on_error")
-    );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 fn create_temp_workspace() -> PathBuf {
@@ -158,9 +106,5 @@ fn create_temp_workspace() -> PathBuf {
 }
 
 fn write_fixture(root: &Path, relative_path: &str, contents: &str) {
-    let path = root.join(relative_path);
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent).expect("parent dir creation should succeed");
-    }
-    fs::write(path, contents).expect("fixture write should succeed");
+    support::write_fixture(root, relative_path, contents);
 }

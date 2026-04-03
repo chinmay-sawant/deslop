@@ -1,12 +1,13 @@
 mod evaluate;
 mod file_analysis;
+mod reporting;
 mod suppression;
 mod walker;
 
 use std::env;
 use std::time::Instant;
 
-use crate::analysis::{AnalysisConfig, ParsedFile, supported_extensions};
+use crate::analysis::{AnalysisConfig, supported_extensions};
 use crate::index::build_repository_index;
 use crate::model::{ScanOptions, ScanReport, TimingBreakdown};
 use crate::scan::walker::discover_source_files;
@@ -18,6 +19,7 @@ use self::evaluate::evaluate_findings;
 use self::file_analysis::analyze_discovered_files;
 #[cfg(test)]
 use self::file_analysis::is_generated;
+use self::reporting::file_reports;
 #[cfg(test)]
 use self::suppression::{
     SuppressionDirective, next_code_line, parse_rule_ids, parse_suppression_directives,
@@ -69,7 +71,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
 
     let files_analyzed = parsed_files.len();
     let functions_found = parsed_files.iter().map(|file| file.functions.len()).sum();
-    let files = parsed_files.iter().map(ParsedFile::to_report).collect();
+    let files = file_reports(&parsed_files);
 
     Ok(ScanReport {
         root: canonical_root,

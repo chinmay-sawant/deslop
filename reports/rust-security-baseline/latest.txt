@@ -20,7 +20,7 @@ src/analysis/python/parser/hotpath_ext.rs:240:            let receiver = &trimme
 src/analysis/python/parser/hotpath_ext.rs:241:            let after = &trimmed[get_idx + 5..];
 src/analysis/python/parser/hotpath_ext.rs:243:                let key = after[..end].trim();
 src/analysis/rust/parser/mod.rs:433:    text[vec_start + 4..].contains("Box<")
-src/heuristics/go/advanceplan3/data_access.rs:1420:                let after_like = &upper[like_pos + 4..];
+src/heuristics/go/advanceplan3/data_access/sql.rs:552:                let after_like = &upper[like_pos + 4..];
 src/heuristics/go/advanceplan3/gin.rs:239:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
 src/heuristics/go/advanceplan3/gin.rs:694:        text = text[1..text.len() - 1].trim();
 src/heuristics/go/advanceplan3/gin.rs:764:        for (end_index, current) in suffix[index + character.len_utf8()..].char_indices() {
@@ -30,14 +30,14 @@ src/heuristics/go/advanceplan3/gin.rs:803:            ',' if depth == 0 => retur
 src/heuristics/go/advanceplan3/hot_path.rs:1488:                    return Some(suffix[..index].trim().to_string());
 src/heuristics/go/advanceplan3/hot_path.rs:1492:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
 src/heuristics/go/advanceplan3/mod.rs:309:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/go/advanceplan4/performance.rs:693:        let Some(end) = bl.text[start..].find(']') else {
-src/heuristics/go/advanceplan4/performance.rs:697:        let key_expr = bl.text[start + 1..end].trim();
-src/heuristics/go/advanceplan4/performance.rs:698:        let map_expr = bl.text[..start]
+src/heuristics/go/advanceplan4/performance/collections.rs:178:        let Some(end) = bl.text[start..].find(']') else {
+src/heuristics/go/advanceplan4/performance/collections.rs:182:        let key_expr = bl.text[start + 1..end].trim();
+src/heuristics/go/advanceplan4/performance/collections.rs:183:        let map_expr = bl.text[..start]
 src/heuristics/go/idioms.rs:1037:    let parameters = &signature_text[parameters_start + 1..parameters_end];
 src/heuristics/go/idioms.rs:1083:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go/performance.rs:338:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/python/framework.rs:520:            let rhs = &trimmed[eq_idx + 3..];
-src/heuristics/python/framework.rs:522:                let var = trimmed[..eq_idx].trim().to_string();
+src/heuristics/python/framework/django.rs:224:            let rhs = &trimmed[eq_idx + 3..];
+src/heuristics/python/framework/django.rs:226:                let var = trimmed[..eq_idx].trim().to_string();
 src/heuristics/python/hotpath_ext.rs:416:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
 src/heuristics/python/hotpath_ext.rs:418:            && let Some(source_start) = trimmed[in_idx + 5..].find(" in ")
 src/heuristics/python/hotpath_ext.rs:420:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
@@ -54,15 +54,15 @@ src/heuristics/rust/runtime_boundary.rs:265:        if &bytes[start..start + key
 
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
-src/heuristics/python/framework.rs:312:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
+src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/heuristics/python/packaging.rs:242:    candidate.exists().then_some(candidate)
 src/heuristics/rust/runtime_boundary.rs:167:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
-src/rules.rs:128:    fn finds_known_rule_metadata() {
-src/rules.rs:129:        let metadata = rule_metadata("dropped_error", RuleLanguage::Go)
-src/rules.rs:162:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
-src/rules.rs:171:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
+src/rules.rs:136:    fn finds_known_rule_metadata() {
+src/rules.rs:137:        let metadata = rule_metadata("dropped_error", RuleLanguage::Go)
+src/rules.rs:170:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
+src/rules.rs:179:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
 src/rules.rs:69:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
 
 ## toctou_check_then_open
