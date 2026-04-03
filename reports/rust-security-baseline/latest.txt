@@ -30,9 +30,9 @@ src/heuristics/go/advanceplan3/gin.rs:803:            ',' if depth == 0 => retur
 src/heuristics/go/advanceplan3/hot_path.rs:1488:                    return Some(suffix[..index].trim().to_string());
 src/heuristics/go/advanceplan3/hot_path.rs:1492:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
 src/heuristics/go/advanceplan3/mod.rs:309:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/go/advanceplan4/performance/collections.rs:178:        let Some(end) = bl.text[start..].find(']') else {
-src/heuristics/go/advanceplan4/performance/collections.rs:182:        let key_expr = bl.text[start + 1..end].trim();
-src/heuristics/go/advanceplan4/performance/collections.rs:183:        let map_expr = bl.text[..start]
+src/heuristics/go/advanceplan4/performance/collections.rs:179:        let Some(end) = bl.text[start..].find(']') else {
+src/heuristics/go/advanceplan4/performance/collections.rs:183:        let key_expr = bl.text[start + 1..end].trim();
+src/heuristics/go/advanceplan4/performance/collections.rs:184:        let map_expr = bl.text[..start]
 src/heuristics/go/idioms.rs:1037:    let parameters = &signature_text[parameters_start + 1..parameters_end];
 src/heuristics/go/idioms.rs:1083:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go/performance.rs:338:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
