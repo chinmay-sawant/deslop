@@ -31,7 +31,11 @@ fn dataclass_mutable_default_findings(file: &ParsedFile) -> Vec<Finding> {
     }
 
     let mut findings = Vec::new();
-    for model in file.python_models().iter().filter(|model| model.is_dataclass) {
+    for model in file
+        .python_models()
+        .iter()
+        .filter(|model| model.is_dataclass)
+    {
         for field in &model.fields {
             let Some(default_text) = field.default_text.as_deref() else {
                 continue;

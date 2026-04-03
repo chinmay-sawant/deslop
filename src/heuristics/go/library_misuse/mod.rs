@@ -17,7 +17,10 @@ pub(crate) fn go_library_misuse_file_findings(file: &ParsedFile) -> Vec<Finding>
     findings
 }
 
-fn go_library_misuse_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+fn go_library_misuse_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if file.is_test_file || function.is_test_function {
         return Vec::new();
     }

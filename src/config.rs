@@ -121,11 +121,8 @@ mod tests {
     #[test]
     fn rejects_malformed_toml_with_parse_error() {
         let root = temp_dir("malformed");
-        fs::write(
-            root.join(".deslop.toml"),
-            "this is not valid toml {{{\n",
-        )
-        .expect("config file should be written");
+        fs::write(root.join(".deslop.toml"), "this is not valid toml {{{\n")
+            .expect("config file should be written");
 
         let error = load_repository_config(&root).expect_err("malformed TOML should fail");
         assert!(

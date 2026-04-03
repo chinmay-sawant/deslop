@@ -350,7 +350,10 @@ fn looks_like_aos_hot_path(file: &ParsedFile, function: &ParsedFunction) -> bool
     function.body_text.contains("for ")
         && has_numeric_update(function.body_text.as_str())
         && repeated_receiver_field_accesses(function.body_text.as_str()) >= 4
-        && file.structs().iter().any(|summary| summary.fields.len() >= 3)
+        && file
+            .structs()
+            .iter()
+            .any(|summary| summary.fields.len() >= 3)
 }
 
 fn has_numeric_update(body: &str) -> bool {

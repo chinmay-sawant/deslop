@@ -30,7 +30,10 @@ pub(crate) fn go_framework_patterns_file_findings(file: &ParsedFile) -> Vec<Find
     findings
 }
 
-fn go_framework_patterns_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+fn go_framework_patterns_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if file.is_test_file || function.is_test_function {
         return Vec::new();
     }

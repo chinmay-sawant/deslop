@@ -2,8 +2,8 @@ use std::fs;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::{
-    SuppressionDirective, apply_repository_config, is_generated, next_code_line,
-    parse_rule_ids, parse_suppression_directives, scan_repository,
+    SuppressionDirective, apply_repository_config, is_generated, next_code_line, parse_rule_ids,
+    parse_suppression_directives, scan_repository,
 };
 use crate::RepoConfig;
 use crate::model::ScanOptions;

@@ -40,12 +40,12 @@ mod context;
 mod core;
 #[path = "integration_scan/data_access.rs"]
 mod data_access;
-#[path = "integration_scan/go_resource_hygiene.rs"]
-mod go_resource_hygiene;
 #[path = "integration_scan/go_framework_patterns.rs"]
 mod go_framework_patterns;
 #[path = "integration_scan/go_library_misuse.rs"]
 mod go_library_misuse;
+#[path = "integration_scan/go_resource_hygiene.rs"]
+mod go_resource_hygiene;
 #[path = "integration_scan/hallucination.rs"]
 mod hallucination;
 #[path = "integration_scan/naming.rs"]

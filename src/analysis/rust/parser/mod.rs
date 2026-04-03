@@ -9,7 +9,7 @@ use tree_sitter::{Node, Parser};
 
 use crate::analysis::{
     AnalysisResult, CallSite, Error, Language, LanguageFileData, MacroCall, NamedLiteral,
-    ParsedFile, ParsedFunction, RustFileData, RuntimeCall, RustFunctionEvidence, UnsafePattern,
+    ParsedFile, ParsedFunction, RuntimeCall, RustFileData, RustFunctionEvidence, UnsafePattern,
     UnsafePatternKind,
 };
 use crate::model::FunctionFingerprint;

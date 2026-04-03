@@ -53,7 +53,10 @@ fn test_go_framework_patterns_core_hot_path_rules() {
 
 #[test]
 fn test_go_framework_patterns_core_hot_path_clean() {
-    let report = scan_files(&[("core_clean.go", go_fixture!("framework_patterns_core_clean.txt"))]);
+    let report = scan_files(&[(
+        "core_clean.go",
+        go_fixture!("framework_patterns_core_clean.txt"),
+    )]);
 
     assert_rules_absent(
         &report,
@@ -157,7 +160,10 @@ fn test_go_framework_patterns_data_access_rules() {
 
 #[test]
 fn test_go_framework_patterns_data_access_clean() {
-    let report = scan_files(&[("data_clean.go", go_fixture!("framework_patterns_data_clean.txt"))]);
+    let report = scan_files(&[(
+        "data_clean.go",
+        go_fixture!("framework_patterns_data_clean.txt"),
+    )]);
 
     assert_rules_absent(
         &report,
@@ -254,7 +260,10 @@ fn test_go_framework_patterns_gin_request_rules() {
 
 #[test]
 fn test_go_framework_patterns_gin_request_clean() {
-    let report = scan_files(&[("gin_clean.go", go_fixture!("framework_patterns_gin_clean.txt"))]);
+    let report = scan_files(&[(
+        "gin_clean.go",
+        go_fixture!("framework_patterns_gin_clean.txt"),
+    )]);
 
     assert_rules_absent(
         &report,

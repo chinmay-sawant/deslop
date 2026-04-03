@@ -52,11 +52,7 @@ func buildIndex(items []string) map[string][]string {
 #[test]
 fn semantic_flag_propagates_through_config() {
     let root = temp_dir("propagation");
-    write_fixture(
-        &root,
-        ".deslop.toml",
-        "go_semantic_experimental = true\n",
-    );
+    write_fixture(&root, ".deslop.toml", "go_semantic_experimental = true\n");
     write_fixture(&root, "main.go", "package main\n\nfunc main() {}\n");
 
     let report = scan_repository(&ScanOptions {
@@ -101,17 +97,15 @@ fn semantic_gated_rules_enabled_via_config() {
 #[test]
 fn semantic_gated_rules_disabled_via_config() {
     let root = temp_dir("no-semantic-alloc");
-    write_fixture(
-        &root,
-        ".deslop.toml",
-        "go_semantic_experimental = false\n",
-    );
+    write_fixture(&root, ".deslop.toml", "go_semantic_experimental = false\n");
     write_fixture(&root, "main.go", GO_NESTED_LOOP_ALLOC);
 
     // The test is robust regardless of env var state because explicit false in
     // config takes precedence. But we also clear the env var to be thorough.
     let had_env = std::env::var("DESLOP_ENABLE_GO_SEMANTIC").ok();
-    unsafe { std::env::remove_var("DESLOP_ENABLE_GO_SEMANTIC"); }
+    unsafe {
+        std::env::remove_var("DESLOP_ENABLE_GO_SEMANTIC");
+    }
 
     let report = scan_repository(&ScanOptions {
         root: root.clone(),
@@ -121,7 +115,9 @@ fn semantic_gated_rules_disabled_via_config() {
 
     // Restore env var if it was previously set.
     if let Some(val) = had_env {
-        unsafe { std::env::set_var("DESLOP_ENABLE_GO_SEMANTIC", val); }
+        unsafe {
+            std::env::set_var("DESLOP_ENABLE_GO_SEMANTIC", val);
+        }
     }
 
     let has_semantic_rule = report

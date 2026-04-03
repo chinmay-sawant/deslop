@@ -10,8 +10,7 @@ fn cargo_bin() -> String {
         .expect("cargo build should succeed");
     assert!(output.status.success(), "cargo build failed");
     // Return the path to the binary
-    let target_dir = std::env::var("CARGO_TARGET_DIR")
-        .unwrap_or_else(|_| "target".to_string());
+    let target_dir = std::env::var("CARGO_TARGET_DIR").unwrap_or_else(|_| "target".to_string());
     format!("{}/debug/deslop", target_dir)
 }
 
@@ -71,7 +70,10 @@ fn cli_scan_exits_nonzero_for_findings() {
         .output()
         .expect("scan should execute");
 
-    assert!(!output.status.success(), "findings scan should exit non-zero");
+    assert!(
+        !output.status.success(),
+        "findings scan should exit non-zero"
+    );
 
     fs::remove_dir_all(root).expect("temp dir cleanup should succeed");
 }
@@ -114,8 +116,14 @@ fn cli_scan_json_produces_valid_json() {
     let stdout = String::from_utf8_lossy(&output.stdout);
     let parsed: serde_json::Value =
         serde_json::from_str(&stdout).expect("JSON output should be valid JSON");
-    assert!(parsed.get("root").is_some(), "JSON should contain 'root' field");
-    assert!(parsed.get("findings").is_some(), "JSON should contain 'findings' field");
+    assert!(
+        parsed.get("root").is_some(),
+        "JSON should contain 'root' field"
+    );
+    assert!(
+        parsed.get("findings").is_some(),
+        "JSON should contain 'findings' field"
+    );
     assert!(
         parsed.get("timings").is_some(),
         "JSON should contain 'timings' field"
