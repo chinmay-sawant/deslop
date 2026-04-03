@@ -42,6 +42,7 @@ Makefile text eol=lf
 *.css linguist-vendored
 *.html linguist-vendored
 *.json linguist-vendored
+*.txt linguist-vendored
 *.py linguist-vendored
 
 /docs/ linguist-vendored
