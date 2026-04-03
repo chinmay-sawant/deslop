@@ -32,13 +32,13 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **561 language-scoped rule entries** in deslop `0.1.0`.
+The shipped registry currently tracks **611 language-scoped rule entries** in deslop `0.1.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
 | go | 312 | 2 | 0 | 314 |
-| python | 162 | 0 | 0 | 162 |
+| python | 212 | 0 | 0 | 212 |
 | rust | 62 | 12 | 0 | 74 |
 
 The sections below are generated from the rule registry and grouped by language and family.
@@ -409,7 +409,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `inconsistent_package_name`: Directories that mix base Go package names after ignoring the _test suffix.
 - `misgrouped_imports`: Import blocks that place stdlib imports after third-party imports.
 
-### Python rules (162)
+### Python rules (212)
 
 #### Ai Smells (5)
 - `enthusiastic_commentary`: Unusually enthusiastic or emoji-heavy production comments.
@@ -487,33 +487,41 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `filter_then_count_then_iterate`: The same collection is traversed repeatedly for filtering, counting, and later iteration.
 - `json_encoder_recreated_per_item`: A JSON encoder object is recreated per item instead of being reused for the stream.
 
-#### Hotpath (11)
+#### Hotpath (13)
 - `dict_items_or_keys_materialized_in_loop`: dict.items(), keys(), or values() are repeatedly materialized inside loops.
 - `enumerate_on_range_len`: enumerate(range(len(...))) style loops that add indexing ceremony without extra value.
 - `in_check_on_list_literal`: Membership tests against list literals where a tuple or set would be clearer or cheaper.
+- `json_loads_same_payload_multiple_times`: The same JSON payload is decoded multiple times inside one function instead of caching the parsed value.
 - `list_comprehension_only_for_length`: A list comprehension is built only so len(...) can be called on it.
 - `read_then_splitlines`: File contents are fully read and then splitlines() is called instead of streaming lines.
 - `readlines_then_iterate`: readlines() materializes the whole file before line-by-line iteration.
 - `regex_compile_in_hot_path`: re.compile(...) or similar regex compilation repeated inside hot code paths.
+- `repeated_json_dumps_same_object`: json.dumps(...) is repeated for the same object instead of caching the serialized value.
 - `repeated_open_same_file_in_function`: The same file appears to be opened multiple times within one function.
 - `sorted_only_for_first_element`: A sequence is fully sorted even though only the first or smallest element is used.
 - `string_startswith_endswith_chain`: Repeated startswith(...) or endswith(...) checks that can often be combined into tuple-based calls.
 - `write_without_buffering_in_loop`: Repeated writes inside loops with no visible buffering or batching.
 
-#### Hotpath Ext (15)
+#### Hotpath Ext (21)
 - `concatenation_in_comprehension_body`: String or collection concatenation happens inside a comprehension body, creating avoidable churn.
+- `dict_copy_in_loop_same_source`: A dict-like source is copied on each loop iteration instead of being reused or hoisted.
 - `gzip_open_per_chunk`: gzip open/create calls are repeated per chunk instead of per stream.
+- `list_copy_in_loop_same_source`: A list is copied on each loop iteration even though the source appears unchanged.
 - `nested_list_search_map_candidate`: Nested linear list searches that look like they want a temporary map or set index.
+- `path_resolve_or_expanduser_in_loop`: Path resolution helpers such as resolve() or expanduser() run inside loops on invariant inputs.
 - `pickle_dumps_in_loop_same_structure`: pickle.dumps(...) is called repeatedly for the same structural shape in a loop.
 - `repeated_datetime_strptime_same_format`: datetime.strptime(...) is repeated with the same format string instead of reusing a parsed shape or preprocessing once.
 - `repeated_dict_get_same_key_no_cache`: The same dictionary key is fetched repeatedly instead of storing the value in a local binding.
 - `repeated_hashlib_new_same_algorithm`: The same hashing algorithm is repeatedly constructed in a loop or tight path.
 - `repeated_isinstance_chain_same_object`: The same object goes through repeated isinstance(...) checks that could be consolidated.
 - `repeated_list_index_lookup`: The same list index lookup is performed repeatedly instead of caching the accessed value.
+- `repeated_locale_or_codec_lookup_in_loop`: Locale or codec lookups repeat inside loops instead of being cached once.
 - `repeated_string_format_invariant_template`: An invariant string template is formatted repeatedly in a loop instead of being partially precomputed.
+- `set_created_per_iteration_same_elements`: A set with the same elements is rebuilt on each iteration instead of being hoisted.
 - `sort_then_first_or_membership_only`: A collection is sorted even though only the first element or a membership-style check is needed.
 - `string_join_without_generator`: String joins that materialize an unnecessary list comprehension instead of using a generator or direct iterable.
 - `tuple_unpacking_in_tight_loop`: Tuple unpacking is repeated in tight loops where reducing per-iteration overhead may help.
+- `urlparse_in_loop_on_invariant_base`: urlparse() or urlsplit() is repeated inside loops for invariant base values.
 - `xml_parse_same_payload_multiple_times`: The same XML payload is parsed repeatedly within one function.
 - `yaml_load_same_payload_multiple_times`: The same YAML payload is parsed repeatedly within one function.
 
@@ -539,10 +547,52 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `side_effect_comprehension`: List, set, or dicit comprehensions used as standalone statements where the result is discarded.
 - `variadic_public_api`: Public Python functions that expose *args or **kwargs instead of a clearer interface.
 
-#### Mlops (3)
+#### Mlops (45)
+- `data_pipeline_no_error_handling`: Pipeline-style functions with no visible error handling or recovery path.
+- `dataset_not_using_dataloader`: Manual dataset batching loops that bypass torch.utils.data.DataLoader.
+- `embedding_computed_per_request`: Embeddings recomputed on request paths instead of cached or precomputed for stable inputs.
+- `embedding_dimension_mismatch_silent`: Embeddings are compared without visible dimension validation before similarity math.
+- `entire_dataframe_copied_for_transform`: Whole DataFrames are copied for transforms that could target a smaller subset or reuse views.
+- `global_state_in_data_pipeline`: Pipeline-style functions mutate global state, making concurrency and reproducibility brittle.
+- `gpu_memory_not_cleared_between_experiments`: GPU-backed experiment flows show no visible memory or session cleanup between runs.
+- `hardcoded_api_key_in_source`: Hardcoded model-provider API keys or secret-like tokens appear in source.
+- `intermediate_dataframe_not_freed`: Multiple intermediate DataFrames accumulate with no visible cleanup in one pipeline.
 - `langchain_chain_built_per_request`: LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path.
+- `llm_api_call_in_loop_without_batching`: LLM API calls are made inside loops without batching or aggregation.
+- `llm_full_response_loaded_into_memory`: Large LLM responses are loaded fully into memory instead of streamed or incrementally consumed.
+- `llm_response_not_cached_same_input`: Repeated LLM calls show no visible caching even when prompt inputs appear likely to repeat.
+- `model_eval_mode_missing`: Torch-style inference paths run model(...) without obvious eval() or inference mode setup.
+- `model_loaded_per_request`: Models are loaded on request paths instead of once during application startup.
+- `model_to_device_in_loop`: Models or tensors are moved to a device repeatedly inside loops.
+- `no_schema_validation_on_external_data`: External JSON or tabular data is parsed without visible schema validation.
+- `numpy_append_in_loop`: np.append(...) is used inside loops, forcing repeated reallocations.
+- `numpy_dtype_mismatch_implicit_cast`: Arrays are constructed and immediately cast, implying a missing upfront dtype choice.
+- `numpy_python_loop_over_array`: Python loops iterate directly over arrays where vectorized NumPy operations would be clearer and faster.
+- `numpy_tolist_in_hot_path`: NumPy arrays are converted to Python lists in hot paths, increasing object overhead.
+- `numpy_vstack_hstack_in_loop`: Arrays are repeatedly stacked inside loops instead of collected and stacked once.
+- `pandas_apply_with_simple_vectorizable_op`: Simple DataFrame transforms are routed through apply(lambda) instead of vectorized operations.
+- `pandas_chain_assignment_warning`: Chained DataFrame assignment patterns risk SettingWithCopy-style behavior.
+- `pandas_concat_in_loop`: DataFrames are concatenated inside loops instead of collected and concatenated once.
+- `pandas_copy_in_loop`: DataFrames are copied inside loops, amplifying memory churn.
+- `pandas_eval_string_manipulation`: Dynamic string building is fed into pandas eval/query calls, increasing injection and correctness risk.
+- `pandas_full_dataframe_print_in_production`: Full DataFrames are printed or displayed in production-oriented code paths.
+- `pandas_inplace_false_reassignment_missing`: DataFrame-transform methods are called without reassignment or inplace=True, silently discarding results.
+- `pandas_iterrows_in_loop`: iterrows() is used on DataFrames instead of vectorized operations or itertuples().
+- `pandas_merge_without_validation`: DataFrame merges omit validate= safeguards against multiplicative joins.
+- `pandas_read_csv_without_dtypes`: pd.read_csv(...) calls omit dtype hints, forcing extra inference work.
+- `pandas_read_without_chunksize_large_file`: Data-loading functions read large tabular files without chunksize or nrows limits.
+- `pandas_to_dict_records_in_loop`: DataFrame to_dict conversions are repeated inside loops.
+- `print_metrics_instead_of_logging`: Training or evaluation code prints metrics directly instead of using logging or experiment tracking.
+- `prompt_template_string_concat_in_loop`: Prompt strings are built incrementally inside loops instead of composing a stable template once.
+- `random_seed_not_set`: Training or evaluation entrypoints use randomness without an obvious seed.
+- `retry_on_rate_limit_without_backoff`: Rate-limit retries appear without visible backoff or Retry-After handling.
+- `token_count_not_checked_before_api_call`: LLM requests are sent without visible token counting or context-window checks.
 - `tokenizer_encode_in_loop_without_cache`: Tokenizer encode calls repeated inside loops without caching or batching signals.
+- `tokenizer_loaded_per_request`: Tokenizers are loaded on request paths instead of once during application startup.
+- `torch_no_grad_missing_in_inference`: Torch inference paths show no visible no_grad() or inference_mode() guard.
+- `training_loop_without_zero_grad`: optimizer.step() appears without an obvious zero_grad() reset.
 - `vector_store_client_created_per_request`: Vector-store clients created on request paths instead of reused application state.
+- `wandb_mlflow_log_in_tight_loop`: wandb or mlflow metrics are logged in inner loops instead of batched or reported at coarser boundaries.
 
 #### Packaging (4)
 - `cross_package_internal_import`: Local Python packages reaching into another package's internal or private modules.

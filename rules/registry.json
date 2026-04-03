@@ -5150,6 +5150,19 @@
     "description": "Membership tests against list literals where a tuple or set would be clearer or cheaper."
   },
   {
+    "id": "json_loads_same_payload_multiple_times",
+    "language": "python",
+    "family": "hotpath",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "The same JSON payload is decoded multiple times inside one function instead of caching the parsed value."
+  },
+  {
     "id": "list_comprehension_only_for_length",
     "language": "python",
     "family": "hotpath",
@@ -5200,6 +5213,19 @@
       "severity_override"
     ],
     "description": "re.compile(...) or similar regex compilation repeated inside hot code paths."
+  },
+  {
+    "id": "repeated_json_dumps_same_object",
+    "language": "python",
+    "family": "hotpath",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "json.dumps(...) is repeated for the same object instead of caching the serialized value."
   },
   {
     "id": "repeated_open_same_file_in_function",
@@ -5267,6 +5293,19 @@
     "description": "String or collection concatenation happens inside a comprehension body, creating avoidable churn."
   },
   {
+    "id": "dict_copy_in_loop_same_source",
+    "language": "python",
+    "family": "hotpath_ext",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "A dict-like source is copied on each loop iteration instead of being reused or hoisted."
+  },
+  {
     "id": "gzip_open_per_chunk",
     "language": "python",
     "family": "hotpath_ext",
@@ -5280,6 +5319,19 @@
     "description": "gzip open/create calls are repeated per chunk instead of per stream."
   },
   {
+    "id": "list_copy_in_loop_same_source",
+    "language": "python",
+    "family": "hotpath_ext",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "A list is copied on each loop iteration even though the source appears unchanged."
+  },
+  {
     "id": "nested_list_search_map_candidate",
     "language": "python",
     "family": "hotpath_ext",
@@ -5291,6 +5343,19 @@
       "severity_override"
     ],
     "description": "Nested linear list searches that look like they want a temporary map or set index."
+  },
+  {
+    "id": "path_resolve_or_expanduser_in_loop",
+    "language": "python",
+    "family": "hotpath_ext",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Path resolution helpers such as resolve() or expanduser() run inside loops on invariant inputs."
   },
   {
     "id": "pickle_dumps_in_loop_same_structure",
@@ -5371,6 +5436,19 @@
     "description": "The same list index lookup is performed repeatedly instead of caching the accessed value."
   },
   {
+    "id": "repeated_locale_or_codec_lookup_in_loop",
+    "language": "python",
+    "family": "hotpath_ext",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Locale or codec lookups repeat inside loops instead of being cached once."
+  },
+  {
     "id": "repeated_string_format_invariant_template",
     "language": "python",
     "family": "hotpath_ext",
@@ -5382,6 +5460,19 @@
       "severity_override"
     ],
     "description": "An invariant string template is formatted repeatedly in a loop instead of being partially precomputed."
+  },
+  {
+    "id": "set_created_per_iteration_same_elements",
+    "language": "python",
+    "family": "hotpath_ext",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "A set with the same elements is rebuilt on each iteration instead of being hoisted."
   },
   {
     "id": "sort_then_first_or_membership_only",
@@ -5421,6 +5512,19 @@
       "severity_override"
     ],
     "description": "Tuple unpacking is repeated in tight loops where reducing per-iteration overhead may help."
+  },
+  {
+    "id": "urlparse_in_loop_on_invariant_base",
+    "language": "python",
+    "family": "hotpath_ext",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "urlparse() or urlsplit() is repeated inside loops for invariant base values."
   },
   {
     "id": "xml_parse_same_payload_multiple_times",
@@ -5709,6 +5813,123 @@
     "description": "Public Python functions that expose *args or **kwargs instead of a clearer interface."
   },
   {
+    "id": "data_pipeline_no_error_handling",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Pipeline-style functions with no visible error handling or recovery path."
+  },
+  {
+    "id": "dataset_not_using_dataloader",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Manual dataset batching loops that bypass torch.utils.data.DataLoader."
+  },
+  {
+    "id": "embedding_computed_per_request",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Embeddings recomputed on request paths instead of cached or precomputed for stable inputs."
+  },
+  {
+    "id": "embedding_dimension_mismatch_silent",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Embeddings are compared without visible dimension validation before similarity math."
+  },
+  {
+    "id": "entire_dataframe_copied_for_transform",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Whole DataFrames are copied for transforms that could target a smaller subset or reuse views."
+  },
+  {
+    "id": "global_state_in_data_pipeline",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Pipeline-style functions mutate global state, making concurrency and reproducibility brittle."
+  },
+  {
+    "id": "gpu_memory_not_cleared_between_experiments",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "GPU-backed experiment flows show no visible memory or session cleanup between runs."
+  },
+  {
+    "id": "hardcoded_api_key_in_source",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Hardcoded model-provider API keys or secret-like tokens appear in source."
+  },
+  {
+    "id": "intermediate_dataframe_not_freed",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Multiple intermediate DataFrames accumulate with no visible cleanup in one pipeline."
+  },
+  {
     "id": "langchain_chain_built_per_request",
     "language": "python",
     "family": "mlops",
@@ -5720,6 +5941,383 @@
       "severity_override"
     ],
     "description": "LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path."
+  },
+  {
+    "id": "llm_api_call_in_loop_without_batching",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "LLM API calls are made inside loops without batching or aggregation."
+  },
+  {
+    "id": "llm_full_response_loaded_into_memory",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Large LLM responses are loaded fully into memory instead of streamed or incrementally consumed."
+  },
+  {
+    "id": "llm_response_not_cached_same_input",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Repeated LLM calls show no visible caching even when prompt inputs appear likely to repeat."
+  },
+  {
+    "id": "model_eval_mode_missing",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Torch-style inference paths run model(...) without obvious eval() or inference mode setup."
+  },
+  {
+    "id": "model_loaded_per_request",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Models are loaded on request paths instead of once during application startup."
+  },
+  {
+    "id": "model_to_device_in_loop",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Models or tensors are moved to a device repeatedly inside loops."
+  },
+  {
+    "id": "no_schema_validation_on_external_data",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "External JSON or tabular data is parsed without visible schema validation."
+  },
+  {
+    "id": "numpy_append_in_loop",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "np.append(...) is used inside loops, forcing repeated reallocations."
+  },
+  {
+    "id": "numpy_dtype_mismatch_implicit_cast",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Arrays are constructed and immediately cast, implying a missing upfront dtype choice."
+  },
+  {
+    "id": "numpy_python_loop_over_array",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Python loops iterate directly over arrays where vectorized NumPy operations would be clearer and faster."
+  },
+  {
+    "id": "numpy_tolist_in_hot_path",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "NumPy arrays are converted to Python lists in hot paths, increasing object overhead."
+  },
+  {
+    "id": "numpy_vstack_hstack_in_loop",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Arrays are repeatedly stacked inside loops instead of collected and stacked once."
+  },
+  {
+    "id": "pandas_apply_with_simple_vectorizable_op",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Simple DataFrame transforms are routed through apply(lambda) instead of vectorized operations."
+  },
+  {
+    "id": "pandas_chain_assignment_warning",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Chained DataFrame assignment patterns risk SettingWithCopy-style behavior."
+  },
+  {
+    "id": "pandas_concat_in_loop",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "DataFrames are concatenated inside loops instead of collected and concatenated once."
+  },
+  {
+    "id": "pandas_copy_in_loop",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "DataFrames are copied inside loops, amplifying memory churn."
+  },
+  {
+    "id": "pandas_eval_string_manipulation",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Dynamic string building is fed into pandas eval/query calls, increasing injection and correctness risk."
+  },
+  {
+    "id": "pandas_full_dataframe_print_in_production",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Full DataFrames are printed or displayed in production-oriented code paths."
+  },
+  {
+    "id": "pandas_inplace_false_reassignment_missing",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "DataFrame-transform methods are called without reassignment or inplace=True, silently discarding results."
+  },
+  {
+    "id": "pandas_iterrows_in_loop",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "iterrows() is used on DataFrames instead of vectorized operations or itertuples()."
+  },
+  {
+    "id": "pandas_merge_without_validation",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "DataFrame merges omit validate= safeguards against multiplicative joins."
+  },
+  {
+    "id": "pandas_read_csv_without_dtypes",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "pd.read_csv(...) calls omit dtype hints, forcing extra inference work."
+  },
+  {
+    "id": "pandas_read_without_chunksize_large_file",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Data-loading functions read large tabular files without chunksize or nrows limits."
+  },
+  {
+    "id": "pandas_to_dict_records_in_loop",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "DataFrame to_dict conversions are repeated inside loops."
+  },
+  {
+    "id": "print_metrics_instead_of_logging",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Training or evaluation code prints metrics directly instead of using logging or experiment tracking."
+  },
+  {
+    "id": "prompt_template_string_concat_in_loop",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Prompt strings are built incrementally inside loops instead of composing a stable template once."
+  },
+  {
+    "id": "random_seed_not_set",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Training or evaluation entrypoints use randomness without an obvious seed."
+  },
+  {
+    "id": "retry_on_rate_limit_without_backoff",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Rate-limit retries appear without visible backoff or Retry-After handling."
+  },
+  {
+    "id": "token_count_not_checked_before_api_call",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "LLM requests are sent without visible token counting or context-window checks."
   },
   {
     "id": "tokenizer_encode_in_loop_without_cache",
@@ -5735,6 +6333,45 @@
     "description": "Tokenizer encode calls repeated inside loops without caching or batching signals."
   },
   {
+    "id": "tokenizer_loaded_per_request",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Tokenizers are loaded on request paths instead of once during application startup."
+  },
+  {
+    "id": "torch_no_grad_missing_in_inference",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Torch inference paths show no visible no_grad() or inference_mode() guard."
+  },
+  {
+    "id": "training_loop_without_zero_grad",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "optimizer.step() appears without an obvious zero_grad() reset."
+  },
+  {
     "id": "vector_store_client_created_per_request",
     "language": "python",
     "family": "mlops",
@@ -5746,6 +6383,19 @@
       "severity_override"
     ],
     "description": "Vector-store clients created on request paths instead of reused application state."
+  },
+  {
+    "id": "wandb_mlflow_log_in_tight_loop",
+    "language": "python",
+    "family": "mlops",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "wandb or mlflow metrics are logged in inner loops instead of batched or reported at coarser boundaries."
   },
   {
     "id": "cross_package_internal_import",

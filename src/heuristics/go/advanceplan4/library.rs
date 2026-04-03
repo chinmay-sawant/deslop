@@ -693,25 +693,25 @@ fn config_cli_findings(
                     || bl.text.contains("ParseInt"))
         })
         .count();
-    if env_parse_count >= 4 {
-        if let Some(first) = lines.iter().find(|bl| bl.text.contains("os.Getenv(")) {
-            findings.push(Finding {
-                rule_id: "env_parsing_repeated_in_init".into(),
-                severity: Severity::Info,
-                path: file.path.clone(),
-                function_name: Some(function.fingerprint.name.clone()),
-                start_line: first.line,
-                end_line: first.line,
-                message: format!(
-                    "function {} has {} manual env parsing chains",
-                    function.fingerprint.name, env_parse_count
-                ),
-                evidence: vec![
-                    format!("{} os.Getenv+strconv chains", env_parse_count),
-                    "use envconfig.Process for validated config struct".into(),
-                ],
-            });
-        }
+    if env_parse_count >= 4
+        && let Some(first) = lines.iter().find(|bl| bl.text.contains("os.Getenv("))
+    {
+        findings.push(Finding {
+            rule_id: "env_parsing_repeated_in_init".into(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: first.line,
+            end_line: first.line,
+            message: format!(
+                "function {} has {} manual env parsing chains",
+                function.fingerprint.name, env_parse_count
+            ),
+            evidence: vec![
+                format!("{} os.Getenv+strconv chains", env_parse_count),
+                "use envconfig.Process for validated config struct".into(),
+            ],
+        });
     }
 
     findings
@@ -796,32 +796,31 @@ fn prometheus_findings(
 
     // E4 prometheus_unregistered_metric
     for bl in lines {
-        if bl.text.contains("prometheus.NewCounter(")
+        if (bl.text.contains("prometheus.NewCounter(")
             || bl.text.contains("prometheus.NewHistogram(")
-            || bl.text.contains("prometheus.NewGauge(")
+            || bl.text.contains("prometheus.NewGauge("))
+            && !bl.text.contains("promauto.")
         {
-            if !bl.text.contains("promauto.") {
-                let has_register = lines
-                    .iter()
-                    .any(|l| l.text.contains("MustRegister(") || l.text.contains("Register("));
-                if !has_register {
-                    findings.push(Finding {
-                        rule_id: "prometheus_unregistered_metric".into(),
-                        severity: Severity::Warning,
-                        path: file.path.clone(),
-                        function_name: Some(function.fingerprint.name.clone()),
-                        start_line: bl.line,
-                        end_line: bl.line,
-                        message: format!(
-                            "function {} creates metric without registering",
-                            function.fingerprint.name
-                        ),
-                        evidence: vec![
-                            format!("unregistered metric at line {}", bl.line),
-                            "unregistered metrics are never scraped".into(),
-                        ],
-                    });
-                }
+            let has_register = lines
+                .iter()
+                .any(|l| l.text.contains("MustRegister(") || l.text.contains("Register("));
+            if !has_register {
+                findings.push(Finding {
+                    rule_id: "prometheus_unregistered_metric".into(),
+                    severity: Severity::Warning,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: bl.line,
+                    end_line: bl.line,
+                    message: format!(
+                        "function {} creates metric without registering",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("unregistered metric at line {}", bl.line),
+                        "unregistered metrics are never scraped".into(),
+                    ],
+                });
             }
         }
     }

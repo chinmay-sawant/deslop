@@ -21,6 +21,6 @@ pub use model::{
 };
 pub use rules::{
     RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleMetadata, RuleStatus,
-    rule_metadata, rule_metadata_variants, rule_registry,
+    is_detail_only_rule, rule_metadata, rule_metadata_variants, rule_registry,
 };
 pub use scan::scan_repository;

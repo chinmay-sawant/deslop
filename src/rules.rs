@@ -79,13 +79,21 @@ pub fn rule_metadata_variants(rule_id: &str) -> Vec<&'static RuleMetadata> {
         .collect()
 }
 
+pub fn is_detail_only_rule(rule_id: &str) -> bool {
+    rule_metadata_variants(rule_id).iter().any(|metadata| {
+        metadata
+            .configurability
+            .contains(&RuleConfigurability::DetailsOnly)
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeSet;
 
     use super::{
-        RuleConfigurability, RuleLanguage, RuleStatus, rule_metadata, rule_metadata_variants,
-        rule_registry,
+        RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule, rule_metadata,
+        rule_metadata_variants, rule_registry,
     };
 
     #[test]
@@ -179,6 +187,18 @@ mod tests {
             !go_experimental
                 .configurability
                 .contains(&RuleConfigurability::RustAsyncExperimental)
+        );
+    }
+
+    #[test]
+    fn detail_only_predicate_matches_rule_metadata_variants() {
+        assert_eq!(
+            is_detail_only_rule("placeholder_test_body"),
+            rule_metadata_variants("placeholder_test_body")
+                .iter()
+                .any(|metadata| metadata
+                    .configurability
+                    .contains(&RuleConfigurability::DetailsOnly))
         );
     }
 }

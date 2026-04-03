@@ -2,7 +2,7 @@ use std::fmt::Write as _;
 use std::path::PathBuf;
 
 use anyhow::Result;
-use deslop::{RuleConfigurability, rule_metadata_variants};
+use deslop::is_detail_only_rule;
 use serde::Serialize;
 
 pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> String {
@@ -135,16 +135,8 @@ fn visible_findings(report: &deslop::ScanReport, details: bool) -> Vec<&deslop::
     report
         .findings
         .iter()
-        .filter(|finding| details || !is_detail_only_finding(finding.rule_id.as_str()))
+        .filter(|finding| details || !is_detail_only_rule(finding.rule_id.as_str()))
         .collect()
-}
-
-fn is_detail_only_finding(rule_id: &str) -> bool {
-    rule_metadata_variants(rule_id).iter().any(|metadata| {
-        metadata
-            .configurability
-            .contains(&RuleConfigurability::DetailsOnly)
-    })
 }
 
 pub(crate) fn print_benchmark_report(report: &deslop::BenchmarkReport) {
