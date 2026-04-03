@@ -19,7 +19,7 @@ src/analysis/python/parser/hotpath_ext.rs:186:                let after_join = &
 src/analysis/python/parser/hotpath_ext.rs:240:            let receiver = &trimmed[..get_idx];
 src/analysis/python/parser/hotpath_ext.rs:241:            let after = &trimmed[get_idx + 5..];
 src/analysis/python/parser/hotpath_ext.rs:243:                let key = after[..end].trim();
-src/analysis/rust/parser/mod.rs:433:    text[vec_start + 4..].contains("Box<")
+src/analysis/rust/parser/mod.rs:430:    text[vec_start + 4..].contains("Box<")
 src/heuristics/go/framework_patterns/data_access/sql.rs:552:                let after_like = &upper[like_pos + 4..];
 src/heuristics/go/framework_patterns/gin.rs:239:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
 src/heuristics/go/framework_patterns/gin.rs:694:        text = text[1..text.len() - 1].trim();
@@ -29,7 +29,7 @@ src/heuristics/go/framework_patterns/gin.rs:799:                    return Some(
 src/heuristics/go/framework_patterns/gin.rs:803:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
 src/heuristics/go/framework_patterns/hot_path.rs:1488:                    return Some(suffix[..index].trim().to_string());
 src/heuristics/go/framework_patterns/hot_path.rs:1492:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
-src/heuristics/go/framework_patterns/mod.rs:309:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/go/framework_patterns/mod.rs:312:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go/idioms.rs:1037:    let parameters = &signature_text[parameters_start + 1..parameters_end];
 src/heuristics/go/idioms.rs:1083:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go/library_misuse/performance/collections.rs:179:        let Some(end) = bl.text[start..].find(']') else {
@@ -49,7 +49,7 @@ src/heuristics/rust/api_design.rs:568:    for (offset, character) in signature_t
 src/heuristics/rust/api_design.rs:584:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/performance.rs:339:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:346:    line[start + marker.len()..].starts_with('/')
-src/heuristics/rust/performance.rs:384:                let receiver = &line[start..index];
+src/heuristics/rust/performance.rs:387:                let receiver = &line[start..index];
 src/heuristics/rust/runtime_boundary.rs:265:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 
 ## toctou_fs_checks
@@ -82,6 +82,9 @@ src/heuristics/rust/api_design.rs:757:    type_text.contains("Rc<RefCell<") || t
 
 ## derive_default
 src/analysis/config.rs:1:#[derive(Debug, Clone, Copy, Default)]
+src/analysis/types/core.rs:53:#[derive(Debug, Clone, Default)]
+src/analysis/types/core.rs:62:#[derive(Debug, Clone, Default)]
+src/analysis/types/core.rs:69:#[derive(Debug, Clone, Default)]
 
 ## thread_spawn_async
 
