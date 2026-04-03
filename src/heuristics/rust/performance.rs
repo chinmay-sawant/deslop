@@ -261,7 +261,7 @@ pub(crate) fn performance_function_findings(
 pub(crate) fn performance_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    for summary in &file.structs {
+    for summary in file.structs() {
         for field in &summary.fields {
             if contains_boxed_vec_type(field.type_text.as_str()) {
                 findings.push(file_finding(
@@ -350,7 +350,7 @@ fn looks_like_aos_hot_path(file: &ParsedFile, function: &ParsedFunction) -> bool
     function.body_text.contains("for ")
         && has_numeric_update(function.body_text.as_str())
         && repeated_receiver_field_accesses(function.body_text.as_str()) >= 4
-        && file.structs.iter().any(|summary| summary.fields.len() >= 3)
+        && file.structs().iter().any(|summary| summary.fields.len() >= 3)
 }
 
 fn has_numeric_update(body: &str) -> bool {

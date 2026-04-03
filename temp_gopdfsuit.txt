@@ -5,7 +5,7 @@ Functions fingerprinted: 876
 Findings: 1622
 Index summary: packages=63 symbols=1129 imports=755
 Parse failures: 0
-Timings: discover=58ms parse=594ms index=4ms heuristics=1896ms total=2554ms
+Timings: discover=65ms parse=441ms index=2ms heuristics=1398ms total=1908ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/cgo/exports.go:40 function GeneratePDF allocates C string without free [cgo_string_lifetime]

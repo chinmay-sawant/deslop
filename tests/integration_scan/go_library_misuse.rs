@@ -155,12 +155,12 @@ const LIBRARY_RULES: &[&str] = &[
 // ── Performance rules (plan1) ──
 
 #[test]
-fn test_go_advanceplan4_perf_positive() {
+fn test_go_library_misuse_perf_positive() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
         "perf_positive.go",
-        go_fixture!("advanceplan4_perf_positive.txt"),
+        go_fixture!("library_misuse_perf_positive.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -177,12 +177,12 @@ fn test_go_advanceplan4_perf_positive() {
 }
 
 #[test]
-fn test_go_advanceplan4_perf_clean() {
+fn test_go_library_misuse_perf_clean() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
         "perf_clean.go",
-        go_fixture!("advanceplan4_perf_clean.txt"),
+        go_fixture!("library_misuse_perf_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -201,12 +201,12 @@ fn test_go_advanceplan4_perf_clean() {
 // ── Security rules (plan2) ──
 
 #[test]
-fn test_go_advanceplan4_security_positive() {
+fn test_go_library_misuse_security_positive() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
         "sec_positive.go",
-        go_fixture!("advanceplan4_security_positive.txt"),
+        go_fixture!("library_misuse_security_positive.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -223,12 +223,12 @@ fn test_go_advanceplan4_security_positive() {
 }
 
 #[test]
-fn test_go_advanceplan4_security_clean() {
+fn test_go_library_misuse_security_clean() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
         "sec_clean.go",
-        go_fixture!("advanceplan4_security_clean.txt"),
+        go_fixture!("library_misuse_security_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -247,12 +247,12 @@ fn test_go_advanceplan4_security_clean() {
 // ── Library rules (plan3) ──
 
 #[test]
-fn test_go_advanceplan4_library_positive() {
+fn test_go_library_misuse_library_positive() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
         "lib_positive.go",
-        go_fixture!("advanceplan4_library_positive.txt"),
+        go_fixture!("library_misuse_library_positive.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
@@ -269,12 +269,12 @@ fn test_go_advanceplan4_library_positive() {
 }
 
 #[test]
-fn test_go_advanceplan4_library_clean() {
+fn test_go_library_misuse_library_clean() {
     let temp_dir = create_temp_workspace();
     write_fixture(
         &temp_dir,
         "lib_clean.go",
-        go_fixture!("advanceplan4_library_clean.txt"),
+        go_fixture!("library_misuse_library_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {

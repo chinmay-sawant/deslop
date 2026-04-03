@@ -20,17 +20,17 @@ pub(super) struct BodyLine {
 
 pub(super) const LARGE_MULTIPART_FORM_BYTES: u64 = 32 * 1024 * 1024;
 
-pub(crate) fn go_advanceplan3_file_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn go_framework_patterns_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     for function in &file.functions {
-        findings.extend(go_advanceplan3_function_findings(file, function));
+        findings.extend(go_framework_patterns_function_findings(file, function));
     }
 
     findings
 }
 
-fn go_advanceplan3_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+fn go_framework_patterns_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if file.is_test_file || function.is_test_function {
         return Vec::new();
     }

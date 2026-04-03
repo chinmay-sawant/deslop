@@ -91,7 +91,7 @@ pub(super) fn monolithic_init_module_findings(file: &ParsedFile) -> Vec<Finding>
 }
 
 pub(super) fn too_many_attributes_findings(file: &ParsedFile) -> Vec<Finding> {
-    file.class_summaries
+    file.class_summaries()
         .iter()
         .filter(|summary| {
             summary.instance_attribute_count >= INSTANCE_ATTRIBUTE_THRESHOLD
@@ -141,7 +141,7 @@ pub(super) fn monolithic_module_findings(file: &ParsedFile) -> Vec<Finding> {
         return Vec::new();
     }
 
-    let declaration_count = file.functions.len() + file.class_summaries.len();
+    let declaration_count = file.functions.len() + file.class_summaries().len();
     let mixed_concern_functions = file
         .functions
         .iter()
@@ -191,7 +191,7 @@ pub(super) fn monolithic_module_findings(file: &ParsedFile) -> Vec<Finding> {
         evidence: vec![
             format!("line_count={}", file.line_count),
             format!("functions={}", file.functions.len()),
-            format!("classes={}", file.class_summaries.len()),
+            format!("classes={}", file.class_summaries().len()),
             format!("imports={}", file.imports.len()),
             format!("byte_size={}", file.byte_size),
             format!("orchestration_functions={}", orchestration_functions),
@@ -205,7 +205,7 @@ pub(super) fn monolithic_module_findings(file: &ParsedFile) -> Vec<Finding> {
 }
 
 pub(super) fn god_class_findings(file: &ParsedFile) -> Vec<Finding> {
-    file.class_summaries
+    file.class_summaries()
         .iter()
         .filter(|summary| {
             summary.method_count >= GOD_CLASS_METHOD_THRESHOLD
@@ -236,7 +236,7 @@ pub(super) fn god_class_findings(file: &ParsedFile) -> Vec<Finding> {
 }
 
 pub(super) fn eager_constructor_collaborator_findings(file: &ParsedFile) -> Vec<Finding> {
-    file.class_summaries
+    file.class_summaries()
         .iter()
         .filter(|summary| summary.constructor_collaborator_count >= EAGER_CONSTRUCTOR_THRESHOLD)
         .map(|summary| Finding {
@@ -269,7 +269,7 @@ pub(super) fn over_abstracted_wrapper_findings(file: &ParsedFile) -> Vec<Finding
         }
     }
 
-    file.class_summaries
+    file.class_summaries()
         .iter()
         .filter_map(|summary| {
             let methods = methods_by_class.get(&summary.name)?;
@@ -460,7 +460,7 @@ pub(super) fn module_name_mismatch_findings(file: &ParsedFile) -> Vec<Finding> {
 pub(super) fn deep_inheritance_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut class_map = BTreeMap::<String, (&ParsedFile, usize, Vec<String>)>::new();
     for file in files {
-        for summary in &file.class_summaries {
+        for summary in file.class_summaries() {
             class_map.insert(
                 summary.name.clone(),
                 (file, summary.line, summary.base_classes.clone()),

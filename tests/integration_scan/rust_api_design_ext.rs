@@ -44,7 +44,7 @@ fn assert_rules_absent(report: &deslop::ScanReport, rule_ids: &[&str]) {
 
 #[test]
 fn test_rust_advanceplan2_api_rules() {
-    let report = scan_fixture(rust_fixture!("advanceplan2/api_positive.txt"));
+    let report = scan_fixture(rust_fixture!("api_design_ext/api_positive.txt"));
 
     assert_rules_present(
         &report,
@@ -61,7 +61,7 @@ fn test_rust_advanceplan2_api_rules() {
 
 #[test]
 fn test_rust_advanceplan2_api_clean() {
-    let report = scan_fixture(rust_fixture!("advanceplan2/api_clean.txt"));
+    let report = scan_fixture(rust_fixture!("api_design_ext/api_clean.txt"));
 
     assert_rules_absent(
         &report,
@@ -78,7 +78,7 @@ fn test_rust_advanceplan2_api_clean() {
 
 #[test]
 fn test_rust_advanceplan2_shared_state_rules() {
-    let report = scan_fixture(rust_fixture!("advanceplan2/shared_state_positive.txt"));
+    let report = scan_fixture(rust_fixture!("api_design_ext/shared_state_positive.txt"));
 
     assert_rules_present(
         &report,
@@ -94,7 +94,7 @@ fn test_rust_advanceplan2_shared_state_rules() {
 
 #[test]
 fn test_rust_advanceplan2_shared_state_clean() {
-    let report = scan_fixture(rust_fixture!("advanceplan2/shared_state_clean.txt"));
+    let report = scan_fixture(rust_fixture!("api_design_ext/shared_state_clean.txt"));
 
     assert_rules_absent(
         &report,
@@ -110,7 +110,7 @@ fn test_rust_advanceplan2_shared_state_clean() {
 
 #[test]
 fn test_rust_advanceplan2_serde_rules() {
-    let report = scan_fixture(rust_fixture!("advanceplan2/serde_positive.txt"));
+    let report = scan_fixture(rust_fixture!("api_design_ext/serde_positive.txt"));
 
     assert_rules_present(
         &report,
@@ -126,7 +126,7 @@ fn test_rust_advanceplan2_serde_rules() {
 
 #[test]
 fn test_rust_advanceplan2_serde_clean() {
-    let report = scan_fixture(rust_fixture!("advanceplan2/serde_clean.txt"));
+    let report = scan_fixture(rust_fixture!("api_design_ext/serde_clean.txt"));
 
     assert_rules_absent(
         &report,
@@ -142,7 +142,7 @@ fn test_rust_advanceplan2_serde_clean() {
 
 #[test]
 fn test_rust_advanceplan2_builder_rules() {
-    let report = scan_fixture(rust_fixture!("advanceplan2/builder_positive.txt"));
+    let report = scan_fixture(rust_fixture!("api_design_ext/builder_positive.txt"));
 
     assert_rules_present(
         &report,
@@ -158,7 +158,7 @@ fn test_rust_advanceplan2_builder_rules() {
 
 #[test]
 fn test_rust_advanceplan2_builder_clean() {
-    let report = scan_fixture(rust_fixture!("advanceplan2/builder_clean.txt"));
+    let report = scan_fixture(rust_fixture!("api_design_ext/builder_clean.txt"));
 
     assert_rules_absent(
         &report,

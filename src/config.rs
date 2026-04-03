@@ -117,4 +117,42 @@ mod tests {
 
         fs::remove_dir_all(root).expect("config temp dir should be removed");
     }
+
+    #[test]
+    fn rejects_malformed_toml_with_parse_error() {
+        let root = temp_dir("malformed");
+        fs::write(
+            root.join(".deslop.toml"),
+            "this is not valid toml {{{\n",
+        )
+        .expect("config file should be written");
+
+        let error = load_repository_config(&root).expect_err("malformed TOML should fail");
+        assert!(
+            matches!(error, super::Error::Parse { .. }),
+            "error should be Parse variant, got: {error:?}"
+        );
+
+        fs::remove_dir_all(root).expect("config temp dir should be removed");
+    }
+
+    #[test]
+    fn unknown_keys_are_tolerated_by_serde_default() {
+        let root = temp_dir("unknown-keys");
+        fs::write(
+            root.join(".deslop.toml"),
+            "go_semantic_experimental = true\nfuture_unknown_setting = 42\n",
+        )
+        .expect("config file should be written");
+
+        // TOML serde `deny_unknown_fields` is NOT set, so unknown keys should be ignored.
+        let result = load_repository_config(&root);
+        // If the project later adds `deny_unknown_fields`, this test should be updated.
+        assert!(
+            result.is_ok(),
+            "unknown keys should be silently ignored: {result:?}"
+        );
+
+        fs::remove_dir_all(root).expect("config temp dir should be removed");
+    }
 }

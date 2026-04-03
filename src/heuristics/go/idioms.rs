@@ -545,7 +545,7 @@ fn public_bool_parameter_findings(file: &ParsedFile, function: &ParsedFunction) 
 fn mutable_package_global_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    for package_var in &file.package_vars {
+    for package_var in file.package_vars() {
         let mut mutation_lines = Vec::new();
         for function in &file.functions {
             if function.is_test_function {
@@ -618,7 +618,7 @@ fn single_impl_interface_findings(files: &[&ParsedFile]) -> Vec<Finding> {
                 }
             }
 
-            for interface in &file.interfaces {
+            for interface in file.interfaces() {
                 interfaces.push((file, interface));
             }
         }
@@ -632,7 +632,7 @@ fn single_impl_interface_findings(files: &[&ParsedFile]) -> Vec<Finding> {
                 }
             }
 
-            for go_struct in &file.go_structs {
+            for go_struct in file.go_structs() {
                 for field in &go_struct.fields {
                     *consumer_counts.entry(field.type_text.clone()).or_default() += 1;
                 }
@@ -695,14 +695,14 @@ fn passthrough_wrapper_interface_findings(files: &[&ParsedFile]) -> Vec<Finding>
         let interface_names = package_files
             .iter()
             .flat_map(|file| {
-                file.interfaces
+                file.interfaces()
                     .iter()
                     .map(|interface| interface.name.clone())
             })
             .collect::<BTreeSet<_>>();
 
         for file in &package_files {
-            for go_struct in &file.go_structs {
+            for go_struct in file.go_structs() {
                 let interface_fields = go_struct
                     .fields
                     .iter()

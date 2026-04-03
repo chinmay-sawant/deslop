@@ -19,6 +19,7 @@ use super::rust::{
     StructSummary,
 };
 
+/// Common file-level data shared across all languages.
 #[derive(Debug, Clone)]
 pub(crate) struct ParsedFile {
     pub language: Language,
@@ -30,21 +31,111 @@ pub(crate) struct ParsedFile {
     pub byte_size: usize,
     pub pkg_strings: Vec<NamedLiteral>,
     pub comments: Vec<CommentSummary>,
-    pub struct_tags: Vec<StructTag>,
     pub functions: Vec<ParsedFunction>,
     pub imports: Vec<ImportSpec>,
     pub symbols: Vec<DeclaredSymbol>,
-    pub class_summaries: Vec<ClassSummary>,
+    pub top_level_bindings: Vec<TopLevelBindingSummary>,
+    pub module_scope_calls: Vec<TopLevelCallSummary>,
+    /// Language-specific file-level data. Exactly one variant is populated.
+    pub lang: LanguageFileData,
+}
+
+/// Language-specific file-level data. Prevents storing empty vectors for
+/// languages that don't use a given field.
+#[derive(Debug, Clone)]
+pub(crate) enum LanguageFileData {
+    Go(GoFileData),
+    Python(PythonFileData),
+    Rust(RustFileData),
+}
+
+/// Go-specific file-level data.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct GoFileData {
+    pub struct_tags: Vec<StructTag>,
     pub package_vars: Vec<PackageVarSummary>,
     pub interfaces: Vec<InterfaceSummary>,
     pub go_structs: Vec<GoStructSummary>,
-    pub module_scope_calls: Vec<TopLevelCallSummary>,
-    pub top_level_bindings: Vec<TopLevelBindingSummary>,
+}
+
+/// Python-specific file-level data.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct PythonFileData {
+    pub class_summaries: Vec<ClassSummary>,
     pub python_models: Vec<PythonModelSummary>,
+}
+
+/// Rust-specific file-level data.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct RustFileData {
     pub rust_statics: Vec<RustStaticSummary>,
     pub rust_enums: Vec<RustEnumSummary>,
-    // Rust heuristics consume conservative struct summaries so they can stay syntax-driven.
     pub structs: Vec<StructSummary>,
+}
+
+impl ParsedFile {
+    /// Access Go-specific file data. Returns `None` if the file is not Go.
+    pub(crate) fn go_data(&self) -> Option<&GoFileData> {
+        match &self.lang {
+            LanguageFileData::Go(data) => Some(data),
+            _ => None,
+        }
+    }
+
+    /// Access Python-specific file data. Returns `None` if the file is not Python.
+    pub(crate) fn python_data(&self) -> Option<&PythonFileData> {
+        match &self.lang {
+            LanguageFileData::Python(data) => Some(data),
+            _ => None,
+        }
+    }
+
+    /// Access Rust-specific file data. Returns `None` if the file is not Rust.
+    pub(crate) fn rust_data(&self) -> Option<&RustFileData> {
+        match &self.lang {
+            LanguageFileData::Rust(data) => Some(data),
+            _ => None,
+        }
+    }
+
+    // ── Backward-compatible accessors ──
+    // These delegate to the language envelope, returning empty slices for mismatches.
+
+    pub(crate) fn struct_tags(&self) -> &[StructTag] {
+        self.go_data().map_or(&[], |d| &d.struct_tags)
+    }
+
+    pub(crate) fn package_vars(&self) -> &[PackageVarSummary] {
+        self.go_data().map_or(&[], |d| &d.package_vars)
+    }
+
+    pub(crate) fn interfaces(&self) -> &[InterfaceSummary] {
+        self.go_data().map_or(&[], |d| &d.interfaces)
+    }
+
+    pub(crate) fn go_structs(&self) -> &[GoStructSummary] {
+        self.go_data().map_or(&[], |d| &d.go_structs)
+    }
+
+    pub(crate) fn class_summaries(&self) -> &[ClassSummary] {
+        self.python_data().map_or(&[], |d| &d.class_summaries)
+    }
+
+    pub(crate) fn python_models(&self) -> &[PythonModelSummary] {
+        self.python_data().map_or(&[], |d| &d.python_models)
+    }
+
+    pub(crate) fn rust_statics(&self) -> &[RustStaticSummary] {
+        self.rust_data().map_or(&[], |d| &d.rust_statics)
+    }
+
+    pub(crate) fn rust_enums(&self) -> &[RustEnumSummary] {
+        self.rust_data().map_or(&[], |d| &d.rust_enums)
+    }
+
+    pub(crate) fn structs(&self) -> &[StructSummary] {
+        self.rust_data().map_or(&[], |d| &d.structs)
+    }
 }
 
 #[derive(Debug, Clone)]

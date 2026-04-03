@@ -1,5 +1,5 @@
-mod advanceplan3;
-mod advanceplan4;
+mod framework_patterns;
+mod library_misuse;
 mod concurrency;
 mod consistency;
 mod context;
@@ -8,8 +8,8 @@ mod idioms;
 mod performance;
 mod style;
 
-pub(super) use advanceplan3::go_advanceplan3_file_findings;
-pub(super) use advanceplan4::go_advanceplan4_file_findings;
+pub(super) use framework_patterns::go_framework_patterns_file_findings;
+pub(super) use library_misuse::go_library_misuse_file_findings;
 pub(super) use concurrency::{
     coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, shutdown_findings,
 };

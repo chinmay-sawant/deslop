@@ -150,9 +150,9 @@ fn struct_field_json_exposed(
 pub(super) fn sensitive_struct_field_json_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
     let sensitive_names = ["Password", "Secret", "Token", "APIKey", "PrivateKey"];
-    for go_struct in &file.go_structs {
+    for go_struct in file.go_structs() {
         let uses_json_tags = file
-            .struct_tags
+            .struct_tags()
             .iter()
             .any(|tag| tag.struct_name == go_struct.name && tag.raw_tag.contains("json:"));
         if !uses_json_tags {
@@ -162,7 +162,7 @@ pub(super) fn sensitive_struct_field_json_findings(file: &ParsedFile) -> Vec<Fin
             if !field.is_pub || !sensitive_names.iter().any(|name| field.name.contains(name)) {
                 continue;
             }
-            let hidden = file.struct_tags.iter().any(|tag| {
+            let hidden = file.struct_tags().iter().any(|tag| {
                 tag.struct_name == go_struct.name
                     && tag.field_name == field.name
                     && tag.raw_tag.contains("json:\"-\"")
@@ -261,7 +261,7 @@ fn fmt_print_sensitive_struct(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
-    let has_sensitive_struct = file.go_structs.iter().any(|go_struct| {
+    let has_sensitive_struct = file.go_structs().iter().any(|go_struct| {
         go_struct.fields.iter().any(|field| {
             ["Password", "Secret", "Token", "APIKey", "PrivateKey"]
                 .iter()

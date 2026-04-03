@@ -6,7 +6,7 @@ use super::comments::comment_findings;
 use super::go::{
     alloc_findings, busy_findings, cancel_findings, concat_findings, coordination_findings,
     ctx_findings, db_findings, deeper_goroutine_lifetime_findings, error_findings, fmt_findings,
-    go_advanceplan3_file_findings, go_advanceplan4_file_findings, go_file_findings,
+    go_framework_patterns_file_findings, go_library_misuse_file_findings, go_file_findings,
     go_repo_findings, import_grouping_findings, json_findings, load_findings, mutex_findings,
     n_squared_findings, package_name_consistency, propagate_findings, receiver_findings,
     reflect_findings, shutdown_findings, sleep_findings, tag_findings,
@@ -37,8 +37,8 @@ pub(super) const SHARED_FUNCTION_RULES: &[FunctionRule] =
 
 pub(super) const GO_FILE_RULES: &[FileRule] = &[
     go_file_findings,
-    go_advanceplan3_file_findings,
-    go_advanceplan4_file_findings,
+    go_framework_patterns_file_findings,
+    go_library_misuse_file_findings,
     tag_findings,
     import_grouping_findings,
 ];

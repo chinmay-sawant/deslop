@@ -217,8 +217,8 @@ fn test_python_phase4_parser_evidence() {
         vec![26]
     );
 
-    assert_eq!(parsed.class_summaries.len(), 2);
-    let payload_manager = &parsed.class_summaries[1];
+    assert_eq!(parsed.class_summaries().len(), 2);
+    let payload_manager = &parsed.class_summaries()[1];
     assert_eq!(payload_manager.name, "PayloadManager");
     assert_eq!(payload_manager.method_count, 3);
     assert_eq!(payload_manager.instance_attribute_count, 13);
@@ -437,10 +437,10 @@ fn test_python_advanceplan2_parser_evidence() {
     assert_eq!(parsed.module_scope_calls[0].name, "Client");
     assert_eq!(parsed.top_level_bindings.len(), 1);
     assert_eq!(parsed.top_level_bindings[0].name, "SETTINGS");
-    assert_eq!(parsed.python_models.len(), 2);
+    assert_eq!(parsed.python_models().len(), 2);
 
     let payload = parsed
-        .python_models
+        .python_models()
         .iter()
         .find(|model| model.name == "Payload")
         .expect("expected dataclass summary");
@@ -449,7 +449,7 @@ fn test_python_advanceplan2_parser_evidence() {
     assert_eq!(payload.fields[0].default_text.as_deref(), Some("[]"));
 
     let payload_shape = parsed
-        .python_models
+        .python_models()
         .iter()
         .find(|model| model.name == "PayloadShape")
         .expect("expected typeddict summary");

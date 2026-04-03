@@ -31,7 +31,7 @@ fn dataclass_mutable_default_findings(file: &ParsedFile) -> Vec<Finding> {
     }
 
     let mut findings = Vec::new();
-    for model in file.python_models.iter().filter(|model| model.is_dataclass) {
+    for model in file.python_models().iter().filter(|model| model.is_dataclass) {
         for field in &model.fields {
             let Some(default_text) = field.default_text.as_deref() else {
                 continue;
@@ -71,7 +71,7 @@ fn option_bag_model_findings(file: &ParsedFile) -> Vec<Finding> {
         return Vec::new();
     }
 
-    file.python_models
+    file.python_models()
         .iter()
         .filter(|model| (model.is_dataclass || model.is_typed_dict) && !model.name.starts_with('_'))
         .filter_map(|model| {
@@ -130,7 +130,7 @@ fn public_any_type_leak_model_findings(file: &ParsedFile) -> Vec<Finding> {
 
     let mut findings = Vec::new();
     for model in file
-        .python_models
+        .python_models()
         .iter()
         .filter(|model| !model.name.starts_with('_'))
     {

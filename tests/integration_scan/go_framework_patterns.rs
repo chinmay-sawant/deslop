@@ -1,10 +1,10 @@
 use super::support::{assert_rules_absent, assert_rules_present, scan_files};
 
 #[test]
-fn test_go_advanceplan3_core_hot_path_rules() {
+fn test_go_framework_patterns_core_hot_path_rules() {
     let report = scan_files(&[(
         "core_positive.go",
-        go_fixture!("advanceplan3_core_positive.txt"),
+        go_fixture!("framework_patterns_core_positive.txt"),
     )]);
 
     assert_rules_present(
@@ -52,8 +52,8 @@ fn test_go_advanceplan3_core_hot_path_rules() {
 }
 
 #[test]
-fn test_go_advanceplan3_core_hot_path_clean() {
-    let report = scan_files(&[("core_clean.go", go_fixture!("advanceplan3_core_clean.txt"))]);
+fn test_go_framework_patterns_core_hot_path_clean() {
+    let report = scan_files(&[("core_clean.go", go_fixture!("framework_patterns_core_clean.txt"))]);
 
     assert_rules_absent(
         &report,
@@ -100,10 +100,10 @@ fn test_go_advanceplan3_core_hot_path_clean() {
 }
 
 #[test]
-fn test_go_advanceplan3_data_access_rules() {
+fn test_go_framework_patterns_data_access_rules() {
     let report = scan_files(&[(
         "data_positive.go",
-        go_fixture!("advanceplan3_data_positive.txt"),
+        go_fixture!("framework_patterns_data_positive.txt"),
     )]);
 
     assert_rules_present(
@@ -156,8 +156,8 @@ fn test_go_advanceplan3_data_access_rules() {
 }
 
 #[test]
-fn test_go_advanceplan3_data_access_clean() {
-    let report = scan_files(&[("data_clean.go", go_fixture!("advanceplan3_data_clean.txt"))]);
+fn test_go_framework_patterns_data_access_clean() {
+    let report = scan_files(&[("data_clean.go", go_fixture!("framework_patterns_data_clean.txt"))]);
 
     assert_rules_absent(
         &report,
@@ -205,10 +205,10 @@ fn test_go_advanceplan3_data_access_clean() {
 }
 
 #[test]
-fn test_go_advanceplan3_gin_request_rules() {
+fn test_go_framework_patterns_gin_request_rules() {
     let report = scan_files(&[(
         "gin_positive.go",
-        go_fixture!("advanceplan3_gin_positive.txt"),
+        go_fixture!("framework_patterns_gin_positive.txt"),
     )]);
 
     assert_rules_present(
@@ -253,8 +253,8 @@ fn test_go_advanceplan3_gin_request_rules() {
 }
 
 #[test]
-fn test_go_advanceplan3_gin_request_clean() {
-    let report = scan_files(&[("gin_clean.go", go_fixture!("advanceplan3_gin_clean.txt"))]);
+fn test_go_framework_patterns_gin_request_clean() {
+    let report = scan_files(&[("gin_clean.go", go_fixture!("framework_patterns_gin_clean.txt"))]);
 
     assert_rules_absent(
         &report,
@@ -298,10 +298,10 @@ fn test_go_advanceplan3_gin_request_clean() {
 }
 
 #[test]
-fn test_go_advanceplan3_request_path_framework_expansion_rules() {
+fn test_go_framework_patterns_request_path_framework_expansion_rules() {
     let report = scan_files(&[(
         "request_paths_positive.go",
-        go_fixture!("advanceplan3_request_paths_positive.txt"),
+        go_fixture!("framework_patterns_request_paths_positive.txt"),
     )]);
 
     assert_rules_present(
@@ -327,10 +327,10 @@ fn test_go_advanceplan3_request_path_framework_expansion_rules() {
 }
 
 #[test]
-fn test_go_advanceplan3_request_path_framework_expansion_clean() {
+fn test_go_framework_patterns_request_path_framework_expansion_clean() {
     let report = scan_files(&[(
         "request_paths_clean.go",
-        go_fixture!("advanceplan3_request_paths_clean.txt"),
+        go_fixture!("framework_patterns_request_paths_clean.txt"),
     )]);
 
     assert_rules_absent(
@@ -356,10 +356,10 @@ fn test_go_advanceplan3_request_path_framework_expansion_clean() {
 }
 
 #[test]
-fn test_go_advanceplan3_client_lifecycle_rules() {
+fn test_go_framework_patterns_client_lifecycle_rules() {
     let report = scan_files(&[(
         "client_positive.go",
-        go_fixture!("advanceplan3_clients_positive.txt"),
+        go_fixture!("framework_patterns_clients_positive.txt"),
     )]);
 
     assert_rules_present(
@@ -379,10 +379,10 @@ fn test_go_advanceplan3_client_lifecycle_rules() {
 }
 
 #[test]
-fn test_go_advanceplan3_client_lifecycle_clean() {
+fn test_go_framework_patterns_client_lifecycle_clean() {
     let report = scan_files(&[(
         "client_clean.go",
-        go_fixture!("advanceplan3_clients_clean.txt"),
+        go_fixture!("framework_patterns_clients_clean.txt"),
     )]);
 
     assert_rules_absent(

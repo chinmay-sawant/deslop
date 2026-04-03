@@ -299,7 +299,7 @@ fn dataclass_heavy_post_init_findings(
         return Vec::new();
     };
     let Some(model) = file
-        .python_models
+        .python_models()
         .iter()
         .find(|model| model.name == model_name && model.is_dataclass)
     else {
@@ -374,7 +374,7 @@ fn typeddict_unchecked_access_findings(
     let entries = body_lines(function);
     let mut findings = Vec::new();
     for model in file
-        .python_models
+        .python_models()
         .iter()
         .filter(|model| model.is_typed_dict)
     {

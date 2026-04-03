@@ -12,7 +12,9 @@ use std::path::Path;
 
 use tree_sitter::Parser;
 
-use crate::analysis::{AnalysisResult, Error, Language, ParsedFile};
+use crate::analysis::{
+    AnalysisResult, Error, Language, LanguageFileData, ParsedFile, PythonFileData,
+};
 
 use self::comments::collect_comment_summaries;
 use self::functions::collect_functions;
@@ -57,20 +59,15 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
         byte_size: source.len(),
         pkg_strings: package_string_literals,
         comments,
-        struct_tags: Vec::new(),
         functions,
         imports,
         symbols,
-        class_summaries,
-        package_vars: Vec::new(),
-        interfaces: Vec::new(),
-        go_structs: Vec::new(),
         module_scope_calls,
         top_level_bindings,
-        python_models,
-        rust_statics: Vec::new(),
-        rust_enums: Vec::new(),
-        structs: Vec::new(),
+        lang: LanguageFileData::Python(PythonFileData {
+            class_summaries,
+            python_models,
+        }),
     })
 }
 
