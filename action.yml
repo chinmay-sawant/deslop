@@ -20,7 +20,7 @@ inputs:
     required: false
     default: 'false'
   details:
-    description: Include detail-only scan findings. Applies only to the scan command.
+    description: Include full per-function fingerprint details in scan output. Applies only to the scan command.
     required: false
     default: 'false'
   no-ignore:

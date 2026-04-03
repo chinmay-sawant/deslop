@@ -2868,8 +2868,7 @@
     "configurability": [
       "disable",
       "ignore",
-      "severity_override",
-      "details_only"
+      "severity_override"
     ],
     "description": "Calls that load an entire payload into memory instead of streaming."
   },
@@ -5835,8 +5834,7 @@
     "configurability": [
       "disable",
       "ignore",
-      "severity_override",
-      "details_only"
+      "severity_override"
     ],
     "description": "Calls that load an entire payload into memory instead of streaming."
   },

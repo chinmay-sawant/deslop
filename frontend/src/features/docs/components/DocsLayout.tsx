@@ -1,6 +1,7 @@
 import {
   cliCommands,
   commonRules,
+  goEcosystemSupport,
   githubActionInputs,
   githubActionBenchExample,
   githubActionJsonExample,
@@ -136,6 +137,20 @@ export function DocsLayout({
             ))}
           </div>
 
+          {activeLang === 'go' && (
+            <>
+              <h2 className="docs-h2">Third-party coverage</h2>
+              <p className="docs-p">
+                Go support includes dedicated heuristics for common server and infrastructure stacks without turning the overview into a wall of text.
+              </p>
+              <div className="docs-pill-list">
+                {goEcosystemSupport.map((item) => (
+                  <span key={item} className="docs-pill">{item}</span>
+                ))}
+              </div>
+            </>
+          )}
+
           <h2 className="docs-h2">Installation</h2>
           <p className="docs-p">Install the CLI from crates.io using Cargo:</p>
           <CodeBlock code="cargo install deslop" />
@@ -165,7 +180,7 @@ export function DocsLayout({
           <h2 className="docs-h2">GitHub Actions</h2>
           <p className="docs-p">Scan the checked-out repository with defaults:</p>
           <CodeBlock code={githubActionWorkflow} />
-          <p className="docs-p">Emit JSON, include detail-only findings, and keep the workflow green while you evaluate the report:</p>
+          <p className="docs-p">Emit JSON, include per-function fingerprints, and keep the workflow green while you evaluate the report:</p>
           <CodeBlock code={githubActionJsonExample} />
           <p className="docs-p">Run benchmark mode instead of a scan:</p>
           <CodeBlock code={githubActionBenchExample} />
@@ -209,7 +224,7 @@ export function DocsLayout({
           <div className="docs-callout" style={{ borderLeftColor: `var(--lang-${activeLang})`, background: `var(--lang-${activeLang}-soft)` }}>
             <p>
               By default, <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>deslop scan</code> prints the standard finding set.
-              Detail-only diagnostics are held back unless you pass <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>--details</code>.
+              Pass <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>--details</code> when you want the per-function fingerprint breakdown alongside the normal findings.
             </p>
           </div>
 
@@ -232,11 +247,6 @@ export function DocsLayout({
               <h2 className="docs-h2">Detection philosophy</h2>
               <p className="docs-p">Findings are heuristics, not compile-time proof. The analyzer is intentionally conservative where full type information is missing.</p>
               <p className="docs-p">Rules are designed to produce readable evidence so humans can validate them quickly. Local repository context is used where possible, but deslop does not replace go/types.</p>
-              <div className="docs-callout" style={{ borderLeftColor: 'var(--lang-go)', background: 'var(--lang-go-soft)' }}>
-                <p>
-                  The current Go catalog now includes the full advanceplan4 expansion: low-level string, slice, map, runtime, I/O, and error-handling performance signals; crypto, auth, TLS, injection, data-exposure, and race-oriented security signals; and library-specific Redis, gRPC, logging, config, Prometheus, Cobra, and AWS misuse patterns on top of the earlier Gin, GORM, request-path, and repo-local rule families.
-                </p>
-              </div>
             </>
           )}
           {activeLang === 'python' && (
@@ -298,7 +308,7 @@ export function DocsLayout({
               </tr>
             </thead>
             <tbody>
-              <tr><td>--details</td><td>Include full per-function fingerprint details and detail-only findings.</td></tr>
+              <tr><td>--details</td><td>Include full per-function fingerprint details in scan output.</td></tr>
               <tr><td>--enable-semantic</td><td>Enable the opt-in deeper semantic Go heuristics for the current scan or benchmark run.</td></tr>
               <tr><td>--ignore RULE1,RULE2</td><td>Ignore specific rule IDs for one scan invocation after analysis completes.</td></tr>
               <tr><td>--json</td><td>Emit structured JSON instead of human-readable text output.</td></tr>
@@ -363,7 +373,7 @@ deslop scan --details --json .`} />
           <h2 className="docs-h2">Benchmarking</h2>
           <p className="docs-p">
             The <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>bench</code> command measures each pipeline stage individually — discovery, parse, index, heuristics, and total runtime.
-            A documented baseline of 180.80 ms was measured against a realistic Go repository of 89 files and 702 functions.
+            A local benchmark recorded on April 3, 2026 averaged 1906.20 ms over 5 repeats after 1 warmup against gopdfsuit at 125 files and 876 functions.
           </p>
           <CodeBlock code="cargo run -- bench --warmups 2 --repeats 5 /path/to/repo" />
 
