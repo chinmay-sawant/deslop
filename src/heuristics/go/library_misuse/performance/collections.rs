@@ -503,7 +503,7 @@ fn range_copy_large_struct(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     let signature_has_large_struct_slice = function.signature_text.contains("[]struct{")
-        || file.go_structs.iter().any(|go_struct| {
+        || file.go_structs().iter().any(|go_struct| {
             go_struct.fields.len() >= 4
                 && function
                     .signature_text

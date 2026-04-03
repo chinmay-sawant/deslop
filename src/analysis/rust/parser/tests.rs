@@ -182,7 +182,7 @@ pub static CACHE: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
         parse_file(Path::new("src/lib.rs"), source).expect("rust source should parse successfully");
 
     let config = parsed
-        .structs
+        .structs()
         .iter()
         .find(|summary| summary.name == "RequestConfig")
         .expect("RequestConfig should be summarized");
@@ -205,19 +205,19 @@ pub static CACHE: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
             .any(|attribute| attribute.contains("serde(flatten)"))
     );
 
-    assert_eq!(parsed.rust_enums.len(), 1);
-    assert_eq!(parsed.rust_enums[0].name, "WireValue");
-    assert_eq!(parsed.rust_enums[0].variant_count, 2);
+    assert_eq!(parsed.rust_enums().len(), 1);
+    assert_eq!(parsed.rust_enums()[0].name, "WireValue");
+    assert_eq!(parsed.rust_enums()[0].variant_count, 2);
     assert!(
-        parsed.rust_enums[0]
+        parsed.rust_enums()[0]
             .attributes
             .iter()
             .any(|attribute| attribute.contains("untagged"))
     );
 
-    assert_eq!(parsed.rust_statics.len(), 1);
-    assert_eq!(parsed.rust_statics[0].name, "CACHE");
-    assert!(parsed.rust_statics[0].type_text.contains("OnceLock"));
+    assert_eq!(parsed.rust_statics().len(), 1);
+    assert_eq!(parsed.rust_statics()[0].name, "CACHE");
+    assert!(parsed.rust_statics()[0].type_text.contains("OnceLock"));
 }
 
 #[test]

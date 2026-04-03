@@ -170,7 +170,7 @@ fn mutex_value_receiver(
         return findings;
     }
     let Some(go_struct) = file
-        .go_structs
+        .go_structs()
         .iter()
         .find(|summary| summary.name == *receiver)
     else {

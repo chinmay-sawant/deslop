@@ -1,7 +1,7 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-use super::super::advanceplan3::{
+use super::super::framework_patterns::{
     BodyLine, has_import_path, import_aliases_for, is_request_path_function,
 };
 

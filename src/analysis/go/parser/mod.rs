@@ -13,7 +13,8 @@ use tree_sitter::{Node, Parser};
 
 use crate::analysis::go::fingerprint::build_function_fingerprint;
 use crate::analysis::{
-    AnalysisResult, Error, GoFunctionEvidence, Language, ParsedFile, ParsedFunction,
+    AnalysisResult, Error, GoFileData, GoFunctionEvidence, Language, LanguageFileData, ParsedFile,
+    ParsedFunction,
 };
 
 use self::comments::extract_doc_comment;
@@ -68,20 +69,17 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
         byte_size: source.len(),
         pkg_strings: package_string_literals,
         comments: Vec::new(),
-        struct_tags,
         functions,
         imports,
         symbols,
-        class_summaries: Vec::new(),
-        package_vars,
-        interfaces,
-        go_structs,
         module_scope_calls: Vec::new(),
         top_level_bindings: Vec::new(),
-        python_models: Vec::new(),
-        rust_statics: Vec::new(),
-        rust_enums: Vec::new(),
-        structs: Vec::new(),
+        lang: LanguageFileData::Go(GoFileData {
+            struct_tags,
+            package_vars,
+            interfaces,
+            go_structs,
+        }),
     })
 }
 

@@ -8,7 +8,9 @@ pub(crate) use common::{
     BlockFingerprint, CallSite, CommentSummary, DeclaredSymbol, FormattedErrorCall, ImportSpec,
     NamedLiteral, TestFunctionSummary, TopLevelBindingSummary, TopLevelCallSummary,
 };
-pub(crate) use core::{ParsedFile, ParsedFunction};
+pub(crate) use core::{
+    GoFileData, LanguageFileData, ParsedFile, ParsedFunction, PythonFileData, RustFileData,
+};
 pub(crate) use go::{
     ContextFactoryCall, DbQueryCall, GinCallSummary, GoFieldSummary, GoFunctionEvidence,
     GoStructSummary, GormChainStep, GormQueryChain, InterfaceSummary, PackageVarSummary,

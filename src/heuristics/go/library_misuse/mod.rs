@@ -5,19 +5,22 @@ mod security;
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::Finding;
 
-use super::advanceplan3::body_lines;
+use super::framework_patterns::body_lines;
 
-pub(crate) fn go_advanceplan4_file_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn go_library_misuse_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = security::file_security_findings(file);
 
     for function in &file.functions {
-        findings.extend(go_advanceplan4_function_findings(file, function));
+        findings.extend(go_library_misuse_function_findings(file, function));
     }
 
     findings
 }
 
-fn go_advanceplan4_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+fn go_library_misuse_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if file.is_test_file || function.is_test_function {
         return Vec::new();
     }

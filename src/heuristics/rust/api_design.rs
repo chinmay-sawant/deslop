@@ -162,7 +162,7 @@ fn api_surface_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Fin
 fn shared_state_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    for summary in &file.structs {
+    for summary in file.structs() {
         let public_exposure =
             summary.visibility_pub || summary.fields.iter().any(|field| field.is_pub);
 
@@ -240,7 +240,7 @@ fn shared_state_findings(file: &ParsedFile) -> Vec<Finding> {
         }
     }
 
-    for static_summary in &file.rust_statics {
+    for static_summary in file.rust_statics() {
         let normalized = normalized_type(&static_summary.type_text);
         if contains_global_lock_state(&normalized) {
             findings.push(file_finding(
@@ -285,7 +285,7 @@ fn shared_state_findings(file: &ParsedFile) -> Vec<Finding> {
 fn serde_contract_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    for summary in &file.rust_enums {
+    for summary in file.rust_enums() {
         if summary.variant_count >= 2
             && attribute_has(&summary.attributes, "serde(")
             && attribute_has(&summary.attributes, "untagged")
@@ -310,7 +310,7 @@ fn serde_contract_findings(file: &ParsedFile) -> Vec<Finding> {
         }
     }
 
-    for summary in &file.structs {
+    for summary in file.structs() {
         if summary.has_deserialize_derive {
             if strict_contract_name(&summary.name)
                 && !attribute_has(&summary.attributes, "deny_unknown_fields")
@@ -395,7 +395,7 @@ fn serde_contract_findings(file: &ParsedFile) -> Vec<Finding> {
 fn builder_state_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    for summary in &file.structs {
+    for summary in file.structs() {
         let option_fields = summary
             .fields
             .iter()

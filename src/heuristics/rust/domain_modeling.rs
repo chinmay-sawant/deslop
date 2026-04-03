@@ -9,7 +9,7 @@ use super::{
 pub(crate) fn domain_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    for summary in &file.structs {
+    for summary in file.structs() {
         for field in &summary.fields {
             if business_value_like(&field.name) && field.is_primitive {
                 findings.push(file_finding(

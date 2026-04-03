@@ -94,7 +94,7 @@ pub(crate) fn receiver_findings(files: &[&ParsedFile]) -> Vec<Finding> {
 pub(crate) fn tag_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    for tag in &file.struct_tags {
+    for tag in file.struct_tags() {
         match parse_struct_tag_keys(&tag.raw_tag) {
             None => findings.push(Finding {
                 rule_id: "malformed_struct_tag".to_string(),

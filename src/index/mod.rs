@@ -109,7 +109,10 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     use super::{ImportResolution, build_repository_index};
-    use crate::analysis::{DeclaredSymbol, Language, ParsedFile, ParsedFunction};
+    use crate::analysis::{
+        DeclaredSymbol, GoFileData, Language, LanguageFileData, ParsedFile, ParsedFunction,
+        PythonFileData, RustFileData,
+    };
     use crate::model::{FunctionFingerprint, SymbolKind};
 
     fn sample_file(
@@ -128,7 +131,6 @@ mod tests {
             byte_size: 10,
             pkg_strings: Vec::new(),
             comments: Vec::new(),
-            struct_tags: Vec::new(),
             functions: function_names
                 .iter()
                 .map(|name| ParsedFunction {
@@ -175,16 +177,13 @@ mod tests {
                     line: 1,
                 })
                 .collect(),
-            class_summaries: Vec::new(),
-            package_vars: Vec::new(),
-            interfaces: Vec::new(),
-            go_structs: Vec::new(),
-            module_scope_calls: Vec::new(),
             top_level_bindings: Vec::new(),
-            python_models: Vec::new(),
-            rust_statics: Vec::new(),
-            rust_enums: Vec::new(),
-            structs: Vec::new(),
+            module_scope_calls: Vec::new(),
+            lang: match language {
+                Language::Go => LanguageFileData::Go(GoFileData::default()),
+                Language::Python => LanguageFileData::Python(PythonFileData::default()),
+                Language::Rust => LanguageFileData::Rust(RustFileData::default()),
+            },
         }
     }
 

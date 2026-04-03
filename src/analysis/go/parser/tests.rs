@@ -165,8 +165,8 @@ fn test_pkg_literals() {
     assert!(parsed.is_test_file);
     assert_eq!(parsed.pkg_strings.len(), 1);
     assert_eq!(parsed.pkg_strings[0].name, "apiToken");
-    assert_eq!(parsed.struct_tags.len(), 1);
-    assert_eq!(parsed.struct_tags[0].field_name, "Name");
+    assert_eq!(parsed.struct_tags().len(), 1);
+    assert_eq!(parsed.struct_tags()[0].field_name, "Name");
     assert!(parsed.symbols.iter().any(|symbol| {
         symbol.name == "NameValue"
             && symbol.receiver_type.as_deref() == Some("User")
@@ -215,18 +215,18 @@ fn test_collects_package_vars_interfaces_structs_and_signature_text() {
     let source = go_parser_fixture!("package_vars_interfaces_structs_signature");
 
     let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
-    assert_eq!(parsed.package_vars.len(), 2);
-    assert_eq!(parsed.package_vars[0].name, "DefaultStore");
-    assert_eq!(parsed.package_vars[1].type_text.as_deref(), Some("int"));
+    assert_eq!(parsed.package_vars().len(), 2);
+    assert_eq!(parsed.package_vars()[0].name, "DefaultStore");
+    assert_eq!(parsed.package_vars()[1].type_text.as_deref(), Some("int"));
 
-    assert_eq!(parsed.interfaces.len(), 1);
-    assert_eq!(parsed.interfaces[0].name, "Store");
-    assert_eq!(parsed.interfaces[0].methods, vec!["Save", "Load"]);
+    assert_eq!(parsed.interfaces().len(), 1);
+    assert_eq!(parsed.interfaces()[0].name, "Store");
+    assert_eq!(parsed.interfaces()[0].methods, vec!["Save", "Load"]);
 
-    assert_eq!(parsed.go_structs.len(), 1);
-    assert_eq!(parsed.go_structs[0].name, "Service");
-    assert_eq!(parsed.go_structs[0].fields.len(), 2);
-    assert_eq!(parsed.go_structs[0].fields[0].type_text, "Store");
+    assert_eq!(parsed.go_structs().len(), 1);
+    assert_eq!(parsed.go_structs()[0].name, "Service");
+    assert_eq!(parsed.go_structs()[0].fields.len(), 2);
+    assert_eq!(parsed.go_structs()[0].fields[0].type_text, "Store");
 
     let run = parsed
         .functions

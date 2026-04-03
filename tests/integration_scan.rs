@@ -40,12 +40,12 @@ mod context;
 mod core;
 #[path = "integration_scan/data_access.rs"]
 mod data_access;
-#[path = "integration_scan/go_advanceplan2.rs"]
-mod go_advanceplan2;
-#[path = "integration_scan/go_advanceplan3.rs"]
-mod go_advanceplan3;
-#[path = "integration_scan/go_advanceplan4.rs"]
-mod go_advanceplan4;
+#[path = "integration_scan/go_framework_patterns.rs"]
+mod go_framework_patterns;
+#[path = "integration_scan/go_library_misuse.rs"]
+mod go_library_misuse;
+#[path = "integration_scan/go_resource_hygiene.rs"]
+mod go_resource_hygiene;
 #[path = "integration_scan/hallucination.rs"]
 mod hallucination;
 #[path = "integration_scan/naming.rs"]
@@ -58,8 +58,8 @@ mod python;
 mod rust;
 #[path = "integration_scan/rust_advanced.rs"]
 mod rust_advanced;
-#[path = "integration_scan/rust_advanceplan2.rs"]
-mod rust_advanceplan2;
+#[path = "integration_scan/rust_api_design_ext.rs"]
+mod rust_api_design_ext;
 #[path = "integration_scan/security.rs"]
 mod security;
 #[path = "integration_scan/style.rs"]

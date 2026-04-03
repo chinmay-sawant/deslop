@@ -8,8 +8,9 @@ use std::path::Path;
 use tree_sitter::{Node, Parser};
 
 use crate::analysis::{
-    AnalysisResult, CallSite, Error, Language, MacroCall, NamedLiteral, ParsedFile, ParsedFunction,
-    RuntimeCall, RustFunctionEvidence, UnsafePattern, UnsafePatternKind,
+    AnalysisResult, CallSite, Error, Language, LanguageFileData, MacroCall, NamedLiteral,
+    ParsedFile, ParsedFunction, RuntimeCall, RustFileData, RustFunctionEvidence, UnsafePattern,
+    UnsafePatternKind,
 };
 use crate::model::FunctionFingerprint;
 
@@ -51,20 +52,16 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
         byte_size: source.len(),
         pkg_strings: package_string_literals,
         comments: Vec::new(),
-        struct_tags: Vec::new(),
         functions,
         imports,
         symbols,
-        class_summaries: Vec::new(),
-        package_vars: Vec::new(),
-        interfaces: Vec::new(),
-        go_structs: Vec::new(),
         module_scope_calls: Vec::new(),
         top_level_bindings: Vec::new(),
-        python_models: Vec::new(),
-        rust_statics,
-        rust_enums,
-        structs,
+        lang: LanguageFileData::Rust(RustFileData {
+            rust_statics,
+            rust_enums,
+            structs,
+        }),
     })
 }
 
