@@ -31,20 +31,20 @@ Date: 2026-04-03
 
 These rules only need `body_lines()`, `import_aliases_for()`, `body_text` matching, and existing `ParsedFunction` fields:
 
-- [ ] All 12 string rules (plan1, Section A)
-- [ ] All 13 slice/map rules (plan1, Section B)
-- [ ] All 10 runtime/sync rules (plan1, Section C)
-- [ ] All 8 I/O/encoding rules (plan1, Section D)
-- [ ] All 7 error/interface rules (plan1, Section E)
-- [ ] 8 out of 10 crypto rules (plan2, Section A — A1 through A7, A10)
-- [ ] All 10 injection rules (plan2, Section B)
-- [ ] 6 out of 8 auth/session rules (plan2, Section C — C1 through C6)
-- [ ] 4 out of 7 concurrency security rules (plan2, Section D — D1, D2, D5, D6)
-- [ ] All 8 network/TLS rules (plan2, Section E)
-- [ ] All 9 data exposure rules (plan2, Section F)
-- [ ] All 5 logging rules (plan3, Section C)
-- [ ] All 5 config/CLI rules (plan3, Section D)
-- [ ] All 4 Prometheus rules (plan3, Section E)
+- [x] All 12 string rules (plan1, Section A)
+- [x] All 13 slice/map rules (plan1, Section B)
+- [x] All 10 runtime/sync rules (plan1, Section C)
+- [x] All 8 I/O/encoding rules (plan1, Section D)
+- [x] All 7 error/interface rules (plan1, Section E)
+- [x] 8 out of 10 crypto rules (plan2, Section A — A1 through A7, A10)
+- [x] All 10 injection rules (plan2, Section B)
+- [x] 6 out of 8 auth/session rules (plan2, Section C — C1 through C6)
+- [x] 4 out of 7 concurrency security rules (plan2, Section D — D1, D2, D5, D6)
+- [x] All 8 network/TLS rules (plan2, Section E)
+- [x] All 9 data exposure rules (plan2, Section F)
+- [x] All 5 logging rules (plan3, Section C)
+- [x] All 5 config/CLI rules (plan3, Section D)
+- [x] All 4 Prometheus rules (plan3, Section E)
 
 **Shipped immediately with existing evidence: ~109 rules**
 
@@ -52,10 +52,10 @@ These rules only need `body_lines()`, `import_aliases_for()`, `body_text` matchi
 
 These rules need `import_aliases_for()` support for libraries not currently in the alias table:
 
-- [ ] Redis rules (plan3, Section A) — need `github.com/go-redis/redis` / `github.com/redis/go-redis` alias resolution
-- [ ] gRPC rules (plan3, Section B) — need `google.golang.org/grpc` alias resolution
-- [ ] AWS SDK rules (plan3, Section F) — need `github.com/aws/aws-sdk-go` alias resolution
-- [ ] JWT rules (plan2, A8, C5) — need `github.com/golang-jwt/jwt` alias resolution
+- [x] Redis rules (plan3, Section A) — need `github.com/go-redis/redis` / `github.com/redis/go-redis` alias resolution
+- [x] gRPC rules (plan3, Section B) — need `google.golang.org/grpc` alias resolution
+- [x] AWS SDK rules (plan3, Section F) — need `github.com/aws/aws-sdk-go` alias resolution
+- [x] JWT rules (plan2, A8, C5) — need `github.com/golang-jwt/jwt` alias resolution
 
 **Shipped after minor alias handling and explicit import-path checks: 132 rules (all)**
 
@@ -76,31 +76,31 @@ Priority: highest confidence, broadest applicability, minimal false-positive ris
 
 - [x] Wave 1 is complete.
 
-- [ ] `sprintf_for_simple_int_to_string` (A4) — clear pattern, measurable speedup
-- [ ] `sprintf_for_simple_string_format` (A5) — clear pattern, measurable speedup
-- [ ] `string_format_for_error_wrap` (A9) — both performance and correctness
-- [ ] `strings_hasprefix_then_trimprefix` (A10) — Go 1.20+ optimization
-- [ ] `strings_hassuffix_then_trimsuffix` (A11) — Go 1.20+ optimization
-- [ ] `string_builder_write_string_vs_plus` (A12) — builder misuse
-- [ ] `map_lookup_double_access` (B5) — clear waste
-- [ ] `slice_grow_without_cap_hint` (B6) — well-known antipattern
-- [ ] `range_copy_large_struct` (B12) — measurable for structs > 64 bytes
-- [ ] `sort_slice_vs_sort_sort` (B3) — Go 1.21+ optimization
-- [ ] `clear_map_go121` (B9) — Go 1.21+ optimization
-- [ ] `sync_mutex_for_atomic_counter` (C1) — lock-free optimization
-- [ ] `defer_in_tight_loop` (C6) — defer cost accumulation
-- [ ] `select_with_single_case` (C7) — unnecessary overhead
-- [ ] `waitgroup_add_inside_loop` (C10) — atomic batching
-- [ ] `ioutil_readall_still_used` (D1) — deprecated API
-- [ ] `json_marshal_then_write` (D2) — streaming optimization
-- [ ] `csv_reader_reuse_record` (D6) — allocation reduction
-- [ ] `errors_new_for_static_sentinel` (E3) — alloc reduction
-- [ ] `fmt_errorf_without_wrap_verb` (E4) — error chain preservation
-- [ ] `error_string_comparison` (E5) — performance + correctness
-- [ ] `type_assertion_without_comma_ok` (E1) — panic safety
-- [ ] `type_switch_vs_repeated_assertions` (E2) — jump table optimization  
-- [ ] `os_getenv_in_hot_path` (D2, plan3) — lock avoidance
-- [ ] `viper_get_in_hot_path` (D1, plan3) — mutex avoidance
+- [x] `sprintf_for_simple_int_to_string` (A4) — clear pattern, measurable speedup
+- [x] `sprintf_for_simple_string_format` (A5) — clear pattern, measurable speedup
+- [x] `string_format_for_error_wrap` (A9) — both performance and correctness
+- [x] `strings_hasprefix_then_trimprefix` (A10) — Go 1.20+ optimization
+- [x] `strings_hassuffix_then_trimsuffix` (A11) — Go 1.20+ optimization
+- [x] `string_builder_write_string_vs_plus` (A12) — builder misuse
+- [x] `map_lookup_double_access` (B5) — clear waste
+- [x] `slice_grow_without_cap_hint` (B6) — well-known antipattern
+- [x] `range_copy_large_struct` (B12) — measurable for structs > 64 bytes
+- [x] `sort_slice_vs_sort_sort` (B3) — Go 1.21+ optimization
+- [x] `clear_map_go121` (B9) — Go 1.21+ optimization
+- [x] `sync_mutex_for_atomic_counter` (C1) — lock-free optimization
+- [x] `defer_in_tight_loop` (C6) — defer cost accumulation
+- [x] `select_with_single_case` (C7) — unnecessary overhead
+- [x] `waitgroup_add_inside_loop` (C10) — atomic batching
+- [x] `ioutil_readall_still_used` (D1) — deprecated API
+- [x] `json_marshal_then_write` (D2) — streaming optimization
+- [x] `csv_reader_reuse_record` (D6) — allocation reduction
+- [x] `errors_new_for_static_sentinel` (E3) — alloc reduction
+- [x] `fmt_errorf_without_wrap_verb` (E4) — error chain preservation
+- [x] `error_string_comparison` (E5) — performance + correctness
+- [x] `type_assertion_without_comma_ok` (E1) — panic safety
+- [x] `type_switch_vs_repeated_assertions` (E2) — jump table optimization  
+- [x] `os_getenv_in_hot_path` (D2, plan3) — lock avoidance
+- [x] `viper_get_in_hot_path` (D1, plan3) — mutex avoidance
 
 ### Wave 2 — Critical Security Rules (25 rules)
 
@@ -108,31 +108,31 @@ Priority: highest-impact vulnerabilities, clear detection patterns.
 
 - [x] Wave 2 is complete.
 
-- [ ] `insecure_random_for_security` (A1) — crypto vs math/rand
-- [ ] `hardcoded_tls_skip_verify` (A2) — MITM vulnerability
-- [ ] `hardcoded_tls_min_version_too_low` (A3) — protocol downgrade
-- [ ] `constant_encryption_key` (A5) — key in binary
-- [ ] `constant_iv_or_nonce` (A6) — nonce reuse
-- [ ] `bcrypt_cost_too_low` (A9) — brute-force weakness
-- [ ] `rsa_key_size_too_small` (A10) — key length
-- [ ] `os_exec_command_with_user_input` (B1) — command injection
-- [ ] `template_html_unescaped` (B2) — XSS
-- [ ] `text_template_for_html` (B3) — XSS
-- [ ] `filepath_join_with_user_path` (B4) — path traversal
-- [ ] `url_redirect_without_validation` (B5) — open redirect
-- [ ] `ssrf_via_user_controlled_url` (B6) — SSRF
-- [ ] `xml_decoder_without_entity_limit` (B9) — XXE
-- [ ] `cookie_without_secure_flag` (C1) — cookie theft
-- [ ] `cookie_without_httponly` (C2) — XSS cookie theft
-- [ ] `cors_allow_all_origins` (C4) — CORS misconfiguration
-- [ ] `timing_attack_on_token_comparison` (C6) — timing side-channel
-- [ ] `http_body_readall_without_limitreader` (D8, plan1) — DoS
-- [ ] `sensitive_data_in_log` (F1) — data exposure
-- [ ] `error_detail_leaked_to_client` (F2) — info disclosure
-- [ ] `debug_endpoint_in_production` (F3) — pprof exposure
-- [ ] `struct_field_exposed_in_json` (F4) — data leak
-- [ ] `temp_file_predictable_name` (F5) — symlink attack
-- [ ] `world_readable_file_permissions` (F6) — permission flaw
+- [x] `insecure_random_for_security` (A1) — crypto vs math/rand
+- [x] `hardcoded_tls_skip_verify` (A2) — MITM vulnerability
+- [x] `hardcoded_tls_min_version_too_low` (A3) — protocol downgrade
+- [x] `constant_encryption_key` (A5) — key in binary
+- [x] `constant_iv_or_nonce` (A6) — nonce reuse
+- [x] `bcrypt_cost_too_low` (A9) — brute-force weakness
+- [x] `rsa_key_size_too_small` (A10) — key length
+- [x] `os_exec_command_with_user_input` (B1) — command injection
+- [x] `template_html_unescaped` (B2) — XSS
+- [x] `text_template_for_html` (B3) — XSS
+- [x] `filepath_join_with_user_path` (B4) — path traversal
+- [x] `url_redirect_without_validation` (B5) — open redirect
+- [x] `ssrf_via_user_controlled_url` (B6) — SSRF
+- [x] `xml_decoder_without_entity_limit` (B9) — XXE
+- [x] `cookie_without_secure_flag` (C1) — cookie theft
+- [x] `cookie_without_httponly` (C2) — XSS cookie theft
+- [x] `cors_allow_all_origins` (C4) — CORS misconfiguration
+- [x] `timing_attack_on_token_comparison` (C6) — timing side-channel
+- [x] `http_body_readall_without_limitreader` (D8, plan1) — DoS
+- [x] `sensitive_data_in_log` (F1) — data exposure
+- [x] `error_detail_leaked_to_client` (F2) — info disclosure
+- [x] `debug_endpoint_in_production` (F3) — pprof exposure
+- [x] `struct_field_exposed_in_json` (F4) — data leak
+- [x] `temp_file_predictable_name` (F5) — symlink attack
+- [x] `world_readable_file_permissions` (F6) — permission flaw
 
 ### Wave 3 — Library-Specific Rules (20 rules)
 
@@ -140,26 +140,26 @@ Priority: popular libraries, common mistakes, measurable impact.
 
 - [x] Wave 3 is complete.
 
-- [ ] `redis_ping_per_request` (A1, plan3)
-- [ ] `redis_get_set_without_pipeline` (A2, plan3)
-- [ ] `redis_keys_command_in_handler` (A3, plan3)
-- [ ] `redis_connection_per_request` (A4, plan3)
-- [ ] `redis_no_ttl_on_cache_keys` (A6, plan3)
-- [ ] `grpc_dial_per_request` (B1, plan3)
-- [ ] `grpc_context_not_propagated` (B3, plan3)
-- [ ] `grpc_without_tls_credentials` (E6, plan2)
-- [ ] `log_level_check_after_format` (C1, plan3)
-- [ ] `logger_created_per_request` (C2, plan3)
-- [ ] `string_format_in_structured_logger` (C3, plan3)
-- [ ] `log_printf_for_production` (C4, plan3)
-- [ ] `error_logged_and_returned` (C5, plan3)
-- [ ] `prometheus_counter_created_per_request` (E1, plan3)
-- [ ] `prometheus_high_cardinality_labels` (E2, plan3)
-- [ ] `aws_session_per_request` (F1, plan3)
-- [ ] `aws_credential_hardcoded` (F3, plan3)
-- [ ] `config_file_read_per_request` (D3, plan3)
-- [ ] `dynamodb_scan_in_handler` (F5, plan3)
-- [ ] `ssh_host_key_callback_insecure` (E7, plan2)
+- [x] `redis_ping_per_request` (A1, plan3)
+- [x] `redis_get_set_without_pipeline` (A2, plan3)
+- [x] `redis_keys_command_in_handler` (A3, plan3)
+- [x] `redis_connection_per_request` (A4, plan3)
+- [x] `redis_no_ttl_on_cache_keys` (A6, plan3)
+- [x] `grpc_dial_per_request` (B1, plan3)
+- [x] `grpc_context_not_propagated` (B3, plan3)
+- [x] `grpc_without_tls_credentials` (E6, plan2)
+- [x] `log_level_check_after_format` (C1, plan3)
+- [x] `logger_created_per_request` (C2, plan3)
+- [x] `string_format_in_structured_logger` (C3, plan3)
+- [x] `log_printf_for_production` (C4, plan3)
+- [x] `error_logged_and_returned` (C5, plan3)
+- [x] `prometheus_counter_created_per_request` (E1, plan3)
+- [x] `prometheus_high_cardinality_labels` (E2, plan3)
+- [x] `aws_session_per_request` (F1, plan3)
+- [x] `aws_credential_hardcoded` (F3, plan3)
+- [x] `config_file_read_per_request` (D3, plan3)
+- [x] `dynamodb_scan_in_handler` (F5, plan3)
+- [x] `ssh_host_key_callback_insecure` (E7, plan2)
 
 ### Wave 4 — Remaining Rules (62 rules)
 
@@ -167,9 +167,9 @@ Priority: lower confidence or niche patterns. Ship after waves 1-3 settle.
 
 - [x] Wave 4 is complete.
 
-- [ ] All remaining plan1 rules (string operations A1-A3, A6-A8; slice operations B1-B2, B4, B7-B8, B10-B11, B13; runtime C2-C5, C8-C9; I/O D3-D5, D7; interface E6-E7)
-- [ ] All remaining plan2 rules (A4, A7-A8; B7-B8, B10; C3, C7-C8; D1, D3-D4, D7; E1-E2, E4-E5, E8; F7-F9)
-- [ ] All remaining plan3 rules (A5; B2, B4-B5; F2, F4)
+- [x] All remaining plan1 rules (string operations A1-A3, A6-A8; slice operations B1-B2, B4, B7-B8, B10-B11, B13; runtime C2-C5, C8-C9; I/O D3-D5, D7; interface E6-E7)
+- [x] All remaining plan2 rules (A4, A7-A8; B7-B8, B10; C3, C7-C8; D1, D3-D4, D7; E1-E2, E4-E5, E8; F7-F9)
+- [x] All remaining plan3 rules (A5; B2, B4-B5; F2, F4)
 
 ## Parser And Evidence Work
 

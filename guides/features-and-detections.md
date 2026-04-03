@@ -32,12 +32,12 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **430 language-scoped rule entries** in deslop `0.1.0`.
+The shipped registry currently tracks **561 language-scoped rule entries** in deslop `0.1.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 181 | 2 | 0 | 183 |
+| go | 312 | 2 | 0 | 314 |
 | python | 162 | 0 | 0 | 162 |
 | rust | 62 | 12 | 0 | 74 |
 
@@ -67,7 +67,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `placeholder_test_body`: Tests that look skipped, TODO-shaped, or otherwise placeholder-like.
 - `test_without_assertion_signal`: Tests that exercise production code without an obvious assertion or failure signal.
 
-### Go rules (183)
+### Go rules (314)
 
 #### Concurrency (6)
 - `blocking_call_while_locked`: Potentially blocking calls observed between Lock and Unlock.
@@ -249,28 +249,161 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `time_after_in_loop`: time.After(...) is allocated inside loops instead of reusing a timer or deadline.
 - `tx_without_rollback_guard`: Transactions begun and later committed with no observed rollback guard.
 
+#### Library (29)
+- `aws_credential_hardcoded`: `credentials.NewStaticCredentials("AKID...", "secret...", "")` with literal access keys
+- `aws_session_per_request`: `session.NewSession()` or `config.LoadDefaultConfig(ctx)` inside handler functions
+- `cobra_flag_lookup_in_run`: `cmd.Flags().GetString("flag")` inside `RunE` when the flag could be bound to a variable with `StringVar`
+- `config_file_read_per_request`: `os.ReadFile("config.json")` or `viper.ReadInConfig()` inside handler or loop code
+- `dynamodb_scan_in_handler`: `dynamodb.Scan` in request handler functions
+- `env_parsing_repeated_in_init`: multiple `os.Getenv` + `strconv.Atoi` / `strconv.ParseBool` chains that could be replaced with a config struct + `envconfig` or `env` library
+- `error_logged_and_returned`: `log.Error(err); return err` or `logger.Error("failed", zap.Error(err)); return fmt.Errorf("failed: %w", err)` — logging the error then returning it
+- `grpc_context_not_propagated`: gRPC handler methods that create new `context.Background()` instead of using the stream/request context
+- `grpc_dial_per_request`: `grpc.Dial(addr, opts...)` or `grpc.NewClient(addr, opts...)` inside handler functions
+- `grpc_large_message_without_streaming`: unary RPC handlers returning or receiving messages > 4MB (inferred from large slice/struct serialization patterns)
+- `grpc_no_keepalive_config`: `grpc.NewServer()` without keepalive server parameters in long-running services
+- `grpc_unary_interceptor_per_rpc`: interceptor/middleware construction inside RPC handler methods instead of at server setup
+- `log_level_check_after_format`: `zap.S().Debugf("expensive %v", computeDebug())` or `logrus.Debugf("data: %v", expensiveCall())` where the expensive computation happens regardless of log level
+- `log_printf_for_production`: `log.Printf` (stdlib) usage in web service handler code
+- `logger_created_per_request`: `zap.NewProduction()` or `logrus.New()` inside handler functions
+- `os_getenv_in_hot_path`: `os.Getenv("KEY")` inside handler functions or loops
+- `prometheus_counter_created_per_request`: `prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions
+- `prometheus_high_cardinality_labels`: `counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources
+- `prometheus_observe_without_timer`: manual `time.Since(start).Seconds()` + `histogram.Observe(duration)` patterns when `prometheus.NewTimer` would be safer
+- `prometheus_unregistered_metric`: metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`
+- `redis_connection_per_request`: `redis.NewClient(&redis.Options{...})` inside handler/request functions
+- `redis_get_set_without_pipeline`: multiple sequential `rdb.Get(ctx, key)` or `rdb.Set(ctx, key, val, ...)` calls in the same function without pipeline
+- `redis_keys_command_in_handler`: `rdb.Keys(ctx, pattern)` in handler or loop code
+- `redis_large_value_without_compression`: `rdb.Set(ctx, key, largePayload, ...)` where `largePayload` is the result of `json.Marshal` on a large struct or slice, without visible compression
+- `redis_no_ttl_on_cache_keys`: `rdb.Set(ctx, key, val, 0)` or `rdb.Set(ctx, key, val, redis.KeepTTL)` for cache-like keys without TTL
+- `s3_getobject_without_range`: `s3.GetObject` downloading full objects when only partial data is needed (inferred from subsequent `io.LimitReader` or partial reads)
+- `s3_listobjects_without_pagination`: `s3.ListObjectsV2` without `MaxKeys` or pagination in handler code
+- `string_format_in_structured_logger`: `logger.Info(fmt.Sprintf("user %s logged in", user))` instead of structured fields
+- `viper_get_in_hot_path`: `viper.GetString("key")` or `viper.GetInt("key")` inside handler functions or loops
+
 #### Mod (4)
 - `json_unmarshal_same_payload_multiple_times`: The same local JSON payload binding is unmarshaled into multiple targets in one function.
 - `proto_unmarshal_same_payload_multiple_times`: The same local protobuf payload binding is unmarshaled into multiple targets in one function.
 - `xml_unmarshal_same_payload_multiple_times`: The same local XML payload binding is unmarshaled into multiple targets in one function.
 - `yaml_unmarshal_same_payload_multiple_times`: The same local YAML payload binding is unmarshaled into multiple targets in one function.
 
-#### Performance (11)
+#### Performance (61)
 - `allocation_churn_in_loop`: Obvious make, new, or buffer-construction calls inside loops.
+- `binary_read_for_single_field`: `binary.Read(r, order, &singleField)` for reading a single integer
+- `bufio_scanner_small_buffer_for_large_lines`: `bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB
+- `clear_map_go121`: `for k := range m { delete(m, k) }` in Go 1.21+ codebases
+- `copy_append_idiom_waste`: `dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known
+- `csv_reader_reuse_record`: `csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored
+- `defer_in_tight_loop`: `defer` statements inside loops with > 100 iterations or visible hot-path markers
+- `empty_interface_parameter_overuse`: exported functions with `any` or `interface{}` parameters when concrete types would suffice
+- `error_string_comparison`: `if err.Error() == "some error"` string comparison for error checking
+- `errors_new_for_static_sentinel`: `errors.New("some error")` called repeatedly in hot paths instead of a package-level sentinel
+- `fmt_errorf_without_wrap_verb`: `fmt.Errorf("context: %v", err)` instead of `%w`
 - `fmt_hot_path`: fmt formatting calls such as Sprintf inside loops.
 - `full_dataset_load`: Calls that load an entire payload into memory instead of streaming.
+- `goroutine_for_sync_work`: `go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited
+- `http_body_readall_without_limitreader`: `io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`
+- `interface_slice_allocation`: `[]interface{}` or `[]any` used to pass homogeneous typed data
+- `ioutil_readall_still_used`: `ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+)
+- `json_marshal_then_write`: `data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly
+- `json_number_vs_float64_decode`: `json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`
+- `len_string_for_empty_check`: `len(s) == 0` used interchangeably with `s == ""`
 - `likely_n_squared_allocation`: Opt-in deeper semantic signal for allocations that also sit inside nested loop structure. *(status: experimental)*
 - `likely_n_squared_string_concat`: Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage. *(status: experimental)*
 - `likely_unindexed_query`: Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.
+- `map_delete_in_loop_vs_new_map`: `for k := range m { delete(m, k) }` patterns
+- `map_lookup_double_access`: `if _, ok := m[k]; ok { v := m[k] }` — two map lookups for the same key
+- `map_of_slices_prealloc`: `m[k] = append(m[k], v)` in loops without pre-allocating inner slices
+- `mutex_value_receiver`: `func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field
 - `n_plus_one_query`: Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.
+- `panic_for_expected_errors`: `panic()` used for expected error conditions like invalid input or missing config
+- `range_copy_large_struct`: `for _, v := range largeStructSlice` where the struct is > 64 bytes
+- `range_over_string_by_index`: `for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes
 - `reflection_hot_path`: reflect package calls inside loops.
 - `repeated_json_marshaling`: encoding/json.Marshal or MarshalIndent inside loops — repeated allocation and serialization hot spots.
+- `repeated_string_trim_normalize`: chains like `strings.TrimSpace(strings.ToLower(strings.TrimPrefix(s, ...)))` that scan the string multiple times
+- `select_with_single_case`: `select { case v := <-ch: ... }` with only one case and no default
+- `slice_grow_without_cap_hint`: `var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source
+- `sort_slice_vs_sort_sort`: `sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types
+- `sprintf_for_simple_int_to_string`: `fmt.Sprintf("%d", n)` where `n` is clearly an integer type
+- `sprintf_for_simple_string_format`: `fmt.Sprintf("%s:%s", a, b)` where only `%s` verbs are used
+- `string_builder_write_string_vs_plus`: `builder.WriteString(a + b)` where `a` and `b` are separate bindings
 - `string_concat_in_loop`: Repeated string concatenation inside loops (O(n^2) risk).
+- `string_concatenation_for_path_join`: `dir + "/" + file` or manual path assembly via `+` concatenation
+- `string_format_for_error_wrap`: `fmt.Errorf("failed: %s", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`
+- `string_to_byte_for_single_char_check`: `[]byte(s)[0]` or `string(b) == "x"` for single-character comparisons
+- `strings_contains_vs_index`: `strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns
+- `strings_hasprefix_then_trimprefix`: `if strings.HasPrefix(s, p) { s = strings.TrimPrefix(s, p) }`
+- `strings_hassuffix_then_trimsuffix`: `if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`
+- `strings_replace_all_for_single_char`: `strings.ReplaceAll(s, "x", "y")` where both old and new are single characters
+- `sync_mutex_for_atomic_counter`: `mu.Lock(); count++; mu.Unlock()` for simple integer counters
+- `sync_mutex_for_readonly_config`: `mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely
+- `sync_pool_ignored_for_frequent_small_allocs`: repeated `make([]byte, size)` or `new(T)` in hot paths where the object is short-lived and could be pooled
+- `three_index_slice_for_append_safety`: `sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound
+- `time_now_in_tight_loop`: `time.Now()` called on every iteration of a tight inner loop
+- `type_assertion_without_comma_ok`: `v := i.(T)` without the comma-ok form in non-panic-safe code
+- `type_switch_vs_repeated_assertions`: multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns
+- `unbuffered_channel_for_known_producer_count`: unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time
+- `unnecessary_map_for_set_of_ints`: `map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges
+- `unnecessary_slice_copy_for_readonly`: `copy := append([]T(nil), original...)` when `copy` is only read, never mutated
+- `waitgroup_add_inside_loop`: `for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count
 - `wide_select_query`: Literal SELECT * query shapes.
+- `xml_decoder_without_strict`: `xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML
 
-#### Security (2)
+#### Security (54)
+- `bcrypt_cost_too_low`: `bcrypt.GenerateFromPassword(pw, cost)` where `cost` is literally `< 10` or `bcrypt.MinCost`
+- `cgo_string_lifetime`: `C.CString(goString)` without a corresponding `C.free` in the same function, or deferred `C.free`
+- `constant_encryption_key`: `[]byte("...")` used directly as arguments to `cipher.NewGCM`, `aes.NewCipher`, or similar encryption constructor calls
+- `constant_iv_or_nonce`: constant or zero-valued byte slices used as IV/nonce arguments to `cipher.NewCBCEncrypter`, `gcm.Seal`, or similar
+- `cookie_without_httponly`: `http.Cookie{...}` for session/auth cookies without `HttpOnly: true`
+- `cookie_without_samesite`: `http.Cookie{...}` without `SameSite` set, particularly for auth/session cookies
+- `cookie_without_secure_flag`: `http.Cookie{...}` literals without `Secure: true` for session or authentication cookies
+- `cors_allow_all_origins`: `Access-Control-Allow-Origin: *` combined with `Access-Control-Allow-Credentials: true`, or CORS middleware configured with `AllowAllOrigins: true` in Gin/Echo/Chi
+- `debug_endpoint_in_production`: `net/http/pprof` import or `http.Handle("/debug/pprof/", ...)` registration without access control
+- `dns_lookup_for_access_control`: `net.LookupHost` or `net.LookupAddr` results used in access control decisions
+- `ecb_mode_cipher`: direct use of `cipher.Block.Encrypt` / `cipher.Block.Decrypt` without a block mode wrapper (CBC, CTR, GCM)
+- `env_var_in_error_message`: `fmt.Errorf("... %s", os.Getenv("SECRET_KEY"))` or similar patterns that embed environment variable values in errors
+- `error_detail_leaked_to_client`: `c.JSON(500, gin.H{"error": err.Error()})` or `http.Error(w, err.Error(), 500)` returning internal error details to the client
+- `filepath_join_with_user_path`: `filepath.Join(baseDir, userInput)` without subsequent `filepath.Rel` or path-containment validation
+- `fmt_print_of_sensitive_struct`: `fmt.Sprintf("%+v", user)` or `fmt.Printf("%v", config)` on structs that contain password/secret/token fields
+- `global_rand_source_contention`: `math/rand.Intn()`, `rand.Float64()`, etc. (global source) in hot handler or goroutine paths
+- `goroutine_captures_loop_variable`: `for _, v := range items { go func() { use(v) }() }` without rebinding `v` inside the loop body (pre-Go 1.22)
+- `grpc_without_tls_credentials`: `grpc.Dial(addr, grpc.WithInsecure())` or `grpc.WithTransportCredentials(insecure.NewCredentials())` in non-test code
+- `hardcoded_tls_min_version_too_low`: `tls.Config{MinVersion: tls.VersionTLS10}` or `tls.VersionTLS11` or `tls.VersionSSL30`
+- `hardcoded_tls_skip_verify`: `tls.Config{InsecureSkipVerify: true}` in non-test code
+- `header_injection_via_user_input`: `w.Header().Set(name, userInput)` or `w.Header().Add(name, userInput)` where the value contains unvalidated user input that could contain `\r\n`
+- `http_handler_missing_security_headers`: HTTP handler functions that write responses without setting `X-Content-Type-Options`, `X-Frame-Options`, or `Content-Security-Policy` headers (or without security header middleware)
+- `http_handler_without_csrf_protection`: POST/PUT/DELETE handler registration without evidence of CSRF token middleware
+- `http_listen_non_tls`: `http.ListenAndServe` (non-TLS) usage in production-like code (not test files, not localhost bindings)
+- `insecure_random_for_security`: `math/rand` usage (any of `rand.Int`, `rand.Intn`, `rand.Read`, `rand.New`) in functions whose names suggest security use (token generation, key generation, password, nonce, salt, session)
+- `jwt_none_algorithm_risk`: JWT verification code that accepts `"none"` or `alg: ""` as valid signing methods, or uses `jwt.Parse` without `WithValidMethods`
+- `jwt_secret_in_source`: `jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte("hardcoded"))` where the signing key is a string literal
+- `ldap_injection_via_string_concat`: string concatenation or `fmt.Sprintf` building LDAP filter strings with user input
+- `missing_rate_limiting_on_auth_endpoint`: login/authentication handler functions (name contains `Login`, `Authenticate`, `SignIn`) that don't reference rate limiting, throttling, or brute-force protection mechanisms
+- `os_exec_command_with_user_input`: `exec.Command(userInput)` or `exec.Command("sh", "-c", variable)` where the command string appears to come from a function parameter or request binding
+- `panic_stack_trace_to_client`: `recover()` in HTTP middleware that sends the panic message/stack to the response writer
+- `password_stored_as_plaintext`: struct fields named `Password`, `Passwd`, or `Pwd` stored as `string` in database model structs without evidence of hashing
+- `race_on_shared_map`: map reads/writes from multiple goroutines without mutex or `sync.Map` protection (detect goroutine launches + shared map access patterns)
+- `rsa_key_size_too_small`: `rsa.GenerateKey(rand, bits)` where `bits` is literally `< 2048`
+- `sensitive_data_in_log`: `log.Printf`, `slog.Info`, `zap.String`, `logrus.WithField` calls that include variables named `password`, `secret`, `token`, `apiKey`, `creditCard`, `ssn`, or similar
+- `shared_slice_append_race`: goroutines appending to a shared slice without synchronization
+- `smtp_plaintext_auth`: `smtp.PlainAuth` used without TLS (`smtp.SendMail` to non-TLS endpoints)
 - `sql_string_concat`: Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf.
+- `ssh_host_key_callback_insecure`: `ssh.ClientConfig{HostKeyCallback: ssh.InsecureIgnoreHostKey()}` in non-test code
+- `ssrf_via_user_controlled_url`: `http.Get(userInput)` or `http.NewRequest("GET", userInput, nil)` where the URL comes from request parameters
+- `struct_field_exposed_in_json`: exported struct fields containing sensitive data (Password, Secret, Token, APIKey, PrivateKey) without `json:"-"` tags in API response structs
+- `temp_file_predictable_name`: `os.Create("/tmp/myapp-data.txt")` or `os.OpenFile("/tmp/" + fixedName, ...)` with predictable filenames
+- `template_html_unescaped`: `template.HTML(userInput)` or `template.JS(userInput)` type conversions on data from request parameters
+- `text_template_for_html`: `text/template` used to generate HTML content (check for HTML tags in template literals or `.html` file extensions in `ParseFiles`)
+- `timing_attack_on_token_comparison`: `token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values
+- `toctou_file_check_then_open`: `os.Stat(path)` or file existence check followed by `os.Open(path)` or `os.Create(path)` without atomic operations
+- `unsafe_pointer_cast`: `unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`
+- `url_redirect_without_validation`: `http.Redirect(w, r, r.FormValue("redirect_url"), 302)` or `c.Redirect(302, c.Query("url"))` without URL validation
 - `weak_crypto`: Direct use of weak standard-library crypto packages such as crypto/md5, crypto/sha1, crypto/des, and crypto/rc4.
+- `weak_hash_for_integrity`: `md5.New()`, `sha1.New()`, `md5.Sum()`, `sha1.Sum()` used for integrity checks, checksums, or MAC operations (not just `weak_crypto` import-level detection)
+- `websocket_without_origin_check`: `websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}` or missing `CheckOrigin`
+- `world_readable_file_permissions`: `os.OpenFile(path, flag, 0666)` or `os.WriteFile(path, data, 0777)` with world-readable/writable permissions
+- `xml_decoder_without_entity_limit`: `xml.NewDecoder(r)` processing untrusted XML without setting `d.Entity = nil` and without input size limits
+- `yaml_unmarshal_untrusted_input`: `yaml.Unmarshal(untrustedInput, &target)` using `gopkg.in/yaml.v2` without size limits
 
 #### Style (2)
 - `inconsistent_package_name`: Directories that mix base Go package names after ignoring the _test suffix.

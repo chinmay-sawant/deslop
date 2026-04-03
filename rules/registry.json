@@ -2275,6 +2275,383 @@
     "description": "Transactions begun and later committed with no observed rollback guard."
   },
   {
+    "id": "aws_credential_hardcoded",
+    "language": "go",
+    "family": "library",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`credentials.NewStaticCredentials(\"AKID...\", \"secret...\", \"\")` with literal access keys"
+  },
+  {
+    "id": "aws_session_per_request",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`session.NewSession()` or `config.LoadDefaultConfig(ctx)` inside handler functions"
+  },
+  {
+    "id": "cobra_flag_lookup_in_run",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`cmd.Flags().GetString(\"flag\")` inside `RunE` when the flag could be bound to a variable with `StringVar`"
+  },
+  {
+    "id": "config_file_read_per_request",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`os.ReadFile(\"config.json\")` or `viper.ReadInConfig()` inside handler or loop code"
+  },
+  {
+    "id": "dynamodb_scan_in_handler",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`dynamodb.Scan` in request handler functions"
+  },
+  {
+    "id": "env_parsing_repeated_in_init",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "multiple `os.Getenv` + `strconv.Atoi` / `strconv.ParseBool` chains that could be replaced with a config struct + `envconfig` or `env` library"
+  },
+  {
+    "id": "error_logged_and_returned",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`log.Error(err); return err` or `logger.Error(\"failed\", zap.Error(err)); return fmt.Errorf(\"failed: %w\", err)` \u2014 logging the error then returning it"
+  },
+  {
+    "id": "grpc_context_not_propagated",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "gRPC handler methods that create new `context.Background()` instead of using the stream/request context"
+  },
+  {
+    "id": "grpc_dial_per_request",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`grpc.Dial(addr, opts...)` or `grpc.NewClient(addr, opts...)` inside handler functions"
+  },
+  {
+    "id": "grpc_large_message_without_streaming",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "unary RPC handlers returning or receiving messages > 4MB (inferred from large slice/struct serialization patterns)"
+  },
+  {
+    "id": "grpc_no_keepalive_config",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`grpc.NewServer()` without keepalive server parameters in long-running services"
+  },
+  {
+    "id": "grpc_unary_interceptor_per_rpc",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "interceptor/middleware construction inside RPC handler methods instead of at server setup"
+  },
+  {
+    "id": "log_level_check_after_format",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`zap.S().Debugf(\"expensive %v\", computeDebug())` or `logrus.Debugf(\"data: %v\", expensiveCall())` where the expensive computation happens regardless of log level"
+  },
+  {
+    "id": "log_printf_for_production",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`log.Printf` (stdlib) usage in web service handler code"
+  },
+  {
+    "id": "logger_created_per_request",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`zap.NewProduction()` or `logrus.New()` inside handler functions"
+  },
+  {
+    "id": "os_getenv_in_hot_path",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`os.Getenv(\"KEY\")` inside handler functions or loops"
+  },
+  {
+    "id": "prometheus_counter_created_per_request",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions"
+  },
+  {
+    "id": "prometheus_high_cardinality_labels",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources"
+  },
+  {
+    "id": "prometheus_observe_without_timer",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "manual `time.Since(start).Seconds()` + `histogram.Observe(duration)` patterns when `prometheus.NewTimer` would be safer"
+  },
+  {
+    "id": "prometheus_unregistered_metric",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`"
+  },
+  {
+    "id": "redis_connection_per_request",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`redis.NewClient(&redis.Options{...})` inside handler/request functions"
+  },
+  {
+    "id": "redis_get_set_without_pipeline",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "multiple sequential `rdb.Get(ctx, key)` or `rdb.Set(ctx, key, val, ...)` calls in the same function without pipeline"
+  },
+  {
+    "id": "redis_keys_command_in_handler",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`rdb.Keys(ctx, pattern)` in handler or loop code"
+  },
+  {
+    "id": "redis_large_value_without_compression",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`rdb.Set(ctx, key, largePayload, ...)` where `largePayload` is the result of `json.Marshal` on a large struct or slice, without visible compression"
+  },
+  {
+    "id": "redis_no_ttl_on_cache_keys",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`rdb.Set(ctx, key, val, 0)` or `rdb.Set(ctx, key, val, redis.KeepTTL)` for cache-like keys without TTL"
+  },
+  {
+    "id": "s3_getobject_without_range",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`s3.GetObject` downloading full objects when only partial data is needed (inferred from subsequent `io.LimitReader` or partial reads)"
+  },
+  {
+    "id": "s3_listobjects_without_pagination",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`s3.ListObjectsV2` without `MaxKeys` or pagination in handler code"
+  },
+  {
+    "id": "string_format_in_structured_logger",
+    "language": "go",
+    "family": "library",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`logger.Info(fmt.Sprintf(\"user %s logged in\", user))` instead of structured fields"
+  },
+  {
+    "id": "viper_get_in_hot_path",
+    "language": "go",
+    "family": "library",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`viper.GetString(\"key\")` or `viper.GetInt(\"key\")` inside handler functions or loops"
+  },
+  {
     "id": "json_unmarshal_same_payload_multiple_times",
     "language": "go",
     "family": "mod",
@@ -2340,6 +2717,136 @@
     "description": "Obvious make, new, or buffer-construction calls inside loops."
   },
   {
+    "id": "binary_read_for_single_field",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`binary.Read(r, order, &singleField)` for reading a single integer"
+  },
+  {
+    "id": "bufio_scanner_small_buffer_for_large_lines",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB"
+  },
+  {
+    "id": "clear_map_go121",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`for k := range m { delete(m, k) }` in Go 1.21+ codebases"
+  },
+  {
+    "id": "copy_append_idiom_waste",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known"
+  },
+  {
+    "id": "csv_reader_reuse_record",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored"
+  },
+  {
+    "id": "defer_in_tight_loop",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`defer` statements inside loops with > 100 iterations or visible hot-path markers"
+  },
+  {
+    "id": "empty_interface_parameter_overuse",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "exported functions with `any` or `interface{}` parameters when concrete types would suffice"
+  },
+  {
+    "id": "error_string_comparison",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`if err.Error() == \"some error\"` string comparison for error checking"
+  },
+  {
+    "id": "errors_new_for_static_sentinel",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`errors.New(\"some error\")` called repeatedly in hot paths instead of a package-level sentinel"
+  },
+  {
+    "id": "fmt_errorf_without_wrap_verb",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`fmt.Errorf(\"context: %v\", err)` instead of `%w`"
+  },
+  {
     "id": "fmt_hot_path",
     "language": "go",
     "family": "performance",
@@ -2365,6 +2872,97 @@
       "details_only"
     ],
     "description": "Calls that load an entire payload into memory instead of streaming."
+  },
+  {
+    "id": "goroutine_for_sync_work",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited"
+  },
+  {
+    "id": "http_body_readall_without_limitreader",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`"
+  },
+  {
+    "id": "interface_slice_allocation",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`[]interface{}` or `[]any` used to pass homogeneous typed data"
+  },
+  {
+    "id": "ioutil_readall_still_used",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+)"
+  },
+  {
+    "id": "json_marshal_then_write",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly"
+  },
+  {
+    "id": "json_number_vs_float64_decode",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`"
+  },
+  {
+    "id": "len_string_for_empty_check",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`len(s) == 0` used interchangeably with `s == \"\"`"
   },
   {
     "id": "likely_n_squared_allocation",
@@ -2408,6 +3006,58 @@
     "description": "Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly."
   },
   {
+    "id": "map_delete_in_loop_vs_new_map",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`for k := range m { delete(m, k) }` patterns"
+  },
+  {
+    "id": "map_lookup_double_access",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`if _, ok := m[k]; ok { v := m[k] }` \u2014 two map lookups for the same key"
+  },
+  {
+    "id": "map_of_slices_prealloc",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`m[k] = append(m[k], v)` in loops without pre-allocating inner slices"
+  },
+  {
+    "id": "mutex_value_receiver",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field"
+  },
+  {
     "id": "n_plus_one_query",
     "language": "go",
     "family": "performance",
@@ -2419,6 +3069,45 @@
       "severity_override"
     ],
     "description": "Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear."
+  },
+  {
+    "id": "panic_for_expected_errors",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`panic()` used for expected error conditions like invalid input or missing config"
+  },
+  {
+    "id": "range_copy_large_struct",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`for _, v := range largeStructSlice` where the struct is > 64 bytes"
+  },
+  {
+    "id": "range_over_string_by_index",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes"
   },
   {
     "id": "reflection_hot_path",
@@ -2447,6 +3136,97 @@
     "description": "encoding/json.Marshal or MarshalIndent inside loops \u2014 repeated allocation and serialization hot spots."
   },
   {
+    "id": "repeated_string_trim_normalize",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "chains like `strings.TrimSpace(strings.ToLower(strings.TrimPrefix(s, ...)))` that scan the string multiple times"
+  },
+  {
+    "id": "select_with_single_case",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`select { case v := <-ch: ... }` with only one case and no default"
+  },
+  {
+    "id": "slice_grow_without_cap_hint",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source"
+  },
+  {
+    "id": "sort_slice_vs_sort_sort",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types"
+  },
+  {
+    "id": "sprintf_for_simple_int_to_string",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`fmt.Sprintf(\"%d\", n)` where `n` is clearly an integer type"
+  },
+  {
+    "id": "sprintf_for_simple_string_format",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`fmt.Sprintf(\"%s:%s\", a, b)` where only `%s` verbs are used"
+  },
+  {
+    "id": "string_builder_write_string_vs_plus",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`builder.WriteString(a + b)` where `a` and `b` are separate bindings"
+  },
+  {
     "id": "string_concat_in_loop",
     "language": "go",
     "family": "performance",
@@ -2458,6 +3238,240 @@
       "severity_override"
     ],
     "description": "Repeated string concatenation inside loops (O(n^2) risk)."
+  },
+  {
+    "id": "string_concatenation_for_path_join",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`dir + \"/\" + file` or manual path assembly via `+` concatenation"
+  },
+  {
+    "id": "string_format_for_error_wrap",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`fmt.Errorf(\"failed: %s\", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`"
+  },
+  {
+    "id": "string_to_byte_for_single_char_check",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`[]byte(s)[0]` or `string(b) == \"x\"` for single-character comparisons"
+  },
+  {
+    "id": "strings_contains_vs_index",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns"
+  },
+  {
+    "id": "strings_hasprefix_then_trimprefix",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`if strings.HasPrefix(s, p) { s = strings.TrimPrefix(s, p) }`"
+  },
+  {
+    "id": "strings_hassuffix_then_trimsuffix",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`"
+  },
+  {
+    "id": "strings_replace_all_for_single_char",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`strings.ReplaceAll(s, \"x\", \"y\")` where both old and new are single characters"
+  },
+  {
+    "id": "sync_mutex_for_atomic_counter",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`mu.Lock(); count++; mu.Unlock()` for simple integer counters"
+  },
+  {
+    "id": "sync_mutex_for_readonly_config",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely"
+  },
+  {
+    "id": "sync_pool_ignored_for_frequent_small_allocs",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "repeated `make([]byte, size)` or `new(T)` in hot paths where the object is short-lived and could be pooled"
+  },
+  {
+    "id": "three_index_slice_for_append_safety",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound"
+  },
+  {
+    "id": "time_now_in_tight_loop",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`time.Now()` called on every iteration of a tight inner loop"
+  },
+  {
+    "id": "type_assertion_without_comma_ok",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`v := i.(T)` without the comma-ok form in non-panic-safe code"
+  },
+  {
+    "id": "type_switch_vs_repeated_assertions",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns"
+  },
+  {
+    "id": "unbuffered_channel_for_known_producer_count",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time"
+  },
+  {
+    "id": "unnecessary_map_for_set_of_ints",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges"
+  },
+  {
+    "id": "unnecessary_slice_copy_for_readonly",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`copy := append([]T(nil), original...)` when `copy` is only read, never mutated"
+  },
+  {
+    "id": "waitgroup_add_inside_loop",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count"
   },
   {
     "id": "wide_select_query",
@@ -2473,6 +3487,500 @@
     "description": "Literal SELECT * query shapes."
   },
   {
+    "id": "xml_decoder_without_strict",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML"
+  },
+  {
+    "id": "bcrypt_cost_too_low",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`bcrypt.GenerateFromPassword(pw, cost)` where `cost` is literally `< 10` or `bcrypt.MinCost`"
+  },
+  {
+    "id": "cgo_string_lifetime",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`C.CString(goString)` without a corresponding `C.free` in the same function, or deferred `C.free`"
+  },
+  {
+    "id": "constant_encryption_key",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`[]byte(\"...\")` used directly as arguments to `cipher.NewGCM`, `aes.NewCipher`, or similar encryption constructor calls"
+  },
+  {
+    "id": "constant_iv_or_nonce",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "constant or zero-valued byte slices used as IV/nonce arguments to `cipher.NewCBCEncrypter`, `gcm.Seal`, or similar"
+  },
+  {
+    "id": "cookie_without_httponly",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`http.Cookie{...}` for session/auth cookies without `HttpOnly: true`"
+  },
+  {
+    "id": "cookie_without_samesite",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`http.Cookie{...}` without `SameSite` set, particularly for auth/session cookies"
+  },
+  {
+    "id": "cookie_without_secure_flag",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`http.Cookie{...}` literals without `Secure: true` for session or authentication cookies"
+  },
+  {
+    "id": "cors_allow_all_origins",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`Access-Control-Allow-Origin: *` combined with `Access-Control-Allow-Credentials: true`, or CORS middleware configured with `AllowAllOrigins: true` in Gin/Echo/Chi"
+  },
+  {
+    "id": "debug_endpoint_in_production",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`net/http/pprof` import or `http.Handle(\"/debug/pprof/\", ...)` registration without access control"
+  },
+  {
+    "id": "dns_lookup_for_access_control",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`net.LookupHost` or `net.LookupAddr` results used in access control decisions"
+  },
+  {
+    "id": "ecb_mode_cipher",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "direct use of `cipher.Block.Encrypt` / `cipher.Block.Decrypt` without a block mode wrapper (CBC, CTR, GCM)"
+  },
+  {
+    "id": "env_var_in_error_message",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`fmt.Errorf(\"... %s\", os.Getenv(\"SECRET_KEY\"))` or similar patterns that embed environment variable values in errors"
+  },
+  {
+    "id": "error_detail_leaked_to_client",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`c.JSON(500, gin.H{\"error\": err.Error()})` or `http.Error(w, err.Error(), 500)` returning internal error details to the client"
+  },
+  {
+    "id": "filepath_join_with_user_path",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`filepath.Join(baseDir, userInput)` without subsequent `filepath.Rel` or path-containment validation"
+  },
+  {
+    "id": "fmt_print_of_sensitive_struct",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`fmt.Sprintf(\"%+v\", user)` or `fmt.Printf(\"%v\", config)` on structs that contain password/secret/token fields"
+  },
+  {
+    "id": "global_rand_source_contention",
+    "language": "go",
+    "family": "security",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`math/rand.Intn()`, `rand.Float64()`, etc. (global source) in hot handler or goroutine paths"
+  },
+  {
+    "id": "goroutine_captures_loop_variable",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`for _, v := range items { go func() { use(v) }() }` without rebinding `v` inside the loop body (pre-Go 1.22)"
+  },
+  {
+    "id": "grpc_without_tls_credentials",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`grpc.Dial(addr, grpc.WithInsecure())` or `grpc.WithTransportCredentials(insecure.NewCredentials())` in non-test code"
+  },
+  {
+    "id": "hardcoded_tls_min_version_too_low",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`tls.Config{MinVersion: tls.VersionTLS10}` or `tls.VersionTLS11` or `tls.VersionSSL30`"
+  },
+  {
+    "id": "hardcoded_tls_skip_verify",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`tls.Config{InsecureSkipVerify: true}` in non-test code"
+  },
+  {
+    "id": "header_injection_via_user_input",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`w.Header().Set(name, userInput)` or `w.Header().Add(name, userInput)` where the value contains unvalidated user input that could contain `\\r\\n`"
+  },
+  {
+    "id": "http_handler_missing_security_headers",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "HTTP handler functions that write responses without setting `X-Content-Type-Options`, `X-Frame-Options`, or `Content-Security-Policy` headers (or without security header middleware)"
+  },
+  {
+    "id": "http_handler_without_csrf_protection",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "POST/PUT/DELETE handler registration without evidence of CSRF token middleware"
+  },
+  {
+    "id": "http_listen_non_tls",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`http.ListenAndServe` (non-TLS) usage in production-like code (not test files, not localhost bindings)"
+  },
+  {
+    "id": "insecure_random_for_security",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`math/rand` usage (any of `rand.Int`, `rand.Intn`, `rand.Read`, `rand.New`) in functions whose names suggest security use (token generation, key generation, password, nonce, salt, session)"
+  },
+  {
+    "id": "jwt_none_algorithm_risk",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "JWT verification code that accepts `\"none\"` or `alg: \"\"` as valid signing methods, or uses `jwt.Parse` without `WithValidMethods`"
+  },
+  {
+    "id": "jwt_secret_in_source",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(\"hardcoded\"))` where the signing key is a string literal"
+  },
+  {
+    "id": "ldap_injection_via_string_concat",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "string concatenation or `fmt.Sprintf` building LDAP filter strings with user input"
+  },
+  {
+    "id": "missing_rate_limiting_on_auth_endpoint",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "login/authentication handler functions (name contains `Login`, `Authenticate`, `SignIn`) that don't reference rate limiting, throttling, or brute-force protection mechanisms"
+  },
+  {
+    "id": "os_exec_command_with_user_input",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`exec.Command(userInput)` or `exec.Command(\"sh\", \"-c\", variable)` where the command string appears to come from a function parameter or request binding"
+  },
+  {
+    "id": "panic_stack_trace_to_client",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`recover()` in HTTP middleware that sends the panic message/stack to the response writer"
+  },
+  {
+    "id": "password_stored_as_plaintext",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "struct fields named `Password`, `Passwd`, or `Pwd` stored as `string` in database model structs without evidence of hashing"
+  },
+  {
+    "id": "race_on_shared_map",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "map reads/writes from multiple goroutines without mutex or `sync.Map` protection (detect goroutine launches + shared map access patterns)"
+  },
+  {
+    "id": "rsa_key_size_too_small",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`rsa.GenerateKey(rand, bits)` where `bits` is literally `< 2048`"
+  },
+  {
+    "id": "sensitive_data_in_log",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`log.Printf`, `slog.Info`, `zap.String`, `logrus.WithField` calls that include variables named `password`, `secret`, `token`, `apiKey`, `creditCard`, `ssn`, or similar"
+  },
+  {
+    "id": "shared_slice_append_race",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "goroutines appending to a shared slice without synchronization"
+  },
+  {
+    "id": "smtp_plaintext_auth",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`smtp.PlainAuth` used without TLS (`smtp.SendMail` to non-TLS endpoints)"
+  },
+  {
     "id": "sql_string_concat",
     "language": "go",
     "family": "security",
@@ -2486,6 +3994,136 @@
     "description": "Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf."
   },
   {
+    "id": "ssh_host_key_callback_insecure",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`ssh.ClientConfig{HostKeyCallback: ssh.InsecureIgnoreHostKey()}` in non-test code"
+  },
+  {
+    "id": "ssrf_via_user_controlled_url",
+    "language": "go",
+    "family": "security",
+    "default_severity": "error",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`http.Get(userInput)` or `http.NewRequest(\"GET\", userInput, nil)` where the URL comes from request parameters"
+  },
+  {
+    "id": "struct_field_exposed_in_json",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "exported struct fields containing sensitive data (Password, Secret, Token, APIKey, PrivateKey) without `json:\"-\"` tags in API response structs"
+  },
+  {
+    "id": "temp_file_predictable_name",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`os.Create(\"/tmp/myapp-data.txt\")` or `os.OpenFile(\"/tmp/\" + fixedName, ...)` with predictable filenames"
+  },
+  {
+    "id": "template_html_unescaped",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`template.HTML(userInput)` or `template.JS(userInput)` type conversions on data from request parameters"
+  },
+  {
+    "id": "text_template_for_html",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`text/template` used to generate HTML content (check for HTML tags in template literals or `.html` file extensions in `ParseFiles`)"
+  },
+  {
+    "id": "timing_attack_on_token_comparison",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values"
+  },
+  {
+    "id": "toctou_file_check_then_open",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`os.Stat(path)` or file existence check followed by `os.Open(path)` or `os.Create(path)` without atomic operations"
+  },
+  {
+    "id": "unsafe_pointer_cast",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`"
+  },
+  {
+    "id": "url_redirect_without_validation",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`http.Redirect(w, r, r.FormValue(\"redirect_url\"), 302)` or `c.Redirect(302, c.Query(\"url\"))` without URL validation"
+  },
+  {
     "id": "weak_crypto",
     "language": "go",
     "family": "security",
@@ -2497,6 +4135,71 @@
       "severity_override"
     ],
     "description": "Direct use of weak standard-library crypto packages such as crypto/md5, crypto/sha1, crypto/des, and crypto/rc4."
+  },
+  {
+    "id": "weak_hash_for_integrity",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`md5.New()`, `sha1.New()`, `md5.Sum()`, `sha1.Sum()` used for integrity checks, checksums, or MAC operations (not just `weak_crypto` import-level detection)"
+  },
+  {
+    "id": "websocket_without_origin_check",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}` or missing `CheckOrigin`"
+  },
+  {
+    "id": "world_readable_file_permissions",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`os.OpenFile(path, flag, 0666)` or `os.WriteFile(path, data, 0777)` with world-readable/writable permissions"
+  },
+  {
+    "id": "xml_decoder_without_entity_limit",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`xml.NewDecoder(r)` processing untrusted XML without setting `d.Entity = nil` and without input size limits"
+  },
+  {
+    "id": "yaml_unmarshal_untrusted_input",
+    "language": "go",
+    "family": "security",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "`yaml.Unmarshal(untrustedInput, &target)` using `gopkg.in/yaml.v2` without size limits"
   },
   {
     "id": "inconsistent_package_name",

@@ -234,7 +234,7 @@ export function DocsLayout({
               <p className="docs-p">Rules are designed to produce readable evidence so humans can validate them quickly. Local repository context is used where possible, but deslop does not replace go/types.</p>
               <div className="docs-callout" style={{ borderLeftColor: 'var(--lang-go)', background: 'var(--lang-go-soft)' }}>
                 <p>
-                  The latest Go performance pack now also covers duplicate XML, YAML, and protobuf decode, looped JSON decoder setup, repeated split and strconv work, scratch slice and map churn, slice cloning, byte-string conversion, loop-local slice membership checks, loop-local URL and time parsing, builder and buffer recreation, repeated request-path prepares, looped transactions and GORM session or CRUD chains, dynamic Gin map binding, large multipart thresholds, whole-upload ReadAll paths, file-serving via Data, c.Copy() fanout churn, request dumps, request-time file reads, body-rewind duplication, large dynamic map responses, export streaming gaps, debug-body logging on hot routes, upstream response decode duplication, handler-driven DB write batch gaps, and non-request workload suppression for missing-limit findings.
+                  The current Go catalog now includes the full advanceplan4 expansion: low-level string, slice, map, runtime, I/O, and error-handling performance signals; crypto, auth, TLS, injection, data-exposure, and race-oriented security signals; and library-specific Redis, gRPC, logging, config, Prometheus, Cobra, and AWS misuse patterns on top of the earlier Gin, GORM, request-path, and repo-local rule families.
                 </p>
               </div>
             </>
