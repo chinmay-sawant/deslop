@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::super::FixtureWorkspace;
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
@@ -72,11 +70,7 @@ fn test_python_framework_positive() {
         python_fixture!("integration/framework/framework_positive.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(&report, FRAMEWORK_RULES);
 }
@@ -89,11 +83,7 @@ fn test_python_framework_clean() {
         python_fixture!("integration/framework/framework_clean.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(&report, FRAMEWORK_RULES);
 }
@@ -106,11 +96,7 @@ fn test_python_framework_phase3_positive() {
         python_fixture!("integration/framework/framework_phase3_positive.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(&report, PHASE3_FRAMEWORK_RULES);
 }
@@ -123,11 +109,7 @@ fn test_python_framework_phase3_clean() {
         python_fixture!("integration/framework/framework_phase3_clean.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(&report, PHASE3_FRAMEWORK_RULES);
 }

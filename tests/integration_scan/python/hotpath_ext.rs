@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::super::FixtureWorkspace;
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
@@ -52,11 +50,7 @@ fn test_python_hotpath_ext_positive() {
         python_fixture!("integration/hotpath_ext/ext_positive.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(&report, HOTPATH_EXT_RULES);
 }
@@ -69,11 +63,7 @@ fn test_python_hotpath_ext_clean() {
         python_fixture!("integration/hotpath_ext/ext_clean.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(&report, HOTPATH_EXT_RULES);
 }

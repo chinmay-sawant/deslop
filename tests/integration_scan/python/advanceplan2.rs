@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::super::FixtureWorkspace;
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
@@ -34,11 +32,7 @@ fn test_python_advanceplan2_async_rules() {
         python_fixture!("integration/advanceplan2/async_positive.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(
         &report,
@@ -59,11 +53,7 @@ fn test_python_advanceplan2_async_clean() {
         python_fixture!("integration/advanceplan2/async_clean.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(
         &report,
@@ -84,11 +74,7 @@ fn test_python_advanceplan2_contract_rules() {
         python_fixture!("integration/advanceplan2/contracts_positive.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(
         &report,
@@ -111,11 +97,7 @@ fn test_python_advanceplan2_contract_clean() {
         python_fixture!("integration/advanceplan2/contracts_clean.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(
         &report,
@@ -138,11 +120,7 @@ fn test_python_advanceplan2_import_time_rules() {
         python_fixture!("integration/advanceplan2/import_time_positive.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(
         &report,
@@ -165,11 +143,7 @@ fn test_python_advanceplan2_import_time_clean() {
         python_fixture!("integration/advanceplan2/import_time_clean.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(
         &report,
@@ -192,11 +166,7 @@ fn test_python_advanceplan2_boundary_rules() {
         python_fixture!("integration/advanceplan2/boundary_positive.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(
         &report,
@@ -218,11 +188,7 @@ fn test_python_advanceplan2_boundary_clean() {
         python_fixture!("integration/advanceplan2/boundary_clean.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(
         &report,

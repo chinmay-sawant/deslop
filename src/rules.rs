@@ -57,7 +57,7 @@ pub fn rule_registry() -> &'static [RuleMetadata] {
 
     REGISTRY
         .get_or_init(|| {
-            catalog::RULE_CATALOG
+            catalog::rule_catalog()
                 .iter()
                 .map(rule_metadata_from_definition)
                 .collect()
@@ -79,7 +79,7 @@ pub fn rule_metadata_variants(rule_id: &str) -> Vec<&'static RuleMetadata> {
 }
 
 pub fn rule_binding_location(rule_id: &str, language: RuleLanguage) -> Option<&'static str> {
-    catalog::RULE_CATALOG
+    catalog::rule_catalog()
         .iter()
         .find(|definition| definition.id == rule_id && definition.language == language)
         .map(|definition| definition.binding_location)

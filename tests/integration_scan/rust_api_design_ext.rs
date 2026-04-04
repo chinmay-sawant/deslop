@@ -1,15 +1,9 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 fn scan_fixture(fixture_path: &str) -> deslop::ScanReport {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/lib.rs", fixture_path);
-    scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed")
+    workspace.scan()
 }
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {

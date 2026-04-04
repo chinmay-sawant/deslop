@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 #[test]
@@ -8,11 +6,7 @@ fn test_inconsistent_package_names() {
     workspace.write_file("pkg/alpha.go", go_fixture!("package_conflict_a.txt"));
     workspace.write_file("pkg/beta_test.go", go_fixture!("package_conflict_b.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -31,11 +25,7 @@ fn test_package_test_suffix_is_allowed() {
         go_fixture!("package_conflict_test_variant.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -50,11 +40,7 @@ fn test_misgrouped_imports() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("imports.go", go_fixture!("import_misgrouped.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -69,11 +55,7 @@ fn test_grouped_imports() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("imports.go", go_fixture!("import_grouped.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -93,11 +75,7 @@ fn test_style_rules_respect_repository_config() {
     workspace.write_file("pkg/beta_test.go", go_fixture!("package_conflict_b.txt"));
     workspace.write_file("imports.go", go_fixture!("import_misgrouped.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report

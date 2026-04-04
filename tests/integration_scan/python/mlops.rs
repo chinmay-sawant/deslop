@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::super::FixtureWorkspace;
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
@@ -65,11 +63,7 @@ fn test_python_mlops_positive() {
         python_fixture!("integration/mlops/mlops_positive.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(&report, MLOPS_RULES);
 }
@@ -82,11 +76,7 @@ fn test_python_mlops_clean() {
         python_fixture!("integration/mlops/mlops_clean.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(&report, MLOPS_RULES);
 }
@@ -99,11 +89,7 @@ fn test_python_mlops_phase3_advanced_positive() {
         python_fixture!("integration/mlops/mlops_phase3_advanced_positive.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(&report, ADVANCED_MLOPS_RULES);
 }
@@ -116,11 +102,7 @@ fn test_python_mlops_phase3_advanced_clean() {
         python_fixture!("integration/mlops/mlops_phase3_advanced_clean.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(&report, ADVANCED_MLOPS_RULES);
 }

@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 fn has_rule(report: &deslop::ScanReport, rule_id: &str) -> bool {
@@ -160,11 +158,7 @@ fn test_go_library_misuse_perf_positive() {
         go_fixture!("library_misuse_perf_positive.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in PERF_RULES {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
@@ -179,11 +173,7 @@ fn test_go_library_misuse_perf_clean() {
         go_fixture!("library_misuse_perf_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in PERF_RULES {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
@@ -200,11 +190,7 @@ fn test_go_library_misuse_security_positive() {
         go_fixture!("library_misuse_security_positive.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in SECURITY_RULES {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
@@ -219,11 +205,7 @@ fn test_go_library_misuse_security_clean() {
         go_fixture!("library_misuse_security_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in SECURITY_RULES {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
@@ -240,11 +222,7 @@ fn test_go_library_misuse_library_positive() {
         go_fixture!("library_misuse_library_positive.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in LIBRARY_RULES {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
@@ -259,11 +237,7 @@ fn test_go_library_misuse_library_clean() {
         go_fixture!("library_misuse_library_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in LIBRARY_RULES {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");

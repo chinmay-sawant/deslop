@@ -1,8 +1,8 @@
 use std::path::Path;
 
-use deslop::{BenchmarkOptions, ScanOptions, benchmark_repository, scan_repository};
+use deslop::{BenchmarkOptions, benchmark_repository};
 
-use super::FixtureWorkspace;
+use super::support::{FixtureWorkspace, scan_root};
 
 const GOMINDMAPPER_ROOT: &str = "/home/chinmay/ChinmayPersonalProjects/mindmapper/gomindmapper";
 const GOPDFSUIT_ROOT: &str = "/home/chinmay/ChinmayPersonalProjects/gopdfsuit";
@@ -13,11 +13,7 @@ fn test_real_scan() {
     let roots = [Path::new(GOMINDMAPPER_ROOT), Path::new(GOPDFSUIT_ROOT)];
 
     for root in roots {
-        let report = scan_repository(&ScanOptions {
-            root: root.to_path_buf(),
-            respect_ignore: true,
-        })
-        .unwrap_or_else(|error| panic!("scan should succeed for {}: {error}", root.display()));
+        let report = scan_root(root.to_path_buf());
 
         assert!(
             report.files_discovered > 0,

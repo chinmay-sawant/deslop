@@ -2,8 +2,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 #[test]
@@ -11,11 +9,7 @@ fn test_rust_domain_modeling_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/lib.rs", rust_fixture!("domain_modeling/positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_domain_raw_primitive",
@@ -46,11 +40,7 @@ fn test_rust_async_and_performance_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/lib.rs", rust_fixture!("async/positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_blocking_io_in_async",
@@ -85,11 +75,7 @@ fn test_rust_unsafe_soundness_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/lib.rs", rust_fixture!("unsafe/positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_unsafe_get_unchecked",
@@ -124,11 +110,7 @@ fn test_rust_advanced_negative_fixtures() {
     workspace.write_file("src/async.rs", rust_fixture!("async/negative.txt"));
     workspace.write_file("src/unsafe.rs", rust_fixture!("unsafe/negative.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     let blocked = [
         "rust_domain_raw_primitive",
@@ -177,11 +159,7 @@ fn test_rust_phase4_runtime_boundary_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/lib.rs", rust_fixture!("phase4/positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_tokio_runtime_built_per_call",
@@ -210,11 +188,7 @@ fn test_rust_phase4_runtime_boundary_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/lib.rs", rust_fixture!("phase4/negative.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_tokio_runtime_built_per_call",
@@ -244,11 +218,7 @@ fn test_rust_phase4_workspace_manifest_rule() {
     workspace.write_file("Cargo.toml", "[workspace]\nmembers = [\"app\", \"lib\"]\n");
     workspace.write_file("src/lib.rs", rust_fixture!("phase4/negative.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -273,11 +243,7 @@ fn test_rust_phase4_workspace_manifest_clean() {
     );
     workspace.write_file("src/lib.rs", rust_fixture!("phase4/negative.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report

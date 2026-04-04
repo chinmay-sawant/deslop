@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 #[test]
@@ -7,11 +5,7 @@ fn test_missing_ctx_http() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("http.go", go_fixture!("missing_context.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -26,11 +20,7 @@ fn test_ctx_http() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("http.go", go_fixture!("context_aware_http.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -45,11 +35,7 @@ fn test_missing_cancel() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("cancel.go", go_fixture!("context_cancel_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "missing_cancel_call" && finding.function_name.as_deref() == Some("Run")
@@ -61,11 +47,7 @@ fn test_ctx_cancel() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("cancel.go", go_fixture!("context_cancel_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -80,11 +62,7 @@ fn test_sleep_loops() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("poll.go", go_fixture!("sleep_polling.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -99,11 +77,7 @@ fn test_sleep_ok() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("poll.go", go_fixture!("sleep_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -118,11 +92,7 @@ fn test_busy_wait() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("wait.go", go_fixture!("busy_waiting_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -137,11 +107,7 @@ fn test_select_ok() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("wait.go", go_fixture!("busy_waiting_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -156,11 +122,7 @@ fn test_missing_ctx_exec() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("exec.go", go_fixture!("missing_context_exec.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "missing_context" && finding.message.contains("context-aware work")
@@ -172,11 +134,7 @@ fn test_ctx_exec() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("exec.go", go_fixture!("context_aware_exec.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -191,11 +149,7 @@ fn test_context_wrapper_slop() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("wrapper.go", go_fixture!("context_wrapper_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -216,11 +170,7 @@ fn test_context_wrapper_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("wrapper.go", go_fixture!("context_wrapper_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -244,11 +194,7 @@ fn test_context_wrapper_alias_slop() {
         go_fixture!("context_wrapper_alias_slop.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "missing_context_propagation"
@@ -268,11 +214,7 @@ fn test_context_receiver_wrapper_slop() {
         go_fixture!("context_receiver_wrapper_slop.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "missing_context_propagation"
@@ -288,11 +230,7 @@ fn test_context_nested_wrapper_slop() {
         go_fixture!("context_nested_wrapper_slop.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "missing_context_propagation"
@@ -306,11 +244,7 @@ fn test_context_db_query_wrapper_slop() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("db_wrapper.go", go_fixture!("context_db_query_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "missing_context_propagation"
@@ -327,11 +261,7 @@ fn test_documented_context_detach_is_allowed() {
         go_fixture!("context_documented_detach_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(!report.findings.iter().any(|finding| {
         matches!(
@@ -353,11 +283,7 @@ fn test_context_propagation_severity_override() {
         "[severity_overrides]\nmissing_context_propagation = \"error\"\n",
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "missing_context_propagation"

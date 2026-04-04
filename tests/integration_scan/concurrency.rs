@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 #[test]
@@ -7,11 +5,7 @@ fn test_unmanaged_goroutines() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("go_routine.go", go_fixture!("goroutine_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -32,11 +26,7 @@ fn test_coordination() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("go_routine.go", go_fixture!("goroutine_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -57,11 +47,7 @@ fn test_shutdown_mutex() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("concurrency.go", go_fixture!("concurrency_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -88,11 +74,7 @@ fn test_no_slop() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("concurrency.go", go_fixture!("concurrency_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -116,11 +98,7 @@ fn test_deeper_goroutine_lifetime() {
         go_fixture!("goroutine_deeper_slop.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -138,11 +116,7 @@ fn test_deeper_goroutine_lifetime_clean() {
         go_fixture!("goroutine_deeper_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report

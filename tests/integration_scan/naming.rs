@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 #[test]
@@ -7,11 +5,7 @@ fn test_naming_slop() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("sloppy.go", go_fixture!("generic_weak.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -32,11 +26,7 @@ fn test_doc_overlong() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("comments.go", go_fixture!("comment_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -63,11 +53,7 @@ fn test_doc_ok() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("comments.go", go_fixture!("comment_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -88,11 +74,7 @@ fn test_handler_ok() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("handler.go", go_fixture!("legitimate_handler.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(!report.findings.iter().any(|finding| {
         finding.rule_id == "generic_name"
@@ -105,11 +87,7 @@ fn test_adapter_ok() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("adapter.go", go_fixture!("legitimate_adapter.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(!report.findings.iter().any(|finding| {
         finding.rule_id == "generic_name"

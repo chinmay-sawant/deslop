@@ -1,7 +1,5 @@
 //! Integration tests for `go_semantic_experimental` and the explicit CLI toggle.
 
-use deslop::{ScanOptions, scan_repository_with_go_semantic};
-
 #[path = "support/mod.rs"]
 mod support;
 
@@ -31,21 +29,10 @@ func buildIndex(items []string) map[string][]string {
 #[test]
 fn semantic_flag_propagates_through_config() {
     let workspace = FixtureWorkspace::new();
-    write_fixture(
-        &workspace,
-        ".deslop.toml",
-        "go_semantic_experimental = true\n",
-    );
-    write_fixture(&workspace, "main.go", "package main\n\nfunc main() {}\n");
+    workspace.write_file(".deslop.toml", "go_semantic_experimental = true\n");
+    workspace.write_file("main.go", "package main\n\nfunc main() {}\n");
 
-    let report = scan_repository_with_go_semantic(
-        &ScanOptions {
-            root: workspace.root().to_path_buf(),
-            respect_ignore: true,
-        },
-        false,
-    )
-    .expect("scan should succeed");
+    let report = workspace.scan_with_go_semantic(false);
 
     assert!(report.files_analyzed >= 1);
 }
@@ -53,21 +40,10 @@ fn semantic_flag_propagates_through_config() {
 #[test]
 fn semantic_gated_rules_enabled_via_toggle() {
     let workspace = FixtureWorkspace::new();
-    write_fixture(
-        &workspace,
-        ".deslop.toml",
-        "go_semantic_experimental = false\n",
-    );
-    write_fixture(&workspace, "main.go", GO_NESTED_LOOP_ALLOC);
+    workspace.write_file(".deslop.toml", "go_semantic_experimental = false\n");
+    workspace.write_file("main.go", GO_NESTED_LOOP_ALLOC);
 
-    let report = scan_repository_with_go_semantic(
-        &ScanOptions {
-            root: workspace.root().to_path_buf(),
-            respect_ignore: true,
-        },
-        true,
-    )
-    .expect("scan should succeed");
+    let report = workspace.scan_with_go_semantic(true);
 
     let has_semantic_rule = report
         .findings
@@ -83,21 +59,10 @@ fn semantic_gated_rules_enabled_via_toggle() {
 #[test]
 fn semantic_gated_rules_disabled_without_toggle() {
     let workspace = FixtureWorkspace::new();
-    write_fixture(
-        &workspace,
-        ".deslop.toml",
-        "go_semantic_experimental = false\n",
-    );
-    write_fixture(&workspace, "main.go", GO_NESTED_LOOP_ALLOC);
+    workspace.write_file(".deslop.toml", "go_semantic_experimental = false\n");
+    workspace.write_file("main.go", GO_NESTED_LOOP_ALLOC);
 
-    let report = scan_repository_with_go_semantic(
-        &ScanOptions {
-            root: workspace.root().to_path_buf(),
-            respect_ignore: true,
-        },
-        false,
-    )
-    .expect("scan should succeed");
+    let report = workspace.scan_with_go_semantic(false);
 
     let has_semantic_rule = report
         .findings
@@ -108,8 +73,4 @@ fn semantic_gated_rules_disabled_without_toggle() {
         !has_semantic_rule,
         "semantic-gated rule should NOT fire without the flag"
     );
-}
-
-fn write_fixture(workspace: &FixtureWorkspace, relative_path: &str, contents: &str) {
-    workspace.write_file(relative_path, contents);
 }

@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 #[test]
@@ -7,11 +5,7 @@ fn test_concat_loops() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("concat.go", go_fixture!("string_concat_loop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -26,11 +20,7 @@ fn test_numeric_ok() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("concat.go", go_fixture!("string_concat_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -45,11 +35,7 @@ fn test_json_loops() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("json.go", go_fixture!("json_marshal_loop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "repeated_json_marshaling"
@@ -62,11 +48,7 @@ fn test_json_ok() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("json.go", go_fixture!("json_marshal_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -81,11 +63,7 @@ fn test_hot_path() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("hot_path.go", go_fixture!("hot_path_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -112,11 +90,7 @@ fn test_hot_path_ok() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("hot_path.go", go_fixture!("hot_path_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -143,11 +117,7 @@ fn test_dataset_load() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("full_dataset.go", go_fixture!("full_dataset_load_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -165,11 +135,7 @@ fn test_streaming_ok() {
         go_fixture!("full_dataset_load_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -185,11 +151,7 @@ fn test_semantic_n_squared_rules_are_opt_in() {
     workspace.write_file("alloc.go", go_fixture!("n_squared_alloc_slop.txt"));
     workspace.write_file("concat.go", go_fixture!("n_squared_concat_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(!report.findings.iter().any(|finding| {
         matches!(
@@ -206,11 +168,7 @@ fn test_semantic_n_squared_rules() {
     workspace.write_file("alloc.go", go_fixture!("n_squared_alloc_slop.txt"));
     workspace.write_file("concat.go", go_fixture!("n_squared_concat_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "likely_n_squared_allocation"
@@ -229,11 +187,7 @@ fn test_semantic_n_squared_clean_fixtures() {
     workspace.write_file("alloc.go", go_fixture!("n_squared_alloc_clean.txt"));
     workspace.write_file("concat.go", go_fixture!("n_squared_concat_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(!report.findings.iter().any(|finding| {
         matches!(
@@ -249,11 +203,7 @@ fn test_semantic_nested_query_escalation() {
     workspace.write_file(".deslop.toml", "go_semantic_experimental = true\n");
     workspace.write_file("query.go", go_fixture!("n_squared_query_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "n_plus_one_query"
@@ -268,11 +218,7 @@ fn test_semantic_nested_query_clean() {
     workspace.write_file(".deslop.toml", "go_semantic_experimental = true\n");
     workspace.write_file("query.go", go_fixture!("n_squared_query_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report

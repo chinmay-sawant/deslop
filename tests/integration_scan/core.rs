@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 #[test]
@@ -7,11 +5,7 @@ fn test_go_fingerprints() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("main.go", go_fixture!("simple.go"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 1);
     assert_eq!(report.files_analyzed, 1);
@@ -35,11 +29,7 @@ fn respects_gitignore() {
     workspace.write_file("main.go", go_fixture!("simple.go"));
     workspace.write_file("ignored.go", go_fixture!("simple.go"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 1);
     assert_eq!(report.files_analyzed, 1);
@@ -51,11 +41,7 @@ fn test_generated_syntax() {
     workspace.write_file("generated.go", go_fixture!("generated.go"));
     workspace.write_file("broken.go", go_fixture!("malformed.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 2);
     assert_eq!(report.files_analyzed, 1);

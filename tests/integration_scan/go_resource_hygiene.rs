@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 fn has_rule(report: &deslop::ScanReport, rule_id: &str) -> bool {
@@ -30,11 +28,7 @@ fn test_go_advanceplan2_channel_and_timer_rules() {
     );
     workspace.write_file("ticker.go", go_fixture!("ticker_without_stop_positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(has_rule(&report, "range_over_local_channel_without_close"));
     assert!(has_rule(&report, "double_close_local_channel"));
@@ -51,11 +45,7 @@ fn test_go_advanceplan2_channel_and_timer_clean() {
         go_fixture!("channel_lifecycle_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "range_over_local_channel_without_close",
@@ -92,11 +82,7 @@ fn test_go_advanceplan2_http_boundary_rules() {
         go_fixture!("http_writeheader_order_positive.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(has_rule(&report, "http_response_body_not_closed"));
     assert!(has_rule(&report, "http_client_without_timeout"));
@@ -110,11 +96,7 @@ fn test_go_advanceplan2_http_boundary_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("http_clean.go", go_fixture!("http_boundary_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "http_response_body_not_closed",
@@ -148,11 +130,7 @@ fn test_go_advanceplan2_resource_hygiene_rules() {
     );
     workspace.write_file("defer_loop.go", go_fixture!("defer_in_loop_positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(has_rule(&report, "file_handle_without_close"));
     assert!(has_rule(&report, "rows_without_close"));
@@ -169,11 +147,7 @@ fn test_go_advanceplan2_resource_hygiene_clean() {
         go_fixture!("resource_hygiene_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "file_handle_without_close",
@@ -214,11 +188,7 @@ fn test_go_advanceplan2_architecture_rules() {
         go_fixture!("public_bool_parameter_api_positive.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(has_rule(&report, "mutable_package_global"));
     assert!(has_rule(&report, "init_side_effect"));
@@ -235,11 +205,7 @@ fn test_go_advanceplan2_architecture_clean() {
         go_fixture!("architecture_clean_a.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "mutable_package_global",

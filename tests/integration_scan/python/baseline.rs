@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::super::FixtureWorkspace;
 
 #[test]
@@ -7,11 +5,7 @@ fn test_python_fingerprints() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[("app.py", python_fixture!("simple.txt"))]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 1);
     assert_eq!(report.files_analyzed, 1);
@@ -32,11 +26,7 @@ fn test_python_syntax() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[("broken.py", python_fixture!("broken.txt"))]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 1);
     assert_eq!(report.files_analyzed, 1);
@@ -53,11 +43,7 @@ fn test_python_mixed_repo() {
         ("src/main.rs", rust_fixture!("simple.txt")),
     ]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 3);
     assert_eq!(report.files_analyzed, 3);
@@ -85,11 +71,7 @@ fn test_python_rust_mixed_repo() {
         ("pkg/render/lib.rs", rust_fixture!("simple.txt")),
     ]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 2);
     assert_eq!(report.files_analyzed, 2);
@@ -105,11 +87,7 @@ fn test_python_same_directory_mixed_repo() {
         ("pkg/render/lib.rs", rust_fixture!("simple.txt")),
     ]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 3);
     assert_eq!(report.files_analyzed, 3);
@@ -121,11 +99,7 @@ fn test_python_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[("service.py", python_fixture!("rule_pack_positive.txt"))]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -170,11 +144,7 @@ fn test_python_rule_suppressions() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[("service.py", python_fixture!("rule_pack_negative.txt"))]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -222,11 +192,7 @@ fn test_python_test_rule_suppressions() {
         python_fixture!("rule_pack_test_only.txt"),
     )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(!report.findings.iter().any(|finding| {
         matches!(
@@ -246,11 +212,7 @@ fn test_python_phase4_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[("pkg/__init__.py", python_fixture!("phase4_positive.txt"))]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "blocking_sync_io_in_async",
@@ -303,11 +265,7 @@ fn test_python_phase4_suppressions() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[("pkg/module.py", python_fixture!("phase4_negative.txt"))]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "blocking_sync_io_in_async",
@@ -397,11 +355,7 @@ fn test_python_phase4_repo_rules() {
         ),
     ]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "deep_inheritance_hierarchy",
@@ -433,11 +387,7 @@ fn test_python_hallucination_rule() {
         ),
     ]);
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report

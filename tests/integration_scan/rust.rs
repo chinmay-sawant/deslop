@@ -1,5 +1,3 @@
-use deslop::{ScanOptions, scan_repository};
-
 use super::FixtureWorkspace;
 
 #[test]
@@ -7,11 +5,7 @@ fn test_rust_fingerprints() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/main.rs", rust_fixture!("simple.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 1);
     assert_eq!(report.files_analyzed, 1);
@@ -32,11 +26,7 @@ fn test_rust_syntax() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/lib.rs", rust_fixture!("broken.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 1);
     assert_eq!(report.files_analyzed, 1);
@@ -50,11 +40,7 @@ fn test_mixed_repo() {
     workspace.write_file("main.go", go_fixture!("simple.go"));
     workspace.write_file("src/main.rs", rust_fixture!("simple.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_eq!(report.files_discovered, 2);
     assert_eq!(report.files_analyzed, 2);
@@ -79,11 +65,7 @@ fn test_rust_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/lib.rs", rust_fixture!("rule_pack_positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -158,11 +140,7 @@ fn test_rust_suppressions() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("src/lib.rs", rust_fixture!("rule_pack_negative.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -247,11 +225,7 @@ pub fn demo() {
 "#,
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -295,11 +269,7 @@ pub async fn demo() {
 "#,
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -327,11 +297,7 @@ fn test_rust_hallucination() {
         rust_fixture!("hallucinated_import_positive_render.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "hallucinated_import_call"
@@ -361,11 +327,7 @@ fn test_rust_hierarchy() {
         rust_fixture!("hallucinated_import_negative_helpers.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(!report.findings.iter().any(|finding| {
         finding.rule_id == "hallucinated_import_call"
@@ -388,11 +350,7 @@ fn test_direct_hallucination() {
         rust_fixture!("direct_call_hallucination_render.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "hallucinated_import_call"
@@ -418,11 +376,7 @@ fn test_rust_direct_ok() {
         rust_fixture!("direct_call_hallucination_render.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: workspace.root().to_path_buf(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(!report.findings.iter().any(|finding| {
         matches!(
