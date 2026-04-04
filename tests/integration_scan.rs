@@ -69,11 +69,7 @@ mod support;
 #[path = "integration_scan/test_quality.rs"]
 mod test_quality;
 
-use std::fs;
-use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
-
-use support::{assert_rules_absent, assert_rules_present, scan_files};
+use support::{FixtureWorkspace, assert_rules_absent, assert_rules_present, scan_files};
 
 #[test]
 fn test_error_slop() {
@@ -93,18 +89,4 @@ fn test_error_ok() {
         &report,
         &["error_wrapping_misuse", "dropped_error", "panic_on_error"],
     );
-}
-
-fn create_temp_workspace() -> PathBuf {
-    let nonce = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock should be after unix epoch")
-        .as_nanos();
-    let dir = std::env::temp_dir().join(format!("deslop-test-{nonce}"));
-    fs::create_dir_all(&dir).expect("temp dir creation should succeed");
-    dir
-}
-
-fn write_fixture(root: &Path, relative_path: &str, contents: &str) {
-    support::write_fixture(root, relative_path, contents);
 }

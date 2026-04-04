@@ -1,16 +1,15 @@
-use std::fs;
 
 use deslop::{ScanOptions, scan_repository};
 
-use super::{create_temp_workspace, write_fixture};
+use super::FixtureWorkspace;
 
 #[test]
 fn test_go_fingerprints() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "main.go", go_fixture!("simple.go"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("main.go", go_fixture!("simple.go"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -29,18 +28,17 @@ fn test_go_fingerprints() {
         .collect::<Vec<_>>();
     assert_eq!(names, vec!["Add", "Run"]);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn respects_gitignore() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, ".gitignore", "ignored.go\n");
-    write_fixture(&temp_dir, "main.go", go_fixture!("simple.go"));
-    write_fixture(&temp_dir, "ignored.go", go_fixture!("simple.go"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(".gitignore", "ignored.go\n");
+    workspace.write_file("main.go", go_fixture!("simple.go"));
+    workspace.write_file("ignored.go", go_fixture!("simple.go"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -48,17 +46,16 @@ fn respects_gitignore() {
     assert_eq!(report.files_discovered, 1);
     assert_eq!(report.files_analyzed, 1);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_generated_syntax() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "generated.go", go_fixture!("generated.go"));
-    write_fixture(&temp_dir, "broken.go", go_fixture!("malformed.txt"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("generated.go", go_fixture!("generated.go"));
+    workspace.write_file("broken.go", go_fixture!("malformed.txt"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -74,5 +71,4 @@ fn test_generated_syntax() {
     );
     assert!(report.files[0].syntax_error);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }

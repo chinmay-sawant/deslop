@@ -1,16 +1,15 @@
-use std::fs;
 
 use deslop::{ScanOptions, scan_repository};
 
-use super::{create_temp_workspace, write_fixture};
+use super::FixtureWorkspace;
 
 #[test]
 fn test_rust_fingerprints() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/main.rs", rust_fixture!("simple.txt"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/main.rs", rust_fixture!("simple.txt"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -28,16 +27,15 @@ fn test_rust_fingerprints() {
         .collect::<Vec<_>>();
     assert_eq!(names, vec!["sum_pair", "render_summary"]);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_rust_syntax() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("broken.txt"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs", rust_fixture!("broken.txt"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -47,17 +45,16 @@ fn test_rust_syntax() {
     assert!(report.files[0].syntax_error);
     assert!(report.parse_failures.is_empty());
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_mixed_repo() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "main.go", go_fixture!("simple.go"));
-    write_fixture(&temp_dir, "src/main.rs", rust_fixture!("simple.txt"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("main.go", go_fixture!("simple.go"));
+    workspace.write_file("src/main.rs", rust_fixture!("simple.txt"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -71,7 +68,7 @@ fn test_mixed_repo() {
         .iter()
         .map(|file| {
             file.path
-                .strip_prefix(&temp_dir)
+                .strip_prefix(workspace.root())
                 .expect("report path should stay under the temp dir")
                 .to_string_lossy()
                 .into_owned()
@@ -79,20 +76,17 @@ fn test_mixed_repo() {
         .collect::<Vec<_>>();
     assert_eq!(analyzed_paths, vec!["main.go", "src/main.rs"]);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_rust_rules() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs",
         rust_fixture!("rule_pack_positive.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -164,20 +158,17 @@ fn test_rust_rules() {
             .any(|finding| finding.rule_id == "unsafe_without_safety_comment")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_rust_suppressions() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs",
         rust_fixture!("rule_pack_negative.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -249,15 +240,12 @@ fn test_rust_suppressions() {
             .any(|finding| finding.rule_id == "unsafe_without_safety_comment")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_rust_rule_ignore_directives() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs",
         r#"
 pub fn demo() {
     let _value = Some(1).unwrap(); // deslop-ignore:unwrap_in_non_test_code
@@ -269,7 +257,7 @@ pub fn demo() {
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -293,20 +281,15 @@ pub fn demo() {
             .any(|finding| finding.rule_id == "expect_in_non_test_code")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_rust_repository_config_controls_rules() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        ".deslop.toml",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(".deslop.toml",
         "rust_async_experimental = false\n[severity_overrides]\nexpect_in_non_test_code = \"error\"\n",
     );
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
+    workspace.write_file("src/lib.rs",
         r#"
 use std::sync::Mutex;
 
@@ -322,7 +305,7 @@ pub async fn demo() {
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -340,25 +323,20 @@ pub async fn demo() {
         .expect("expect finding should remain after config filtering");
     assert!(matches!(expect_finding.severity, deslop::Severity::Error));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_rust_hallucination() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs",
         rust_fixture!("hallucinated_import_positive_main.txt"),
     );
-    write_fixture(
-        &temp_dir,
-        "src/config/render.rs",
+    workspace.write_file("src/config/render.rs",
         rust_fixture!("hallucinated_import_positive_render.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -374,30 +352,23 @@ fn test_rust_hallucination() {
             && finding.message.contains("helpers::load")
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_rust_hierarchy() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/config/mod.rs",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/config/mod.rs",
         rust_fixture!("hallucinated_import_negative_mod.txt"),
     );
-    write_fixture(
-        &temp_dir,
-        "src/config/render.rs",
+    workspace.write_file("src/config/render.rs",
         rust_fixture!("hallucinated_import_negative_render.txt"),
     );
-    write_fixture(
-        &temp_dir,
-        "src/config/sub/helpers.rs",
+    workspace.write_file("src/config/sub/helpers.rs",
         rust_fixture!("hallucinated_import_negative_helpers.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -410,25 +381,20 @@ fn test_rust_hierarchy() {
             )
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_direct_hallucination() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs",
         rust_fixture!("direct_call_hallucination_positive.txt"),
     );
-    write_fixture(
-        &temp_dir,
-        "src/config/render.rs",
+    workspace.write_file("src/config/render.rs",
         rust_fixture!("direct_call_hallucination_render.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -444,25 +410,20 @@ fn test_direct_hallucination() {
             && finding.message.contains("missing_local")
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_rust_direct_ok() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs",
         rust_fixture!("direct_call_hallucination_negative.txt"),
     );
-    write_fixture(
-        &temp_dir,
-        "src/config/render.rs",
+    workspace.write_file("src/config/render.rs",
         rust_fixture!("direct_call_hallucination_render.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -480,5 +441,4 @@ fn test_rust_direct_ok() {
         )
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }

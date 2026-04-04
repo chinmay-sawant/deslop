@@ -1,21 +1,18 @@
-use std::fs;
 
 use deslop::{ScanOptions, scan_repository};
 
-use super::{create_temp_workspace, write_fixture};
+use super::FixtureWorkspace;
 
 #[test]
 fn test_hallucination() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "main.go", go_fixture!("hallucinated_import.txt"));
-    write_fixture(
-        &temp_dir,
-        "utils/utils.go",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("main.go", go_fixture!("hallucinated_import.txt"));
+    workspace.write_file("utils/utils.go",
         go_fixture!("utils_package.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -27,15 +24,12 @@ fn test_hallucination() {
             .any(|finding| finding.rule_id == "hallucinated_import_call")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_hallucination_dir() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "main.go",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("main.go",
         r#"package sample
 
 import render "github.com/acme/project/pkg/render"
@@ -45,9 +39,7 @@ func Run(address string) string {
 }
 "#,
     );
-    write_fixture(
-        &temp_dir,
-        "pkg/render/render.go",
+    workspace.write_file("pkg/render/render.go",
         r#"package render
 
 func Normalize(address string) string {
@@ -55,9 +47,7 @@ func Normalize(address string) string {
 }
 "#,
     );
-    write_fixture(
-        &temp_dir,
-        "internal/render/render.go",
+    workspace.write_file("internal/render/render.go",
         r#"package render
 
 func Sanitize(address string) string {
@@ -67,7 +57,7 @@ func Sanitize(address string) string {
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -78,15 +68,12 @@ func Sanitize(address string) string {
             && finding.message.contains("render.Sanitize")
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_alias_hallucination() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "pdf/generator.go",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("pdf/generator.go",
         r#"package pdf
 
 import font "example.com/font"
@@ -102,7 +89,7 @@ func collectAllStandardFontsInTemplate() {
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -113,15 +100,12 @@ func collectAllStandardFontsInTemplate() {
             && finding.start_line == 9
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_rust_go_separation() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "main.go",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("main.go",
         r#"package sample
 
 import render "github.com/acme/project/pkg/render"
@@ -131,9 +115,7 @@ func Run(address string) string {
 }
 "#,
     );
-    write_fixture(
-        &temp_dir,
-        "pkg/render/render.go",
+    workspace.write_file("pkg/render/render.go",
         r#"package render
 
 func Sanitize(address string) string {
@@ -141,9 +123,7 @@ func Sanitize(address string) string {
 }
 "#,
     );
-    write_fixture(
-        &temp_dir,
-        "pkg/render/lib.rs",
+    workspace.write_file("pkg/render/lib.rs",
         r#"pub fn Normalize(address: &str) -> String {
     address.to_string()
 }
@@ -151,7 +131,7 @@ func Sanitize(address string) string {
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -162,5 +142,4 @@ func Sanitize(address string) string {
             && finding.message.contains("render.Normalize")
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }

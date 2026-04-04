@@ -1,9 +1,8 @@
-use std::fs;
 
 use deslop::{ScanOptions, scan_repository};
 
-use super::super::create_temp_workspace;
-use super::write_files;
+use super::super::FixtureWorkspace;
+
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
@@ -62,88 +61,76 @@ const ADVANCED_MLOPS_RULES: &[&str] = &[
 
 #[test]
 fn test_python_mlops_positive() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
             "pkg/mlops_code.py",
             python_fixture!("integration/mlops/mlops_positive.txt"),
         )],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
 
     assert_rules_present(&report, MLOPS_RULES);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_mlops_clean() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
             "pkg/mlops_code.py",
             python_fixture!("integration/mlops/mlops_clean.txt"),
         )],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
 
     assert_rules_absent(&report, MLOPS_RULES);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_mlops_phase3_advanced_positive() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
             "pkg/mlops_phase3_advanced.py",
             python_fixture!("integration/mlops/mlops_phase3_advanced_positive.txt"),
         )],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
 
     assert_rules_present(&report, ADVANCED_MLOPS_RULES);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_mlops_phase3_advanced_clean() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
             "pkg/mlops_phase3_advanced.py",
             python_fixture!("integration/mlops/mlops_phase3_advanced_clean.txt"),
         )],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
 
     assert_rules_absent(&report, ADVANCED_MLOPS_RULES);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }

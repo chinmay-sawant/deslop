@@ -1,17 +1,16 @@
-use std::fs;
 
 use deslop::{ScanOptions, scan_repository};
 
-use super::super::create_temp_workspace;
-use super::write_files;
+use super::super::FixtureWorkspace;
+
 
 #[test]
 fn test_python_fingerprints() {
-    let temp_dir = create_temp_workspace();
-    write_files(&temp_dir, &[("app.py", python_fixture!("simple.txt"))]);
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[("app.py", python_fixture!("simple.txt"))]);
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -29,16 +28,15 @@ fn test_python_fingerprints() {
         .collect::<Vec<_>>();
     assert_eq!(names, vec!["build_summary", "render"]);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_syntax() {
-    let temp_dir = create_temp_workspace();
-    write_files(&temp_dir, &[("broken.py", python_fixture!("broken.txt"))]);
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[("broken.py", python_fixture!("broken.txt"))]);
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -48,15 +46,12 @@ fn test_python_syntax() {
     assert!(report.files[0].syntax_error);
     assert!(report.parse_failures.is_empty());
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_mixed_repo() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
             ("app.py", python_fixture!("simple.txt")),
             ("main.go", go_fixture!("simple.go")),
             ("src/main.rs", rust_fixture!("simple.txt")),
@@ -64,7 +59,7 @@ fn test_python_mixed_repo() {
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -78,7 +73,7 @@ fn test_python_mixed_repo() {
         .iter()
         .map(|file| {
             file.path
-                .strip_prefix(&temp_dir)
+                .strip_prefix(workspace.root())
                 .expect("report path should stay under the temp dir")
                 .to_string_lossy()
                 .into_owned()
@@ -86,22 +81,19 @@ fn test_python_mixed_repo() {
         .collect::<Vec<_>>();
     assert_eq!(analyzed_paths, vec!["app.py", "main.go", "src/main.rs"]);
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_rust_mixed_repo() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
             ("pkg/render/service.py", python_fixture!("simple.txt")),
             ("pkg/render/lib.rs", rust_fixture!("simple.txt")),
         ],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -110,15 +102,12 @@ fn test_python_rust_mixed_repo() {
     assert_eq!(report.files_analyzed, 2);
     assert!(report.parse_failures.is_empty());
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_same_directory_mixed_repo() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
             ("pkg/render/__init__.py", python_fixture!("simple.txt")),
             ("pkg/render/main.go", go_fixture!("simple.go")),
             ("pkg/render/lib.rs", rust_fixture!("simple.txt")),
@@ -126,7 +115,7 @@ fn test_python_same_directory_mixed_repo() {
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -135,19 +124,16 @@ fn test_python_same_directory_mixed_repo() {
     assert_eq!(report.files_analyzed, 3);
     assert!(report.parse_failures.is_empty());
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_rules() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[("service.py", python_fixture!("rule_pack_positive.txt"))],
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[("service.py", python_fixture!("rule_pack_positive.txt"))],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -189,19 +175,16 @@ fn test_python_rules() {
             .any(|finding| finding.rule_id == "print_debugging_leftover")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_rule_suppressions() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[("service.py", python_fixture!("rule_pack_negative.txt"))],
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[("service.py", python_fixture!("rule_pack_negative.txt"))],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -243,22 +226,19 @@ fn test_python_rule_suppressions() {
             .any(|finding| finding.rule_id == "print_debugging_leftover")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_test_rule_suppressions() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
             "tests/test_service.py",
             python_fixture!("rule_pack_test_only.txt"),
         )],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -275,19 +255,16 @@ fn test_python_test_rule_suppressions() {
         )
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_phase4_rules() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[("pkg/__init__.py", python_fixture!("phase4_positive.txt"))],
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[("pkg/__init__.py", python_fixture!("phase4_positive.txt"))],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -337,19 +314,16 @@ fn test_python_phase4_rules() {
         );
     }
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_phase4_suppressions() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[("pkg/module.py", python_fixture!("phase4_negative.txt"))],
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[("pkg/module.py", python_fixture!("phase4_negative.txt"))],
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -399,15 +373,12 @@ fn test_python_phase4_suppressions() {
         );
     }
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_phase4_repo_rules() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
             (
                 "pkg/root.py",
                 python_fixture!("integration/baseline/phase4_repo_root.txt"),
@@ -448,7 +419,7 @@ fn test_python_phase4_repo_rules() {
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -468,15 +439,12 @@ fn test_python_phase4_repo_rules() {
         );
     }
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_python_hallucination_rule() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
             (
                 "pkg/target.py",
                 python_fixture!("hallucination/import_resolution_target.txt"),
@@ -489,7 +457,7 @@ fn test_python_hallucination_rule() {
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -599,5 +567,4 @@ fn test_python_hallucination_rule() {
         "did not expect finding for local class SnapBackTranscriptionClient"
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }

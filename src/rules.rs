@@ -2,6 +2,8 @@ use std::sync::OnceLock;
 
 use serde::{Deserialize, Serialize};
 
+mod catalog;
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum RuleLanguage {
@@ -55,19 +57,10 @@ pub fn rule_registry() -> &'static [RuleMetadata] {
 
     REGISTRY
         .get_or_init(|| {
-            let mut registry: Vec<RuleMetadata> = serde_json::from_str(include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/rules/registry.json"
-            )))
-            .unwrap_or_else(|error| {
-                unreachable!("rules/registry.json should be valid registry metadata: {error}")
-            });
-
-            for metadata in &mut registry {
-                apply_runtime_policy(metadata);
-            }
-
-            registry
+            catalog::RULE_CATALOG
+                .iter()
+                .map(rule_metadata_from_definition)
+                .collect()
         })
         .as_slice()
 }
@@ -85,6 +78,13 @@ pub fn rule_metadata_variants(rule_id: &str) -> Vec<&'static RuleMetadata> {
         .collect()
 }
 
+pub fn rule_binding_location(rule_id: &str, language: RuleLanguage) -> Option<&'static str> {
+    catalog::RULE_CATALOG
+        .iter()
+        .find(|definition| definition.id == rule_id && definition.language == language)
+        .map(|definition| definition.binding_location)
+}
+
 pub fn is_detail_only_rule(rule_id: &str) -> bool {
     rule_metadata_variants(rule_id).iter().any(|metadata| {
         metadata
@@ -96,6 +96,21 @@ pub fn is_detail_only_rule(rule_id: &str) -> bool {
 fn apply_runtime_policy(metadata: &mut RuleMetadata) {
     metadata.status = status_for_rule(&metadata.language, metadata.id.as_str());
     metadata.configurability = configurability_for_rule(&metadata.language, metadata.id.as_str());
+}
+
+fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMetadata {
+    let mut metadata = RuleMetadata {
+        id: definition.id.to_string(),
+        language: definition.language.clone(),
+        family: definition.family.to_string(),
+        default_severity: definition.default_severity.clone(),
+        status: definition.status.clone(),
+        configurability: definition.configurability.iter().cloned().collect(),
+        description: definition.description.to_string(),
+    };
+
+    apply_runtime_policy(&mut metadata);
+    metadata
 }
 
 fn status_for_rule(language: &RuleLanguage, rule_id: &str) -> RuleStatus {
@@ -165,8 +180,8 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     use super::{
-        RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule, rule_metadata,
-        rule_metadata_variants, rule_registry,
+        RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule,
+        rule_binding_location, rule_metadata, rule_metadata_variants, rule_registry,
     };
     use crate::{DEFAULT_MAX_BYTES, read_to_string_limited};
 
@@ -364,6 +379,17 @@ mod tests {
         assert!(
             source_rule_ids.is_subset(&registry_rule_ids),
             "source contains rule ids that are missing from the public registry"
+        );
+    }
+
+    #[test]
+    fn binding_locations_are_available_for_catalogued_rules() {
+        let location = rule_binding_location("dropped_error", RuleLanguage::Go)
+            .unwrap_or_else(|| unreachable!("binding location should be catalogued"));
+
+        assert!(
+            location.ends_with(".rs"),
+            "binding location should point at a Rust source file"
         );
     }
 

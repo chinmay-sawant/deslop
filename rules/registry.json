@@ -7509,7 +7509,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": ".expect(...) used in non-test Rust code."
+    "description": "expect() used in non-test Rust code."
   },
   {
     "id": "fixme_doc_comment_leftover",
@@ -7548,7 +7548,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "panic!() left in non-test Rust code."
+    "description": "panic macro left in non-test Rust code."
   },
   {
     "id": "todo_doc_comment_leftover",
@@ -7626,7 +7626,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": ".unwrap() used in non-test Rust code."
+    "description": "unwrap() used in non-test Rust code."
   },
   {
     "id": "rust_aos_hot_path",

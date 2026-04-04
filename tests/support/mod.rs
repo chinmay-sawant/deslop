@@ -22,6 +22,12 @@ impl FixtureWorkspace {
         Self { root }
     }
 
+    pub(crate) fn with_files(files: &[(&str, &str)]) -> Self {
+        let workspace = Self::new();
+        workspace.write_files(files);
+        workspace
+    }
+
     #[allow(dead_code)]
     pub(crate) fn root(&self) -> &Path {
         &self.root
@@ -37,9 +43,13 @@ impl FixtureWorkspace {
     }
 
     pub(crate) fn scan(&self) -> ScanReport {
+        self.scan_with_options(true)
+    }
+
+    pub(crate) fn scan_with_options(&self, respect_ignore: bool) -> ScanReport {
         scan_repository(&ScanOptions {
             root: self.root.clone(),
-            respect_ignore: true,
+            respect_ignore,
         })
         .expect("scan should succeed")
     }

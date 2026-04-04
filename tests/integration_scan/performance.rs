@@ -1,20 +1,17 @@
-use std::fs;
 
 use deslop::{ScanOptions, scan_repository};
 
-use super::{create_temp_workspace, write_fixture};
+use super::FixtureWorkspace;
 
 #[test]
 fn test_concat_loops() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "concat.go",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("concat.go",
         go_fixture!("string_concat_loop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -26,20 +23,17 @@ fn test_concat_loops() {
             .any(|finding| finding.rule_id == "string_concat_in_loop")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_numeric_ok() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "concat.go",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("concat.go",
         go_fixture!("string_concat_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -51,16 +45,15 @@ fn test_numeric_ok() {
             .any(|finding| finding.rule_id == "string_concat_in_loop")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_json_loops() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "json.go", go_fixture!("json_marshal_loop.txt"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("json.go", go_fixture!("json_marshal_loop.txt"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -70,16 +63,15 @@ fn test_json_loops() {
             && finding.function_name.as_deref() == Some("EncodeAll")
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_json_ok() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "json.go", go_fixture!("json_marshal_clean.txt"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("json.go", go_fixture!("json_marshal_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -91,16 +83,15 @@ fn test_json_ok() {
             .any(|finding| finding.rule_id == "repeated_json_marshaling")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_hot_path() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "hot_path.go", go_fixture!("hot_path_slop.txt"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("hot_path.go", go_fixture!("hot_path_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -124,16 +115,15 @@ fn test_hot_path() {
             .any(|finding| finding.rule_id == "reflection_hot_path")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_hot_path_ok() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "hot_path.go", go_fixture!("hot_path_clean.txt"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("hot_path.go", go_fixture!("hot_path_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -157,20 +147,17 @@ fn test_hot_path_ok() {
             .any(|finding| finding.rule_id == "reflection_hot_path")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_dataset_load() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "full_dataset.go",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("full_dataset.go",
         go_fixture!("full_dataset_load_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -182,20 +169,17 @@ fn test_dataset_load() {
             .any(|finding| finding.rule_id == "full_dataset_load")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_streaming_ok() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "full_dataset.go",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("full_dataset.go",
         go_fixture!("full_dataset_load_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -207,25 +191,20 @@ fn test_streaming_ok() {
             .any(|finding| finding.rule_id == "full_dataset_load")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_semantic_n_squared_rules_are_opt_in() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "alloc.go",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("alloc.go",
         go_fixture!("n_squared_alloc_slop.txt"),
     );
-    write_fixture(
-        &temp_dir,
-        "concat.go",
+    workspace.write_file("concat.go",
         go_fixture!("n_squared_concat_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -237,30 +216,23 @@ fn test_semantic_n_squared_rules_are_opt_in() {
         )
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_semantic_n_squared_rules() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        ".deslop.toml",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(".deslop.toml",
         "go_semantic_experimental = true\n",
     );
-    write_fixture(
-        &temp_dir,
-        "alloc.go",
+    workspace.write_file("alloc.go",
         go_fixture!("n_squared_alloc_slop.txt"),
     );
-    write_fixture(
-        &temp_dir,
-        "concat.go",
+    workspace.write_file("concat.go",
         go_fixture!("n_squared_concat_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -274,30 +246,23 @@ fn test_semantic_n_squared_rules() {
             && finding.function_name.as_deref() == Some("Render")
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_semantic_n_squared_clean_fixtures() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        ".deslop.toml",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(".deslop.toml",
         "go_semantic_experimental = true\n",
     );
-    write_fixture(
-        &temp_dir,
-        "alloc.go",
+    workspace.write_file("alloc.go",
         go_fixture!("n_squared_alloc_clean.txt"),
     );
-    write_fixture(
-        &temp_dir,
-        "concat.go",
+    workspace.write_file("concat.go",
         go_fixture!("n_squared_concat_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -309,25 +274,20 @@ fn test_semantic_n_squared_clean_fixtures() {
         )
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_semantic_nested_query_escalation() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        ".deslop.toml",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(".deslop.toml",
         "go_semantic_experimental = true\n",
     );
-    write_fixture(
-        &temp_dir,
-        "query.go",
+    workspace.write_file("query.go",
         go_fixture!("n_squared_query_slop.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -338,25 +298,20 @@ fn test_semantic_nested_query_escalation() {
             && finding.function_name.as_deref() == Some("Load")
     }));
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }
 
 #[test]
 fn test_semantic_nested_query_clean() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        ".deslop.toml",
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(".deslop.toml",
         "go_semantic_experimental = true\n",
     );
-    write_fixture(
-        &temp_dir,
-        "query.go",
+    workspace.write_file("query.go",
         go_fixture!("n_squared_query_clean.txt"),
     );
 
     let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -368,5 +323,4 @@ fn test_semantic_nested_query_clean() {
             .any(|finding| finding.rule_id == "n_plus_one_query")
     );
 
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
-}
+    }

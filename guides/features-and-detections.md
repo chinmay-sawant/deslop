@@ -695,16 +695,16 @@ When the same rule ID is implemented in more than one backend, it appears once i
 
 #### Hygiene (11)
 - `dbg_macro_leftover`: dbg!() left in non-test Rust code.
-- `expect_in_non_test_code`: .expect(...) used in non-test Rust code.
+- `expect_in_non_test_code`: expect() used in non-test Rust code.
 - `fixme_doc_comment_leftover`: Rust doc comments that still contain a FIXME marker in non-test code.
 - `hack_doc_comment_leftover`: Rust doc comments that still contain a HACK marker in non-test code.
-- `panic_macro_leftover`: panic!() left in non-test Rust code.
+- `panic_macro_leftover`: panic macro left in non-test Rust code.
 - `todo_doc_comment_leftover`: Rust doc comments that still contain a TODO marker in non-test code.
 - `todo_macro_leftover`: todo!() left in non-test Rust code.
 - `unimplemented_macro_leftover`: unimplemented!() left in non-test Rust code.
 - `unreachable_macro_leftover`: unreachable!() left in non-test Rust code.
 - `unsafe_without_safety_comment`: unsafe fn or unsafe block without a nearby SAFETY: comment within the previous two lines.
-- `unwrap_in_non_test_code`: .unwrap() used in non-test Rust code.
+- `unwrap_in_non_test_code`: unwrap() used in non-test Rust code.
 
 #### Performance (12)
 - `rust_aos_hot_path`: Repeated struct-field dereferences inside a loop that may indicate an array-of-structs hot path.

@@ -17,17 +17,13 @@ fn cargo_bin() -> String {
     path.to_string_lossy().into_owned()
 }
 
-fn write_fixture(workspace: &FixtureWorkspace, relative_path: &str, contents: &str) {
-    workspace.write_file(relative_path, contents);
-}
-
 // ── Scan subcommand tests ──
 
 #[test]
 fn cli_scan_exits_zero_for_clean_code() {
     let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
-    write_fixture(&workspace, "main.go", "package main\n\nfunc main() {\n}\n");
+    workspace.write_file("main.go", "package main\n\nfunc main() {\n}\n");
 
     let output = Command::new(&bin)
         .args(["scan", workspace.root().to_str().unwrap()])
@@ -46,8 +42,7 @@ fn cli_scan_exits_nonzero_for_findings() {
     let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
     // Overlong name + fmt.Sprintf in loop → guaranteed findings.
-    write_fixture(
-        &workspace,
+    workspace.write_file(
         "bad.go",
         "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
     );
@@ -67,8 +62,7 @@ fn cli_scan_exits_nonzero_for_findings() {
 fn cli_scan_no_fail_exits_zero_even_with_findings() {
     let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
-    write_fixture(
-        &workspace,
+    workspace.write_file(
         "bad.go",
         "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
     );
@@ -89,7 +83,7 @@ fn cli_scan_no_fail_exits_zero_even_with_findings() {
 fn cli_scan_json_produces_valid_json() {
     let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
-    write_fixture(&workspace, "main.go", "package main\n\nfunc main() {\n}\n");
+    workspace.write_file("main.go", "package main\n\nfunc main() {\n}\n");
 
     let output = Command::new(&bin)
         .args([
@@ -122,8 +116,7 @@ fn cli_scan_json_produces_valid_json() {
 fn cli_scan_ignore_flag_suppresses_specific_rules() {
     let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
-    write_fixture(
-        &workspace,
+    workspace.write_file(
         "bad.go",
         "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
     );
