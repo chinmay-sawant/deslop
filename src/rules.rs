@@ -41,15 +41,15 @@ pub enum RuleConfigurability {
     RustAsyncExperimental,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 pub struct RuleMetadata {
-    pub id: String,
+    pub id: &'static str,
     pub language: RuleLanguage,
-    pub family: String,
+    pub family: &'static str,
     pub default_severity: RuleDefaultSeverity,
     pub status: RuleStatus,
-    pub configurability: Vec<RuleConfigurability>,
-    pub description: String,
+    pub configurability: &'static [RuleConfigurability],
+    pub description: &'static str,
 }
 
 pub fn rule_registry() -> &'static [RuleMetadata] {
@@ -93,84 +93,24 @@ pub fn is_detail_only_rule(rule_id: &str) -> bool {
     })
 }
 
-fn apply_runtime_policy(metadata: &mut RuleMetadata) {
-    metadata.status = status_for_rule(&metadata.language, metadata.id.as_str());
-    metadata.configurability = configurability_for_rule(&metadata.language, metadata.id.as_str());
+pub fn is_async_rollout_rule(rule_id: &str) -> bool {
+    rule_metadata_variants(rule_id).iter().any(|metadata| {
+        metadata
+            .configurability
+            .contains(&RuleConfigurability::RustAsyncExperimental)
+    })
 }
 
 fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMetadata {
-    let mut metadata = RuleMetadata {
-        id: definition.id.to_string(),
+    RuleMetadata {
+        id: definition.id,
         language: definition.language.clone(),
-        family: definition.family.to_string(),
+        family: definition.family,
         default_severity: definition.default_severity.clone(),
         status: definition.status.clone(),
-        configurability: definition.configurability.to_vec(),
-        description: definition.description.to_string(),
-    };
-
-    apply_runtime_policy(&mut metadata);
-    metadata
-}
-
-fn status_for_rule(language: &RuleLanguage, rule_id: &str) -> RuleStatus {
-    if matches!(
-        (language, rule_id),
-        (RuleLanguage::Go, "likely_n_squared_allocation")
-            | (RuleLanguage::Go, "likely_n_squared_string_concat")
-            | (RuleLanguage::Rust, "rust_async_blocking_drop")
-            | (RuleLanguage::Rust, "rust_async_hold_permit_across_await")
-            | (RuleLanguage::Rust, "rust_async_invariant_broken_at_await")
-            | (RuleLanguage::Rust, "rust_async_lock_order_cycle")
-            | (RuleLanguage::Rust, "rust_async_missing_fuse_pin")
-            | (RuleLanguage::Rust, "rust_async_monopolize_executor")
-            | (RuleLanguage::Rust, "rust_async_recreate_future_in_select")
-            | (RuleLanguage::Rust, "rust_async_spawn_cancel_at_await")
-            | (RuleLanguage::Rust, "rust_async_std_mutex_await")
-            | (RuleLanguage::Rust, "rust_blocking_io_in_async")
-            | (RuleLanguage::Rust, "rust_lock_across_await")
-            | (RuleLanguage::Rust, "rust_tokio_mutex_unnecessary")
-    ) {
-        RuleStatus::Experimental
-    } else {
-        RuleStatus::Stable
+        configurability: definition.configurability,
+        description: definition.description,
     }
-}
-
-fn configurability_for_rule(language: &RuleLanguage, rule_id: &str) -> Vec<RuleConfigurability> {
-    let mut configurability = vec![
-        RuleConfigurability::Disable,
-        RuleConfigurability::Ignore,
-        RuleConfigurability::SeverityOverride,
-    ];
-
-    if matches!(
-        (language, rule_id),
-        (RuleLanguage::Go, "likely_n_squared_allocation")
-            | (RuleLanguage::Go, "likely_n_squared_string_concat")
-    ) {
-        configurability.push(RuleConfigurability::GoSemanticExperimental);
-    }
-
-    if matches!(
-        (language, rule_id),
-        (RuleLanguage::Rust, "rust_async_blocking_drop")
-            | (RuleLanguage::Rust, "rust_async_hold_permit_across_await")
-            | (RuleLanguage::Rust, "rust_async_invariant_broken_at_await")
-            | (RuleLanguage::Rust, "rust_async_lock_order_cycle")
-            | (RuleLanguage::Rust, "rust_async_missing_fuse_pin")
-            | (RuleLanguage::Rust, "rust_async_monopolize_executor")
-            | (RuleLanguage::Rust, "rust_async_recreate_future_in_select")
-            | (RuleLanguage::Rust, "rust_async_spawn_cancel_at_await")
-            | (RuleLanguage::Rust, "rust_async_std_mutex_await")
-            | (RuleLanguage::Rust, "rust_blocking_io_in_async")
-            | (RuleLanguage::Rust, "rust_lock_across_await")
-            | (RuleLanguage::Rust, "rust_tokio_mutex_unnecessary")
-    ) {
-        configurability.push(RuleConfigurability::RustAsyncExperimental);
-    }
-
-    configurability
 }
 
 #[cfg(test)]
@@ -195,7 +135,7 @@ mod tests {
 
         for metadata in registry {
             assert!(
-                entries.insert((metadata.id.as_str(), &metadata.language)),
+                entries.insert((metadata.id, &metadata.language)),
                 "duplicate language-scoped rule id in registry: {} ({:?})",
                 metadata.id,
                 metadata.language
@@ -206,17 +146,17 @@ mod tests {
                     (prev_language, prev_family, prev_id)
                         <= (
                             &metadata.language,
-                            metadata.family.as_str(),
-                            metadata.id.as_str()
+                            metadata.family,
+                            metadata.id
                         ),
                     "registry should stay sorted by language, family, then id"
                 );
             }
 
             previous = Some((
-                metadata.id.as_str(),
+                metadata.id,
                 &metadata.language,
-                metadata.family.as_str(),
+                metadata.family,
             ));
         }
     }
@@ -297,7 +237,7 @@ mod tests {
         let experimental_rules = registry
             .iter()
             .filter(|metadata| metadata.status == RuleStatus::Experimental)
-            .map(|metadata| (metadata.language.clone(), metadata.id.as_str()))
+            .map(|metadata| (metadata.language.clone(), metadata.id))
             .collect::<BTreeSet<_>>();
 
         let expected = BTreeSet::from([
@@ -320,7 +260,7 @@ mod tests {
         assert_eq!(experimental_rules, expected);
 
         for metadata in registry {
-            match (metadata.language.clone(), metadata.id.as_str()) {
+            match (metadata.language.clone(), metadata.id) {
                 (RuleLanguage::Go, "likely_n_squared_allocation")
                 | (RuleLanguage::Go, "likely_n_squared_string_concat") => {
                     assert_eq!(metadata.status, RuleStatus::Experimental);
@@ -373,7 +313,7 @@ mod tests {
             collect_source_rule_ids(Path::new(env!("CARGO_MANIFEST_DIR")).join("src"));
         let registry_rule_ids = rule_registry()
             .iter()
-            .map(|metadata| metadata.id.clone())
+            .map(|metadata| metadata.id.to_string())
             .collect::<BTreeSet<_>>();
 
         assert!(

@@ -1,18 +1,12 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::{Parser, Subcommand, ValueEnum};
 
 mod cli;
 
 use std::path::PathBuf;
 
-use crate::cli::{
-    filtered_rules, format_rules_report, format_rules_report_json, format_scan_report,
-    format_scan_report_json, print_benchmark_report,
-};
-use deslop::{
-    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions, benchmark_repository_with_go_semantic,
-    is_detail_only_rule, scan_repository_with_go_semantic,
-};
+use crate::cli::{execute_bench, execute_rules, execute_scan};
+use deslop::{RuleLanguage, RuleStatus};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -78,40 +72,15 @@ fn main() -> Result<()> {
             enable_semantic,
             ignore,
             no_fail,
-        } => {
-            let scan_root = path.clone();
-            let mut report = scan_repository_with_go_semantic(
-                &ScanOptions {
-                    root: path,
-                    respect_ignore: !no_ignore,
-                },
-                enable_semantic,
-            )
-            .with_context(|| format!("scan failed for {}", scan_root.display()))?;
-
-            if !ignore.is_empty() {
-                report
-                    .findings
-                    .retain(|finding| !ignore.iter().any(|rule_id| rule_id == &finding.rule_id));
-            }
-
-            if json {
-                println!("{}", format_scan_report_json(&report, details)?);
-            } else {
-                print!("{}", format_scan_report(&report, details));
-            }
-
-            if !no_fail {
-                let finding_count = report
-                    .findings
-                    .iter()
-                    .filter(|f| details || !is_detail_only_rule(f.rule_id.as_str()))
-                    .count();
-                if finding_count > 0 {
-                    std::process::exit(1);
-                }
-            }
-        }
+        } => execute_scan(
+            path,
+            json,
+            details,
+            no_ignore,
+            enable_semantic,
+            ignore,
+            no_fail,
+        ),
         Command::Bench {
             path,
             repeats,
@@ -119,43 +88,17 @@ fn main() -> Result<()> {
             json,
             no_ignore,
             enable_semantic,
-        } => {
-            let bench_root = path.clone();
-            let report = benchmark_repository_with_go_semantic(
-                &BenchmarkOptions {
-                    root: path,
-                    repeats,
-                    warmups,
-                    respect_ignore: !no_ignore,
-                },
-                enable_semantic,
-            )
-            .with_context(|| format!("benchmark failed for {}", bench_root.display()))?;
-
-            if json {
-                println!("{}", serde_json::to_string_pretty(&report)?);
-            } else {
-                print_benchmark_report(&report);
-            }
-        }
+        } => execute_bench(path, repeats, warmups, json, no_ignore, enable_semantic),
         Command::Rules {
             json,
             language,
             status,
-        } => {
-            let language = language.map(Into::into);
-            let status = status.map(Into::into);
-            let rules = filtered_rules(language.clone(), status.clone());
-
-            if json {
-                println!("{}", format_rules_report_json(&rules)?);
-            } else {
-                print!("{}", format_rules_report(&rules, language, status));
-            }
-        }
+        } => execute_rules(
+            json,
+            language.map(Into::into),
+            status.map(Into::into),
+        ),
     }
-
-    Ok(())
 }
 
 #[derive(Debug, Clone, ValueEnum)]

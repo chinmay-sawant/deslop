@@ -39,7 +39,7 @@ pub use model::{
 };
 pub use rules::{
     RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleMetadata, RuleStatus,
-    is_detail_only_rule, rule_binding_location, rule_metadata, rule_metadata_variants,
+    is_detail_only_rule, is_async_rollout_rule, rule_binding_location, rule_metadata, rule_metadata_variants,
     rule_registry,
 };
 pub use scan::{scan_repository, scan_repository_with_go_semantic};

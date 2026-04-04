@@ -11,21 +11,19 @@ use super::registry::{
     SHARED_OPTIONAL_FUNCTION_RULES,
 };
 
-pub(crate) fn evaluate_shared(files: &[ParsedFile], _index: &RepositoryIndex) -> Vec<Finding> {
+pub(crate) fn evaluate_shared_file(file: &ParsedFile, _index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    for file in files {
-        extend_file_rules(&mut findings, file, SHARED_FILE_RULES);
+    extend_file_rules(&mut findings, file, SHARED_FILE_RULES);
 
-        for function in &file.functions {
-            extend_optional_function_rules(
-                &mut findings,
-                file,
-                function,
-                SHARED_OPTIONAL_FUNCTION_RULES,
-            );
-            extend_function_rules(&mut findings, file, function, SHARED_FUNCTION_RULES);
-        }
+    for function in &file.functions {
+        extend_optional_function_rules(
+            &mut findings,
+            file,
+            function,
+            SHARED_OPTIONAL_FUNCTION_RULES,
+        );
+        extend_function_rules(&mut findings, file, function, SHARED_FUNCTION_RULES);
     }
 
     findings
