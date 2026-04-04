@@ -45,30 +45,33 @@ pub(crate) trait LanguageBackend: Send + Sync {
     }
 }
 
-pub(crate) fn registered_backends() -> [&'static dyn LanguageBackend; 3] {
-    static GO_BACKEND: go::GoAnalyzer = go::GoAnalyzer;
-    static PYTHON_BACKEND: python::PythonAnalyzer = python::PythonAnalyzer;
-    static RUST_BACKEND: rust::RustAnalyzer = rust::RustAnalyzer;
+static GO_BACKEND: go::GoAnalyzer = go::GoAnalyzer;
+static PYTHON_BACKEND: python::PythonAnalyzer = python::PythonAnalyzer;
+static RUST_BACKEND: rust::RustAnalyzer = rust::RustAnalyzer;
+static BACKENDS: [&dyn LanguageBackend; 3] = [&GO_BACKEND, &PYTHON_BACKEND, &RUST_BACKEND];
 
-    [&GO_BACKEND, &PYTHON_BACKEND, &RUST_BACKEND]
+pub(crate) fn registered_backends() -> &'static [&'static dyn LanguageBackend] {
+    &BACKENDS
 }
 
 pub(crate) fn backend_for_path(path: &Path) -> Option<&'static dyn LanguageBackend> {
     registered_backends()
-        .into_iter()
+        .iter()
         .find(|backend| backend.supports_path(path))
+        .copied()
 }
 
 pub(crate) fn backend_for_language(language: Language) -> Option<&'static dyn LanguageBackend> {
     registered_backends()
-        .into_iter()
+        .iter()
         .find(|backend| backend.language() == language)
+        .copied()
 }
 
 pub(crate) fn supported_extensions() -> Vec<&'static str> {
     let mut extensions = Vec::new();
 
-    for backend in registered_backends() {
+    for &backend in registered_backends() {
         for extension in backend.supported_extensions() {
             if !extensions.contains(extension) {
                 extensions.push(*extension);

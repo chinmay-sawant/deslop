@@ -54,7 +54,7 @@ src/heuristics/rust/runtime_boundary.rs:267:        if &bytes[start..start + key
 src/rules.rs:468:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
 src/rules.rs:470:            let Some(end_offset) = source[start..].find('\"') else {
 src/rules.rs:474:            ids.insert(source[start..start + end_offset].to_string());
-tests/integration_scan/mod.rs:31:#[path = "../support/mod.rs"]
+tests/integration_scan/mod.rs:33:#[path = "../support/mod.rs"]
 
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {

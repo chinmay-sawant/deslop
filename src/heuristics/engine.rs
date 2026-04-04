@@ -1,4 +1,4 @@
-use crate::analysis::{AnalysisConfig, ImportSpec, ParsedFile, ParsedFunction};
+use crate::analysis::{ImportSpec, ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
@@ -32,7 +32,7 @@ pub(crate) fn evaluate_shared_file(file: &ParsedFile, _index: &RepositoryIndex) 
 pub(crate) fn evaluate_go_file(
     file: &ParsedFile,
     index: &RepositoryIndex,
-    analysis_config: &AnalysisConfig,
+    enable_go_semantic: bool,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
 
@@ -58,7 +58,7 @@ pub(crate) fn evaluate_go_file(
             &mut findings,
             file,
             function,
-            analysis_config.enable_go_semantic,
+            enable_go_semantic,
             GO_CONFIGURABLE_FUNCTION_RULES,
         );
     }
