@@ -5,11 +5,11 @@ pub(crate) use report::{format_scan_report, format_scan_report_json, print_bench
 pub(crate) use rules::{filtered_rules, format_rules_report, format_rules_report_json};
 
 use anyhow::{Context, Result};
-use std::path::PathBuf;
 use deslop::{
-    benchmark_repository_with_go_semantic, is_detail_only_rule, scan_repository_with_go_semantic,
-    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions,
+    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions, benchmark_repository_with_go_semantic,
+    is_detail_only_rule, scan_repository_with_go_semantic,
 };
+use std::path::PathBuf;
 
 pub(crate) fn execute_scan(
     path: PathBuf,

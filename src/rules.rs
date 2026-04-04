@@ -144,20 +144,12 @@ mod tests {
             if let Some((prev_id, prev_language, prev_family)) = previous {
                 assert!(
                     (prev_language, prev_family, prev_id)
-                        <= (
-                            &metadata.language,
-                            metadata.family,
-                            metadata.id
-                        ),
+                        <= (&metadata.language, metadata.family, metadata.id),
                     "registry should stay sorted by language, family, then id"
                 );
             }
 
-            previous = Some((
-                metadata.id,
-                &metadata.language,
-                metadata.family,
-            ));
+            previous = Some((metadata.id, &metadata.language, metadata.family));
         }
     }
 

@@ -93,11 +93,7 @@ fn main() -> Result<()> {
             json,
             language,
             status,
-        } => execute_rules(
-            json,
-            language.map(Into::into),
-            status.map(Into::into),
-        ),
+        } => execute_rules(json, language.map(Into::into), status.map(Into::into)),
     }
 }
 
