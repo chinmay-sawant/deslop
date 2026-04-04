@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Pipeline-style functions with no visible error handling or recovery path.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "dataset_not_using_dataloader",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Manual dataset batching loops that bypass torch.utils.data.DataLoader.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "embedding_computed_per_request",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Embeddings recomputed on request paths instead of cached or precomputed for stable inputs.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "embedding_dimension_mismatch_silent",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Embeddings are compared without visible dimension validation before similarity math.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "entire_dataframe_copied_for_transform",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Whole DataFrames are copied for transforms that could target a smaller subset or reuse views.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "global_state_in_data_pipeline",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Pipeline-style functions mutate global state, making concurrency and reproducibility brittle.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "gpu_memory_not_cleared_between_experiments",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GPU-backed experiment flows show no visible memory or session cleanup between runs.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "hardcoded_api_key_in_source",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Hardcoded model-provider API keys or secret-like tokens appear in source.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "intermediate_dataframe_not_freed",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Multiple intermediate DataFrames accumulate with no visible cleanup in one pipeline.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "langchain_chain_built_per_request",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "llm_api_call_in_loop_without_batching",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "LLM API calls are made inside loops without batching or aggregation.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "llm_full_response_loaded_into_memory",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Large LLM responses are loaded fully into memory instead of streamed or incrementally consumed.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "llm_response_not_cached_same_input",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated LLM calls show no visible caching even when prompt inputs appear likely to repeat.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "model_eval_mode_missing",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Torch-style inference paths run model(...) without obvious eval() or inference mode setup.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "model_loaded_per_request",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Models are loaded on request paths instead of once during application startup.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "model_to_device_in_loop",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Models or tensors are moved to a device repeatedly inside loops.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "no_schema_validation_on_external_data",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "External JSON or tabular data is parsed without visible schema validation.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "numpy_append_in_loop",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "np.append(...) is used inside loops, forcing repeated reallocations.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "numpy_dtype_mismatch_implicit_cast",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Arrays are constructed and immediately cast, implying a missing upfront dtype choice.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "numpy_python_loop_over_array",
@@ -279,7 +279,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Python loops iterate directly over arrays where vectorized NumPy operations would be clearer and faster.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "numpy_tolist_in_hot_path",
@@ -293,7 +293,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "NumPy arrays are converted to Python lists in hot paths, increasing object overhead.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "numpy_vstack_hstack_in_loop",
@@ -307,7 +307,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Arrays are repeatedly stacked inside loops instead of collected and stacked once.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_apply_with_simple_vectorizable_op",
@@ -321,7 +321,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Simple DataFrame transforms are routed through apply(lambda) instead of vectorized operations.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_chain_assignment_warning",
@@ -335,7 +335,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Chained DataFrame assignment patterns risk SettingWithCopy-style behavior.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_concat_in_loop",
@@ -349,7 +349,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "DataFrames are concatenated inside loops instead of collected and concatenated once.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_copy_in_loop",
@@ -363,7 +363,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "DataFrames are copied inside loops, amplifying memory churn.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_eval_string_manipulation",
@@ -377,7 +377,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Dynamic string building is fed into pandas eval/query calls, increasing injection and correctness risk.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_full_dataframe_print_in_production",
@@ -391,7 +391,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Full DataFrames are printed or displayed in production-oriented code paths.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_inplace_false_reassignment_missing",
@@ -405,7 +405,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "DataFrame-transform methods are called without reassignment or inplace=True, silently discarding results.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_iterrows_in_loop",
@@ -419,7 +419,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "iterrows() is used on DataFrames instead of vectorized operations or itertuples().",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_merge_without_validation",
@@ -433,7 +433,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "DataFrame merges omit validate= safeguards against multiplicative joins.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_read_csv_without_dtypes",
@@ -447,7 +447,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "pd.read_csv(...) calls omit dtype hints, forcing extra inference work.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_read_without_chunksize_large_file",
@@ -461,7 +461,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Data-loading functions read large tabular files without chunksize or nrows limits.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "pandas_to_dict_records_in_loop",
@@ -475,7 +475,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "DataFrame to_dict conversions are repeated inside loops.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "print_metrics_instead_of_logging",
@@ -489,7 +489,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Training or evaluation code prints metrics directly instead of using logging or experiment tracking.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "prompt_template_string_concat_in_loop",
@@ -503,7 +503,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Prompt strings are built incrementally inside loops instead of composing a stable template once.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "random_seed_not_set",
@@ -517,7 +517,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Training or evaluation entrypoints use randomness without an obvious seed.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "retry_on_rate_limit_without_backoff",
@@ -531,7 +531,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Rate-limit retries appear without visible backoff or Retry-After handling.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "token_count_not_checked_before_api_call",
@@ -545,7 +545,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "LLM requests are sent without visible token counting or context-window checks.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "tokenizer_encode_in_loop_without_cache",
@@ -559,7 +559,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Tokenizer encode calls repeated inside loops without caching or batching signals.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "tokenizer_loaded_per_request",
@@ -573,7 +573,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Tokenizers are loaded on request paths instead of once during application startup.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "torch_no_grad_missing_in_inference",
@@ -587,7 +587,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Torch inference paths show no visible no_grad() or inference_mode() guard.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "training_loop_without_zero_grad",
@@ -601,7 +601,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "optimizer.step() appears without an obvious zero_grad() reset.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "vector_store_client_created_per_request",
@@ -615,7 +615,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Vector-store clients created on request paths instead of reused application state.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
     RuleDefinition {
         id: "wandb_mlflow_log_in_tight_loop",
@@ -629,6 +629,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "wandb or mlflow metrics are logged in inner loops instead of batched or reported at coarser boundaries.",
-        binding_location: "src/heuristics/python/mlops.rs",
+        binding_location: super::bindings::PYTHON_MLOPS,
     },
 ];

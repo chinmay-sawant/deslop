@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same local JSON payload binding is unmarshaled into multiple targets in one function.",
-        binding_location: "src/heuristics/go/mod.rs",
+        binding_location: super::bindings::GO_MOD,
     },
     RuleDefinition {
         id: "proto_unmarshal_same_payload_multiple_times",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same local protobuf payload binding is unmarshaled into multiple targets in one function.",
-        binding_location: "src/heuristics/go/mod.rs",
+        binding_location: super::bindings::GO_MOD,
     },
     RuleDefinition {
         id: "xml_unmarshal_same_payload_multiple_times",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same local XML payload binding is unmarshaled into multiple targets in one function.",
-        binding_location: "src/heuristics/go/mod.rs",
+        binding_location: super::bindings::GO_MOD,
     },
     RuleDefinition {
         id: "yaml_unmarshal_same_payload_multiple_times",
@@ -55,6 +55,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same local YAML payload binding is unmarshaled into multiple targets in one function.",
-        binding_location: "src/heuristics/go/mod.rs",
+        binding_location: super::bindings::GO_MOD,
     },
 ];

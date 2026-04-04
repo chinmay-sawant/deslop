@@ -3,6 +3,8 @@ use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::super::common::import_alias_lookup;
 
 const CONTEXT_FACTORY_ESCAPES: &[&str] = &["Background", "TODO"];

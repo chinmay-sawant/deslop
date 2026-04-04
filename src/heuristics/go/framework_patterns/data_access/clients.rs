@@ -1,5 +1,7 @@
 use super::*;
 
+pub(crate) const BINDING_LOCATION: &str = super::BINDING_LOCATION;
+
 pub(super) fn pool_lifecycle_findings(
     file: &ParsedFile,
     function: &ParsedFunction,

@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(super) fn regex_compile_in_hotpath_findings(
     file: &ParsedFile,
     function: &ParsedFunction,

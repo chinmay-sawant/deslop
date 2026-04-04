@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Potentially blocking calls observed between Lock and Unlock.",
-        binding_location: "src/heuristics/go/concurrency.rs",
+        binding_location: super::bindings::GO_CONCURRENCY,
     },
     RuleDefinition {
         id: "goroutine_derived_context_unmanaged",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.",
-        binding_location: "src/heuristics/go/concurrency.rs",
+        binding_location: super::bindings::GO_CONCURRENCY,
     },
     RuleDefinition {
         id: "goroutine_spawn_in_loop",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Raw go statements launched from inside loops without obvious WaitGroup coordination.",
-        binding_location: "src/heuristics/go/concurrency.rs",
+        binding_location: super::bindings::GO_CONCURRENCY,
     },
     RuleDefinition {
         id: "goroutine_without_coordination",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Raw go statements without an obvious context or WaitGroup-like coordination signal.",
-        binding_location: "src/heuristics/go/concurrency.rs",
+        binding_location: super::bindings::GO_CONCURRENCY,
     },
     RuleDefinition {
         id: "goroutine_without_shutdown_path",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.",
-        binding_location: "src/heuristics/go/concurrency.rs",
+        binding_location: super::bindings::GO_CONCURRENCY,
     },
     RuleDefinition {
         id: "mutex_in_loop",
@@ -83,6 +83,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated Lock or RLock acquisition inside loops.",
-        binding_location: "src/heuristics/go/concurrency.rs",
+        binding_location: super::bindings::GO_CONCURRENCY,
     },
 ];

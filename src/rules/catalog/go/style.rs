@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Directories that mix base Go package names after ignoring the _test suffix.",
-        binding_location: "src/heuristics/go/style.rs",
+        binding_location: super::bindings::GO_STYLE,
     },
     RuleDefinition {
         id: "misgrouped_imports",
@@ -27,6 +27,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Import blocks that place stdlib imports after third-party imports.",
-        binding_location: "src/heuristics/go/style.rs",
+        binding_location: super::bindings::GO_STYLE,
     },
 ];

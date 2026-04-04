@@ -3,6 +3,8 @@ use std::collections::BTreeSet;
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::gin::{
     RepeatedArgumentGroupSpec, collect_labeled_first_argument_calls, layout_argument_looks_stable,
     repeated_argument_group_findings, simple_local_binding, url_parse_argument_looks_stable,

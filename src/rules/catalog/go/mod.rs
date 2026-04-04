@@ -1,5 +1,5 @@
 pub(super) use super::{
-    RuleConfigurability, RuleDefaultSeverity, RuleDefinition, RuleLanguage, RuleStatus,
+    RuleConfigurability, RuleDefaultSeverity, RuleDefinition, RuleLanguage, RuleStatus, bindings,
 };
 
 pub(crate) mod concurrency;

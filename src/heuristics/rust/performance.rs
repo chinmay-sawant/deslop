@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::{file_finding, first_await_after, function_finding, is_tokio_mutex};
 
 const HASHMAP_PREFIX: &str = "HashMap::";

@@ -2,6 +2,7 @@ use std::sync::OnceLock;
 
 use super::{RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleStatus};
 
+mod bindings;
 mod common;
 mod go;
 mod python;
@@ -57,6 +58,13 @@ pub(crate) fn rule_catalog() -> &'static [RuleDefinition] {
             catalog.extend_from_slice(python::structure::RULE_DEFINITIONS);
 
             catalog.extend_from_slice(rust::RULE_DEFINITIONS);
+            catalog.sort_by(|left, right| {
+                (&left.language, left.family, left.id).cmp(&(
+                    &right.language,
+                    right.family,
+                    right.id,
+                ))
+            });
             catalog
         })
         .as_slice()

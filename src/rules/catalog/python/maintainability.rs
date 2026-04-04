@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Broad except Exception: style handlers that still obscure failure shape even when not fully swallowed.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "builtin_reduction_candidate",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Loop shapes that look like obvious sum, any, or all candidates.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "commented_out_code",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Blocks of commented-out source code left in production files.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "environment_boundary_without_fallback",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Environment-variable lookups that omit a default value or explicit failure handler.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "eval_exec_usage",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Direct eval() or exec() usage in non-test Python code.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "exception_swallowed",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Broad exception handlers like except: or except Exception: that immediately suppress the error with pass, continue, break, or return.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "external_input_without_validation",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Request or CLI entry points that trust external input without obvious validation or guard checks.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "hardcoded_business_rule",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Hardcoded threshold, rate-limit, or pricing-style literals assigned inside non-test Python functions.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "hardcoded_path_string",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Hardcoded filesystem path literals assigned inside non-test Python functions.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "magic_value_branching",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated branch-shaping numeric or string literals that likely want an explicit constant or policy name.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "missing_context_manager",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Resource management (files, network connections) inside non-test Python functions that omits with-statement context managers.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "mixed_sync_async_module",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Modules that expose public sync and async entry points together.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "network_boundary_without_timeout",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Request, sync, or job-style Python functions that call HTTP boundaries with no obvious timeout or retry policy.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "none_comparison",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "== None or != None checks instead of is None or is not None.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "print_debugging_leftover",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "print() calls left in non-test Python functions that do not look like obvious main-entrypoint output.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "public_api_missing_type_hints",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public Python functions that omit complete parameter or return annotations.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "redundant_return_none",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Explicit return None in simple code paths where Python would already return None implicitly.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "reinvented_utility",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Obvious locally implemented utility helpers that overlap with already-imported standard-library style helpers.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "side_effect_comprehension",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "List, set, or dicit comprehensions used as standalone statements where the result is discarded.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
     RuleDefinition {
         id: "variadic_public_api",
@@ -279,6 +279,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public Python functions that expose *args or **kwargs instead of a clearer interface.",
-        binding_location: "src/heuristics/python/maintainability.rs",
+        binding_location: super::bindings::PYTHON_MAINTAINABILITY,
     },
 ];

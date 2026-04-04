@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Synchronous network, subprocess, sleep, or file I/O calls made from async def functions.",
-        binding_location: "src/heuristics/python/performance.rs",
+        binding_location: super::bindings::PYTHON_PERFORMANCE,
     },
     RuleDefinition {
         id: "deque_candidate_queue",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Queue-style list operations like pop(0) or insert(0, ...) that may want collections.deque.",
-        binding_location: "src/heuristics/python/performance.rs",
+        binding_location: super::bindings::PYTHON_PERFORMANCE,
     },
     RuleDefinition {
         id: "full_dataset_load",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Calls that load an entire payload into memory instead of streaming.",
-        binding_location: "src/heuristics/python/performance.rs",
+        binding_location: super::bindings::PYTHON_PERFORMANCE,
     },
     RuleDefinition {
         id: "list_materialization_first_element",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "list(...)[0] style access that materializes a whole list just to read the first element.",
-        binding_location: "src/heuristics/python/performance.rs",
+        binding_location: super::bindings::PYTHON_PERFORMANCE,
     },
     RuleDefinition {
         id: "list_membership_in_loop",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated membership checks against obviously list-like containers inside loops.",
-        binding_location: "src/heuristics/python/performance.rs",
+        binding_location: super::bindings::PYTHON_PERFORMANCE,
     },
     RuleDefinition {
         id: "recursive_traversal_risk",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Direct recursion in traversal-style helpers that may be safer as iterative walks for deep inputs.",
-        binding_location: "src/heuristics/python/performance.rs",
+        binding_location: super::bindings::PYTHON_PERFORMANCE,
     },
     RuleDefinition {
         id: "repeated_len_in_loop",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated len(...) checks inside loops when the receiver appears unchanged locally.",
-        binding_location: "src/heuristics/python/performance.rs",
+        binding_location: super::bindings::PYTHON_PERFORMANCE,
     },
     RuleDefinition {
         id: "string_concat_in_loop",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated string concatenation inside loops can create O(n^2) growth and extra allocations.",
-        binding_location: "src/heuristics/python/performance.rs",
+        binding_location: super::bindings::PYTHON_PERFORMANCE,
     },
     RuleDefinition {
         id: "temporary_collection_in_loop",
@@ -125,6 +125,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Loop-local list, dict, or set construction that likely adds avoidable allocation churn.",
-        binding_location: "src/heuristics/python/performance.rs",
+        binding_location: super::bindings::PYTHON_PERFORMANCE,
     },
 ];

@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Heading-like Title Case documentation.",
-        binding_location: "src/heuristics/comments.rs",
+        binding_location: super::bindings::COMMENTS,
     },
     RuleDefinition {
         id: "comment_style_tutorial",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Tutorial-style documentation that narrates obvious implementation steps.",
-        binding_location: "src/heuristics/comments.rs",
+        binding_location: super::bindings::COMMENTS,
     },
     RuleDefinition {
         id: "hallucinated_import_call",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Package-qualified calls that do not match locally indexed symbols for the imported package.",
-        binding_location: "src/heuristics/hallucination.rs",
+        binding_location: super::bindings::HALLUCINATION,
     },
     RuleDefinition {
         id: "hallucinated_local_call",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Same-package calls to symbols not present in the scanned local package context.",
-        binding_location: "src/heuristics/hallucination.rs",
+        binding_location: super::bindings::HALLUCINATION,
     },
     RuleDefinition {
         id: "generic_name",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Function names that are overly generic without stronger contextual signals.",
-        binding_location: "src/heuristics/naming.rs",
+        binding_location: super::bindings::NAMING,
     },
     RuleDefinition {
         id: "overlong_name",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Very long identifiers with too many descriptive tokens.",
-        binding_location: "src/heuristics/naming.rs",
+        binding_location: super::bindings::NAMING,
     },
     RuleDefinition {
         id: "weak_typing",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Signatures that rely on any or empty interface types.",
-        binding_location: "src/heuristics/naming.rs",
+        binding_location: super::bindings::NAMING,
     },
     RuleDefinition {
         id: "hardcoded_secret",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Secret-like identifiers assigned direct string literals instead of environment lookups.",
-        binding_location: "src/heuristics/security.rs",
+        binding_location: super::bindings::SHARED_SECURITY,
     },
     RuleDefinition {
         id: "happy_path_only_test",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Tests that assert success expectations without any obvious negative-path signal.",
-        binding_location: "src/heuristics/test_quality.rs",
+        binding_location: super::bindings::TEST_QUALITY,
     },
     RuleDefinition {
         id: "placeholder_test_body",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Tests that look skipped, TODO-shaped, or otherwise placeholder-like.",
-        binding_location: "src/heuristics/test_quality.rs",
+        binding_location: super::bindings::TEST_QUALITY,
     },
     RuleDefinition {
         id: "test_without_assertion_signal",
@@ -153,6 +153,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Tests that exercise production code without an obvious assertion or failure signal.",
-        binding_location: "src/heuristics/test_quality.rs",
+        binding_location: super::bindings::TEST_QUALITY,
     },
 ];

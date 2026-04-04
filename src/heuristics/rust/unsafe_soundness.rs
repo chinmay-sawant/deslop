@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction, UnsafePatternKind};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::function_finding;
 
 pub(crate) fn unsafe_soundness_findings(

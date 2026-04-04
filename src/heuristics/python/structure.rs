@@ -4,6 +4,8 @@ use crate::analysis::{Language, ParsedFile, ParsedFunction};
 use crate::index::{ImportResolution, RepositoryIndex};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 const GOD_FUNCTION_LINE_THRESHOLD: usize = 45;
 const GOD_FUNCTION_COMPLEXITY_THRESHOLD: usize = 6;
 const GOD_FUNCTION_CALL_THRESHOLD: usize = 8;

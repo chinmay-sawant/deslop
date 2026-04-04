@@ -11,6 +11,18 @@ mod quality;
 mod specs;
 mod structure;
 
+pub(crate) const AI_SMELLS_BINDING_LOCATION: &str = ai_smells::BINDING_LOCATION;
+pub(crate) const DUPLICATION_BINDING_LOCATION: &str = duplication::BINDING_LOCATION;
+pub(crate) const FRAMEWORK_BINDING_LOCATION: &str = framework::BINDING_LOCATION;
+pub(crate) const HOTPATH_BINDING_LOCATION: &str = hotpath::BINDING_LOCATION;
+pub(crate) const HOTPATH_EXT_BINDING_LOCATION: &str = hotpath_ext::BINDING_LOCATION;
+pub(crate) const MAINTAINABILITY_BINDING_LOCATION: &str = maintainability::BINDING_LOCATION;
+pub(crate) const MLOPS_BINDING_LOCATION: &str = mlops::BINDING_LOCATION;
+pub(crate) const PACKAGING_BINDING_LOCATION: &str = packaging::BINDING_LOCATION;
+pub(crate) const PERFORMANCE_BINDING_LOCATION: &str = performance::BINDING_LOCATION;
+pub(crate) const QUALITY_BINDING_LOCATION: &str = quality::BINDING_LOCATION;
+pub(crate) const STRUCTURE_BINDING_LOCATION: &str = structure::BINDING_LOCATION;
+
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;

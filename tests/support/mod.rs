@@ -1,36 +1,34 @@
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use deslop::{ScanOptions, ScanReport, scan_repository, scan_repository_with_go_semantic};
+use tempfile::TempDir;
 
 pub(crate) struct FixtureWorkspace {
-    root: PathBuf,
+    root: TempDir,
 }
 
 impl FixtureWorkspace {
     pub(crate) fn new() -> Self {
-        let nonce = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock should be after unix epoch")
-            .as_nanos();
-        let root = std::env::temp_dir().join(format!("deslop-test-{nonce}"));
-        fs::create_dir_all(&root).expect("temp dir creation should succeed");
+        let root = tempfile::Builder::new()
+            .prefix("deslop-test-")
+            .tempdir()
+            .expect("temp dir creation should succeed");
 
         Self { root }
     }
 
     #[allow(dead_code)]
     pub(crate) fn root(&self) -> &Path {
-        &self.root
+        self.root.path()
     }
 
     pub(crate) fn write_file(&self, relative_path: &str, contents: &str) {
-        write_fixture(&self.root, relative_path, contents);
+        write_fixture(self.root.path(), relative_path, contents);
     }
 
     pub(crate) fn write_files(&self, files: &[(&str, &str)]) {
-        write_files(&self.root, files);
+        write_files(self.root.path(), files);
     }
 
     pub(crate) fn scan(&self) -> ScanReport {
@@ -42,18 +40,12 @@ impl FixtureWorkspace {
     }
 
     pub(crate) fn scan_with_options(&self, respect_ignore: bool) -> ScanReport {
-        scan_root_with_options(self.root.clone(), respect_ignore)
+        scan_root_with_options(self.root.path().to_path_buf(), respect_ignore)
     }
 
     #[allow(dead_code)]
     pub(crate) fn scan_with_go_semantic(&self, go_semantic: bool) -> ScanReport {
-        scan_root_with_go_semantic(self.root.clone(), go_semantic)
-    }
-}
-
-impl Drop for FixtureWorkspace {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.root);
+        scan_root_with_go_semantic(self.root.path().to_path_buf(), go_semantic)
     }
 }
 

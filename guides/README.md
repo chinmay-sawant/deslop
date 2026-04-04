@@ -16,6 +16,7 @@ deslop uses three planning buckets:
 - [`implementation-guide.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/implementation-guide.md): status map and planning rules
 - [`evaluation-and-promotion-policy.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/evaluation-and-promotion-policy.md): corpus, promotion, and stability contract
 - [`features-and-detections.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/features-and-detections.md): synced rule inventory and user-facing detection guide
+- [`inventory-regression-guards.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/inventory-regression-guards.md): intentional inventory-count guards and informational scan workflow notes
 - [`release-checklist.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/release-checklist.md): release validation checklist
 
 ## Backlog

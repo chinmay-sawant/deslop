@@ -3,6 +3,8 @@ use std::collections::BTreeMap;
 use crate::analysis::{CallSite, ImportSpec, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 const REQUEST_METHODS: &[&str] = &[
     "get", "post", "put", "patch", "delete", "head", "options", "request",
 ];

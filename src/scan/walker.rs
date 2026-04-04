@@ -71,32 +71,27 @@ fn is_excluded_path(path: &Path) -> bool {
 #[cfg(test)]
 mod tests {
     use std::fs;
-    use std::time::{SystemTime, UNIX_EPOCH};
+    use tempfile::{Builder, TempDir};
 
     use super::discover_source_files;
 
-    fn temp_dir(name: &str) -> std::path::PathBuf {
-        let nonce = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock should be after unix epoch")
-            .as_nanos();
-        let path = std::env::temp_dir().join(format!("deslop-walker-{name}-{nonce}"));
-        fs::create_dir_all(&path).expect("temp dir should be created");
-        path
+    fn temp_dir(name: &str) -> TempDir {
+        Builder::new()
+            .prefix(&format!("deslop-walker-{name}-"))
+            .tempdir()
+            .expect("temp dir should be created")
     }
 
     #[test]
     fn discovers_real_rust_files() {
         let root = temp_dir("files");
-        let src = root.join("src");
+        let src = root.path().join("src");
         fs::create_dir_all(&src).expect("src dir should be created");
         fs::write(src.join("lib.rs"), "fn demo() {}\n").expect("fixture should be written");
 
-        let files = discover_source_files(&root, true, &["rs"]).expect("walk should succeed");
+        let files = discover_source_files(root.path(), true, &["rs"]).expect("walk should succeed");
         assert_eq!(files.len(), 1);
         assert!(files[0].ends_with("src/lib.rs"));
-
-        fs::remove_dir_all(root).expect("temp dir should be removed");
     }
 
     #[cfg(unix)]
@@ -106,19 +101,16 @@ mod tests {
 
         let root = temp_dir("symlink-root");
         let outside = temp_dir("symlink-outside");
-        let src = root.join("src");
+        let src = root.path().join("src");
         fs::create_dir_all(&src).expect("src dir should be created");
         fs::write(src.join("lib.rs"), "fn local() {}\n").expect("fixture should be written");
 
-        let outside_file = outside.join("escape.rs");
+        let outside_file = outside.path().join("escape.rs");
         fs::write(&outside_file, "fn escape() {}\n").expect("outside file should be written");
         symlink(&outside_file, src.join("escape.rs")).expect("symlink should be created");
 
-        let files = discover_source_files(&root, true, &["rs"]).expect("walk should succeed");
+        let files = discover_source_files(root.path(), true, &["rs"]).expect("walk should succeed");
         assert_eq!(files.len(), 1);
         assert!(files[0].ends_with("src/lib.rs"));
-
-        fs::remove_dir_all(root).expect("root temp dir should be removed");
-        fs::remove_dir_all(outside).expect("outside temp dir should be removed");
     }
 }

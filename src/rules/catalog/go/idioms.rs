@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "defer statements inside loops that can accumulate resources until function exit.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "double_close_local_channel",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same locally created channel appears to be closed more than once in one function body.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "file_handle_without_close",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "http_client_without_timeout",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Local http.Client{} literals constructed without an explicit timeout.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "http_response_body_not_closed",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "HTTP responses acquired locally without an observed resp.Body.Close() call.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "http_server_without_timeouts",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Explicit http.Server{} values that omit common timeout fields.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "http_status_ignored_before_decode",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Response decoding or body consumption that happens without an observed StatusCode check.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "http_writeheader_after_write",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Handlers that write the response body before calling WriteHeader(...).",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "init_side_effect",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "init() functions that perform network, file-system, or subprocess side effects.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "mutable_package_global",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Package-level variables that are mutated from function bodies instead of kept immutable.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "passthrough_wrapper_interface",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Wrapper structs that mostly forward one-to-one through an interface field with little added policy.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "public_bool_parameter_api",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Exported functions or methods that expose raw boolean mode switches in their signatures.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "range_over_local_channel_without_close",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Functions that range over a locally owned channel without an observed close path.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "rows_without_close",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Query result handles that appear locally owned but have no observed rows.Close() call.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "send_after_local_close_risk",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A locally owned channel is closed and later used in a send expression.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "single_impl_interface",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repository-local interfaces with one obvious implementation and a very small consumer surface.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "stmt_without_close",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Prepared statements or similar DB handles without an observed Close() call.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "ticker_without_stop",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "time.NewTicker(...) is created without an observed Stop() call.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "time_after_in_loop",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "time.After(...) is allocated inside loops instead of reusing a timer or deadline.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
         id: "tx_without_rollback_guard",
@@ -279,6 +279,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Transactions begun and later committed with no observed rollback guard.",
-        binding_location: "src/heuristics/go/idioms.rs",
+        binding_location: super::bindings::GO_IDIOMS,
     },
 ];

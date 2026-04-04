@@ -1,6 +1,9 @@
 mod evaluate;
 mod parser;
 
+pub(crate) const EVALUATE_BINDING_LOCATION: &str = evaluate::BINDING_LOCATION;
+pub(crate) const FINDINGS_BINDING_LOCATION: &str = evaluate::findings::BINDING_LOCATION;
+
 use std::path::Path;
 
 use crate::analysis::{AnalysisConfig, Language, LanguageBackend, ParsedFile};

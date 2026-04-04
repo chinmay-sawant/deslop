@@ -1,6 +1,8 @@
 use crate::analysis::{FieldSummary, ParsedFile, ParsedFunction, StructSummary};
 use crate::model::Finding;
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::{file_finding, function_finding, matches_token, struct_severity};
 
 #[path = "api_design_state.rs"]

@@ -3,7 +3,7 @@ mod config;
 mod error;
 mod go;
 mod python;
-mod rust;
+pub(crate) mod rust;
 mod types;
 
 use std::path::Path;

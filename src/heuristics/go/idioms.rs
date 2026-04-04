@@ -4,6 +4,8 @@ use std::path::PathBuf;
 use crate::analysis::{InterfaceSummary, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity, SymbolKind};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::super::common::import_alias_lookup;
 
 #[derive(Debug, Clone)]

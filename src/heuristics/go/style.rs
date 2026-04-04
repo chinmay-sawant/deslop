@@ -4,6 +4,8 @@ use std::path::{Path, PathBuf};
 use crate::analysis::{ImportSpec, ParsedFile};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(crate) fn package_name_consistency(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut files_by_directory = BTreeMap::<PathBuf, Vec<&ParsedFile>>::new();
 

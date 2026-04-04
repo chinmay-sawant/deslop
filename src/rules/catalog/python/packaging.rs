@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Local Python packages reaching into another package's internal or private modules.",
-        binding_location: "src/heuristics/python/packaging.rs",
+        binding_location: super::bindings::PYTHON_PACKAGING,
     },
     RuleDefinition {
         id: "pyproject_missing_requires_python",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "pyproject metadata missing an explicit Python runtime requirement.",
-        binding_location: "src/heuristics/python/packaging.rs",
+        binding_location: super::bindings::PYTHON_PACKAGING,
     },
     RuleDefinition {
         id: "pyproject_script_entrypoint_unresolved",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "pyproject script entrypoints that do not resolve to a locally indexed module callable.",
-        binding_location: "src/heuristics/python/packaging.rs",
+        binding_location: super::bindings::PYTHON_PACKAGING,
     },
     RuleDefinition {
         id: "python_public_api_any_contract",
@@ -55,6 +55,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public Python APIs that expose Any in parameter or return contracts.",
-        binding_location: "src/heuristics/python/packaging.rs",
+        binding_location: super::bindings::PYTHON_PACKAGING,
     },
 ];

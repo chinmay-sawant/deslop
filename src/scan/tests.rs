@@ -1,5 +1,5 @@
 use std::fs;
-use std::time::{SystemTime, UNIX_EPOCH};
+use tempfile::{Builder, TempDir};
 
 use super::{
     SuppressionDirective, apply_repository_config, is_generated, next_code_line, parse_rule_ids,
@@ -22,14 +22,11 @@ fn sample_finding(rule_id: &str, severity: Severity) -> Finding {
     }
 }
 
-fn temp_dir(name: &str) -> std::path::PathBuf {
-    let nonce = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock should be after unix epoch")
-        .as_nanos();
-    let path = std::env::temp_dir().join(format!("deslop-scan-{name}-{nonce}"));
-    fs::create_dir_all(&path).expect("scan temp dir should be created");
-    path
+fn temp_dir(name: &str) -> TempDir {
+    Builder::new()
+        .prefix(&format!("deslop-scan-{name}-"))
+        .tempdir()
+        .expect("scan temp dir should be created")
 }
 
 #[test]
@@ -131,11 +128,11 @@ fn suppresses_findings_under_configured_paths() {
     let root = temp_dir("suppressed-paths");
     let mut findings = vec![
         Finding {
-            path: root.join("tests/fixtures/rust/async/positive.rs"),
+            path: root.path().join("tests/fixtures/rust/async/positive.rs"),
             ..sample_finding("rust_blocking_io_in_async", Severity::Warning)
         },
         Finding {
-            path: root.join("src/lib.rs"),
+            path: root.path().join("src/lib.rs"),
             ..sample_finding("unwrap_in_non_test_code", Severity::Warning)
         },
     ];
@@ -147,18 +144,16 @@ fn suppresses_findings_under_configured_paths() {
         severity_overrides: std::collections::BTreeMap::new(),
     };
 
-    apply_repository_config(&mut findings, &repo_config, &root);
+    apply_repository_config(&mut findings, &repo_config, root.path());
 
     assert_eq!(findings.len(), 1);
-    assert_eq!(findings[0].path, root.join("src/lib.rs"));
-
-    fs::remove_dir_all(root).expect("scan temp dir should be removed");
+    assert_eq!(findings[0].path, root.path().join("src/lib.rs"));
 }
 
 #[test]
 fn scan_uses_canonical_root_for_index_resolution() {
     let root = temp_dir("canonical-root");
-    let src = root.join("src");
+    let src = root.path().join("src");
     let config = src.join("config");
     fs::create_dir_all(&config).expect("config dir should be created");
     fs::write(
@@ -170,7 +165,7 @@ fn scan_uses_canonical_root_for_index_resolution() {
         .expect("render fixture should be written");
 
     let report = scan_repository(&ScanOptions {
-        root: root.join("."),
+        root: root.path().join("."),
         respect_ignore: true,
     })
     .expect("scan should succeed");
@@ -179,6 +174,4 @@ fn scan_uses_canonical_root_for_index_resolution() {
         finding.rule_id == "hallucinated_import_call"
             && finding.function_name.as_deref() == Some("run")
     }));
-
-    fs::remove_dir_all(root).expect("scan temp dir should be removed");
 }

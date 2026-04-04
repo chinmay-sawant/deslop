@@ -8,6 +8,29 @@ mod library_misuse;
 mod performance;
 mod style;
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+pub(crate) const CONCURRENCY_BINDING_LOCATION: &str = concurrency::BINDING_LOCATION;
+pub(crate) const CONSISTENCY_BINDING_LOCATION: &str = consistency::BINDING_LOCATION;
+pub(crate) const CONTEXT_BINDING_LOCATION: &str = context::BINDING_LOCATION;
+pub(crate) const ERRORS_BINDING_LOCATION: &str = errors::BINDING_LOCATION;
+pub(crate) const DATA_ACCESS_BINDING_LOCATION: &str =
+    framework_patterns::DATA_ACCESS_BINDING_LOCATION;
+pub(crate) const DATA_ACCESS_CLIENTS_BINDING_LOCATION: &str =
+    framework_patterns::DATA_ACCESS_CLIENTS_BINDING_LOCATION;
+pub(crate) const DATA_ACCESS_GORM_BINDING_LOCATION: &str =
+    framework_patterns::DATA_ACCESS_GORM_BINDING_LOCATION;
+pub(crate) const DATA_ACCESS_SQL_BINDING_LOCATION: &str =
+    framework_patterns::DATA_ACCESS_SQL_BINDING_LOCATION;
+pub(crate) const GIN_BINDING_LOCATION: &str = framework_patterns::GIN_BINDING_LOCATION;
+pub(crate) const HOT_PATH_BINDING_LOCATION: &str = framework_patterns::HOT_PATH_BINDING_LOCATION;
+pub(crate) const IDIOMS_BINDING_LOCATION: &str = idioms::BINDING_LOCATION;
+pub(crate) const LIBRARY_MISUSE_LIBRARY_BINDING_LOCATION: &str =
+    library_misuse::LIBRARY_BINDING_LOCATION;
+pub(crate) const LIBRARY_MISUSE_SECURITY_BINDING_LOCATION: &str =
+    library_misuse::SECURITY_BINDING_LOCATION;
+pub(crate) const PERFORMANCE_BINDING_LOCATION: &str = performance::BINDING_LOCATION;
+pub(crate) const STYLE_BINDING_LOCATION: &str = style::BINDING_LOCATION;
+
 pub(super) use concurrency::{
     coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, shutdown_findings,
 };

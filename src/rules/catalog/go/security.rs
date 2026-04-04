@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`bcrypt.GenerateFromPassword(pw, cost)` where `cost` is literally `< 10` or `bcrypt.MinCost`",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "cgo_string_lifetime",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`C.CString(goString)` without a corresponding `C.free` in the same function, or deferred `C.free`",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "constant_encryption_key",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`[]byte(\"...\")` used directly as arguments to `cipher.NewGCM`, `aes.NewCipher`, or similar encryption constructor calls",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "constant_iv_or_nonce",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "constant or zero-valued byte slices used as IV/nonce arguments to `cipher.NewCBCEncrypter`, `gcm.Seal`, or similar",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "cookie_without_httponly",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`http.Cookie{...}` for session/auth cookies without `HttpOnly: true`",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "cookie_without_samesite",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`http.Cookie{...}` without `SameSite` set, particularly for auth/session cookies",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "cookie_without_secure_flag",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`http.Cookie{...}` literals without `Secure: true` for session or authentication cookies",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "cors_allow_all_origins",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`Access-Control-Allow-Origin: *` combined with `Access-Control-Allow-Credentials: true`, or CORS middleware configured with `AllowAllOrigins: true` in Gin/Echo/Chi",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "debug_endpoint_in_production",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`net/http/pprof` import or `http.Handle(\"/debug/pprof/\", ...)` registration without access control",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "dns_lookup_for_access_control",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`net.LookupHost` or `net.LookupAddr` results used in access control decisions",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "ecb_mode_cipher",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "direct use of `cipher.Block.Encrypt` / `cipher.Block.Decrypt` without a block mode wrapper (CBC, CTR, GCM)",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "env_var_in_error_message",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`fmt.Errorf(\"... %s\", os.Getenv(\"SECRET_KEY\"))` or similar patterns that embed environment variable values in errors",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "error_detail_leaked_to_client",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`c.JSON(500, gin.H{\"error\": err.Error()})` or `http.Error(w, err.Error(), 500)` returning internal error details to the client",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "filepath_join_with_user_path",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`filepath.Join(baseDir, userInput)` without subsequent `filepath.Rel` or path-containment validation",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "fmt_print_of_sensitive_struct",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`fmt.Sprintf(\"%+v\", user)` or `fmt.Printf(\"%v\", config)` on structs that contain password/secret/token fields",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "global_rand_source_contention",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`math/rand.Intn()`, `rand.Float64()`, etc. (global source) in hot handler or goroutine paths",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "goroutine_captures_loop_variable",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`for _, v := range items { go func() { use(v) }() }` without rebinding `v` inside the loop body (pre-Go 1.22)",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "grpc_without_tls_credentials",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`grpc.Dial(addr, grpc.WithInsecure())` or `grpc.WithTransportCredentials(insecure.NewCredentials())` in non-test code",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "hardcoded_tls_min_version_too_low",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`tls.Config{MinVersion: tls.VersionTLS10}` or `tls.VersionTLS11` or `tls.VersionSSL30`",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "hardcoded_tls_skip_verify",
@@ -279,7 +279,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`tls.Config{InsecureSkipVerify: true}` in non-test code",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "header_injection_via_user_input",
@@ -293,7 +293,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`w.Header().Set(name, userInput)` or `w.Header().Add(name, userInput)` where the value contains unvalidated user input that could contain `\\r\\n`",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "http_handler_missing_security_headers",
@@ -307,7 +307,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "HTTP handler functions that write responses without setting `X-Content-Type-Options`, `X-Frame-Options`, or `Content-Security-Policy` headers (or without security header middleware)",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "http_handler_without_csrf_protection",
@@ -321,7 +321,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "POST/PUT/DELETE handler registration without evidence of CSRF token middleware",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "http_listen_non_tls",
@@ -335,7 +335,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`http.ListenAndServe` (non-TLS) usage in production-like code (not test files, not localhost bindings)",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "insecure_random_for_security",
@@ -349,7 +349,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`math/rand` usage (any of `rand.Int`, `rand.Intn`, `rand.Read`, `rand.New`) in functions whose names suggest security use (token generation, key generation, password, nonce, salt, session)",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "jwt_none_algorithm_risk",
@@ -363,7 +363,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "JWT verification code that accepts `\"none\"` or `alg: \"\"` as valid signing methods, or uses `jwt.Parse` without `WithValidMethods`",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "jwt_secret_in_source",
@@ -377,7 +377,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(\"hardcoded\"))` where the signing key is a string literal",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "ldap_injection_via_string_concat",
@@ -391,7 +391,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "string concatenation or `fmt.Sprintf` building LDAP filter strings with user input",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "missing_rate_limiting_on_auth_endpoint",
@@ -405,7 +405,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "login/authentication handler functions (name contains `Login`, `Authenticate`, `SignIn`) that don't reference rate limiting, throttling, or brute-force protection mechanisms",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "os_exec_command_with_user_input",
@@ -419,7 +419,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`exec.Command(userInput)` or `exec.Command(\"sh\", \"-c\", variable)` where the command string appears to come from a function parameter or request binding",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "panic_stack_trace_to_client",
@@ -433,7 +433,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`recover()` in HTTP middleware that sends the panic message/stack to the response writer",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "password_stored_as_plaintext",
@@ -447,7 +447,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "struct fields named `Password`, `Passwd`, or `Pwd` stored as `string` in database model structs without evidence of hashing",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "race_on_shared_map",
@@ -461,7 +461,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "map reads/writes from multiple goroutines without mutex or `sync.Map` protection (detect goroutine launches + shared map access patterns)",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "rsa_key_size_too_small",
@@ -475,7 +475,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`rsa.GenerateKey(rand, bits)` where `bits` is literally `< 2048`",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "sensitive_data_in_log",
@@ -489,7 +489,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`log.Printf`, `slog.Info`, `zap.String`, `logrus.WithField` calls that include variables named `password`, `secret`, `token`, `apiKey`, `creditCard`, `ssn`, or similar",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "shared_slice_append_race",
@@ -503,7 +503,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "goroutines appending to a shared slice without synchronization",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "smtp_plaintext_auth",
@@ -517,7 +517,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`smtp.PlainAuth` used without TLS (`smtp.SendMail` to non-TLS endpoints)",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "sql_string_concat",
@@ -531,7 +531,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Query execution calls where SQL is constructed dynamically with concatenation or fmt.Sprintf.",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "ssh_host_key_callback_insecure",
@@ -545,7 +545,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`ssh.ClientConfig{HostKeyCallback: ssh.InsecureIgnoreHostKey()}` in non-test code",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "ssrf_via_user_controlled_url",
@@ -559,7 +559,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`http.Get(userInput)` or `http.NewRequest(\"GET\", userInput, nil)` where the URL comes from request parameters",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "struct_field_exposed_in_json",
@@ -573,7 +573,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "exported struct fields containing sensitive data (Password, Secret, Token, APIKey, PrivateKey) without `json:\"-\"` tags in API response structs",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "temp_file_predictable_name",
@@ -587,7 +587,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`os.Create(\"/tmp/myapp-data.txt\")` or `os.OpenFile(\"/tmp/\" + fixedName, ...)` with predictable filenames",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "template_html_unescaped",
@@ -601,7 +601,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`template.HTML(userInput)` or `template.JS(userInput)` type conversions on data from request parameters",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "text_template_for_html",
@@ -615,7 +615,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`text/template` used to generate HTML content (check for HTML tags in template literals or `.html` file extensions in `ParseFiles`)",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "timing_attack_on_token_comparison",
@@ -629,7 +629,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "toctou_file_check_then_open",
@@ -643,7 +643,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`os.Stat(path)` or file existence check followed by `os.Open(path)` or `os.Create(path)` without atomic operations",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "unsafe_pointer_cast",
@@ -657,7 +657,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "url_redirect_without_validation",
@@ -671,7 +671,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`http.Redirect(w, r, r.FormValue(\"redirect_url\"), 302)` or `c.Redirect(302, c.Query(\"url\"))` without URL validation",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "weak_crypto",
@@ -685,7 +685,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Direct use of weak standard-library crypto packages such as crypto/md5, crypto/sha1, crypto/des, and crypto/rc4.",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "weak_hash_for_integrity",
@@ -699,7 +699,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`md5.New()`, `sha1.New()`, `md5.Sum()`, `sha1.Sum()` used for integrity checks, checksums, or MAC operations (not just `weak_crypto` import-level detection)",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "websocket_without_origin_check",
@@ -713,7 +713,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}` or missing `CheckOrigin`",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "world_readable_file_permissions",
@@ -727,7 +727,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`os.OpenFile(path, flag, 0666)` or `os.WriteFile(path, data, 0777)` with world-readable/writable permissions",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "xml_decoder_without_entity_limit",
@@ -741,7 +741,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`xml.NewDecoder(r)` processing untrusted XML without setting `d.Entity = nil` and without input size limits",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
     RuleDefinition {
         id: "yaml_unmarshal_untrusted_input",
@@ -755,6 +755,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`yaml.Unmarshal(untrustedInput, &target)` using `gopkg.in/yaml.v2` without size limits",
-        binding_location: "src/heuristics/go/security.rs",
+        binding_location: super::bindings::GO_LIBRARY_SECURITY,
     },
 ];

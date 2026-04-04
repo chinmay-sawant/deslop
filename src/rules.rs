@@ -115,15 +115,25 @@ fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMe
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeSet;
+    use std::collections::{BTreeMap, BTreeSet};
     use std::fs;
     use std::path::{Path, PathBuf};
 
     use super::{
-        RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule, rule_binding_location,
-        rule_metadata, rule_metadata_variants, rule_registry,
+        RuleConfigurability, RuleLanguage, RuleStatus, catalog, is_detail_only_rule,
+        rule_binding_location, rule_metadata, rule_metadata_variants, rule_registry,
     };
     use crate::{DEFAULT_MAX_BYTES, read_to_string_limited};
+
+    // Intentional maintenance guard. If this changes, review the source rule-id diff and
+    // update [guides/inventory-regression-guards.md] in the same change.
+    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 438;
+    const EXPECTED_RULE_COUNTS_BY_LANGUAGE: &[(RuleLanguage, usize)] = &[
+        (RuleLanguage::Common, 11),
+        (RuleLanguage::Go, 314),
+        (RuleLanguage::Python, 212),
+        (RuleLanguage::Rust, 74),
+    ];
 
     #[test]
     fn registry_is_unique_per_language_and_sorted() {
@@ -312,17 +322,105 @@ mod tests {
             source_rule_ids.is_subset(&registry_rule_ids),
             "source contains rule ids that are missing from the public registry"
         );
+        assert_eq!(
+            source_rule_ids.len(),
+            EXPECTED_SOURCE_RULE_ID_COUNT,
+            "source rule-id inventory changed; if intentional, update EXPECTED_SOURCE_RULE_ID_COUNT and guides/inventory-regression-guards.md"
+        );
+    }
+
+    #[test]
+    fn registry_rule_counts_remain_grouped_by_language() {
+        let mut counts = BTreeMap::<RuleLanguage, usize>::new();
+
+        for metadata in rule_registry() {
+            *counts.entry(metadata.language.clone()).or_insert(0) += 1;
+        }
+
+        assert_eq!(
+            counts,
+            EXPECTED_RULE_COUNTS_BY_LANGUAGE
+                .iter()
+                .cloned()
+                .collect::<BTreeMap<_, _>>(),
+            "registry language breakdown changed; if intentional, update the grouped counts and guides/inventory-regression-guards.md"
+        );
     }
 
     #[test]
     fn binding_locations_are_available_for_catalogued_rules() {
-        let location = rule_binding_location("dropped_error", RuleLanguage::Go)
-            .unwrap_or_else(|| unreachable!("binding location should be catalogued"));
+        let repo_root = Path::new(env!("CARGO_MANIFEST_DIR"));
+
+        for definition in catalog::rule_catalog() {
+            assert!(
+                definition.binding_location.ends_with(".rs"),
+                "binding location should point at a Rust source file for {} ({:?})",
+                definition.id,
+                definition.language
+            );
+
+            let path = repo_root.join(definition.binding_location);
+            assert!(
+                path.is_file(),
+                "binding location should exist for {} ({:?}): {}",
+                definition.id,
+                definition.language,
+                path.display()
+            );
+        }
+    }
+
+    #[test]
+    fn python_hot_path_binding_locations_match_implementations() {
+        let expected = [
+            (
+                "append_then_sort_each_iteration",
+                "src/heuristics/python/hotpath_ext.rs",
+            ),
+            (
+                "csv_writer_flush_per_row",
+                "src/heuristics/python/hotpath.rs",
+            ),
+            (
+                "filter_then_count_then_iterate",
+                "src/heuristics/python/hotpath_ext.rs",
+            ),
+            (
+                "json_encoder_recreated_per_item",
+                "src/heuristics/python/hotpath_ext.rs",
+            ),
+        ];
+
+        for (rule_id, expected_location) in expected {
+            assert_eq!(
+                rule_binding_location(rule_id, RuleLanguage::Python),
+                Some(expected_location),
+                "binding location drifted for {rule_id}"
+            );
+        }
+    }
+
+    #[test]
+    fn go_library_binding_locations_match_leaf_implementation() {
+        let go_library_rules = catalog::rule_catalog()
+            .iter()
+            .filter(|definition| {
+                definition.language == RuleLanguage::Go && definition.family == "library"
+            })
+            .collect::<Vec<_>>();
 
         assert!(
-            location.ends_with(".rs"),
-            "binding location should point at a Rust source file"
+            !go_library_rules.is_empty(),
+            "go library catalog entries should be present"
         );
+
+        for definition in go_library_rules {
+            assert_eq!(
+                definition.binding_location, "src/heuristics/go/library_misuse/library.rs",
+                "go library binding location should stay pinned to the leaf implementation for {}",
+                definition.id
+            );
+        }
     }
 
     fn collect_source_rule_ids(root: PathBuf) -> BTreeSet<String> {
@@ -334,10 +432,14 @@ mod tests {
     fn collect_rule_ids_from_dir(dir: &Path, ids: &mut BTreeSet<String>) {
         let entries = match fs::read_dir(dir) {
             Ok(entries) => entries,
-            Err(_) => return,
+            Err(error) => unreachable!("failed to read directory {}: {error}", dir.display()),
         };
 
-        for entry in entries.flatten() {
+        for entry in entries {
+            let entry = match entry {
+                Ok(entry) => entry,
+                Err(error) => unreachable!("failed to read entry in {}: {error}", dir.display()),
+            };
             let path = entry.path();
             if path.is_dir() {
                 collect_rule_ids_from_dir(&path, ids);
@@ -348,8 +450,9 @@ mod tests {
                 continue;
             }
 
-            let Ok(source) = read_to_string_limited(&path, DEFAULT_MAX_BYTES) else {
-                continue;
+            let source = match read_to_string_limited(&path, DEFAULT_MAX_BYTES) {
+                Ok(source) => source,
+                Err(error) => unreachable!("failed to read {}: {error}", path.display()),
             };
             let production_source = source
                 .split_once("#[cfg(test)]")
