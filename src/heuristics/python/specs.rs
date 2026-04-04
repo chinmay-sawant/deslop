@@ -344,12 +344,12 @@ pub(super) const FUNCTION_RULE_SPECS: &[PythonFunctionRuleSpec] = &[
         evaluate: ai_smells_function_family_findings,
     },
     PythonFunctionRuleSpec {
-        family: "hotpath",
+        family: "hot_path",
         rule_ids: HOTPATH_FUNCTION_RULE_IDS,
         evaluate: hotpath_family_findings,
     },
     PythonFunctionRuleSpec {
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         rule_ids: HOTPATH_EXT_FUNCTION_RULE_IDS,
         evaluate: hotpath_ext_family_findings,
     },

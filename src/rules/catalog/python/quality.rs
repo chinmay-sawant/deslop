@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Async lock scopes or explicit acquire/release regions that continue across unrelated await points.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "async_retry_sleep_without_backoff",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Retry-style async loops that sleep a fixed interval without visible backoff, jitter, or bounded retry policy.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "background_task_exception_unobserved",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Background task bindings with no obvious await, callback, supervisor, or observation path.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "dataclass_heavy_post_init",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Dataclass __post_init__ methods that perform I/O, subprocess, network, or heavyweight client setup.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "dataclass_mutable_default",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Dataclass fields that use mutable defaults instead of default_factory.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "import_time_config_load",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Module-scope configuration or secret loading that runs during import instead of an explicit startup path.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "import_time_file_io",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Module-scope file reads, writes, or directory scans that happen during import.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "import_time_network_call",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Module-scope HTTP or socket calls executed while the module is imported.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "import_time_subprocess",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Subprocess launches triggered from module scope during import.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "module_singleton_client_side_effect",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Eagerly constructed network, database, or cloud clients bound at module scope.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "mutable_default_argument",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Function parameters that use mutable defaults such as [], {}, or set() directly in the signature.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "mutable_module_global_state",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Mutable module globals updated from multiple functions.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "option_bag_model",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Dataclass or TypedDict models that accumulate many optional fields and boolean switches.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "pickle_deserialization_boundary",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "pickle.load(s) or dill.load(s) style deserialization in production code.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "public_any_type_leak",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public functions or model fields that expose Any, object, or similarly wide contracts.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "subprocess_shell_true",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Subprocess boundaries that enable shell=True.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "tar_extractall_unfiltered",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "tarfile.extractall(...) without an obvious filter, members list, or path-validation helper.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "tempfile_without_cleanup",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Temporary files or directories created without a visible cleanup or context-manager ownership path.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "typeddict_unchecked_access",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Direct indexing of optional TypedDict keys without an obvious guard path.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "unsafe_yaml_loader",
@@ -279,7 +279,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "yaml.load(...) or full_load(...) style loaders used where safe loading is more appropriate.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
     RuleDefinition {
         id: "untracked_asyncio_task",
@@ -293,6 +293,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "asyncio.create_task(...) or similar task creation whose handle is discarded immediately.",
-        binding_location: "src/heuristics/python/quality.rs",
+        binding_location: "src/heuristics/python/quality/mod.rs",
     },
 ];

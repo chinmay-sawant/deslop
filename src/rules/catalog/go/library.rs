@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`credentials.NewStaticCredentials(\"AKID...\", \"secret...\", \"\")` with literal access keys",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "aws_session_per_request",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`session.NewSession()` or `config.LoadDefaultConfig(ctx)` inside handler functions",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "cobra_flag_lookup_in_run",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`cmd.Flags().GetString(\"flag\")` inside `RunE` when the flag could be bound to a variable with `StringVar`",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "config_file_read_per_request",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`os.ReadFile(\"config.json\")` or `viper.ReadInConfig()` inside handler or loop code",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "dynamodb_scan_in_handler",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`dynamodb.Scan` in request handler functions",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "env_parsing_repeated_in_init",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "multiple `os.Getenv` + `strconv.Atoi` / `strconv.ParseBool` chains that could be replaced with a config struct + `envconfig` or `env` library",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "error_logged_and_returned",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`log.Error(err); return err` or `logger.Error(\"failed\", zap.Error(err)); return fmt.Errorf(\"failed: %w\", err)` \u{2014} logging the error then returning it",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "grpc_context_not_propagated",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "gRPC handler methods that create new `context.Background()` instead of using the stream/request context",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "grpc_dial_per_request",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`grpc.Dial(addr, opts...)` or `grpc.NewClient(addr, opts...)` inside handler functions",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "grpc_large_message_without_streaming",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unary RPC handlers returning or receiving messages > 4MB (inferred from large slice/struct serialization patterns)",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "grpc_no_keepalive_config",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`grpc.NewServer()` without keepalive server parameters in long-running services",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "grpc_unary_interceptor_per_rpc",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "interceptor/middleware construction inside RPC handler methods instead of at server setup",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "log_level_check_after_format",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`zap.S().Debugf(\"expensive %v\", computeDebug())` or `logrus.Debugf(\"data: %v\", expensiveCall())` where the expensive computation happens regardless of log level",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "log_printf_for_production",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`log.Printf` (stdlib) usage in web service handler code",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "logger_created_per_request",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`zap.NewProduction()` or `logrus.New()` inside handler functions",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "os_getenv_in_hot_path",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`os.Getenv(\"KEY\")` inside handler functions or loops",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "prometheus_counter_created_per_request",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "prometheus_high_cardinality_labels",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "prometheus_observe_without_timer",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "manual `time.Since(start).Seconds()` + `histogram.Observe(duration)` patterns when `prometheus.NewTimer` would be safer",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "prometheus_unregistered_metric",
@@ -279,7 +279,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "redis_connection_per_request",
@@ -293,7 +293,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`redis.NewClient(&redis.Options{...})` inside handler/request functions",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "redis_get_set_without_pipeline",
@@ -307,7 +307,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "multiple sequential `rdb.Get(ctx, key)` or `rdb.Set(ctx, key, val, ...)` calls in the same function without pipeline",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "redis_keys_command_in_handler",
@@ -321,7 +321,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`rdb.Keys(ctx, pattern)` in handler or loop code",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "redis_large_value_without_compression",
@@ -335,7 +335,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`rdb.Set(ctx, key, largePayload, ...)` where `largePayload` is the result of `json.Marshal` on a large struct or slice, without visible compression",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "redis_no_ttl_on_cache_keys",
@@ -349,7 +349,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`rdb.Set(ctx, key, val, 0)` or `rdb.Set(ctx, key, val, redis.KeepTTL)` for cache-like keys without TTL",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "s3_getobject_without_range",
@@ -363,7 +363,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`s3.GetObject` downloading full objects when only partial data is needed (inferred from subsequent `io.LimitReader` or partial reads)",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "s3_listobjects_without_pagination",
@@ -377,7 +377,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`s3.ListObjectsV2` without `MaxKeys` or pagination in handler code",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "string_format_in_structured_logger",
@@ -391,7 +391,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`logger.Info(fmt.Sprintf(\"user %s logged in\", user))` instead of structured fields",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
     RuleDefinition {
         id: "viper_get_in_hot_path",
@@ -405,6 +405,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`viper.GetString(\"key\")` or `viper.GetInt(\"key\")` inside handler functions or loops",
-        binding_location: "src/heuristics/go/library.rs",
+        binding_location: "src/heuristics/go/library_misuse/mod.rs",
     },
 ];

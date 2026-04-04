@@ -120,10 +120,12 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     use super::{
-        RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule, rule_binding_location,
-        rule_metadata, rule_metadata_variants, rule_registry,
+        RuleConfigurability, RuleLanguage, RuleStatus, catalog, is_detail_only_rule,
+        rule_binding_location, rule_metadata, rule_metadata_variants, rule_registry,
     };
     use crate::{DEFAULT_MAX_BYTES, read_to_string_limited};
+
+    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 438;
 
     #[test]
     fn registry_is_unique_per_language_and_sorted() {
@@ -312,17 +314,64 @@ mod tests {
             source_rule_ids.is_subset(&registry_rule_ids),
             "source contains rule ids that are missing from the public registry"
         );
+        assert_eq!(
+            source_rule_ids.len(),
+            EXPECTED_SOURCE_RULE_ID_COUNT,
+            "source rule-id inventory changed; update the expected count if the change is intentional"
+        );
     }
 
     #[test]
     fn binding_locations_are_available_for_catalogued_rules() {
-        let location = rule_binding_location("dropped_error", RuleLanguage::Go)
-            .unwrap_or_else(|| unreachable!("binding location should be catalogued"));
+        let repo_root = Path::new(env!("CARGO_MANIFEST_DIR"));
 
-        assert!(
-            location.ends_with(".rs"),
-            "binding location should point at a Rust source file"
-        );
+        for definition in catalog::rule_catalog() {
+            assert!(
+                definition.binding_location.ends_with(".rs"),
+                "binding location should point at a Rust source file for {} ({:?})",
+                definition.id,
+                definition.language
+            );
+
+            let path = repo_root.join(definition.binding_location);
+            assert!(
+                path.is_file(),
+                "binding location should exist for {} ({:?}): {}",
+                definition.id,
+                definition.language,
+                path.display()
+            );
+        }
+    }
+
+    #[test]
+    fn python_hot_path_binding_locations_match_implementations() {
+        let expected = [
+            (
+                "append_then_sort_each_iteration",
+                "src/heuristics/python/hotpath_ext.rs",
+            ),
+            (
+                "csv_writer_flush_per_row",
+                "src/heuristics/python/hotpath.rs",
+            ),
+            (
+                "filter_then_count_then_iterate",
+                "src/heuristics/python/hotpath_ext.rs",
+            ),
+            (
+                "json_encoder_recreated_per_item",
+                "src/heuristics/python/hotpath_ext.rs",
+            ),
+        ];
+
+        for (rule_id, expected_location) in expected {
+            assert_eq!(
+                rule_binding_location(rule_id, RuleLanguage::Python),
+                Some(expected_location),
+                "binding location drifted for {rule_id}"
+            );
+        }
     }
 
     fn collect_source_rule_ids(root: PathBuf) -> BTreeSet<String> {
@@ -334,10 +383,14 @@ mod tests {
     fn collect_rule_ids_from_dir(dir: &Path, ids: &mut BTreeSet<String>) {
         let entries = match fs::read_dir(dir) {
             Ok(entries) => entries,
-            Err(_) => return,
+            Err(error) => unreachable!("failed to read directory {}: {error}", dir.display()),
         };
 
-        for entry in entries.flatten() {
+        for entry in entries {
+            let entry = match entry {
+                Ok(entry) => entry,
+                Err(error) => unreachable!("failed to read entry in {}: {error}", dir.display()),
+            };
             let path = entry.path();
             if path.is_dir() {
                 collect_rule_ids_from_dir(&path, ids);
@@ -348,8 +401,9 @@ mod tests {
                 continue;
             }
 
-            let Ok(source) = read_to_string_limited(&path, DEFAULT_MAX_BYTES) else {
-                continue;
+            let source = match read_to_string_limited(&path, DEFAULT_MAX_BYTES) {
+                Ok(source) => source,
+                Err(error) => unreachable!("failed to read {}: {error}", path.display()),
             };
             let production_source = source
                 .split_once("#[cfg(test)]")

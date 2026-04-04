@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Slice sorting observed inside loops \u{2014} often cheaper to sort once after the loop.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "append_then_trim_each_iteration",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Slice append followed by reslice each iteration instead of batching.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "bufio_reader_missing_for_small_read_loop",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "File or socket reads inside loops without visible bufio buffering.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "bufio_writer_missing_in_bulk_export",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "File or socket writes inside loops without visible bufio buffering.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "builder_or_buffer_recreated_per_iteration",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "strings.Builder, bytes.Buffer, or bytes.NewBuffer(...) constructions observed inside loops instead of being reset or reused.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "byte_string_conversion_in_loop",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "bytes_buffer_without_grow_known_bound",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "bytes.Buffer used without Grow when approximate output size is locally visible.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "bytes_split_same_input_multiple_times",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same byte-slice input is passed through bytes.Split* or bytes.Fields* helpers multiple times in one function.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "csv_writer_flush_per_row",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "csv.Writer.Flush() called inside per-row loops, reducing buffering effectiveness.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "filter_then_count_then_iterate",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Same collection traversed multiple times for filter, count, and process steps.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "gzip_reader_writer_recreated_per_item",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "gzip.NewReader(...) or gzip.NewWriter(...) recreated inside iterative paths instead of per stream.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "json_decoder_recreated_per_item",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "json.NewDecoder(...) constructed repeatedly inside loops instead of reusing a stable decoder per stream.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "json_encoder_recreated_per_item",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "json.NewEncoder(...) constructed repeatedly inside loops instead of reusing a stable encoder per stream.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "make_map_inside_hot_loop_same_shape",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "make(map[K]V, ...) scratch maps recreated inside loops instead of being reused or prebuilt.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "make_slice_inside_hot_loop_same_shape",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "make([]T, ...) scratch slices recreated inside loops instead of being reused.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "map_growth_without_size_hint",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Map insertions inside loops without a visible size hint on the initial make call.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "nested_append_without_outer_capacity",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Append calls inside nested loops without visible preallocation on the outer slice.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "nested_linear_join_map_candidate",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Nested-loop lookups or joins that could use a map index for O(1) access.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "read_then_decode_duplicate_materialization",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "regexp_compile_in_hot_path",
@@ -279,7 +279,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "regexp.Compile or regexp.MustCompile observed inside obvious iterative paths.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "repeated_map_clone_in_loop",
@@ -293,7 +293,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "maps.Clone or equivalent map-copy calls observed inside loops.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "repeated_slice_clone_in_loop",
@@ -307,7 +307,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "slices.Clone(...) or similar whole-slice cloning observed inside loops.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "slice_append_without_prealloc_known_bound",
@@ -321,7 +321,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Slice append inside a range loop without visible preallocation when the bound is locally known.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "slice_membership_in_loop_map_candidate",
@@ -335,7 +335,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "slices.Contains(...) or slices.Index(...) used inside loops against a stable-looking slice binding.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "sort_before_first_or_membership_only",
@@ -349,7 +349,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Sorting a collection when only the first element or min/max is needed.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "stable_value_normalization_in_inner_loop",
@@ -363,7 +363,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Stable value normalization (ToLower, TrimSpace, etc.) repeated inside inner loops.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "strconv_repeat_on_same_binding",
@@ -377,7 +377,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same string binding is converted with strconv parsing helpers multiple times in one function.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "strings_builder_without_grow_known_bound",
@@ -391,7 +391,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "strings.Builder used without Grow when approximate output size is locally visible.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "strings_split_same_input_multiple_times",
@@ -405,7 +405,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same string input is passed through strings.Split* or strings.Fields* helpers multiple times in one function.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "template_parse_in_hot_path",
@@ -419,7 +419,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "html/template or text/template parse calls observed on request-style paths instead of startup-time caching.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "time_parse_layout_in_loop",
@@ -433,7 +433,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "time.Parse(...) or ParseInLocation(...) observed inside loops with a stable layout.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "url_parse_in_loop_on_invariant_base",
@@ -447,7 +447,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "url.Parse(...) or ParseRequestURI(...) observed inside loops with a stable-looking base input.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
     RuleDefinition {
         id: "uuid_hash_formatting_only_for_logs",
@@ -461,6 +461,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "UUID or hash formatting observed inside loops only for log output.",
-        binding_location: "src/heuristics/go/hot_path.rs",
+        binding_location: "src/heuristics/go/framework_patterns/hot_path.rs",
     },
 ];

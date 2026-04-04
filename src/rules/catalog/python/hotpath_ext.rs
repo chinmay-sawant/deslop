@@ -4,7 +4,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "concatenation_in_comprehension_body",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -18,7 +18,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "dict_copy_in_loop_same_source",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -32,7 +32,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "gzip_open_per_chunk",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -46,7 +46,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "list_copy_in_loop_same_source",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -60,7 +60,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "nested_list_search_map_candidate",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -74,7 +74,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "path_resolve_or_expanduser_in_loop",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -88,7 +88,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "pickle_dumps_in_loop_same_structure",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -102,7 +102,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "repeated_datetime_strptime_same_format",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -116,7 +116,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "repeated_dict_get_same_key_no_cache",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -130,7 +130,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "repeated_hashlib_new_same_algorithm",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -144,7 +144,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "repeated_isinstance_chain_same_object",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -158,7 +158,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "repeated_list_index_lookup",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -172,7 +172,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "repeated_locale_or_codec_lookup_in_loop",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -186,7 +186,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "repeated_string_format_invariant_template",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -200,7 +200,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "set_created_per_iteration_same_elements",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -214,7 +214,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "sort_then_first_or_membership_only",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -228,7 +228,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "string_join_without_generator",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -242,7 +242,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "tuple_unpacking_in_tight_loop",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -256,7 +256,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "urlparse_in_loop_on_invariant_base",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -270,7 +270,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "xml_parse_same_payload_multiple_times",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -284,7 +284,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "yaml_load_same_payload_multiple_times",
         language: RuleLanguage::Python,
-        family: "hotpath_ext",
+        family: "hot_path_ext",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[

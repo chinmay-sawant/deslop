@@ -4,10 +4,18 @@ use std::path::{Path, PathBuf};
 use deslop::syntax_error_for_source;
 
 const CORPUS_ROOT: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/corpus/regressions");
+const EXPECTED_CORPUS_ENTRY_COUNT: usize = 9;
 
 #[test]
 fn corpus_regressions_cover_malformed_generated_and_edge_cases() {
-    for entry in collect_sources(Path::new(CORPUS_ROOT)) {
+    let entries = collect_sources(Path::new(CORPUS_ROOT));
+    assert_eq!(
+        entries.len(),
+        EXPECTED_CORPUS_ENTRY_COUNT,
+        "corpus regression inventory changed; update the expected count if the change is intentional"
+    );
+
+    for entry in entries {
         let source = fs::read_to_string(&entry)
             .unwrap_or_else(|error| panic!("failed to read {}: {error}", entry.display()));
         let relative = entry
@@ -65,12 +73,12 @@ fn collect_sources(root: &Path) -> Vec<PathBuf> {
 }
 
 fn collect_sources_recursive(dir: &Path, files: &mut Vec<PathBuf>) {
-    let entries = match fs::read_dir(dir) {
-        Ok(entries) => entries,
-        Err(_) => return,
-    };
+    let entries = fs::read_dir(dir)
+        .unwrap_or_else(|error| panic!("failed to read directory {}: {error}", dir.display()));
 
-    for entry in entries.flatten() {
+    for entry in entries {
+        let entry = entry
+            .unwrap_or_else(|error| panic!("failed to read entry in {}: {error}", dir.display()));
         let path = entry.path();
         if path.is_dir() {
             collect_sources_recursive(&path, files);

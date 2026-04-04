@@ -4,7 +4,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "dict_items_or_keys_materialized_in_loop",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -18,7 +18,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "enumerate_on_range_len",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -32,7 +32,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "in_check_on_list_literal",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -46,7 +46,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "json_loads_same_payload_multiple_times",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -60,7 +60,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "list_comprehension_only_for_length",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -74,7 +74,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "read_then_splitlines",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -88,7 +88,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "readlines_then_iterate",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -102,7 +102,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "regex_compile_in_hot_path",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -116,7 +116,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "repeated_json_dumps_same_object",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -130,7 +130,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "repeated_open_same_file_in_function",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -144,7 +144,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "sorted_only_for_first_element",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -158,7 +158,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "string_startswith_endswith_chain",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[
@@ -172,7 +172,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
         id: "write_without_buffering_in_loop",
         language: RuleLanguage::Python,
-        family: "hotpath",
+        family: "hot_path",
         default_severity: RuleDefaultSeverity::Info,
         status: RuleStatus::Stable,
         configurability: &[

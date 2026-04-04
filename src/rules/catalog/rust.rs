@@ -554,7 +554,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "dbg!() left in non-test Rust code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/evaluate.rs",
     },
     RuleDefinition {
         id: "expect_in_non_test_code",
@@ -568,7 +568,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "expect() used in non-test Rust code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/evaluate.rs",
     },
     RuleDefinition {
         id: "fixme_doc_comment_leftover",
@@ -582,7 +582,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Rust doc comments that still contain a FIXME marker in non-test code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/findings.rs",
     },
     RuleDefinition {
         id: "hack_doc_comment_leftover",
@@ -596,7 +596,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Rust doc comments that still contain a HACK marker in non-test code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/findings.rs",
     },
     RuleDefinition {
         id: "panic_macro_leftover",
@@ -610,7 +610,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "panic macro left in non-test Rust code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/evaluate.rs",
     },
     RuleDefinition {
         id: "todo_doc_comment_leftover",
@@ -624,7 +624,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Rust doc comments that still contain a TODO marker in non-test code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/findings.rs",
     },
     RuleDefinition {
         id: "todo_macro_leftover",
@@ -638,7 +638,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "todo!() left in non-test Rust code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/evaluate.rs",
     },
     RuleDefinition {
         id: "unimplemented_macro_leftover",
@@ -652,7 +652,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unimplemented!() left in non-test Rust code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/evaluate.rs",
     },
     RuleDefinition {
         id: "unreachable_macro_leftover",
@@ -666,7 +666,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unreachable!() left in non-test Rust code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/evaluate.rs",
     },
     RuleDefinition {
         id: "unsafe_without_safety_comment",
@@ -680,7 +680,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unsafe fn or unsafe block without a nearby SAFETY: comment within the previous two lines.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/findings.rs",
     },
     RuleDefinition {
         id: "unwrap_in_non_test_code",
@@ -694,7 +694,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unwrap() used in non-test Rust code.",
-        binding_location: "src/heuristics/rust/hygiene.rs",
+        binding_location: "src/analysis/rust/evaluate.rs",
     },
     RuleDefinition {
         id: "rust_aos_hot_path",
