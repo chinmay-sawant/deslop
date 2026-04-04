@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -26,8 +25,7 @@ fn test_naming_slop() {
             .iter()
             .any(|finding| finding.rule_id == "weak_typing")
     );
-
-    }
+}
 
 #[test]
 fn test_doc_overlong() {
@@ -58,8 +56,7 @@ fn test_doc_overlong() {
             .iter()
             .any(|finding| finding.rule_id == "overlong_name")
     );
-
-    }
+}
 
 #[test]
 fn test_doc_ok() {
@@ -84,15 +81,12 @@ fn test_doc_ok() {
             .iter()
             .any(|finding| finding.rule_id == "comment_style_tutorial")
     );
-
-    }
+}
 
 #[test]
 fn test_handler_ok() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("handler.go",
-        go_fixture!("legitimate_handler.txt"),
-    );
+    workspace.write_file("handler.go", go_fixture!("legitimate_handler.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -104,15 +98,12 @@ fn test_handler_ok() {
         finding.rule_id == "generic_name"
             && finding.function_name.as_deref() == Some("HandleRequest")
     }));
-
-    }
+}
 
 #[test]
 fn test_adapter_ok() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("adapter.go",
-        go_fixture!("legitimate_adapter.txt"),
-    );
+    workspace.write_file("adapter.go", go_fixture!("legitimate_adapter.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -124,5 +115,4 @@ fn test_adapter_ok() {
         finding.rule_id == "generic_name"
             && finding.function_name.as_deref() == Some("ConvertValue")
     }));
-
-    }
+}

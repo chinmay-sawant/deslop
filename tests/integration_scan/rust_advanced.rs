@@ -9,9 +9,7 @@ use super::FixtureWorkspace;
 #[test]
 fn test_rust_domain_modeling_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
-        rust_fixture!("domain_modeling/positive.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("domain_modeling/positive.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -41,8 +39,7 @@ fn test_rust_domain_modeling_rules() {
                 .collect::<Vec<_>>()
         );
     }
-
-    }
+}
 
 #[test]
 fn test_rust_async_and_performance_rules() {
@@ -81,15 +78,12 @@ fn test_rust_async_and_performance_rules() {
                 .collect::<Vec<_>>()
         );
     }
-
-    }
+}
 
 #[test]
 fn test_rust_unsafe_soundness_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
-        rust_fixture!("unsafe/positive.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("unsafe/positive.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -118,21 +112,17 @@ fn test_rust_unsafe_soundness_rules() {
                 .collect::<Vec<_>>()
         );
     }
-
-    }
+}
 
 #[test]
 fn test_rust_advanced_negative_fixtures() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/domain.rs",
+    workspace.write_file(
+        "src/domain.rs",
         rust_fixture!("domain_modeling/negative.txt"),
     );
-    workspace.write_file("src/async.rs",
-        rust_fixture!("async/negative.txt"),
-    );
-    workspace.write_file("src/unsafe.rs",
-        rust_fixture!("unsafe/negative.txt"),
-    );
+    workspace.write_file("src/async.rs", rust_fixture!("async/negative.txt"));
+    workspace.write_file("src/unsafe.rs", rust_fixture!("unsafe/negative.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -180,15 +170,12 @@ fn test_rust_advanced_negative_fixtures() {
                 .collect::<Vec<_>>()
         );
     }
-
-    }
+}
 
 #[test]
 fn test_rust_phase4_runtime_boundary_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
-        rust_fixture!("phase4/positive.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("phase4/positive.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -216,15 +203,12 @@ fn test_rust_phase4_runtime_boundary_rules() {
                 .collect::<Vec<_>>()
         );
     }
-
-    }
+}
 
 #[test]
 fn test_rust_phase4_runtime_boundary_clean() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
-        rust_fixture!("phase4/negative.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("phase4/negative.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -252,18 +236,13 @@ fn test_rust_phase4_runtime_boundary_clean() {
                 .collect::<Vec<_>>()
         );
     }
-
-    }
+}
 
 #[test]
 fn test_rust_phase4_workspace_manifest_rule() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("Cargo.toml",
-        "[workspace]\nmembers = [\"app\", \"lib\"]\n",
-    );
-    workspace.write_file("src/lib.rs",
-        rust_fixture!("phase4/negative.txt"),
-    );
+    workspace.write_file("Cargo.toml", "[workspace]\nmembers = [\"app\", \"lib\"]\n");
+    workspace.write_file("src/lib.rs", rust_fixture!("phase4/negative.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -283,18 +262,16 @@ fn test_rust_phase4_workspace_manifest_rule() {
             .map(|finding| finding.rule_id.as_str())
             .collect::<Vec<_>>()
     );
-
-    }
+}
 
 #[test]
 fn test_rust_phase4_workspace_manifest_clean() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("Cargo.toml",
+    workspace.write_file(
+        "Cargo.toml",
         "[workspace]\nresolver = \"2\"\nmembers = [\"app\", \"lib\"]\n",
     );
-    workspace.write_file("src/lib.rs",
-        rust_fixture!("phase4/negative.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("phase4/negative.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -314,8 +291,7 @@ fn test_rust_phase4_workspace_manifest_clean() {
             .map(|finding| finding.rule_id.as_str())
             .collect::<Vec<_>>()
     );
-
-    }
+}
 
 #[test]
 fn test_rust_hygiene_script() {

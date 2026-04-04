@@ -1,8 +1,6 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::super::FixtureWorkspace;
-
 
 #[test]
 fn test_python_fingerprints() {
@@ -27,8 +25,7 @@ fn test_python_fingerprints() {
         .map(|function| function.name.as_str())
         .collect::<Vec<_>>();
     assert_eq!(names, vec!["build_summary", "render"]);
-
-    }
+}
 
 #[test]
 fn test_python_syntax() {
@@ -45,18 +42,16 @@ fn test_python_syntax() {
     assert_eq!(report.files_analyzed, 1);
     assert!(report.files[0].syntax_error);
     assert!(report.parse_failures.is_empty());
-
-    }
+}
 
 #[test]
 fn test_python_mixed_repo() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
-            ("app.py", python_fixture!("simple.txt")),
-            ("main.go", go_fixture!("simple.go")),
-            ("src/main.rs", rust_fixture!("simple.txt")),
-        ],
-    );
+        ("app.py", python_fixture!("simple.txt")),
+        ("main.go", go_fixture!("simple.go")),
+        ("src/main.rs", rust_fixture!("simple.txt")),
+    ]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -80,17 +75,15 @@ fn test_python_mixed_repo() {
         })
         .collect::<Vec<_>>();
     assert_eq!(analyzed_paths, vec!["app.py", "main.go", "src/main.rs"]);
-
-    }
+}
 
 #[test]
 fn test_python_rust_mixed_repo() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
-            ("pkg/render/service.py", python_fixture!("simple.txt")),
-            ("pkg/render/lib.rs", rust_fixture!("simple.txt")),
-        ],
-    );
+        ("pkg/render/service.py", python_fixture!("simple.txt")),
+        ("pkg/render/lib.rs", rust_fixture!("simple.txt")),
+    ]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -101,18 +94,16 @@ fn test_python_rust_mixed_repo() {
     assert_eq!(report.files_discovered, 2);
     assert_eq!(report.files_analyzed, 2);
     assert!(report.parse_failures.is_empty());
-
-    }
+}
 
 #[test]
 fn test_python_same_directory_mixed_repo() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
-            ("pkg/render/__init__.py", python_fixture!("simple.txt")),
-            ("pkg/render/main.go", go_fixture!("simple.go")),
-            ("pkg/render/lib.rs", rust_fixture!("simple.txt")),
-        ],
-    );
+        ("pkg/render/__init__.py", python_fixture!("simple.txt")),
+        ("pkg/render/main.go", go_fixture!("simple.go")),
+        ("pkg/render/lib.rs", rust_fixture!("simple.txt")),
+    ]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -123,14 +114,12 @@ fn test_python_same_directory_mixed_repo() {
     assert_eq!(report.files_discovered, 3);
     assert_eq!(report.files_analyzed, 3);
     assert!(report.parse_failures.is_empty());
-
-    }
+}
 
 #[test]
 fn test_python_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_files(&[("service.py", python_fixture!("rule_pack_positive.txt"))],
-    );
+    workspace.write_files(&[("service.py", python_fixture!("rule_pack_positive.txt"))]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -174,14 +163,12 @@ fn test_python_rules() {
             .iter()
             .any(|finding| finding.rule_id == "print_debugging_leftover")
     );
-
-    }
+}
 
 #[test]
 fn test_python_rule_suppressions() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_files(&[("service.py", python_fixture!("rule_pack_negative.txt"))],
-    );
+    workspace.write_files(&[("service.py", python_fixture!("rule_pack_negative.txt"))]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -225,17 +212,15 @@ fn test_python_rule_suppressions() {
             .iter()
             .any(|finding| finding.rule_id == "print_debugging_leftover")
     );
-
-    }
+}
 
 #[test]
 fn test_python_test_rule_suppressions() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "tests/test_service.py",
-            python_fixture!("rule_pack_test_only.txt"),
-        )],
-    );
+        "tests/test_service.py",
+        python_fixture!("rule_pack_test_only.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -254,14 +239,12 @@ fn test_python_test_rule_suppressions() {
                 | "print_debugging_leftover"
         )
     }));
-
-    }
+}
 
 #[test]
 fn test_python_phase4_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_files(&[("pkg/__init__.py", python_fixture!("phase4_positive.txt"))],
-    );
+    workspace.write_files(&[("pkg/__init__.py", python_fixture!("phase4_positive.txt"))]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -313,14 +296,12 @@ fn test_python_phase4_rules() {
             "expected rule {rule_id} to fire"
         );
     }
-
-    }
+}
 
 #[test]
 fn test_python_phase4_suppressions() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_files(&[("pkg/module.py", python_fixture!("phase4_negative.txt"))],
-    );
+    workspace.write_files(&[("pkg/module.py", python_fixture!("phase4_negative.txt"))]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -372,51 +353,49 @@ fn test_python_phase4_suppressions() {
             "did not expect rule {rule_id} to fire"
         );
     }
-
-    }
+}
 
 #[test]
 fn test_python_phase4_repo_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
-            (
-                "pkg/root.py",
-                python_fixture!("integration/baseline/phase4_repo_root.txt"),
-            ),
-            (
-                "pkg/base.py",
-                python_fixture!("integration/baseline/phase4_repo_base.txt"),
-            ),
-            (
-                "pkg/mid.py",
-                python_fixture!("integration/baseline/phase4_repo_mid.txt"),
-            ),
-            (
-                "pkg/helpers.py",
-                python_fixture!("integration/baseline/phase4_repo_helpers.txt"),
-            ),
-            (
-                "pkg/models.py",
-                python_fixture!("integration/baseline/phase4_repo_models.txt"),
-            ),
-            (
-                "pkg/services.py",
-                python_fixture!("integration/baseline/phase4_repo_services.txt"),
-            ),
-            (
-                "pkg/adapters.py",
-                python_fixture!("integration/baseline/phase4_repo_adapters.txt"),
-            ),
-            (
-                "pkg/leaf.py",
-                python_fixture!("integration/baseline/phase4_repo_leaf.txt"),
-            ),
-            (
-                "tests/test_helpers.py",
-                python_fixture!("integration/baseline/phase4_repo_test_helpers.txt"),
-            ),
-        ],
-    );
+        (
+            "pkg/root.py",
+            python_fixture!("integration/baseline/phase4_repo_root.txt"),
+        ),
+        (
+            "pkg/base.py",
+            python_fixture!("integration/baseline/phase4_repo_base.txt"),
+        ),
+        (
+            "pkg/mid.py",
+            python_fixture!("integration/baseline/phase4_repo_mid.txt"),
+        ),
+        (
+            "pkg/helpers.py",
+            python_fixture!("integration/baseline/phase4_repo_helpers.txt"),
+        ),
+        (
+            "pkg/models.py",
+            python_fixture!("integration/baseline/phase4_repo_models.txt"),
+        ),
+        (
+            "pkg/services.py",
+            python_fixture!("integration/baseline/phase4_repo_services.txt"),
+        ),
+        (
+            "pkg/adapters.py",
+            python_fixture!("integration/baseline/phase4_repo_adapters.txt"),
+        ),
+        (
+            "pkg/leaf.py",
+            python_fixture!("integration/baseline/phase4_repo_leaf.txt"),
+        ),
+        (
+            "tests/test_helpers.py",
+            python_fixture!("integration/baseline/phase4_repo_test_helpers.txt"),
+        ),
+    ]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -438,23 +417,21 @@ fn test_python_phase4_repo_rules() {
             "expected repo rule {rule_id} to fire"
         );
     }
-
-    }
+}
 
 #[test]
 fn test_python_hallucination_rule() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
-            (
-                "pkg/target.py",
-                python_fixture!("hallucination/import_resolution_target.txt"),
-            ),
-            (
-                "pkg/caller.py",
-                python_fixture!("hallucination/import_resolution_positive.txt"),
-            ),
-        ],
-    );
+        (
+            "pkg/target.py",
+            python_fixture!("hallucination/import_resolution_target.txt"),
+        ),
+        (
+            "pkg/caller.py",
+            python_fixture!("hallucination/import_resolution_positive.txt"),
+        ),
+    ]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -566,5 +543,4 @@ fn test_python_hallucination_rule() {
             .contains("SnapBackTranscriptionClient")),
         "did not expect finding for local class SnapBackTranscriptionClient"
     );
-
-    }
+}

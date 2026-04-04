@@ -56,7 +56,8 @@ fn test_real_scan() {
 #[test]
 fn test_benchmark() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("main.go",
+    workspace.write_file(
+        "main.go",
         include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
             "/tests/fixtures/go/simple.go"
@@ -74,5 +75,4 @@ fn test_benchmark() {
     assert_eq!(report.repeats, 2);
     assert_eq!(report.warmups, 1);
     assert_eq!(report.runs.len(), 2);
-
-    }
+}

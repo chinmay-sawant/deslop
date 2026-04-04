@@ -28,12 +28,10 @@ impl FixtureWorkspace {
         workspace
     }
 
-    #[allow(dead_code)]
     pub(crate) fn root(&self) -> &Path {
         &self.root
     }
 
-    #[allow(dead_code)]
     pub(crate) fn write_file(&self, relative_path: &str, contents: &str) {
         write_fixture(&self.root, relative_path, contents);
     }
@@ -88,7 +86,6 @@ pub(crate) fn report_has_rule(report: &ScanReport, rule_id: &str) -> bool {
         .any(|finding| finding.rule_id == rule_id)
 }
 
-#[allow(dead_code)]
 pub(crate) fn find_rule<'a>(report: &'a ScanReport, rule_id: &str) -> Option<&'a deslop::Finding> {
     report
         .findings

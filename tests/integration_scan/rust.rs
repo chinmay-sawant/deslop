@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -26,8 +25,7 @@ fn test_rust_fingerprints() {
         .map(|function| function.name.as_str())
         .collect::<Vec<_>>();
     assert_eq!(names, vec!["sum_pair", "render_summary"]);
-
-    }
+}
 
 #[test]
 fn test_rust_syntax() {
@@ -44,8 +42,7 @@ fn test_rust_syntax() {
     assert_eq!(report.files_analyzed, 1);
     assert!(report.files[0].syntax_error);
     assert!(report.parse_failures.is_empty());
-
-    }
+}
 
 #[test]
 fn test_mixed_repo() {
@@ -75,15 +72,12 @@ fn test_mixed_repo() {
         })
         .collect::<Vec<_>>();
     assert_eq!(analyzed_paths, vec!["main.go", "src/main.rs"]);
-
-    }
+}
 
 #[test]
 fn test_rust_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
-        rust_fixture!("rule_pack_positive.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("rule_pack_positive.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -157,15 +151,12 @@ fn test_rust_rules() {
             .iter()
             .any(|finding| finding.rule_id == "unsafe_without_safety_comment")
     );
-
-    }
+}
 
 #[test]
 fn test_rust_suppressions() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
-        rust_fixture!("rule_pack_negative.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("rule_pack_negative.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -239,13 +230,13 @@ fn test_rust_suppressions() {
             .iter()
             .any(|finding| finding.rule_id == "unsafe_without_safety_comment")
     );
-
-    }
+}
 
 #[test]
 fn test_rust_rule_ignore_directives() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
+    workspace.write_file(
+        "src/lib.rs",
         r#"
 pub fn demo() {
     let _value = Some(1).unwrap(); // deslop-ignore:unwrap_in_non_test_code
@@ -280,8 +271,7 @@ pub fn demo() {
             .iter()
             .any(|finding| finding.rule_id == "expect_in_non_test_code")
     );
-
-    }
+}
 
 #[test]
 fn test_rust_repository_config_controls_rules() {
@@ -289,7 +279,8 @@ fn test_rust_repository_config_controls_rules() {
     workspace.write_file(".deslop.toml",
         "rust_async_experimental = false\n[severity_overrides]\nexpect_in_non_test_code = \"error\"\n",
     );
-    workspace.write_file("src/lib.rs",
+    workspace.write_file(
+        "src/lib.rs",
         r#"
 use std::sync::Mutex;
 
@@ -322,16 +313,17 @@ pub async fn demo() {
         .find(|finding| finding.rule_id == "expect_in_non_test_code")
         .expect("expect finding should remain after config filtering");
     assert!(matches!(expect_finding.severity, deslop::Severity::Error));
-
-    }
+}
 
 #[test]
 fn test_rust_hallucination() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
+    workspace.write_file(
+        "src/lib.rs",
         rust_fixture!("hallucinated_import_positive_main.txt"),
     );
-    workspace.write_file("src/config/render.rs",
+    workspace.write_file(
+        "src/config/render.rs",
         rust_fixture!("hallucinated_import_positive_render.txt"),
     );
 
@@ -351,19 +343,21 @@ fn test_rust_hallucination() {
             && finding.function_name.as_deref() == Some("run_missing_module")
             && finding.message.contains("helpers::load")
     }));
-
-    }
+}
 
 #[test]
 fn test_rust_hierarchy() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/config/mod.rs",
+    workspace.write_file(
+        "src/config/mod.rs",
         rust_fixture!("hallucinated_import_negative_mod.txt"),
     );
-    workspace.write_file("src/config/render.rs",
+    workspace.write_file(
+        "src/config/render.rs",
         rust_fixture!("hallucinated_import_negative_render.txt"),
     );
-    workspace.write_file("src/config/sub/helpers.rs",
+    workspace.write_file(
+        "src/config/sub/helpers.rs",
         rust_fixture!("hallucinated_import_negative_helpers.txt"),
     );
 
@@ -380,16 +374,17 @@ fn test_rust_hierarchy() {
                 Some("run_render") | Some("run_helper")
             )
     }));
-
-    }
+}
 
 #[test]
 fn test_direct_hallucination() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
+    workspace.write_file(
+        "src/lib.rs",
         rust_fixture!("direct_call_hallucination_positive.txt"),
     );
-    workspace.write_file("src/config/render.rs",
+    workspace.write_file(
+        "src/config/render.rs",
         rust_fixture!("direct_call_hallucination_render.txt"),
     );
 
@@ -409,16 +404,17 @@ fn test_direct_hallucination() {
             && finding.function_name.as_deref() == Some("run_same_module")
             && finding.message.contains("missing_local")
     }));
-
-    }
+}
 
 #[test]
 fn test_rust_direct_ok() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs",
+    workspace.write_file(
+        "src/lib.rs",
         rust_fixture!("direct_call_hallucination_negative.txt"),
     );
-    workspace.write_file("src/config/render.rs",
+    workspace.write_file(
+        "src/config/render.rs",
         rust_fixture!("direct_call_hallucination_render.txt"),
     );
 
@@ -440,5 +436,4 @@ fn test_rust_direct_ok() {
             "hallucinated_import_call" | "hallucinated_local_call"
         )
     }));
-
-    }
+}

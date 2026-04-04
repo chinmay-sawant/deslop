@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -7,9 +6,7 @@ use super::FixtureWorkspace;
 fn test_hallucination() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("main.go", go_fixture!("hallucinated_import.txt"));
-    workspace.write_file("utils/utils.go",
-        go_fixture!("utils_package.txt"),
-    );
+    workspace.write_file("utils/utils.go", go_fixture!("utils_package.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -23,13 +20,13 @@ fn test_hallucination() {
             .iter()
             .any(|finding| finding.rule_id == "hallucinated_import_call")
     );
-
-    }
+}
 
 #[test]
 fn test_hallucination_dir() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("main.go",
+    workspace.write_file(
+        "main.go",
         r#"package sample
 
 import render "github.com/acme/project/pkg/render"
@@ -39,7 +36,8 @@ func Run(address string) string {
 }
 "#,
     );
-    workspace.write_file("pkg/render/render.go",
+    workspace.write_file(
+        "pkg/render/render.go",
         r#"package render
 
 func Normalize(address string) string {
@@ -47,7 +45,8 @@ func Normalize(address string) string {
 }
 "#,
     );
-    workspace.write_file("internal/render/render.go",
+    workspace.write_file(
+        "internal/render/render.go",
         r#"package render
 
 func Sanitize(address string) string {
@@ -67,13 +66,13 @@ func Sanitize(address string) string {
             && finding.function_name.as_deref() == Some("Run")
             && finding.message.contains("render.Sanitize")
     }));
-
-    }
+}
 
 #[test]
 fn test_alias_hallucination() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("pdf/generator.go",
+    workspace.write_file(
+        "pdf/generator.go",
         r#"package pdf
 
 import font "example.com/font"
@@ -99,13 +98,13 @@ func collectAllStandardFontsInTemplate() {
             && finding.function_name.as_deref() == Some("collectAllStandardFontsInTemplate")
             && finding.start_line == 9
     }));
-
-    }
+}
 
 #[test]
 fn test_rust_go_separation() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("main.go",
+    workspace.write_file(
+        "main.go",
         r#"package sample
 
 import render "github.com/acme/project/pkg/render"
@@ -115,7 +114,8 @@ func Run(address string) string {
 }
 "#,
     );
-    workspace.write_file("pkg/render/render.go",
+    workspace.write_file(
+        "pkg/render/render.go",
         r#"package render
 
 func Sanitize(address string) string {
@@ -123,7 +123,8 @@ func Sanitize(address string) string {
 }
 "#,
     );
-    workspace.write_file("pkg/render/lib.rs",
+    workspace.write_file(
+        "pkg/render/lib.rs",
         r#"pub fn Normalize(address: &str) -> String {
     address.to_string()
 }
@@ -141,5 +142,4 @@ func Sanitize(address string) string {
             && finding.function_name.as_deref() == Some("Run")
             && finding.message.contains("render.Normalize")
     }));
-
-    }
+}

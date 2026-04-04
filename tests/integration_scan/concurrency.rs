@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -6,9 +5,7 @@ use super::FixtureWorkspace;
 #[test]
 fn test_unmanaged_goroutines() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("go_routine.go",
-        go_fixture!("goroutine_slop.txt"),
-    );
+    workspace.write_file("go_routine.go", go_fixture!("goroutine_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -28,15 +25,12 @@ fn test_unmanaged_goroutines() {
             .iter()
             .any(|finding| finding.rule_id == "goroutine_spawn_in_loop")
     );
-
-    }
+}
 
 #[test]
 fn test_coordination() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("go_routine.go",
-        go_fixture!("goroutine_clean.txt"),
-    );
+    workspace.write_file("go_routine.go", go_fixture!("goroutine_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -56,15 +50,12 @@ fn test_coordination() {
             .iter()
             .any(|finding| finding.rule_id == "goroutine_spawn_in_loop")
     );
-
-    }
+}
 
 #[test]
 fn test_shutdown_mutex() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("concurrency.go",
-        go_fixture!("concurrency_slop.txt"),
-    );
+    workspace.write_file("concurrency.go", go_fixture!("concurrency_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -90,15 +81,12 @@ fn test_shutdown_mutex() {
             .iter()
             .any(|finding| finding.rule_id == "blocking_call_while_locked")
     );
-
-    }
+}
 
 #[test]
 fn test_no_slop() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("concurrency.go",
-        go_fixture!("concurrency_clean.txt"),
-    );
+    workspace.write_file("concurrency.go", go_fixture!("concurrency_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -118,13 +106,13 @@ fn test_no_slop() {
             .iter()
             .any(|finding| finding.rule_id == "blocking_call_while_locked")
     );
-
-    }
+}
 
 #[test]
 fn test_deeper_goroutine_lifetime() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("goroutine_deeper.go",
+    workspace.write_file(
+        "goroutine_deeper.go",
         go_fixture!("goroutine_deeper_slop.txt"),
     );
 
@@ -140,13 +128,13 @@ fn test_deeper_goroutine_lifetime() {
             .iter()
             .any(|finding| finding.rule_id == "goroutine_derived_context_unmanaged")
     );
-
-    }
+}
 
 #[test]
 fn test_deeper_goroutine_lifetime_clean() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("goroutine_deeper.go",
+    workspace.write_file(
+        "goroutine_deeper.go",
         go_fixture!("goroutine_deeper_clean.txt"),
     );
 
@@ -162,5 +150,4 @@ fn test_deeper_goroutine_lifetime_clean() {
             .iter()
             .any(|finding| finding.rule_id == "goroutine_derived_context_unmanaged")
     );
-
-    }
+}

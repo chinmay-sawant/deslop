@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -27,8 +26,7 @@ fn test_go_fingerprints() {
         .map(|function| function.name.as_str())
         .collect::<Vec<_>>();
     assert_eq!(names, vec!["Add", "Run"]);
-
-    }
+}
 
 #[test]
 fn respects_gitignore() {
@@ -45,8 +43,7 @@ fn respects_gitignore() {
 
     assert_eq!(report.files_discovered, 1);
     assert_eq!(report.files_analyzed, 1);
-
-    }
+}
 
 #[test]
 fn test_generated_syntax() {
@@ -70,5 +67,4 @@ fn test_generated_syntax() {
         Some("broken.go")
     );
     assert!(report.files[0].syntax_error);
-
-    }
+}

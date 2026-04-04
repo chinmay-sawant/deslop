@@ -10,7 +10,6 @@ use super::python;
 use super::rust;
 use super::types::ParsedFile;
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum Language {
     Go,

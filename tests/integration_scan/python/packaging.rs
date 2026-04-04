@@ -1,8 +1,6 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::super::FixtureWorkspace;
-
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
@@ -39,24 +37,23 @@ const PACKAGING_RULES: &[&str] = &[
 fn test_python_packaging_positive() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
-            (
-                "pyproject.toml",
-                python_fixture!("integration/packaging/pyproject_positive.txt"),
-            ),
-            (
-                "pkg/cli.py",
-                python_fixture!("integration/packaging/cli_positive.txt"),
-            ),
-            (
-                "pkg/internal/admin.py",
-                python_fixture!("integration/packaging/internal_admin.txt"),
-            ),
-            (
-                "service/consumer.py",
-                python_fixture!("integration/packaging/consumer_positive.txt"),
-            ),
-        ],
-    );
+        (
+            "pyproject.toml",
+            python_fixture!("integration/packaging/pyproject_positive.txt"),
+        ),
+        (
+            "pkg/cli.py",
+            python_fixture!("integration/packaging/cli_positive.txt"),
+        ),
+        (
+            "pkg/internal/admin.py",
+            python_fixture!("integration/packaging/internal_admin.txt"),
+        ),
+        (
+            "service/consumer.py",
+            python_fixture!("integration/packaging/consumer_positive.txt"),
+        ),
+    ]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -65,23 +62,21 @@ fn test_python_packaging_positive() {
     .expect("scan should succeed");
 
     assert_rules_present(&report, PACKAGING_RULES);
-
-    }
+}
 
 #[test]
 fn test_python_packaging_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
-            (
-                "pyproject.toml",
-                python_fixture!("integration/packaging/pyproject_clean.txt"),
-            ),
-            (
-                "pkg/cli.py",
-                python_fixture!("integration/packaging/cli_clean.txt"),
-            ),
-        ],
-    );
+        (
+            "pyproject.toml",
+            python_fixture!("integration/packaging/pyproject_clean.txt"),
+        ),
+        (
+            "pkg/cli.py",
+            python_fixture!("integration/packaging/cli_clean.txt"),
+        ),
+    ]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -90,5 +85,4 @@ fn test_python_packaging_clean() {
     .expect("scan should succeed");
 
     assert_rules_absent(&report, PACKAGING_RULES);
-
-    }
+}

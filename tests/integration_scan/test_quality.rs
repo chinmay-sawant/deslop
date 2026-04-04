@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -6,9 +5,7 @@ use super::FixtureWorkspace;
 #[test]
 fn test_low_signal() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("quality_test.go",
-        go_fixture!("test_quality_slop.txt"),
-    );
+    workspace.write_file("quality_test.go", go_fixture!("test_quality_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -34,15 +31,12 @@ fn test_low_signal() {
             .iter()
             .any(|finding| finding.rule_id == "placeholder_test_body")
     );
-
-    }
+}
 
 #[test]
 fn test_high_signal() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("quality_test.go",
-        go_fixture!("test_quality_clean.txt"),
-    );
+    workspace.write_file("quality_test.go", go_fixture!("test_quality_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -68,5 +62,4 @@ fn test_high_signal() {
             .iter()
             .any(|finding| finding.rule_id == "placeholder_test_body")
     );
-
-    }
+}

@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -32,8 +31,7 @@ fn test_db_slop() {
             .iter()
             .any(|finding| finding.rule_id == "likely_unindexed_query")
     );
-
-    }
+}
 
 #[test]
 fn test_db_clean() {
@@ -64,5 +62,4 @@ fn test_db_clean() {
             .iter()
             .any(|finding| finding.rule_id == "likely_unindexed_query")
     );
-
-    }
+}

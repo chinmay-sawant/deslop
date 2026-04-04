@@ -19,8 +19,8 @@ use self::items::{
 
 mod functions;
 
-pub(crate) use functions::{is_inside_function, leading_attributes, string_literal_value};
 use self::functions::{collect_functions, is_test_file, module_name_for_path};
+pub(crate) use functions::{is_inside_function, leading_attributes, string_literal_value};
 
 pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
     let mut parser = Parser::new();

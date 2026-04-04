@@ -11,7 +11,11 @@ use crate::model::FunctionFingerprint;
 use super::imports::combine_path_prefix;
 use super::items::trait_impl_type;
 
-pub(crate) fn collect_functions(root: Node<'_>, source: &str, is_test_file: bool) -> Vec<ParsedFunction> {
+pub(crate) fn collect_functions(
+    root: Node<'_>,
+    source: &str,
+    is_test_file: bool,
+) -> Vec<ParsedFunction> {
     let mut functions = Vec::new();
     visit_for_functions(root, source, is_test_file, &mut functions);
     functions.sort_by(|left, right| {

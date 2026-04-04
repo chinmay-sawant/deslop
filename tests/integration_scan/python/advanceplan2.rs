@@ -1,8 +1,6 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::super::FixtureWorkspace;
-
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
@@ -32,10 +30,9 @@ fn assert_rules_absent(report: &deslop::ScanReport, rule_ids: &[&str]) {
 fn test_python_advanceplan2_async_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/async_service.py",
-            python_fixture!("integration/advanceplan2/async_positive.txt"),
-        )],
-    );
+        "pkg/async_service.py",
+        python_fixture!("integration/advanceplan2/async_positive.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -52,17 +49,15 @@ fn test_python_advanceplan2_async_rules() {
             "async_retry_sleep_without_backoff",
         ],
     );
-
-    }
+}
 
 #[test]
 fn test_python_advanceplan2_async_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/async_service.py",
-            python_fixture!("integration/advanceplan2/async_clean.txt"),
-        )],
-    );
+        "pkg/async_service.py",
+        python_fixture!("integration/advanceplan2/async_clean.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -79,17 +74,15 @@ fn test_python_advanceplan2_async_clean() {
             "async_retry_sleep_without_backoff",
         ],
     );
-
-    }
+}
 
 #[test]
 fn test_python_advanceplan2_contract_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/contracts.py",
-            python_fixture!("integration/advanceplan2/contracts_positive.txt"),
-        )],
-    );
+        "pkg/contracts.py",
+        python_fixture!("integration/advanceplan2/contracts_positive.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -108,17 +101,15 @@ fn test_python_advanceplan2_contract_rules() {
             "typeddict_unchecked_access",
         ],
     );
-
-    }
+}
 
 #[test]
 fn test_python_advanceplan2_contract_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/contracts.py",
-            python_fixture!("integration/advanceplan2/contracts_clean.txt"),
-        )],
-    );
+        "pkg/contracts.py",
+        python_fixture!("integration/advanceplan2/contracts_clean.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -137,17 +128,15 @@ fn test_python_advanceplan2_contract_clean() {
             "typeddict_unchecked_access",
         ],
     );
-
-    }
+}
 
 #[test]
 fn test_python_advanceplan2_import_time_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/bootstrap.py",
-            python_fixture!("integration/advanceplan2/import_time_positive.txt"),
-        )],
-    );
+        "pkg/bootstrap.py",
+        python_fixture!("integration/advanceplan2/import_time_positive.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -166,17 +155,15 @@ fn test_python_advanceplan2_import_time_rules() {
             "import_time_config_load",
         ],
     );
-
-    }
+}
 
 #[test]
 fn test_python_advanceplan2_import_time_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/bootstrap.py",
-            python_fixture!("integration/advanceplan2/import_time_clean.txt"),
-        )],
-    );
+        "pkg/bootstrap.py",
+        python_fixture!("integration/advanceplan2/import_time_clean.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -195,17 +182,15 @@ fn test_python_advanceplan2_import_time_clean() {
             "import_time_config_load",
         ],
     );
-
-    }
+}
 
 #[test]
 fn test_python_advanceplan2_boundary_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/boundary.py",
-            python_fixture!("integration/advanceplan2/boundary_positive.txt"),
-        )],
-    );
+        "pkg/boundary.py",
+        python_fixture!("integration/advanceplan2/boundary_positive.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -223,17 +208,15 @@ fn test_python_advanceplan2_boundary_rules() {
             "tempfile_without_cleanup",
         ],
     );
-
-    }
+}
 
 #[test]
 fn test_python_advanceplan2_boundary_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/boundary.py",
-            python_fixture!("integration/advanceplan2/boundary_clean.txt"),
-        )],
-    );
+        "pkg/boundary.py",
+        python_fixture!("integration/advanceplan2/boundary_clean.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -251,5 +234,4 @@ fn test_python_advanceplan2_boundary_clean() {
             "tempfile_without_cleanup",
         ],
     );
-
-    }
+}

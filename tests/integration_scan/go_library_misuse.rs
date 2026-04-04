@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -156,7 +155,8 @@ const LIBRARY_RULES: &[&str] = &[
 #[test]
 fn test_go_library_misuse_perf_positive() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("perf_positive.go",
+    workspace.write_file(
+        "perf_positive.go",
         go_fixture!("library_misuse_perf_positive.txt"),
     );
 
@@ -169,13 +169,13 @@ fn test_go_library_misuse_perf_positive() {
     for rule_id in PERF_RULES {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
     }
-
-    }
+}
 
 #[test]
 fn test_go_library_misuse_perf_clean() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("perf_clean.go",
+    workspace.write_file(
+        "perf_clean.go",
         go_fixture!("library_misuse_perf_clean.txt"),
     );
 
@@ -188,15 +188,15 @@ fn test_go_library_misuse_perf_clean() {
     for rule_id in PERF_RULES {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
     }
-
-    }
+}
 
 // ── Security rules (plan2) ──
 
 #[test]
 fn test_go_library_misuse_security_positive() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("sec_positive.go",
+    workspace.write_file(
+        "sec_positive.go",
         go_fixture!("library_misuse_security_positive.txt"),
     );
 
@@ -209,13 +209,13 @@ fn test_go_library_misuse_security_positive() {
     for rule_id in SECURITY_RULES {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
     }
-
-    }
+}
 
 #[test]
 fn test_go_library_misuse_security_clean() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("sec_clean.go",
+    workspace.write_file(
+        "sec_clean.go",
         go_fixture!("library_misuse_security_clean.txt"),
     );
 
@@ -228,15 +228,15 @@ fn test_go_library_misuse_security_clean() {
     for rule_id in SECURITY_RULES {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
     }
-
-    }
+}
 
 // ── Library rules (plan3) ──
 
 #[test]
 fn test_go_library_misuse_library_positive() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("lib_positive.go",
+    workspace.write_file(
+        "lib_positive.go",
         go_fixture!("library_misuse_library_positive.txt"),
     );
 
@@ -249,13 +249,13 @@ fn test_go_library_misuse_library_positive() {
     for rule_id in LIBRARY_RULES {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
     }
-
-    }
+}
 
 #[test]
 fn test_go_library_misuse_library_clean() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("lib_clean.go",
+    workspace.write_file(
+        "lib_clean.go",
         go_fixture!("library_misuse_library_clean.txt"),
     );
 
@@ -268,5 +268,4 @@ fn test_go_library_misuse_library_clean() {
     for rule_id in LIBRARY_RULES {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
     }
-
-    }
+}

@@ -323,7 +323,10 @@ pub(super) fn builder_state_file_findings(file: &ParsedFile) -> Vec<Finding> {
     findings
 }
 
-pub(super) fn builder_state_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(super) fn builder_state_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if !is_public_api(function) {
         return Vec::new();
     }

@@ -105,7 +105,7 @@ fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMe
         family: definition.family.to_string(),
         default_severity: definition.default_severity.clone(),
         status: definition.status.clone(),
-        configurability: definition.configurability.iter().cloned().collect(),
+        configurability: definition.configurability.to_vec(),
         description: definition.description.to_string(),
     };
 
@@ -180,8 +180,8 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     use super::{
-        RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule,
-        rule_binding_location, rule_metadata, rule_metadata_variants, rule_registry,
+        RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule, rule_binding_location,
+        rule_metadata, rule_metadata_variants, rule_registry,
     };
     use crate::{DEFAULT_MAX_BYTES, read_to_string_limited};
 

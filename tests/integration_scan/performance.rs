@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -6,9 +5,7 @@ use super::FixtureWorkspace;
 #[test]
 fn test_concat_loops() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("concat.go",
-        go_fixture!("string_concat_loop.txt"),
-    );
+    workspace.write_file("concat.go", go_fixture!("string_concat_loop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -22,15 +19,12 @@ fn test_concat_loops() {
             .iter()
             .any(|finding| finding.rule_id == "string_concat_in_loop")
     );
-
-    }
+}
 
 #[test]
 fn test_numeric_ok() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("concat.go",
-        go_fixture!("string_concat_clean.txt"),
-    );
+    workspace.write_file("concat.go", go_fixture!("string_concat_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -44,8 +38,7 @@ fn test_numeric_ok() {
             .iter()
             .any(|finding| finding.rule_id == "string_concat_in_loop")
     );
-
-    }
+}
 
 #[test]
 fn test_json_loops() {
@@ -62,8 +55,7 @@ fn test_json_loops() {
         finding.rule_id == "repeated_json_marshaling"
             && finding.function_name.as_deref() == Some("EncodeAll")
     }));
-
-    }
+}
 
 #[test]
 fn test_json_ok() {
@@ -82,8 +74,7 @@ fn test_json_ok() {
             .iter()
             .any(|finding| finding.rule_id == "repeated_json_marshaling")
     );
-
-    }
+}
 
 #[test]
 fn test_hot_path() {
@@ -114,8 +105,7 @@ fn test_hot_path() {
             .iter()
             .any(|finding| finding.rule_id == "reflection_hot_path")
     );
-
-    }
+}
 
 #[test]
 fn test_hot_path_ok() {
@@ -146,15 +136,12 @@ fn test_hot_path_ok() {
             .iter()
             .any(|finding| finding.rule_id == "reflection_hot_path")
     );
-
-    }
+}
 
 #[test]
 fn test_dataset_load() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("full_dataset.go",
-        go_fixture!("full_dataset_load_slop.txt"),
-    );
+    workspace.write_file("full_dataset.go", go_fixture!("full_dataset_load_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -168,13 +155,13 @@ fn test_dataset_load() {
             .iter()
             .any(|finding| finding.rule_id == "full_dataset_load")
     );
-
-    }
+}
 
 #[test]
 fn test_streaming_ok() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("full_dataset.go",
+    workspace.write_file(
+        "full_dataset.go",
         go_fixture!("full_dataset_load_clean.txt"),
     );
 
@@ -190,18 +177,13 @@ fn test_streaming_ok() {
             .iter()
             .any(|finding| finding.rule_id == "full_dataset_load")
     );
-
-    }
+}
 
 #[test]
 fn test_semantic_n_squared_rules_are_opt_in() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("alloc.go",
-        go_fixture!("n_squared_alloc_slop.txt"),
-    );
-    workspace.write_file("concat.go",
-        go_fixture!("n_squared_concat_slop.txt"),
-    );
+    workspace.write_file("alloc.go", go_fixture!("n_squared_alloc_slop.txt"));
+    workspace.write_file("concat.go", go_fixture!("n_squared_concat_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -215,21 +197,14 @@ fn test_semantic_n_squared_rules_are_opt_in() {
             "likely_n_squared_allocation" | "likely_n_squared_string_concat"
         )
     }));
-
-    }
+}
 
 #[test]
 fn test_semantic_n_squared_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(".deslop.toml",
-        "go_semantic_experimental = true\n",
-    );
-    workspace.write_file("alloc.go",
-        go_fixture!("n_squared_alloc_slop.txt"),
-    );
-    workspace.write_file("concat.go",
-        go_fixture!("n_squared_concat_slop.txt"),
-    );
+    workspace.write_file(".deslop.toml", "go_semantic_experimental = true\n");
+    workspace.write_file("alloc.go", go_fixture!("n_squared_alloc_slop.txt"));
+    workspace.write_file("concat.go", go_fixture!("n_squared_concat_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -245,21 +220,14 @@ fn test_semantic_n_squared_rules() {
         finding.rule_id == "likely_n_squared_string_concat"
             && finding.function_name.as_deref() == Some("Render")
     }));
-
-    }
+}
 
 #[test]
 fn test_semantic_n_squared_clean_fixtures() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(".deslop.toml",
-        "go_semantic_experimental = true\n",
-    );
-    workspace.write_file("alloc.go",
-        go_fixture!("n_squared_alloc_clean.txt"),
-    );
-    workspace.write_file("concat.go",
-        go_fixture!("n_squared_concat_clean.txt"),
-    );
+    workspace.write_file(".deslop.toml", "go_semantic_experimental = true\n");
+    workspace.write_file("alloc.go", go_fixture!("n_squared_alloc_clean.txt"));
+    workspace.write_file("concat.go", go_fixture!("n_squared_concat_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -273,18 +241,13 @@ fn test_semantic_n_squared_clean_fixtures() {
             "likely_n_squared_allocation" | "likely_n_squared_string_concat"
         )
     }));
-
-    }
+}
 
 #[test]
 fn test_semantic_nested_query_escalation() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(".deslop.toml",
-        "go_semantic_experimental = true\n",
-    );
-    workspace.write_file("query.go",
-        go_fixture!("n_squared_query_slop.txt"),
-    );
+    workspace.write_file(".deslop.toml", "go_semantic_experimental = true\n");
+    workspace.write_file("query.go", go_fixture!("n_squared_query_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -297,18 +260,13 @@ fn test_semantic_nested_query_escalation() {
             && matches!(finding.severity, deslop::Severity::Error)
             && finding.function_name.as_deref() == Some("Load")
     }));
-
-    }
+}
 
 #[test]
 fn test_semantic_nested_query_clean() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(".deslop.toml",
-        "go_semantic_experimental = true\n",
-    );
-    workspace.write_file("query.go",
-        go_fixture!("n_squared_query_clean.txt"),
-    );
+    workspace.write_file(".deslop.toml", "go_semantic_experimental = true\n");
+    workspace.write_file("query.go", go_fixture!("n_squared_query_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -322,5 +280,4 @@ fn test_semantic_nested_query_clean() {
             .iter()
             .any(|finding| finding.rule_id == "n_plus_one_query")
     );
-
-    }
+}

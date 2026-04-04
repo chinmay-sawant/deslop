@@ -1,8 +1,6 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::super::FixtureWorkspace;
-
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
@@ -49,10 +47,9 @@ const HOTPATH_RULES: &[&str] = &[
 fn test_python_hotpath_positive() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/hotpath_code.py",
-            python_fixture!("integration/hotpath/core_positive.txt"),
-        )],
-    );
+        "pkg/hotpath_code.py",
+        python_fixture!("integration/hotpath/core_positive.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -61,17 +58,15 @@ fn test_python_hotpath_positive() {
     .expect("scan should succeed");
 
     assert_rules_present(&report, HOTPATH_RULES);
-
-    }
+}
 
 #[test]
 fn test_python_hotpath_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
-            "pkg/hotpath_code.py",
-            python_fixture!("integration/hotpath/core_clean.txt"),
-        )],
-    );
+        "pkg/hotpath_code.py",
+        python_fixture!("integration/hotpath/core_clean.txt"),
+    )]);
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -80,5 +75,4 @@ fn test_python_hotpath_clean() {
     .expect("scan should succeed");
 
     assert_rules_absent(&report, HOTPATH_RULES);
-
-    }
+}

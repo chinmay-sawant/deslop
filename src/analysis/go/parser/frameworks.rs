@@ -135,7 +135,7 @@ fn visit_parse_input_calls(
     let next_inside_loop = inside_loop || node.kind() == "for_statement";
 
     if node.kind() == "call_expression"
-        && let Some(call) = parse_input_call(node, source, imports, next_inside_loop)
+        && let Some(call) = parse_input_call(node, source, imports)
     {
         calls.push(call);
     }
@@ -188,7 +188,6 @@ fn parse_input_call(
     node: Node<'_>,
     source: &str,
     imports: &[ImportSpec],
-    in_loop: bool,
 ) -> Option<ParseInputCall> {
     let function_node = node.child_by_field_name("function")?;
     let arguments_node = node.child_by_field_name("arguments")?;
@@ -221,7 +220,6 @@ fn parse_input_call(
         input_binding: simple_reference_text(&input_text),
         input_text,
         target_text,
-        in_loop,
     })
 }
 

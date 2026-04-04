@@ -105,19 +105,14 @@ pub(crate) struct ParseInputCall {
     pub input_text: String,
     pub input_binding: Option<String>,
     pub target_text: Option<String>,
-    #[allow(dead_code)]
-    pub in_loop: bool,
 }
 
 #[derive(Debug, Clone)]
 pub(crate) struct GinCallSummary {
     pub line: usize,
     pub operation: String,
-    #[allow(dead_code)]
     pub argument_texts: Vec<String>,
-    #[allow(dead_code)]
     pub assigned_binding: Option<String>,
-    #[allow(dead_code)]
     pub in_loop: bool,
 }
 
@@ -154,7 +149,6 @@ pub(crate) struct GoStructSummary {
     pub fields: Vec<GoFieldSummary>,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct GoFunctionEvidenceView<'a> {
     pub has_context_parameter: bool,

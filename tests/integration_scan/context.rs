@@ -1,4 +1,3 @@
-
 use deslop::{ScanOptions, scan_repository};
 
 use super::FixtureWorkspace;
@@ -20,8 +19,7 @@ fn test_missing_ctx_http() {
             .iter()
             .any(|finding| finding.rule_id == "missing_context")
     );
-
-    }
+}
 
 #[test]
 fn test_ctx_http() {
@@ -40,15 +38,12 @@ fn test_ctx_http() {
             .iter()
             .any(|finding| finding.rule_id == "missing_context")
     );
-
-    }
+}
 
 #[test]
 fn test_missing_cancel() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("cancel.go",
-        go_fixture!("context_cancel_slop.txt"),
-    );
+    workspace.write_file("cancel.go", go_fixture!("context_cancel_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -59,15 +54,12 @@ fn test_missing_cancel() {
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "missing_cancel_call" && finding.function_name.as_deref() == Some("Run")
     }));
-
-    }
+}
 
 #[test]
 fn test_ctx_cancel() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("cancel.go",
-        go_fixture!("context_cancel_clean.txt"),
-    );
+    workspace.write_file("cancel.go", go_fixture!("context_cancel_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -81,8 +73,7 @@ fn test_ctx_cancel() {
             .iter()
             .any(|finding| finding.rule_id == "missing_cancel_call")
     );
-
-    }
+}
 
 #[test]
 fn test_sleep_loops() {
@@ -101,8 +92,7 @@ fn test_sleep_loops() {
             .iter()
             .any(|finding| finding.rule_id == "sleep_polling")
     );
-
-    }
+}
 
 #[test]
 fn test_sleep_ok() {
@@ -121,8 +111,7 @@ fn test_sleep_ok() {
             .iter()
             .any(|finding| finding.rule_id == "sleep_polling")
     );
-
-    }
+}
 
 #[test]
 fn test_busy_wait() {
@@ -141,8 +130,7 @@ fn test_busy_wait() {
             .iter()
             .any(|finding| finding.rule_id == "busy_waiting")
     );
-
-    }
+}
 
 #[test]
 fn test_select_ok() {
@@ -161,15 +149,12 @@ fn test_select_ok() {
             .iter()
             .any(|finding| finding.rule_id == "busy_waiting")
     );
-
-    }
+}
 
 #[test]
 fn test_missing_ctx_exec() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("exec.go",
-        go_fixture!("missing_context_exec.txt"),
-    );
+    workspace.write_file("exec.go", go_fixture!("missing_context_exec.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -180,8 +165,7 @@ fn test_missing_ctx_exec() {
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "missing_context" && finding.message.contains("context-aware work")
     }));
-
-    }
+}
 
 #[test]
 fn test_ctx_exec() {
@@ -200,15 +184,12 @@ fn test_ctx_exec() {
             .iter()
             .any(|finding| finding.rule_id == "missing_context")
     );
-
-    }
+}
 
 #[test]
 fn test_context_wrapper_slop() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("wrapper.go",
-        go_fixture!("context_wrapper_slop.txt"),
-    );
+    workspace.write_file("wrapper.go", go_fixture!("context_wrapper_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -228,15 +209,12 @@ fn test_context_wrapper_slop() {
             .iter()
             .any(|finding| finding.rule_id == "context_background_used")
     );
-
-    }
+}
 
 #[test]
 fn test_context_wrapper_clean() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("wrapper.go",
-        go_fixture!("context_wrapper_clean.txt"),
-    );
+    workspace.write_file("wrapper.go", go_fixture!("context_wrapper_clean.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -256,13 +234,13 @@ fn test_context_wrapper_clean() {
             .iter()
             .any(|finding| finding.rule_id == "context_background_used")
     );
-
-    }
+}
 
 #[test]
 fn test_context_wrapper_alias_slop() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("wrapper_alias.go",
+    workspace.write_file(
+        "wrapper_alias.go",
         go_fixture!("context_wrapper_alias_slop.txt"),
     );
 
@@ -280,13 +258,13 @@ fn test_context_wrapper_alias_slop() {
         finding.rule_id == "context_background_used"
             && finding.function_name.as_deref() == Some("Fetch")
     }));
-
-    }
+}
 
 #[test]
 fn test_context_receiver_wrapper_slop() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("receiver_wrapper.go",
+    workspace.write_file(
+        "receiver_wrapper.go",
         go_fixture!("context_receiver_wrapper_slop.txt"),
     );
 
@@ -300,13 +278,13 @@ fn test_context_receiver_wrapper_slop() {
         finding.rule_id == "missing_context_propagation"
             && finding.function_name.as_deref() == Some("Fetch")
     }));
-
-    }
+}
 
 #[test]
 fn test_context_nested_wrapper_slop() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("nested_wrapper.go",
+    workspace.write_file(
+        "nested_wrapper.go",
         go_fixture!("context_nested_wrapper_slop.txt"),
     );
 
@@ -321,15 +299,12 @@ fn test_context_nested_wrapper_slop() {
             && finding.function_name.as_deref() == Some("Fetch")
             && finding.message.contains("wrapper chain")
     }));
-
-    }
+}
 
 #[test]
 fn test_context_db_query_wrapper_slop() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("db_wrapper.go",
-        go_fixture!("context_db_query_slop.txt"),
-    );
+    workspace.write_file("db_wrapper.go", go_fixture!("context_db_query_slop.txt"));
 
     let report = scan_repository(&ScanOptions {
         root: workspace.root().to_path_buf(),
@@ -342,13 +317,13 @@ fn test_context_db_query_wrapper_slop() {
             && finding.function_name.as_deref() == Some("Load")
             && finding.message.contains("context-aware DB variant")
     }));
-
-    }
+}
 
 #[test]
 fn test_documented_context_detach_is_allowed() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("detach.go",
+    workspace.write_file(
+        "detach.go",
         go_fixture!("context_documented_detach_clean.txt"),
     );
 
@@ -364,16 +339,17 @@ fn test_documented_context_detach_is_allowed() {
             "missing_context_propagation" | "context_background_used"
         )
     }));
-
-    }
+}
 
 #[test]
 fn test_context_propagation_severity_override() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("receiver_wrapper.go",
+    workspace.write_file(
+        "receiver_wrapper.go",
         go_fixture!("context_receiver_wrapper_slop.txt"),
     );
-    workspace.write_file(".deslop.toml",
+    workspace.write_file(
+        ".deslop.toml",
         "[severity_overrides]\nmissing_context_propagation = \"error\"\n",
     );
 
@@ -387,5 +363,4 @@ fn test_context_propagation_severity_override() {
         finding.rule_id == "missing_context_propagation"
             && matches!(finding.severity, deslop::Severity::Error)
     }));
-
-    }
+}

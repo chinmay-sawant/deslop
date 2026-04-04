@@ -9,8 +9,8 @@ mod api_design_state;
 mod api_design_surface;
 
 use self::api_design_state::{
-    builder_state_file_findings, builder_state_function_findings, shared_state_findings,
-    serde_contract_findings,
+    builder_state_file_findings, builder_state_function_findings, serde_contract_findings,
+    shared_state_findings,
 };
 use self::api_design_surface::api_surface_findings;
 
