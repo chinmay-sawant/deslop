@@ -1,0 +1,90 @@
+use super::{
+    RuleConfigurability, RuleDefaultSeverity, RuleDefinition, RuleLanguage, RuleStatus, bindings,
+};
+
+pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
+    RuleDefinition {
+        id: "rust_axum_router_built_in_handler",
+        language: RuleLanguage::Rust,
+        family: "runtime_boundary",
+        default_severity: RuleDefaultSeverity::Warning,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Axum routers assembled inside handler call paths instead of startup wiring.",
+        binding_location: bindings::RUST_RUNTIME_BOUNDARY,
+    },
+    RuleDefinition {
+        id: "rust_clone_heavy_state_in_loop",
+        language: RuleLanguage::Rust,
+        family: "runtime_boundary",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Likely heavy state cloned repeatedly inside loops in Rust application code.",
+        binding_location: bindings::RUST_RUNTIME_BOUNDARY,
+    },
+    RuleDefinition {
+        id: "rust_env_var_read_in_request_path",
+        language: RuleLanguage::Rust,
+        family: "runtime_boundary",
+        default_severity: RuleDefaultSeverity::Warning,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Rust request handlers reading environment configuration on the hot request path.",
+        binding_location: bindings::RUST_RUNTIME_BOUNDARY,
+    },
+    RuleDefinition {
+        id: "rust_tokio_runtime_built_per_call",
+        language: RuleLanguage::Rust,
+        family: "runtime_boundary",
+        default_severity: RuleDefaultSeverity::Warning,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Tokio runtimes created per call instead of being owned at process or bootstrap boundaries.",
+        binding_location: bindings::RUST_RUNTIME_BOUNDARY,
+    },
+    RuleDefinition {
+        id: "rust_tonic_channel_connect_per_request",
+        language: RuleLanguage::Rust,
+        family: "runtime_boundary",
+        default_severity: RuleDefaultSeverity::Warning,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "tonic transport channels dialed on request paths instead of reusing configured clients.",
+        binding_location: bindings::RUST_RUNTIME_BOUNDARY,
+    },
+    RuleDefinition {
+        id: "rust_workspace_missing_resolver",
+        language: RuleLanguage::Rust,
+        family: "runtime_boundary",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Workspace Cargo manifests with multiple members but no explicit resolver version.",
+        binding_location: bindings::RUST_RUNTIME_BOUNDARY,
+    },
+];

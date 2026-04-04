@@ -39,6 +39,15 @@ pub(crate) const PYTHON_STRUCTURE: &str = crate::heuristics::python::STRUCTURE_B
 
 pub(crate) const RUST_ANALYSIS_EVALUATE: &str = crate::analysis::rust::EVALUATE_BINDING_LOCATION;
 pub(crate) const RUST_ANALYSIS_FINDINGS: &str = crate::analysis::rust::FINDINGS_BINDING_LOCATION;
+pub(crate) const RUST_ADVANCEPLAN3: &str = crate::heuristics::rust::ADVANCEPLAN3_BINDING_LOCATION;
+pub(crate) const RUST_ADVANCEPLAN3_PLAN1: &str =
+    crate::heuristics::rust::ADVANCEPLAN3_PLAN1_BINDING_LOCATION;
+pub(crate) const RUST_ADVANCEPLAN3_PLAN2: &str =
+    crate::heuristics::rust::ADVANCEPLAN3_PLAN2_BINDING_LOCATION;
+pub(crate) const RUST_ADVANCEPLAN3_PLAN3: &str =
+    crate::heuristics::rust::ADVANCEPLAN3_PLAN3_BINDING_LOCATION;
+pub(crate) const RUST_ADVANCEPLAN3_PLAN4: &str =
+    crate::heuristics::rust::ADVANCEPLAN3_PLAN4_BINDING_LOCATION;
 pub(crate) const RUST_API_DESIGN: &str = crate::heuristics::rust::API_DESIGN_BINDING_LOCATION;
 pub(crate) const RUST_ASYNC_PATTERNS: &str =
     crate::heuristics::rust::ASYNC_PATTERNS_BINDING_LOCATION;

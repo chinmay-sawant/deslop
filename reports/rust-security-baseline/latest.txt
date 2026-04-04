@@ -1,4 +1,14 @@
 ## narrowing_as_casts
+src/heuristics/rust/advanceplan3/mod.rs:69:        " as u8",
+src/heuristics/rust/advanceplan3/mod.rs:70:        " as u16",
+src/heuristics/rust/advanceplan3/mod.rs:71:        " as u32",
+src/heuristics/rust/advanceplan3/mod.rs:72:        " as u64",
+src/heuristics/rust/advanceplan3/mod.rs:73:        " as usize",
+src/heuristics/rust/advanceplan3/mod.rs:74:        " as i8",
+src/heuristics/rust/advanceplan3/mod.rs:75:        " as i16",
+src/heuristics/rust/advanceplan3/mod.rs:76:        " as i32",
+src/heuristics/rust/advanceplan3/mod.rs:77:        " as i64",
+src/heuristics/rust/advanceplan3/mod.rs:78:        " as isize",
 
 ## split_at_and_indexing
 src/analysis/python/parser/general.rs:932:                return &line[..index];
@@ -45,6 +55,7 @@ src/heuristics/python/hotpath_ext.rs:688:            let expr = &trimmed[1..for_
 src/heuristics/python/hotpath_ext.rs:726:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
 src/heuristics/python/packaging.rs:324:        [first, ..] => Some(*first),
 src/heuristics/python/quality/mod.rs:203:    split_top_level_commas(&signature_text[start + 1..end])
+src/heuristics/rust/advanceplan3/plan2.rs:90:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:85:    for (offset, character) in signature_text[start..].char_indices() {
 src/heuristics/rust/performance.rs:341:    text[vec_start + 4..].contains("Box<")
@@ -60,6 +71,8 @@ tests/integration_scan/mod.rs:33:#[path = "../support/mod.rs"]
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/heuristics/python/packaging.rs:244:    candidate.exists().then_some(candidate)
+src/heuristics/rust/advanceplan3/plan1.rs:187:        &["exists(", "metadata(", "symlink_metadata("],
+src/heuristics/rust/advanceplan3/plan4.rs:203:    if !should_emit_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/heuristics/rust/runtime_boundary.rs:169:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
@@ -72,21 +85,26 @@ src/rules/catalog/python/framework.rs:169:        description: "Django querysets
 tests/benchmark_guard.rs:36:        repo_root.exists(),
 
 ## toctou_check_then_open
+src/heuristics/rust/advanceplan3/plan1.rs:187: prior check:         &["exists(", "metadata(", "symlink_metadata("],
+src/heuristics/rust/advanceplan3/plan1.rs:194: check-then-open candidate after line 187:         &["open(", "read_to_string(", "read(", "File::open("],
 
 ## secret_comparisons
 src/analysis/rust/parser/tests.rs:135:            .any(|name| name == "password")
-src/heuristics/rust/mod.rs:163:        .any(|token| normalized == *token || normalized.contains(token))
+src/heuristics/rust/mod.rs:173:        .any(|token| normalized == *token || normalized.contains(token))
 src/rules/catalog/go/security.rs:631:        description: "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
 tests/integration_scan/security.rs:29:            .any(|finding| finding.rule_id == "hardcoded_secret")
 tests/integration_scan/security.rs:44:            .any(|finding| finding.rule_id == "hardcoded_secret")
 
 ## shared_mutability
+src/heuristics/rust/advanceplan3/plan4.rs:177:            name.contains("parent") && type_text.contains("Rc<") && !type_text.contains("Weak<")
 src/heuristics/rust/api_design.rs:244:        "RefCell<",
 src/heuristics/rust/api_design.rs:274:    type_text.contains("Rc<RefCell<") || type_text.contains("Rc<std::cell::RefCell<")
 src/heuristics/rust/api_design_state.rs:78:                        "struct {} uses Rc<RefCell<_>> in a domain-style type",
-src/rules/catalog/rust.rs:225:        description: "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
+src/rules/catalog/rust/api_design.rs:227:        description: "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
 
 ## unsafe_globals
+src/analysis/rust/parser/items.rs:395:            .is_some_and(|text| text.contains("static mut ")),
+src/heuristics/rust/advanceplan3/plan4.rs:83:        description: "static mut global state that bypasses the safer shared-state models already in the scanner.",
 
 ## derive_default
 src/analysis/config.rs:1:#[derive(Debug, Clone, Copy, Default)]
@@ -95,6 +113,9 @@ src/analysis/types/core.rs:62:#[derive(Debug, Clone, Default)]
 src/analysis/types/core.rs:69:#[derive(Debug, Clone, Default)]
 
 ## thread_spawn_async
+src/heuristics/rust/advanceplan3/plan4.rs:340:        &["thread::spawn(", "std::thread::spawn("],
+src/heuristics/rust/advanceplan3/plan4.rs:364:        &["thread::spawn(", "std::thread::spawn("],
+src/heuristics/rust/advanceplan3/plan4.rs:55:        description: "Raw std::thread::spawn blocks that call async work without an explicit runtime handoff.",
 
 ## path_join_absolute
 

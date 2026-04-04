@@ -1,3 +1,4 @@
+mod advanceplan3;
 mod api_design;
 mod async_patterns;
 mod domain_modeling;
@@ -5,8 +6,13 @@ mod performance;
 mod runtime_boundary;
 mod unsafe_soundness;
 
+pub(crate) const ADVANCEPLAN3_PLAN1_BINDING_LOCATION: &str = advanceplan3::plan1::BINDING_LOCATION;
+pub(crate) const ADVANCEPLAN3_PLAN2_BINDING_LOCATION: &str = advanceplan3::plan2::BINDING_LOCATION;
+pub(crate) const ADVANCEPLAN3_PLAN3_BINDING_LOCATION: &str = advanceplan3::plan3::BINDING_LOCATION;
+pub(crate) const ADVANCEPLAN3_PLAN4_BINDING_LOCATION: &str = advanceplan3::plan4::BINDING_LOCATION;
 pub(crate) const API_DESIGN_BINDING_LOCATION: &str = api_design::BINDING_LOCATION;
 pub(crate) const ASYNC_PATTERNS_BINDING_LOCATION: &str = async_patterns::BINDING_LOCATION;
+pub(crate) const ADVANCEPLAN3_BINDING_LOCATION: &str = advanceplan3::BINDING_LOCATION;
 pub(crate) const DOMAIN_MODELING_BINDING_LOCATION: &str = domain_modeling::BINDING_LOCATION;
 pub(crate) const PERFORMANCE_BINDING_LOCATION: &str = performance::BINDING_LOCATION;
 pub(crate) const RUNTIME_BOUNDARY_BINDING_LOCATION: &str = runtime_boundary::BINDING_LOCATION;
@@ -15,6 +21,10 @@ pub(crate) const UNSAFE_SOUNDNESS_BINDING_LOCATION: &str = unsafe_soundness::BIN
 use crate::analysis::{FieldSummary, ParsedFile, ParsedFunction, StructSummary};
 use crate::model::{Finding, Severity};
 
+pub(crate) use advanceplan3::{
+    file_findings as advanceplan3_file_findings,
+    function_findings as advanceplan3_function_findings, plan1, plan2, plan3, plan4,
+};
 pub(crate) use api_design::{api_design_file_findings, api_design_function_findings};
 pub(crate) use async_patterns::{async_file_findings, async_function_findings};
 pub(crate) use domain_modeling::domain_findings;

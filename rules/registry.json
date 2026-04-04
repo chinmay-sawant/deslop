@@ -7382,6 +7382,84 @@
     "description": "std::sync::Mutex appears to be held across .await in async code."
   },
   {
+    "id": "rust_check_then_open_path",
+    "language": "rust",
+    "family": "boundary",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Filesystem code that checks metadata or existence before opening a path."
+  },
+  {
+    "id": "rust_internal_anyhow_result",
+    "language": "rust",
+    "family": "boundary",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Internal library functions that return anyhow-style error surfaces instead of crate-local errors."
+  },
+  {
+    "id": "rust_manual_tempdir_lifecycle",
+    "language": "rust",
+    "family": "boundary",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Manual temp-directory setup and cleanup that should usually use RAII helpers."
+  },
+  {
+    "id": "rust_narrowing_numeric_cast",
+    "language": "rust",
+    "family": "boundary",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Numeric narrowing casts that may silently truncate or change precision."
+  },
+  {
+    "id": "rust_secret_equality_compare",
+    "language": "rust",
+    "family": "boundary",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Direct equality or inequality comparisons on secret-like values."
+  },
+  {
+    "id": "rust_unbounded_read_to_string",
+    "language": "rust",
+    "family": "boundary",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Production code that reads an entire file into a string without a size bound."
+  },
+  {
     "id": "rust_debug_secret",
     "language": "rust",
     "family": "domain_modeling",
@@ -7629,6 +7707,97 @@
     "description": "unwrap() used in non-test Rust code."
   },
   {
+    "id": "rust_broad_allow_dead_code",
+    "language": "rust",
+    "family": "module_surface",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Broad dead_code suppression that can hide real wiring or maintenance gaps."
+  },
+  {
+    "id": "rust_duplicate_bootstrap_sequence",
+    "language": "rust",
+    "family": "module_surface",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Repeated startup or bootstrap wiring in multiple functions within the same file."
+  },
+  {
+    "id": "rust_mod_rs_catchall",
+    "language": "rust",
+    "family": "module_surface",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "mod.rs files that look like catch-all subsystem dumps."
+  },
+  {
+    "id": "rust_oversized_module_file",
+    "language": "rust",
+    "family": "module_surface",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Rust module files that grow too large and mix too many responsibilities."
+  },
+  {
+    "id": "rust_pub_use_glob_surface",
+    "language": "rust",
+    "family": "module_surface",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Public glob re-exports that flatten the crate surface."
+  },
+  {
+    "id": "rust_redundant_path_attribute",
+    "language": "rust",
+    "family": "module_surface",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Same-directory #[path = \"...\"] module attributes that standard resolution could replace."
+  },
+  {
+    "id": "rust_root_reexport_wall",
+    "language": "rust",
+    "family": "module_surface",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Crate roots that expose too many public re-exports at once."
+  },
+  {
     "id": "rust_aos_hot_path",
     "language": "rust",
     "family": "performance",
@@ -7864,6 +8033,175 @@
       "severity_override"
     ],
     "description": "Workspace Cargo manifests with multiple members but no explicit resolver version."
+  },
+  {
+    "id": "rust_block_in_place_request_path",
+    "language": "rust",
+    "family": "runtime_ownership",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Blocking runtime bridges such as block_in_place or block_on inside request-handling code."
+  },
+  {
+    "id": "rust_channel_created_per_request",
+    "language": "rust",
+    "family": "runtime_ownership",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Per-request channel and notification state creation instead of startup-owned coordination."
+  },
+  {
+    "id": "rust_detached_spawn_without_handle",
+    "language": "rust",
+    "family": "runtime_ownership",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Spawned background work whose JoinHandle is immediately discarded or never supervised."
+  },
+  {
+    "id": "rust_notify_without_shutdown_contract",
+    "language": "rust",
+    "family": "runtime_ownership",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Notify/wait coordination that lacks any visible shutdown or cancellation branch."
+  },
+  {
+    "id": "rust_process_global_env_toggle",
+    "language": "rust",
+    "family": "runtime_ownership",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Process-global environment mutation used as runtime control flow."
+  },
+  {
+    "id": "rust_runtime_builder_in_loop",
+    "language": "rust",
+    "family": "runtime_ownership",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Repeated runtime or executor builder setup inside loops or retry bodies."
+  },
+  {
+    "id": "rust_from_utf8_unchecked_boundary",
+    "language": "rust",
+    "family": "security_footguns",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Unchecked UTF-8 conversion at a repository or service boundary."
+  },
+  {
+    "id": "rust_rc_cycle_parent_link",
+    "language": "rust",
+    "family": "security_footguns",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Rc-based parent/back-reference shapes that likely need Weak on the reverse edge."
+  },
+  {
+    "id": "rust_release_profile_missing_overflow_checks",
+    "language": "rust",
+    "family": "security_footguns",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Release profiles that omit overflow-checks = true in Cargo.toml."
+  },
+  {
+    "id": "rust_release_profile_panic_unwind",
+    "language": "rust",
+    "family": "security_footguns",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Release profiles that still explicitly use panic = \"unwind\"."
+  },
+  {
+    "id": "rust_split_at_unchecked_external_input",
+    "language": "rust",
+    "family": "security_footguns",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Slice splitting and range indexing on externally-derived offsets without obvious bounds guards."
+  },
+  {
+    "id": "rust_static_mut_global",
+    "language": "rust",
+    "family": "security_footguns",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "static mut global state that bypasses the safer shared-state models already in the scanner."
+  },
+  {
+    "id": "rust_thread_spawn_async_without_runtime",
+    "language": "rust",
+    "family": "security_footguns",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Raw std::thread::spawn blocks that call async work without an explicit runtime handoff."
   },
   {
     "id": "rust_unsafe_aliasing_assumption",

@@ -1,0 +1,20 @@
+use axum::{extract::State, response::IntoResponse};
+
+pub struct AppState;
+
+pub async fn handler(State(_state): State<AppState>) -> impl IntoResponse {
+    let handle = tokio::spawn(async move {
+        do_work().await;
+    });
+    handle.await.unwrap();
+
+    let sender = startup_owned_sender();
+    let _ = sender;
+
+    Ok::<_, ()>(())
+}
+
+fn startup_owned_sender() -> tokio::sync::mpsc::Sender<u8> {
+    let (sender, _receiver) = tokio::sync::mpsc::channel(8);
+    sender
+}

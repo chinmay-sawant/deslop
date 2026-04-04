@@ -32,14 +32,14 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **611 language-scoped rule entries** in deslop `0.1.0`.
+The shipped registry currently tracks **637 language-scoped rule entries** in deslop `0.1.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
 | go | 312 | 2 | 0 | 314 |
 | python | 212 | 0 | 0 | 212 |
-| rust | 62 | 12 | 0 | 74 |
+| rust | 88 | 12 | 0 | 100 |
 
 The sections below are generated from the rule registry and grouped by language and family.
 When the same rule ID is implemented in more than one backend, it appears once in each relevant language section.
@@ -645,7 +645,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `tight_module_coupling`: Modules that depend on a large number of repository-local Python modules.
 - `too_many_instance_attributes`: Classes that assign an unusually large number of instance attributes across their methods.
 
-### Rust rules (74)
+### Rust rules (100)
 
 #### Api Design (21)
 - `rust_arc_mutex_option_state`: Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers.
@@ -681,6 +681,14 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_async_spawn_cancel_at_await`: Async work is spawned without an obvious cancellation path. *(status: experimental)*
 - `rust_async_std_mutex_await`: std::sync::Mutex appears to be held across .await in async code. *(status: experimental)*
 
+#### Boundary (6)
+- `rust_check_then_open_path`: Filesystem code that checks metadata or existence before opening a path.
+- `rust_internal_anyhow_result`: Internal library functions that return anyhow-style error surfaces instead of crate-local errors.
+- `rust_manual_tempdir_lifecycle`: Manual temp-directory setup and cleanup that should usually use RAII helpers.
+- `rust_narrowing_numeric_cast`: Numeric narrowing casts that may silently truncate or change precision.
+- `rust_secret_equality_compare`: Direct equality or inequality comparisons on secret-like values.
+- `rust_unbounded_read_to_string`: Production code that reads an entire file into a string without a size bound.
+
 #### Domain Modeling (8)
 - `rust_debug_secret`: Debug is derived on a type that carries secret-like fields.
 - `rust_domain_default_produces_invalid`: Default is derived or implemented on a type that likely cannot have a safe default state.
@@ -704,6 +712,15 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `unsafe_without_safety_comment`: unsafe fn or unsafe block without a nearby SAFETY: comment within the previous two lines.
 - `unwrap_in_non_test_code`: unwrap() used in non-test Rust code.
 
+#### Module Surface (7)
+- `rust_broad_allow_dead_code`: Broad dead_code suppression that can hide real wiring or maintenance gaps.
+- `rust_duplicate_bootstrap_sequence`: Repeated startup or bootstrap wiring in multiple functions within the same file.
+- `rust_mod_rs_catchall`: mod.rs files that look like catch-all subsystem dumps.
+- `rust_oversized_module_file`: Rust module files that grow too large and mix too many responsibilities.
+- `rust_pub_use_glob_surface`: Public glob re-exports that flatten the crate surface.
+- `rust_redundant_path_attribute`: Same-directory #[path = "..."] module attributes that standard resolution could replace.
+- `rust_root_reexport_wall`: Crate roots that expose too many public re-exports at once.
+
 #### Performance (12)
 - `rust_aos_hot_path`: Repeated struct-field dereferences inside a loop that may indicate an array-of-structs hot path.
 - `rust_blocking_drop`: A Drop implementation performs blocking work.
@@ -725,6 +742,23 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_tokio_runtime_built_per_call`: Tokio runtimes created per call instead of being owned at process or bootstrap boundaries.
 - `rust_tonic_channel_connect_per_request`: tonic transport channels dialed on request paths instead of reusing configured clients.
 - `rust_workspace_missing_resolver`: Workspace Cargo manifests with multiple members but no explicit resolver version.
+
+#### Runtime Ownership (6)
+- `rust_block_in_place_request_path`: Blocking runtime bridges such as block_in_place or block_on inside request-handling code.
+- `rust_channel_created_per_request`: Per-request channel and notification state creation instead of startup-owned coordination.
+- `rust_detached_spawn_without_handle`: Spawned background work whose JoinHandle is immediately discarded or never supervised.
+- `rust_notify_without_shutdown_contract`: Notify/wait coordination that lacks any visible shutdown or cancellation branch.
+- `rust_process_global_env_toggle`: Process-global environment mutation used as runtime control flow.
+- `rust_runtime_builder_in_loop`: Repeated runtime or executor builder setup inside loops or retry bodies.
+
+#### Security Footguns (7)
+- `rust_from_utf8_unchecked_boundary`: Unchecked UTF-8 conversion at a repository or service boundary.
+- `rust_rc_cycle_parent_link`: Rc-based parent/back-reference shapes that likely need Weak on the reverse edge.
+- `rust_release_profile_missing_overflow_checks`: Release profiles that omit overflow-checks = true in Cargo.toml.
+- `rust_release_profile_panic_unwind`: Release profiles that still explicitly use panic = "unwind".
+- `rust_split_at_unchecked_external_input`: Slice splitting and range indexing on externally-derived offsets without obvious bounds guards.
+- `rust_static_mut_global`: static mut global state that bypasses the safer shared-state models already in the scanner.
+- `rust_thread_spawn_async_without_runtime`: Raw std::thread::spawn blocks that call async work without an explicit runtime handoff.
 
 #### Unsafe Soundness (7)
 - `rust_unsafe_aliasing_assumption`: Unsafe code mixes interior mutability and mutable references in ways that need careful aliasing review.

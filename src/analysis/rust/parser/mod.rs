@@ -13,8 +13,8 @@ use crate::analysis::{
 
 use self::imports::collect_imports;
 use self::items::{
-    collect_enum_summaries, collect_pkg_strings, collect_static_summaries,
-    collect_struct_summaries, collect_symbols, collect_trait_impls,
+    collect_attribute_summaries, collect_enum_summaries, collect_pkg_strings,
+    collect_static_summaries, collect_struct_summaries, collect_symbols, collect_trait_impls,
 };
 
 mod functions;
@@ -42,6 +42,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
     let rust_statics = collect_static_summaries(root, source);
     let rust_enums = collect_enum_summaries(root, source);
     let structs = collect_struct_summaries(root, source, &default_impls);
+    let attributes = collect_attribute_summaries(root, source);
 
     Ok(ParsedFile {
         language: Language::Rust,
@@ -62,6 +63,7 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
             rust_statics,
             rust_enums,
             structs,
+            attributes,
         }),
     })
 }

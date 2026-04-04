@@ -81,6 +81,13 @@ pub(crate) struct RustStaticSummary {
     pub type_text: String,
     pub value_text: Option<String>,
     pub visibility_pub: bool,
+    pub is_mut: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct RustAttributeSummary {
+    pub line: usize,
+    pub text: String,
 }
 
 #[derive(Debug, Clone)]

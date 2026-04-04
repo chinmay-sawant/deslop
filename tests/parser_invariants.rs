@@ -63,11 +63,7 @@ fn scan_single(filename: &str, source: &str) -> Vec<String> {
     })
     .expect("scan should succeed");
 
-    report
-        .findings
-        .iter()
-        .map(|f| f.rule_id.clone())
-        .collect()
+    report.findings.iter().map(|f| f.rule_id.clone()).collect()
 }
 
 // ---------------------------------------------------------------------------
@@ -93,8 +89,14 @@ macro_rules! go_positive_invariant {
     };
 }
 
-go_positive_invariant!(go_error_handling_slop_has_findings, "error_handling_slop.txt");
-go_positive_invariant!(go_context_cancel_slop_has_findings, "context_cancel_slop.txt");
+go_positive_invariant!(
+    go_error_handling_slop_has_findings,
+    "error_handling_slop.txt"
+);
+go_positive_invariant!(
+    go_context_cancel_slop_has_findings,
+    "context_cancel_slop.txt"
+);
 go_positive_invariant!(go_concurrency_slop_has_findings, "concurrency_slop.txt");
 go_positive_invariant!(go_busy_waiting_slop_has_findings, "busy_waiting_slop.txt");
 go_positive_invariant!(go_db_query_slop_has_findings, "db_query_slop.txt");
@@ -122,7 +124,10 @@ macro_rules! python_positive_invariant {
     };
 }
 
-python_positive_invariant!(python_rule_pack_positive_has_findings, "rule_pack_positive.txt");
+python_positive_invariant!(
+    python_rule_pack_positive_has_findings,
+    "rule_pack_positive.txt"
+);
 python_positive_invariant!(python_phase4_positive_has_findings, "phase4_positive.txt");
 
 // ---------------------------------------------------------------------------
@@ -148,7 +153,10 @@ macro_rules! rust_positive_invariant {
     };
 }
 
-rust_positive_invariant!(rust_rule_pack_positive_has_findings, "rule_pack_positive.txt");
+rust_positive_invariant!(
+    rust_rule_pack_positive_has_findings,
+    "rule_pack_positive.txt"
+);
 rust_positive_invariant!(
     rust_direct_call_hallucination_positive_has_findings,
     "direct_call_hallucination_positive.txt"

@@ -83,6 +83,18 @@ Checkpoints must describe observable outcomes, not vague intent. Acceptance crit
 - [release-checklist.md](release-checklist.md): release validation checklist for shipped Rust support
 - [benchmark-note.md](benchmark-note.md): recorded Rust-only benchmark and scan snapshot for the current rollout baseline
 
+## Expansion backlogs
+
+These checklist plans are grounded in the current `src/`, `tests/`, and Rust-only architecture review trail. They are the next-pass backlog for growing Rust rule coverage without breaking the current design constraints.
+
+- [advanceplan1/](advanceplan1/): shipped performance, domain, async, and security-oriented backlog work
+- [advanceplan2/](advanceplan2/): shipped API-shape and boundary-contract rule packs
+- [advanceplan3/index.md](advanceplan3/index.md): coverage audit mapping architecture-review bad practices to shipped or backlog Rust rules
+- [advanceplan3/plan1.md](advanceplan3/plan1.md): error, I/O, and path boundary backlog
+- [advanceplan3/plan2.md](advanceplan3/plan2.md): module ownership and surface architecture backlog
+- [advanceplan3/plan3.md](advanceplan3/plan3.md): runtime ownership and task-lifecycle backlog
+- [advanceplan3/plan4.md](advanceplan3/plan4.md): unsafe, global-state, and security backlog
+
 ## Execution policy
 
 When implementation starts, the default expectation is to work phase by phase and keep changes reviewable.

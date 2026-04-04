@@ -1,0 +1,21 @@
+use std::fs::File;
+use std::io::Read;
+use std::path::Path;
+
+pub fn public_error(path: &Path) -> anyhow::Result<String> {
+    let mut file = File::open(path)?;
+    let mut buffer = [0u8; 16];
+    let _ = file.read(&mut buffer)?;
+    Ok(String::from_utf8_lossy(&buffer).to_string())
+}
+
+fn compare_ok(left: &str, right: &str) -> bool {
+    left.eq_ignore_ascii_case(right)
+}
+
+#[test]
+fn tempdir_is_owned_by_test() {
+    let _dir = tempfile::tempdir().unwrap();
+    let value = 1u16;
+    let _ = value;
+}
