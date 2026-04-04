@@ -2,6 +2,9 @@ mod library;
 mod performance;
 mod security;
 
+pub(super) const LIBRARY_BINDING_LOCATION: &str = library::BINDING_LOCATION;
+pub(super) const SECURITY_BINDING_LOCATION: &str = security::BINDING_LOCATION;
+
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::Finding;
 

@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Obvious make, new, or buffer-construction calls inside loops.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "binary_read_for_single_field",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`binary.Read(r, order, &singleField)` for reading a single integer",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "bufio_scanner_small_buffer_for_large_lines",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "clear_map_go121",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`for k := range m { delete(m, k) }` in Go 1.21+ codebases",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "copy_append_idiom_waste",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "csv_reader_reuse_record",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "defer_in_tight_loop",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`defer` statements inside loops with > 100 iterations or visible hot-path markers",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "empty_interface_parameter_overuse",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "exported functions with `any` or `interface{}` parameters when concrete types would suffice",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "error_string_comparison",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`if err.Error() == \"some error\"` string comparison for error checking",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "errors_new_for_static_sentinel",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`errors.New(\"some error\")` called repeatedly in hot paths instead of a package-level sentinel",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "fmt_errorf_without_wrap_verb",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`fmt.Errorf(\"context: %v\", err)` instead of `%w`",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "fmt_hot_path",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "fmt formatting calls such as Sprintf inside loops.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "full_dataset_load",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Calls that load an entire payload into memory instead of streaming.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "goroutine_for_sync_work",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "http_body_readall_without_limitreader",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "interface_slice_allocation",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`[]interface{}` or `[]any` used to pass homogeneous typed data",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "ioutil_readall_still_used",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+)",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "json_marshal_then_write",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "json_number_vs_float64_decode",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "len_string_for_empty_check",
@@ -279,7 +279,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`len(s) == 0` used interchangeably with `s == \"\"`",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "likely_n_squared_allocation",
@@ -294,7 +294,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::GoSemanticExperimental,
         ],
         description: "Opt-in deeper semantic signal for allocations that also sit inside nested loop structure.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "likely_n_squared_string_concat",
@@ -309,7 +309,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::GoSemanticExperimental,
         ],
         description: "Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "likely_unindexed_query",
@@ -323,7 +323,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "map_delete_in_loop_vs_new_map",
@@ -337,7 +337,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`for k := range m { delete(m, k) }` patterns",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "map_lookup_double_access",
@@ -351,7 +351,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`if _, ok := m[k]; ok { v := m[k] }` \u{2014} two map lookups for the same key",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "map_of_slices_prealloc",
@@ -365,7 +365,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`m[k] = append(m[k], v)` in loops without pre-allocating inner slices",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "mutex_value_receiver",
@@ -379,7 +379,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "n_plus_one_query",
@@ -393,7 +393,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "panic_for_expected_errors",
@@ -407,7 +407,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`panic()` used for expected error conditions like invalid input or missing config",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "range_copy_large_struct",
@@ -421,7 +421,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`for _, v := range largeStructSlice` where the struct is > 64 bytes",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "range_over_string_by_index",
@@ -435,7 +435,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "reflection_hot_path",
@@ -449,7 +449,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "reflect package calls inside loops.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "repeated_json_marshaling",
@@ -463,7 +463,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "encoding/json.Marshal or MarshalIndent inside loops \u{2014} repeated allocation and serialization hot spots.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "repeated_string_trim_normalize",
@@ -477,7 +477,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "chains like `strings.TrimSpace(strings.ToLower(strings.TrimPrefix(s, ...)))` that scan the string multiple times",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "select_with_single_case",
@@ -491,7 +491,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`select { case v := <-ch: ... }` with only one case and no default",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "slice_grow_without_cap_hint",
@@ -505,7 +505,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "sort_slice_vs_sort_sort",
@@ -519,7 +519,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "sprintf_for_simple_int_to_string",
@@ -533,7 +533,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`fmt.Sprintf(\"%d\", n)` where `n` is clearly an integer type",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "sprintf_for_simple_string_format",
@@ -547,7 +547,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`fmt.Sprintf(\"%s:%s\", a, b)` where only `%s` verbs are used",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "string_builder_write_string_vs_plus",
@@ -561,7 +561,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`builder.WriteString(a + b)` where `a` and `b` are separate bindings",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "string_concat_in_loop",
@@ -575,7 +575,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated string concatenation inside loops (O(n^2) risk).",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "string_concatenation_for_path_join",
@@ -589,7 +589,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`dir + \"/\" + file` or manual path assembly via `+` concatenation",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "string_format_for_error_wrap",
@@ -603,7 +603,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`fmt.Errorf(\"failed: %s\", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "string_to_byte_for_single_char_check",
@@ -617,7 +617,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`[]byte(s)[0]` or `string(b) == \"x\"` for single-character comparisons",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "strings_contains_vs_index",
@@ -631,7 +631,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "strings_hasprefix_then_trimprefix",
@@ -645,7 +645,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`if strings.HasPrefix(s, p) { s = strings.TrimPrefix(s, p) }`",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "strings_hassuffix_then_trimsuffix",
@@ -659,7 +659,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "strings_replace_all_for_single_char",
@@ -673,7 +673,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`strings.ReplaceAll(s, \"x\", \"y\")` where both old and new are single characters",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "sync_mutex_for_atomic_counter",
@@ -687,7 +687,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`mu.Lock(); count++; mu.Unlock()` for simple integer counters",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "sync_mutex_for_readonly_config",
@@ -701,7 +701,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "sync_pool_ignored_for_frequent_small_allocs",
@@ -715,7 +715,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "repeated `make([]byte, size)` or `new(T)` in hot paths where the object is short-lived and could be pooled",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "three_index_slice_for_append_safety",
@@ -729,7 +729,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "time_now_in_tight_loop",
@@ -743,7 +743,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`time.Now()` called on every iteration of a tight inner loop",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "type_assertion_without_comma_ok",
@@ -757,7 +757,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`v := i.(T)` without the comma-ok form in non-panic-safe code",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "type_switch_vs_repeated_assertions",
@@ -771,7 +771,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "unbuffered_channel_for_known_producer_count",
@@ -785,7 +785,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "unnecessary_map_for_set_of_ints",
@@ -799,7 +799,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "unnecessary_slice_copy_for_readonly",
@@ -813,7 +813,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`copy := append([]T(nil), original...)` when `copy` is only read, never mutated",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "waitgroup_add_inside_loop",
@@ -827,7 +827,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "wide_select_query",
@@ -841,7 +841,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Literal SELECT * query shapes.",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
         id: "xml_decoder_without_strict",
@@ -855,6 +855,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "`xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML",
-        binding_location: "src/heuristics/go/performance.rs",
+        binding_location: super::bindings::GO_PERFORMANCE,
     },
 ];

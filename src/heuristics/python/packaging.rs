@@ -7,6 +7,8 @@ use crate::index::{ImportResolution, RepositoryIndex};
 use crate::io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(super) fn public_api_any_contract_findings(
     file: &ParsedFile,
     function: &ParsedFunction,

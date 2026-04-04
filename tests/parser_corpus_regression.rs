@@ -4,6 +4,8 @@ use std::path::{Path, PathBuf};
 use deslop::syntax_error_for_source;
 
 const CORPUS_ROOT: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/corpus/regressions");
+// Intentional maintenance guard. If this changes, review the fixture diff and update
+// [guides/inventory-regression-guards.md] in the same change.
 const EXPECTED_CORPUS_ENTRY_COUNT: usize = 9;
 
 #[test]
@@ -12,7 +14,7 @@ fn corpus_regressions_cover_malformed_generated_and_edge_cases() {
     assert_eq!(
         entries.len(),
         EXPECTED_CORPUS_ENTRY_COUNT,
-        "corpus regression inventory changed; update the expected count if the change is intentional"
+        "corpus regression inventory changed; if intentional, update EXPECTED_CORPUS_ENTRY_COUNT and guides/inventory-regression-guards.md"
     );
 
     for entry in entries {

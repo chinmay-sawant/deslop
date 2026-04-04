@@ -19,6 +19,8 @@ use crate::heuristics::{extend_file_rules, extend_function_rules};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(super) fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
     let mut findings = Vec::new();
 

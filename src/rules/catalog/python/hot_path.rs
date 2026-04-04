@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A collection is appended to and then sorted on each iteration instead of sorting once after accumulation.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "csv_writer_flush_per_row",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "csv.Writer flushes on each row instead of buffering a larger batch.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "filter_then_count_then_iterate",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same collection is traversed repeatedly for filtering, counting, and later iteration.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "json_encoder_recreated_per_item",
@@ -55,6 +55,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A JSON encoder object is recreated per item instead of being reused for the stream.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
 ];

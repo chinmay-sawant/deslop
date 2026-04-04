@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Unusually enthusiastic or emoji-heavy production comments.",
-        binding_location: "src/heuristics/python/ai_smells.rs",
+        binding_location: super::bindings::PYTHON_AI_SMELLS,
     },
     RuleDefinition {
         id: "mixed_naming_conventions",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "File mixes snake_case and camelCase function naming conventions.",
-        binding_location: "src/heuristics/python/ai_smells.rs",
+        binding_location: super::bindings::PYTHON_AI_SMELLS,
     },
     RuleDefinition {
         id: "obvious_commentary",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Comments that narrate obvious implementation steps instead of explaining intent.",
-        binding_location: "src/heuristics/python/ai_smells.rs",
+        binding_location: super::bindings::PYTHON_AI_SMELLS,
     },
     RuleDefinition {
         id: "textbook_docstring_small_helper",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Very small helper functions that have unusually long, textbook-style docstrings.",
-        binding_location: "src/heuristics/python/ai_smells.rs",
+        binding_location: super::bindings::PYTHON_AI_SMELLS,
     },
     RuleDefinition {
         id: "unrelated_heavy_import",
@@ -69,6 +69,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Heavy ecosystem imports with little local evidence of real need.",
-        binding_location: "src/heuristics/python/ai_smells.rs",
+        binding_location: super::bindings::PYTHON_AI_SMELLS,
     },
 ];

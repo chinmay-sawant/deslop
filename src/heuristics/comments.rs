@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::common::{is_title_doc, is_tutorial_doc};
 
 pub(super) fn comment_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {

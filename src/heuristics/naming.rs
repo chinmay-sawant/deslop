@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::common::{identifier_token_count, is_generic_name, normalize_name};
 
 pub(super) fn overlong_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<Finding> {

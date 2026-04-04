@@ -3,6 +3,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::analysis::{GinCallSummary, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::{
     BodyLine, LARGE_MULTIPART_FORM_BYTES, binding_for_patterns, body_lines, import_aliases_for,
     is_identifier_name, is_request_path_function, join_lines, json_aliases, strip_line_comment,

@@ -125,6 +125,8 @@ mod tests {
     };
     use crate::{DEFAULT_MAX_BYTES, read_to_string_limited};
 
+    // Intentional maintenance guard. If this changes, review the source rule-id diff and
+    // update [guides/inventory-regression-guards.md] in the same change.
     const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 438;
 
     #[test]
@@ -317,7 +319,7 @@ mod tests {
         assert_eq!(
             source_rule_ids.len(),
             EXPECTED_SOURCE_RULE_ID_COUNT,
-            "source rule-id inventory changed; update the expected count if the change is intentional"
+            "source rule-id inventory changed; if intentional, update EXPECTED_SOURCE_RULE_ID_COUNT and guides/inventory-regression-guards.md"
         );
     }
 
@@ -370,6 +372,29 @@ mod tests {
                 rule_binding_location(rule_id, RuleLanguage::Python),
                 Some(expected_location),
                 "binding location drifted for {rule_id}"
+            );
+        }
+    }
+
+    #[test]
+    fn go_library_binding_locations_match_leaf_implementation() {
+        let go_library_rules = catalog::rule_catalog()
+            .iter()
+            .filter(|definition| {
+                definition.language == RuleLanguage::Go && definition.family == "library"
+            })
+            .collect::<Vec<_>>();
+
+        assert!(
+            !go_library_rules.is_empty(),
+            "go library catalog entries should be present"
+        );
+
+        for definition in go_library_rules {
+            assert_eq!(
+                definition.binding_location, "src/heuristics/go/library_misuse/library.rs",
+                "go library binding location should stay pinned to the leaf implementation for {}",
+                definition.id
             );
         }
     }

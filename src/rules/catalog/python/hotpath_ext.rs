@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "String or collection concatenation happens inside a comprehension body, creating avoidable churn.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "dict_copy_in_loop_same_source",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A dict-like source is copied on each loop iteration instead of being reused or hoisted.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "gzip_open_per_chunk",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "gzip open/create calls are repeated per chunk instead of per stream.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "list_copy_in_loop_same_source",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A list is copied on each loop iteration even though the source appears unchanged.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "nested_list_search_map_candidate",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Nested linear list searches that look like they want a temporary map or set index.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "path_resolve_or_expanduser_in_loop",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Path resolution helpers such as resolve() or expanduser() run inside loops on invariant inputs.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "pickle_dumps_in_loop_same_structure",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "pickle.dumps(...) is called repeatedly for the same structural shape in a loop.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "repeated_datetime_strptime_same_format",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "datetime.strptime(...) is repeated with the same format string instead of reusing a parsed shape or preprocessing once.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "repeated_dict_get_same_key_no_cache",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same dictionary key is fetched repeatedly instead of storing the value in a local binding.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "repeated_hashlib_new_same_algorithm",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same hashing algorithm is repeatedly constructed in a loop or tight path.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "repeated_isinstance_chain_same_object",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same object goes through repeated isinstance(...) checks that could be consolidated.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "repeated_list_index_lookup",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same list index lookup is performed repeatedly instead of caching the accessed value.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "repeated_locale_or_codec_lookup_in_loop",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Locale or codec lookups repeat inside loops instead of being cached once.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "repeated_string_format_invariant_template",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "An invariant string template is formatted repeatedly in a loop instead of being partially precomputed.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "set_created_per_iteration_same_elements",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A set with the same elements is rebuilt on each iteration instead of being hoisted.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "sort_then_first_or_membership_only",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A collection is sorted even though only the first element or a membership-style check is needed.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "string_join_without_generator",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "String joins that materialize an unnecessary list comprehension instead of using a generator or direct iterable.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "tuple_unpacking_in_tight_loop",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Tuple unpacking is repeated in tight loops where reducing per-iteration overhead may help.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "urlparse_in_loop_on_invariant_base",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "urlparse() or urlsplit() is repeated inside loops for invariant base values.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "xml_parse_same_payload_multiple_times",
@@ -279,7 +279,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same XML payload is parsed repeatedly within one function.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
     RuleDefinition {
         id: "yaml_load_same_payload_multiple_times",
@@ -293,6 +293,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same YAML payload is parsed repeatedly within one function.",
-        binding_location: "src/heuristics/python/hotpath_ext.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH_EXT,
     },
 ];

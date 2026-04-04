@@ -6,6 +6,8 @@ mod pipeline;
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(crate) use self::inference::model_inference_findings;
 pub(crate) use self::llm::llm_findings;
 pub(crate) use self::pandas_numpy::{numpy_findings, pandas_findings};

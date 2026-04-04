@@ -5,6 +5,8 @@ fn indent_level(line: &str) -> usize {
 }
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 // ── Rules using extended repeated_call_same_arg evidence ──────────────────────
 
 pub(super) fn yaml_repeated_load_findings(

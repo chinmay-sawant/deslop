@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "dict.items(), keys(), or values() are repeatedly materialized inside loops.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "enumerate_on_range_len",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "enumerate(range(len(...))) style loops that add indexing ceremony without extra value.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "in_check_on_list_literal",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Membership tests against list literals where a tuple or set would be clearer or cheaper.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "json_loads_same_payload_multiple_times",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same JSON payload is decoded multiple times inside one function instead of caching the parsed value.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "list_comprehension_only_for_length",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A list comprehension is built only so len(...) can be called on it.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "read_then_splitlines",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "File contents are fully read and then splitlines() is called instead of streaming lines.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "readlines_then_iterate",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "readlines() materializes the whole file before line-by-line iteration.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "regex_compile_in_hot_path",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "re.compile(...) or similar regex compilation repeated inside hot code paths.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "repeated_json_dumps_same_object",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "json.dumps(...) is repeated for the same object instead of caching the serialized value.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "repeated_open_same_file_in_function",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same file appears to be opened multiple times within one function.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "sorted_only_for_first_element",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A sequence is fully sorted even though only the first or smallest element is used.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "string_startswith_endswith_chain",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated startswith(...) or endswith(...) checks that can often be combined into tuple-based calls.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
     RuleDefinition {
         id: "write_without_buffering_in_loop",
@@ -181,6 +181,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated writes inside loops with no visible buffering or batching.",
-        binding_location: "src/heuristics/python/hotpath.rs",
+        binding_location: super::bindings::PYTHON_HOTPATH,
     },
 ];

@@ -5,6 +5,8 @@ use crate::analysis::{ImportSpec, Language, ParsedFile, ParsedFunction};
 use crate::index::{ImportResolution, PackageIndex, RepositoryIndex};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(super) fn unsafe_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let rust = function.rust_evidence();
 

@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(crate) fn error_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
     let mut findings = Vec::new();

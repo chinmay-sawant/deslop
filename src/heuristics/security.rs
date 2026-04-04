@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::common::{identifier_tokens, import_alias_lookup};
 
 const WEAK_CRYPTO_IMPORTS: &[&str] = &["crypto/md5", "crypto/sha1", "crypto/des", "crypto/rc4"];

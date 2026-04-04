@@ -6,6 +6,8 @@ use std::collections::BTreeSet;
 use crate::analysis::{ParsedFile, ParsedFunction, TopLevelCallSummary};
 use crate::model::Finding;
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use self::function_rules::function_rules_findings;
 use self::module_state::module_state_findings;
 

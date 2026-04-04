@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Highly similar non-test function bodies repeated across multiple Python files.",
-        binding_location: "src/heuristics/python/duplication.rs",
+        binding_location: super::bindings::PYTHON_DUPLICATION,
     },
     RuleDefinition {
         id: "cross_file_repeated_literal",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Project repeats the same long string literal across multiple files.",
-        binding_location: "src/heuristics/python/duplication.rs",
+        binding_location: super::bindings::PYTHON_DUPLICATION,
     },
     RuleDefinition {
         id: "duplicate_error_handler_block",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated exception-handling block shapes in one file.",
-        binding_location: "src/heuristics/python/duplication.rs",
+        binding_location: super::bindings::PYTHON_DUPLICATION,
     },
     RuleDefinition {
         id: "duplicate_query_fragment",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repository repeats the same SQL-like query fragment across multiple files.",
-        binding_location: "src/heuristics/python/duplication.rs",
+        binding_location: super::bindings::PYTHON_DUPLICATION,
     },
     RuleDefinition {
         id: "duplicate_test_utility_logic",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Highly similar utility logic shared between test and production code.",
-        binding_location: "src/heuristics/python/duplication.rs",
+        binding_location: super::bindings::PYTHON_DUPLICATION,
     },
     RuleDefinition {
         id: "duplicate_transformation_pipeline",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repository repeats the same data transformation pipeline stages across multiple functions.",
-        binding_location: "src/heuristics/python/duplication.rs",
+        binding_location: super::bindings::PYTHON_DUPLICATION,
     },
     RuleDefinition {
         id: "duplicate_validation_pipeline",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated validation guard pipelines across functions in one file.",
-        binding_location: "src/heuristics/python/duplication.rs",
+        binding_location: super::bindings::PYTHON_DUPLICATION,
     },
     RuleDefinition {
         id: "repeated_string_literal",
@@ -111,6 +111,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Project repeats the same long string literal multiple times in one file.",
-        binding_location: "src/heuristics/python/duplication.rs",
+        binding_location: super::bindings::PYTHON_DUPLICATION,
     },
 ];

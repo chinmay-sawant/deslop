@@ -2,6 +2,7 @@ use std::sync::OnceLock;
 
 use super::{RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleStatus};
 
+mod bindings;
 mod common;
 mod go;
 mod python;

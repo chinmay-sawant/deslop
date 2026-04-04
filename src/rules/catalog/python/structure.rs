@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repository-local Python class chains with unusually deep inheritance depth.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "eager_constructor_collaborators",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Constructors that instantiate several collaborators eagerly inside __init__.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "god_class",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Python classes that concentrate unusually high method count, public surface area, and mutable instance state.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "god_function",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Very large Python functions with high control-flow and call-surface concentration.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "mixed_concerns_function",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Functions that mix HTTP, persistence, and filesystem-style concerns in one body.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "monolithic_init_module",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "__init__.py files that carry enough imports and behavior to look like monolithic modules.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "monolithic_module",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Non-__init__.py modules that are unusually large and combine many imports with orchestration-heavy behavior.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "name_responsibility_mismatch",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Read-style, transformation-style, or utility-style names that still perform mutation or own multiple infrastructure concerns.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "over_abstracted_wrapper",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Ceremonial wrapper-style or tiny data-container classes that add little beyond storing constructor state.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "tight_module_coupling",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Modules that depend on a large number of repository-local Python modules.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
     RuleDefinition {
         id: "too_many_instance_attributes",
@@ -153,6 +153,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Classes that assign an unusually large number of instance attributes across their methods.",
-        binding_location: "src/heuristics/python/structure.rs",
+        binding_location: super::bindings::PYTHON_STRUCTURE,
     },
 ];

@@ -4,6 +4,8 @@ use std::path::PathBuf;
 use crate::analysis::ParsedFile;
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(crate) fn receiver_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut methods_by_receiver =
         BTreeMap::<(Option<String>, PathBuf, String), Vec<MethodRecord>>::new();

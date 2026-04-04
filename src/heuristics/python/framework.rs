@@ -6,6 +6,8 @@ mod web;
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(super) use self::celery_click::{celery_task_findings, click_typer_command_findings};
 pub(super) use self::django::{
     django_extra_findings, django_loop_db_findings, django_n_plus_one_findings,

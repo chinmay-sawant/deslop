@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity, SymbolKind};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 pub(super) fn textbook_docstring_findings(
     file: &ParsedFile,
     function: &ParsedFunction,

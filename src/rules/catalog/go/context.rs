@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "select { default: ... } inside loops, which often spins instead of blocking.",
-        binding_location: "src/heuristics/go/context.rs",
+        binding_location: super::bindings::GO_CONTEXT,
     },
     RuleDefinition {
         id: "context_background_used",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Functions that already accept context.Context but still create context.Background() or context.TODO() locally.",
-        binding_location: "src/heuristics/go/context.rs",
+        binding_location: super::bindings::GO_CONTEXT,
     },
     RuleDefinition {
         id: "missing_cancel_call",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Derived contexts where deslop cannot find a local cancel() or defer cancel() call.",
-        binding_location: "src/heuristics/go/context.rs",
+        binding_location: super::bindings::GO_CONTEXT,
     },
     RuleDefinition {
         id: "missing_context",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Standard-library context-aware calls from functions that do not accept context.Context.",
-        binding_location: "src/heuristics/go/context.rs",
+        binding_location: super::bindings::GO_CONTEXT,
     },
     RuleDefinition {
         id: "missing_context_propagation",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.",
-        binding_location: "src/heuristics/go/context.rs",
+        binding_location: super::bindings::GO_CONTEXT,
     },
     RuleDefinition {
         id: "sleep_polling",
@@ -83,6 +83,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "time.Sleep inside loops \u{2014} often indicates polling or busy-wait style code.",
-        binding_location: "src/heuristics/go/context.rs",
+        binding_location: super::bindings::GO_CONTEXT,
     },
 ];

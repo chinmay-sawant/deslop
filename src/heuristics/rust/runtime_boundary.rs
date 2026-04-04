@@ -7,6 +7,8 @@ use crate::index::RepositoryIndex;
 use crate::io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::function_finding;
 
 #[derive(Debug, Clone)]

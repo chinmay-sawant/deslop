@@ -4,6 +4,8 @@ use crate::analysis::ParsedFile;
 use crate::analysis::ParsedFunction;
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::{
     file_finding, first_await_after, function_finding, has_cancellation_pattern, is_std_mutex,
 };

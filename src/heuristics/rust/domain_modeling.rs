@@ -1,6 +1,8 @@
 use crate::analysis::ParsedFile;
 use crate::model::Finding;
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::{
     business_value_like, credential_like, enabled_like, field_type_mentions, file_finding,
     secret_like, sensitive_default_like, struct_severity,

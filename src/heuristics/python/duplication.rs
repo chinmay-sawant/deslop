@@ -3,6 +3,8 @@ use std::collections::BTreeMap;
 use crate::analysis::{NamedLiteral, ParsedFile};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 const REPEATED_LITERAL_THRESHOLD: usize = 3;
 const REPEATED_LITERAL_MIN_LENGTH: usize = 12;
 const DUPLICATE_QUERY_FRAGMENT_THRESHOLD: usize = 3;

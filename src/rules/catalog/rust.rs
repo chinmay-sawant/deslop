@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_boolean_state_machine",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "State structs encoded with multiple booleans instead of a dedicated enum.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_borrowed_pathbuf_api",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public signatures that borrow &PathBuf instead of &Path.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_borrowed_string_api",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public signatures that borrow &String instead of &str.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_borrowed_vec_api",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public signatures that borrow &Vec<T> instead of &[T].",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_builder_without_validate",
@@ -83,7 +83,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Builders that expose build() without an obvious validation step.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_constructor_many_flags",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Constructor-like APIs that use multiple boolean flags.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_global_lock_state",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Static or lazy global state wrapped in mutable lock-based containers.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_mutex_wrapped_collection",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Collection-plus-lock fields embedded directly in public or central state structs.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_option_bag_config",
@@ -139,7 +139,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Config-like structs with many Option fields and no obvious validation path.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_partial_init_escape",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Constructor-like functions that return or store partially initialized structs.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_pub_interior_mutability_field",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public structs that expose Mutex, RwLock, RefCell, Cell, or similar fields directly.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_public_anyhow_result",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public library-facing APIs that return anyhow-style Result types instead of a clearer domain error.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_public_bool_parameter_api",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public APIs that expose a raw boolean mode switch.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_public_box_dyn_error",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Public APIs that expose Box<dyn Error> rather than a clearer error surface.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_rc_refcell_domain_model",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_serde_default_on_required_field",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Required-looking contract fields that opt into #[serde(default)].",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_serde_flatten_catchall",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "#[serde(flatten)] catch-all maps or loose value bags that absorb unknown fields.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_serde_unknown_fields_allowed",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Strict-looking config or request structs that deserialize without deny_unknown_fields.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_serde_untagged_enum_boundary",
@@ -279,7 +279,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Boundary-facing enums that derive #[serde(untagged)] and risk ambiguous wire formats.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_stringly_typed_enum_boundary",
@@ -293,7 +293,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Enum-like boundary fields kept as String instead of a dedicated enum.",
-        binding_location: "src/heuristics/rust/api_design.rs",
+        binding_location: super::bindings::RUST_API_DESIGN,
     },
     RuleDefinition {
         id: "rust_async_blocking_drop",
@@ -308,7 +308,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "A Drop implementation does blocking work that can surface in async contexts.",
-        binding_location: "src/heuristics/rust/async_patterns.rs",
+        binding_location: super::bindings::RUST_ASYNC_PATTERNS,
     },
     RuleDefinition {
         id: "rust_async_hold_permit_across_await",
@@ -323,7 +323,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "A permit or pooled resource may be held across an .await.",
-        binding_location: "src/heuristics/rust/async_patterns.rs",
+        binding_location: super::bindings::RUST_ASYNC_PATTERNS,
     },
     RuleDefinition {
         id: "rust_async_invariant_broken_at_await",
@@ -338,7 +338,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "Related state mutations appear split around an await boundary.",
-        binding_location: "src/heuristics/rust/async_patterns.rs",
+        binding_location: super::bindings::RUST_ASYNC_PATTERNS,
     },
     RuleDefinition {
         id: "rust_async_lock_order_cycle",
@@ -353,7 +353,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "Conflicting lock acquisition order suggests a lock-order cycle.",
-        binding_location: "src/heuristics/rust/async_patterns.rs",
+        binding_location: super::bindings::RUST_ASYNC_PATTERNS,
     },
     RuleDefinition {
         id: "rust_async_missing_fuse_pin",
@@ -368,7 +368,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "select! reuse lacks pinning or fusing markers for repeated polling.",
-        binding_location: "src/heuristics/rust/async_patterns.rs",
+        binding_location: super::bindings::RUST_ASYNC_PATTERNS,
     },
     RuleDefinition {
         id: "rust_async_monopolize_executor",
@@ -383,7 +383,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "An async function may monopolize the executor with blocking work and no await.",
-        binding_location: "src/heuristics/rust/async_patterns.rs",
+        binding_location: super::bindings::RUST_ASYNC_PATTERNS,
     },
     RuleDefinition {
         id: "rust_async_recreate_future_in_select",
@@ -398,7 +398,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "A select! loop may recreate futures instead of reusing long-lived ones.",
-        binding_location: "src/heuristics/rust/async_patterns.rs",
+        binding_location: super::bindings::RUST_ASYNC_PATTERNS,
     },
     RuleDefinition {
         id: "rust_async_spawn_cancel_at_await",
@@ -413,7 +413,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "Async work is spawned without an obvious cancellation path.",
-        binding_location: "src/heuristics/rust/async_patterns.rs",
+        binding_location: super::bindings::RUST_ASYNC_PATTERNS,
     },
     RuleDefinition {
         id: "rust_async_std_mutex_await",
@@ -428,7 +428,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "std::sync::Mutex appears to be held across .await in async code.",
-        binding_location: "src/heuristics/rust/async_patterns.rs",
+        binding_location: super::bindings::RUST_ASYNC_PATTERNS,
     },
     RuleDefinition {
         id: "rust_debug_secret",
@@ -442,7 +442,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Debug is derived on a type that carries secret-like fields.",
-        binding_location: "src/heuristics/rust/domain_modeling.rs",
+        binding_location: super::bindings::RUST_DOMAIN_MODELING,
     },
     RuleDefinition {
         id: "rust_domain_default_produces_invalid",
@@ -456,7 +456,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Default is derived or implemented on a type that likely cannot have a safe default state.",
-        binding_location: "src/heuristics/rust/domain_modeling.rs",
+        binding_location: super::bindings::RUST_DOMAIN_MODELING,
     },
     RuleDefinition {
         id: "rust_domain_float_for_money",
@@ -470,7 +470,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Floating-point storage is used for money-like values.",
-        binding_location: "src/heuristics/rust/domain_modeling.rs",
+        binding_location: super::bindings::RUST_DOMAIN_MODELING,
     },
     RuleDefinition {
         id: "rust_domain_impossible_combination",
@@ -484,7 +484,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A boolean toggle is mixed with optional credentials, creating invalid-state combinations.",
-        binding_location: "src/heuristics/rust/domain_modeling.rs",
+        binding_location: super::bindings::RUST_DOMAIN_MODELING,
     },
     RuleDefinition {
         id: "rust_domain_optional_secret_default",
@@ -498,7 +498,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A defaultable type includes optional secret-like fields, which can hide invalid configuration.",
-        binding_location: "src/heuristics/rust/domain_modeling.rs",
+        binding_location: super::bindings::RUST_DOMAIN_MODELING,
     },
     RuleDefinition {
         id: "rust_domain_raw_primitive",
@@ -512,7 +512,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Business-facing data is stored as a raw primitive instead of a stronger domain type.",
-        binding_location: "src/heuristics/rust/domain_modeling.rs",
+        binding_location: super::bindings::RUST_DOMAIN_MODELING,
     },
     RuleDefinition {
         id: "rust_serde_sensitive_deserialize",
@@ -526,7 +526,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Deserialize is derived for sensitive fields without obvious validation.",
-        binding_location: "src/heuristics/rust/domain_modeling.rs",
+        binding_location: super::bindings::RUST_DOMAIN_MODELING,
     },
     RuleDefinition {
         id: "rust_serde_sensitive_serialize",
@@ -540,7 +540,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Serialize is derived for secret-like fields that may need redaction or exclusion.",
-        binding_location: "src/heuristics/rust/domain_modeling.rs",
+        binding_location: super::bindings::RUST_DOMAIN_MODELING,
     },
     RuleDefinition {
         id: "dbg_macro_leftover",
@@ -554,7 +554,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "dbg!() left in non-test Rust code.",
-        binding_location: "src/analysis/rust/evaluate.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_EVALUATE,
     },
     RuleDefinition {
         id: "expect_in_non_test_code",
@@ -568,7 +568,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "expect() used in non-test Rust code.",
-        binding_location: "src/analysis/rust/evaluate.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_EVALUATE,
     },
     RuleDefinition {
         id: "fixme_doc_comment_leftover",
@@ -582,7 +582,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Rust doc comments that still contain a FIXME marker in non-test code.",
-        binding_location: "src/analysis/rust/findings.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_FINDINGS,
     },
     RuleDefinition {
         id: "hack_doc_comment_leftover",
@@ -596,7 +596,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Rust doc comments that still contain a HACK marker in non-test code.",
-        binding_location: "src/analysis/rust/findings.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_FINDINGS,
     },
     RuleDefinition {
         id: "panic_macro_leftover",
@@ -610,7 +610,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "panic macro left in non-test Rust code.",
-        binding_location: "src/analysis/rust/evaluate.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_EVALUATE,
     },
     RuleDefinition {
         id: "todo_doc_comment_leftover",
@@ -624,7 +624,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Rust doc comments that still contain a TODO marker in non-test code.",
-        binding_location: "src/analysis/rust/findings.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_FINDINGS,
     },
     RuleDefinition {
         id: "todo_macro_leftover",
@@ -638,7 +638,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "todo!() left in non-test Rust code.",
-        binding_location: "src/analysis/rust/evaluate.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_EVALUATE,
     },
     RuleDefinition {
         id: "unimplemented_macro_leftover",
@@ -652,7 +652,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unimplemented!() left in non-test Rust code.",
-        binding_location: "src/analysis/rust/evaluate.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_EVALUATE,
     },
     RuleDefinition {
         id: "unreachable_macro_leftover",
@@ -666,7 +666,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unreachable!() left in non-test Rust code.",
-        binding_location: "src/analysis/rust/evaluate.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_EVALUATE,
     },
     RuleDefinition {
         id: "unsafe_without_safety_comment",
@@ -680,7 +680,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unsafe fn or unsafe block without a nearby SAFETY: comment within the previous two lines.",
-        binding_location: "src/analysis/rust/findings.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_FINDINGS,
     },
     RuleDefinition {
         id: "unwrap_in_non_test_code",
@@ -694,7 +694,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "unwrap() used in non-test Rust code.",
-        binding_location: "src/analysis/rust/evaluate.rs",
+        binding_location: super::bindings::RUST_ANALYSIS_EVALUATE,
     },
     RuleDefinition {
         id: "rust_aos_hot_path",
@@ -708,7 +708,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated struct-field dereferences inside a loop that may indicate an array-of-structs hot path.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_blocking_drop",
@@ -722,7 +722,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "A Drop implementation performs blocking work.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_blocking_io_in_async",
@@ -737,7 +737,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "Blocking I/O or blocking work observed in async Rust code.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_hashmap_default_hasher",
@@ -751,7 +751,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "HashMap default-hasher construction in a likely hot path.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_large_future_stack",
@@ -765,7 +765,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Large allocations may be captured across await points and bloat future size.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_lines_allocate_per_line",
@@ -779,7 +779,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: ".lines() iteration used in a loop where per-item allocation may matter.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_lock_across_await",
@@ -794,7 +794,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "A lock appears to be held across an .await boundary.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_path_join_absolute",
@@ -808,7 +808,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Path::join used with an absolute segment that discards the existing base path.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_pointer_chasing_vec_box",
@@ -822,7 +822,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Pointer-heavy boxed vector-style storage that may hurt cache locality.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_tokio_mutex_unnecessary",
@@ -837,7 +837,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::RustAsyncExperimental,
         ],
         description: "tokio::sync::Mutex used in a fully synchronous critical path with no await.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_unbuffered_file_writes",
@@ -851,7 +851,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "File-like writes performed inside a loop without buffering or batching.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_utf8_validate_hot_path",
@@ -865,7 +865,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "UTF-8 validation appears in a likely hot path and may deserve profiling.",
-        binding_location: "src/heuristics/rust/performance.rs",
+        binding_location: super::bindings::RUST_PERFORMANCE,
     },
     RuleDefinition {
         id: "rust_axum_router_built_in_handler",
@@ -879,7 +879,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Axum routers assembled inside handler call paths instead of startup wiring.",
-        binding_location: "src/heuristics/rust/runtime_boundary.rs",
+        binding_location: super::bindings::RUST_RUNTIME_BOUNDARY,
     },
     RuleDefinition {
         id: "rust_clone_heavy_state_in_loop",
@@ -893,7 +893,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Likely heavy state cloned repeatedly inside loops in Rust application code.",
-        binding_location: "src/heuristics/rust/runtime_boundary.rs",
+        binding_location: super::bindings::RUST_RUNTIME_BOUNDARY,
     },
     RuleDefinition {
         id: "rust_env_var_read_in_request_path",
@@ -907,7 +907,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Rust request handlers reading environment configuration on the hot request path.",
-        binding_location: "src/heuristics/rust/runtime_boundary.rs",
+        binding_location: super::bindings::RUST_RUNTIME_BOUNDARY,
     },
     RuleDefinition {
         id: "rust_tokio_runtime_built_per_call",
@@ -921,7 +921,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Tokio runtimes created per call instead of being owned at process or bootstrap boundaries.",
-        binding_location: "src/heuristics/rust/runtime_boundary.rs",
+        binding_location: super::bindings::RUST_RUNTIME_BOUNDARY,
     },
     RuleDefinition {
         id: "rust_tonic_channel_connect_per_request",
@@ -935,7 +935,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "tonic transport channels dialed on request paths instead of reusing configured clients.",
-        binding_location: "src/heuristics/rust/runtime_boundary.rs",
+        binding_location: super::bindings::RUST_RUNTIME_BOUNDARY,
     },
     RuleDefinition {
         id: "rust_workspace_missing_resolver",
@@ -949,7 +949,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Workspace Cargo manifests with multiple members but no explicit resolver version.",
-        binding_location: "src/heuristics/rust/runtime_boundary.rs",
+        binding_location: super::bindings::RUST_RUNTIME_BOUNDARY,
     },
     RuleDefinition {
         id: "rust_unsafe_aliasing_assumption",
@@ -963,7 +963,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Unsafe code mixes interior mutability and mutable references in ways that need careful aliasing review.",
-        binding_location: "src/heuristics/rust/unsafe_soundness.rs",
+        binding_location: super::bindings::RUST_UNSAFE_SOUNDNESS,
     },
     RuleDefinition {
         id: "rust_unsafe_assume_init",
@@ -977,7 +977,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Unsafe MaybeUninit::assume_init use without proof of full initialization.",
-        binding_location: "src/heuristics/rust/unsafe_soundness.rs",
+        binding_location: super::bindings::RUST_UNSAFE_SOUNDNESS,
     },
     RuleDefinition {
         id: "rust_unsafe_from_raw_parts",
@@ -991,7 +991,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Unsafe raw slice construction that depends on lifetime and length invariants.",
-        binding_location: "src/heuristics/rust/unsafe_soundness.rs",
+        binding_location: super::bindings::RUST_UNSAFE_SOUNDNESS,
     },
     RuleDefinition {
         id: "rust_unsafe_get_unchecked",
@@ -1005,7 +1005,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Unsafe use of get_unchecked without proof of bounds invariants.",
-        binding_location: "src/heuristics/rust/unsafe_soundness.rs",
+        binding_location: super::bindings::RUST_UNSAFE_SOUNDNESS,
     },
     RuleDefinition {
         id: "rust_unsafe_raw_pointer_cast",
@@ -1019,7 +1019,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Unsafe raw pointer cast that depends on aliasing and lifetime guarantees.",
-        binding_location: "src/heuristics/rust/unsafe_soundness.rs",
+        binding_location: super::bindings::RUST_UNSAFE_SOUNDNESS,
     },
     RuleDefinition {
         id: "rust_unsafe_set_len",
@@ -1033,7 +1033,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Unsafe Vec::set_len use that requires initialized elements and correct capacity invariants.",
-        binding_location: "src/heuristics/rust/unsafe_soundness.rs",
+        binding_location: super::bindings::RUST_UNSAFE_SOUNDNESS,
     },
     RuleDefinition {
         id: "rust_unsafe_transmute",
@@ -1047,6 +1047,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Unsafe transmute use that requires layout and validity proof.",
-        binding_location: "src/heuristics/rust/unsafe_soundness.rs",
+        binding_location: super::bindings::RUST_UNSAFE_SOUNDNESS,
     },
 ];

@@ -5,6 +5,13 @@ mod performance;
 mod runtime_boundary;
 mod unsafe_soundness;
 
+pub(crate) const API_DESIGN_BINDING_LOCATION: &str = api_design::BINDING_LOCATION;
+pub(crate) const ASYNC_PATTERNS_BINDING_LOCATION: &str = async_patterns::BINDING_LOCATION;
+pub(crate) const DOMAIN_MODELING_BINDING_LOCATION: &str = domain_modeling::BINDING_LOCATION;
+pub(crate) const PERFORMANCE_BINDING_LOCATION: &str = performance::BINDING_LOCATION;
+pub(crate) const RUNTIME_BOUNDARY_BINDING_LOCATION: &str = runtime_boundary::BINDING_LOCATION;
+pub(crate) const UNSAFE_SOUNDNESS_BINDING_LOCATION: &str = unsafe_soundness::BINDING_LOCATION;
+
 use crate::analysis::{FieldSummary, ParsedFile, ParsedFunction, StructSummary};
 use crate::model::{Finding, Severity};
 

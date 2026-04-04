@@ -8,6 +8,8 @@ mod network;
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::super::framework_patterns::{
     BodyLine, has_import_path, import_aliases_for, is_request_path_function,
 };

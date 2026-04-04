@@ -3,6 +3,8 @@ use std::collections::BTreeSet;
 use crate::analysis::{ImportSpec, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::super::common::{import_alias_lookup, is_blocking_call};
 
 const COORDINATION_METHODS: &[&str] = &["Add", "Done", "Wait", "Go"];

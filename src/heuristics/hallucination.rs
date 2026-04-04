@@ -2,6 +2,8 @@ use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::index::{ImportResolution, RepositoryIndex};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::common::{import_alias_lookup, is_builtin, is_global_sym};
 
 pub(super) fn hallucination_findings(

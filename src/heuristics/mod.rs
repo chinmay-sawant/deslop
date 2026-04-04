@@ -1,14 +1,14 @@
-mod comments;
+pub(crate) mod comments;
 mod common;
 mod engine;
-mod go;
-mod hallucination;
-mod naming;
-mod python;
+pub(crate) mod go;
+pub(crate) mod hallucination;
+pub(crate) mod naming;
+pub(crate) mod python;
 mod registry;
 pub(crate) mod rust;
-mod security;
-mod test_quality;
+pub(crate) mod security;
+pub(crate) mod test_quality;
 #[cfg(test)]
 mod tests;
 

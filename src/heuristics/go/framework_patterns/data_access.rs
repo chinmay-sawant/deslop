@@ -7,6 +7,8 @@ use std::collections::BTreeMap;
 use crate::analysis::{GormChainStep, GormQueryChain, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+pub(crate) const BINDING_LOCATION: &str = file!();
+
 use super::gin::prepare_like_call_lines;
 use super::{
     BodyLine, body_lines, has_import_path, has_sql_like_import, import_aliases_for,
@@ -14,6 +16,7 @@ use super::{
 };
 
 use self::clients::{pool_lifecycle_findings, service_client_lifecycle_findings};
+
 use self::gorm::{
     duplicate_find_then_preload_findings, find_all_then_manual_paginate_findings,
     gorm_chain_findings, gorm_loop_findings, gorm_query_shape_findings, orm_tuning_findings,

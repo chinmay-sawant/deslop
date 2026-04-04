@@ -1,4 +1,4 @@
-.PHONY: build test clean fmt lint help scan
+.PHONY: build test clean fmt lint help scan scan-info scan-gopdfsuit scan-gopdfsuit-info scan-snapback scan-snapback-info scan-claw scan-claw-info
 
 # Path to scan (can be overridden with 'make scan PATH=<path>')
 # For now hardcoded the path for personal use, you can customize this as required
@@ -40,14 +40,26 @@ fmt:
 scan:
 	$(CARGO) run -- scan $(PATH_TO_SCAN) > results.txt
 
+scan-info:
+	$(CARGO) run -- scan $(PATH_TO_SCAN) --no-fail > results.txt
+
 scan-gopdfsuit:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_GOPDFSUIT) > temp_gopdfsuit.txt
+
+scan-gopdfsuit-info:
+	$(CARGO) run -- scan $(PATH_TO_SCAN_GOPDFSUIT) --no-fail > temp_gopdfsuit.txt
 
 scan-snapback:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_SNAPBACK) > temp_snapback.txt
 
+scan-snapback-info:
+	$(CARGO) run -- scan $(PATH_TO_SCAN_SNAPBACK) --no-fail > temp_snapback.txt
+
 scan-claw:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_CLAW) --ignore hallucinated_import_call > temp_claw.txt
+
+scan-claw-info:
+	$(CARGO) run -- scan $(PATH_TO_SCAN_CLAW) --ignore hallucinated_import_call --no-fail > temp_claw.txt
 
 # Clean build artifacts and temporary files
 clean:
@@ -62,9 +74,13 @@ help:
 	@echo "  lint        - Run clippy for code analysis"
 	@echo "  fmt         - Format source code"
 	@echo "  scan        - Run deslop scan on a directory (default PATH_TO_SCAN=.)"
+	@echo "  scan-info   - Run deslop scan without failing make when findings are present"
 	@echo "                Example: make scan PATH_TO_SCAN=/path/to/go/project"
 	@echo "  clean       - Remove build artifacts and result files"
 	@echo "  help        - Show this menu"
 	@echo "  scan-gopdfsuit - Scan the gopdfsuit project and save results to temp_gopdfsuit.txt"
+	@echo "  scan-gopdfsuit-info - Informational gopdfsuit scan that keeps output but does not fail make"
 	@echo "  scan-snapback - Scan the snapback project and save results to temp_snapback.txt"
+	@echo "  scan-snapback-info - Informational snapback scan that keeps output but does not fail make"
 	@echo "  scan-claw - Scan the claw project and save results to temp_claw.txt"
+	@echo "  scan-claw-info - Informational claw scan that keeps output but does not fail make"

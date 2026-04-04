@@ -2,6 +2,10 @@ mod data_access;
 mod gin;
 mod hot_path;
 
+pub(super) const DATA_ACCESS_BINDING_LOCATION: &str = data_access::BINDING_LOCATION;
+pub(super) const GIN_BINDING_LOCATION: &str = gin::BINDING_LOCATION;
+pub(super) const HOT_PATH_BINDING_LOCATION: &str = hot_path::BINDING_LOCATION;
+
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::analysis::{ParsedFile, ParsedFunction};

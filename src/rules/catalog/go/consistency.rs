@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Struct field tags that repeat the same key more than once.",
-        binding_location: "src/heuristics/go/consistency.rs",
+        binding_location: super::bindings::GO_CONSISTENCY,
     },
     RuleDefinition {
         id: "malformed_struct_tag",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Struct field tags that do not parse as valid Go tag key/value pairs.",
-        binding_location: "src/heuristics/go/consistency.rs",
+        binding_location: super::bindings::GO_CONSISTENCY,
     },
     RuleDefinition {
         id: "mixed_receiver_kinds",
@@ -41,6 +41,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Methods on the same receiver type mix pointer and value receivers.",
-        binding_location: "src/heuristics/go/consistency.rs",
+        binding_location: super::bindings::GO_CONSISTENCY,
     },
 ];
