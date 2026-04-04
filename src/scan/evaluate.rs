@@ -3,9 +3,12 @@ use std::path::{Path, PathBuf};
 
 use crate::RepoConfig;
 use crate::analysis::{AnalysisConfig, ParsedFile, backend_for_language, registered_backends};
-use crate::heuristics::evaluate_shared;
+use crate::heuristics::evaluate_shared_file;
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
+
+use crate::is_async_rollout_rule;
+use rayon::prelude::*;
 
 use super::suppression::{SuppressionDirective, is_suppressed};
 
@@ -17,13 +20,16 @@ pub(super) fn evaluate_findings(
     root: &Path,
     analysis_config: &AnalysisConfig,
 ) -> Vec<Finding> {
-    let mut findings = evaluate_shared(files, index);
-
-    for file in files {
-        if let Some(backend) = backend_for_language(file.language) {
-            findings.extend(backend.evaluate_file(file, index, analysis_config));
-        }
-    }
+    let mut findings: Vec<Finding> = files
+        .par_iter()
+        .flat_map(|file| {
+            let mut file_findings = evaluate_shared_file(file, index);
+            if let Some(backend) = backend_for_language(file.language) {
+                file_findings.extend(backend.evaluate_file(file, index, analysis_config));
+            }
+            file_findings
+        })
+        .collect();
 
     for backend in registered_backends() {
         let backend_files = files
@@ -75,11 +81,4 @@ fn path_is_suppressed(path: &Path, root: &Path, suppressed_paths: &[PathBuf]) ->
                 .is_ok_and(|relative_path| relative_path.starts_with(prefix))
         }
     })
-}
-
-fn is_async_rollout_rule(rule_id: &str) -> bool {
-    matches!(
-        rule_id,
-        "rust_blocking_io_in_async" | "rust_lock_across_await" | "rust_tokio_mutex_unnecessary"
-    ) || rule_id.starts_with("rust_async_")
 }

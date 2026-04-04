@@ -766,7 +766,7 @@ mod tests {
         let registry_rule_ids = rule_registry()
             .iter()
             .filter(|metadata| metadata.language == RuleLanguage::Python)
-            .map(|metadata| metadata.id.as_str())
+            .map(|metadata| metadata.id)
             .collect::<BTreeSet<_>>();
 
         assert_eq!(spec_rule_ids, registry_rule_ids);
