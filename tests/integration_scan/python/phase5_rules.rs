@@ -1,6 +1,6 @@
 use deslop::{ScanReport, Severity};
 
-use crate::support::{
+use super::super::support::{
     FixtureWorkspace, assert_rules_absent, assert_rules_present, find_rule, report_has_rule,
     scan_files,
 };

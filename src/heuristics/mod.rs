@@ -13,5 +13,6 @@ mod test_quality;
 mod tests;
 
 pub(crate) use self::engine::{
-    evaluate_go_file, evaluate_go_repo, evaluate_python_file, evaluate_python_repo, evaluate_shared,
+    evaluate_go_file, evaluate_go_repo, evaluate_python_file, evaluate_python_repo,
+    evaluate_shared, extend_file_rules, extend_function_rules,
 };

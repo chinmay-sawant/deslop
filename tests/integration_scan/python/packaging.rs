@@ -1,9 +1,4 @@
-use std::fs;
-
-use deslop::{ScanOptions, scan_repository};
-
-use super::super::create_temp_workspace;
-use super::write_files;
+use super::super::FixtureWorkspace;
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
@@ -38,64 +33,46 @@ const PACKAGING_RULES: &[&str] = &[
 
 #[test]
 fn test_python_packaging_positive() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[
-            (
-                "pyproject.toml",
-                python_fixture!("integration/packaging/pyproject_positive.txt"),
-            ),
-            (
-                "pkg/cli.py",
-                python_fixture!("integration/packaging/cli_positive.txt"),
-            ),
-            (
-                "pkg/internal/admin.py",
-                python_fixture!("integration/packaging/internal_admin.txt"),
-            ),
-            (
-                "service/consumer.py",
-                python_fixture!("integration/packaging/consumer_positive.txt"),
-            ),
-        ],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "pyproject.toml",
+            python_fixture!("integration/packaging/pyproject_positive.txt"),
+        ),
+        (
+            "pkg/cli.py",
+            python_fixture!("integration/packaging/cli_positive.txt"),
+        ),
+        (
+            "pkg/internal/admin.py",
+            python_fixture!("integration/packaging/internal_admin.txt"),
+        ),
+        (
+            "service/consumer.py",
+            python_fixture!("integration/packaging/consumer_positive.txt"),
+        ),
+    ]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(&report, PACKAGING_RULES);
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_python_packaging_clean() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[
-            (
-                "pyproject.toml",
-                python_fixture!("integration/packaging/pyproject_clean.txt"),
-            ),
-            (
-                "pkg/cli.py",
-                python_fixture!("integration/packaging/cli_clean.txt"),
-            ),
-        ],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "pyproject.toml",
+            python_fixture!("integration/packaging/pyproject_clean.txt"),
+        ),
+        (
+            "pkg/cli.py",
+            python_fixture!("integration/packaging/cli_clean.txt"),
+        ),
+    ]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(&report, PACKAGING_RULES);
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

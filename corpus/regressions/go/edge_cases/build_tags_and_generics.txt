@@ -1,0 +1,14 @@
+//go:build linux
+
+package edgecases
+
+import "context"
+
+type Cache[T any] struct {
+    value T
+}
+
+func (c Cache[T]) Load(ctx context.Context) T {
+    _ = ctx
+    return c.value
+}

@@ -1,9 +1,4 @@
-use std::fs;
-
-use deslop::{ScanOptions, scan_repository};
-
-use super::super::create_temp_workspace;
-use super::write_files;
+use super::super::FixtureWorkspace;
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
@@ -48,44 +43,26 @@ const HOTPATH_RULES: &[&str] = &[
 
 #[test]
 fn test_python_hotpath_positive() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/hotpath_code.py",
-            python_fixture!("integration/hotpath/core_positive.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/hotpath_code.py",
+        python_fixture!("integration/hotpath/core_positive.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(&report, HOTPATH_RULES);
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_python_hotpath_clean() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/hotpath_code.py",
-            python_fixture!("integration/hotpath/core_clean.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/hotpath_code.py",
+        python_fixture!("integration/hotpath/core_clean.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(&report, HOTPATH_RULES);
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

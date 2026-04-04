@@ -2,6 +2,8 @@ use std::sync::OnceLock;
 
 use serde::{Deserialize, Serialize};
 
+mod catalog;
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum RuleLanguage {
@@ -55,13 +57,10 @@ pub fn rule_registry() -> &'static [RuleMetadata] {
 
     REGISTRY
         .get_or_init(|| {
-            serde_json::from_str(include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/rules/registry.json"
-            )))
-            .unwrap_or_else(|error| {
-                unreachable!("rules/registry.json should be valid registry metadata: {error}")
-            })
+            catalog::rule_catalog()
+                .iter()
+                .map(rule_metadata_from_definition)
+                .collect()
         })
         .as_slice()
 }
@@ -79,6 +78,13 @@ pub fn rule_metadata_variants(rule_id: &str) -> Vec<&'static RuleMetadata> {
         .collect()
 }
 
+pub fn rule_binding_location(rule_id: &str, language: RuleLanguage) -> Option<&'static str> {
+    catalog::rule_catalog()
+        .iter()
+        .find(|definition| definition.id == rule_id && definition.language == language)
+        .map(|definition| definition.binding_location)
+}
+
 pub fn is_detail_only_rule(rule_id: &str) -> bool {
     rule_metadata_variants(rule_id).iter().any(|metadata| {
         metadata
@@ -87,14 +93,97 @@ pub fn is_detail_only_rule(rule_id: &str) -> bool {
     })
 }
 
+fn apply_runtime_policy(metadata: &mut RuleMetadata) {
+    metadata.status = status_for_rule(&metadata.language, metadata.id.as_str());
+    metadata.configurability = configurability_for_rule(&metadata.language, metadata.id.as_str());
+}
+
+fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMetadata {
+    let mut metadata = RuleMetadata {
+        id: definition.id.to_string(),
+        language: definition.language.clone(),
+        family: definition.family.to_string(),
+        default_severity: definition.default_severity.clone(),
+        status: definition.status.clone(),
+        configurability: definition.configurability.to_vec(),
+        description: definition.description.to_string(),
+    };
+
+    apply_runtime_policy(&mut metadata);
+    metadata
+}
+
+fn status_for_rule(language: &RuleLanguage, rule_id: &str) -> RuleStatus {
+    if matches!(
+        (language, rule_id),
+        (RuleLanguage::Go, "likely_n_squared_allocation")
+            | (RuleLanguage::Go, "likely_n_squared_string_concat")
+            | (RuleLanguage::Rust, "rust_async_blocking_drop")
+            | (RuleLanguage::Rust, "rust_async_hold_permit_across_await")
+            | (RuleLanguage::Rust, "rust_async_invariant_broken_at_await")
+            | (RuleLanguage::Rust, "rust_async_lock_order_cycle")
+            | (RuleLanguage::Rust, "rust_async_missing_fuse_pin")
+            | (RuleLanguage::Rust, "rust_async_monopolize_executor")
+            | (RuleLanguage::Rust, "rust_async_recreate_future_in_select")
+            | (RuleLanguage::Rust, "rust_async_spawn_cancel_at_await")
+            | (RuleLanguage::Rust, "rust_async_std_mutex_await")
+            | (RuleLanguage::Rust, "rust_blocking_io_in_async")
+            | (RuleLanguage::Rust, "rust_lock_across_await")
+            | (RuleLanguage::Rust, "rust_tokio_mutex_unnecessary")
+    ) {
+        RuleStatus::Experimental
+    } else {
+        RuleStatus::Stable
+    }
+}
+
+fn configurability_for_rule(language: &RuleLanguage, rule_id: &str) -> Vec<RuleConfigurability> {
+    let mut configurability = vec![
+        RuleConfigurability::Disable,
+        RuleConfigurability::Ignore,
+        RuleConfigurability::SeverityOverride,
+    ];
+
+    if matches!(
+        (language, rule_id),
+        (RuleLanguage::Go, "likely_n_squared_allocation")
+            | (RuleLanguage::Go, "likely_n_squared_string_concat")
+    ) {
+        configurability.push(RuleConfigurability::GoSemanticExperimental);
+    }
+
+    if matches!(
+        (language, rule_id),
+        (RuleLanguage::Rust, "rust_async_blocking_drop")
+            | (RuleLanguage::Rust, "rust_async_hold_permit_across_await")
+            | (RuleLanguage::Rust, "rust_async_invariant_broken_at_await")
+            | (RuleLanguage::Rust, "rust_async_lock_order_cycle")
+            | (RuleLanguage::Rust, "rust_async_missing_fuse_pin")
+            | (RuleLanguage::Rust, "rust_async_monopolize_executor")
+            | (RuleLanguage::Rust, "rust_async_recreate_future_in_select")
+            | (RuleLanguage::Rust, "rust_async_spawn_cancel_at_await")
+            | (RuleLanguage::Rust, "rust_async_std_mutex_await")
+            | (RuleLanguage::Rust, "rust_blocking_io_in_async")
+            | (RuleLanguage::Rust, "rust_lock_across_await")
+            | (RuleLanguage::Rust, "rust_tokio_mutex_unnecessary")
+    ) {
+        configurability.push(RuleConfigurability::RustAsyncExperimental);
+    }
+
+    configurability
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeSet;
+    use std::fs;
+    use std::path::{Path, PathBuf};
 
     use super::{
-        RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule, rule_metadata,
-        rule_metadata_variants, rule_registry,
+        RuleConfigurability, RuleLanguage, RuleStatus, is_detail_only_rule, rule_binding_location,
+        rule_metadata, rule_metadata_variants, rule_registry,
     };
+    use crate::{DEFAULT_MAX_BYTES, read_to_string_limited};
 
     #[test]
     fn registry_is_unique_per_language_and_sorted() {
@@ -200,5 +289,155 @@ mod tests {
                     .configurability
                     .contains(&RuleConfigurability::DetailsOnly))
         );
+    }
+
+    #[test]
+    fn runtime_policy_marks_experimental_rules_and_configurability() {
+        let registry = rule_registry();
+        let experimental_rules = registry
+            .iter()
+            .filter(|metadata| metadata.status == RuleStatus::Experimental)
+            .map(|metadata| (metadata.language.clone(), metadata.id.as_str()))
+            .collect::<BTreeSet<_>>();
+
+        let expected = BTreeSet::from([
+            (RuleLanguage::Go, "likely_n_squared_allocation"),
+            (RuleLanguage::Go, "likely_n_squared_string_concat"),
+            (RuleLanguage::Rust, "rust_async_blocking_drop"),
+            (RuleLanguage::Rust, "rust_async_hold_permit_across_await"),
+            (RuleLanguage::Rust, "rust_async_invariant_broken_at_await"),
+            (RuleLanguage::Rust, "rust_async_lock_order_cycle"),
+            (RuleLanguage::Rust, "rust_async_missing_fuse_pin"),
+            (RuleLanguage::Rust, "rust_async_monopolize_executor"),
+            (RuleLanguage::Rust, "rust_async_recreate_future_in_select"),
+            (RuleLanguage::Rust, "rust_async_spawn_cancel_at_await"),
+            (RuleLanguage::Rust, "rust_async_std_mutex_await"),
+            (RuleLanguage::Rust, "rust_blocking_io_in_async"),
+            (RuleLanguage::Rust, "rust_lock_across_await"),
+            (RuleLanguage::Rust, "rust_tokio_mutex_unnecessary"),
+        ]);
+
+        assert_eq!(experimental_rules, expected);
+
+        for metadata in registry {
+            match (metadata.language.clone(), metadata.id.as_str()) {
+                (RuleLanguage::Go, "likely_n_squared_allocation")
+                | (RuleLanguage::Go, "likely_n_squared_string_concat") => {
+                    assert_eq!(metadata.status, RuleStatus::Experimental);
+                    assert!(
+                        metadata
+                            .configurability
+                            .contains(&RuleConfigurability::GoSemanticExperimental)
+                    );
+                }
+                (
+                    RuleLanguage::Rust,
+                    "rust_async_blocking_drop"
+                    | "rust_async_hold_permit_across_await"
+                    | "rust_async_invariant_broken_at_await"
+                    | "rust_async_lock_order_cycle"
+                    | "rust_async_missing_fuse_pin"
+                    | "rust_async_monopolize_executor"
+                    | "rust_async_recreate_future_in_select"
+                    | "rust_async_spawn_cancel_at_await"
+                    | "rust_async_std_mutex_await"
+                    | "rust_blocking_io_in_async"
+                    | "rust_lock_across_await"
+                    | "rust_tokio_mutex_unnecessary",
+                ) => {
+                    assert_eq!(metadata.status, RuleStatus::Experimental);
+                    assert!(
+                        metadata
+                            .configurability
+                            .contains(&RuleConfigurability::RustAsyncExperimental)
+                    );
+                }
+                _ => {
+                    assert_eq!(metadata.status, RuleStatus::Stable);
+                    assert_eq!(
+                        metadata.configurability,
+                        vec![
+                            RuleConfigurability::Disable,
+                            RuleConfigurability::Ignore,
+                            RuleConfigurability::SeverityOverride,
+                        ]
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn source_rule_ids_match_public_registry() {
+        let source_rule_ids =
+            collect_source_rule_ids(Path::new(env!("CARGO_MANIFEST_DIR")).join("src"));
+        let registry_rule_ids = rule_registry()
+            .iter()
+            .map(|metadata| metadata.id.clone())
+            .collect::<BTreeSet<_>>();
+
+        assert!(
+            source_rule_ids.is_subset(&registry_rule_ids),
+            "source contains rule ids that are missing from the public registry"
+        );
+    }
+
+    #[test]
+    fn binding_locations_are_available_for_catalogued_rules() {
+        let location = rule_binding_location("dropped_error", RuleLanguage::Go)
+            .unwrap_or_else(|| unreachable!("binding location should be catalogued"));
+
+        assert!(
+            location.ends_with(".rs"),
+            "binding location should point at a Rust source file"
+        );
+    }
+
+    fn collect_source_rule_ids(root: PathBuf) -> BTreeSet<String> {
+        let mut ids = BTreeSet::new();
+        collect_rule_ids_from_dir(&root, &mut ids);
+        ids
+    }
+
+    fn collect_rule_ids_from_dir(dir: &Path, ids: &mut BTreeSet<String>) {
+        let entries = match fs::read_dir(dir) {
+            Ok(entries) => entries,
+            Err(_) => return,
+        };
+
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                collect_rule_ids_from_dir(&path, ids);
+                continue;
+            }
+
+            if path.extension().and_then(|ext| ext.to_str()) != Some("rs") {
+                continue;
+            }
+
+            let Ok(source) = read_to_string_limited(&path, DEFAULT_MAX_BYTES) else {
+                continue;
+            };
+            let production_source = source
+                .split_once("#[cfg(test)]")
+                .map(|(production, _)| production)
+                .unwrap_or(&source);
+            extract_rule_ids(production_source, ids);
+        }
+    }
+
+    fn extract_rule_ids(source: &str, ids: &mut BTreeSet<String>) {
+        let mut search_start = 0;
+
+        while let Some(offset) = source[search_start..].find("rule_id: \"") {
+            let start = search_start + offset + "rule_id: \"".len();
+            let Some(end_offset) = source[start..].find('\"') else {
+                break;
+            };
+
+            ids.insert(source[start..start + end_offset].to_string());
+            search_start = start + end_offset + 1;
+        }
     }
 }

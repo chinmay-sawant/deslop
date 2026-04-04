@@ -1,0 +1,19 @@
+// Generated-style Rust sample.
+pub struct Row0001 {
+    pub id: u64,
+    pub name: String,
+}
+
+impl Row0001 {
+    pub fn new(id: u64, name: String) -> Self {
+        Self { id, name }
+    }
+}
+
+pub fn generated_value_0001() -> usize {
+    1
+}
+
+pub fn generated_value_0002() -> usize {
+    generated_value_0001() + 1
+}

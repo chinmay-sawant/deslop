@@ -48,7 +48,7 @@ pub(crate) struct PythonFunctionEvidence {
 
 impl PythonFunctionEvidence {
     pub(crate) fn as_view(&self) -> PythonFunctionEvidenceView<'_> {
-        PythonFunctionEvidenceView {
+        let view = PythonFunctionEvidenceView {
             exception_handlers: &self.exception_handlers,
             validation_signature: self.validation_signature.as_ref(),
             exception_block_signatures: &self.exception_block_signatures,
@@ -89,7 +89,9 @@ impl PythonFunctionEvidence {
             append_sort_in_loop_lines: &self.append_sort_in_loop_lines,
             join_list_comp_lines: &self.join_list_comp_lines,
             repeated_subscript_lines: &self.repeated_subscript_lines,
-        }
+        };
+        let _ = view.await_points;
+        view
     }
 }
 
@@ -136,7 +138,6 @@ pub(crate) struct PythonModelSummary {
     pub method_names: Vec<String>,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct PythonFunctionEvidenceView<'a> {
     pub exception_handlers: &'a [ExceptionHandler],

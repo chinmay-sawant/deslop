@@ -1,0 +1,16 @@
+package generated
+
+import "fmt"
+
+type Row0001 struct {
+    ID   int
+    Name string
+}
+
+func BuildRow0001(id int, name string) Row0001 {
+    return Row0001{ID: id, Name: name}
+}
+
+func RenderRow0001(row Row0001) string {
+    return fmt.Sprintf("%d:%s", row.ID, row.Name)
+}

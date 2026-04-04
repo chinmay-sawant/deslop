@@ -108,6 +108,8 @@ impl PackageIndex {
 mod tests {
     use std::path::{Path, PathBuf};
 
+    use proptest::prelude::*;
+
     use super::{ImportResolution, build_repository_index};
     use crate::analysis::{
         DeclaredSymbol, GoFileData, Language, LanguageFileData, ParsedFile, ParsedFunction,
@@ -392,6 +394,21 @@ mod tests {
                 assert!(package.has_function("normalize"));
             }
             other => panic!("expected super import to resolve, got {other:?}"),
+        }
+    }
+
+    proptest! {
+        #[test]
+        fn package_directory_matches_nested_file_parent(
+            root_name in "[a-z]{1,8}",
+            child_dir in "[a-z]{1,8}",
+            file_stem in "[a-z]{1,8}",
+        ) {
+            let root = PathBuf::from(format!("/tmp/{root_name}"));
+            let file_path = root.join(&child_dir).join(format!("{file_stem}.rs"));
+
+            let directory = super::build::package_directory(&root, &file_path);
+            prop_assert_eq!(directory, PathBuf::from(child_dir));
         }
     }
 }

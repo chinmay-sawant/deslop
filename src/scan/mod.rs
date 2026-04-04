@@ -4,7 +4,6 @@ mod reporting;
 mod suppression;
 mod walker;
 
-use std::env;
 use std::time::Instant;
 
 use crate::analysis::{AnalysisConfig, supported_extensions};
@@ -25,9 +24,14 @@ use self::suppression::{
     SuppressionDirective, next_code_line, parse_rule_ids, parse_suppression_directives,
 };
 
-const GO_SEMANTIC_ENV_VAR: &str = "DESLOP_ENABLE_GO_SEMANTIC";
-
 pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
+    scan_repository_with_go_semantic(options, false)
+}
+
+pub fn scan_repository_with_go_semantic(
+    options: &ScanOptions,
+    enable_go_semantic: bool,
+) -> Result<ScanReport> {
     let total_start = Instant::now();
     let canonical_root = options
         .root
@@ -54,8 +58,7 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
     let index_ms = index_start.elapsed().as_millis();
 
     let analysis_config = AnalysisConfig {
-        enable_go_semantic: repo_config.go_semantic_experimental
-            || env_flag_enabled(GO_SEMANTIC_ENV_VAR),
+        enable_go_semantic: repo_config.go_semantic_experimental || enable_go_semantic,
     };
 
     let heuristics_start = Instant::now();
@@ -91,15 +94,5 @@ pub fn scan_repository(options: &ScanOptions) -> Result<ScanReport> {
         },
     })
 }
-
-fn env_flag_enabled(name: &str) -> bool {
-    env::var(name).ok().is_some_and(|value| {
-        matches!(
-            value.trim().to_ascii_lowercase().as_str(),
-            "1" | "true" | "yes" | "on"
-        )
-    })
-}
-
 #[cfg(test)]
 mod tests;

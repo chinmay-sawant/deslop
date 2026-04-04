@@ -1,9 +1,4 @@
-use std::fs;
-
-use deslop::{ScanOptions, scan_repository};
-
-use super::super::create_temp_workspace;
-use super::write_files;
+use super::super::FixtureWorkspace;
 
 fn assert_rules_present(report: &deslop::ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
@@ -31,20 +26,13 @@ fn assert_rules_absent(report: &deslop::ScanReport, rule_ids: &[&str]) {
 
 #[test]
 fn test_python_advanceplan2_async_rules() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/async_service.py",
-            python_fixture!("integration/advanceplan2/async_positive.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/async_service.py",
+        python_fixture!("integration/advanceplan2/async_positive.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(
         &report,
@@ -55,26 +43,17 @@ fn test_python_advanceplan2_async_rules() {
             "async_retry_sleep_without_backoff",
         ],
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_python_advanceplan2_async_clean() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/async_service.py",
-            python_fixture!("integration/advanceplan2/async_clean.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/async_service.py",
+        python_fixture!("integration/advanceplan2/async_clean.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(
         &report,
@@ -85,26 +64,17 @@ fn test_python_advanceplan2_async_clean() {
             "async_retry_sleep_without_backoff",
         ],
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_python_advanceplan2_contract_rules() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/contracts.py",
-            python_fixture!("integration/advanceplan2/contracts_positive.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/contracts.py",
+        python_fixture!("integration/advanceplan2/contracts_positive.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(
         &report,
@@ -117,26 +87,17 @@ fn test_python_advanceplan2_contract_rules() {
             "typeddict_unchecked_access",
         ],
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_python_advanceplan2_contract_clean() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/contracts.py",
-            python_fixture!("integration/advanceplan2/contracts_clean.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/contracts.py",
+        python_fixture!("integration/advanceplan2/contracts_clean.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(
         &report,
@@ -149,26 +110,17 @@ fn test_python_advanceplan2_contract_clean() {
             "typeddict_unchecked_access",
         ],
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_python_advanceplan2_import_time_rules() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/bootstrap.py",
-            python_fixture!("integration/advanceplan2/import_time_positive.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/bootstrap.py",
+        python_fixture!("integration/advanceplan2/import_time_positive.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(
         &report,
@@ -181,26 +133,17 @@ fn test_python_advanceplan2_import_time_rules() {
             "import_time_config_load",
         ],
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_python_advanceplan2_import_time_clean() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/bootstrap.py",
-            python_fixture!("integration/advanceplan2/import_time_clean.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/bootstrap.py",
+        python_fixture!("integration/advanceplan2/import_time_clean.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(
         &report,
@@ -213,26 +156,17 @@ fn test_python_advanceplan2_import_time_clean() {
             "import_time_config_load",
         ],
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_python_advanceplan2_boundary_rules() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/boundary.py",
-            python_fixture!("integration/advanceplan2/boundary_positive.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/boundary.py",
+        python_fixture!("integration/advanceplan2/boundary_positive.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_present(
         &report,
@@ -244,26 +178,17 @@ fn test_python_advanceplan2_boundary_rules() {
             "tempfile_without_cleanup",
         ],
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_python_advanceplan2_boundary_clean() {
-    let temp_dir = create_temp_workspace();
-    write_files(
-        &temp_dir,
-        &[(
-            "pkg/boundary.py",
-            python_fixture!("integration/advanceplan2/boundary_clean.txt"),
-        )],
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/boundary.py",
+        python_fixture!("integration/advanceplan2/boundary_clean.txt"),
+    )]);
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert_rules_absent(
         &report,
@@ -275,6 +200,4 @@ fn test_python_advanceplan2_boundary_clean() {
             "tempfile_without_cleanup",
         ],
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

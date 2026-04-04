@@ -1,0 +1,18 @@
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn edge_case_assertion() {
+        assert_eq!(format!("{:?}", Some("value")), "Some(\"value\")");
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct EdgeCase<'a> {
+    pub label: &'a str,
+}
+
+impl<'a> EdgeCase<'a> {
+    pub fn as_ref(&self) -> &str {
+        self.label
+    }
+}

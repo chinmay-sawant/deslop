@@ -1,24 +1,12 @@
-use std::fs;
-
-use deslop::{ScanOptions, scan_repository};
-
-use super::{create_temp_workspace, write_fixture};
+use super::FixtureWorkspace;
 
 #[test]
 fn test_hallucination() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "main.go", go_fixture!("hallucinated_import.txt"));
-    write_fixture(
-        &temp_dir,
-        "utils/utils.go",
-        go_fixture!("utils_package.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("main.go", go_fixture!("hallucinated_import.txt"));
+    workspace.write_file("utils/utils.go", go_fixture!("utils_package.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -26,15 +14,12 @@ fn test_hallucination() {
             .iter()
             .any(|finding| finding.rule_id == "hallucinated_import_call")
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_hallucination_dir() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "main.go",
         r#"package sample
 
@@ -45,8 +30,7 @@ func Run(address string) string {
 }
 "#,
     );
-    write_fixture(
-        &temp_dir,
+    workspace.write_file(
         "pkg/render/render.go",
         r#"package render
 
@@ -55,8 +39,7 @@ func Normalize(address string) string {
 }
 "#,
     );
-    write_fixture(
-        &temp_dir,
+    workspace.write_file(
         "internal/render/render.go",
         r#"package render
 
@@ -66,26 +49,19 @@ func Sanitize(address string) string {
 "#,
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "hallucinated_import_call"
             && finding.function_name.as_deref() == Some("Run")
             && finding.message.contains("render.Sanitize")
     }));
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_alias_hallucination() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "pdf/generator.go",
         r#"package pdf
 
@@ -101,26 +77,19 @@ func collectAllStandardFontsInTemplate() {
 "#,
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(!report.findings.iter().any(|finding| {
         finding.rule_id == "hallucinated_local_call"
             && finding.function_name.as_deref() == Some("collectAllStandardFontsInTemplate")
             && finding.start_line == 9
     }));
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_rust_go_separation() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "main.go",
         r#"package sample
 
@@ -131,8 +100,7 @@ func Run(address string) string {
 }
 "#,
     );
-    write_fixture(
-        &temp_dir,
+    workspace.write_file(
         "pkg/render/render.go",
         r#"package render
 
@@ -141,8 +109,7 @@ func Sanitize(address string) string {
 }
 "#,
     );
-    write_fixture(
-        &temp_dir,
+    workspace.write_file(
         "pkg/render/lib.rs",
         r#"pub fn Normalize(address: &str) -> String {
     address.to_string()
@@ -150,17 +117,11 @@ func Sanitize(address string) string {
 "#,
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "hallucinated_import_call"
             && finding.function_name.as_deref() == Some("Run")
             && finding.message.contains("render.Normalize")
     }));
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

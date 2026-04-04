@@ -1,0 +1,5 @@
+package main
+
+func seed() int {
+    return 1
+}

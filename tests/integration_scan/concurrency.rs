@@ -1,23 +1,11 @@
-use std::fs;
-
-use deslop::{ScanOptions, scan_repository};
-
-use super::{create_temp_workspace, write_fixture};
+use super::FixtureWorkspace;
 
 #[test]
 fn test_unmanaged_goroutines() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "go_routine.go",
-        go_fixture!("goroutine_slop.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("go_routine.go", go_fixture!("goroutine_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -31,24 +19,14 @@ fn test_unmanaged_goroutines() {
             .iter()
             .any(|finding| finding.rule_id == "goroutine_spawn_in_loop")
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_coordination() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "go_routine.go",
-        go_fixture!("goroutine_clean.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("go_routine.go", go_fixture!("goroutine_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -62,24 +40,14 @@ fn test_coordination() {
             .iter()
             .any(|finding| finding.rule_id == "goroutine_spawn_in_loop")
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_shutdown_mutex() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "concurrency.go",
-        go_fixture!("concurrency_slop.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("concurrency.go", go_fixture!("concurrency_slop.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -99,24 +67,14 @@ fn test_shutdown_mutex() {
             .iter()
             .any(|finding| finding.rule_id == "blocking_call_while_locked")
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_no_slop() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "concurrency.go",
-        go_fixture!("concurrency_clean.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("concurrency.go", go_fixture!("concurrency_clean.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -130,24 +88,17 @@ fn test_no_slop() {
             .iter()
             .any(|finding| finding.rule_id == "blocking_call_while_locked")
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_deeper_goroutine_lifetime() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "goroutine_deeper.go",
         go_fixture!("goroutine_deeper_slop.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -155,24 +106,17 @@ fn test_deeper_goroutine_lifetime() {
             .iter()
             .any(|finding| finding.rule_id == "goroutine_derived_context_unmanaged")
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_deeper_goroutine_lifetime_clean() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "goroutine_deeper.go",
         go_fixture!("goroutine_deeper_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -180,6 +124,4 @@ fn test_deeper_goroutine_lifetime_clean() {
             .iter()
             .any(|finding| finding.rule_id == "goroutine_derived_context_unmanaged")
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

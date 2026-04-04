@@ -1,0 +1,88 @@
+use super::{RuleConfigurability, RuleDefaultSeverity, RuleDefinition, RuleLanguage, RuleStatus};
+
+pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
+    RuleDefinition {
+        id: "busy_waiting",
+        language: RuleLanguage::Go,
+        family: "context",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "select { default: ... } inside loops, which often spins instead of blocking.",
+        binding_location: "src/heuristics/go/context.rs",
+    },
+    RuleDefinition {
+        id: "context_background_used",
+        language: RuleLanguage::Go,
+        family: "context",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Functions that already accept context.Context but still create context.Background() or context.TODO() locally.",
+        binding_location: "src/heuristics/go/context.rs",
+    },
+    RuleDefinition {
+        id: "missing_cancel_call",
+        language: RuleLanguage::Go,
+        family: "context",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Derived contexts where deslop cannot find a local cancel() or defer cancel() call.",
+        binding_location: "src/heuristics/go/context.rs",
+    },
+    RuleDefinition {
+        id: "missing_context",
+        language: RuleLanguage::Go,
+        family: "context",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Standard-library context-aware calls from functions that do not accept context.Context.",
+        binding_location: "src/heuristics/go/context.rs",
+    },
+    RuleDefinition {
+        id: "missing_context_propagation",
+        language: RuleLanguage::Go,
+        family: "context",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.",
+        binding_location: "src/heuristics/go/context.rs",
+    },
+    RuleDefinition {
+        id: "sleep_polling",
+        language: RuleLanguage::Go,
+        family: "context",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "time.Sleep inside loops \u{2014} often indicates polling or busy-wait style code.",
+        binding_location: "src/heuristics/go/context.rs",
+    },
+];

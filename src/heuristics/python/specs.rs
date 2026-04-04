@@ -11,25 +11,52 @@ type FunctionEvaluator = fn(&ParsedFile, &ParsedFunction) -> Vec<Finding>;
 type FileEvaluator = fn(&ParsedFile) -> Vec<Finding>;
 type RepoEvaluator = fn(&[&ParsedFile], &RepositoryIndex) -> Vec<Finding>;
 
-#[allow(dead_code)]
 pub(super) struct PythonFunctionRuleSpec {
     pub(super) family: &'static str,
     pub(super) rule_ids: &'static [&'static str],
     pub(super) evaluate: FunctionEvaluator,
 }
 
-#[allow(dead_code)]
+impl PythonFunctionRuleSpec {
+    fn family(&self) -> &'static str {
+        self.family
+    }
+
+    fn rule_ids(&self) -> &'static [&'static str] {
+        self.rule_ids
+    }
+}
+
 pub(super) struct PythonFileRuleSpec {
     pub(super) family: &'static str,
     pub(super) rule_ids: &'static [&'static str],
     pub(super) evaluate: FileEvaluator,
 }
 
-#[allow(dead_code)]
+impl PythonFileRuleSpec {
+    fn family(&self) -> &'static str {
+        self.family
+    }
+
+    fn rule_ids(&self) -> &'static [&'static str] {
+        self.rule_ids
+    }
+}
+
 pub(super) struct PythonRepoRuleSpec {
     pub(super) family: &'static str,
     pub(super) rule_ids: &'static [&'static str],
     pub(super) evaluate: RepoEvaluator,
+}
+
+impl PythonRepoRuleSpec {
+    fn family(&self) -> &'static str {
+        self.family
+    }
+
+    fn rule_ids(&self) -> &'static [&'static str] {
+        self.rule_ids
+    }
 }
 
 const QUALITY_FUNCTION_RULE_IDS: &[&str] = &[
@@ -543,6 +570,8 @@ pub(super) fn evaluate_function_specs(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for spec in specs {
+        let _ = spec.family();
+        let _ = spec.rule_ids();
         findings.extend((spec.evaluate)(file, function));
     }
     findings
@@ -551,6 +580,8 @@ pub(super) fn evaluate_function_specs(
 pub(super) fn evaluate_file_specs(specs: &[PythonFileRuleSpec], file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
     for spec in specs {
+        let _ = spec.family();
+        let _ = spec.rule_ids();
         findings.extend((spec.evaluate)(file));
     }
     findings
@@ -563,6 +594,8 @@ pub(super) fn evaluate_repo_specs(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for spec in specs {
+        let _ = spec.family();
+        let _ = spec.rule_ids();
         findings.extend((spec.evaluate)(files, index));
     }
     findings

@@ -125,7 +125,6 @@ pub(crate) enum UnsafePatternKind {
     RawPointerCast,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct RustFunctionEvidenceView<'a> {
     pub safety_comment_lines: &'a [usize],

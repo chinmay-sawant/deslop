@@ -2,24 +2,14 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use deslop::{ScanOptions, scan_repository};
-
-use super::{create_temp_workspace, write_fixture};
+use super::FixtureWorkspace;
 
 #[test]
 fn test_rust_domain_modeling_rules() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
-        rust_fixture!("domain_modeling/positive.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs", rust_fixture!("domain_modeling/positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_domain_raw_primitive",
@@ -43,20 +33,14 @@ fn test_rust_domain_modeling_rules() {
                 .collect::<Vec<_>>()
         );
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_rust_async_and_performance_rules() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(&temp_dir, "src/lib.rs", rust_fixture!("async/positive.txt"));
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs", rust_fixture!("async/positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_blocking_io_in_async",
@@ -84,24 +68,14 @@ fn test_rust_async_and_performance_rules() {
                 .collect::<Vec<_>>()
         );
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_rust_unsafe_soundness_rules() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
-        rust_fixture!("unsafe/positive.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs", rust_fixture!("unsafe/positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_unsafe_get_unchecked",
@@ -124,34 +98,19 @@ fn test_rust_unsafe_soundness_rules() {
                 .collect::<Vec<_>>()
         );
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_rust_advanced_negative_fixtures() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "src/domain.rs",
         rust_fixture!("domain_modeling/negative.txt"),
     );
-    write_fixture(
-        &temp_dir,
-        "src/async.rs",
-        rust_fixture!("async/negative.txt"),
-    );
-    write_fixture(
-        &temp_dir,
-        "src/unsafe.rs",
-        rust_fixture!("unsafe/negative.txt"),
-    );
+    workspace.write_file("src/async.rs", rust_fixture!("async/negative.txt"));
+    workspace.write_file("src/unsafe.rs", rust_fixture!("unsafe/negative.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     let blocked = [
         "rust_domain_raw_primitive",
@@ -193,24 +152,14 @@ fn test_rust_advanced_negative_fixtures() {
                 .collect::<Vec<_>>()
         );
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_rust_phase4_runtime_boundary_rules() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
-        rust_fixture!("phase4/positive.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs", rust_fixture!("phase4/positive.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_tokio_runtime_built_per_call",
@@ -232,24 +181,14 @@ fn test_rust_phase4_runtime_boundary_rules() {
                 .collect::<Vec<_>>()
         );
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_rust_phase4_runtime_boundary_clean() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
-        rust_fixture!("phase4/negative.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("src/lib.rs", rust_fixture!("phase4/negative.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in [
         "rust_tokio_runtime_built_per_call",
@@ -271,29 +210,15 @@ fn test_rust_phase4_runtime_boundary_clean() {
                 .collect::<Vec<_>>()
         );
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_rust_phase4_workspace_manifest_rule() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
-        "Cargo.toml",
-        "[workspace]\nmembers = [\"app\", \"lib\"]\n",
-    );
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
-        rust_fixture!("phase4/negative.txt"),
-    );
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("Cargo.toml", "[workspace]\nmembers = [\"app\", \"lib\"]\n");
+    workspace.write_file("src/lib.rs", rust_fixture!("phase4/negative.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         report
@@ -307,29 +232,18 @@ fn test_rust_phase4_workspace_manifest_rule() {
             .map(|finding| finding.rule_id.as_str())
             .collect::<Vec<_>>()
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_rust_phase4_workspace_manifest_clean() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "Cargo.toml",
         "[workspace]\nresolver = \"2\"\nmembers = [\"app\", \"lib\"]\n",
     );
-    write_fixture(
-        &temp_dir,
-        "src/lib.rs",
-        rust_fixture!("phase4/negative.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("phase4/negative.txt"));
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     assert!(
         !report
@@ -343,8 +257,6 @@ fn test_rust_phase4_workspace_manifest_clean() {
             .map(|finding| finding.rule_id.as_str())
             .collect::<Vec<_>>()
     );
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]

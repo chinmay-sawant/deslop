@@ -1,0 +1,88 @@
+use super::{RuleConfigurability, RuleDefaultSeverity, RuleDefinition, RuleLanguage, RuleStatus};
+
+pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
+    RuleDefinition {
+        id: "blocking_call_while_locked",
+        language: RuleLanguage::Go,
+        family: "concurrency",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Potentially blocking calls observed between Lock and Unlock.",
+        binding_location: "src/heuristics/go/concurrency.rs",
+    },
+    RuleDefinition {
+        id: "goroutine_derived_context_unmanaged",
+        language: RuleLanguage::Go,
+        family: "concurrency",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.",
+        binding_location: "src/heuristics/go/concurrency.rs",
+    },
+    RuleDefinition {
+        id: "goroutine_spawn_in_loop",
+        language: RuleLanguage::Go,
+        family: "concurrency",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Raw go statements launched from inside loops without obvious WaitGroup coordination.",
+        binding_location: "src/heuristics/go/concurrency.rs",
+    },
+    RuleDefinition {
+        id: "goroutine_without_coordination",
+        language: RuleLanguage::Go,
+        family: "concurrency",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Raw go statements without an obvious context or WaitGroup-like coordination signal.",
+        binding_location: "src/heuristics/go/concurrency.rs",
+    },
+    RuleDefinition {
+        id: "goroutine_without_shutdown_path",
+        language: RuleLanguage::Go,
+        family: "concurrency",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.",
+        binding_location: "src/heuristics/go/concurrency.rs",
+    },
+    RuleDefinition {
+        id: "mutex_in_loop",
+        language: RuleLanguage::Go,
+        family: "concurrency",
+        default_severity: RuleDefaultSeverity::Contextual,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Repeated Lock or RLock acquisition inside loops.",
+        binding_location: "src/heuristics/go/concurrency.rs",
+    },
+];

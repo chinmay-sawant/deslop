@@ -1,9 +1,8 @@
-use std::fs;
 use std::path::Path;
 
-use deslop::{BenchmarkOptions, ScanOptions, benchmark_repository, scan_repository};
+use deslop::{BenchmarkOptions, benchmark_repository};
 
-use super::{create_temp_workspace, write_fixture};
+use super::support::{FixtureWorkspace, scan_root};
 
 const GOMINDMAPPER_ROOT: &str = "/home/chinmay/ChinmayPersonalProjects/mindmapper/gomindmapper";
 const GOPDFSUIT_ROOT: &str = "/home/chinmay/ChinmayPersonalProjects/gopdfsuit";
@@ -14,11 +13,7 @@ fn test_real_scan() {
     let roots = [Path::new(GOMINDMAPPER_ROOT), Path::new(GOPDFSUIT_ROOT)];
 
     for root in roots {
-        let report = scan_repository(&ScanOptions {
-            root: root.to_path_buf(),
-            respect_ignore: true,
-        })
-        .unwrap_or_else(|error| panic!("scan should succeed for {}: {error}", root.display()));
+        let report = scan_root(root.to_path_buf());
 
         assert!(
             report.files_discovered > 0,
@@ -56,9 +51,8 @@ fn test_real_scan() {
 
 #[test]
 fn test_benchmark() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "main.go",
         include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
@@ -67,7 +61,7 @@ fn test_benchmark() {
     );
 
     let report = benchmark_repository(&BenchmarkOptions {
-        root: temp_dir.clone(),
+        root: workspace.root().to_path_buf(),
         repeats: 2,
         warmups: 1,
         respect_ignore: true,
@@ -77,6 +71,4 @@ fn test_benchmark() {
     assert_eq!(report.repeats, 2);
     assert_eq!(report.warmups, 1);
     assert_eq!(report.runs.len(), 2);
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }

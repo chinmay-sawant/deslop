@@ -1,8 +1,4 @@
-use std::fs;
-
-use deslop::{ScanOptions, scan_repository};
-
-use super::{create_temp_workspace, write_fixture};
+use super::FixtureWorkspace;
 
 fn has_rule(report: &deslop::ScanReport, rule_id: &str) -> bool {
     report
@@ -156,136 +152,94 @@ const LIBRARY_RULES: &[&str] = &[
 
 #[test]
 fn test_go_library_misuse_perf_positive() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "perf_positive.go",
         go_fixture!("library_misuse_perf_positive.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in PERF_RULES {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_go_library_misuse_perf_clean() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "perf_clean.go",
         go_fixture!("library_misuse_perf_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in PERF_RULES {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 // ── Security rules (plan2) ──
 
 #[test]
 fn test_go_library_misuse_security_positive() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "sec_positive.go",
         go_fixture!("library_misuse_security_positive.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in SECURITY_RULES {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_go_library_misuse_security_clean() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "sec_clean.go",
         go_fixture!("library_misuse_security_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in SECURITY_RULES {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 // ── Library rules (plan3) ──
 
 #[test]
 fn test_go_library_misuse_library_positive() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "lib_positive.go",
         go_fixture!("library_misuse_library_positive.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in LIBRARY_RULES {
         assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
 
 #[test]
 fn test_go_library_misuse_library_clean() {
-    let temp_dir = create_temp_workspace();
-    write_fixture(
-        &temp_dir,
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
         "lib_clean.go",
         go_fixture!("library_misuse_library_clean.txt"),
     );
 
-    let report = scan_repository(&ScanOptions {
-        root: temp_dir.clone(),
-        respect_ignore: true,
-    })
-    .expect("scan should succeed");
+    let report = workspace.scan();
 
     for rule_id in LIBRARY_RULES {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
     }
-
-    fs::remove_dir_all(temp_dir).expect("temp dir cleanup should succeed");
 }
