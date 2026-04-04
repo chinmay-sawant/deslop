@@ -69,6 +69,7 @@ src/rules.rs:201:        let async_rule = rule_metadata("rust_async_lock_order_c
 src/rules.rs:210:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
 src/rules.rs:68:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
 src/rules/catalog/python/framework.rs:169:        description: "Django querysets use count() for existence checks instead of exists().",
+tests/benchmark_guard.rs:36:        repo_root.exists(),
 
 ## toctou_check_then_open
 

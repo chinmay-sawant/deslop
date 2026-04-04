@@ -52,6 +52,12 @@ pub(super) fn evaluate_findings(
             .then(left.start_line.cmp(&right.start_line))
             .then(left.rule_id.cmp(&right.rule_id))
     });
+    // Remove any exact (path, start_line, rule_id) duplicates that could arise
+    // if two evaluation paths both emit the same finding for the same location.
+    // The sort above places identical keys adjacent, so dedup_by is O(n).
+    findings.dedup_by(|a, b| {
+        a.path == b.path && a.start_line == b.start_line && a.rule_id == b.rule_id
+    });
     findings
 }
 

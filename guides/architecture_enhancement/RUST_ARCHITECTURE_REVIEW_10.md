@@ -102,10 +102,10 @@ The author came from Go (PDF/UA-2 and PDF/A-4 work on gopdfsuit) with no prior R
 
 **Impact:** Heuristics and scan config become coupled. A change to `AnalysisConfig` fields forces review of all heuristics call sites.
 
-- [ ] Extract `enable_go_semantic` out of `AnalysisConfig` and pass it as a plain `bool` to the configurable rule dispatch path
-- [ ] Remove the `AnalysisConfig` import from `src/heuristics/engine.rs`
-- [ ] Verify `GO_CONFIGURABLE_FUNCTION_RULES` still receives its flag through the new path
-- [ ] Add a compile-time check or doc comment on `AnalysisConfig` documenting that it must not be imported by `heuristics/`
+- [x] Extract `enable_go_semantic` out of `AnalysisConfig` and pass it as a plain `bool` to the configurable rule dispatch path
+- [x] Remove the `AnalysisConfig` import from `src/heuristics/engine.rs`
+- [x] Verify `GO_CONFIGURABLE_FUNCTION_RULES` still receives its flag through the new path
+- [x] Add a compile-time check or doc comment on `AnalysisConfig` documenting that it must not be imported by `heuristics/`
 
 ### Gap 2 — Wide re-export surface in `analysis/mod.rs`
 
@@ -113,9 +113,9 @@ The author came from Go (PDF/UA-2 and PDF/A-4 work on gopdfsuit) with no prior R
 
 **Impact:** Contributors cannot discover the ownership of a type from its import path. Refactoring the types submodule requires auditing all call sites of the flat re-export.
 
-- [ ] Group re-exports in `analysis/mod.rs` by sub-namespace with inline comments marking language boundaries (Go types, Python types, Rust types, shared types)
-- [ ] Consider whether Go-specific types (`GinCallSummary`, `GoFieldSummary`, `GoFunctionEvidence`, etc.) should be accessible via `analysis::go::*` rather than the flat `analysis::*` surface
-- [ ] Add a test or lint that catches any new type being added to the flat re-export without a grouping comment
+- [x] Group re-exports in `analysis/mod.rs` by sub-namespace with inline comments marking language boundaries (Go types, Python types, Rust types, shared types)
+- [x] Consider whether Go-specific types (`GinCallSummary`, `GoFieldSummary`, `GoFunctionEvidence`, etc.) should be accessible via `analysis::go::*` rather than the flat `analysis::*` surface
+- [x] Add a test or lint that catches any new type being added to the flat re-export without a grouping comment
 
 ### Gap 3 — Dual dispatch path for shared vs. language-specific findings
 
@@ -123,9 +123,9 @@ The author came from Go (PDF/UA-2 and PDF/A-4 work on gopdfsuit) with no prior R
 
 **Impact:** It is not obvious to a new contributor which path applies when, or what happens if shared-rule and backend-rule findings conflict. Adding a new evaluation phase requires updating both paths.
 
-- [ ] Document explicitly in `scan/evaluate.rs` why `evaluate_shared_file` is called separately from `backend.evaluate_file` (if there is a deliberate reason)
-- [ ] If there is no deliberate reason, consolidate by having each backend's `evaluate_file` call `evaluate_shared_file` internally and remove the direct call from `scan/evaluate.rs`
-- [ ] Add an integration test that verifies shared rules fire on all three languages (Go, Python, Rust) to guard against a regression if the dispatch is unified
+- [x] Document explicitly in `scan/evaluate.rs` why `evaluate_shared_file` is called separately from `backend.evaluate_file` (if there is a deliberate reason)
+- [x] If there is no deliberate reason, consolidate by having each backend's `evaluate_file` call `evaluate_shared_file` internally and remove the direct call from `scan/evaluate.rs`
+- [x] Add an integration test that verifies shared rules fire on all three languages (Go, Python, Rust) to guard against a regression if the dispatch is unified
 
 ### Gap 4 — Unconventional `#[path = "..."]` module declarations in integration tests
 
@@ -133,9 +133,9 @@ The author came from Go (PDF/UA-2 and PDF/A-4 work on gopdfsuit) with no prior R
 
 **Impact:** Maintenance friction. Contributors adding a new test module must follow the non-standard pattern or discover that both approaches work, creating inconsistency.
 
-- [ ] Remove all `#[path = "..."]` attributes from `tests/integration_scan/mod.rs` that point to sibling files
-- [ ] Verify that `cargo test` still compiles and all integration scan tests pass after removal
-- [ ] Document in `tests/integration_scan/mod.rs` (or `guides/`) the reason for any `#[path]` usage that legitimately cannot be removed
+- [x] Remove all `#[path = "..."]` attributes from `tests/integration_scan/mod.rs` that point to sibling files
+- [x] Verify that `cargo test` still compiles and all integration scan tests pass after removal
+- [x] Document in `tests/integration_scan/mod.rs` (or `guides/`) the reason for any `#[path]` usage that legitimately cannot be removed
 
 ### Gap 5 — `registered_backends()` returns a fixed-size array
 
@@ -143,10 +143,10 @@ The author came from Go (PDF/UA-2 and PDF/A-4 work on gopdfsuit) with no prior R
 
 **Impact:** Language addition touches the function signature unnecessarily. Callers that destructure the array by index would break silently at compile time in subtle ways.
 
-- [ ] Change `registered_backends()` to return `&'static [&'static dyn LanguageBackend]`
-- [ ] Replace the inline array literal with a `static` slice or use `once_cell`/`OnceLock` if needed
-- [ ] Verify all callers (in `scan/evaluate.rs`, `analysis/mod.rs`, etc.) still compile and behave correctly
-- [ ] Add a test that iterates all registered backends and asserts each has at least one supported extension
+- [x] Change `registered_backends()` to return `&'static [&'static dyn LanguageBackend]`
+- [x] Replace the inline array literal with a `static` slice or use `once_cell`/`OnceLock` if needed
+- [x] Verify all callers (in `scan/evaluate.rs`, `analysis/mod.rs`, etc.) still compile and behave correctly
+- [x] Add a test that iterates all registered backends and asserts each has at least one supported extension
 
 ### Gap 6 — `proptest` dependency is present but underused in parser-critical paths
 
@@ -154,11 +154,11 @@ The author came from Go (PDF/UA-2 and PDF/A-4 work on gopdfsuit) with no prior R
 
 **Impact:** The parser can silently accept malformed code and produce incorrect evidence, leading to false negatives. There are no invariant-level tests confirming "clean fixtures never produce findings."
 
-- [ ] Add a `proptest`-backed invariant test: given any valid Go/Python/Rust source string, `parse_source_file` must not panic
-- [ ] Add a fixture-level invariant: for every `*_clean.txt` fixture in `tests/fixtures/`, assert that scanning it produces zero findings for the rules it is meant to validate
-- [ ] Add a fixture-level invariant: for every `*_slop.txt` or `*_positive.txt` fixture, assert that scanning it produces at least one finding
-- [ ] Consider enabling the `cargo fuzz` targets in CI on a short time budget to surface parser panics on random inputs
-- [ ] Document which properties are considered invariants vs. which findings are expected to change as heuristics evolve
+- [x] Add a `proptest`-backed invariant test: given any valid Go/Python/Rust source string, `parse_source_file` must not panic
+- [x] Add a fixture-level invariant: for every `*_clean.txt` fixture in `tests/fixtures/`, assert that scanning it produces zero findings for the rules it is meant to validate
+- [x] Add a fixture-level invariant: for every `*_slop.txt` or `*_positive.txt` fixture, assert that scanning it produces at least one finding
+- [x] Consider enabling the `cargo fuzz` targets in CI on a short time budget to surface parser panics on random inputs
+- [x] Document which properties are considered invariants vs. which findings are expected to change as heuristics evolve
 
 ---
 

@@ -153,3 +153,88 @@ rust_positive_invariant!(
     rust_direct_call_hallucination_positive_has_findings,
     "direct_call_hallucination_positive.txt"
 );
+
+// ---------------------------------------------------------------------------
+// 3. Zero-findings baseline invariant: every language
+//
+// NOTE — These fixtures are deliberately minimal code samples that are
+// globally finding-free.  They are distinct from the per-rule `_clean`
+// fixtures, which are clean only for a specific rule family; other rules may
+// fire on them.  The baselines here must produce zero findings from any rule.
+// ---------------------------------------------------------------------------
+
+#[test]
+fn go_zero_findings_baseline_produces_no_findings() {
+    let source = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/go/zero_findings_baseline.txt"
+    ));
+    let findings = scan_single("zero_findings_baseline.go", source);
+    assert!(
+        findings.is_empty(),
+        "zero-findings Go baseline produced unexpected findings: {findings:?}"
+    );
+}
+
+#[test]
+fn python_zero_findings_baseline_produces_no_findings() {
+    let source = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/python/zero_findings_baseline.txt"
+    ));
+    let findings = scan_single("zero_findings_baseline.py", source);
+    assert!(
+        findings.is_empty(),
+        "zero-findings Python baseline produced unexpected findings: {findings:?}"
+    );
+}
+
+#[test]
+fn rust_zero_findings_baseline_produces_no_findings() {
+    let source = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/rust/zero_findings_baseline.txt"
+    ));
+    let findings = scan_single("zero_findings_baseline.rs", source);
+    assert!(
+        findings.is_empty(),
+        "zero-findings Rust baseline produced unexpected findings: {findings:?}"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// 4. Deduplication invariant: scan results must never contain two findings
+//    with the same (path, start_line, rule_id) triple.
+// ---------------------------------------------------------------------------
+
+#[test]
+fn scan_results_contain_no_duplicate_findings() {
+    // Use a known-noisy Go fixture so multiple rules fire, giving the
+    // deduplication guard a realistic workout.
+    let source = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/go/error_handling_slop.txt"
+    ));
+    // scan_single returns Vec<String> of rule_ids; use the full ScanReport
+    // to access (start_line, rule_id) pairs for the duplicate check.
+    let dir = tempfile::TempDir::new().expect("temp dir");
+    let file_path = dir.path().join("dedup_check.go");
+    std::fs::write(&file_path, source).expect("write fixture");
+
+    let report = deslop::scan_repository(&deslop::ScanOptions {
+        root: dir.path().to_path_buf(),
+        respect_ignore: false,
+    })
+    .expect("scan should succeed");
+
+    let mut seen = std::collections::BTreeSet::new();
+    for f in &report.findings {
+        let key = (f.start_line, f.rule_id.clone());
+        assert!(
+            seen.insert(key.clone()),
+            "duplicate finding detected: rule='{}' at line {}",
+            key.1,
+            key.0
+        );
+    }
+}

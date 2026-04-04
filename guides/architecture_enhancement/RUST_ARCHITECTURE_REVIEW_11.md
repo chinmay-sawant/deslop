@@ -96,10 +96,10 @@ The existing `_clean` and `_negative` fixtures are clean only for the rule famil
 
 **Path to 10:** Introduce a small set of "universally clean" fixtures — minimal, highly focused code samples that are guaranteed to produce zero findings from any rule in the registry. These are kept separate from the per-rule `_clean` fixtures and are explicitly documented as global baselines.
 
-- [ ] Add `tests/fixtures/go/zero_findings_baseline.txt` — a 10-15 line well-formed Go file designed to be globally finding-free
-- [ ] Add `tests/fixtures/python/zero_findings_baseline.txt` — same for Python
-- [ ] Add `tests/fixtures/rust/zero_findings_baseline.txt` — same for Rust
-- [ ] Add invariant tests in `parser_invariants.rs` that scan each baseline and assert zero findings
+- [x] Add `tests/fixtures/go/zero_findings_baseline.txt` — a 10-15 line well-formed Go file designed to be globally finding-free
+- [x] Add `tests/fixtures/python/zero_findings_baseline.txt` — same for Python
+- [x] Add `tests/fixtures/rust/zero_findings_baseline.txt` — same for Rust
+- [x] Add invariant tests in `parser_invariants.rs` that scan each baseline and assert zero findings
 
 ### 2. The heuristics layer has no cross-rule conflict detection
 
@@ -107,8 +107,8 @@ The registry in `src/heuristics/registry.rs` is an ordered list of independent r
 
 **Path to 10:** After the evaluation pass, deduplicate findings that share the same `(path, start_line, rule_id)` key:
 
-- [ ] Add a deduplication step in `scan/evaluate.rs` before the sort — remove exact `(path, start_line, rule_id)` duplicates
-- [ ] Add a test that verifies a file which would trigger two rules at the same location does not emit duplicate findings
+- [x] Add a deduplication step in `scan/evaluate.rs` before the sort — remove exact `(path, start_line, rule_id)` duplicates
+- [x] Add a test that verifies a file which would trigger two rules at the same location does not emit duplicate findings
 
 ### 3. The benchmark module has no automated performance regression guard
 
@@ -116,8 +116,8 @@ The registry in `src/heuristics/registry.rs` is an ordered list of independent r
 
 **Path to 10:** Add a benchmark regression baseline (files/sec or ms/file) against the `real-repos/` fixture:
 
-- [ ] Record baseline scan time for a known-size repository (e.g. `real-repos/go-gin-example`) in `guides/`
-- [ ] Add a soft-fail benchmark test (allowed to ignore in CI, blocked in release) that asserts scan time stays within 2× of baseline
+- [x] Record baseline scan time for a known-size repository (e.g. `real-repos/go-gin-example`) in `guides/`
+- [x] Add a soft-fail benchmark test (allowed to ignore in CI, blocked in release) that asserts scan time stays within 2× of baseline
 
 ---
 
