@@ -101,8 +101,8 @@ Current state:
 
 Improvement path:
 
-- [ ] introduce a macro or helper that derives `binding_location` from module-owned constants
-- [ ] reduce the amount of hand-authored path text in the catalog layer
+- [x] introduce a macro or helper that derives `binding_location` from module-owned constants
+- [x] reduce the amount of hand-authored path text in the catalog layer
 
 Why it matters:
 
@@ -117,8 +117,8 @@ Current state:
 
 Improvement path:
 
-- [ ] refine family-level binding paths into more precise leaf-module bindings where practical
-- [ ] do this only where the extra specificity improves maintenance more than it increases churn
+- [x] refine family-level binding paths into more precise leaf-module bindings where practical
+- [x] do this only where the extra specificity improves maintenance more than it increases churn
 
 Why it matters:
 
@@ -132,8 +132,8 @@ Current state:
 
 Improvement path:
 
-- [ ] keep the exact counts, but document how to update them intentionally when adding corpus files or rule ids
-- [ ] consider grouping counts by language/category in addition to raw totals if future churn increases
+- [x] keep the exact counts, but document how to update them intentionally when adding corpus files or rule ids
+- [x] consider grouping counts by language/category in addition to raw totals if future churn increases
 
 Why it matters:
 
@@ -147,8 +147,8 @@ Current state:
 
 Improvement path:
 
-- [ ] add a second informational target that captures scan output without making `make` fail when findings are expected
-- [ ] keep the strict target for CI-style enforcement
+- [x] add a second informational target that captures scan output without making `make` fail when findings are expected
+- [x] keep the strict target for CI-style enforcement
 
 Why it matters:
 
@@ -218,10 +218,10 @@ The remaining gap to 10/10 is now mostly about reducing manual metadata string m
 
 ## Next-Step Checklist
 
-- [ ] Consider macro- or constant-backed `binding_location` generation to reduce manual path strings
-- [ ] Refine family-level Go binding paths into leaf-level bindings where the extra precision is worth the maintenance cost
-- [ ] Document the intentional update flow for corpus and rule-source inventory counts
-- [ ] Add a non-failing informational scan make target alongside the current policy-enforcing one
+- [x] Consider macro- or constant-backed `binding_location` generation to reduce manual path strings
+- [x] Refine family-level Go binding paths into leaf-level bindings where the extra precision is worth the maintenance cost
+- [x] Document the intentional update flow for corpus and rule-source inventory counts
+- [x] Add a non-failing informational scan make target alongside the current policy-enforcing one
 
 ## Bottom Line
 

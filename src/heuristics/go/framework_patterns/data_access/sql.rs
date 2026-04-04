@@ -1,6 +1,8 @@
 use super::gorm::{gorm_chain_has_step, gorm_chain_shape, gorm_chain_step};
 use super::*;
 
+pub(crate) const BINDING_LOCATION: &str = super::BINDING_LOCATION;
+
 fn db_query_text_looks_write(query_text: &str) -> bool {
     let normalized = query_text.to_ascii_uppercase();
     normalized.contains("INSERT ")

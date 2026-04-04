@@ -8,6 +8,9 @@ use crate::analysis::{GormChainStep, GormQueryChain, ParsedFile, ParsedFunction}
 use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
+pub(crate) const CLIENTS_BINDING_LOCATION: &str = clients::BINDING_LOCATION;
+pub(crate) const GORM_BINDING_LOCATION: &str = gorm::BINDING_LOCATION;
+pub(crate) const SQL_BINDING_LOCATION: &str = sql::BINDING_LOCATION;
 
 use super::gin::prepare_like_call_lines;
 use super::{

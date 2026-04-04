@@ -13,7 +13,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM Association(...).Find(...) loaders observed inside loops.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "automigrate_or_schema_probe_in_request_path",
@@ -27,7 +27,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "AutoMigrate or schema probes running on request paths instead of startup.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "bun_newdb_per_request",
@@ -41,7 +41,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Bun DB handles created directly on request paths instead of reused process-level state.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "bun_select_scan_without_limit",
@@ -55,7 +55,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Bun select-and-scan request paths without a visible limit or pagination marker.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "connection_pool_reconfigured_per_request",
@@ -69,7 +69,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "DB pool sizing or lifetime settings changed on request paths.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "count_inside_loop",
@@ -97,7 +97,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Request-path GORM flows that run Count(...) and then a broad Find(...) with the same filter shape.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "create_single_in_loop_instead_of_batches",
@@ -111,7 +111,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM .Create(...) used inside loops with no visible CreateInBatches(...) path in the same function.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "date_or_cast_wrapped_indexed_column",
@@ -125,7 +125,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "DATE/CAST wrapping indexed columns in WHERE clauses, preventing index usage.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "db_ping_per_request",
@@ -153,7 +153,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Bulk creates performed with GORM default transaction enabled \u{2014} SkipDefaultTransaction improves throughput.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "delete_single_row_in_loop_without_batch",
@@ -167,7 +167,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM Delete(...) chains observed inside loops one row at a time.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "distinct_wide_row_request_path",
@@ -181,7 +181,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Distinct on wide rows without Select projection \u{2014} a key-only subquery is usually cheaper.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "duplicate_find_then_preload_followup",
@@ -195,7 +195,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Initial Find followed by a separate Preload query that could be folded into one.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "ent_open_per_request",
@@ -209,7 +209,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "ent clients opened directly inside request handlers instead of shared startup wiring.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "exec_inside_loop_without_batch",
@@ -223,7 +223,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Exec(...) or ExecContext(...) used for row-by-row SQL writes inside loops.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "exists_via_count_star",
@@ -237,7 +237,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "COUNT(*) used for an existence check instead of EXISTS or LIMIT 1.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "find_all_then_manual_paginate_in_go",
@@ -251,7 +251,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "All rows fetched and then sliced in Go instead of using database-level pagination.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "findinbatches_candidate_for_large_scan",
@@ -265,7 +265,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Unbounded result sets that could use FindInBatches or cursor iteration.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "first_or_create_in_loop",
@@ -279,7 +279,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM FirstOrCreate(...) chains observed inside loops.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "gorm_debug_enabled_in_request_path",
@@ -293,7 +293,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM debug logging enabled on request paths.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "gorm_find_without_limit_on_handler_path",
@@ -307,7 +307,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Request-path GORM Find(...) chains with no visible Limit(...) step.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "gorm_joins_plus_preload_plus_find_without_limit",
@@ -321,7 +321,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM chains combining Joins, Preload, and unbounded Find on request paths.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "gorm_open_per_request",
@@ -335,7 +335,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "gorm.Open(...) called on request paths instead of process-level setup.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "gorm_preload_clause_associations_on_wide_graph",
@@ -349,7 +349,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Request-path GORM chains that use Preload(clause.Associations) or other broad preload graphs.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "gorm_select_missing_projection_on_wide_model",
@@ -363,7 +363,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM queries on wide models without a Select projection to limit fetched columns.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "gorm_session_allocated_per_item",
@@ -377,7 +377,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM Session(...) chains allocated inside loops before issuing queries.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "leading_wildcard_builder_chain",
@@ -391,7 +391,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "LIKE queries with leading wildcards that prevent index usage.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "lower_or_func_wrapped_indexed_column",
@@ -405,7 +405,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "LOWER() or other functions wrapping indexed columns in WHERE clauses, preventing index usage.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "many_column_or_filter_chain",
@@ -419,7 +419,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Query chains with many OR filter conditions that often scale poorly.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "nested_transaction_in_request_path",
@@ -433,7 +433,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Multiple transactions started on a single request path.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "offset_pagination_on_large_table",
@@ -447,7 +447,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Request-path GORM Find(...) chains that page with Offset(...), which often scales poorly on large lists.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "order_by_random_request_path",
@@ -475,7 +475,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "ORM chains that order results without a Limit on request paths.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "pgx_collectrows_unbounded_materialization",
@@ -489,7 +489,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "pgx.CollectRows used on request paths without a visible LIMIT in the query.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "pgxpool_acquire_in_loop",
@@ -503,7 +503,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated pgxpool acquire calls inside loops that may churn pooled resources.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "pgxpool_new_per_request",
@@ -517,7 +517,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "pgxpool pools created on request paths instead of reused application-level state.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "pgxpool_ping_per_request",
@@ -531,7 +531,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Per-request pgxpool connectivity probes that add latency outside health-check boundaries.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "preload_inside_loop",
@@ -545,7 +545,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM Preload(...) queries configured and executed inside loops.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "prepare_inside_loop",
@@ -559,7 +559,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Prepare(...) or PrepareContext(...) observed inside loops.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "prepare_on_every_request_same_sql",
@@ -587,7 +587,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "QueryRow(...) or QueryRowContext(...) used inside loops for point lookups that usually want a bulk prefetch path.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "raw_scan_inside_loop",
@@ -601,7 +601,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM Raw(...).Scan(...) chains observed inside loops.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "redis_client_created_per_request",
@@ -615,7 +615,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Redis clients created per request instead of reused as shared process infrastructure.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "redis_command_loop_without_pipeline",
@@ -629,7 +629,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Redis command loops that issue round-trips without pipeline or batch usage.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "redis_ping_per_request",
@@ -643,7 +643,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Per-request Redis ping checks instead of startup or explicit health-probe validation.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_CLIENTS,
     },
     RuleDefinition {
         id: "repeated_same_query_template_same_function",
@@ -657,7 +657,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "The same query template executed multiple times in one function.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "row_by_row_upsert_loop",
@@ -671,7 +671,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Upsert-style writes executed row by row inside loops instead of batched.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "rows_to_struct_allocation_per_row_without_reuse",
@@ -685,7 +685,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "New struct allocated for each row scan instead of reusing a scratch variable.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "save_for_single_column_change",
@@ -699,7 +699,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM Save used for a single-column update instead of a targeted Update call.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "save_in_loop_full_model",
@@ -713,7 +713,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM Save(...) writes full models inside loops.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "scan_into_map_string_any_hot_path",
@@ -727,7 +727,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Rows scanned into map[string]any instead of typed structs on hot paths.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "select_or_get_inside_loop_lookup",
@@ -741,7 +741,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "ORM lookups (Select, Get, First, etc.) executed inside loops.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "sql_open_per_request",
@@ -769,7 +769,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "sqlx.Select used on request paths without a visible LIMIT in the query.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "tx_begin_per_item_loop",
@@ -783,7 +783,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Transactions started inside loops instead of once around the wider batch.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "unbounded_in_clause_expansion",
@@ -797,7 +797,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "IN clauses built from request-driven collections without bound limits.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_SQL,
     },
     RuleDefinition {
         id: "update_single_row_in_loop_without_batch",
@@ -811,7 +811,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM Update(...), UpdateColumn(...), or Updates(...) calls observed inside loops one row at a time.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
     RuleDefinition {
         id: "updates_map_allocated_per_row",
@@ -825,6 +825,6 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "GORM Updates(map[string]...) maps allocated inside loops for per-row updates.",
-        binding_location: super::bindings::GO_DATA_ACCESS,
+        binding_location: super::bindings::GO_DATA_ACCESS_GORM,
     },
 ];

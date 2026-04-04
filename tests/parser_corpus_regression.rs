@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -17,6 +18,7 @@ fn corpus_regressions_cover_malformed_generated_and_edge_cases() {
         "corpus regression inventory changed; if intentional, update EXPECTED_CORPUS_ENTRY_COUNT and guides/inventory-regression-guards.md"
     );
 
+    let mut category_counts = BTreeMap::<String, usize>::new();
     for entry in entries {
         let source = fs::read_to_string(&entry)
             .unwrap_or_else(|error| panic!("failed to read {}: {error}", entry.display()));
@@ -43,6 +45,7 @@ fn corpus_regressions_cover_malformed_generated_and_edge_cases() {
             .and_then(|parent| parent.file_name())
             .and_then(|name| name.to_str())
             .unwrap_or("<unknown>");
+        *category_counts.entry(category.to_string()).or_insert(0) += 1;
 
         match category {
             "malformed" => {
@@ -65,6 +68,16 @@ fn corpus_regressions_cover_malformed_generated_and_edge_cases() {
             ),
         }
     }
+
+    assert_eq!(
+        category_counts,
+        BTreeMap::from([
+            ("edge_cases".to_string(), 3),
+            ("generated".to_string(), 3),
+            ("malformed".to_string(), 3),
+        ]),
+        "corpus category breakdown changed; if intentional, update the grouped counts and guides/inventory-regression-guards.md"
+    );
 }
 
 fn collect_sources(root: &Path) -> Vec<PathBuf> {

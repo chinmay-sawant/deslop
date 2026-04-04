@@ -7,6 +7,11 @@ pub(crate) const TEST_QUALITY: &str = crate::heuristics::test_quality::BINDING_L
 pub(crate) const GO_CONCURRENCY: &str = crate::heuristics::go::CONCURRENCY_BINDING_LOCATION;
 pub(crate) const GO_CONSISTENCY: &str = crate::heuristics::go::CONSISTENCY_BINDING_LOCATION;
 pub(crate) const GO_CONTEXT: &str = crate::heuristics::go::CONTEXT_BINDING_LOCATION;
+pub(crate) const GO_DATA_ACCESS_CLIENTS: &str =
+    crate::heuristics::go::DATA_ACCESS_CLIENTS_BINDING_LOCATION;
+pub(crate) const GO_DATA_ACCESS_GORM: &str =
+    crate::heuristics::go::DATA_ACCESS_GORM_BINDING_LOCATION;
+pub(crate) const GO_DATA_ACCESS_SQL: &str = crate::heuristics::go::DATA_ACCESS_SQL_BINDING_LOCATION;
 pub(crate) const GO_DATA_ACCESS: &str = crate::heuristics::go::DATA_ACCESS_BINDING_LOCATION;
 pub(crate) const GO_ERRORS: &str = crate::heuristics::go::ERRORS_BINDING_LOCATION;
 pub(crate) const GO_GIN: &str = crate::heuristics::go::GIN_BINDING_LOCATION;

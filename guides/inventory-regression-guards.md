@@ -25,3 +25,16 @@ When it fails:
 
 These counts are meant to fail closed.
 They make silent coverage shrinkage obvious and force inventory changes to be reviewed explicitly.
+Where it helps, the guards also keep grouped breakdowns visible by language or corpus category so drift is easier to localize.
+
+## Informational Scan Workflows
+
+The makefile also exposes non-failing scan targets for review and exploration:
+
+- `make scan-info`
+- `make scan-gopdfsuit-info`
+- `make scan-snapback-info`
+- `make scan-claw-info`
+
+Use these when findings are expected and you want to keep the output without turning the shell session red.
+Keep the strict `scan`, `scan-gopdfsuit`, `scan-snapback`, and `scan-claw` targets for policy enforcement and CI-style checks.

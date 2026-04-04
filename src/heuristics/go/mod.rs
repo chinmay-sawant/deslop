@@ -15,6 +15,12 @@ pub(crate) const CONTEXT_BINDING_LOCATION: &str = context::BINDING_LOCATION;
 pub(crate) const ERRORS_BINDING_LOCATION: &str = errors::BINDING_LOCATION;
 pub(crate) const DATA_ACCESS_BINDING_LOCATION: &str =
     framework_patterns::DATA_ACCESS_BINDING_LOCATION;
+pub(crate) const DATA_ACCESS_CLIENTS_BINDING_LOCATION: &str =
+    framework_patterns::DATA_ACCESS_CLIENTS_BINDING_LOCATION;
+pub(crate) const DATA_ACCESS_GORM_BINDING_LOCATION: &str =
+    framework_patterns::DATA_ACCESS_GORM_BINDING_LOCATION;
+pub(crate) const DATA_ACCESS_SQL_BINDING_LOCATION: &str =
+    framework_patterns::DATA_ACCESS_SQL_BINDING_LOCATION;
 pub(crate) const GIN_BINDING_LOCATION: &str = framework_patterns::GIN_BINDING_LOCATION;
 pub(crate) const HOT_PATH_BINDING_LOCATION: &str = framework_patterns::HOT_PATH_BINDING_LOCATION;
 pub(crate) const IDIOMS_BINDING_LOCATION: &str = idioms::BINDING_LOCATION;

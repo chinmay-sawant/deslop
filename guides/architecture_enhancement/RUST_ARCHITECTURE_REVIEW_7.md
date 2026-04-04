@@ -172,16 +172,16 @@ The current code is close, but not there yet. The correct framing is not "this i
 
 ## Improvement Checklist
 
-- [ ] Add a test that validates every catalogued `binding_location` resolves to a real source file.
-- [ ] Unify Python rule family naming so `hot_path` and `hotpath` do not both exist in the public metadata model.
-- [ ] Fix the existing incorrect Python `binding_location` values so they point to the actual implementation files.
-- [ ] Make `tests/parser_corpus_regression.rs` fail on unexpected directory-read and entry-read errors.
-- [ ] Make `src/rules.rs` rule-source coverage traversal fail on unexpected I/O errors instead of silently skipping them.
-- [ ] Add assertions for expected corpus/rule-source counts so coverage shrinkage is visible.
-- [ ] Decide on a strict policy for `.deslop.toml` unknown keys and implement it consistently.
-- [ ] If strict parsing is too disruptive, emit user-visible warnings for unknown config keys.
-- [ ] Consolidate temp workspace creation around `tempfile::TempDir` or a shared helper.
-- [ ] Add a regression test specifically for metadata-to-implementation traceability, not just rule presence.
+- [x] Add a test that validates every catalogued `binding_location` resolves to a real source file.
+- [x] Unify Python rule family naming so `hot_path` and `hotpath` do not both exist in the public metadata model.
+- [x] Fix the existing incorrect Python `binding_location` values so they point to the actual implementation files.
+- [x] Make `tests/parser_corpus_regression.rs` fail on unexpected directory-read and entry-read errors.
+- [x] Make `src/rules.rs` rule-source coverage traversal fail on unexpected I/O errors instead of silently skipping them.
+- [x] Add assertions for expected corpus/rule-source counts so coverage shrinkage is visible.
+- [x] Decide on a strict policy for `.deslop.toml` unknown keys and implement it consistently.
+- [x] If strict parsing is too disruptive, emit user-visible warnings for unknown config keys. This fallback is not needed because strict parsing is already in place.
+- [x] Consolidate temp workspace creation around `tempfile::TempDir` or a shared helper.
+- [x] Add a regression test specifically for metadata-to-implementation traceability, not just rule presence.
 
 ## Suggested Priority Order
 

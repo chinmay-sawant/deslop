@@ -1,5 +1,7 @@
 use super::*;
 
+pub(crate) const BINDING_LOCATION: &str = super::BINDING_LOCATION;
+
 pub(super) fn gorm_chain_findings(
     file: &ParsedFile,
     function: &ParsedFunction,

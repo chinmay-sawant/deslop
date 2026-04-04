@@ -115,7 +115,7 @@ fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMe
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeSet;
+    use std::collections::{BTreeMap, BTreeSet};
     use std::fs;
     use std::path::{Path, PathBuf};
 
@@ -128,6 +128,12 @@ mod tests {
     // Intentional maintenance guard. If this changes, review the source rule-id diff and
     // update [guides/inventory-regression-guards.md] in the same change.
     const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 438;
+    const EXPECTED_RULE_COUNTS_BY_LANGUAGE: &[(RuleLanguage, usize)] = &[
+        (RuleLanguage::Common, 11),
+        (RuleLanguage::Go, 314),
+        (RuleLanguage::Python, 212),
+        (RuleLanguage::Rust, 74),
+    ];
 
     #[test]
     fn registry_is_unique_per_language_and_sorted() {
@@ -320,6 +326,24 @@ mod tests {
             source_rule_ids.len(),
             EXPECTED_SOURCE_RULE_ID_COUNT,
             "source rule-id inventory changed; if intentional, update EXPECTED_SOURCE_RULE_ID_COUNT and guides/inventory-regression-guards.md"
+        );
+    }
+
+    #[test]
+    fn registry_rule_counts_remain_grouped_by_language() {
+        let mut counts = BTreeMap::<RuleLanguage, usize>::new();
+
+        for metadata in rule_registry() {
+            *counts.entry(metadata.language.clone()).or_insert(0) += 1;
+        }
+
+        assert_eq!(
+            counts,
+            EXPECTED_RULE_COUNTS_BY_LANGUAGE
+                .iter()
+                .cloned()
+                .collect::<BTreeMap<_, _>>(),
+            "registry language breakdown changed; if intentional, update the grouped counts and guides/inventory-regression-guards.md"
         );
     }
 

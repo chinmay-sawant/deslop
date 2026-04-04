@@ -3,6 +3,9 @@ mod gin;
 mod hot_path;
 
 pub(super) const DATA_ACCESS_BINDING_LOCATION: &str = data_access::BINDING_LOCATION;
+pub(super) const DATA_ACCESS_CLIENTS_BINDING_LOCATION: &str = data_access::CLIENTS_BINDING_LOCATION;
+pub(super) const DATA_ACCESS_GORM_BINDING_LOCATION: &str = data_access::GORM_BINDING_LOCATION;
+pub(super) const DATA_ACCESS_SQL_BINDING_LOCATION: &str = data_access::SQL_BINDING_LOCATION;
 pub(super) const GIN_BINDING_LOCATION: &str = gin::BINDING_LOCATION;
 pub(super) const HOT_PATH_BINDING_LOCATION: &str = hot_path::BINDING_LOCATION;
 

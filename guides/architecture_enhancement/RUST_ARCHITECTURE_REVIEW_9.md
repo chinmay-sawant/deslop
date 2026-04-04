@@ -102,12 +102,7 @@ Why:
 
 ## Remaining Gap To 10/10
 
-The remaining gap is now small and mostly about how far to push precision versus churn.
-
-- [ ] selectively leaf-ify a few other aggregated Go binding families only where the extra precision clearly improves maintenance
-- [ ] surface the new inventory-guard and informational-scan workflow in broader contributor-facing docs if this becomes part of the normal team workflow
-
-These are refinement choices, not architectural liabilities.
+The current review chain is effectively closed. Any future work here is now just refinement, not an outstanding architectural issue.
 
 ## Architectural Verdict
 
