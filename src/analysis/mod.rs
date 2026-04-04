@@ -16,15 +16,27 @@ pub(crate) use config::AnalysisConfig;
 pub use error::Error;
 pub(crate) use error::Result as AnalysisResult;
 
+// Shared / cross-language types
 pub(crate) use types::{
-    BlockFingerprint, CallSite, ClassSummary, CommentSummary, ContextFactoryCall, DbQueryCall,
-    DeclaredSymbol, ExceptionHandler, FieldSummary, FormattedErrorCall, GinCallSummary,
-    GoFieldSummary, GoFileData, GoFunctionEvidence, GoStructSummary, GormChainStep, GormQueryChain,
-    ImportSpec, InterfaceSummary, LanguageFileData, MacroCall, NamedLiteral, PackageVarSummary,
-    ParseInputCall, ParsedFile, ParsedFunction, PythonFieldSummary, PythonFileData,
-    PythonFunctionEvidence, PythonModelSummary, RuntimeCall, RustEnumSummary, RustFileData,
-    RustFunctionEvidence, RustStaticSummary, StructSummary, StructTag, TestFunctionSummary,
-    TopLevelBindingSummary, TopLevelCallSummary, UnsafePattern, UnsafePatternKind,
+    BlockFingerprint, CallSite, CommentSummary, DeclaredSymbol, FormattedErrorCall, ImportSpec,
+    LanguageFileData, NamedLiteral, ParsedFile, ParsedFunction, TestFunctionSummary,
+    TopLevelBindingSummary, TopLevelCallSummary,
+};
+// Go-specific evidence types
+pub(crate) use types::{
+    ContextFactoryCall, DbQueryCall, GinCallSummary, GoFieldSummary, GoFileData,
+    GoFunctionEvidence, GoStructSummary, GormChainStep, GormQueryChain, InterfaceSummary,
+    PackageVarSummary, ParseInputCall, StructTag,
+};
+// Python-specific evidence types
+pub(crate) use types::{
+    ClassSummary, ExceptionHandler, PythonFieldSummary, PythonFileData, PythonFunctionEvidence,
+    PythonModelSummary,
+};
+// Rust-specific evidence types
+pub(crate) use types::{
+    FieldSummary, MacroCall, RuntimeCall, RustEnumSummary, RustFileData, RustFunctionEvidence,
+    RustStaticSummary, StructSummary, UnsafePattern, UnsafePatternKind,
 };
 
 pub(crate) fn parse_source_file(path: &Path, source: &str) -> crate::Result<ParsedFile> {
@@ -47,7 +59,7 @@ pub fn syntax_error_for_source(path: &Path, source: &str) -> crate::Result<bool>
 mod tests {
     use std::path::Path;
 
-    use super::{Language, backend_for_path, parse_source_file, supported_extensions};
+    use super::{Language, backend_for_path, parse_source_file, registered_backends, supported_extensions};
 
     #[test]
     fn test_python_backend() {
@@ -76,5 +88,16 @@ mod tests {
             .expect_err("unknown extensions should fail");
 
         assert!(matches!(error, crate::Error::UnsupportedParserPath { .. }));
+    }
+
+    #[test]
+    fn every_backend_has_at_least_one_supported_extension() {
+        for &backend in registered_backends() {
+            assert!(
+                !backend.supported_extensions().is_empty(),
+                "backend for {:?} should declare at least one file extension",
+                backend.language()
+            );
+        }
     }
 }

@@ -23,6 +23,10 @@ pub(super) fn evaluate_findings(
     let mut findings: Vec<Finding> = files
         .par_iter()
         .flat_map(|file| {
+            // Shared rules (naming, comments, secrets, test quality) apply to every language
+            // and are evaluated here once, outside any backend, so individual backends do not
+            // need to call them. Language-specific rules are then appended via the backend so
+            // that new languages gain shared coverage automatically without extra wiring.
             let mut file_findings = evaluate_shared_file(file, index);
             if let Some(backend) = backend_for_language(file.language) {
                 file_findings.extend(backend.evaluate_file(file, index, analysis_config));
@@ -31,7 +35,7 @@ pub(super) fn evaluate_findings(
         })
         .collect();
 
-    for backend in registered_backends() {
+    for &backend in registered_backends() {
         let backend_files = files
             .iter()
             .filter(|file| file.language == backend.language())
@@ -47,6 +51,12 @@ pub(super) fn evaluate_findings(
             .cmp(&right.path)
             .then(left.start_line.cmp(&right.start_line))
             .then(left.rule_id.cmp(&right.rule_id))
+    });
+    // Remove any exact (path, start_line, rule_id) duplicates that could arise
+    // if two evaluation paths both emit the same finding for the same location.
+    // The sort above places identical keys adjacent, so dedup_by is O(n).
+    findings.dedup_by(|a, b| {
+        a.path == b.path && a.start_line == b.start_line && a.rule_id == b.rule_id
     });
     findings
 }

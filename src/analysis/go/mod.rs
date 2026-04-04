@@ -34,7 +34,7 @@ impl LanguageBackend for GoAnalyzer {
         index: &RepositoryIndex,
         analysis_config: &AnalysisConfig,
     ) -> Vec<Finding> {
-        evaluate_go_file(file, index, analysis_config)
+        evaluate_go_file(file, index, analysis_config.enable_go_semantic)
     }
 
     fn evaluate_repo(
