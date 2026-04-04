@@ -481,16 +481,14 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `upstream_http_call_per_item_in_handler`: Request handlers make sequential upstream HTTP calls inside loops instead of batching or bounded concurrency.
 - `upstream_response_not_checked_before_decode`: Handlers decode upstream responses without visible status checks such as raise_for_status() or status_code guards.
 
-#### Hot Path (4)
+#### Hot Path (17)
 - `append_then_sort_each_iteration`: A collection is appended to and then sorted on each iteration instead of sorting once after accumulation.
 - `csv_writer_flush_per_row`: csv.Writer flushes on each row instead of buffering a larger batch.
-- `filter_then_count_then_iterate`: The same collection is traversed repeatedly for filtering, counting, and later iteration.
-- `json_encoder_recreated_per_item`: A JSON encoder object is recreated per item instead of being reused for the stream.
-
-#### Hotpath (13)
 - `dict_items_or_keys_materialized_in_loop`: dict.items(), keys(), or values() are repeatedly materialized inside loops.
 - `enumerate_on_range_len`: enumerate(range(len(...))) style loops that add indexing ceremony without extra value.
+- `filter_then_count_then_iterate`: The same collection is traversed repeatedly for filtering, counting, and later iteration.
 - `in_check_on_list_literal`: Membership tests against list literals where a tuple or set would be clearer or cheaper.
+- `json_encoder_recreated_per_item`: A JSON encoder object is recreated per item instead of being reused for the stream.
 - `json_loads_same_payload_multiple_times`: The same JSON payload is decoded multiple times inside one function instead of caching the parsed value.
 - `list_comprehension_only_for_length`: A list comprehension is built only so len(...) can be called on it.
 - `read_then_splitlines`: File contents are fully read and then splitlines() is called instead of streaming lines.
@@ -502,7 +500,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `string_startswith_endswith_chain`: Repeated startswith(...) or endswith(...) checks that can often be combined into tuple-based calls.
 - `write_without_buffering_in_loop`: Repeated writes inside loops with no visible buffering or batching.
 
-#### Hotpath Ext (21)
+#### Hot Path Ext (21)
 - `concatenation_in_comprehension_body`: String or collection concatenation happens inside a comprehension body, creating avoidable churn.
 - `dict_copy_in_loop_same_source`: A dict-like source is copied on each loop iteration instead of being reused or hoisted.
 - `gzip_open_per_chunk`: gzip open/create calls are repeated per chunk instead of per stream.

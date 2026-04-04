@@ -5085,6 +5085,32 @@
     "description": "csv.Writer flushes on each row instead of buffering a larger batch."
   },
   {
+    "id": "dict_items_or_keys_materialized_in_loop",
+    "language": "python",
+    "family": "hot_path",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "dict.items(), keys(), or values() are repeatedly materialized inside loops."
+  },
+  {
+    "id": "enumerate_on_range_len",
+    "language": "python",
+    "family": "hot_path",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "enumerate(range(len(...))) style loops that add indexing ceremony without extra value."
+  },
+  {
     "id": "filter_then_count_then_iterate",
     "language": "python",
     "family": "hot_path",
@@ -5096,6 +5122,19 @@
       "severity_override"
     ],
     "description": "The same collection is traversed repeatedly for filtering, counting, and later iteration."
+  },
+  {
+    "id": "in_check_on_list_literal",
+    "language": "python",
+    "family": "hot_path",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Membership tests against list literals where a tuple or set would be clearer or cheaper."
   },
   {
     "id": "json_encoder_recreated_per_item",
@@ -5111,48 +5150,9 @@
     "description": "A JSON encoder object is recreated per item instead of being reused for the stream."
   },
   {
-    "id": "dict_items_or_keys_materialized_in_loop",
-    "language": "python",
-    "family": "hotpath",
-    "default_severity": "info",
-    "status": "stable",
-    "configurability": [
-      "disable",
-      "ignore",
-      "severity_override"
-    ],
-    "description": "dict.items(), keys(), or values() are repeatedly materialized inside loops."
-  },
-  {
-    "id": "enumerate_on_range_len",
-    "language": "python",
-    "family": "hotpath",
-    "default_severity": "info",
-    "status": "stable",
-    "configurability": [
-      "disable",
-      "ignore",
-      "severity_override"
-    ],
-    "description": "enumerate(range(len(...))) style loops that add indexing ceremony without extra value."
-  },
-  {
-    "id": "in_check_on_list_literal",
-    "language": "python",
-    "family": "hotpath",
-    "default_severity": "info",
-    "status": "stable",
-    "configurability": [
-      "disable",
-      "ignore",
-      "severity_override"
-    ],
-    "description": "Membership tests against list literals where a tuple or set would be clearer or cheaper."
-  },
-  {
     "id": "json_loads_same_payload_multiple_times",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5165,7 +5165,7 @@
   {
     "id": "list_comprehension_only_for_length",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5178,7 +5178,7 @@
   {
     "id": "read_then_splitlines",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5191,7 +5191,7 @@
   {
     "id": "readlines_then_iterate",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5204,7 +5204,7 @@
   {
     "id": "regex_compile_in_hot_path",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5217,7 +5217,7 @@
   {
     "id": "repeated_json_dumps_same_object",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5230,7 +5230,7 @@
   {
     "id": "repeated_open_same_file_in_function",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5243,7 +5243,7 @@
   {
     "id": "sorted_only_for_first_element",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5256,7 +5256,7 @@
   {
     "id": "string_startswith_endswith_chain",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5269,7 +5269,7 @@
   {
     "id": "write_without_buffering_in_loop",
     "language": "python",
-    "family": "hotpath",
+    "family": "hot_path",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5282,7 +5282,7 @@
   {
     "id": "concatenation_in_comprehension_body",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5295,7 +5295,7 @@
   {
     "id": "dict_copy_in_loop_same_source",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5308,7 +5308,7 @@
   {
     "id": "gzip_open_per_chunk",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5321,7 +5321,7 @@
   {
     "id": "list_copy_in_loop_same_source",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5334,7 +5334,7 @@
   {
     "id": "nested_list_search_map_candidate",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5347,7 +5347,7 @@
   {
     "id": "path_resolve_or_expanduser_in_loop",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5360,7 +5360,7 @@
   {
     "id": "pickle_dumps_in_loop_same_structure",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5373,7 +5373,7 @@
   {
     "id": "repeated_datetime_strptime_same_format",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5386,7 +5386,7 @@
   {
     "id": "repeated_dict_get_same_key_no_cache",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5399,7 +5399,7 @@
   {
     "id": "repeated_hashlib_new_same_algorithm",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5412,7 +5412,7 @@
   {
     "id": "repeated_isinstance_chain_same_object",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5425,7 +5425,7 @@
   {
     "id": "repeated_list_index_lookup",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5438,7 +5438,7 @@
   {
     "id": "repeated_locale_or_codec_lookup_in_loop",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5451,7 +5451,7 @@
   {
     "id": "repeated_string_format_invariant_template",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5464,7 +5464,7 @@
   {
     "id": "set_created_per_iteration_same_elements",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5477,7 +5477,7 @@
   {
     "id": "sort_then_first_or_membership_only",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5490,7 +5490,7 @@
   {
     "id": "string_join_without_generator",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5503,7 +5503,7 @@
   {
     "id": "tuple_unpacking_in_tight_loop",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5516,7 +5516,7 @@
   {
     "id": "urlparse_in_loop_on_invariant_base",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5529,7 +5529,7 @@
   {
     "id": "xml_parse_same_payload_multiple_times",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
@@ -5542,7 +5542,7 @@
   {
     "id": "yaml_load_same_payload_multiple_times",
     "language": "python",
-    "family": "hotpath_ext",
+    "family": "hot_path_ext",
     "default_severity": "info",
     "status": "stable",
     "configurability": [
