@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -22,12 +20,7 @@ impl FixtureWorkspace {
         Self { root }
     }
 
-    pub(crate) fn with_files(files: &[(&str, &str)]) -> Self {
-        let workspace = Self::new();
-        workspace.write_files(files);
-        workspace
-    }
-
+    #[allow(dead_code)]
     pub(crate) fn root(&self) -> &Path {
         &self.root
     }
@@ -52,6 +45,7 @@ impl FixtureWorkspace {
         scan_root_with_options(self.root.clone(), respect_ignore)
     }
 
+    #[allow(dead_code)]
     pub(crate) fn scan_with_go_semantic(&self, go_semantic: bool) -> ScanReport {
         scan_root_with_go_semantic(self.root.clone(), go_semantic)
     }
@@ -77,16 +71,19 @@ pub(crate) fn write_files(root: &Path, files: &[(&str, &str)]) {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn scan_files(files: &[(&str, &str)]) -> ScanReport {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(files);
     workspace.scan_report()
 }
 
+#[allow(dead_code)]
 pub(crate) fn scan_root(root: PathBuf) -> ScanReport {
     scan_root_with_options(root, true)
 }
 
+#[allow(dead_code)]
 pub(crate) fn scan_root_with_options(root: PathBuf, respect_ignore: bool) -> ScanReport {
     scan_repository(&ScanOptions {
         root,
@@ -95,6 +92,7 @@ pub(crate) fn scan_root_with_options(root: PathBuf, respect_ignore: bool) -> Sca
     .expect("scan should succeed")
 }
 
+#[allow(dead_code)]
 pub(crate) fn scan_root_with_go_semantic(root: PathBuf, go_semantic: bool) -> ScanReport {
     scan_repository_with_go_semantic(
         &ScanOptions {
@@ -106,6 +104,7 @@ pub(crate) fn scan_root_with_go_semantic(root: PathBuf, go_semantic: bool) -> Sc
     .expect("scan should succeed")
 }
 
+#[allow(dead_code)]
 pub(crate) fn report_has_rule(report: &ScanReport, rule_id: &str) -> bool {
     report
         .findings
@@ -113,6 +112,7 @@ pub(crate) fn report_has_rule(report: &ScanReport, rule_id: &str) -> bool {
         .any(|finding| finding.rule_id == rule_id)
 }
 
+#[allow(dead_code)]
 pub(crate) fn find_rule<'a>(report: &'a ScanReport, rule_id: &str) -> Option<&'a deslop::Finding> {
     report
         .findings
@@ -120,12 +120,14 @@ pub(crate) fn find_rule<'a>(report: &'a ScanReport, rule_id: &str) -> Option<&'a
         .find(|finding| finding.rule_id == rule_id)
 }
 
+#[allow(dead_code)]
 pub(crate) fn assert_rules_present(report: &ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
         assert!(report_has_rule(report, rule_id), "missing rule: {rule_id}");
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn assert_rules_absent(report: &ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
         assert!(

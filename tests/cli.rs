@@ -1,34 +1,20 @@
-use std::process::Command;
-
 #[path = "support/mod.rs"]
 mod support;
 
+#[path = "cli_support/mod.rs"]
+mod cli_support;
+
+use cli_support::{assert_json_fields, parse_json_output, run_cli};
 use support::FixtureWorkspace;
-
-fn cargo_bin() -> String {
-    if let Ok(path) = std::env::var("CARGO_BIN_EXE_deslop") {
-        return path;
-    }
-
-    let mut path = std::env::current_exe().expect("test binary path should be available");
-    path.pop();
-    path.pop();
-    path.push("deslop");
-    path.to_string_lossy().into_owned()
-}
 
 // ── Scan subcommand tests ──
 
 #[test]
 fn cli_scan_exits_zero_for_clean_code() {
-    let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
     workspace.write_file("main.go", "package main\n\nfunc main() {\n}\n");
 
-    let output = Command::new(&bin)
-        .args(["scan", workspace.root().to_str().unwrap()])
-        .output()
-        .expect("scan should execute");
+    let output = run_cli(&["scan", workspace.root().to_str().unwrap()]);
 
     assert!(
         output.status.success(),
@@ -39,7 +25,6 @@ fn cli_scan_exits_zero_for_clean_code() {
 
 #[test]
 fn cli_scan_exits_nonzero_for_findings() {
-    let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
     // Overlong name + fmt.Sprintf in loop → guaranteed findings.
     workspace.write_file(
@@ -47,10 +32,7 @@ fn cli_scan_exits_nonzero_for_findings() {
         "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
     );
 
-    let output = Command::new(&bin)
-        .args(["scan", workspace.root().to_str().unwrap()])
-        .output()
-        .expect("scan should execute");
+    let output = run_cli(&["scan", workspace.root().to_str().unwrap()]);
 
     assert!(
         !output.status.success(),
@@ -60,17 +42,13 @@ fn cli_scan_exits_nonzero_for_findings() {
 
 #[test]
 fn cli_scan_no_fail_exits_zero_even_with_findings() {
-    let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
     workspace.write_file(
         "bad.go",
         "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
     );
 
-    let output = Command::new(&bin)
-        .args(["scan", workspace.root().to_str().unwrap(), "--no-fail"])
-        .output()
-        .expect("scan should execute");
+    let output = run_cli(&["scan", workspace.root().to_str().unwrap(), "--no-fail"]);
 
     assert!(
         output.status.success(),
@@ -81,61 +59,38 @@ fn cli_scan_no_fail_exits_zero_even_with_findings() {
 
 #[test]
 fn cli_scan_json_produces_valid_json() {
-    let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
     workspace.write_file("main.go", "package main\n\nfunc main() {\n}\n");
 
-    let output = Command::new(&bin)
-        .args([
-            "scan",
-            workspace.root().to_str().unwrap(),
-            "--json",
-            "--no-fail",
-        ])
-        .output()
-        .expect("scan should execute");
+    let output = run_cli(&[
+        "scan",
+        workspace.root().to_str().unwrap(),
+        "--json",
+        "--no-fail",
+    ]);
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let parsed: serde_json::Value =
-        serde_json::from_str(&stdout).expect("JSON output should be valid JSON");
-    assert!(
-        parsed.get("root").is_some(),
-        "JSON should contain 'root' field"
-    );
-    assert!(
-        parsed.get("findings").is_some(),
-        "JSON should contain 'findings' field"
-    );
-    assert!(
-        parsed.get("timings").is_some(),
-        "JSON should contain 'timings' field"
-    );
+    let parsed = parse_json_output(&output);
+    assert_json_fields(&parsed, &["root", "findings", "timings"]);
 }
 
 #[test]
 fn cli_scan_ignore_flag_suppresses_specific_rules() {
-    let bin = cargo_bin();
     let workspace = FixtureWorkspace::new();
     workspace.write_file(
         "bad.go",
         "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
     );
 
-    let output = Command::new(&bin)
-        .args([
-            "scan",
-            workspace.root().to_str().unwrap(),
-            "--json",
-            "--no-fail",
-            "--ignore",
-            "overlong_name",
-        ])
-        .output()
-        .expect("scan should execute");
+    let output = run_cli(&[
+        "scan",
+        workspace.root().to_str().unwrap(),
+        "--json",
+        "--no-fail",
+        "--ignore",
+        "overlong_name",
+    ]);
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let parsed: serde_json::Value =
-        serde_json::from_str(&stdout).expect("JSON output should be valid JSON");
+    let parsed = parse_json_output(&output);
     let findings = parsed["findings"].as_array().unwrap();
     assert!(
         !findings.iter().any(|f| f["rule_id"] == "overlong_name"),
@@ -147,12 +102,7 @@ fn cli_scan_ignore_flag_suppresses_specific_rules() {
 
 #[test]
 fn cli_rules_lists_rules() {
-    let bin = cargo_bin();
-
-    let output = Command::new(&bin)
-        .args(["rules"])
-        .output()
-        .expect("rules should execute");
+    let output = run_cli(&["rules"]);
 
     assert!(output.status.success(), "rules should exit 0");
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -161,32 +111,19 @@ fn cli_rules_lists_rules() {
 
 #[test]
 fn cli_rules_json_produces_valid_json() {
-    let bin = cargo_bin();
-
-    let output = Command::new(&bin)
-        .args(["rules", "--json"])
-        .output()
-        .expect("rules should execute");
+    let output = run_cli(&["rules", "--json"]);
 
     assert!(output.status.success(), "rules --json should exit 0");
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let parsed: serde_json::Value =
-        serde_json::from_str(&stdout).expect("JSON output should be valid JSON");
+    let parsed = parse_json_output(&output);
     assert!(parsed.is_array(), "JSON rules output should be an array");
 }
 
 #[test]
 fn cli_rules_language_filter() {
-    let bin = cargo_bin();
-
-    let output = Command::new(&bin)
-        .args(["rules", "--json", "--language", "rust"])
-        .output()
-        .expect("rules should execute");
+    let output = run_cli(&["rules", "--json", "--language", "rust"]);
 
     assert!(output.status.success());
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let parsed: serde_json::Value = serde_json::from_str(&stdout).unwrap();
+    let parsed = parse_json_output(&output);
     let rules = parsed.as_array().unwrap();
     assert!(
         rules

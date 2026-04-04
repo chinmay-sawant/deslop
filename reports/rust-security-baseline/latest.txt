@@ -19,7 +19,7 @@ src/analysis/python/parser/hotpath_ext.rs:186:                let after_join = &
 src/analysis/python/parser/hotpath_ext.rs:240:            let receiver = &trimmed[..get_idx];
 src/analysis/python/parser/hotpath_ext.rs:241:            let after = &trimmed[get_idx + 5..];
 src/analysis/python/parser/hotpath_ext.rs:243:                let key = after[..end].trim();
-src/analysis/rust/parser/functions.rs:376:    text[vec_start + 4..].contains("Box<")
+src/analysis/rust/parser/evidence.rs:204:    text[vec_start + 4..].contains("Box<")
 src/heuristics/go/framework_patterns/data_access/sql.rs:552:                let after_like = &upper[like_pos + 4..];
 src/heuristics/go/framework_patterns/gin.rs:239:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
 src/heuristics/go/framework_patterns/gin.rs:694:        text = text[1..text.len() - 1].trim();
@@ -54,6 +54,7 @@ src/heuristics/rust/runtime_boundary.rs:265:        if &bytes[start..start + key
 src/rules.rs:433:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
 src/rules.rs:435:            let Some(end_offset) = source[start..].find('\"') else {
 src/rules.rs:439:            ids.insert(source[start..start + end_offset].to_string());
+tests/integration_scan/mod.rs:31:#[path = "../support/mod.rs"]
 
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
@@ -67,22 +68,22 @@ src/rules.rs:226:        let metadata = rule_metadata("dropped_error", RuleLangu
 src/rules.rs:259:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
 src/rules.rs:268:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
 src/rules.rs:68:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
-src/rules/catalog.rs:3514:        description: "Django querysets use count() for existence checks instead of exists().",
+src/rules/catalog/python/framework.rs:169:        description: "Django querysets use count() for existence checks instead of exists().",
 
 ## toctou_check_then_open
 
 ## secret_comparisons
 src/analysis/rust/parser/tests.rs:135:            .any(|name| name == "password")
 src/heuristics/rust/mod.rs:156:        .any(|token| normalized == *token || normalized.contains(token))
-src/rules/catalog.rs:3154:        description: "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
-tests/integration_scan/security.rs:43:            .any(|finding| finding.rule_id == "hardcoded_secret")
-tests/integration_scan/security.rs:65:            .any(|finding| finding.rule_id == "hardcoded_secret")
+src/rules/catalog/go/security.rs:631:        description: "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
+tests/integration_scan/security.rs:29:            .any(|finding| finding.rule_id == "hardcoded_secret")
+tests/integration_scan/security.rs:44:            .any(|finding| finding.rule_id == "hardcoded_secret")
 
 ## shared_mutability
 src/heuristics/rust/api_design.rs:242:        "RefCell<",
 src/heuristics/rust/api_design.rs:272:    type_text.contains("Rc<RefCell<") || type_text.contains("Rc<std::cell::RefCell<")
 src/heuristics/rust/api_design_state.rs:78:                        "struct {} uses Rc<RefCell<_>> in a domain-style type",
-src/rules/catalog.rs:5544:        description: "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
+src/rules/catalog/rust.rs:225:        description: "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
 
 ## unsafe_globals
 

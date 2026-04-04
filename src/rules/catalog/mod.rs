@@ -26,8 +26,8 @@ pub(crate) fn rule_catalog() -> &'static [RuleDefinition] {
         .get_or_init(|| {
             let mut catalog = Vec::new();
             catalog.extend_from_slice(common::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::RULE_DEFINITIONS);
+            catalog.extend_from_slice(go::rule_definitions());
+            catalog.extend_from_slice(python::rule_definitions());
             catalog.extend_from_slice(rust::RULE_DEFINITIONS);
             catalog
         })
