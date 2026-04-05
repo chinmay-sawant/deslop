@@ -714,11 +714,29 @@ fn should_skip_print_rule(file: &ParsedFile, function: &ParsedFunction) -> bool 
         || name.starts_with("show_")
         || name.starts_with("report_")
         || name.starts_with("dump_")
+        || looks_like_tooling_context(file, function)
         || file
             .path
             .file_name()
             .and_then(|n| n.to_str())
             .is_some_and(|n| n == "__main__.py")
+}
+
+fn looks_like_tooling_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    let name = function.fingerprint.name.to_ascii_lowercase();
+    let tool_name_markers = [
+        "run", "load", "validate", "build", "render", "sync", "list", "resolve",
+    ];
+    if !tool_name_markers.iter().any(|marker| name.contains(marker)) {
+        return false;
+    }
+
+    file.imports.iter().any(|import| {
+        matches!(
+            import.path.as_str(),
+            "argparse" | "json" | "shutil" | "subprocess" | "sys" | "pathlib"
+        )
+    })
 }
 
 fn looks_like_hardcoded_path(value: &str) -> bool {

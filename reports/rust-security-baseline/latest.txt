@@ -59,9 +59,9 @@ src/heuristics/python/quality/mod.rs:203:    split_top_level_commas(&signature_t
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:85:    for (offset, character) in signature_text[start..].char_indices() {
 src/heuristics/rust/module_surface.rs:92:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
-src/heuristics/rust/performance.rs:351:    text[vec_start + 4..].contains("Box<")
-src/heuristics/rust/performance.rs:358:    line[start + marker.len()..].starts_with('/')
-src/heuristics/rust/performance.rs:399:                let receiver = &line[start..index];
+src/heuristics/rust/performance.rs:354:    text[vec_start + 4..].contains("Box<")
+src/heuristics/rust/performance.rs:361:    line[start + marker.len()..].starts_with('/')
+src/heuristics/rust/performance.rs:442:                let receiver = &line[start..index];
 src/heuristics/rust/runtime_boundary.rs:271:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/rules.rs:468:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
 src/rules.rs:470:            let Some(end_offset) = source[start..].find('\"') else {

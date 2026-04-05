@@ -1,11 +1,11 @@
 deslop scan root: /home/chinmay/ChinmayPersonalProjects/deslop
 Source files discovered: 228
 Source files analyzed: 227
-Functions fingerprinted: 1774
-Findings: 176
-Index summary: packages=227 symbols=2152 imports=1774
+Functions fingerprinted: 1778
+Findings: 166
+Index summary: packages=227 symbols=2156 imports=1777
 Parse failures: 0
-Timings: discover=17ms parse=517ms index=11ms heuristics=87ms total=635ms
+Timings: discover=19ms parse=502ms index=12ms heuristics=74ms total=610ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:119 function load_manifest parses external data without schema validation; corrupt input propagates silently [no_schema_validation_on_external_data]
@@ -18,13 +18,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:222 function run_targets concentrates too much control flow and behavior [god_function]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:230 function run_targets formats a string inside a loop; consider building the template once [repeated_string_format_invariant_template]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:237 function run_targets uses a loop shape that may read better with a Python built-in [builtin_reduction_candidate]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:241 function run_targets leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:244 function run_targets leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:249 function run_targets leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:251 function run_targets leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:253 function run_targets leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:267 function run_targets leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:269 function run_targets leaves print()-based debugging in production code [print_debugging_leftover]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:276 function resolve_repo_path returns None explicitly where falling through would be clearer [redundant_return_none]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/sync_docs.py:136 function main formats a string inside a loop; consider building the template once [repeated_string_format_invariant_template]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/sync_docs.py:154 function load_registry parses external data without schema validation; corrupt input propagates silently [no_schema_validation_on_external_data]
@@ -77,9 +70,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/benchmark/mod.rs:19 public API benchmark_repository_with_go_semantic exposes a raw boolean mode switch [rust_public_bool_parameter_api]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/mod.rs:4 file /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/mod.rs exposes many public re-exports from the root surface [rust_root_reexport_wall]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/rules.rs:96 function format_rules_report writes to a file-like sink inside a loop [rust_unbuffered_file_writes]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/rules.rs:105 function format_rules_report writes to a file-like sink inside a loop [rust_unbuffered_file_writes]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/rules.rs:106 function format_rules_report writes to a file-like sink inside a loop [rust_unbuffered_file_writes]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/framework_patterns/data_access/gorm.rs:340 function count_then_find_same_filter_findings uses an overly descriptive name [overlong_name]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/framework_patterns/data_access/gorm.rs:472 function find_all_then_manual_paginate_findings uses an overly descriptive name [overlong_name]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/framework_patterns/data_access/gorm.rs:515 function duplicate_find_then_preload_findings uses an overly descriptive name [overlong_name]
