@@ -37,11 +37,16 @@ Makefile text eol=lf
 /.venv/** export-ignore
 *.js linguist-vendored
 *.jsx linguist-vendored
+*.go linguist-vendored
+*.lock linguist-vendored
+*.svg linguist-vendored
+*.toml linguist-vendored
 *.ts linguist-vendored
 *.tsx linguist-vendored
 *.css linguist-vendored
 *.html linguist-vendored
 *.json linguist-vendored
+*.yml linguist-vendored
 *.txt linguist-vendored
 *.py linguist-vendored
 
