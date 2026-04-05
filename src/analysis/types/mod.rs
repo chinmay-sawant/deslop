@@ -21,5 +21,6 @@ pub(crate) use python::{
 };
 pub(crate) use rust::{
     FieldSummary, MacroCall, RuntimeCall, RustAttributeSummary, RustEnumSummary,
-    RustFunctionEvidence, RustStaticSummary, StructSummary, UnsafePattern, UnsafePatternKind,
+    RustFunctionEvidence, RustModuleDeclaration, RustStaticSummary, StructSummary,
+    UnsafePattern, UnsafePatternKind,
 };

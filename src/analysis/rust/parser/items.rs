@@ -4,7 +4,7 @@ use tree_sitter::Node;
 
 use crate::analysis::{
     DeclaredSymbol, FieldSummary, ImportSpec, NamedLiteral, ParsedFunction, RustAttributeSummary,
-    RustEnumSummary, RustStaticSummary, StructSummary,
+    RustEnumSummary, RustModuleDeclaration, RustStaticSummary, StructSummary,
 };
 use crate::model::SymbolKind;
 
@@ -47,6 +47,63 @@ pub(super) fn collect_symbols(
     visit_for_symbols(root, source, &mut symbols);
     symbols.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
     symbols
+}
+
+pub(super) fn collect_module_declarations(
+    root: Node<'_>,
+    source: &str,
+) -> Vec<RustModuleDeclaration> {
+    let mut declarations = Vec::new();
+    visit_for_module_declarations(root, source, &mut declarations);
+    declarations.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    declarations.dedup_by(|left, right| left.line == right.line && left.name == right.name);
+    declarations
+}
+
+fn visit_for_module_declarations(
+    node: Node<'_>,
+    source: &str,
+    declarations: &mut Vec<RustModuleDeclaration>,
+) {
+    if node.kind() == "mod_item"
+        && !is_inside_function(node)
+        && let Some(text) = source.get(node.byte_range())
+        && text.trim_end().ends_with(';')
+        && let Some(name_node) = node.child_by_field_name("name")
+        && let Some(name) = source.get(name_node.byte_range())
+    {
+        declarations.push(RustModuleDeclaration {
+            line: node.start_position().row + 1,
+            name: name.trim().to_string(),
+            path_override: module_path_override(node, source),
+        });
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_module_declarations(child, source, declarations);
+    }
+}
+
+fn module_path_override(node: Node<'_>, source: &str) -> Option<String> {
+    for attribute in leading_attributes(node) {
+        let normalized = source
+            .get(attribute.byte_range())?
+            .chars()
+            .filter(|character| !character.is_whitespace())
+            .collect::<String>();
+        let Some(path_text) = normalized.strip_prefix("#[path=\"") else {
+            continue;
+        };
+        let Some((path, _)) = path_text.split_once('"') else {
+            continue;
+        };
+        if !path.is_empty() {
+            return Some(path.to_string());
+        }
+    }
+
+    None
 }
 
 fn visit_for_symbols(node: Node<'_>, source: &str, symbols: &mut Vec<DeclaredSymbol>) {

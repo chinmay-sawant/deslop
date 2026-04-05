@@ -91,6 +91,13 @@ pub(crate) struct RustAttributeSummary {
 }
 
 #[derive(Debug, Clone)]
+pub(crate) struct RustModuleDeclaration {
+    pub line: usize,
+    pub name: String,
+    pub path_override: Option<String>,
+}
+
+#[derive(Debug, Clone)]
 pub(crate) struct RustEnumSummary {
     pub line: usize,
     pub name: String,

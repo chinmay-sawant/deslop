@@ -2,10 +2,10 @@ deslop scan root: /home/chinmay/ChinmayPersonalProjects/gopdfsuit
 Source files discovered: 125
 Source files analyzed: 125
 Functions fingerprinted: 876
-Findings: 1622
+Findings: 1618
 Index summary: packages=63 symbols=1129 imports=755
 Parse failures: 0
-Timings: discover=76ms parse=717ms index=6ms heuristics=509ms total=1311ms
+Timings: discover=79ms parse=494ms index=3ms heuristics=290ms total=871ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/cgo/exports.go:40 function GeneratePDF allocates C string without free [cgo_string_lifetime]
@@ -45,8 +45,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/html.py:54 function convert_html_to_image has a verbose tutorial-style doc comment [comment_style_tutorial]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/redact.py:8 file repeats the same validation pipeline across functions [duplicate_validation_pipeline]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/redact.py:71 function apply_redactions calls json.dumps(redactions) multiple times; cache the result in a local variable [repeated_json_dumps_same_object]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/redact.py:71 function apply_redactions calls json.dumps(redactions) multiple times; cache the result in a local variable [repeated_json_dumps_same_object]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/redact.py:123 function apply_redactions_advanced calls json.dumps(options) multiple times; cache the result in a local variable [repeated_json_dumps_same_object]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/redact.py:123 function apply_redactions_advanced calls json.dumps(options) multiple times; cache the result in a local variable [repeated_json_dumps_same_object]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/types.py:11 function _to_dict relies on weakly typed inputs or outputs [weak_typing]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/types.py:14 function _to_dict returns None explicitly where falling through would be clearer [redundant_return_none]
@@ -165,7 +163,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/tests/test_html.py:76 test test_convert_html_to_png appears to cover only success expectations [happy_path_only_test]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/tests/test_html.py:92 test test_convert_html_to_jpeg appears to cover only success expectations [happy_path_only_test]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/tests/test_integration.py:49 function _resolve_math_font returns None explicitly where falling through would be clearer [redundant_return_none]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/tests/test_integration.py:55 function _generate_pdf_from_dict calls json.dumps(template_dict) multiple times; cache the result in a local variable [repeated_json_dumps_same_object]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/tests/test_integration.py:55 function _generate_pdf_from_dict calls json.dumps(template_dict) multiple times; cache the result in a local variable [repeated_json_dumps_same_object]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/tests/test_integration.py:165 test test_url_to_pdf appears to cover only success expectations [happy_path_only_test]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/tests/test_integration.py:185 test test_url_to_png appears to cover only success expectations [happy_path_only_test]
@@ -1516,7 +1513,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/amazonReceipt/amazonReceipt.py:25 class ReceiptItem looks ceremonial enough that a function or dataclass may suffice [over_abstracted_wrapper]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/amazonReceipt/amazonReceipt.py:118 function sample_product_image repeats branch-shaping literals instead of naming them explicitly [magic_value_branching]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/amazonReceipt/amazonReceipt.py:376 function generate_pdf_with_page_margin uses an overly descriptive name [overlong_name]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/amazonReceipt/amazonReceipt.py:378 function generate_pdf_with_page_margin calls json.dumps(template_payload) multiple times; cache the result in a local variable [repeated_json_dumps_same_object]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/amazonReceipt/amazonReceipt.py:378 function generate_pdf_with_page_margin calls json.dumps(template_payload) multiple times; cache the result in a local variable [repeated_json_dumps_same_object]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/financial_report_pypdfsuit.py:194 function build_financial_report_template formats a string inside a loop; consider building the template once [repeated_string_format_invariant_template]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/financial_report_pypdfsuit.py:342 public function main omits complete type hints [public_api_missing_type_hints]

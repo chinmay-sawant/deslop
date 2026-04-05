@@ -6,6 +6,13 @@ use crate::model::IndexSummary;
 use super::build::package_directory;
 use super::{ImportResolution, PackageIndex, PackageKey, RepositoryIndex};
 
+#[derive(Debug, Clone)]
+pub(crate) enum RustModuleFileResolution {
+    Resolved(PathBuf),
+    Ambiguous(Vec<PathBuf>),
+    Unresolved,
+}
+
 pub(crate) fn package_for_file<'a>(
     index: &'a RepositoryIndex,
     language: Language,
@@ -19,6 +26,14 @@ pub(crate) fn package_for_file<'a>(
     };
 
     index.packages.get(&key)
+}
+
+pub(crate) fn package_for_rust_file<'a>(
+    index: &'a RepositoryIndex,
+    file_path: &Path,
+) -> Option<&'a PackageIndex> {
+    let package_name = index.rust_package_names_by_file.get(file_path)?;
+    package_for_file(index, Language::Rust, file_path, package_name)
 }
 
 pub(crate) fn resolve_import_path<'a>(
@@ -47,6 +62,117 @@ pub(crate) fn resolve_import_path<'a>(
 }
 
 pub(crate) fn resolve_rust_import<'a>(
+    index: &'a RepositoryIndex,
+    current_file_path: &Path,
+    import_path: &str,
+) -> ImportResolution<'a> {
+    match resolve_rust_module_file(index, current_file_path, import_path) {
+        RustModuleFileResolution::Resolved(file_path) => {
+            if let Some(package) = package_for_rust_file(index, &file_path) {
+                return ImportResolution::Resolved(package);
+            }
+        }
+        RustModuleFileResolution::Ambiguous(file_paths) => {
+            let mut candidates = file_paths
+                .into_iter()
+                .filter_map(|file_path| package_for_rust_file(index, &file_path))
+                .collect::<Vec<_>>();
+            candidates.sort_by(|left, right| {
+                left.directory
+                    .cmp(&right.directory)
+                    .then(left.package_name.cmp(&right.package_name))
+            });
+            candidates.dedup_by(|left, right| {
+                left.directory == right.directory && left.package_name == right.package_name
+            });
+            return match candidates.len() {
+                0 => ImportResolution::Unresolved,
+                1 => ImportResolution::Resolved(candidates[0]),
+                _ => ImportResolution::Ambiguous(candidates),
+            };
+        }
+        RustModuleFileResolution::Unresolved => {}
+    }
+
+    legacy_resolve_rust_import(index, current_file_path, import_path)
+}
+
+pub(crate) fn resolve_rust_module_file(
+    index: &RepositoryIndex,
+    current_file_path: &Path,
+    import_path: &str,
+) -> RustModuleFileResolution {
+    let segments = import_path
+        .split("::")
+        .filter(|segment| !segment.is_empty())
+        .collect::<Vec<_>>();
+    let Some(head) = segments.first().copied() else {
+        return RustModuleFileResolution::Unresolved;
+    };
+
+    let mut current_files = match head {
+        "crate" => index
+            .rust_crate_roots
+            .get(current_file_path)
+            .cloned()
+            .unwrap_or_default(),
+        "self" => vec![current_file_path.to_path_buf()],
+        "super" => {
+            let super_count = segments.iter().take_while(|segment| **segment == "super").count();
+            let mut parents = vec![current_file_path.to_path_buf()];
+            for _ in 0..super_count {
+                let mut next = Vec::new();
+                for parent in &parents {
+                    if let Some(candidates) = index.rust_parent_modules.get(parent) {
+                        next.extend(candidates.iter().cloned());
+                    }
+                }
+                if next.is_empty() {
+                    return RustModuleFileResolution::Unresolved;
+                }
+                next.sort();
+                next.dedup();
+                parents = next;
+            }
+            parents
+        }
+        _ => Vec::new(),
+    };
+
+    if current_files.is_empty() {
+        return RustModuleFileResolution::Unresolved;
+    }
+
+    let start_index = if head == "super" {
+        segments.iter().take_while(|segment| **segment == "super").count()
+    } else {
+        1
+    };
+    for segment in segments.iter().skip(start_index) {
+        let mut next_files = Vec::new();
+        for current in &current_files {
+            if let Some(children) = index.rust_child_modules.get(current)
+                && let Some(candidates) = children.get(*segment)
+            {
+                next_files.extend(candidates.iter().cloned());
+            }
+        }
+        if next_files.is_empty() {
+            return RustModuleFileResolution::Unresolved;
+        }
+        next_files.sort();
+        next_files.dedup();
+        current_files = next_files;
+    }
+
+    match current_files.len() {
+        0 => RustModuleFileResolution::Unresolved,
+        1 => RustModuleFileResolution::Resolved(current_files.remove(0)),
+        _ => RustModuleFileResolution::Ambiguous(current_files),
+    }
+}
+
+fn legacy_resolve_rust_import<'a>(
     index: &'a RepositoryIndex,
     current_file_path: &Path,
     import_path: &str,

@@ -118,4 +118,3 @@ src/heuristics/rust/advanceplan3/plan4.rs:364:        &["thread::spawn(", "std::
 src/heuristics/rust/advanceplan3/plan4.rs:55:        description: "Raw std::thread::spawn blocks that call async work without an explicit runtime handoff.",
 
 ## path_join_absolute
-

@@ -4,10 +4,11 @@ mod resolve;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use crate::analysis::{DeclaredSymbol, Language};
+use crate::analysis::{DeclaredSymbol, ImportSpec, Language};
 use crate::model::IndexSummary;
 
 pub(crate) use build::build_repository_index;
+pub(crate) use resolve::RustModuleFileResolution;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct PackageKey {
@@ -39,6 +40,11 @@ pub(crate) enum ImportResolution<'a> {
 pub(crate) struct RepositoryIndex {
     root: PathBuf,
     packages: BTreeMap<PackageKey, PackageIndex>,
+    rust_package_names_by_file: BTreeMap<PathBuf, String>,
+    rust_imports_by_file: BTreeMap<PathBuf, Vec<ImportSpec>>,
+    rust_child_modules: BTreeMap<PathBuf, BTreeMap<String, Vec<PathBuf>>>,
+    rust_parent_modules: BTreeMap<PathBuf, Vec<PathBuf>>,
+    rust_crate_roots: BTreeMap<PathBuf, Vec<PathBuf>>,
 }
 
 impl RepositoryIndex {
@@ -69,6 +75,25 @@ impl RepositoryIndex {
         import_path: &str,
     ) -> ImportResolution<'_> {
         resolve::resolve_rust_import(self, current_file_path, import_path)
+    }
+
+    pub(crate) fn resolve_rust_module_file(
+        &self,
+        current_file_path: &Path,
+        import_path: &str,
+    ) -> RustModuleFileResolution {
+        resolve::resolve_rust_module_file(self, current_file_path, import_path)
+    }
+
+    pub(crate) fn package_for_rust_file(&self, file_path: &Path) -> Option<&PackageIndex> {
+        resolve::package_for_rust_file(self, file_path)
+    }
+
+    pub(crate) fn rust_imports_for_file(&self, file_path: &Path) -> &[ImportSpec] {
+        self.rust_imports_by_file
+            .get(file_path)
+            .map(Vec::as_slice)
+            .unwrap_or(&[])
     }
 
     pub fn summary(&self) -> IndexSummary {

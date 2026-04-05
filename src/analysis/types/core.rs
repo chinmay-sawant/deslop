@@ -16,7 +16,7 @@ use super::python::{
 };
 use super::rust::{
     RustAttributeSummary, RustEnumSummary, RustFunctionEvidence, RustFunctionEvidenceView,
-    RustStaticSummary, StructSummary,
+    RustModuleDeclaration, RustStaticSummary, StructSummary,
 };
 
 /// Common file-level data shared across all languages.
@@ -72,6 +72,7 @@ pub(crate) struct RustFileData {
     pub rust_enums: Vec<RustEnumSummary>,
     pub structs: Vec<StructSummary>,
     pub attributes: Vec<RustAttributeSummary>,
+    pub module_declarations: Vec<RustModuleDeclaration>,
 }
 
 impl ParsedFile {
@@ -140,6 +141,10 @@ impl ParsedFile {
 
     pub(crate) fn rust_attributes(&self) -> &[RustAttributeSummary] {
         self.rust_data().map_or(&[], |d| &d.attributes)
+    }
+
+    pub(crate) fn rust_module_declarations(&self) -> &[RustModuleDeclaration] {
+        self.rust_data().map_or(&[], |d| &d.module_declarations)
     }
 }
 

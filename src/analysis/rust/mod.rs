@@ -404,4 +404,186 @@ pub fn run() {
                 })
         );
     }
+
+    #[test]
+    fn path_attribute_child_module_import_is_resolved() {
+        let current = parse_file(
+            "/repo/src/analysis/rust/evaluate.rs",
+            r#"
+#[path = "findings.rs"]
+mod findings;
+
+use self::findings::helper;
+
+fn run() {
+    helper();
+}
+"#,
+        );
+        let findings_module = parse_file(
+            "/repo/src/analysis/rust/findings.rs",
+            r#"
+pub(super) fn helper() {}
+"#,
+        );
+
+        let index = build_repository_index(Path::new("/repo"), &[current.clone(), findings_module]);
+
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_import_call"
+                        && finding.message.contains("helper")
+                })
+        );
+    }
+
+    #[test]
+    fn path_attribute_parent_module_import_is_resolved() {
+        let root = parse_file(
+            "/repo/tests/integration_scan/mod.rs",
+            r#"
+#[path = "../support/mod.rs"]
+mod support;
+mod benchmarking;
+"#,
+        );
+        let benchmark = parse_file(
+            "/repo/tests/integration_scan/benchmarking.rs",
+            r#"
+use super::support::FixtureWorkspace;
+
+fn run() {
+    let _ = FixtureWorkspace::new();
+}
+"#,
+        );
+        let support = parse_file(
+            "/repo/tests/support/mod.rs",
+            r#"
+pub struct FixtureWorkspace;
+
+impl FixtureWorkspace {
+    pub fn new() -> Self {
+        Self
+    }
+}
+"#,
+        );
+
+        let index = build_repository_index(Path::new("/repo"), &[root, benchmark.clone(), support]);
+
+        assert!(
+            !evaluate_rust_findings(&benchmark, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_import_call"
+                        && finding.message.contains("FixtureWorkspace::new")
+                })
+        );
+    }
+
+    #[test]
+    fn wildcard_parent_import_resolves_parent_visible_imports() {
+        let root = parse_file(
+            "/repo/src/lib.rs",
+            r#"
+mod framework_patterns;
+mod data_access;
+"#,
+        );
+        let framework = parse_file(
+            "/repo/src/framework_patterns.rs",
+            r#"
+pub fn has_sql_like_import() {}
+"#,
+        );
+        let data_access = parse_file(
+            "/repo/src/data_access.rs",
+            r#"
+mod clients;
+
+use crate::framework_patterns::has_sql_like_import;
+"#,
+        );
+        let clients = parse_file(
+            "/repo/src/data_access/clients.rs",
+            r#"
+use super::*;
+
+fn run() {
+    has_sql_like_import();
+}
+"#,
+        );
+
+        let index =
+            build_repository_index(Path::new("/repo"), &[root, framework, data_access, clients.clone()]);
+
+        assert!(
+            !evaluate_rust_findings(&clients, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_local_call"
+                        && finding.message.contains("has_sql_like_import")
+                })
+        );
+    }
+
+    #[test]
+    fn for_loop_callable_bindings_are_not_flagged_as_missing() {
+        let current = parse_file(
+            "/repo/src/heuristics/engine.rs",
+            r#"
+fn run(rules: Vec<fn()>) {
+    for rule in rules {
+        rule();
+    }
+}
+"#,
+        );
+
+        let index = build_repository_index(Path::new("/repo"), std::slice::from_ref(&current));
+
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_local_call"
+                        && finding.message.contains("rule")
+                })
+        );
+    }
+
+    #[test]
+    fn test_functions_skip_hallucinated_call_checks() {
+        let current = parse_file(
+            "/repo/src/lib.rs",
+            r#"
+fn helper() {}
+
+#[cfg(test)]
+mod tests {
+    use super::helper;
+
+    #[test]
+    fn run() {
+        helper();
+    }
+}
+"#,
+        );
+
+        let index = build_repository_index(Path::new("/repo"), std::slice::from_ref(&current));
+
+        assert!(
+            !evaluate_rust_findings(&current, &index)
+                .iter()
+                .any(|finding| {
+                    finding.rule_id == "hallucinated_import_call"
+                        || finding.rule_id == "hallucinated_local_call"
+                })
+        );
+    }
 }
