@@ -1,8 +1,8 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 use crate::analysis::{ImportSpec, Language, ParsedFile, ParsedFunction};
-use crate::index::{ImportResolution, PackageIndex, RepositoryIndex};
+use crate::index::{ImportResolution, PackageIndex, RepositoryIndex, RustModuleFileResolution};
 use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
@@ -174,6 +174,10 @@ pub(super) fn rust_import_findings(
     imports: &[ImportSpec],
     current_package: &PackageIndex,
 ) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
     let mut findings = Vec::new();
 
     for call in &function.calls {
@@ -263,6 +267,10 @@ pub(super) fn rust_call_findings(
     index: &RepositoryIndex,
     imports: &[ImportSpec],
 ) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
     let Some(package_name) = &file.package_name else {
         return Vec::new();
     };
@@ -322,6 +330,23 @@ pub(super) fn rust_call_findings(
             continue;
         }
 
+        let mut visited = BTreeSet::new();
+        if import_aliases
+            .values()
+            .filter(|import_spec| import_spec.alias == "*")
+            .any(|import_spec| {
+                wildcard_import_matches_item(
+                    index,
+                    &file.path,
+                    import_spec,
+                    &call.name,
+                    &mut visited,
+                )
+            })
+        {
+            continue;
+        }
+
         if is_rust_local_sym(&call.name) {
             findings.push(Finding {
                 rule_id: "hallucinated_local_call".to_string(),
@@ -370,16 +395,97 @@ pub(crate) fn import_matches_item(
         return false;
     }
 
-    match index.resolve_rust_import(file_path, module_path) {
-        ImportResolution::Resolved(module_package) => {
-            module_package.has_function(item_name)
-                || module_package.has_symbol(item_name)
+    match index.resolve_rust_module_file(file_path, module_path) {
+        RustModuleFileResolution::Resolved(module_file) => {
+            let mut visited = BTreeSet::new();
+            module_namespace_matches_item(index, &module_file, item_name, &mut visited)
                 || import_matches_local_module(index, file_path, module_path, item_name)
         }
-        ImportResolution::Ambiguous(_) => true,
-        ImportResolution::Unresolved => {
-            import_matches_local_module(index, file_path, module_path, item_name)
+        RustModuleFileResolution::Ambiguous(_) => true,
+        RustModuleFileResolution::Unresolved => {
+            match index.resolve_rust_import(file_path, module_path) {
+                ImportResolution::Resolved(module_package) => {
+                    module_package.has_function(item_name)
+                        || module_package.has_symbol(item_name)
+                        || import_matches_local_module(index, file_path, module_path, item_name)
+                }
+                ImportResolution::Ambiguous(_) => true,
+                ImportResolution::Unresolved => {
+                    import_matches_local_module(index, file_path, module_path, item_name)
+                }
+            }
         }
+    }
+}
+
+fn module_namespace_matches_item(
+    index: &RepositoryIndex,
+    module_file: &Path,
+    item_name: &str,
+    visited: &mut BTreeSet<(String, String)>,
+) -> bool {
+    let visit_key = (
+        module_file.to_string_lossy().into_owned(),
+        item_name.to_string(),
+    );
+    if !visited.insert(visit_key) {
+        return false;
+    }
+
+    if index.package_for_rust_file(module_file).is_some_and(|package| {
+        package.has_function(item_name) || package.has_symbol(item_name)
+    }) {
+        return true;
+    }
+
+    let imports = index.rust_imports_for_file(module_file);
+    let import_aliases = alias_lookup(imports);
+    if let Some(import_spec) = import_aliases.get(item_name)
+        && explicit_import_matches_item(index, module_file, import_spec, visited)
+    {
+        return true;
+    }
+
+    for import_spec in imports {
+        if import_spec.alias != "*" || !is_rust_import(import_spec.path.as_str()) {
+            continue;
+        }
+        if wildcard_import_matches_item(index, module_file, import_spec, item_name, visited) {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn explicit_import_matches_item(
+    index: &RepositoryIndex,
+    module_file: &Path,
+    import_spec: &ImportSpec,
+    visited: &mut BTreeSet<(String, String)>,
+) -> bool {
+    let Some(module_path) = import_spec.namespace_path.as_deref() else {
+        return false;
+    };
+    let Some(item_name) = import_spec.imported_name.as_deref() else {
+        return false;
+    };
+    if item_name == "*" {
+        return false;
+    }
+
+    match index.resolve_rust_module_file(module_file, module_path) {
+        RustModuleFileResolution::Resolved(target_file) => {
+            module_namespace_matches_item(index, &target_file, item_name, visited)
+        }
+        RustModuleFileResolution::Ambiguous(_) => true,
+        RustModuleFileResolution::Unresolved => match index.resolve_rust_import(module_file, module_path) {
+            ImportResolution::Resolved(module_package) => {
+                module_package.has_function(item_name) || module_package.has_symbol(item_name)
+            }
+            ImportResolution::Ambiguous(_) => true,
+            ImportResolution::Unresolved => false,
+        },
     }
 }
 
@@ -398,17 +504,46 @@ fn import_matches_local_module(
     };
 
     let sibling_file = parent.join(format!("{item_name}.rs"));
-    if index
-        .package_for_file(Language::Rust, &sibling_file, item_name)
-        .is_some()
-    {
+    if index.package_for_rust_file(&sibling_file).is_some() {
         return true;
     }
 
     let sibling_mod = parent.join(item_name).join("mod.rs");
-    index
-        .package_for_file(Language::Rust, &sibling_mod, item_name)
-        .is_some()
+    index.package_for_rust_file(&sibling_mod).is_some()
+}
+
+fn wildcard_import_matches_item(
+    index: &RepositoryIndex,
+    file_path: &Path,
+    import_spec: &ImportSpec,
+    item_name: &str,
+    visited: &mut BTreeSet<(String, String)>,
+) -> bool {
+    let Some(module_path) = import_spec
+        .namespace_path
+        .as_deref()
+        .or_else(|| import_spec.path.strip_suffix("::*"))
+        .or_else(|| {
+            (import_spec.imported_name.as_deref() == Some("*") && import_spec.path != "*")
+                .then_some(import_spec.path.as_str())
+        })
+    else {
+        return false;
+    };
+
+    match index.resolve_rust_module_file(file_path, module_path) {
+        RustModuleFileResolution::Resolved(module_file) => {
+            module_namespace_matches_item(index, &module_file, item_name, visited)
+        }
+        RustModuleFileResolution::Ambiguous(_) => true,
+        RustModuleFileResolution::Unresolved => match index.resolve_rust_import(file_path, module_path) {
+            ImportResolution::Resolved(module_package) => {
+                module_package.has_function(item_name) || module_package.has_symbol(item_name)
+            }
+            ImportResolution::Ambiguous(_) => true,
+            ImportResolution::Unresolved => false,
+        },
+    }
 }
 
 fn is_rust_prelude_function(name: &str) -> bool {

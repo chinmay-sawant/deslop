@@ -1,0 +1,30 @@
+use axum::{extract::State, response::IntoResponse};
+use tokio::sync::{mpsc, Notify};
+
+pub struct AppState;
+
+pub async fn handler(State(_state): State<AppState>) -> impl IntoResponse {
+    let _ = tokio::spawn(async move {
+        do_work().await;
+    });
+
+    let _ = mpsc::channel::<u8>(8);
+
+    tokio::task::block_in_place(|| {
+        std::env::set_var("FEATURE_FLAG", "1");
+    });
+
+    let notify = Notify::new();
+    notify.notified().await;
+
+    Ok::<_, ()>(())
+}
+
+pub async fn loop_builder() {
+    for _ in 0..2 {
+        let _runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+    }
+}

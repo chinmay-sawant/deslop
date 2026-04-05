@@ -39,6 +39,13 @@ pub(crate) const PYTHON_STRUCTURE: &str = crate::heuristics::python::STRUCTURE_B
 
 pub(crate) const RUST_ANALYSIS_EVALUATE: &str = crate::analysis::rust::EVALUATE_BINDING_LOCATION;
 pub(crate) const RUST_ANALYSIS_FINDINGS: &str = crate::analysis::rust::FINDINGS_BINDING_LOCATION;
+pub(crate) const RUST_BOUNDARY: &str = crate::heuristics::rust::BOUNDARY_BINDING_LOCATION;
+pub(crate) const RUST_MODULE_SURFACE: &str =
+    crate::heuristics::rust::MODULE_SURFACE_BINDING_LOCATION;
+pub(crate) const RUST_RUNTIME_OWNERSHIP: &str =
+    crate::heuristics::rust::RUNTIME_OWNERSHIP_BINDING_LOCATION;
+pub(crate) const RUST_SECURITY_FOOTGUNS: &str =
+    crate::heuristics::rust::SECURITY_FOOTGUNS_BINDING_LOCATION;
 pub(crate) const RUST_API_DESIGN: &str = crate::heuristics::rust::API_DESIGN_BINDING_LOCATION;
 pub(crate) const RUST_ASYNC_PATTERNS: &str =
     crate::heuristics::rust::ASYNC_PATTERNS_BINDING_LOCATION;

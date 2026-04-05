@@ -1,14 +1,22 @@
 mod api_design;
 mod async_patterns;
+pub(crate) mod boundary;
 mod domain_modeling;
+pub(crate) mod module_surface;
 mod performance;
 mod runtime_boundary;
+pub(crate) mod runtime_ownership;
+pub(crate) mod security_footguns;
 mod unsafe_soundness;
 
+pub(crate) const BOUNDARY_BINDING_LOCATION: &str = boundary::BINDING_LOCATION;
 pub(crate) const API_DESIGN_BINDING_LOCATION: &str = api_design::BINDING_LOCATION;
 pub(crate) const ASYNC_PATTERNS_BINDING_LOCATION: &str = async_patterns::BINDING_LOCATION;
 pub(crate) const DOMAIN_MODELING_BINDING_LOCATION: &str = domain_modeling::BINDING_LOCATION;
+pub(crate) const MODULE_SURFACE_BINDING_LOCATION: &str = module_surface::BINDING_LOCATION;
 pub(crate) const PERFORMANCE_BINDING_LOCATION: &str = performance::BINDING_LOCATION;
+pub(crate) const RUNTIME_OWNERSHIP_BINDING_LOCATION: &str = runtime_ownership::BINDING_LOCATION;
+pub(crate) const SECURITY_FOOTGUNS_BINDING_LOCATION: &str = security_footguns::BINDING_LOCATION;
 pub(crate) const RUNTIME_BOUNDARY_BINDING_LOCATION: &str = runtime_boundary::BINDING_LOCATION;
 pub(crate) const UNSAFE_SOUNDNESS_BINDING_LOCATION: &str = unsafe_soundness::BINDING_LOCATION;
 
@@ -17,13 +25,89 @@ use crate::model::{Finding, Severity};
 
 pub(crate) use api_design::{api_design_file_findings, api_design_function_findings};
 pub(crate) use async_patterns::{async_file_findings, async_function_findings};
+pub(crate) use boundary::{boundary_file_findings, boundary_function_findings};
 pub(crate) use domain_modeling::domain_findings;
+pub(crate) use module_surface::module_surface_file_findings;
 pub(crate) use performance::{performance_file_findings, performance_function_findings};
 pub(crate) use runtime_boundary::{runtime_file_findings, runtime_function_findings};
+pub(crate) use runtime_ownership::runtime_ownership_function_findings;
+pub(crate) use security_footguns::{
+    security_footguns_file_findings, security_footguns_function_findings,
+};
 pub(crate) use unsafe_soundness::unsafe_soundness_findings;
 
 const RUST_GUIDE_REFERENCE: &str =
     "see guides/rust/heuristics-and-findings.md for remediation examples";
+
+pub(crate) fn is_scanner_infra_file(file: &ParsedFile) -> bool {
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+    path.contains("/src/analysis/")
+        || path.contains("/src/heuristics/")
+        || path.contains("/src/rules/")
+        || path.contains("/src/index/")
+        || path.contains("/src/model/")
+        || path.contains("/src/scan/")
+}
+
+pub(crate) fn file_attributes(file: &ParsedFile) -> &[crate::analysis::RustAttributeSummary] {
+    file.rust_attributes()
+}
+
+pub(crate) fn is_test_like(file: &ParsedFile, function: Option<&ParsedFunction>) -> bool {
+    function.is_some_and(|function| function.is_test_function) || file.is_test_file
+}
+
+pub(crate) fn is_main_like_file(file: &ParsedFile) -> bool {
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+    path.ends_with("/main.rs") || path.ends_with("main.rs") || path.contains("/bin/")
+}
+
+pub(crate) fn contains_any(text: &str, markers: &[&str]) -> bool {
+    markers.iter().any(|marker| text.contains(marker))
+}
+
+pub(crate) fn first_line_with_any(body: &str, base_line: usize, markers: &[&str]) -> Option<usize> {
+    body.lines()
+        .enumerate()
+        .find(|(_, line)| contains_any(line, markers))
+        .map(|(offset, _)| base_line + offset)
+}
+
+pub(crate) fn has_secret_like_text(text: &str) -> bool {
+    let normalized = text.to_ascii_lowercase();
+    [
+        "password",
+        "secret",
+        "token",
+        "api_key",
+        "apikey",
+        "access_token",
+        "private_key",
+        "cert",
+        "certificate",
+        "auth",
+        "key",
+    ]
+    .iter()
+    .any(|token| normalized.contains(token))
+}
+
+pub(crate) fn has_numeric_narrowing_cast(line: &str) -> bool {
+    [
+        " as u8",
+        " as u16",
+        " as u32",
+        " as u64",
+        " as usize",
+        " as i8",
+        " as i16",
+        " as i32",
+        " as i64",
+        " as isize",
+    ]
+    .iter()
+    .any(|marker| line.contains(marker))
+}
 
 fn function_finding(
     file: &ParsedFile,

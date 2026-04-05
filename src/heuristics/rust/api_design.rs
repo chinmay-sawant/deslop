@@ -51,7 +51,7 @@ fn is_public_api(function: &ParsedFunction) -> bool {
 
 fn is_library_like(file: &ParsedFile) -> bool {
     let path = file.path.to_string_lossy().to_ascii_lowercase();
-    !path.ends_with("main.rs") && !path.contains("/bin/")
+    !path.ends_with("main.rs") && !path.contains("/bin/") && !path.contains("/src/cli/")
 }
 
 fn builder_internal(function: &ParsedFunction) -> bool {

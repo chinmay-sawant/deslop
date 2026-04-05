@@ -35,8 +35,9 @@ pub(crate) use types::{
 };
 // Rust-specific evidence types
 pub(crate) use types::{
-    FieldSummary, MacroCall, RuntimeCall, RustEnumSummary, RustFileData, RustFunctionEvidence,
-    RustStaticSummary, StructSummary, UnsafePattern, UnsafePatternKind,
+    FieldSummary, MacroCall, RuntimeCall, RustAttributeSummary, RustEnumSummary, RustFileData,
+    RustFunctionEvidence, RustModuleDeclaration, RustStaticSummary, StructSummary,
+    UnsafePattern, UnsafePatternKind,
 };
 
 pub(crate) fn parse_source_file(path: &Path, source: &str) -> crate::Result<ParsedFile> {
@@ -59,7 +60,9 @@ pub fn syntax_error_for_source(path: &Path, source: &str) -> crate::Result<bool>
 mod tests {
     use std::path::Path;
 
-    use super::{Language, backend_for_path, parse_source_file, registered_backends, supported_extensions};
+    use super::{
+        Language, backend_for_path, parse_source_file, registered_backends, supported_extensions,
+    };
 
     #[test]
     fn test_python_backend() {

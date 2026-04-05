@@ -2,6 +2,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use deslop::ScanReport;
+
 use super::FixtureWorkspace;
 
 #[test]
@@ -260,6 +262,214 @@ fn test_rust_phase4_workspace_manifest_clean() {
 }
 
 #[test]
+fn test_rust_advanceplan3_plan1_rules() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("advanceplan3/plan1_positive.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_present(
+        &report,
+        &[
+            "rust_internal_anyhow_result",
+            "rust_unbounded_read_to_string",
+            "rust_check_then_open_path",
+            "rust_secret_equality_compare",
+            "rust_narrowing_numeric_cast",
+            "rust_manual_tempdir_lifecycle",
+        ],
+    );
+}
+
+#[test]
+fn test_rust_advanceplan3_plan1_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("advanceplan3/plan1_negative.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_absent(
+        &report,
+        &[
+            "rust_internal_anyhow_result",
+            "rust_unbounded_read_to_string",
+            "rust_check_then_open_path",
+            "rust_secret_equality_compare",
+            "rust_narrowing_numeric_cast",
+            "rust_manual_tempdir_lifecycle",
+        ],
+    );
+}
+
+#[test]
+fn test_rust_advanceplan3_plan2_rules() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "src/lib.rs",
+            rust_fixture!("advanceplan3/plan2_lib_positive.txt"),
+        ),
+        (
+            "src/feature/mod.rs",
+            rust_fixture!("advanceplan3/plan2_mod_positive.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+
+    assert_rules_present(
+        &report,
+        &[
+            "rust_oversized_module_file",
+            "rust_pub_use_glob_surface",
+            "rust_root_reexport_wall",
+            "rust_mod_rs_catchall",
+            "rust_duplicate_bootstrap_sequence",
+            "rust_redundant_path_attribute",
+            "rust_broad_allow_dead_code",
+        ],
+    );
+}
+
+#[test]
+fn test_rust_advanceplan3_plan2_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "src/lib.rs",
+            rust_fixture!("advanceplan3/plan2_lib_negative.txt"),
+        ),
+        (
+            "src/feature/mod.rs",
+            rust_fixture!("advanceplan3/plan2_mod_negative.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+
+    assert_rules_absent(
+        &report,
+        &[
+            "rust_oversized_module_file",
+            "rust_pub_use_glob_surface",
+            "rust_root_reexport_wall",
+            "rust_mod_rs_catchall",
+            "rust_duplicate_bootstrap_sequence",
+            "rust_redundant_path_attribute",
+            "rust_broad_allow_dead_code",
+        ],
+    );
+}
+
+#[test]
+fn test_rust_advanceplan3_plan3_rules() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("advanceplan3/plan3_positive.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_present(
+        &report,
+        &[
+            "rust_detached_spawn_without_handle",
+            "rust_channel_created_per_request",
+            "rust_block_in_place_request_path",
+            "rust_runtime_builder_in_loop",
+            "rust_notify_without_shutdown_contract",
+            "rust_process_global_env_toggle",
+        ],
+    );
+}
+
+#[test]
+fn test_rust_advanceplan3_plan3_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("advanceplan3/plan3_negative.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_absent(
+        &report,
+        &[
+            "rust_detached_spawn_without_handle",
+            "rust_channel_created_per_request",
+            "rust_block_in_place_request_path",
+            "rust_runtime_builder_in_loop",
+            "rust_notify_without_shutdown_contract",
+            "rust_process_global_env_toggle",
+        ],
+    );
+}
+
+#[test]
+fn test_rust_advanceplan3_plan4_rules() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "Cargo.toml",
+        "[package]\nname = \"advanceplan3\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[profile.release]\npanic = \"unwind\"\n",
+    );
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("advanceplan3/plan4_positive.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_present(
+        &report,
+        &[
+            "rust_split_at_unchecked_external_input",
+            "rust_from_utf8_unchecked_boundary",
+            "rust_thread_spawn_async_without_runtime",
+            "rust_rc_cycle_parent_link",
+            "rust_static_mut_global",
+            "rust_release_profile_missing_overflow_checks",
+            "rust_release_profile_panic_unwind",
+        ],
+    );
+}
+
+#[test]
+fn test_rust_advanceplan3_plan4_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "Cargo.toml",
+        "[package]\nname = \"advanceplan3\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[profile.release]\npanic = \"abort\"\noverflow-checks = true\n",
+    );
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("advanceplan3/plan4_negative.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_absent(
+        &report,
+        &[
+            "rust_split_at_unchecked_external_input",
+            "rust_from_utf8_unchecked_boundary",
+            "rust_thread_spawn_async_without_runtime",
+            "rust_rc_cycle_parent_link",
+            "rust_static_mut_global",
+            "rust_release_profile_missing_overflow_checks",
+            "rust_release_profile_panic_unwind",
+        ],
+    );
+}
+
+#[test]
 fn test_rust_hygiene_script() {
     let status = Command::new("bash")
         .arg("scripts/check_rust_hygiene.sh")
@@ -327,5 +537,39 @@ fn collect_rust_files(root: &Path, files: &mut Vec<PathBuf>) {
         } else if path.extension().and_then(|ext| ext.to_str()) == Some("rs") {
             files.push(path);
         }
+    }
+}
+
+fn assert_rules_present(report: &ScanReport, rule_ids: &[&str]) {
+    for rule_id in rule_ids {
+        assert!(
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == *rule_id),
+            "expected finding {rule_id:?}, got {:?}",
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
+        );
+    }
+}
+
+fn assert_rules_absent(report: &ScanReport, rule_ids: &[&str]) {
+    for rule_id in rule_ids {
+        assert!(
+            !report
+                .findings
+                .iter()
+                .any(|finding| finding.rule_id == *rule_id),
+            "unexpected finding {rule_id:?}, got {:?}",
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
+        );
     }
 }

@@ -1,4 +1,14 @@
 ## narrowing_as_casts
+src/heuristics/rust/mod.rs:100:        " as u64",
+src/heuristics/rust/mod.rs:101:        " as usize",
+src/heuristics/rust/mod.rs:102:        " as i8",
+src/heuristics/rust/mod.rs:103:        " as i16",
+src/heuristics/rust/mod.rs:104:        " as i32",
+src/heuristics/rust/mod.rs:105:        " as i64",
+src/heuristics/rust/mod.rs:106:        " as isize",
+src/heuristics/rust/mod.rs:97:        " as u8",
+src/heuristics/rust/mod.rs:98:        " as u16",
+src/heuristics/rust/mod.rs:99:        " as u32",
 
 ## split_at_and_indexing
 src/analysis/python/parser/general.rs:932:                return &line[..index];
@@ -19,6 +29,7 @@ src/analysis/python/parser/hotpath_ext.rs:186:                let after_join = &
 src/analysis/python/parser/hotpath_ext.rs:240:            let receiver = &trimmed[..get_idx];
 src/analysis/python/parser/hotpath_ext.rs:241:            let after = &trimmed[get_idx + 5..];
 src/analysis/python/parser/hotpath_ext.rs:243:                let key = after[..end].trim();
+src/analysis/rust/mod.rs:447:#[path = "../support/mod.rs"]
 src/analysis/rust/parser/evidence.rs:204:    text[vec_start + 4..].contains("Box<")
 src/heuristics/go/framework_patterns/data_access/sql.rs:554:                let after_like = &upper[like_pos + 4..];
 src/heuristics/go/framework_patterns/gin.rs:241:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
@@ -47,10 +58,11 @@ src/heuristics/python/packaging.rs:324:        [first, ..] => Some(*first),
 src/heuristics/python/quality/mod.rs:203:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:85:    for (offset, character) in signature_text[start..].char_indices() {
-src/heuristics/rust/performance.rs:341:    text[vec_start + 4..].contains("Box<")
-src/heuristics/rust/performance.rs:348:    line[start + marker.len()..].starts_with('/')
-src/heuristics/rust/performance.rs:389:                let receiver = &line[start..index];
-src/heuristics/rust/runtime_boundary.rs:267:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/rust/module_surface.rs:90:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
+src/heuristics/rust/performance.rs:351:    text[vec_start + 4..].contains("Box<")
+src/heuristics/rust/performance.rs:358:    line[start + marker.len()..].starts_with('/')
+src/heuristics/rust/performance.rs:399:                let receiver = &line[start..index];
+src/heuristics/rust/runtime_boundary.rs:271:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/rules.rs:468:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
 src/rules.rs:470:            let Some(end_offset) = source[start..].find('\"') else {
 src/rules.rs:474:            ids.insert(source[start..start + end_offset].to_string());
@@ -60,7 +72,9 @@ tests/integration_scan/mod.rs:33:#[path = "../support/mod.rs"]
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/heuristics/python/packaging.rs:244:    candidate.exists().then_some(candidate)
-src/heuristics/rust/runtime_boundary.rs:169:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
+src/heuristics/rust/boundary.rs:203:            && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])
+src/heuristics/rust/runtime_boundary.rs:173:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
+src/heuristics/rust/security_footguns.rs:209:    if !should_emit_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
 src/rules.rs:167:    fn finds_known_rule_metadata() {
@@ -72,10 +86,12 @@ src/rules/catalog/python/framework.rs:169:        description: "Django querysets
 tests/benchmark_guard.rs:36:        repo_root.exists(),
 
 ## toctou_check_then_open
+src/heuristics/rust/boundary.rs:203: prior check:             && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])
+src/heuristics/rust/boundary.rs:209: check-then-open candidate after line 203:         if check_line.is_some() && contains_any(line, &["File::open(", ".open(", "read_to_string("])
 
 ## secret_comparisons
 src/analysis/rust/parser/tests.rs:135:            .any(|name| name == "password")
-src/heuristics/rust/mod.rs:163:        .any(|token| normalized == *token || normalized.contains(token))
+src/heuristics/rust/mod.rs:247:        .any(|token| normalized == *token || normalized.contains(token))
 src/rules/catalog/go/security.rs:631:        description: "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
 tests/integration_scan/security.rs:29:            .any(|finding| finding.rule_id == "hardcoded_secret")
 tests/integration_scan/security.rs:44:            .any(|finding| finding.rule_id == "hardcoded_secret")
@@ -84,9 +100,12 @@ tests/integration_scan/security.rs:44:            .any(|finding| finding.rule_id
 src/heuristics/rust/api_design.rs:244:        "RefCell<",
 src/heuristics/rust/api_design.rs:274:    type_text.contains("Rc<RefCell<") || type_text.contains("Rc<std::cell::RefCell<")
 src/heuristics/rust/api_design_state.rs:78:                        "struct {} uses Rc<RefCell<_>> in a domain-style type",
-src/rules/catalog/rust.rs:225:        description: "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
+src/heuristics/rust/security_footguns.rs:183:            name.contains("parent") && type_text.contains("Rc<") && !type_text.contains("Weak<")
+src/rules/catalog/rust/api_design.rs:227:        description: "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
 
 ## unsafe_globals
+src/analysis/rust/parser/items.rs:452:            .is_some_and(|text| text.contains("static mut ")),
+src/heuristics/rust/security_footguns.rs:83:        description: "static mut global state that bypasses the safer shared-state models already in the scanner.",
 
 ## derive_default
 src/analysis/config.rs:1:#[derive(Debug, Clone, Copy, Default)]
@@ -95,6 +114,9 @@ src/analysis/types/core.rs:62:#[derive(Debug, Clone, Default)]
 src/analysis/types/core.rs:69:#[derive(Debug, Clone, Default)]
 
 ## thread_spawn_async
+src/heuristics/rust/security_footguns.rs:346:        &["thread::spawn(", "std::thread::spawn("],
+src/heuristics/rust/security_footguns.rs:370:        &["thread::spawn(", "std::thread::spawn("],
+src/heuristics/rust/security_footguns.rs:55:        description: "Raw std::thread::spawn blocks that call async work without an explicit runtime handoff.",
 
 ## path_join_absolute
 

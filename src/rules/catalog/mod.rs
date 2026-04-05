@@ -1,8 +1,8 @@
 use std::sync::OnceLock;
 
-use super::{RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleStatus};
+pub(crate) use super::{RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleStatus};
 
-mod bindings;
+pub(crate) mod bindings;
 mod common;
 mod go;
 mod python;
@@ -57,7 +57,18 @@ pub(crate) fn rule_catalog() -> &'static [RuleDefinition] {
             catalog.extend_from_slice(python::quality::RULE_DEFINITIONS);
             catalog.extend_from_slice(python::structure::RULE_DEFINITIONS);
 
-            catalog.extend_from_slice(rust::RULE_DEFINITIONS);
+            // Rust Submodules
+            catalog.extend_from_slice(rust::api_design::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::async_patterns::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::domain_modeling::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::hygiene::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::performance::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::runtime_boundary::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::unsafe_soundness::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::boundary::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::module_surface::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::runtime_ownership::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::security_footguns::RULE_DEFINITIONS);
             catalog.sort_by(|left, right| {
                 (&left.language, left.family, left.id).cmp(&(
                     &right.language,

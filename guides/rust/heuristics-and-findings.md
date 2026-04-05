@@ -6,6 +6,14 @@ This phase adds the first Rust-specific bad-practice detectors. The rule pack sh
 
 The first implementation should favor a small set of high-signal rules rather than a broad but noisy detector list.
 
+## Current shipped state
+
+- [x] Current Rust registry size: 74 rules.
+- [x] Current Rust families: `hygiene`, `api_design`, `domain_modeling`, `async_patterns`, `performance`, `runtime_boundary`, and `unsafe_soundness`.
+- [x] Current primary Rust coverage lives in `tests/integration_scan/rust.rs`, `tests/integration_scan/rust_advanced.rs`, and `tests/integration_scan/rust_api_design_ext.rs`.
+- [x] Current Rust fixtures live under `tests/fixtures/rust/`.
+- [x] The next Rust expansion backlog now lives under `guides/rust/advanceplan3/` and has been implemented phase by phase.
+
 ## In Scope
 
 - The first Rust rule pack

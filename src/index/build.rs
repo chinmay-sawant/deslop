@@ -1,13 +1,17 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use crate::analysis::{DeclaredSymbol, ParsedFile, ParsedFunction};
+use crate::analysis::{
+    DeclaredSymbol, Language, ParsedFile, ParsedFunction, RustModuleDeclaration,
+};
 use crate::model::SymbolKind;
 
 use super::{PackageIndex, PackageKey, RepositoryIndex};
 
 pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> RepositoryIndex {
     let mut packages = BTreeMap::new();
+    let mut rust_package_names_by_file = BTreeMap::new();
+    let mut rust_imports_by_file = BTreeMap::new();
 
     for file in files {
         let ParsedFile {
@@ -22,6 +26,10 @@ pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> Repos
         let package_name = package_name
             .clone()
             .unwrap_or_else(|| "unknown".to_string());
+        if language == Language::Rust {
+            rust_package_names_by_file.insert(path.clone(), package_name.clone());
+            rust_imports_by_file.insert(path.clone(), imports.clone());
+        }
         let directory = package_directory(root, path);
         let import_count = imports.len();
         let key = PackageKey {
@@ -57,9 +65,17 @@ pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> Repos
         }
     }
 
+    let (rust_child_modules, rust_parent_modules, rust_crate_roots) =
+        build_rust_module_graph(files);
+
     RepositoryIndex {
         root: root.to_path_buf(),
         packages,
+        rust_package_names_by_file,
+        rust_imports_by_file,
+        rust_child_modules,
+        rust_parent_modules,
+        rust_crate_roots,
     }
 }
 
@@ -96,6 +112,157 @@ fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
         }
         _ => {}
     }
+}
+
+fn build_rust_module_graph(
+    files: &[ParsedFile],
+) -> (
+    BTreeMap<PathBuf, BTreeMap<String, Vec<PathBuf>>>,
+    BTreeMap<PathBuf, Vec<PathBuf>>,
+    BTreeMap<PathBuf, Vec<PathBuf>>,
+) {
+    let rust_files = files
+        .iter()
+        .filter(|file| file.language == Language::Rust)
+        .map(|file| file.path.clone())
+        .collect::<BTreeSet<_>>();
+    let mut child_modules = BTreeMap::<PathBuf, BTreeMap<String, Vec<PathBuf>>>::new();
+    let mut parent_modules = BTreeMap::<PathBuf, Vec<PathBuf>>::new();
+
+    for file in files.iter().filter(|file| file.language == Language::Rust) {
+        for declaration in file.rust_module_declarations() {
+            let resolved_paths = resolve_module_declaration_paths(&file.path, declaration);
+            for resolved_path in resolved_paths {
+                if !rust_files.contains(&resolved_path) {
+                    continue;
+                }
+                child_modules
+                    .entry(file.path.clone())
+                    .or_default()
+                    .entry(declaration.name.clone())
+                    .or_default()
+                    .push(resolved_path.clone());
+                parent_modules
+                    .entry(resolved_path)
+                    .or_default()
+                    .push(file.path.clone());
+            }
+        }
+    }
+
+    for children in child_modules.values_mut() {
+        for paths in children.values_mut() {
+            paths.sort();
+            paths.dedup();
+        }
+    }
+    for parents in parent_modules.values_mut() {
+        parents.sort();
+        parents.dedup();
+    }
+
+    let child_files = parent_modules.keys().cloned().collect::<BTreeSet<_>>();
+    let roots = rust_files
+        .iter()
+        .filter(|path| !child_files.contains(*path))
+        .cloned()
+        .collect::<Vec<_>>();
+
+    let mut crate_roots = BTreeMap::<PathBuf, Vec<PathBuf>>::new();
+    for root in &roots {
+        let mut visited = BTreeSet::new();
+        assign_crate_root(root, root, &child_modules, &mut crate_roots, &mut visited);
+    }
+    for roots in crate_roots.values_mut() {
+        roots.sort();
+        roots.dedup();
+    }
+
+    (child_modules, parent_modules, crate_roots)
+}
+
+fn assign_crate_root(
+    root: &Path,
+    current: &Path,
+    child_modules: &BTreeMap<PathBuf, BTreeMap<String, Vec<PathBuf>>>,
+    crate_roots: &mut BTreeMap<PathBuf, Vec<PathBuf>>,
+    visited: &mut BTreeSet<PathBuf>,
+) {
+    if !visited.insert(current.to_path_buf()) {
+        return;
+    }
+
+    crate_roots
+        .entry(current.to_path_buf())
+        .or_default()
+        .push(root.to_path_buf());
+
+    if let Some(children) = child_modules.get(current) {
+        for paths in children.values() {
+            for path in paths {
+                assign_crate_root(root, path, child_modules, crate_roots, visited);
+            }
+        }
+    }
+}
+
+fn resolve_module_declaration_paths(
+    parent_file_path: &Path,
+    declaration: &RustModuleDeclaration,
+) -> Vec<PathBuf> {
+    let Some(parent_dir) = parent_file_path.parent() else {
+        return Vec::new();
+    };
+
+    if let Some(path_override) = &declaration.path_override {
+        return vec![normalize_path(&parent_dir.join(path_override))];
+    }
+
+    let mut candidates = Vec::new();
+    if is_directory_root_module(parent_file_path) {
+        candidates.push(normalize_path(
+            &parent_dir.join(format!("{}.rs", declaration.name)),
+        ));
+        candidates.push(normalize_path(
+            &parent_dir.join(&declaration.name).join("mod.rs"),
+        ));
+        return candidates;
+    }
+
+    let Some(stem) = parent_file_path.file_stem().and_then(|stem| stem.to_str()) else {
+        return Vec::new();
+    };
+    let module_dir = parent_dir.join(stem);
+    candidates.push(normalize_path(
+        &module_dir.join(format!("{}.rs", declaration.name)),
+    ));
+    candidates.push(normalize_path(
+        &module_dir.join(&declaration.name).join("mod.rs"),
+    ));
+    candidates
+}
+
+fn is_directory_root_module(path: &Path) -> bool {
+    matches!(
+        path.file_name().and_then(|name| name.to_str()),
+        Some("mod.rs" | "lib.rs" | "main.rs")
+    )
+}
+
+fn normalize_path(path: &Path) -> PathBuf {
+    let mut normalized = PathBuf::new();
+
+    for component in path.components() {
+        match component {
+            std::path::Component::CurDir => {}
+            std::path::Component::ParentDir => {
+                normalized.pop();
+            }
+            _ => normalized.push(component.as_os_str()),
+        }
+    }
+
+    normalized
 }
 
 fn is_contextless_wrapper_candidate(file: &ParsedFile, function: &ParsedFunction) -> bool {

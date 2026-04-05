@@ -3,8 +3,8 @@ use std::collections::BTreeSet;
 use tree_sitter::Node;
 
 use crate::analysis::{
-    DeclaredSymbol, FieldSummary, ImportSpec, NamedLiteral, ParsedFunction, RustEnumSummary,
-    RustStaticSummary, StructSummary,
+    DeclaredSymbol, FieldSummary, ImportSpec, NamedLiteral, ParsedFunction, RustAttributeSummary,
+    RustEnumSummary, RustModuleDeclaration, RustStaticSummary, StructSummary,
 };
 use crate::model::SymbolKind;
 
@@ -47,6 +47,63 @@ pub(super) fn collect_symbols(
     visit_for_symbols(root, source, &mut symbols);
     symbols.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
     symbols
+}
+
+pub(super) fn collect_module_declarations(
+    root: Node<'_>,
+    source: &str,
+) -> Vec<RustModuleDeclaration> {
+    let mut declarations = Vec::new();
+    visit_for_module_declarations(root, source, &mut declarations);
+    declarations.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
+    declarations.dedup_by(|left, right| left.line == right.line && left.name == right.name);
+    declarations
+}
+
+fn visit_for_module_declarations(
+    node: Node<'_>,
+    source: &str,
+    declarations: &mut Vec<RustModuleDeclaration>,
+) {
+    if node.kind() == "mod_item"
+        && !is_inside_function(node)
+        && let Some(text) = source.get(node.byte_range())
+        && text.trim_end().ends_with(';')
+        && let Some(name_node) = node.child_by_field_name("name")
+        && let Some(name) = source.get(name_node.byte_range())
+    {
+        declarations.push(RustModuleDeclaration {
+            line: node.start_position().row + 1,
+            name: name.trim().to_string(),
+            path_override: module_path_override(node, source),
+        });
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_module_declarations(child, source, declarations);
+    }
+}
+
+fn module_path_override(node: Node<'_>, source: &str) -> Option<String> {
+    for attribute in leading_attributes(node) {
+        let normalized = source
+            .get(attribute.byte_range())?
+            .chars()
+            .filter(|character| !character.is_whitespace())
+            .collect::<String>();
+        let Some(path_text) = normalized.strip_prefix("#[path=\"") else {
+            continue;
+        };
+        let Some((path, _)) = path_text.split_once('"') else {
+            continue;
+        };
+        if !path.is_empty() {
+            return Some(path.to_string());
+        }
+    }
+
+    None
 }
 
 fn visit_for_symbols(node: Node<'_>, source: &str, symbols: &mut Vec<DeclaredSymbol>) {
@@ -390,7 +447,47 @@ fn build_static_summary(node: Node<'_>, source: &str) -> Option<RustStaticSummar
         visibility_pub: source.get(node.byte_range()).is_some_and(|text| {
             text.trim_start().starts_with("pub ") || text.trim_start().starts_with("pub(")
         }),
+        is_mut: source
+            .get(node.byte_range())
+            .is_some_and(|text| text.contains("static mut ")),
     })
+}
+
+pub(super) fn collect_attribute_summaries(
+    root: Node<'_>,
+    source: &str,
+) -> Vec<RustAttributeSummary> {
+    let mut attributes = Vec::new();
+    visit_for_attribute_summaries(root, source, &mut attributes);
+    attributes.sort_by(|left, right| left.line.cmp(&right.line).then(left.text.cmp(&right.text)));
+    attributes.dedup_by(|left, right| left.line == right.line && left.text == right.text);
+    attributes
+}
+
+fn visit_for_attribute_summaries(
+    node: Node<'_>,
+    source: &str,
+    attributes: &mut Vec<RustAttributeSummary>,
+) {
+    if matches!(node.kind(), "attribute_item" | "inner_attribute_item")
+        && let Some(text) = source.get(node.byte_range())
+    {
+        let normalized = text
+            .chars()
+            .filter(|character| !character.is_whitespace())
+            .collect::<String>();
+        if !normalized.is_empty() {
+            attributes.push(RustAttributeSummary {
+                line: node.start_position().row + 1,
+                text: normalized,
+            });
+        }
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_for_attribute_summaries(child, source, attributes);
+    }
 }
 
 pub(super) fn collect_enum_summaries(root: Node<'_>, source: &str) -> Vec<RustEnumSummary> {

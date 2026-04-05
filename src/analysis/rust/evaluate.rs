@@ -11,8 +11,10 @@ use self::findings::{
 use crate::analysis::{Language, ParsedFile};
 use crate::heuristics::rust::{
     api_design_file_findings, api_design_function_findings, async_file_findings,
-    async_function_findings, domain_findings, performance_file_findings,
-    performance_function_findings, runtime_file_findings, runtime_function_findings,
+    async_function_findings, boundary_file_findings, boundary_function_findings, domain_findings,
+    module_surface_file_findings, performance_file_findings, performance_function_findings,
+    runtime_file_findings, runtime_function_findings, runtime_ownership_function_findings,
+    security_footguns_file_findings, security_footguns_function_findings,
     unsafe_soundness_findings,
 };
 use crate::heuristics::{extend_file_rules, extend_function_rules};
@@ -35,6 +37,9 @@ pub(super) fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex)
         ],
     );
     findings.extend(runtime_file_findings(file, index));
+    findings.extend(boundary_file_findings(file));
+    findings.extend(module_surface_file_findings(file));
+    findings.extend(security_footguns_file_findings(file, index));
 
     for function in &file.functions {
         for (macro_name, rule_id, message_suffix) in [
@@ -109,6 +114,9 @@ pub(super) fn evaluate_rust_findings(file: &ParsedFile, index: &RepositoryIndex)
                 runtime_function_findings,
             ],
         );
+        findings.extend(boundary_function_findings(file, function));
+        findings.extend(runtime_ownership_function_findings(file, function));
+        findings.extend(security_footguns_function_findings(file, function));
         let Some(package_name) = &file.package_name else {
             continue;
         };

@@ -20,6 +20,7 @@ pub(crate) use python::{
     ClassSummary, ExceptionHandler, PythonFieldSummary, PythonFunctionEvidence, PythonModelSummary,
 };
 pub(crate) use rust::{
-    FieldSummary, MacroCall, RuntimeCall, RustEnumSummary, RustFunctionEvidence, RustStaticSummary,
-    StructSummary, UnsafePattern, UnsafePatternKind,
+    FieldSummary, MacroCall, RuntimeCall, RustAttributeSummary, RustEnumSummary,
+    RustFunctionEvidence, RustModuleDeclaration, RustStaticSummary, StructSummary,
+    UnsafePattern, UnsafePatternKind,
 };

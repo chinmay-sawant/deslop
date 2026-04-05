@@ -1,0 +1,48 @@
+#![allow(dead_code)]
+
+#[path = "sibling.rs"]
+mod sibling;
+
+pub use sibling::*;
+pub use crate::alpha::Alpha;
+pub use crate::beta::Beta;
+pub use crate::gamma::Gamma;
+pub use crate::delta::Delta;
+pub use crate::epsilon::Epsilon;
+
+pub struct One;
+pub struct Two;
+pub struct Three;
+pub struct Four;
+pub struct Five;
+pub struct Six;
+pub struct Seven;
+pub struct Eight;
+pub struct Nine;
+pub struct Ten;
+
+pub fn a() {}
+pub fn b() {}
+pub fn c() {}
+pub fn d() {}
+pub fn e() {}
+pub fn f() {}
+pub fn g() {}
+pub fn h() {}
+pub fn i() {}
+pub fn j() {}
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic
+// filler to keep this module large enough for the oversized-module heuristic

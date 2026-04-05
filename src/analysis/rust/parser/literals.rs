@@ -121,6 +121,12 @@ fn visit_local_bindings(node: Node<'_>, source: &str, names: &mut Vec<String>) {
         collect_ident_patterns(pattern_node, source, names);
     }
 
+    if node.kind() == "for_expression"
+        && let Some(pattern_node) = node.child_by_field_name("pattern")
+    {
+        collect_ident_patterns(pattern_node, source, names);
+    }
+
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
         visit_local_bindings(child, source, names);

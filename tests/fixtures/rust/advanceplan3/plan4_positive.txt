@@ -1,0 +1,26 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::thread;
+
+struct Node {
+    parent: Rc<RefCell<Node>>,
+    payload: Vec<u8>,
+}
+
+static mut COUNTER: usize = 0;
+
+fn split_bytes(offset: usize, bytes: &[u8]) -> &[u8] {
+    bytes.split_at(offset).1
+}
+
+fn utf8_from_raw(bytes: &[u8]) -> &str {
+    unsafe { std::str::from_utf8_unchecked(bytes) }
+}
+
+fn thread_async() {
+    thread::spawn(|| {
+        async move {
+            do_work().await;
+        }
+    });
+}

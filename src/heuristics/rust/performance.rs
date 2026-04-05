@@ -3,7 +3,9 @@ use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
-use super::{file_finding, first_await_after, function_finding, is_tokio_mutex};
+use super::{
+    file_finding, first_await_after, function_finding, is_scanner_infra_file, is_tokio_mutex,
+};
 
 const HASHMAP_PREFIX: &str = "HashMap::";
 const HASHMAP_NEW_SUFFIX: &str = "::new";
@@ -13,6 +15,10 @@ pub(crate) fn performance_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
+    if is_scanner_infra_file(file) {
+        return Vec::new();
+    }
+
     let rust = function.rust_evidence();
     let mut findings = Vec::new();
 
@@ -261,6 +267,10 @@ pub(crate) fn performance_function_findings(
 }
 
 pub(crate) fn performance_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    if is_scanner_infra_file(file) {
+        return Vec::new();
+    }
+
     let mut findings = Vec::new();
 
     for summary in file.structs() {
