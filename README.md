@@ -223,7 +223,25 @@ Expand a saved findings report into review-ready code context:
 python3 scripts/extract_finding_context.py temp_gopdfsuit.txt
 ```
 
-That command reads the `path:line` entries from `temp_gopdfsuit.txt`, extracts 10 lines above and below each finding, and rewrites `scripts/temp.txt` with one consolidated block per finding. The generated file includes the original finding text, the exact suspect range, the code snippet with line numbers, and the false-positive review fields used during manual triage.
+That command reads the `path:line` entries from `temp_gopdfsuit.txt`, extracts the requested code context, and rewrites `scripts/temp.txt` with one consolidated block per finding. By default each block only includes:
+
+- `Rule description`
+- `Auto triage note`
+- `Code`
+
+If you want the full metadata-rich output again, pass `--details`:
+
+```bash
+python3 scripts/extract_finding_context.py temp_gopdfsuit.txt --details
+```
+
+Run the repo-local scripts through one shared entrypoint:
+
+```bash
+make run-scripts
+```
+
+`run-scripts` executes the normal repo-local utility scripts and validates installer scripts in a safe non-installing mode.
 
 Build release executables for your current platform or cross-compile for other supported platforms:
 

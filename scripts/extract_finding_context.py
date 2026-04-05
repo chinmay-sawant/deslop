@@ -2,10 +2,9 @@
 """Expand deslop findings into code-context review blocks.
 
 This script reads a findings file such as ``temp_gopdfsuit.txt`` and writes a
-single consolidated text file to ``scripts/temp.txt``. Each finding block
-includes the original finding, the exact extracted line range, a 10-line
-context window above and below the flagged line, and a placeholder review field
-for marking false positives during later triage.
+single consolidated text file to ``scripts/temp.txt``. By default each finding
+block only includes the rule description, the auto-triage note, and the code
+context. Pass ``--details`` to emit the full metadata-rich block instead.
 """
 
 from __future__ import annotations
@@ -117,6 +116,11 @@ def parse_args() -> argparse.Namespace:
         "--review-placeholder",
         default="REVIEW_NEEDED",
         help="Initial value written into the false-positive review field.",
+    )
+    parser.add_argument(
+        "--details",
+        action="store_true",
+        help="Emit the full metadata-rich finding blocks instead of the compact default view.",
     )
     return parser.parse_args()
 
@@ -287,6 +291,7 @@ def _build_context_block(
     index: int,
     total: int,
     review_placeholder: str,
+    details: bool,
 ) -> str:
     start_line = max(1, finding.line_no - context)
     end_line = min(len(lines), finding.line_no + context)
@@ -304,24 +309,34 @@ def _build_context_block(
         rule_metadata_by_id,
     )
 
-    block_lines = [
-        "=" * 100,
-        f"Finding {index}/{total}",
-        f"Source: {finding.file_path}:{finding.line_no}",
-        f"Rule: [{finding.rule_id}]",
-        f"Rule family: [{family}]",
-        f"Rule severity: [{severity}]",
-        f"Rule status: [{status}]",
-        f"Rule languages: [{languages}]",
-        f"Rule description: {description}",
-        f"Message: {finding.message}",
-        f"Suspect range: [{start_line}-{end_line}]",
-        f"Auto triage: [{auto_triage}]",
-        f"Auto triage note: {auto_reason}",
-        f"False positive: [{review_placeholder}]",
-        f"Original finding: {finding.raw_line}",
-        "Code:",
-    ]
+    block_lines = ["=" * 100, f"Finding {index}/{total}"]
+    if details:
+        block_lines.extend(
+            [
+                f"Source: {finding.file_path}:{finding.line_no}",
+                f"Rule: [{finding.rule_id}]",
+                f"Rule family: [{family}]",
+                f"Rule severity: [{severity}]",
+                f"Rule status: [{status}]",
+                f"Rule languages: [{languages}]",
+                f"Rule description: {description}",
+                f"Message: {finding.message}",
+                f"Suspect range: [{start_line}-{end_line}]",
+                f"Auto triage: [{auto_triage}]",
+                f"Auto triage note: {auto_reason}",
+                f"False positive: [{review_placeholder}]",
+                f"Original finding: {finding.raw_line}",
+                "Code:",
+            ]
+        )
+    else:
+        block_lines.extend(
+            [
+                f"Rule description: {description}",
+                f"Auto triage note: {auto_reason}",
+                "Code:",
+            ]
+        )
 
     block_lines.extend(
         f'{">>" if line_number == finding.line_no else "  "} {line_number:>{width}} | {lines[line_number - 1]}'
@@ -339,6 +354,7 @@ def _build_missing_file_block(
     index: int,
     total: int,
     review_placeholder: str,
+    details: bool,
 ) -> str:
     rule_metadata = _resolve_rule_metadata(finding, rule_metadata_by_id)
     auto_triage, auto_reason = _triage_finding(
@@ -352,26 +368,35 @@ def _build_missing_file_block(
         finding.rule_id,
         rule_metadata_by_id,
     )
-    return "\n".join(
-        [
-            "=" * 100,
-            f"Finding {index}/{total}",
-            f"Source: {finding.file_path}:{finding.line_no}",
-            f"Rule: [{finding.rule_id}]",
-            f"Rule family: [{family}]",
-            f"Rule severity: [{severity}]",
-            f"Rule status: [{status}]",
-            f"Rule languages: [{languages}]",
-            f"Rule description: {description}",
-            f"Message: {finding.message}",
-            f"Auto triage: [{auto_triage}]",
-            f"Auto triage note: {auto_reason}",
-            f"False positive: [{review_placeholder}]",
-            f"Original finding: {finding.raw_line}",
-            "Code: [FILE_NOT_FOUND]",
-            "",
-        ]
-    )
+    block_lines = ["=" * 100, f"Finding {index}/{total}"]
+    if details:
+        block_lines.extend(
+            [
+                f"Source: {finding.file_path}:{finding.line_no}",
+                f"Rule: [{finding.rule_id}]",
+                f"Rule family: [{family}]",
+                f"Rule severity: [{severity}]",
+                f"Rule status: [{status}]",
+                f"Rule languages: [{languages}]",
+                f"Rule description: {description}",
+                f"Message: {finding.message}",
+                f"Auto triage: [{auto_triage}]",
+                f"Auto triage note: {auto_reason}",
+                f"False positive: [{review_placeholder}]",
+                f"Original finding: {finding.raw_line}",
+                "Code: [FILE_NOT_FOUND]",
+            ]
+        )
+    else:
+        block_lines.extend(
+            [
+                f"Rule description: {description}",
+                f"Auto triage note: {auto_reason}",
+                "Code: [FILE_NOT_FOUND]",
+            ]
+        )
+    block_lines.append("")
+    return "\n".join(block_lines)
 
 
 def write_output(
@@ -381,6 +406,7 @@ def write_output(
     *,
     context: int,
     review_placeholder: str,
+    details: bool,
 ) -> None:
     total_findings = len(findings)
     rule_metadata_by_id = _read_rule_metadata()
@@ -390,9 +416,9 @@ def write_output(
         f"Output file: {output_path}",
         f"Total findings parsed: {total_findings}",
         f"Context window: +/- {context} lines",
-        "",
-        _build_rule_inventory_summary(findings, rule_metadata_by_id),
     ]
+    if details:
+        blocks.extend(["", _build_rule_inventory_summary(findings, rule_metadata_by_id)])
 
     for index, finding in enumerate(findings, start=1):
         if not finding.file_path.exists():
@@ -403,6 +429,7 @@ def write_output(
                     index=index,
                     total=total_findings,
                     review_placeholder=review_placeholder,
+                    details=details,
                 )
             )
             continue
@@ -419,6 +446,7 @@ def write_output(
                 index=index,
                 total=total_findings,
                 review_placeholder=review_placeholder,
+                details=details,
             )
         )
 
@@ -538,6 +566,7 @@ def main() -> int:
         output_path,
         context=max(0, args.context),
         review_placeholder=args.review_placeholder,
+        details=args.details,
     )
 
     print(f"Wrote {len(findings)} finding blocks to {output_path}")

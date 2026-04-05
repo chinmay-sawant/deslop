@@ -54,7 +54,7 @@ src/heuristics/python/hotpath_ext.rs:420:            && let Some(source_start) =
 src/heuristics/python/hotpath_ext.rs:422:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
 src/heuristics/python/hotpath_ext.rs:688:            let expr = &trimmed[1..for_idx];
 src/heuristics/python/hotpath_ext.rs:726:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
-src/heuristics/python/packaging.rs:324:        [first, ..] => Some(*first),
+src/heuristics/python/packaging.rs:329:        [first, ..] => Some(*first),
 src/heuristics/python/quality/mod.rs:203:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:85:    for (offset, character) in signature_text[start..].char_indices() {
@@ -71,7 +71,7 @@ tests/integration_scan/mod.rs:33:#[path = "../support/mod.rs"]
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
-src/heuristics/python/packaging.rs:244:    candidate.exists().then_some(candidate)
+src/heuristics/python/packaging.rs:249:    candidate.exists().then_some(candidate)
 src/heuristics/rust/boundary.rs:203:            && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])
 src/heuristics/rust/runtime_boundary.rs:173:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/heuristics/rust/security_footguns.rs:209:    if !should_emit_manifest_finding(file, index.root()) || !manifest_path.exists() {
