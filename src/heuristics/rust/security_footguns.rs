@@ -9,8 +9,8 @@ use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
-use super::super::{file_finding, function_finding};
 use super::{contains_any, first_line_with_any, is_test_like};
+use super::{file_finding, function_finding};
 
 pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
     crate::rules::catalog::RuleDefinition {
@@ -25,7 +25,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Slice splitting and range indexing on externally-derived offsets without obvious bounds guards.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN4,
+        binding_location: crate::rules::catalog::bindings::RUST_SECURITY_FOOTGUNS,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_from_utf8_unchecked_boundary",
@@ -39,7 +39,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Unchecked UTF-8 conversion at a repository or service boundary.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN4,
+        binding_location: crate::rules::catalog::bindings::RUST_SECURITY_FOOTGUNS,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_thread_spawn_async_without_runtime",
@@ -53,7 +53,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Raw std::thread::spawn blocks that call async work without an explicit runtime handoff.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN4,
+        binding_location: crate::rules::catalog::bindings::RUST_SECURITY_FOOTGUNS,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rc_cycle_parent_link",
@@ -67,7 +67,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Rc-based parent/back-reference shapes that likely need Weak on the reverse edge.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN4,
+        binding_location: crate::rules::catalog::bindings::RUST_SECURITY_FOOTGUNS,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_static_mut_global",
@@ -81,7 +81,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "static mut global state that bypasses the safer shared-state models already in the scanner.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN4,
+        binding_location: crate::rules::catalog::bindings::RUST_SECURITY_FOOTGUNS,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_release_profile_missing_overflow_checks",
@@ -95,7 +95,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Release profiles that omit overflow-checks = true in Cargo.toml.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN4,
+        binding_location: crate::rules::catalog::bindings::RUST_SECURITY_FOOTGUNS,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_release_profile_panic_unwind",
@@ -109,11 +109,14 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Release profiles that still explicitly use panic = \"unwind\".",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN4,
+        binding_location: crate::rules::catalog::bindings::RUST_SECURITY_FOOTGUNS,
     },
 ];
 
-pub(crate) fn file_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
+pub(crate) fn security_footguns_file_findings(
+    file: &ParsedFile,
+    index: &RepositoryIndex,
+) -> Vec<Finding> {
     if is_test_like(file, None) {
         return Vec::new();
     }
@@ -125,7 +128,10 @@ pub(crate) fn file_findings(file: &ParsedFile, index: &RepositoryIndex) -> Vec<F
     findings
 }
 
-pub(crate) fn function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn security_footguns_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if is_test_like(file, Some(function)) {
         return Vec::new();
     }

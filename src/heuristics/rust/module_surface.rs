@@ -18,7 +18,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Rust module files that grow too large and mix too many responsibilities.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN2,
+        binding_location: crate::rules::catalog::bindings::RUST_MODULE_SURFACE,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_pub_use_glob_surface",
@@ -32,7 +32,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Public glob re-exports that flatten the crate surface.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN2,
+        binding_location: crate::rules::catalog::bindings::RUST_MODULE_SURFACE,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_root_reexport_wall",
@@ -46,7 +46,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Crate roots that expose too many public re-exports at once.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN2,
+        binding_location: crate::rules::catalog::bindings::RUST_MODULE_SURFACE,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_mod_rs_catchall",
@@ -60,7 +60,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "mod.rs files that look like catch-all subsystem dumps.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN2,
+        binding_location: crate::rules::catalog::bindings::RUST_MODULE_SURFACE,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_duplicate_bootstrap_sequence",
@@ -74,7 +74,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated startup or bootstrap wiring in multiple functions within the same file.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN2,
+        binding_location: crate::rules::catalog::bindings::RUST_MODULE_SURFACE,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_redundant_path_attribute",
@@ -88,7 +88,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN2,
+        binding_location: crate::rules::catalog::bindings::RUST_MODULE_SURFACE,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_broad_allow_dead_code",
@@ -102,11 +102,11 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Broad dead_code suppression that can hide real wiring or maintenance gaps.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN2,
+        binding_location: crate::rules::catalog::bindings::RUST_MODULE_SURFACE,
     },
 ];
 
-pub(crate) fn file_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn module_surface_file_findings(file: &ParsedFile) -> Vec<Finding> {
     if is_test_like(file, None) {
         return Vec::new();
     }
@@ -119,13 +119,6 @@ pub(crate) fn file_findings(file: &ParsedFile) -> Vec<Finding> {
     findings.extend(path_attribute_findings(file));
     findings.extend(dead_code_allow_findings(file));
     findings
-}
-
-pub(crate) fn function_findings(
-    _file: &ParsedFile,
-    _function: &crate::analysis::ParsedFunction,
-) -> Vec<Finding> {
-    Vec::new()
 }
 
 fn oversized_module_findings(file: &ParsedFile) -> Vec<Finding> {

@@ -290,10 +290,7 @@ pub(super) fn builder_state_file_findings(file: &ParsedFile) -> Vec<Finding> {
             ));
         }
 
-        if bool_fields >= 2
-            && (state_like_name(&summary.name)
-                || summary.fields.iter().any(|field| field.is_option))
-        {
+        if bool_fields >= 2 && summary.visibility_pub && state_like_name(&summary.name) {
             findings.push(file_finding(
                 file,
                 "rust_boolean_state_machine",

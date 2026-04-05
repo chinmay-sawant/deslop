@@ -65,10 +65,10 @@ pub(crate) fn rule_catalog() -> &'static [RuleDefinition] {
             catalog.extend_from_slice(rust::performance::RULE_DEFINITIONS);
             catalog.extend_from_slice(rust::runtime_boundary::RULE_DEFINITIONS);
             catalog.extend_from_slice(rust::unsafe_soundness::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::advanceplan3::plan1::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::advanceplan3::plan2::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::advanceplan3::plan3::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::advanceplan3::plan4::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::boundary::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::module_surface::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::runtime_ownership::RULE_DEFINITIONS);
+            catalog.extend_from_slice(rust::security_footguns::RULE_DEFINITIONS);
             catalog.sort_by(|left, right| {
                 (&left.language, left.family, left.id).cmp(&(
                     &right.language,

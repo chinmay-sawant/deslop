@@ -9,7 +9,7 @@ use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
-use super::function_finding;
+use super::{function_finding, is_scanner_infra_file};
 
 #[derive(Debug, Clone)]
 struct BodyLine {
@@ -22,6 +22,10 @@ pub(crate) fn runtime_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
+    if is_scanner_infra_file(file) {
+        return Vec::new();
+    }
+
     if function.is_test_function {
         return Vec::new();
     }

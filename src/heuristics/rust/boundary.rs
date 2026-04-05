@@ -3,6 +3,7 @@ use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
+use super::is_scanner_infra_file;
 use super::{
     contains_any, first_line_with_any, has_numeric_narrowing_cast, has_secret_like_text,
     is_main_like_file, is_test_like,
@@ -21,7 +22,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Internal library functions that return anyhow-style error surfaces instead of crate-local errors.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN1,
+        binding_location: crate::rules::catalog::bindings::RUST_BOUNDARY,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_unbounded_read_to_string",
@@ -35,7 +36,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Production code that reads an entire file into a string without a size bound.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN1,
+        binding_location: crate::rules::catalog::bindings::RUST_BOUNDARY,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_check_then_open_path",
@@ -49,7 +50,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Filesystem code that checks metadata or existence before opening a path.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN1,
+        binding_location: crate::rules::catalog::bindings::RUST_BOUNDARY,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_secret_equality_compare",
@@ -63,7 +64,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Direct equality or inequality comparisons on secret-like values.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN1,
+        binding_location: crate::rules::catalog::bindings::RUST_BOUNDARY,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_narrowing_numeric_cast",
@@ -77,7 +78,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Numeric narrowing casts that may silently truncate or change precision.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN1,
+        binding_location: crate::rules::catalog::bindings::RUST_BOUNDARY,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_manual_tempdir_lifecycle",
@@ -91,16 +92,19 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Manual temp-directory setup and cleanup that should usually use RAII helpers.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN1,
+        binding_location: crate::rules::catalog::bindings::RUST_BOUNDARY,
     },
 ];
 
-pub(crate) fn file_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn boundary_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let _ = file;
     Vec::new()
 }
 
-pub(crate) fn function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn boundary_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if is_test_like(file, Some(function)) {
         return Vec::new();
     }
@@ -154,6 +158,14 @@ fn internal_anyhow_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
 }
 
 fn unbounded_read_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if is_scanner_infra_file(file)
+        || function.body_text.contains("take(max_bytes")
+        || function.body_text.contains("InputTooLarge")
+        || function.body_text.contains("max_bytes")
+    {
+        return Vec::new();
+    }
+
     let Some(line) = first_line_with_any(
         &function.body_text,
         function.fingerprint.start_line,
@@ -181,40 +193,50 @@ fn unbounded_read_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
 }
 
 fn check_then_open_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    let Some(line) = first_line_with_any(
-        &function.body_text,
-        function.fingerprint.start_line,
-        &["exists(", "metadata(", "symlink_metadata("],
-    ) else {
-        return Vec::new();
-    };
-
-    if !contains_any(
-        &function.body_text,
-        &["open(", "read_to_string(", "read(", "File::open("],
-    ) {
+    if is_scanner_infra_file(file) {
         return Vec::new();
     }
 
-    vec![Finding {
-        rule_id: "rust_check_then_open_path".to_string(),
-        severity: Severity::Warning,
-        path: file.path.clone(),
-        function_name: Some(function.fingerprint.name.clone()),
-        start_line: line,
-        end_line: line,
-        message: format!(
-            "function {} checks filesystem state before opening a path",
-            function.fingerprint.name
-        ),
-        evidence: vec![
-            "check-then-open flow may race on mutable filesystems".to_string(),
-            "canonicalize or open first with the desired flags when appropriate".to_string(),
-        ],
-    }]
+    let mut check_line = None;
+    for (offset, line) in function.body_text.lines().enumerate() {
+        if check_line.is_none()
+            && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])
+        {
+            check_line = Some(function.fingerprint.start_line + offset);
+            continue;
+        }
+
+        if check_line.is_some() && contains_any(line, &["File::open(", ".open(", "read_to_string("])
+        {
+            let start_line = check_line.unwrap_or(function.fingerprint.start_line);
+            return vec![Finding {
+                rule_id: "rust_check_then_open_path".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line,
+                end_line: start_line,
+                message: format!(
+                    "function {} checks filesystem state before opening a path",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    "check-then-open flow may race on mutable filesystems".to_string(),
+                    "canonicalize or open first with the desired flags when appropriate"
+                        .to_string(),
+                ],
+            }];
+        }
+    }
+
+    Vec::new()
 }
 
 fn secret_comparison_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if is_scanner_infra_file(file) {
+        return Vec::new();
+    }
+
     for (offset, line) in function.body_text.lines().enumerate() {
         if !(line.contains("==") || line.contains("!=")) {
             continue;
@@ -248,6 +270,10 @@ fn secret_comparison_findings(file: &ParsedFile, function: &ParsedFunction) -> V
 }
 
 fn narrowing_cast_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if is_scanner_infra_file(file) {
+        return Vec::new();
+    }
+
     for (offset, line) in function.body_text.lines().enumerate() {
         if !has_numeric_narrowing_cast(line) {
             continue;

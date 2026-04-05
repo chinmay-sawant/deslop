@@ -3,7 +3,7 @@ use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
-use super::super::function_finding;
+use super::function_finding;
 use super::{contains_any, first_line_with_any, is_test_like};
 
 pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
@@ -19,7 +19,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Spawned background work whose JoinHandle is immediately discarded or never supervised.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN3,
+        binding_location: crate::rules::catalog::bindings::RUST_RUNTIME_OWNERSHIP,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_channel_created_per_request",
@@ -33,7 +33,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Per-request channel and notification state creation instead of startup-owned coordination.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN3,
+        binding_location: crate::rules::catalog::bindings::RUST_RUNTIME_OWNERSHIP,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_block_in_place_request_path",
@@ -47,7 +47,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Blocking runtime bridges such as block_in_place or block_on inside request-handling code.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN3,
+        binding_location: crate::rules::catalog::bindings::RUST_RUNTIME_OWNERSHIP,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_runtime_builder_in_loop",
@@ -61,7 +61,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Repeated runtime or executor builder setup inside loops or retry bodies.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN3,
+        binding_location: crate::rules::catalog::bindings::RUST_RUNTIME_OWNERSHIP,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_notify_without_shutdown_contract",
@@ -75,7 +75,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Notify/wait coordination that lacks any visible shutdown or cancellation branch.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN3,
+        binding_location: crate::rules::catalog::bindings::RUST_RUNTIME_OWNERSHIP,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_process_global_env_toggle",
@@ -89,15 +89,14 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "Process-global environment mutation used as runtime control flow.",
-        binding_location: crate::rules::catalog::bindings::RUST_ADVANCEPLAN3_PLAN3,
+        binding_location: crate::rules::catalog::bindings::RUST_RUNTIME_OWNERSHIP,
     },
 ];
 
-pub(crate) fn file_findings(_file: &ParsedFile) -> Vec<Finding> {
-    Vec::new()
-}
-
-pub(crate) fn function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn runtime_ownership_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if is_test_like(file, Some(function)) {
         return Vec::new();
     }
