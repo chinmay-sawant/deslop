@@ -244,7 +244,7 @@ fn visit_dict_materialization_in_loop(
 }
 
 /// Detect repeated calls to the same callee with the same first argument in one function.
-/// Returns (callee_key, arg_key, lines) triples for duplicates.
+/// Returns later duplicate call lines, skipping the first occurrence.
 pub(super) fn collect_repeated_call_same_arg_lines(
     body_node: Node<'_>,
     source: &str,
@@ -256,7 +256,7 @@ pub(super) fn collect_repeated_call_same_arg_lines(
     let mut results = Vec::new();
     for (key, call_lines) in &call_map {
         if call_lines.len() >= 2 {
-            for line in call_lines {
+            for line in call_lines.iter().skip(1) {
                 results.push((key.clone(), *line));
             }
         }

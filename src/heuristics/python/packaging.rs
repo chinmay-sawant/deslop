@@ -7,13 +7,18 @@ use crate::index::{ImportResolution, RepositoryIndex};
 use crate::io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 use crate::model::{Finding, Severity};
 
+use super::is_to_dict_wrapper;
+
 pub(crate) const BINDING_LOCATION: &str = file!();
 
 pub(super) fn public_api_any_contract_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.is_test_function || !looks_like_public_python_api(function) {
+    if function.is_test_function
+        || !looks_like_public_python_api(function)
+        || is_to_dict_wrapper(function)
+    {
         return Vec::new();
     }
 

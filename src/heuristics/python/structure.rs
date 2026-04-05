@@ -4,6 +4,8 @@ use crate::analysis::{Language, ParsedFile, ParsedFunction};
 use crate::index::{ImportResolution, RepositoryIndex};
 use crate::model::{Finding, Severity};
 
+use super::is_python_package_entrypoint;
+
 pub(crate) const BINDING_LOCATION: &str = file!();
 
 const GOD_FUNCTION_LINE_THRESHOLD: usize = 45;
@@ -274,6 +276,14 @@ pub(super) fn over_abstracted_wrapper_findings(file: &ParsedFile) -> Vec<Finding
     file.class_summaries()
         .iter()
         .filter_map(|summary| {
+            if file
+                .python_models()
+                .iter()
+                .any(|model| model.name == summary.name && model.is_dataclass)
+            {
+                return None;
+            }
+
             let methods = methods_by_class.get(&summary.name)?;
             let shape = classify_over_abstracted_shape(summary, methods)?;
 
@@ -499,7 +509,7 @@ pub(super) fn tight_module_coupling_findings(
     let mut findings = Vec::new();
 
     for file in files {
-        if file.is_test_file {
+        if file.is_test_file || is_python_package_entrypoint(file) {
             continue;
         }
 

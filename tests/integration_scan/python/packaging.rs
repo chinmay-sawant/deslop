@@ -76,3 +76,16 @@ fn test_python_packaging_clean() {
 
     assert_rules_absent(&report, PACKAGING_RULES);
 }
+
+#[test]
+fn test_python_packaging_skips_serializer_to_dict_any_contract() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/types.py",
+        python_fixture!("integration/packaging/to_dict_serializer_clean.txt"),
+    )]);
+
+    let report = workspace.scan();
+
+    assert_rules_absent(&report, &["python_public_api_any_contract"]);
+}

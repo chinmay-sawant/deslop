@@ -1,6 +1,8 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+use super::super::is_to_dict_wrapper;
+
 use super::{
     body_lines, constant_async_sleep_line, contains_task_factory, explicit_lock_acquire_name,
     function_line_text, has_retry_backoff_markers, heavy_post_init_detail, indented_block,
@@ -336,7 +338,10 @@ fn public_any_type_leak_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if function.is_test_function || function.fingerprint.name.starts_with('_') {
+    if function.is_test_function
+        || function.fingerprint.name.starts_with('_')
+        || is_to_dict_wrapper(function)
+    {
         return Vec::new();
     }
 

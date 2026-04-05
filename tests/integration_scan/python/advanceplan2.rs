@@ -113,6 +113,19 @@ fn test_python_advanceplan2_contract_clean() {
 }
 
 #[test]
+fn test_python_advanceplan2_skips_serializer_to_dict_any_contract() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/contracts.py",
+        python_fixture!("integration/advanceplan2/contracts_to_dict_clean.txt"),
+    )]);
+
+    let report = workspace.scan();
+
+    assert_rules_absent(&report, &["public_any_type_leak"]);
+}
+
+#[test]
 fn test_python_advanceplan2_import_time_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(

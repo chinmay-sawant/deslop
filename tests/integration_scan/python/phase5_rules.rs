@@ -316,6 +316,19 @@ fn test_python_performance_rule_family_negative() {
 }
 
 #[test]
+fn test_python_recursive_traversal_skips_non_self_method_name_collisions() {
+    let report = scan_python_files(&[(
+        "pkg/argparse_helpers.py",
+        python_fixture!("performance/recursive_call_method_name_collision_negative.txt"),
+    )]);
+
+    assert!(
+        !report_has_rule(&report, "recursive_traversal_risk"),
+        "did not expect recursive_traversal_risk for parser.parse_args()"
+    );
+}
+
+#[test]
 fn test_python_async_boundary_rules_positive() {
     let report = scan_python_files(&[(
         "pkg/async_boundaries.py",
@@ -526,6 +539,19 @@ fn test_python_phase5_over_abstracted_wrapper_skips_lifecycle_classes() {
     assert!(
         !report_has_rule(&report, "over_abstracted_wrapper"),
         "did not expect over_abstracted_wrapper for lifecycle-heavy classes"
+    );
+}
+
+#[test]
+fn test_python_phase5_over_abstracted_wrapper_skips_dataclass_wrappers() {
+    let report = scan_python_files(&[(
+        "pkg/presenter.py",
+        python_fixture!("structure/over_abstracted_wrapper_dataclass_negative.txt"),
+    )]);
+
+    assert!(
+        !report_has_rule(&report, "over_abstracted_wrapper"),
+        "did not expect over_abstracted_wrapper for dataclass wrappers"
     );
 }
 

@@ -1,11 +1,11 @@
 deslop scan root: /home/chinmay/ChinmayPersonalProjects/deslop
-Source files discovered: 228
-Source files analyzed: 227
-Functions fingerprinted: 1778
-Findings: 166
-Index summary: packages=227 symbols=2156 imports=1777
+Source files discovered: 229
+Source files analyzed: 228
+Functions fingerprinted: 1813
+Findings: 165
+Index summary: packages=228 symbols=2193 imports=1795
 Parse failures: 0
-Timings: discover=14ms parse=487ms index=12ms heuristics=88ms total=604ms
+Timings: discover=120ms parse=867ms index=21ms heuristics=130ms total=1160ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:119 function load_manifest parses external data without schema validation; corrupt input propagates silently [no_schema_validation_on_external_data]
@@ -18,7 +18,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:222 function run_targets concentrates too much control flow and behavior [god_function]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:230 function run_targets formats a string inside a loop; consider building the template once [repeated_string_format_invariant_template]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:237 function run_targets uses a loop shape that may read better with a Python built-in [builtin_reduction_candidate]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:276 function resolve_repo_path returns None explicitly where falling through would be clearer [redundant_return_none]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/sync_docs.py:136 function main formats a string inside a loop; consider building the template once [repeated_string_format_invariant_template]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/sync_docs.py:154 function load_registry parses external data without schema validation; corrupt input propagates silently [no_schema_validation_on_external_data]
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/sync_docs.py:184 function validate_registry formats a string inside a loop; consider building the template once [repeated_string_format_invariant_template]
@@ -122,14 +121,14 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/hotpath_ext.rs:550 function gzip_open_per_chunk_findings uses an overly descriptive name [overlong_name]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/hotpath_ext.rs:711 function tuple_unpacking_in_tight_loop_findings uses an overly descriptive name [overlong_name]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/packaging.rs:12 function public_api_any_contract_findings uses an overly descriptive name [overlong_name]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/packaging.rs:192 function cross_package_internal_import_findings uses an overly descriptive name [overlong_name]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/packaging.rs:281 function looks_like_public_python_api uses an overly descriptive name [overlong_name]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:77 function background_task_exception_unobserved_findings uses an overly descriptive name [overlong_name]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:120 function async_lock_held_across_await_findings uses an overly descriptive name [overlong_name]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:194 function async_retry_sleep_without_backoff_findings uses an overly descriptive name [overlong_name]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:290 function dataclass_heavy_post_init_findings uses an overly descriptive name [overlong_name]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:335 function public_any_type_leak_function_findings uses an overly descriptive name [overlong_name]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/packaging.rs:14 function public_api_any_contract_findings uses an overly descriptive name [overlong_name]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/packaging.rs:197 function cross_package_internal_import_findings uses an overly descriptive name [overlong_name]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/packaging.rs:286 function looks_like_public_python_api uses an overly descriptive name [overlong_name]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:79 function background_task_exception_unobserved_findings uses an overly descriptive name [overlong_name]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:122 function async_lock_held_across_await_findings uses an overly descriptive name [overlong_name]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:196 function async_retry_sleep_without_backoff_findings uses an overly descriptive name [overlong_name]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:292 function dataclass_heavy_post_init_findings uses an overly descriptive name [overlong_name]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/function_rules.rs:337 function public_any_type_leak_function_findings uses an overly descriptive name [overlong_name]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/mod.rs:1 module file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/mod.rs is large enough to justify a closer ownership split [rust_oversized_module_file]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/mod.rs:339 function should_skip_wide_contract_rule uses an overly descriptive name [overlong_name]
