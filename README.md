@@ -217,6 +217,14 @@ python3 scripts/corpus_harness.py run --target gopdfsuit --scan
 python3 scripts/corpus_harness.py run --target gopdfsuit --bench
 ```
 
+Expand a saved findings report into review-ready code context:
+
+```bash
+python3 scripts/extract_finding_context.py temp_gopdfsuit.txt
+```
+
+That command reads the `path:line` entries from `temp_gopdfsuit.txt`, extracts 10 lines above and below each finding, and rewrites `scripts/temp.txt` with one consolidated block per finding. The generated file includes the original finding text, the exact suspect range, the code snippet with line numbers, and the false-positive review fields used during manual triage.
+
 Build release executables for your current platform or cross-compile for other supported platforms:
 
 ```bash

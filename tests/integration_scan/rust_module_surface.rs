@@ -14,10 +14,9 @@ fn source_for(path: &str) -> &'static str {
             env!("CARGO_MANIFEST_DIR"),
             "/src/heuristics/rust/api_design.rs"
         )),
-        "src/benchmark/mod.rs" => include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/src/benchmark/mod.rs"
-        )),
+        "src/benchmark/mod.rs" => {
+            include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/benchmark/mod.rs"))
+        }
         "src/cli/mod.rs" => include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/cli/mod.rs")),
         "src/scan/mod.rs" => include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/scan/mod.rs")),
         "src/heuristics/rust/mod.rs" => include_str!(concat!(
@@ -50,6 +49,9 @@ fn thin_facade_modules_do_not_trip_the_oversized_module_rule() {
 
 #[test]
 fn large_rust_modules_still_trip_the_oversized_module_rule() {
-    let report = scan_files(&[("src/heuristics/rust/mod.rs", source_for("src/heuristics/rust/mod.rs"))]);
+    let report = scan_files(&[(
+        "src/heuristics/rust/mod.rs",
+        source_for("src/heuristics/rust/mod.rs"),
+    )]);
     assert_rules_present(&report, &["rust_oversized_module_file"]);
 }

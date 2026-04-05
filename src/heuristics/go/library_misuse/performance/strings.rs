@@ -321,7 +321,11 @@ fn len_string_empty_check(
             .nth(1)
             .and_then(|suffix| suffix.split(')').next())
             .map(str::trim);
-        if inner.is_some_and(is_identifier_name) {
+        let Some(inner) = inner else {
+            continue;
+        };
+        if is_identifier_name(inner) && identifier_is_likely_string(function, lines, inner, bl.line)
+        {
             findings.push(Finding {
                 rule_id: "len_string_for_empty_check".into(),
                 severity: Severity::Info,
@@ -341,6 +345,92 @@ fn len_string_empty_check(
         }
     }
     findings
+}
+
+fn identifier_is_likely_string(
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+    name: &str,
+    current_line: usize,
+) -> bool {
+    signature_declares_string_identifier(&function.signature_text, name)
+        || function
+            .local_strings
+            .iter()
+            .any(|literal| literal.name == name && literal.line < current_line)
+        || local_binding_declares_string(lines, name, current_line)
+}
+
+fn signature_declares_string_identifier(signature_text: &str, name: &str) -> bool {
+    let normalized = signature_text.replace('\n', " ");
+    normalized.contains(&format!("{name} string"))
+        || normalized.contains(&format!("{name} ...string"))
+}
+
+fn local_binding_declares_string(lines: &[BodyLine], name: &str, current_line: usize) -> bool {
+    for line in lines {
+        if line.line >= current_line {
+            break;
+        }
+
+        let trimmed = line.text.trim();
+        if trimmed.starts_with(&format!("var {name} string"))
+            || trimmed.starts_with(&format!("var {name} ="))
+        {
+            return true;
+        }
+
+        let Some((left, right)) = split_assignment(trimmed) else {
+            continue;
+        };
+
+        if !binding_mentions_identifier(left, name) {
+            continue;
+        }
+
+        if rhs_is_likely_string(right) {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn binding_mentions_identifier(left: &str, name: &str) -> bool {
+    left.trim()
+        .trim_start_matches("var ")
+        .replace(',', " ")
+        .split_whitespace()
+        .any(|token| token == name)
+}
+
+fn rhs_is_likely_string(right: &str) -> bool {
+    let trimmed = right.trim();
+    if trimmed.starts_with("[]byte(")
+        || trimmed.starts_with("[]rune(")
+        || trimmed.starts_with("make([]")
+        || trimmed.contains("strings.Split(")
+        || trimmed.contains("strings.Fields(")
+        || trimmed.contains("FindAll")
+        || trimmed.contains("FindSubmatch")
+    {
+        return false;
+    }
+
+    trimmed.starts_with('"')
+        || trimmed.starts_with('`')
+        || trimmed.contains("string(")
+        || trimmed.contains(".String()")
+        || trimmed.contains(".Error()")
+        || trimmed.contains("C.GoString(")
+        || trimmed.contains("fmt.Sprintf(")
+        || trimmed.contains("strings.Trim")
+        || trimmed.contains("strings.To")
+        || trimmed.contains("strings.Join(")
+        || trimmed.contains("strings.Replace")
+        || trimmed.contains("strings.Clone(")
+        || trimmed.contains("strings.Repeat(")
+        || trimmed.contains("strings.Map(")
 }
 
 // A9
@@ -492,3 +582,91 @@ fn builder_write_string_plus(
 }
 
 // ── Section B — Slice And Map Operations ──
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use crate::analysis::parse_source_file;
+    use crate::heuristics::go::framework_patterns::body_lines;
+
+    use super::len_string_empty_check;
+
+    #[test]
+    fn len_string_empty_check_flags_string_parameters() {
+        let source = r#"
+package main
+
+func check(raw string) bool {
+    return len(raw) == 0
+}
+"#;
+
+        let file =
+            parse_source_file(Path::new("sample.go"), source).expect("go source should parse");
+        let function = file.functions[0].clone();
+        let lines = body_lines(&function);
+        let findings = len_string_empty_check(&file, &function, &lines);
+
+        assert_eq!(
+            findings.len(),
+            1,
+            "string parameters should still be flagged"
+        );
+        assert_eq!(findings[0].rule_id, "len_string_for_empty_check");
+    }
+
+    #[test]
+    fn len_string_empty_check_skips_slice_and_bytes_checks() {
+        let source = r#"
+package main
+
+func check(items []string, payload []byte) bool {
+    if len(items) == 0 {
+        return true
+    }
+    return len(payload) == 0
+}
+"#;
+
+        let file =
+            parse_source_file(Path::new("sample.go"), source).expect("go source should parse");
+        let function = file.functions[0].clone();
+        let lines = body_lines(&function);
+        let findings = len_string_empty_check(&file, &function, &lines);
+
+        assert!(
+            findings.is_empty(),
+            "collection length checks should not be reported as string checks"
+        );
+    }
+
+    #[test]
+    fn len_string_empty_check_skips_local_collection_bindings() {
+        let source = r#"
+package main
+
+import "strings"
+
+func check(raw string) bool {
+    parts := strings.Split(raw, ",")
+    if len(parts) == 0 {
+        return true
+    }
+    src := []rune(raw)
+    return len(src) == 0
+}
+"#;
+
+        let file =
+            parse_source_file(Path::new("sample.go"), source).expect("go source should parse");
+        let function = file.functions[0].clone();
+        let lines = body_lines(&function);
+        let findings = len_string_empty_check(&file, &function, &lines);
+
+        assert!(
+            findings.is_empty(),
+            "split results and rune slices should not be treated as strings"
+        );
+    }
+}

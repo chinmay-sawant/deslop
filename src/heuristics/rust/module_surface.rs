@@ -327,7 +327,6 @@ fn path_attribute_findings(file: &ParsedFile) -> Vec<Finding> {
     }]
 }
 
-
 fn dead_code_allow_findings(file: &ParsedFile) -> Vec<Finding> {
     let Some(attribute) = file_attributes(file)
         .iter()

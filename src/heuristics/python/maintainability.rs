@@ -1004,8 +1004,7 @@ fn http_boundary_calls(file: &ParsedFile, function: &ParsedFunction) -> Vec<Stri
                 || import_path.starts_with("urllib")
                 || import_path.starts_with("aiohttp");
 
-            (direct_http_call || imported_http_call)
-                .then(|| call.name.clone())
+            (direct_http_call || imported_http_call).then(|| call.name.clone())
         })
         .collect()
 }
