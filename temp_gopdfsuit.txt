@@ -2,10 +2,10 @@ deslop scan root: /home/chinmay/ChinmayPersonalProjects/gopdfsuit
 Source files discovered: 125
 Source files analyzed: 125
 Functions fingerprinted: 876
-Findings: 1618
+Findings: 1585
 Index summary: packages=63 symbols=1129 imports=755
 Parse failures: 0
-Timings: discover=79ms parse=494ms index=3ms heuristics=290ms total=871ms
+Timings: discover=56ms parse=435ms index=3ms heuristics=263ms total=759ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/cgo/exports.go:40 function GeneratePDF allocates C string without free [cgo_string_lifetime]
@@ -1474,38 +1474,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:268 function build_active_trader_template formats a string inside a loop; consider building the template once [repeated_string_format_invariant_template]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:353 function build_hft_template formats a string inside a loop; consider building the template once [repeated_string_format_invariant_template]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:415 function run_benchmark mixes multiple infrastructure concerns in one body [mixed_concerns_function]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:416 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:417 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:418 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:420 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:431 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:433 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:437 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:439 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:443 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:444 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:445 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:446 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:483 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:484 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:485 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:486 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:487 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:488 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:489 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:490 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:491 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:492 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:493 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:494 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:495 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:496 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:497 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:498 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:499 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:500 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:501 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/gopdflib/zerodha/pypdfsuit_bench.py:502 function run_benchmark leaves print()-based debugging in production code [print_debugging_leftover]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/librarybook/data/generate_codes.py:36 function generate_qr_code leaves print()-based debugging in production code [print_debugging_leftover]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/librarybook/data/generate_codes.py:69 function generate_barcode leaves print()-based debugging in production code [print_debugging_leftover]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/librarybook/data/generate_codes.py:83 public function main omits complete type hints [public_api_missing_type_hints]
@@ -1535,7 +1503,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/main.py:36 function main concentrates too much control flow and behavior [god_function]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/main.py:36 function main repeats branch-shaping literals instead of naming them explicitly [magic_value_branching]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/main.py:36 function main mixes multiple infrastructure concerns in one body [mixed_concerns_function]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/main.py:36 function main calls an external HTTP boundary without an obvious timeout or retry policy [network_boundary_without_timeout]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/main.py:36 public function main omits complete type hints [public_api_missing_type_hints]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/main.py:80 function main catches a broad exception without narrowing the failure type [broad_exception_handler]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/sampledata/python/test_redact.py:13 test test_redaction exercises code without an obvious assertion signal [test_without_assertion_signal]

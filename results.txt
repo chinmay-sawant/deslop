@@ -5,7 +5,7 @@ Functions fingerprinted: 1778
 Findings: 166
 Index summary: packages=227 symbols=2156 imports=1777
 Parse failures: 0
-Timings: discover=19ms parse=502ms index=12ms heuristics=74ms total=610ms
+Timings: discover=14ms parse=487ms index=12ms heuristics=88ms total=604ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/deslop/scripts/corpus_harness.py:119 function load_manifest parses external data without schema validation; corrupt input propagates silently [no_schema_validation_on_external_data]
