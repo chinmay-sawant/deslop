@@ -1,0 +1,5 @@
+package main
+
+func check(raw string) bool {
+    return len(raw) == 0
+}

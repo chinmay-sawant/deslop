@@ -592,15 +592,15 @@ mod tests {
 
     use super::len_string_empty_check;
 
+    macro_rules! go_fixture {
+        ($name:literal) => {
+            include_str!(concat!("../../../../../tests/fixtures/go/", $name, ".txt"))
+        };
+    }
+
     #[test]
     fn len_string_empty_check_flags_string_parameters() {
-        let source = r#"
-package main
-
-func check(raw string) bool {
-    return len(raw) == 0
-}
-"#;
+        let source = go_fixture!("library_misuse_len_string_parameter_positive");
 
         let file =
             parse_source_file(Path::new("sample.go"), source).expect("go source should parse");
@@ -618,16 +618,7 @@ func check(raw string) bool {
 
     #[test]
     fn len_string_empty_check_skips_slice_and_bytes_checks() {
-        let source = r#"
-package main
-
-func check(items []string, payload []byte) bool {
-    if len(items) == 0 {
-        return true
-    }
-    return len(payload) == 0
-}
-"#;
+        let source = go_fixture!("library_misuse_len_string_collections_negative");
 
         let file =
             parse_source_file(Path::new("sample.go"), source).expect("go source should parse");
@@ -643,20 +634,7 @@ func check(items []string, payload []byte) bool {
 
     #[test]
     fn len_string_empty_check_skips_local_collection_bindings() {
-        let source = r#"
-package main
-
-import "strings"
-
-func check(raw string) bool {
-    parts := strings.Split(raw, ",")
-    if len(parts) == 0 {
-        return true
-    }
-    src := []rune(raw)
-    return len(src) == 0
-}
-"#;
+        let source = go_fixture!("library_misuse_len_string_local_collections_negative");
 
         let file =
             parse_source_file(Path::new("sample.go"), source).expect("go source should parse");

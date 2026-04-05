@@ -309,25 +309,15 @@ mod tests {
 
     use super::cgo_string_lifetime;
 
+    macro_rules! go_fixture {
+        ($name:literal) => {
+            include_str!(concat!("../../../../../tests/fixtures/go/", $name, ".txt"))
+        };
+    }
+
     #[test]
     fn cgo_string_lifetime_skips_documented_result_ownership_transfer() {
-        let source = r#"
-package main
-
-import "C"
-
-type ByteResult struct {
-    error *C.char
-}
-
-// Exported returns an error string.
-// The caller must free the result using FreeBytesResult.
-func Exported() ByteResult {
-    var result ByteResult
-    result.error = C.CString("boom")
-    return result
-}
-"#;
+        let source = go_fixture!("library_misuse_cgo_string_lifetime_documented_transfer");
 
         let file =
             parse_source_file(Path::new("sample.go"), source).expect("go source should parse");
@@ -343,16 +333,7 @@ func Exported() ByteResult {
 
     #[test]
     fn cgo_string_lifetime_still_flags_unfreed_local_allocation() {
-        let source = r#"
-package main
-
-import "C"
-
-func bad(input string) {
-    leaked := C.CString(input)
-    _ = leaked
-}
-"#;
+        let source = go_fixture!("library_misuse_cgo_string_lifetime_local_leak");
 
         let file =
             parse_source_file(Path::new("sample.go"), source).expect("go source should parse");
