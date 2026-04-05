@@ -49,6 +49,10 @@ Makefile text eol=lf
 *.yml linguist-vendored
 *.txt linguist-vendored
 *.py linguist-vendored
+*.sh linguist-vendored
+*.ps1 linguist-vendored
+makefile linguist-vendored
+Makefile linguist-vendored
 
 /docs/ linguist-vendored
 /docs/ linguist-vendored

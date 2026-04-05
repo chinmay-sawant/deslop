@@ -48,6 +48,7 @@ mod performance;
 mod python;
 mod rust;
 mod rust_advanced;
+mod rust_module_surface;
 mod rust_api_design_ext;
 mod security;
 mod style;

@@ -58,7 +58,7 @@ src/heuristics/python/packaging.rs:324:        [first, ..] => Some(*first),
 src/heuristics/python/quality/mod.rs:203:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:85:    for (offset, character) in signature_text[start..].char_indices() {
-src/heuristics/rust/module_surface.rs:90:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
+src/heuristics/rust/module_surface.rs:92:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
 src/heuristics/rust/performance.rs:351:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:358:    line[start + marker.len()..].starts_with('/')
 src/heuristics/rust/performance.rs:399:                let receiver = &line[start..index];

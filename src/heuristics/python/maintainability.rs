@@ -976,14 +976,18 @@ fn http_boundary_calls(file: &ParsedFile, function: &ParsedFunction) -> Vec<Stri
         .filter_map(|call| {
             let receiver = call.receiver.as_deref().unwrap_or(call.name.as_str());
             let import_path = alias_lookup.get(receiver).copied().unwrap_or(receiver);
-            (import_path.starts_with("requests")
-                || import_path.starts_with("httpx")
-                || import_path.starts_with("urllib")
-                || matches!(
+            let direct_http_call = call.receiver.is_none()
+                && matches!(
                     call.name.as_str(),
                     "get" | "post" | "put" | "patch" | "delete" | "request"
-                ))
-            .then(|| call.name.clone())
+                );
+            let imported_http_call = import_path.starts_with("requests")
+                || import_path.starts_with("httpx")
+                || import_path.starts_with("urllib")
+                || import_path.starts_with("aiohttp");
+
+            (direct_http_call || imported_http_call)
+                .then(|| call.name.clone())
         })
         .collect()
 }
