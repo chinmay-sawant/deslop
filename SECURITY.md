@@ -9,7 +9,7 @@ This repository uses static checks, bounded I/O, and CI linting to reduce unsafe
 - Release builds enable `overflow-checks = true` in `Cargo.toml`.
 - Production library code should avoid `.unwrap()`, `.expect()`, and `panic!()`.
 - Repository scans use bounded reads through `read_to_string_limited` instead of unbounded `fs::read_to_string`.
-- Rust async findings can be staged per repository with `.deslop.toml` using `rust_async_experimental = false`.
+- Rust async findings are enabled by default; repositories can temporarily disable them with `.deslop.toml` using `rust_async_experimental = false`.
 
 ## Narrowing Casts
 

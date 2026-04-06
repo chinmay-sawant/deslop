@@ -9,6 +9,12 @@
 /frontend/.cache/
 /frontend/.DS_Store
 
+# VS Code extension
+/vscode-finding-opener/node_modules/
+/vscode-finding-opener/out/
+/vscode-finding-opener/.vscode-test/
+/vscode-finding-opener/*.vsix
+
 # IDEs and editors
 /.vscode/
 /.idea/
@@ -46,3 +52,4 @@ logs/
 *.backup
 .venv
 .codex
+*temp.txt*

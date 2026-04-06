@@ -32,6 +32,25 @@ use self::specs::{
     evaluate_function_specs, evaluate_repo_specs,
 };
 
+pub(super) fn is_python_package_entrypoint(file: &ParsedFile) -> bool {
+    file.path.file_name().and_then(|name| name.to_str()) == Some("__init__.py")
+}
+
+pub(super) fn is_to_dict_wrapper(function: &ParsedFunction) -> bool {
+    if function.fingerprint.receiver_type.is_none() || function.fingerprint.name != "to_dict" {
+        return false;
+    }
+
+    let body_lines = function
+        .body_text
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty() && !line.starts_with('#'))
+        .collect::<Vec<_>>();
+
+    matches!(body_lines.as_slice(), [line] if line.starts_with("return _to_dict(self"))
+}
+
 pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     evaluate_function_specs(FUNCTION_RULE_SPECS, file, function)
 }

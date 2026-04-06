@@ -1,0 +1,8 @@
+package main
+
+func check(items []string, payload []byte) bool {
+    if len(items) == 0 {
+        return true
+    }
+    return len(payload) == 0
+}

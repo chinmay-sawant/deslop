@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use crate::analysis::ParsedFile;
 use crate::model::{Finding, Severity};
 
@@ -122,8 +124,17 @@ pub(crate) fn module_surface_file_findings(file: &ParsedFile) -> Vec<Finding> {
 }
 
 fn oversized_module_findings(file: &ParsedFile) -> Vec<Finding> {
-    let top_level_count = file.functions.len()
-        + file.imports.len()
+    let top_level_count = file
+        .functions
+        .iter()
+        .filter(|function| !function.is_test_function)
+        .count()
+        + file
+            .imports
+            .iter()
+            .map(|import| import.group_line)
+            .collect::<BTreeSet<_>>()
+            .len()
         + file
             .rust_data()
             .map(|data| data.structs.len() + data.rust_enums.len() + data.rust_statics.len())
@@ -282,6 +293,14 @@ fn bootstrap_sequence_findings(file: &ParsedFile) -> Vec<Finding> {
 }
 
 fn path_attribute_findings(file: &ParsedFile) -> Vec<Finding> {
+    let Some(file_name) = file.path.file_name().and_then(|name| name.to_str()) else {
+        return Vec::new();
+    };
+
+    if file_name != "mod.rs" {
+        return Vec::new();
+    }
+
     let Some(attribute) = file_attributes(file)
         .iter()
         .find(|attribute| attribute.text.contains("#[path="))

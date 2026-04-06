@@ -49,6 +49,7 @@ mod python;
 mod rust;
 mod rust_advanced;
 mod rust_api_design_ext;
+mod rust_module_surface;
 mod security;
 mod style;
 mod test_quality;

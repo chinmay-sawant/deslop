@@ -27,14 +27,19 @@ func buildIndex(items []string) map[string][]string {
 "#;
 
 #[test]
-fn semantic_flag_propagates_through_config() {
+fn semantic_flag_defaults_to_true_without_config() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(".deslop.toml", "go_semantic_experimental = true\n");
-    workspace.write_file("main.go", "package main\n\nfunc main() {}\n");
+    workspace.write_file("main.go", GO_NESTED_LOOP_ALLOC);
 
     let report = workspace.scan_with_go_semantic(false);
 
     assert!(report.files_analyzed >= 1);
+    assert!(
+        report
+            .findings
+            .iter()
+            .any(|f| f.rule_id == "likely_n_squared_allocation")
+    );
 }
 
 #[test]
@@ -52,7 +57,7 @@ fn semantic_gated_rules_enabled_via_toggle() {
 
     assert!(
         has_semantic_rule,
-        "semantic-gated rule should fire when config enables it"
+        "semantic-gated rule should fire when the CLI toggle enables it"
     );
 }
 

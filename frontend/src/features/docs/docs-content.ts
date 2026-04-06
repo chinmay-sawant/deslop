@@ -9,6 +9,7 @@ type SectionId =
   | 'cli-commands'
   | 'pipeline'
   | 'limitations'
+  | 'why-this-exists'
   | 'about'
 
 interface NavSection {
@@ -47,6 +48,7 @@ const sections: NavSection[] = [
   { id: 'cli-commands', label: 'CLI Commands', icon: '❯' },
   { id: 'pipeline', label: 'Pipeline', icon: '◎' },
   { id: 'limitations', label: 'Limitations', icon: '△' },
+  { id: 'why-this-exists', label: 'Why This Exists', icon: '✦' },
   { id: 'about', label: 'About', icon: '♡' },
 ]
 
@@ -292,7 +294,7 @@ const goRules: Rule[] = [
   { id: 'map_lookup_double_access', description: '`if _, ok := m[k]; ok { v := m[k] }` — two map lookups for the same key' },
   { id: 'map_of_slices_prealloc', description: '`m[k] = append(m[k], v)` in loops without pre-allocating inner slices' },
   { id: 'mutex_value_receiver', description: '`func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field' },
-  { id: 'n_plus_one_query', description: 'Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.' },
+  { id: 'n_plus_one_query', description: 'Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear.' },
   { id: 'panic_for_expected_errors', description: '`panic()` used for expected error conditions like invalid input or missing config' },
   { id: 'range_copy_large_struct', description: '`for _, v := range largeStructSlice` where the struct is > 64 bytes' },
   { id: 'range_over_string_by_index', description: '`for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes' },
@@ -711,12 +713,12 @@ const cliCommands: Record<Language, CliCommand[]> = {
     { cmd: 'cargo run -- scan --details /path/to/repo', desc: 'Include full per-function fingerprint details.' },
     { cmd: 'cargo run -- scan --json /path/to/repo', desc: 'Emit structured JSON output for pipeline integration.' },
     { cmd: 'cargo run -- scan --json --details /path/to/repo', desc: 'Combine JSON output with full per-function fingerprints.' },
-    { cmd: 'cargo run -- scan --enable-semantic /path/to/repo', desc: 'Enable the opt-in deeper semantic Go pack for nested-loop allocation, concat, and stronger N+1 correlation.' },
+    { cmd: 'cargo run -- scan --enable-semantic /path/to/repo', desc: 'Force the deeper semantic Go pack on for nested-loop allocation, concat, and stronger N+1 correlation.' },
     { cmd: 'cargo run -- scan --ignore dropped_error,panic_on_error /path/to/repo', desc: 'Ignore selected Go rule IDs for one run without changing repository config.' },
     { cmd: 'cargo run -- scan /path/to/repo > results.txt', desc: 'Write the text report directly to a file.' },
     { cmd: 'cargo run -- scan --no-ignore /path/to/repo', desc: 'Scan without .gitignore filtering.' },
     { cmd: 'cargo run -- bench /path/to/repo', desc: 'Benchmark the full pipeline against a local repository.' },
-    { cmd: 'cargo run -- bench --enable-semantic /path/to/repo', desc: 'Benchmark the Go pipeline with the opt-in semantic pack enabled.' },
+    { cmd: 'cargo run -- bench --enable-semantic /path/to/repo', desc: 'Benchmark the Go pipeline with the deeper semantic pack forced on.' },
     { cmd: 'cargo run -- bench --warmups 2 --repeats 5 /path/to/repo', desc: 'Benchmark with explicit warmup and repeat counts.' },
     { cmd: 'cargo run -- bench --json /path/to/repo', desc: 'Emit benchmarking data as JSON.' },
   ],
@@ -893,7 +895,7 @@ const limitations = {
     'No full interprocedural or type-aware context propagation. Wrapper-chain reasoning stays repository-local and conservative.',
     'No proof of goroutine leaks, N+1 queries, or runtime performance regressions — only pattern signals.',
     'Package-method and local-symbol checks are repository-local; external packages are not indexed.',
-    'The opt-in deeper semantic Go pack is still heuristic: it correlates nested-loop structure but does not prove asymptotic complexity or schema-aware DB cost.',
+    'The deeper semantic Go pack is still heuristic: it correlates nested-loop structure but does not prove asymptotic complexity or schema-aware DB cost.',
   ],
   python: [
     'No Python module graph resolution or installed-package awareness.',

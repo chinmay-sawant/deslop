@@ -3067,7 +3067,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear."
+    "description": "Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear."
   },
   {
     "id": "panic_for_expected_errors",

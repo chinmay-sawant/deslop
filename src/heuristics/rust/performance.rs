@@ -44,6 +44,9 @@ pub(crate) fn performance_function_findings(
     }
 
     for line in rust.write_loops {
+        if should_skip_in_memory_write(function, *line) {
+            continue;
+        }
         findings.push(function_finding(
             file,
             function,
@@ -368,6 +371,46 @@ fn looks_like_aos_hot_path(file: &ParsedFile, function: &ParsedFunction) -> bool
             .any(|summary| summary.fields.len() >= 3)
 }
 
+fn should_skip_in_memory_write(function: &ParsedFunction, line: usize) -> bool {
+    let body_lines = function.body_text.lines().collect::<Vec<_>>();
+    let offset = line.saturating_sub(function.body_start_line);
+    let window = body_lines
+        .iter()
+        .skip(offset)
+        .take(4)
+        .copied()
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    if !(window.contains("write!")
+        || window.contains("writeln!")
+        || window.contains(".write(")
+        || window.contains(".write_all("))
+    {
+        return false;
+    }
+
+    function.local_binding_names.iter().any(|name| {
+        let string_initialized = [
+            format!("let mut {name} = String::new()"),
+            format!("let {name} = String::new()"),
+            format!("let mut {name}: String"),
+            format!("let {name}: String"),
+            "String::with_capacity(".to_string(),
+        ]
+        .iter()
+        .any(|needle| function.body_text.contains(needle));
+
+        if !string_initialized {
+            return false;
+        }
+
+        window.contains(&format!("&mut {name}"))
+            || window.contains(&format!("{name}.write("))
+            || window.contains(&format!("{name}.write_all("))
+    })
+}
+
 fn has_numeric_update(body: &str) -> bool {
     ["+=", "-=", "*=", "/="]
         .iter()
@@ -407,7 +450,50 @@ fn repeated_receiver_field_accesses(body: &str) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use super::{contains_default_hashmap_ctor, strip_double_quoted_strings};
+    use super::{
+        contains_default_hashmap_ctor, should_skip_in_memory_write, strip_double_quoted_strings,
+    };
+    use crate::analysis::ParsedFunction;
+    use crate::model::FunctionFingerprint;
+
+    fn sample_function(
+        body_text: &str,
+        local_binding_names: Vec<String>,
+        body_start_line: usize,
+    ) -> ParsedFunction {
+        ParsedFunction {
+            fingerprint: FunctionFingerprint {
+                name: "sample".to_string(),
+                kind: "function".to_string(),
+                receiver_type: None,
+                start_line: body_start_line,
+                end_line: body_start_line,
+                line_count: body_text.lines().count(),
+                comment_lines: 0,
+                code_lines: 0,
+                comment_to_code_ratio: 0.0,
+                complexity_score: 0,
+                symmetry_score: 0.0,
+                boilerplate_err_guards: 0,
+                contains_any_type: false,
+                contains_empty_interface: false,
+                type_assertion_count: 0,
+                call_count: 0,
+            },
+            signature_text: String::new(),
+            body_start_line,
+            calls: Vec::new(),
+            is_test_function: false,
+            local_binding_names,
+            doc_comment: None,
+            body_text: body_text.to_string(),
+            local_strings: Vec::new(),
+            test_summary: None,
+            go: None,
+            python: None,
+            rust: None,
+        }
+    }
 
     #[test]
     fn strips_double_quoted_strings_before_text_matching() {
@@ -423,5 +509,16 @@ mod tests {
             "let msg = \"HashMap::new(\";"
         ));
         assert!(contains_default_hashmap_ctor("let map = HashMap::new();"));
+    }
+
+    #[test]
+    fn skips_in_memory_string_buffer_writes() {
+        let function = sample_function(
+            "let mut output = String::new();\nfor metadata in rules {\n    let _ = writeln!(&mut output, \"{}\");\n}",
+            vec!["output".to_string()],
+            10,
+        );
+
+        assert!(should_skip_in_memory_write(&function, 12));
     }
 }

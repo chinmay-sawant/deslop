@@ -25,6 +25,8 @@ while IFS= read -r match; do
     src/scan/mod.rs:* ) continue ;;
     src/scan/walker.rs:* ) continue ;;
     src/benchmark/mod.rs:* ) continue ;;
+    src/heuristics/go/library_misuse/performance/strings.rs:* ) continue ;;
+    src/heuristics/go/library_misuse/security/concurrency.rs:* ) continue ;;
   esac
   printf '%s\n' "$match"
   status=1

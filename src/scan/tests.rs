@@ -85,11 +85,10 @@ fn applies_disabled_rules_and_severity_overrides() {
         sample_finding("unwrap_in_non_test_code", Severity::Warning),
     ];
     let mut repo_config = RepoConfig {
-        go_semantic_experimental: false,
-        rust_async_experimental: true,
         disabled_rules: vec!["panic_macro_leftover".to_string()],
         suppressed_paths: Vec::new(),
         severity_overrides: std::collections::BTreeMap::new(),
+        ..RepoConfig::default()
     };
     repo_config
         .severity_overrides
@@ -110,11 +109,8 @@ fn disables_async_rollout_rules_when_flag_is_off() {
         sample_finding("unwrap_in_non_test_code", Severity::Warning),
     ];
     let repo_config = RepoConfig {
-        go_semantic_experimental: false,
         rust_async_experimental: false,
-        disabled_rules: Vec::new(),
-        suppressed_paths: Vec::new(),
-        severity_overrides: std::collections::BTreeMap::new(),
+        ..RepoConfig::default()
     };
 
     apply_repository_config(&mut findings, &repo_config, std::path::Path::new("."));
@@ -137,11 +133,8 @@ fn suppresses_findings_under_configured_paths() {
         },
     ];
     let repo_config = RepoConfig {
-        go_semantic_experimental: false,
-        rust_async_experimental: true,
-        disabled_rules: Vec::new(),
         suppressed_paths: vec![std::path::PathBuf::from("tests/fixtures")],
-        severity_overrides: std::collections::BTreeMap::new(),
+        ..RepoConfig::default()
     };
 
     apply_repository_config(&mut findings, &repo_config, root.path());

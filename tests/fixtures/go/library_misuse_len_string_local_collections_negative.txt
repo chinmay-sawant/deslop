@@ -1,0 +1,12 @@
+package main
+
+import "strings"
+
+func check(raw string) bool {
+    parts := strings.Split(raw, ",")
+    if len(parts) == 0 {
+        return true
+    }
+    src := []rune(raw)
+    return len(src) == 0
+}

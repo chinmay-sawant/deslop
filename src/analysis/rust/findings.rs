@@ -432,9 +432,10 @@ fn module_namespace_matches_item(
         return false;
     }
 
-    if index.package_for_rust_file(module_file).is_some_and(|package| {
-        package.has_function(item_name) || package.has_symbol(item_name)
-    }) {
+    if index
+        .package_for_rust_file(module_file)
+        .is_some_and(|package| package.has_function(item_name) || package.has_symbol(item_name))
+    {
         return true;
     }
 
@@ -479,13 +480,15 @@ fn explicit_import_matches_item(
             module_namespace_matches_item(index, &target_file, item_name, visited)
         }
         RustModuleFileResolution::Ambiguous(_) => true,
-        RustModuleFileResolution::Unresolved => match index.resolve_rust_import(module_file, module_path) {
-            ImportResolution::Resolved(module_package) => {
-                module_package.has_function(item_name) || module_package.has_symbol(item_name)
+        RustModuleFileResolution::Unresolved => {
+            match index.resolve_rust_import(module_file, module_path) {
+                ImportResolution::Resolved(module_package) => {
+                    module_package.has_function(item_name) || module_package.has_symbol(item_name)
+                }
+                ImportResolution::Ambiguous(_) => true,
+                ImportResolution::Unresolved => false,
             }
-            ImportResolution::Ambiguous(_) => true,
-            ImportResolution::Unresolved => false,
-        },
+        }
     }
 }
 
@@ -536,13 +539,15 @@ fn wildcard_import_matches_item(
             module_namespace_matches_item(index, &module_file, item_name, visited)
         }
         RustModuleFileResolution::Ambiguous(_) => true,
-        RustModuleFileResolution::Unresolved => match index.resolve_rust_import(file_path, module_path) {
-            ImportResolution::Resolved(module_package) => {
-                module_package.has_function(item_name) || module_package.has_symbol(item_name)
+        RustModuleFileResolution::Unresolved => {
+            match index.resolve_rust_import(file_path, module_path) {
+                ImportResolution::Resolved(module_package) => {
+                    module_package.has_function(item_name) || module_package.has_symbol(item_name)
+                }
+                ImportResolution::Ambiguous(_) => true,
+                ImportResolution::Unresolved => false,
             }
-            ImportResolution::Ambiguous(_) => true,
-            ImportResolution::Unresolved => false,
-        },
+        }
     }
 }
 

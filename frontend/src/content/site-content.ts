@@ -212,7 +212,7 @@ export const pipelineStages: PipelineStage[] = [
     name: 'Heuristics',
     summary: 'Run explainable rule families that emit rule IDs, severity, messages, and evidence.',
     detail:
-      'The heuristics layer is designed for human review rather than opaque scoring. Findings stay readable by default, while the opt-in Go semantic pack adds nested-loop correlation only when you explicitly turn it on.',
+      'The heuristics layer is designed for human review rather than opaque scoring. Findings stay readable by default, while the Go semantic pack adds nested-loop correlation when it is enabled for the repository or run.',
     bullets: [
       'Compact text output by default',
       'Optional `--details` adds per-function fingerprints',
@@ -286,7 +286,7 @@ export const quickStartItems: QuickStartItem[] = [
   {
     label: 'Scan the current repository',
     channel: 'CLI',
-    description: 'Run deslop from the repository root and save a readable report you can review locally or attach to CI output. Add `--enable-semantic` when you want the opt-in deeper Go loop heuristics.',
+    description: 'Run deslop from the repository root and save a readable report you can review locally or attach to CI output. Add `--enable-semantic` when you want the deeper Go loop heuristics forced on for that run.',
     snippet: ['deslop scan . > results.txt'],
     showPrompt: true,
   },

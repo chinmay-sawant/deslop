@@ -146,14 +146,14 @@ fn test_streaming_ok() {
 }
 
 #[test]
-fn test_semantic_n_squared_rules_are_opt_in() {
+fn test_semantic_n_squared_rules_are_enabled_by_default() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("alloc.go", go_fixture!("n_squared_alloc_slop.txt"));
     workspace.write_file("concat.go", go_fixture!("n_squared_concat_slop.txt"));
 
     let report = workspace.scan();
 
-    assert!(!report.findings.iter().any(|finding| {
+    assert!(report.findings.iter().any(|finding| {
         matches!(
             finding.rule_id.as_str(),
             "likely_n_squared_allocation" | "likely_n_squared_string_concat"

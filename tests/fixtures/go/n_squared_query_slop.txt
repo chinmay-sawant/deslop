@@ -1,4 +1,4 @@
-// should raise a stronger n_plus_one_query finding when semantic opt-in is enabled because QueryContext is inside nested loops.
+// should raise a stronger n_plus_one_query finding when the semantic pack is enabled because QueryContext is inside nested loops.
 package sample
 
 import "context"

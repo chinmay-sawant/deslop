@@ -273,7 +273,7 @@ def run_targets(
 def resolve_repo_path(target: dict, *, repo_root: str | None) -> Path | None:
     relative_path = target["relative_path"]
     if relative_path is None:
-        return None
+        return
 
     base = Path(repo_root).resolve() if repo_root else ROOT
     return (base / relative_path).resolve()

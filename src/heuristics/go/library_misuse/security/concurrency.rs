@@ -218,8 +218,22 @@ fn cgo_string_lifetime(
     lines: &[BodyLine],
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
+    let transfers_result_ownership = function
+        .doc_comment
+        .as_deref()
+        .map(str::to_ascii_lowercase)
+        .is_some_and(|comment| {
+            comment.contains("caller must free")
+                || comment.contains("freed by the caller")
+                || comment.contains("caller is responsible for freeing")
+        });
     for bl in lines {
         if bl.text.contains("C.CString(") {
+            let is_result_field_transfer =
+                transfers_result_ownership && bl.text.contains("result.") && bl.text.contains('=');
+            if is_result_field_transfer {
+                continue;
+            }
             let has_free = lines
                 .iter()
                 .any(|l| l.text.contains("C.free(") && l.line > bl.line);
@@ -284,6 +298,56 @@ fn global_rand_source_contention(
         }
     }
     findings
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use crate::analysis::parse_source_file;
+    use crate::heuristics::go::framework_patterns::body_lines;
+
+    use super::cgo_string_lifetime;
+
+    macro_rules! go_fixture {
+        ($name:literal) => {
+            include_str!(concat!("../../../../../tests/fixtures/go/", $name, ".txt"))
+        };
+    }
+
+    #[test]
+    fn cgo_string_lifetime_skips_documented_result_ownership_transfer() {
+        let source = go_fixture!("library_misuse_cgo_string_lifetime_documented_transfer");
+
+        let file =
+            parse_source_file(Path::new("sample.go"), source).expect("go source should parse");
+        let function = file.functions[0].clone();
+        let lines = body_lines(&function);
+        let findings = cgo_string_lifetime(&file, &function, &lines);
+
+        assert!(
+            findings.is_empty(),
+            "documented ownership transfer should not be flagged"
+        );
+    }
+
+    #[test]
+    fn cgo_string_lifetime_still_flags_unfreed_local_allocation() {
+        let source = go_fixture!("library_misuse_cgo_string_lifetime_local_leak");
+
+        let file =
+            parse_source_file(Path::new("sample.go"), source).expect("go source should parse");
+        let function = file.functions[0].clone();
+        let lines = body_lines(&function);
+        let findings = cgo_string_lifetime(&file, &function, &lines);
+
+        assert_eq!(
+            findings.len(),
+            1,
+            "unfreed C strings should still be reported"
+        );
+        assert_eq!(findings[0].rule_id, "cgo_string_lifetime");
+    }
 }
 
 // ── Section E — Network And TLS Security ──

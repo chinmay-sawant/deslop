@@ -494,3 +494,44 @@ fn test_python_hallucination_rule() {
         "did not expect finding for local class SnapBackTranscriptionClient"
     );
 }
+
+#[test]
+fn test_python_tight_module_coupling_skips_package_entrypoints() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "pkg/__init__.py",
+            python_fixture!("integration/baseline/package_entrypoint_init_clean.txt"),
+        ),
+        (
+            "pkg/helpers.py",
+            python_fixture!("integration/baseline/package_entrypoint_helpers.txt"),
+        ),
+        (
+            "pkg/models.py",
+            python_fixture!("integration/baseline/package_entrypoint_models.txt"),
+        ),
+        (
+            "pkg/services.py",
+            python_fixture!("integration/baseline/package_entrypoint_services.txt"),
+        ),
+        (
+            "pkg/adapters.py",
+            python_fixture!("integration/baseline/package_entrypoint_adapters.txt"),
+        ),
+        (
+            "pkg/leaf.py",
+            python_fixture!("integration/baseline/package_entrypoint_leaf.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "tight_module_coupling"),
+        "did not expect tight_module_coupling for package entrypoint re-exports"
+    );
+}

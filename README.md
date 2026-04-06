@@ -18,7 +18,7 @@ By default, scan output prints the scan summary plus the standard finding set. P
 Repository-local scan behavior can be tuned with a `.deslop.toml` file at the scan root:
 
 ```toml
-go_semantic_experimental = false
+go_semantic_experimental = true
 rust_async_experimental = true
 disabled_rules = ["panic_macro_leftover"]
 suppressed_paths = ["tests/fixtures"]
@@ -27,8 +27,8 @@ suppressed_paths = ["tests/fixtures"]
 expect_in_non_test_code = "error"
 ```
 
-`go_semantic_experimental = true` enables the opt-in deeper semantic Go heuristics such as nested-loop allocation/string-build checks and stronger nested N+1 escalation. 
-`rust_async_experimental = false` disables the Rust async rule pack for that repository. 
+`go_semantic_experimental = true` enables the deeper semantic Go heuristics such as nested-loop allocation/string-build checks and stronger nested N+1 escalation. 
+`rust_async_experimental = true` keeps the Rust async rule pack enabled for that repository. 
 `disabled_rules` removes matching rule ids entirely, 
 `suppressed_paths` filters findings under matching relative path prefixes after analysis, and 
 `severity_overrides` rewrites the emitted severity after analysis.
@@ -47,7 +47,7 @@ Run the same scan with JSON output:
 cargo run -- scan --json /path/to/repo
 ```
 
-Enable the opt-in deeper semantic Go checks for a single run:
+Enable the deeper semantic Go checks for a single run:
 
 ```bash
 cargo run -- scan --enable-semantic /path/to/go-repo
@@ -192,7 +192,7 @@ Inputs:
 
 - Wrapper propagation now covers receiver-field clients, local wrapper chains, and `Query` versus `QueryContext`-style mismatches when a function already accepts `context.Context`.
 - Functions that intentionally detach from request context can document that boundary and avoid the propagation warning.
-- The opt-in semantic Go pack adds `likely_n_squared_allocation`, `likely_n_squared_string_concat`, and stronger nested-loop correlation for `n_plus_one_query`.
+- The semantic Go pack adds `likely_n_squared_allocation`, `likely_n_squared_string_concat`, and stronger nested-loop correlation for `n_plus_one_query`.
 
 ## Development
 
@@ -217,6 +217,33 @@ python3 scripts/corpus_harness.py run --target gopdfsuit --scan
 python3 scripts/corpus_harness.py run --target gopdfsuit --bench
 ```
 
+Expand a saved findings report into review-ready code context:
+
+```bash
+python3 scripts/extract_finding_context.py temp_gopdfsuit.txt
+```
+
+That command reads the `path:line` entries from `temp_gopdfsuit.txt`, extracts the requested code context, and rewrites `scripts/temp.txt` with one consolidated block per finding. By default each block only includes:
+
+- `Source`
+- `Rule description`
+- `Auto triage note`
+- `Code`
+
+If you want the full metadata-rich output again, pass `--details`:
+
+```bash
+python3 scripts/extract_finding_context.py temp_gopdfsuit.txt --details
+```
+
+Run the repo-local scripts through one shared entrypoint:
+
+```bash
+make run-scripts
+```
+
+`run-scripts` executes the normal repo-local utility scripts and validates installer scripts in a safe non-installing mode.
+
 Build release executables for your current platform or cross-compile for other supported platforms:
 
 ```bash
@@ -233,6 +260,12 @@ rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin x86_64-unknown-linux
 ```
 
 The native release binary is written to `target/release/`. Cross-compiled binaries are written under `target/<target-triple>/release/` and are named `deslop` on Unix-like systems and `deslop.exe` on Windows.
+
+---
+
+### Helper: VS Code finding opener (Experimental)
+
+If you review `deslop` scan output in Visual Studio Code, the `vscode-finding-opener` helper provides a small extension and scripts to open findings directly in the editor for quick triage. See [vscode-finding-opener](vscode-finding-opener/README.md) for installation, usage, and troubleshooting notes.
 
 For a detailed architecture and roadmap guide, see `guides/implementation-guide.md`.
 For the corpus workflow and promotion contract, see `guides/evaluation-and-promotion-policy.md`.

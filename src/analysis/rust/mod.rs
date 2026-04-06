@@ -518,8 +518,10 @@ fn run() {
 "#,
         );
 
-        let index =
-            build_repository_index(Path::new("/repo"), &[root, framework, data_access, clients.clone()]);
+        let index = build_repository_index(
+            Path::new("/repo"),
+            &[root, framework, data_access, clients.clone()],
+        );
 
         assert!(
             !evaluate_rust_findings(&clients, &index)
@@ -550,8 +552,7 @@ fn run(rules: Vec<fn()>) {
             !evaluate_rust_findings(&current, &index)
                 .iter()
                 .any(|finding| {
-                    finding.rule_id == "hallucinated_local_call"
-                        && finding.message.contains("rule")
+                    finding.rule_id == "hallucinated_local_call" && finding.message.contains("rule")
                 })
         );
     }

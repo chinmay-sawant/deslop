@@ -66,3 +66,29 @@ fn test_python_hotpath_clean() {
 
     assert_rules_absent(&report, HOTPATH_RULES);
 }
+
+#[test]
+fn test_python_repeated_json_dumps_skips_first_cache_assignment() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/hotpath_code.py",
+        python_fixture!("integration/hotpath/repeated_json_dumps_cached_first.txt"),
+    )]);
+
+    let report = workspace.scan();
+    let findings = report
+        .findings
+        .iter()
+        .filter(|finding| finding.rule_id == "repeated_json_dumps_same_object")
+        .collect::<Vec<_>>();
+
+    assert_eq!(
+        findings.len(),
+        1,
+        "expected only the later duplicate json.dumps call to be reported"
+    );
+    assert_eq!(
+        findings[0].start_line, 6,
+        "expected the first cached json.dumps assignment to be skipped"
+    );
+}

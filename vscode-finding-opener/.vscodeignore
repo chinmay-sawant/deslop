@@ -1,0 +1,10 @@
+.vscode/**
+.vscode-test/**
+src/**
+test/**
+**/*.map
+**/*.tsbuildinfo
+tsconfig.json
+README.md
+CHANGELOG.md
+.gitignore

@@ -343,7 +343,7 @@ fn visit_recursive_calls(
         && let Some(target_text) = source.get(function_node.byte_range())
     {
         let normalized = target_text.trim();
-        if normalized == function_name || normalized.ends_with(&format!(".{function_name}")) {
+        if is_recursive_call_target(normalized, function_name) {
             lines.push(node.start_position().row + 1);
         }
     }
@@ -352,6 +352,13 @@ fn visit_recursive_calls(
     for child in node.named_children(&mut cursor) {
         visit_recursive_calls(function_name, child, source, lines);
     }
+}
+
+fn is_recursive_call_target(normalized: &str, function_name: &str) -> bool {
+    normalized == function_name
+        || normalized.strip_prefix("self.") == Some(function_name)
+        || normalized.strip_prefix("cls.") == Some(function_name)
+        || normalized.strip_prefix("super().") == Some(function_name)
 }
 
 fn visit_list_membership(

@@ -118,7 +118,10 @@ pub(crate) fn resolve_rust_module_file(
             .unwrap_or_default(),
         "self" => vec![current_file_path.to_path_buf()],
         "super" => {
-            let super_count = segments.iter().take_while(|segment| **segment == "super").count();
+            let super_count = segments
+                .iter()
+                .take_while(|segment| **segment == "super")
+                .count();
             let mut parents = vec![current_file_path.to_path_buf()];
             for _ in 0..super_count {
                 let mut next = Vec::new();
@@ -144,7 +147,10 @@ pub(crate) fn resolve_rust_module_file(
     }
 
     let start_index = if head == "super" {
-        segments.iter().take_while(|segment| **segment == "super").count()
+        segments
+            .iter()
+            .take_while(|segment| **segment == "super")
+            .count()
     } else {
         1
     };
