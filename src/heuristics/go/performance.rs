@@ -156,7 +156,7 @@ pub(crate) fn db_findings(
                     format!("looped query method: {receiver}.{}", query_call.method_name),
                     "query execution inside loops often turns into N+1 access patterns".to_string(),
                     if nested_loop_signal {
-                        "semantic opt-in correlated this query with nested loop structure, which makes multiplicative query growth more likely"
+                        "semantic correlation tied this query to nested loop structure, which makes multiplicative query growth more likely"
                             .to_string()
                     } else {
                         "no nested-loop correlation was required for the baseline warning".to_string()

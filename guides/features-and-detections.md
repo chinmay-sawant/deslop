@@ -314,7 +314,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `map_lookup_double_access`: `if _, ok := m[k]; ok { v := m[k] }` — two map lookups for the same key
 - `map_of_slices_prealloc`: `m[k] = append(m[k], v)` in loops without pre-allocating inner slices
 - `mutex_value_receiver`: `func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field
-- `n_plus_one_query`: Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.
+- `n_plus_one_query`: Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear.
 - `panic_for_expected_errors`: `panic()` used for expected error conditions like invalid input or missing config
 - `range_copy_large_struct`: `for _, v := range largeStructSlice` where the struct is > 64 bytes
 - `range_over_string_by_index`: `for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes

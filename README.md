@@ -18,7 +18,7 @@ By default, scan output prints the scan summary plus the standard finding set. P
 Repository-local scan behavior can be tuned with a `.deslop.toml` file at the scan root:
 
 ```toml
-go_semantic_experimental = false
+go_semantic_experimental = true
 rust_async_experimental = true
 disabled_rules = ["panic_macro_leftover"]
 suppressed_paths = ["tests/fixtures"]
@@ -27,8 +27,8 @@ suppressed_paths = ["tests/fixtures"]
 expect_in_non_test_code = "error"
 ```
 
-`go_semantic_experimental = true` enables the opt-in deeper semantic Go heuristics such as nested-loop allocation/string-build checks and stronger nested N+1 escalation. 
-`rust_async_experimental = false` disables the Rust async rule pack for that repository. 
+`go_semantic_experimental = true` enables the deeper semantic Go heuristics such as nested-loop allocation/string-build checks and stronger nested N+1 escalation. 
+`rust_async_experimental = true` keeps the Rust async rule pack enabled for that repository. 
 `disabled_rules` removes matching rule ids entirely, 
 `suppressed_paths` filters findings under matching relative path prefixes after analysis, and 
 `severity_overrides` rewrites the emitted severity after analysis.
@@ -47,7 +47,7 @@ Run the same scan with JSON output:
 cargo run -- scan --json /path/to/repo
 ```
 
-Enable the opt-in deeper semantic Go checks for a single run:
+Enable the deeper semantic Go checks for a single run:
 
 ```bash
 cargo run -- scan --enable-semantic /path/to/go-repo
@@ -182,7 +182,7 @@ Inputs:
 - `json`: Emit JSON output. Defaults to `false`. Optional.
 - `details`: Include full per-function fingerprint details in scan output. Applies only to the scan command. Defaults to `false`. Optional.
 - `no-ignore`: Scan without respecting .gitignore. Defaults to `false`. Optional.
-- `enable-semantic`: Enable the opt-in deeper semantic Go heuristics. Defaults to `false`. Optional.
+- `enable-semantic`: Force the deeper semantic Go heuristics on for a run. Defaults to `false`. Optional.
 - `fail-on-findings`: Exit with a non-zero status code when scan findings are present. Applies only to the scan command. Defaults to `true`. Optional.
 - `repeats`: Benchmark repeat count. Applies only to the bench command. Defaults to `5`. Optional.
 - `warmups`: Benchmark warmup count. Applies only to the bench command. Defaults to `1`. Optional.
@@ -192,7 +192,7 @@ Inputs:
 
 - Wrapper propagation now covers receiver-field clients, local wrapper chains, and `Query` versus `QueryContext`-style mismatches when a function already accepts `context.Context`.
 - Functions that intentionally detach from request context can document that boundary and avoid the propagation warning.
-- The opt-in semantic Go pack adds `likely_n_squared_allocation`, `likely_n_squared_string_concat`, and stronger nested-loop correlation for `n_plus_one_query`.
+- The semantic Go pack adds `likely_n_squared_allocation`, `likely_n_squared_string_concat`, and stronger nested-loop correlation for `n_plus_one_query`.
 
 ## Development
 

@@ -309,7 +309,7 @@ export function DocsLayout({
             </thead>
             <tbody>
               <tr><td>--details</td><td>Include full per-function fingerprint details in scan output.</td></tr>
-              <tr><td>--enable-semantic</td><td>Enable the opt-in deeper semantic Go heuristics for the current scan or benchmark run.</td></tr>
+              <tr><td>--enable-semantic</td><td>Force the deeper semantic Go heuristics on for the current scan or benchmark run.</td></tr>
               <tr><td>--ignore RULE1,RULE2</td><td>Ignore specific rule IDs for one scan invocation after analysis completes.</td></tr>
               <tr><td>--json</td><td>Emit structured JSON instead of human-readable text output.</td></tr>
               <tr><td>--no-fail</td><td>Exit 0 even when findings are present.</td></tr>
@@ -337,8 +337,8 @@ export function DocsLayout({
               </tr>
             </thead>
             <tbody>
-              <tr><td>go_semantic_experimental</td><td>Set to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>true</code> to enable the opt-in deeper semantic Go heuristics — nested-loop allocation/string-build checks and stronger N+1 escalation. Defaults to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>false</code>.</td></tr>
-              <tr><td>rust_async_experimental</td><td>Set to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>false</code> to disable the Rust async rule pack for the repository. Defaults to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>true</code>.</td></tr>
+              <tr><td>go_semantic_experimental</td><td>Set to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>true</code> to keep the deeper semantic Go heuristics enabled — nested-loop allocation/string-build checks and stronger N+1 escalation. Defaults to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>true</code>.</td></tr>
+              <tr><td>rust_async_experimental</td><td>Set to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>false</code> only if you need to temporarily disable the Rust async rule pack for the repository. Defaults to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>true</code>.</td></tr>
               <tr><td>disabled_rules</td><td>Array of rule IDs to remove entirely from the emitted findings for this repository.</td></tr>
               <tr><td>suppressed_paths</td><td>Array of relative path prefixes. Findings under matching paths are filtered out after analysis.</td></tr>
               <tr><td>[severity_overrides]</td><td>Map of rule ID to new severity string. Rewrites the emitted severity after analysis without disabling the rule.</td></tr>

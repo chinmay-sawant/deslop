@@ -392,7 +392,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::Ignore,
             RuleConfigurability::SeverityOverride,
         ],
-        description: "Database-style query calls issued inside loops. The opt-in semantic pack can raise severity when nested loops also appear.",
+        description: "Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear.",
         binding_location: super::bindings::GO_PERFORMANCE,
     },
     RuleDefinition {
