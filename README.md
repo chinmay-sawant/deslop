@@ -261,6 +261,12 @@ rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin x86_64-unknown-linux
 
 The native release binary is written to `target/release/`. Cross-compiled binaries are written under `target/<target-triple>/release/` and are named `deslop` on Unix-like systems and `deslop.exe` on Windows.
 
+---
+
+### Helper: VS Code finding opener (Experimental)
+
+If you review `deslop` scan output in Visual Studio Code, the `vscode-finding-opener` helper provides a small extension and scripts to open findings directly in the editor for quick triage. See [vscode-finding-opener](vscode-finding-opener/README.md) for installation, usage, and troubleshooting notes.
+
 For a detailed architecture and roadmap guide, see `guides/implementation-guide.md`.
 For the corpus workflow and promotion contract, see `guides/evaluation-and-promotion-policy.md`.
 For a detector-oriented overview, see `guides/features-and-detections.md`.

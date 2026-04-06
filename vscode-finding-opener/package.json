@@ -1,0 +1,37 @@
+{
+  "name": "deslop-finding-opener",
+  "displayName": "Deslop Finding Opener",
+  "description": "Parse deslop finding reports and open source files at the reported line in a VS Code tab.",
+  "version": "0.0.1",
+  "publisher": "deslop",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*",
+    "onCommand:deslopFindingOpener.openFindings"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "deslopFindingOpener.openFindings",
+        "title": "Deslop: Open Finding in Tab"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "npx --yes vsce@2.15.0 package",
+    "prepublishOnly": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^12.20.55",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^4.9.5"
+  }
+}
