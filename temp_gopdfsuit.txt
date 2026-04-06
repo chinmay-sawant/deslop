@@ -2,10 +2,10 @@ deslop scan root: /home/chinmay/ChinmayPersonalProjects/gopdfsuit
 Source files discovered: 125
 Source files analyzed: 125
 Functions fingerprinted: 876
-Findings: 1445
+Findings: 1457
 Index summary: packages=63 symbols=1129 imports=755
 Parse failures: 0
-Timings: discover=91ms parse=492ms index=3ms heuristics=246ms total=838ms
+Timings: discover=84ms parse=912ms index=11ms heuristics=473ms total=1482ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/_bindings.py:156 public function get_lib omits complete type hints [public_api_missing_type_hints]
@@ -452,6 +452,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/draw.go:1068 function drawTable appends to checkboxBuf in a loop without a capacity hint [slice_grow_without_cap_hint]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/draw.go:1070 function drawTable appends to a slice inside a range loop without visible preallocation [slice_append_without_prealloc_known_bound]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/draw.go:1070 function drawTable appends to checkboxBuf in a loop without a capacity hint [slice_grow_without_cap_hint]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/draw.go:1082 function drawTable appears to concatenate strings inside a nested loop [likely_n_squared_string_concat]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/draw.go:1082 function drawTable concatenates strings inside a loop [string_concat_in_loop]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/draw.go:1140 function drawTable appends to a slice inside a range loop without visible preallocation [slice_append_without_prealloc_known_bound]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/draw.go:1140 function drawTable appends to colorBuf in a loop without a capacity hint [slice_grow_without_cap_hint]
@@ -543,6 +544,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:83 function computeOwnerHash uses weak cryptographic primitive crypto/md5 [weak_crypto]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:83 function computeOwnerHash relies on MD5/SHA-1 for integrity-sensitive hashing [weak_hash_for_integrity]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:99 function computeOwnerHash allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:99 function computeOwnerHash appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:99 function computeOwnerHash recreates scratch slices inside a loop [make_slice_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:115 function computeEncryptionKey uses weak cryptographic primitive crypto/md5 [weak_crypto]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:115 function computeEncryptionKey relies on MD5/SHA-1 for integrity-sensitive hashing [weak_hash_for_integrity]
@@ -551,6 +553,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:144 function computeUserHash uses weak cryptographic primitive crypto/md5 [weak_crypto]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:144 function computeUserHash relies on MD5/SHA-1 for integrity-sensitive hashing [weak_hash_for_integrity]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:154 function computeUserHash allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:154 function computeUserHash appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:154 function computeUserHash recreates scratch slices inside a loop [make_slice_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:275 function computeObjectKey uses weak cryptographic primitive crypto/md5 [weak_crypto]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/encryption/encrypt.go:275 function computeObjectKey relies on MD5/SHA-1 for integrity-sensitive hashing [weak_hash_for_integrity]
@@ -583,6 +586,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/pdfa_test.go:12 test TestEnsureFontsAvailableCachesFailedDownload looks like a placeholder rather than a validating test [placeholder_test_body]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/pdfa_test.go:65 test TestEnsureFontsAvailableSucceedsAfterFontsAppear looks like a placeholder rather than a validating test [placeholder_test_body]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/registry.go:148 function GenerateSubsets allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/registry.go:148 function GenerateSubsets appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/registry.go:148 function GenerateSubsets recreates scratch slices inside a loop [make_slice_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/registry.go:188 function GetUsedFonts appends to fonts in a loop without a capacity hint [slice_grow_without_cap_hint]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/registry.go:208 function ResetUsage allocates new objects inside a loop [allocation_churn_in_loop]
@@ -597,6 +601,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/subset.go:42 function SubsetTTF traverses the same collection multiple times for filter, count, and process [filter_then_count_then_iterate]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/subset.go:58 function buildSubsetFont uses bytes.Buffer without Grow when approximate size is locally visible [bytes_buffer_without_grow_known_bound]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/subset.go:111 function buildSubsetFont allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/subset.go:111 function buildSubsetFont appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/subset.go:111 function buildSubsetFont recreates scratch slices inside a loop [make_slice_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/subset.go:111 function buildSubsetFont inserts into a map in a loop without a visible size hint [map_growth_without_size_hint]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/font/subset.go:163 function buildSubsetFont appends to a slice inside a range loop without visible preallocation [slice_append_without_prealloc_known_bound]
@@ -948,10 +953,12 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:16 function MergePDFs uses bytes.Buffer without Grow when approximate size is locally visible [bytes_buffer_without_grow_known_bound]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:27 function MergePDFs uses a map as a dense integer set [unnecessary_map_for_set_of_ints]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:55 function MergePDFs allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:55 function MergePDFs appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:55 function MergePDFs recreates scratch maps inside a loop [make_map_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:55 function MergePDFs clones maps inside a loop [repeated_map_clone_in_loop]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:61 function MergePDFs inserts into a map in a loop without a visible size hint [map_growth_without_size_hint]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:69 function MergePDFs allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:69 function MergePDFs appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:69 function MergePDFs recreates scratch maps inside a loop [make_map_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:72 function MergePDFs traverses the same collection multiple times for filter, count, and process [filter_then_count_then_iterate]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/merge.go:100 function MergePDFs appends to a slice inside a range loop without visible preallocation [slice_append_without_prealloc_known_bound]
@@ -1101,6 +1108,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/redactor.go:24 function NewRedactor calls errors.New multiple times with static strings [errors_new_for_static_sentinel]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/redactor.go:56 function GetPageInfo calls errors.New multiple times with static strings [errors_new_for_static_sentinel]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/redactor.go:138 function AnalyzePageCapabilities allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/redactor.go:138 function AnalyzePageCapabilities appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/redactor.go:138 function AnalyzePageCapabilities recreates scratch slices inside a loop [make_slice_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/redactor.go:180 function ApplyRedactionsAdvancedWithReport uses an overly descriptive name [overlong_name]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/redactor.go:182 function ApplyRedactionsAdvancedWithReport calls errors.New multiple times with static strings [errors_new_for_static_sentinel]
@@ -1129,6 +1137,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/secure.go:50 function applySecureContentRedactions appends to a slice inside a range loop without visible preallocation [slice_append_without_prealloc_known_bound]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/secure.go:50 function applySecureContentRedactions appends to warnings in a loop without a capacity hint [slice_grow_without_cap_hint]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/secure.go:54 function applySecureContentRedactions allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/secure.go:54 function applySecureContentRedactions appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/secure.go:54 function applySecureContentRedactions recreates scratch maps inside a loop [make_map_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/secure.go:62 function applySecureContentRedactions appends to a slice inside a range loop without visible preallocation [slice_append_without_prealloc_known_bound]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/redact/secure.go:62 function applySecureContentRedactions appends to warnings in a loop without a capacity hint [slice_grow_without_cap_hint]
@@ -1176,6 +1185,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:67 function ConvertSVGToPDFCommands uses bytes.Buffer without Grow when approximate size is locally visible [bytes_buffer_without_grow_known_bound]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:98 function ConvertSVGToPDFCommands inserts into a map in a loop without a visible size hint [map_growth_without_size_hint]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:110 function ConvertSVGToPDFCommands allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:110 function ConvertSVGToPDFCommands appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:110 function ConvertSVGToPDFCommands recreates scratch maps inside a loop [make_map_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:110 function ConvertSVGToPDFCommands clones maps inside a loop [repeated_map_clone_in_loop]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:124 function ConvertSVGToPDFCommands formats strings with fmt inside a loop [fmt_hot_path]
@@ -1210,6 +1220,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:604 function parsePathData formats strings with fmt inside a loop [fmt_hot_path]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/types.go:9 package variable pageSizes is mutated across function bodies [mutable_package_global]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/typst_math_test.go:125 function TestTypstMathStress_GenerateTemplatePDFWithIntegrals concatenates strings inside a loop [string_concat_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/typst_math_test.go:290 function TestTypstMathStress_GenerateEquationBankPDF appears to concatenate strings inside a nested loop [likely_n_squared_string_concat]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/typst_math_test.go:290 function TestTypstMathStress_GenerateEquationBankPDF concatenates strings inside a loop [string_concat_in_loop]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/typst_math_test.go:421 function TestTypstMathStress_GenerateImageStyleShowcasePDF concatenates strings inside a loop [string_concat_in_loop]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/utils.go:14 package variable hexNibble is mutated across function bodies [mutable_package_global]
@@ -1421,6 +1432,7 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/typstsyntax/renderer.go:388 function layoutRoot appends to elements in a loop without a capacity hint [slice_grow_without_cap_hint]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/typstsyntax/renderer.go:424 function layoutGroup appends to elements in a loop without a capacity hint [slice_grow_without_cap_hint]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/typstsyntax/renderer.go:477 function layoutMatrixGrid allocates new objects inside a loop [allocation_churn_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/typstsyntax/renderer.go:477 function layoutMatrixGrid appears to allocate inside a nested loop [likely_n_squared_allocation]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/typstsyntax/renderer.go:477 function layoutMatrixGrid recreates scratch slices inside a loop [make_slice_inside_hot_loop_same_shape]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/typstsyntax/renderer.go:547 function layoutMatrixGrid appends to a slice inside a range loop without visible preallocation [slice_append_without_prealloc_known_bound]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/typstsyntax/renderer.go:547 function layoutMatrixGrid appends to elements in a loop without a capacity hint [slice_grow_without_cap_hint]

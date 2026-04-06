@@ -182,7 +182,7 @@ Inputs:
 - `json`: Emit JSON output. Defaults to `false`. Optional.
 - `details`: Include full per-function fingerprint details in scan output. Applies only to the scan command. Defaults to `false`. Optional.
 - `no-ignore`: Scan without respecting .gitignore. Defaults to `false`. Optional.
-- `enable-semantic`: Force the deeper semantic Go heuristics on for a run. Defaults to `false`. Optional.
+- `enable-semantic`: Enable the opt-in deeper semantic Go heuristics. Defaults to `false`. Optional.
 - `fail-on-findings`: Exit with a non-zero status code when scan findings are present. Applies only to the scan command. Defaults to `true`. Optional.
 - `repeats`: Benchmark repeat count. Applies only to the bench command. Defaults to `5`. Optional.
 - `warmups`: Benchmark warmup count. Applies only to the bench command. Defaults to `1`. Optional.
