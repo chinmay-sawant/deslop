@@ -9,6 +9,7 @@ type SectionId =
   | 'cli-commands'
   | 'pipeline'
   | 'limitations'
+  | 'why-this-exists'
   | 'about'
 
 interface NavSection {
@@ -47,6 +48,7 @@ const sections: NavSection[] = [
   { id: 'cli-commands', label: 'CLI Commands', icon: '❯' },
   { id: 'pipeline', label: 'Pipeline', icon: '◎' },
   { id: 'limitations', label: 'Limitations', icon: '△' },
+  { id: 'why-this-exists', label: 'Why This Exists', icon: '✦' },
   { id: 'about', label: 'About', icon: '♡' },
 ]
 

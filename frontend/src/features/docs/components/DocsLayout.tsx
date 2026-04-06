@@ -321,10 +321,33 @@ export function DocsLayout({
 
           <h2 className="docs-h2">Repository config</h2>
           <p className="docs-p">
-            Repository-local behavior can also be tuned with a <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>.deslop.toml</code>
-            file at the scan root. The current config surface supports disabled rules, severity overrides, suppressed path prefixes, the opt-in Go semantic pack, and the staged Rust async pack toggle.
+            Repository-local behavior can be tuned with a <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>.deslop.toml</code> file at the scan root.
+            Place it in the directory you pass to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>deslop scan</code>.
           </p>
           <CodeBlock code={repositoryConfigExample} />
+          <table className="cli-table" style={{ marginTop: '1.25rem' }}>
+            <colgroup>
+              <col className="cli-col-command" />
+              <col className="cli-col-description" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>What it does</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>go_semantic_experimental</td><td>Set to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>true</code> to enable the opt-in deeper semantic Go heuristics — nested-loop allocation/string-build checks and stronger N+1 escalation. Defaults to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>false</code>.</td></tr>
+              <tr><td>rust_async_experimental</td><td>Set to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>false</code> to disable the Rust async rule pack for the repository. Defaults to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>true</code>.</td></tr>
+              <tr><td>disabled_rules</td><td>Array of rule IDs to remove entirely from the emitted findings for this repository.</td></tr>
+              <tr><td>suppressed_paths</td><td>Array of relative path prefixes. Findings under matching paths are filtered out after analysis.</td></tr>
+              <tr><td>[severity_overrides]</td><td>Map of rule ID to new severity string. Rewrites the emitted severity after analysis without disabling the rule.</td></tr>
+            </tbody>
+          </table>
+          <p className="docs-p" style={{ marginTop: '1rem' }}>
+            To ignore rule IDs for a single run without touching the repository config, use <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>--ignore</code>:
+          </p>
+          <CodeBlock code="deslop scan --ignore hallucinated_import_call,hallucinated_local_call ." />
 
           <h2 className="docs-h2">Output modes</h2>
           <p className="docs-p">Text output (default) prints the scan summary plus the standard finding set. JSON output is available for pipeline integration. The --details flag adds per-function fingerprint data to either output mode.</p>
@@ -336,6 +359,38 @@ deslop scan --json . > results.json
 
 # Full detail output
 deslop scan --details --json .`} />
+
+          <h2 className="docs-h2">Build from source</h2>
+          <p className="docs-p">
+            Build a native release binary for your current platform:
+          </p>
+          <CodeBlock code="cargo build --release" />
+          <p className="docs-p">
+            The binary is written to <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>target/release/deslop</code> on Unix-like systems and <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>target/release/deslop.exe</code> on Windows.
+          </p>
+          <p className="docs-p">Cross-compile for other supported platforms by adding the matching Rust target first, then building with the target flag:</p>
+          <CodeBlock code={`# Add the targets you need
+rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin x86_64-unknown-linux-gnu
+
+# Build for each target
+cargo build --release --target x86_64-pc-windows-gnu
+cargo build --release --target x86_64-apple-darwin
+cargo build --release --target x86_64-unknown-linux-gnu`} />
+          <p className="docs-p">
+            Cross-compiled binaries land under <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>target/&lt;target-triple&gt;/release/</code>. Adjust the triple to match the architecture you want to ship.
+          </p>
+
+          <h2 className="docs-h2">VS Code finding opener</h2>
+          <div className="docs-callout" style={{ borderLeftColor: 'var(--border-strong)', background: 'var(--accent-soft)' }}>
+            <p>
+              <strong>Experimental helper.</strong> If you review scan output in Visual Studio Code, the <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem' }}>vscode-finding-opener</code> extension lets you jump directly from a finding to the relevant line in the editor — no copy-paste required.
+            </p>
+          </div>
+          <p className="docs-p">
+            The helper is a small VS Code extension bundled inside the repository under <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>vscode-finding-opener/</code>.
+            It reads the <code style={{ fontFamily: 'var(--mono-font)', fontSize: '0.8rem', color: 'var(--code)' }}>path:line</code> entries from deslop scan output and opens each finding in the editor for fast triage.
+            See the <a className="docs-link" href="https://github.com/chinmay-sawant/deslop/tree/main/vscode-finding-opener" target="_blank" rel="noreferrer">vscode-finding-opener README</a> for installation, usage, and troubleshooting notes.
+          </p>
         </div>
 
         {/* PIPELINE */}
@@ -435,12 +490,114 @@ deslop scan --details --json .`} />
           </div>
         </div>
 
+        {/* WHY THIS EXISTS */}
+        <div className={`docs-section${activeSection === 'why-this-exists' ? ' active' : ''}`}>
+          <div className="docs-eyebrow" style={{ color: 'var(--muted)' }}>Why This Exists</div>
+          <h1 className="docs-h1">The Last Checkpoint That Does Not Argue Back.</h1>
+          <p className="docs-lead">
+            LLMs are getting faster, cheaper, and more capable — but they still ship patterns you would not want in production. Deslop is the static layer that does not hallucinate, does not drift, and does not need a prompt.
+          </p>
+
+          <div className="docs-callout" style={{ borderLeftColor: 'var(--border-strong)', background: 'var(--accent-soft)', marginBottom: '2rem' }}>
+            <p>
+              These are the ten honest reasons this tool was built. None of them require you to stop using LLMs — they just explain why a rule-based pass after the model still earns its place.
+            </p>
+          </div>
+
+          <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {[
+              {
+                n: '01',
+                title: 'You are probably using a smaller, faster model',
+                body: 'Not every workflow runs on the most capable frontier model. Lighter models cut latency and cost but miss the edge-case logic, failure paths, and naming discipline a senior reviewer would flag. Deslop finds the pattern regardless of which model generated the code.',
+              },
+              {
+                n: '02',
+                title: 'LLMs hallucinate even with perfect prompts',
+                body: 'Precise markdown, structured skills, and thorough context reduce hallucination — they do not eliminate it. A model can confidently reference a function that does not exist, a package it cannot import, or a pattern your codebase has never used. Rule-based detection does not hallucinate.',
+              },
+              {
+                n: '03',
+                title: 'This is the last checkzone before code ships',
+                body: 'After the model, before the reviewer. Deslop is the checkpoint that asks the questions no one else asked: does this code follow the patterns we actually care about? No re-prompting. No second opinion from the same source.',
+              },
+              {
+                n: '04',
+                title: 'Future-proof against LLM price spikes',
+                body: 'If API costs double next quarter, you switch to a cheaper model without lowering your quality floor. The rules stay the same. The safety net stays in place. Capability and cost can move independently when you have a static validation layer.',
+              },
+              {
+                n: '05',
+                title: 'Actionable by engineers, not delegated back to LLMs',
+                body: 'You read the rule ID. You read the evidence. You decide if it is a real problem. No re-prompting a model to review its own output. Easier to detect, easier to fix — by a human, not by the system that created the issue.',
+              },
+              {
+                n: '06',
+                title: 'Static rules do not drift with model versions',
+                body: 'When a provider ships updated weights, your generated output changes. Deslop\'s rules do not. The same check runs with the same result on every scan, every version, every model, every team.',
+              },
+              {
+                n: '07',
+                title: 'Works offline, costs nothing per invocation',
+                body: 'No API call. No token burn. No rate limit. No data leaving your machine. Run it as many times as you want in CI, locally, or in an air-gapped environment. The only cost is the two seconds it takes to scan a repository.',
+              },
+              {
+                n: '08',
+                title: 'An LLM reviewing its own output has no incentive to fail it',
+                body: 'Asking a model to review code it generated introduces a subtle bias toward validation. A static heuristic has no opinion about the author. It flags the pattern or it does not.',
+              },
+              {
+                n: '09',
+                title: 'Gives CI a language-native quality gate with no model in the loop',
+                body: 'Wire it in once and every future AI-assisted PR gets the same sweep automatically. No LLM token, no network call, no flaky API dependency — just a binary and a findings file.',
+              },
+              {
+                n: '10',
+                title: 'Keeps human review time focused on what matters',
+                body: 'When reviewers read findings backed by rule IDs and quoted evidence, they spend time on real problems instead of hunting for patterns a machine could have flagged. Deslop moves the boring part out of human review.',
+              },
+            ].map(({ n, title, body }) => (
+              <li key={n} style={{ display: 'grid', gridTemplateColumns: '3rem 1fr', gap: '1rem', alignItems: 'start' }}>
+                <span style={{ fontFamily: 'var(--mono-font)', fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', paddingTop: '0.25rem', letterSpacing: '0.05em' }}>{n}</span>
+                <div>
+                  <h3 style={{ margin: '0 0 0.4rem', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-strong)' }}>{title}</h3>
+                  <p className="docs-p" style={{ margin: 0 }}>{body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <div className="docs-callout" style={{ borderLeftColor: 'var(--border-strong)', background: 'var(--accent-soft)', marginTop: '2.5rem' }}>
+            <p style={{ margin: '0 0 0.75rem', fontWeight: 600, color: 'var(--text-strong)' }}>
+            This tool is currently in Beta.
+            </p>
+            <p style={{ margin: '0 0 0.75rem' }}>
+              This tool is not production-grade and does not claim to be. It is a beta-stage experiment built with the intention of doing the job well. The rule set is growing, the patterns are expanding, and every release gets closer to the best-practice coverage we are aiming for. Expect rough edges — and expect them to get filed down.
+            </p>
+            <p style={{ margin: '0 0 0.75rem' }}>
+              The roadmap includes more detection patterns, better language coverage, and tighter alignment with community best-practice guides. This is a long-term project, not a one-shot release.
+            </p>
+            <p style={{ margin: 0 }}>
+              Want to help? You can contribute by raising a PR or opening a ticket on GitHub —{' '}
+              <a
+                href="https://github.com/chinmay-sawant/deslop"
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: 'var(--text-strong)', textDecoration: 'underline', textDecorationColor: 'var(--border-strong)', textUnderlineOffset: '3px' }}
+              >
+                github.com/chinmay-sawant/deslop
+              </a>
+              . Every idea, bug report, and pattern suggestion moves this forward.
+            </p>
+          </div>
+        </div>
+
         {/* ABOUT */}
         <div className={`docs-section${activeSection === 'about' ? ' active' : ''}`}>
           <div className="docs-eyebrow" style={{ color: 'var(--muted)' }}>About</div>
-          <h1 className="docs-h1">A "Sloppy" Attempt at a Slop Detector.</h1>
+          <h1 className="docs-h1">Deslop: The Bad Practice Detector.</h1>
           <p className="docs-lead">
-            This is an early-stage experiment in identifying AI-generated slop.
+           An early-stage experiment focused on filtering out worst practices and highlighting what works best.
           </p>
           <h3>The Philosophy</h3>
           <p className="docs-p">
@@ -452,9 +609,8 @@ deslop scan --details --json .`} />
 
           <div className="docs-callout" style={{ borderLeftColor: 'var(--border-strong)', background: 'var(--accent-soft)' }}>
             <p>
-              Before coming @ me — I am trying to solve a real problem. The project is mostly vibecoded,
-              but the architecture is thought through as per my best knowledge. Instead of calling this slop,
-              let's try to work together if you want. Send me more ideas by{' '}
+              I built this to solve a real problem I was facing. Full disclosure: the code itself is mostly 'vibecoded' right now, but I’ve put a lot of thought into the core architecture. I’d love to make this better, so I'm very open to constructive feedback. If you have ideas or see room for improvement, let's collaborate! Feel free to open an issue so we can discuss.
+              Send me more ideas by{' '}
               <a
                 href="https://github.com/chinmay-sawant/deslop/issues/new"
                 target="_blank"
