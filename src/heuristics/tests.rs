@@ -7,7 +7,22 @@ use super::common::{
 fn detects_generic_names() {
     assert!(is_generic_name(&normalize_name("processData")));
     assert!(is_generic_name(&normalize_name("formatResponse")));
+    assert!(is_generic_name("convertPayload"));
     assert!(!is_generic_name(&normalize_name("BuildCustomerLedger")));
+}
+
+#[test]
+fn rejects_domain_mixed_names() {
+    // Names that mix generic tokens with domain-specific tokens must not fire.
+    assert!(!is_generic_name("handleGetFonts")); // two action tokens + domain noun
+    assert!(!is_generic_name("applyTransform")); // two action tokens, no object
+    assert!(!is_generic_name("generateAllContentWithImages")); // domain tokens present
+    assert!(!is_generic_name("ConvertPDFDateToXMP")); // acronym domain tokens
+    assert!(!is_generic_name("GenerateICCProfileObject")); // domain iccprofile token
+    assert!(!is_generic_name("generateOutlineObjects")); // domain outline token
+    assert!(!is_generic_name("createPKCS7SignedData")); // domain pkcs7signed token
+    assert!(!is_generic_name("GetUserInfo")); // info is not a generic object token
+    assert!(!is_generic_name("handleGenerateTemplatePDF")); // two actions + domain
 }
 
 #[test]

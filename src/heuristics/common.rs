@@ -1,18 +1,113 @@
 use std::collections::{BTreeMap, BTreeSet};
+use std::sync::OnceLock;
 
 use crate::analysis::{CallSite, ImportSpec};
 
-const SUSPICIOUS_GENERIC_NAMES: &[&str] = &[
-    "processdata",
-    "handlerequest",
-    "executetask",
-    "convertvalue",
-    "validateinput",
-    "transformdata",
-    "parsedata",
-    "formatresponse",
-    "processrequest",
+const GENERIC_ACTION_TOKENS: &[&str] = &[
+    "process",
+    "handle",
+    "execute",
+    "convert",
+    "validate",
+    "transform",
+    "parse",
+    "format",
+    "build",
+    "create",
+    "update",
+    "manage",
+    "load",
+    "save",
+    "fetch",
+    "get",
+    "set",
+    "make",
+    "apply",
+    "generate",
+    "resolve",
+    "derive",
+    "assemble",
+    "render",
+    "normalize",
 ];
+const GENERIC_OBJECT_TOKENS: &[&str] = &[
+    "data",
+    "request",
+    "response",
+    "input",
+    "output",
+    "payload",
+    "value",
+    "values",
+    "task",
+    "tasks",
+    "item",
+    "items",
+    "record",
+    "records",
+    "object",
+    "objects",
+    "entity",
+    "entities",
+    "model",
+    "models",
+    "result",
+    "results",
+    "message",
+    "messages",
+    "file",
+    "files",
+    "content",
+    "buffer",
+    "params",
+    "parameter",
+    "parameters",
+];
+const GENERIC_CONTEXT_TOKENS: &[&str] = &[
+    "user", "users", "config", "configs", "settings", "state", "schema", "plan", "job", "jobs",
+    "service", "services",
+];
+const GENERIC_CONNECTOR_TOKENS: &[&str] = &["and", "or", "with", "for", "to", "from", "into", "by"];
+
+fn generic_name_templates() -> &'static BTreeSet<String> {
+    static TEMPLATES: OnceLock<BTreeSet<String>> = OnceLock::new();
+    TEMPLATES.get_or_init(|| {
+        let mut templates = BTreeSet::new();
+
+        for action in GENERIC_ACTION_TOKENS {
+            for object in GENERIC_OBJECT_TOKENS {
+                templates.insert(format!("{action}{object}"));
+                for context in GENERIC_CONTEXT_TOKENS {
+                    templates.insert(format!("{action}{context}{object}"));
+                }
+            }
+        }
+
+        templates
+    })
+}
+
+fn generic_name_tokens() -> &'static BTreeSet<&'static str> {
+    static TOKENS: OnceLock<BTreeSet<&'static str>> = OnceLock::new();
+    TOKENS.get_or_init(|| {
+        let mut tokens = BTreeSet::new();
+
+        for token in GENERIC_ACTION_TOKENS {
+            tokens.insert(*token);
+        }
+        for token in GENERIC_OBJECT_TOKENS {
+            tokens.insert(*token);
+        }
+        for token in GENERIC_CONTEXT_TOKENS {
+            tokens.insert(*token);
+        }
+        for token in GENERIC_CONNECTOR_TOKENS {
+            tokens.insert(*token);
+        }
+
+        tokens
+    })
+}
 
 const GO_BUILTINS: &[&str] = &[
     "append", "cap", "clear", "close", "complex", "copy", "delete", "imag", "len", "make", "max",
@@ -175,32 +270,40 @@ pub(super) fn normalize_name(name: &str) -> String {
 }
 
 pub(super) fn is_generic_name(name: &str) -> bool {
-    if SUSPICIOUS_GENERIC_NAMES.contains(&name) {
+    let normalized = normalize_name(name);
+    if generic_name_templates().contains(&normalized) {
         return true;
     }
 
-    let generic_tokens = BTreeSet::from([
-        "process",
-        "handle",
-        "execute",
-        "convert",
-        "validate",
-        "transform",
-        "parse",
-        "format",
-        "request",
-        "response",
-        "data",
-        "input",
-        "output",
-        "task",
-        "value",
-    ]);
-    generic_tokens
+    let tokens = identifier_tokens(name);
+    if tokens.len() < 2 {
+        return false;
+    }
+
+    let generic_token_count = tokens
         .iter()
-        .filter(|token| name.contains(*token))
-        .count()
-        >= 2
+        .filter(|token| generic_name_tokens().contains(token.as_str()))
+        .count();
+    let has_action = tokens
+        .iter()
+        .any(|token| GENERIC_ACTION_TOKENS.contains(&token.as_str()));
+    let has_object = tokens
+        .iter()
+        .any(|token| GENERIC_OBJECT_TOKENS.contains(&token.as_str()));
+    let has_context = tokens
+        .iter()
+        .any(|token| GENERIC_CONTEXT_TOKENS.contains(&token.as_str()));
+
+    // Tokens that belong to no generic vocabulary are domain-specific signals.
+    // When any domain token is present the name has specificity, so only flag
+    // when the entire token set consists of generic vocabulary entries.
+    let domain_token_count = tokens.len() - generic_token_count;
+    let all_generic = domain_token_count == 0;
+
+    all_generic
+        && (generic_token_count >= 3
+            || (has_action && has_object)
+            || (has_action && has_context && has_object))
 }
 
 pub(super) fn is_builtin(name: &str) -> bool {
