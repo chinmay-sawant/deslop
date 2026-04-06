@@ -8,6 +8,10 @@ use crate::model::SymbolKind;
 
 use super::{PackageIndex, PackageKey, RepositoryIndex};
 
+type RustChildModules = BTreeMap<PathBuf, BTreeMap<String, Vec<PathBuf>>>;
+type RustParentModules = BTreeMap<PathBuf, Vec<PathBuf>>;
+type RustCrateRoots = BTreeMap<PathBuf, Vec<PathBuf>>;
+
 pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> RepositoryIndex {
     let mut packages = BTreeMap::new();
     let mut rust_package_names_by_file = BTreeMap::new();
@@ -116,18 +120,14 @@ fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
 
 fn build_rust_module_graph(
     files: &[ParsedFile],
-) -> (
-    BTreeMap<PathBuf, BTreeMap<String, Vec<PathBuf>>>,
-    BTreeMap<PathBuf, Vec<PathBuf>>,
-    BTreeMap<PathBuf, Vec<PathBuf>>,
-) {
+) -> (RustChildModules, RustParentModules, RustCrateRoots) {
     let rust_files = files
         .iter()
         .filter(|file| file.language == Language::Rust)
         .map(|file| file.path.clone())
         .collect::<BTreeSet<_>>();
-    let mut child_modules = BTreeMap::<PathBuf, BTreeMap<String, Vec<PathBuf>>>::new();
-    let mut parent_modules = BTreeMap::<PathBuf, Vec<PathBuf>>::new();
+    let mut child_modules = RustChildModules::new();
+    let mut parent_modules = RustParentModules::new();
 
     for file in files.iter().filter(|file| file.language == Language::Rust) {
         for declaration in file.rust_module_declarations() {
@@ -168,7 +168,7 @@ fn build_rust_module_graph(
         .cloned()
         .collect::<Vec<_>>();
 
-    let mut crate_roots = BTreeMap::<PathBuf, Vec<PathBuf>>::new();
+    let mut crate_roots = RustCrateRoots::new();
     for root in &roots {
         let mut visited = BTreeSet::new();
         assign_crate_root(root, root, &child_modules, &mut crate_roots, &mut visited);

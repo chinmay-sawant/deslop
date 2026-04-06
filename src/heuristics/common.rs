@@ -290,20 +290,13 @@ pub(super) fn is_generic_name(name: &str) -> bool {
     let has_object = tokens
         .iter()
         .any(|token| GENERIC_OBJECT_TOKENS.contains(&token.as_str()));
-    let has_context = tokens
-        .iter()
-        .any(|token| GENERIC_CONTEXT_TOKENS.contains(&token.as_str()));
-
     // Tokens that belong to no generic vocabulary are domain-specific signals.
     // When any domain token is present the name has specificity, so only flag
     // when the entire token set consists of generic vocabulary entries.
     let domain_token_count = tokens.len() - generic_token_count;
     let all_generic = domain_token_count == 0;
 
-    all_generic
-        && (generic_token_count >= 3
-            || (has_action && has_object)
-            || (has_action && has_context && has_object))
+    all_generic && (generic_token_count >= 3 || (has_action && has_object))
 }
 
 pub(super) fn is_builtin(name: &str) -> bool {
