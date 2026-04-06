@@ -2,10 +2,10 @@ deslop scan root: /home/chinmay/ChinmayPersonalProjects/gopdfsuit
 Source files discovered: 125
 Source files analyzed: 125
 Functions fingerprinted: 876
-Findings: 1457
+Findings: 1456
 Index summary: packages=63 symbols=1129 imports=755
 Parse failures: 0
-Timings: discover=84ms parse=912ms index=11ms heuristics=473ms total=1482ms
+Timings: discover=66ms parse=771ms index=5ms heuristics=429ms total=1273ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/_bindings.py:156 public function get_lib omits complete type hints [public_api_missing_type_hints]
@@ -1201,7 +1201,6 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:267 function applyTransform formats strings with fmt inside a loop [fmt_hot_path]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:281 function extractArgs uses strings.ReplaceAll for single character replacement [strings_replace_all_for_single_char]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:360 function parseColorComponent checks HasSuffix then TrimSuffix (use CutSuffix) [strings_hassuffix_then_trimsuffix]
-  - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:454 function parsePathData uses a generic name without strong domain-specific signals [generic_name]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:456 function parsePathData uses strings.ReplaceAll for single character replacement [strings_replace_all_for_single_char]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:459 function parsePathData concatenates strings inside a loop [string_concat_in_loop]
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/internal/pdf/svg/svg.go:459 function parsePathData uses strings.ReplaceAll for single character replacement [strings_replace_all_for_single_char]

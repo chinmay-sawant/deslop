@@ -3,7 +3,7 @@ use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
-use super::common::{identifier_token_count, is_generic_name, normalize_name};
+use super::common::{identifier_token_count, is_generic_name};
 
 pub(super) fn overlong_finding(file: &ParsedFile, function: &ParsedFunction) -> Option<Finding> {
     if function.is_test_function {
@@ -41,8 +41,7 @@ pub(super) fn generic_finding(file: &ParsedFile, function: &ParsedFunction) -> O
         return None;
     }
 
-    let normalized = normalize_name(&function.fingerprint.name);
-    if !is_generic_name(&normalized) {
+    if !is_generic_name(&function.fingerprint.name) {
         return None;
     }
 
