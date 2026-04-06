@@ -3,7 +3,7 @@
 
 This script reads a findings file such as ``temp_gopdfsuit.txt`` and writes a
 single consolidated text file to ``scripts/temp.txt``. By default each finding
-block only includes the rule description, the auto-triage note, and the code
+block includes the file path, rule description, auto-triage note, and code
 context. Pass ``--details`` to emit the full metadata-rich block instead.
 """
 
@@ -332,6 +332,7 @@ def _build_context_block(
     else:
         block_lines.extend(
             [
+                f"Source: {finding.file_path}:{finding.line_no}",
                 f"Rule description: {description}",
                 f"Auto triage note: {auto_reason}",
                 "Code:",

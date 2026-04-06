@@ -225,6 +225,7 @@ python3 scripts/extract_finding_context.py temp_gopdfsuit.txt
 
 That command reads the `path:line` entries from `temp_gopdfsuit.txt`, extracts the requested code context, and rewrites `scripts/temp.txt` with one consolidated block per finding. By default each block only includes:
 
+- `Source`
 - `Rule description`
 - `Auto triage note`
 - `Code`
