@@ -86,7 +86,20 @@ export type ReleaseAssetManifest = {
   assets: ReleaseAsset[]
 }
 
-export const currentRelease = releaseAssetsData as ReleaseAssetManifest
+export type ReleaseCatalogManifest = {
+  currentVersion: string
+  releases: ReleaseAssetManifest[]
+}
+
+export const releaseCatalog = releaseAssetsData as ReleaseCatalogManifest
+
+export const releaseHistory = releaseCatalog.releases
+
+export const currentRelease =
+  releaseHistory.find((release) => release.version === releaseCatalog.currentVersion) ?? releaseHistory[0]
+
+export const getReleaseByVersion = (version: string) =>
+  releaseHistory.find((release) => release.version === version)
 
 const linuxReleaseAsset =
   currentRelease.assets.find((asset) => asset.id === 'linux-x86_64') ?? currentRelease.assets[0]
@@ -260,14 +273,15 @@ export const quickStartItems: QuickStartItem[] = [
     linkHref: siteMetadata.crates.url,
   },
   {
-    label: `Download the ${currentRelease.version} binaries`,
+    label: 'Download release binaries',
     channel: 'Binary',
-    description: 'Grab the already published Linux, macOS, or Windows release asset when you want a prebuilt binary immediately.',
+    description:
+      'Choose the latest release by default, or switch back to the previous tag when you want to compare assets or keep an older install path available.',
     snippet: [
-      `${currentRelease.version} release assets`,
-      ...currentRelease.assets.map((asset) => asset.fileName),
+      'Select a release tag below.',
+      ...releaseHistory.map((release) => `${release.version} -> ${release.assets.length} assets`),
     ],
-    linkLabel: 'Open GitHub release assets',
+    linkLabel: 'Open latest GitHub release assets',
     linkHref: siteMetadata.github.releaseUrl,
   },
   {
