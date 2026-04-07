@@ -67,7 +67,12 @@ pub(crate) fn file_attributes(file: &ParsedFile) -> &[crate::analysis::RustAttri
 }
 
 pub(crate) fn is_test_like(file: &ParsedFile, function: Option<&ParsedFunction>) -> bool {
-    function.is_some_and(|function| function.is_test_function) || file.is_test_file
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+    function.is_some_and(|function| function.is_test_function)
+        || file.is_test_file
+        || path.ends_with("/tests.rs")
+        || path.ends_with("/test_support.rs")
+        || path.contains("/test_support/")
 }
 
 pub(crate) fn is_main_like_file(file: &ParsedFile) -> bool {

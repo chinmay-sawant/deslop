@@ -9,7 +9,7 @@ use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
-use super::{contains_any, first_line_with_any, is_test_like};
+use super::{contains_any, first_line_with_any, is_scanner_infra_file, is_test_like};
 use super::{file_finding, function_finding};
 
 pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
@@ -132,7 +132,7 @@ pub(crate) fn security_footguns_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if is_test_like(file, Some(function)) {
+    if is_test_like(file, Some(function)) || is_scanner_infra_file(file) {
         return Vec::new();
     }
 

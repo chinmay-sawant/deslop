@@ -1,14 +1,14 @@
 ## narrowing_as_casts
-src/heuristics/rust/mod.rs:110:        " as u8",
-src/heuristics/rust/mod.rs:111:        " as u16",
-src/heuristics/rust/mod.rs:112:        " as u32",
-src/heuristics/rust/mod.rs:113:        " as u64",
-src/heuristics/rust/mod.rs:114:        " as usize",
-src/heuristics/rust/mod.rs:115:        " as i8",
-src/heuristics/rust/mod.rs:116:        " as i16",
-src/heuristics/rust/mod.rs:117:        " as i32",
-src/heuristics/rust/mod.rs:118:        " as i64",
-src/heuristics/rust/mod.rs:119:        " as isize",
+src/heuristics/rust/mod.rs:115:        " as u8",
+src/heuristics/rust/mod.rs:116:        " as u16",
+src/heuristics/rust/mod.rs:117:        " as u32",
+src/heuristics/rust/mod.rs:118:        " as u64",
+src/heuristics/rust/mod.rs:119:        " as usize",
+src/heuristics/rust/mod.rs:120:        " as i8",
+src/heuristics/rust/mod.rs:121:        " as i16",
+src/heuristics/rust/mod.rs:122:        " as i32",
+src/heuristics/rust/mod.rs:123:        " as i64",
+src/heuristics/rust/mod.rs:124:        " as isize",
 
 ## split_at_and_indexing
 src/analysis/python/parser/general/imports.rs:140:                return &line[..index];
@@ -57,7 +57,7 @@ src/heuristics/python/packaging.rs:329:        [first, ..] => Some(*first),
 src/heuristics/python/quality/mod.rs:203:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:85:    for (offset, character) in signature_text[start..].char_indices() {
-src/heuristics/rust/module_surface.rs:92:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
+src/heuristics/rust/module_surface.rs:90:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
 src/heuristics/rust/performance.rs:354:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:361:    line[start + marker.len()..].starts_with('/')
 src/heuristics/rust/performance.rs:442:                let receiver = &line[start..index];
@@ -90,7 +90,7 @@ src/heuristics/rust/boundary.rs:209: check-then-open candidate after line 203:  
 
 ## secret_comparisons
 src/analysis/rust/parser/tests.rs:90:            .any(|name| name == "password")
-src/heuristics/rust/mod.rs:260:        .any(|token| normalized == *token || normalized.contains(token))
+src/heuristics/rust/mod.rs:265:        .any(|token| normalized == *token || normalized.contains(token))
 src/rules/catalog/go/security.rs:631:        description: "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
 tests/integration_scan/security.rs:29:            .any(|finding| finding.rule_id == "hardcoded_secret")
 tests/integration_scan/security.rs:44:            .any(|finding| finding.rule_id == "hardcoded_secret")

@@ -1,6 +1,11 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+fn is_test_support_file(file: &ParsedFile) -> bool {
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+    file.is_test_file || path.ends_with("/tests.rs") || path.ends_with("/test_support.rs")
+}
+
 pub(super) fn unsafe_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let rust = function.rust_evidence();
 
@@ -30,7 +35,7 @@ pub(super) fn non_test_macro_findings(
     rule_id: &str,
     message_suffix: &str,
 ) -> Vec<Finding> {
-    if function.is_test_function {
+    if function.is_test_function || is_test_support_file(file) {
         return Vec::new();
     }
 
@@ -58,7 +63,7 @@ pub(super) fn non_test_call_findings(
     rule_id: &str,
     message_suffix: &str,
 ) -> Vec<Finding> {
-    if function.is_test_function {
+    if function.is_test_function || is_test_support_file(file) {
         return Vec::new();
     }
 

@@ -1,5 +1,3 @@
-use std::collections::BTreeSet;
-
 use crate::analysis::ParsedFile;
 use crate::model::{Finding, Severity};
 
@@ -130,14 +128,13 @@ fn oversized_module_findings(file: &ParsedFile) -> Vec<Finding> {
         .filter(|function| !function.is_test_function)
         .count()
         + file
-            .imports
-            .iter()
-            .map(|import| import.group_line)
-            .collect::<BTreeSet<_>>()
-            .len()
-        + file
             .rust_data()
-            .map(|data| data.structs.len() + data.rust_enums.len() + data.rust_statics.len())
+            .map(|data| {
+                data.structs.len()
+                    + data.rust_enums.len()
+                    + data.rust_statics.len()
+                    + data.module_declarations.len()
+            })
             .unwrap_or(0);
     if top_level_count < 18 || file.line_count < 40 {
         return Vec::new();
@@ -194,9 +191,7 @@ fn public_surface_findings(file: &ParsedFile) -> Vec<Finding> {
         });
     }
 
-    if (file.path.ends_with("lib.rs") || file.path.ends_with("mod.rs"))
-        && public_reexports.len() >= 5
-    {
+    if file.path.ends_with("lib.rs") && public_reexports.len() >= 5 {
         findings.push(Finding {
             rule_id: "rust_root_reexport_wall".to_string(),
             severity: Severity::Info,
@@ -224,13 +219,21 @@ fn mod_rs_findings(file: &ParsedFile) -> Vec<Finding> {
         return Vec::new();
     }
 
-    let top_level_count = file.functions.len()
-        + file.imports.len()
+    let top_level_count = file
+        .functions
+        .iter()
+        .filter(|function| !function.is_test_function)
+        .count()
         + file
             .rust_data()
-            .map(|data| data.structs.len() + data.rust_enums.len() + data.rust_statics.len())
+            .map(|data| {
+                data.structs.len()
+                    + data.rust_enums.len()
+                    + data.rust_statics.len()
+                    + data.module_declarations.len()
+            })
             .unwrap_or(0);
-    if top_level_count < 10 {
+    if top_level_count < 10 || file.line_count < 40 {
         return Vec::new();
     }
 
