@@ -1,4 +1,4 @@
-# AI is flooding your Go, Python, and Rust code with slop. Deslop finds it in seconds.
+# Deslop: The lightning-fast bad practice detector for AI-generated code. Deslop finds it in seconds.
 
 deslop is a Rust-based static analyzer for Go, Python, and Rust repositories that focuses on signals commonly associated with low-context AI-generated code. It currently scans a repository, parses Go, Python, and Rust files with tree-sitter, extracts structural fingerprints for each function, builds a lightweight local package index, runs early heuristic checks, and can benchmark the pipeline against real repositories.
 
@@ -139,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: chinmay-sawant/deslop@v0.1.0
+      - uses: chinmay-sawant/deslop@v0.2.0
         with:
           path: .
 ```
@@ -150,7 +150,7 @@ Emit JSON and include per-function fingerprint details:
 <!-- GENERATED_ACTION_JSON_EXAMPLE_START -->
 ```yaml
 - uses: actions/checkout@v4
-- uses: chinmay-sawant/deslop@v0.1.0
+- uses: chinmay-sawant/deslop@v0.2.0
   with:
     path: .
     json: 'true'
@@ -164,7 +164,7 @@ Run a benchmark job instead of a scan:
 <!-- GENERATED_ACTION_BENCH_EXAMPLE_START -->
 ```yaml
 - uses: actions/checkout@v4
-- uses: chinmay-sawant/deslop@v0.1.0
+- uses: chinmay-sawant/deslop@v0.2.0
   with:
     command: bench
     path: .
