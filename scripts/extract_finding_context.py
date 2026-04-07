@@ -333,6 +333,7 @@ def _build_context_block(
         block_lines.extend(
             [
                 f"Source: {finding.file_path}:{finding.line_no}",
+                f"Rule: [{finding.rule_id}]",
                 f"Rule description: {description}",
                 f"Auto triage note: {auto_reason}",
                 "Code:",

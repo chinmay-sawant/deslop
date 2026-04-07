@@ -66,6 +66,10 @@ clean:
 	$(CARGO) clean
 	rm -f results.txt temp_gopdfsuit.txt temp_snapback.txt temp_claw.txt
 
+temp:
+	cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/claude-squad --no-fail > temp.txt
+	python3 scripts/extract_finding_context.py temp.txt
+
 # Display help for make targets
 help:
 	@echo "Deslop Makefile Targets:"
@@ -84,3 +88,4 @@ help:
 	@echo "  scan-snapback-info - Informational snapback scan that keeps output but does not fail make"
 	@echo "  scan-claw - Scan the claw project and save results to temp_claw.txt"
 	@echo "  scan-claw-info - Informational claw scan that keeps output but does not fail make"
+	@echo "  temp        - Run a temporary scan on the real repo project and process results"
