@@ -1,45 +1,42 @@
-# Rust Release Checklist
+# Release Checklist
 
-## Purpose
+This checklist is the shared release gate for deslop. Use it before cutting a release and before marking a release PR ready to merge.
 
-This checklist is the concrete Phase 4 release artifact for deslop's Rust backend. It is meant to be used when Rust support changes in observable ways, especially when parser evidence, local index behavior, or Rust-specific findings are added.
+## Required Commands
 
-## Validation Commands
+1. Run the release-related validation scripts from `scripts/`:
 
-- Run `cargo test --test integration_scan`.
-- Run full `cargo test`.
-- Run `cargo build --release`.
+```bash
+python3 scripts/corpus_harness.py validate
+```
 
-## Required Verification Coverage
+2. Run the full test suite:
 
-- Rust-only scan succeeds on fixture repositories.
-- Mixed Go/Rust scan succeeds without a language flag.
-- Malformed Rust fixtures remain recoverable and stay in the report with `syntax_error=true`.
-- Rust positive and negative rule-pack fixtures cover every shipped Rust rule.
-- Rust local imported-call hallucination checks cover `crate::`, `self::`, and `super::` imports.
-- Rust direct-call hallucination checks cover imported function aliases and same-module direct calls.
-- Mixed-language index separation still prevents Go and Rust symbols from merging in the same directory.
-- Existing Go integration tests still pass.
+```bash
+make test
+```
 
-## Documentation Sync
+No tests should be failing.
 
-- Update `README.md` when the observable Rust feature set changes.
-- Update `guides/features-and-detections.md` when new Rust rule IDs become user-visible.
-- Update `guides/implementation-guide.md` when Rust parser or index behavior changes materially.
-- Update `guides/rust/verification-performance-and-rollout.md` when rollout criteria or benchmark conventions change.
+3. Regenerate the frontend and README content:
 
-## Benchmark Note Requirements
+```bash
+python3 scripts/sync_docs.py
+```
 
-- Keep one repeatable Rust-only benchmark target in addition to the existing Go baseline.
-- Use `cargo run -- bench --warmups 2 --repeats 5 <path>` for recorded notes.
-- Record discovered files, analyzed files, functions, findings, parse failures, and stage timings together.
-- Keep the current recorded rollout snapshot in `guides/rust/benchmark-note.md`.
-- Do not treat benchmark differences as hard release blockers until the benchmark target set is stable.
+Review and include the generated changes before releasing.
 
-## Deferred Backlog To Recheck
+4. Run the security and hygiene checks:
 
-- Cargo workspace and crate-graph awareness.
-- Trait and impl resolution for stronger local-context checks.
-- Async-runtime-specific heuristics.
-- Allocation and clone-pattern heuristics.
-- Wildcard-import or visibility-discipline rules if the project wants them later.
+```bash
+bash scripts/check-rust-security.sh
+bash scripts/check_rust_hygiene.sh
+```
+
+## Exit Criteria
+
+- All commands above exit successfully.
+- `make test` completes with zero failing tests.
+- Generated changes from `python3 scripts/sync_docs.py` are reviewed and included.
+- `reports/rust-security-baseline/latest.txt` is reviewed if `check-rust-security.sh` reports new matches.
+- Do not cut the release or merge the release PR until every item above is complete.

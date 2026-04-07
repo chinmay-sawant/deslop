@@ -130,7 +130,7 @@ The repository PR template mirrors this checklist so the merge contract is visib
 
 ## Relationship To Other Guides
 
-- `guides/master-roadmap.md` defines the multi-phase roadmap.
-- `guides/implementation-guide.md` tells readers which guides are active.
-- `guides/features-and-detections.md` is the generated user-facing inventory of shipped rules.
-- `guides/release-checklist.md` remains the release-time verification checklist.
+- [master-roadmap.md](master-roadmap.md) defines the multi-phase roadmap.
+- [implementation-guide.md](implementation-guide.md) tells readers which guides are active.
+- [features-and-detections.md](features-and-detections.md) is the generated user-facing inventory of shipped rules.
+- [release-checklist.md](release-checklist.md) remains the release-time verification checklist.
