@@ -139,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: chinmay-sawant/deslop@v0.1.0
+      - uses: chinmay-sawant/deslop@v0.2.0
         with:
           path: .
 ```
@@ -150,7 +150,7 @@ Emit JSON and include per-function fingerprint details:
 <!-- GENERATED_ACTION_JSON_EXAMPLE_START -->
 ```yaml
 - uses: actions/checkout@v4
-- uses: chinmay-sawant/deslop@v0.1.0
+- uses: chinmay-sawant/deslop@v0.2.0
   with:
     path: .
     json: 'true'
@@ -164,7 +164,7 @@ Run a benchmark job instead of a scan:
 <!-- GENERATED_ACTION_BENCH_EXAMPLE_START -->
 ```yaml
 - uses: actions/checkout@v4
-- uses: chinmay-sawant/deslop@v0.1.0
+- uses: chinmay-sawant/deslop@v0.2.0
   with:
     command: bench
     path: .
