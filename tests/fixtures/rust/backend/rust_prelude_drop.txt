@@ -1,0 +1,4 @@
+-- path: /repo/src/lib.rs
+pub fn release(value: String) {
+    drop(value);
+}

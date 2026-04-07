@@ -1,0 +1,10 @@
+-- path: /repo/src/analysis/go/mod.rs
+use crate::heuristics::{evaluate_go_file, evaluate_go_repo};
+
+fn run() {
+    evaluate_go_file();
+    evaluate_go_repo();
+}
+-- path: /repo/src/heuristics/mod.rs
+pub fn evaluate_go_file() {}
+pub fn evaluate_go_repo() {}

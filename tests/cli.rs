@@ -12,7 +12,7 @@ use support::FixtureWorkspace;
 #[test]
 fn cli_scan_exits_zero_for_clean_code() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("main.go", "package main\n\nfunc main() {\n}\n");
+    workspace.write_file("main.go", &support::load_fixture("go/cli/clean_main.txt"));
 
     let output = run_cli(&["scan", workspace.root().to_str().unwrap()]);
 
@@ -26,11 +26,7 @@ fn cli_scan_exits_zero_for_clean_code() {
 #[test]
 fn cli_scan_exits_nonzero_for_findings() {
     let workspace = FixtureWorkspace::new();
-    // Overlong name + fmt.Sprintf in loop → guaranteed findings.
-    workspace.write_file(
-        "bad.go",
-        "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
-    );
+    workspace.write_file("bad.go", &support::load_fixture("go/cli/findings_main.txt"));
 
     let output = run_cli(&["scan", workspace.root().to_str().unwrap()]);
 
@@ -43,10 +39,7 @@ fn cli_scan_exits_nonzero_for_findings() {
 #[test]
 fn cli_scan_no_fail_exits_zero_even_with_findings() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(
-        "bad.go",
-        "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
-    );
+    workspace.write_file("bad.go", &support::load_fixture("go/cli/findings_main.txt"));
 
     let output = run_cli(&["scan", workspace.root().to_str().unwrap(), "--no-fail"]);
 
@@ -60,7 +53,7 @@ fn cli_scan_no_fail_exits_zero_even_with_findings() {
 #[test]
 fn cli_scan_json_produces_valid_json() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("main.go", "package main\n\nfunc main() {\n}\n");
+    workspace.write_file("main.go", &support::load_fixture("go/cli/clean_main.txt"));
 
     let output = run_cli(&[
         "scan",
@@ -76,10 +69,7 @@ fn cli_scan_json_produces_valid_json() {
 #[test]
 fn cli_scan_ignore_flag_suppresses_specific_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(
-        "bad.go",
-        "package main\n\nimport \"fmt\"\n\nfunc HandleCalculateAndProcessUserDataFromExternalSource() {\n\tfor i := 0; i < 100; i++ {\n\t\tfmt.Sprintf(\"item %d\", i)\n\t}\n}\n",
-    );
+    workspace.write_file("bad.go", &support::load_fixture("go/cli/findings_main.txt"));
 
     let output = run_cli(&[
         "scan",

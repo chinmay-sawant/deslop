@@ -14,3 +14,18 @@ pub(crate) mod packaging;
 pub(crate) mod performance;
 pub(crate) mod quality;
 pub(crate) mod structure;
+
+pub(crate) const FAMILY_RULES: &[&[RuleDefinition]] = &[
+    ai_smells::RULE_DEFINITIONS,
+    duplication::RULE_DEFINITIONS,
+    framework::RULE_DEFINITIONS,
+    hot_path::RULE_DEFINITIONS,
+    hotpath::RULE_DEFINITIONS,
+    hotpath_ext::RULE_DEFINITIONS,
+    maintainability::RULE_DEFINITIONS,
+    mlops::RULE_DEFINITIONS,
+    packaging::RULE_DEFINITIONS,
+    performance::RULE_DEFINITIONS,
+    quality::RULE_DEFINITIONS,
+    structure::RULE_DEFINITIONS,
+];

@@ -12,31 +12,34 @@ deslop uses three planning buckets:
 
 ## Active
 
-- [`master-roadmap.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/master-roadmap.md): the current multi-phase roadmap
-- [`implementation-guide.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/implementation-guide.md): status map and planning rules
-- [`evaluation-and-promotion-policy.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/evaluation-and-promotion-policy.md): corpus, promotion, and stability contract
-- [`features-and-detections.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/features-and-detections.md): synced rule inventory and user-facing detection guide
-- [`inventory-regression-guards.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/inventory-regression-guards.md): intentional inventory-count guards and informational scan workflow notes
-- [`release-checklist.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/release-checklist.md): release validation checklist
+- [`master-roadmap.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/master-roadmap.md): the current multi-phase roadmap
+- [`implementation-guide.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/implementation-guide.md): status map and planning rules
+- [`evaluation-and-promotion-policy.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/evaluation-and-promotion-policy.md): corpus, promotion, and stability contract
+- [`features-and-detections.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/features-and-detections.md): synced rule inventory and user-facing detection guide
+- [`inventory-regression-guards.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/inventory-regression-guards.md): intentional inventory-count guards and informational scan workflow notes
+- [`release-checklist.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/release-checklist.md): release validation checklist
+- [`architecture-guardrails.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/architecture-guardrails.md): ownership expectations, size thresholds, and the standing refactor validation loop
 
 ## Backlog
 
-- [`backlog/roadmap-issue-backlog.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/roadmap-issue-backlog.md): canonical issue backlog derived from the master roadmap
-- [`backlog/typescript-backend-research-spike.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/typescript-backend-research-spike.md): deferred research contract for the first new backend after Go, Python, and Rust governance work settles
+- [`backlog/roadmap-issue-backlog.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/backlog/roadmap-issue-backlog.md): canonical issue backlog derived from the master roadmap
+- [`backlog/rust-code-structure-improvement-plan.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/backlog/rust-code-structure-improvement-plan.md): detailed plan for tightening Rust code structure across `src/` and `tests/`
+- [`backlog/rust-code-structure-followup-plan.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/backlog/rust-code-structure-followup-plan.md): completed repository-wide architecture refactor record for `src/` and `tests/` across Go, Python, and Rust
+- [`backlog/typescript-backend-research-spike.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/backlog/typescript-backend-research-spike.md): deferred research contract for the first new backend after Go, Python, and Rust governance work settles
 
 ## Completed Or Historical
 
-- [`newplan02042026.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/newplan02042026.md): imported source snapshot that fed the master roadmap
-- [`go/advanceplan1/`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/go/advanceplan1)
-- [`go/advanceplan2/`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/go/advanceplan2)
-- [`go/advanceplan3/`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/go/advanceplan3)
-- [`python/advanceplan1/`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/python/advanceplan1)
-- [`python/advanceplan2/`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/python/advanceplan2)
-- [`python/advanceplan3/`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/python/advanceplan3)
-- [`python/already_implemented/`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/python/already_implemented)
-- [`rust/advanceplan1/`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/rust/advanceplan1)
-- [`rust/advanceplan2/`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/rust/advanceplan2)
-- [`verification-performance-and-rollout.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/verification-performance-and-rollout.md)
+- [`newplan02042026.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/newplan02042026.md): imported source snapshot that fed the master roadmap
+- [`go/advanceplan1/`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/go/advanceplan1)
+- [`go/advanceplan2/`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/go/advanceplan2)
+- [`go/advanceplan3/`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/go/advanceplan3)
+- [`python/advanceplan1/`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/python/advanceplan1)
+- [`python/advanceplan2/`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/python/advanceplan2)
+- [`python/advanceplan3/`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/python/advanceplan3)
+- [`python/already_implemented/`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/python/already_implemented)
+- [`rust/advanceplan1/`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/rust/advanceplan1)
+- [`rust/advanceplan2/`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/rust/advanceplan2)
+- [`verification-performance-and-rollout.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/verification-performance-and-rollout.md)
 
 ## Usage Rules
 

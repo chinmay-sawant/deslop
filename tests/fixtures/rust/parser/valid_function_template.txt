@@ -1,0 +1,3 @@
+pub fn __FUNCTION_NAME__() -> usize {
+    1
+}

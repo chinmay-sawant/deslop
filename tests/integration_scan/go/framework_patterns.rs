@@ -1,4 +1,4 @@
-use super::support::{assert_rules_absent, assert_rules_present, scan_files};
+use super::{assert_rules_absent, assert_rules_present, scan_files};
 
 #[test]
 fn test_go_framework_patterns_core_hot_path_rules() {

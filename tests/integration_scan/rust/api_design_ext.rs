@@ -65,6 +65,15 @@ fn test_rust_advanceplan2_api_clean() {
 }
 
 #[test]
+fn test_rust_explicit_bool_mode_switches_are_not_flagged() {
+    let report = scan_fixture(rust_fixture!(
+        "api_design_ext/explicit_bool_switches_clean.txt"
+    ));
+
+    assert_rules_absent(&report, &["rust_public_bool_parameter_api"]);
+}
+
+#[test]
 fn test_rust_advanceplan2_shared_state_rules() {
     let report = scan_fixture(rust_fixture!("api_design_ext/shared_state_positive.txt"));
 

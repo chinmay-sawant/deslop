@@ -298,6 +298,10 @@ fn narrowing_cast_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
 }
 
 fn manual_tempdir_function_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if is_scanner_infra_file(file) {
+        return Vec::new();
+    }
+
     if !(contains_any(
         &function.body_text,
         &["tempfile::Builder::new()", "tempfile::Builder::new"],

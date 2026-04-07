@@ -382,6 +382,6 @@ fn constructor_like_name(name: &str) -> bool {
 }
 
 fn body_shows_partial_init_escape(body_text: &str) -> bool {
-    (body_text.contains("None") && body_text.contains('{') && body_text.contains(':'))
+    ((body_text.contains(": None") || body_text.contains(":None")) && body_text.contains('{'))
         || body_text.contains("..Default::default()")
 }

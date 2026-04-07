@@ -1,4 +1,4 @@
-use super::support::{assert_rules_absent, assert_rules_present, scan_files};
+use super::{assert_rules_absent, assert_rules_present, scan_files};
 
 fn source_for(path: &str) -> &'static str {
     match path {
@@ -18,6 +18,9 @@ fn source_for(path: &str) -> &'static str {
             include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/benchmark/mod.rs"))
         }
         "src/cli/mod.rs" => include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/cli/mod.rs")),
+        "src/model/mod.rs" => {
+            include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/model/mod.rs"))
+        }
         "src/scan/mod.rs" => include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/scan/mod.rs")),
         "src/heuristics/rust/mod.rs" => include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
@@ -44,6 +47,22 @@ fn thin_facade_modules_do_not_trip_the_oversized_module_rule() {
     for path in ["src/benchmark/mod.rs", "src/cli/mod.rs", "src/scan/mod.rs"] {
         let report = scan_files(&[(path, source_for(path))]);
         assert_rules_absent(&report, &["rust_oversized_module_file"]);
+    }
+}
+
+#[test]
+fn thin_facade_modules_do_not_trip_catchall_or_reexport_wall_rules() {
+    for path in [
+        "src/benchmark/mod.rs",
+        "src/cli/mod.rs",
+        "src/model/mod.rs",
+        "src/scan/mod.rs",
+    ] {
+        let report = scan_files(&[(path, source_for(path))]);
+        assert_rules_absent(
+            &report,
+            &["rust_mod_rs_catchall", "rust_root_reexport_wall"],
+        );
     }
 }
 

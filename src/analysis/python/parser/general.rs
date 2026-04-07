@@ -1,17 +1,28 @@
-use std::collections::BTreeSet;
 use std::path::Path;
 
 use tree_sitter::Node;
 
-use crate::analysis::{
-    CallSite, ClassSummary, DeclaredSymbol, ExceptionHandler, ImportSpec, NamedLiteral,
-    ParsedFunction, PythonFieldSummary, PythonModelSummary, TestFunctionSummary,
-    TopLevelBindingSummary, TopLevelCallSummary,
-};
+use crate::analysis::{DeclaredSymbol, ImportSpec, ParsedFunction};
 use crate::model::{FunctionFingerprint, SymbolKind};
 
 use super::comments::parse_string_literal_text;
-use super::phase4::collect_class_summaries as collect_phase4_class_summaries;
+
+#[path = "general/function_evidence.rs"]
+mod function_evidence;
+#[path = "general/imports.rs"]
+mod imports;
+#[path = "general/module_scope.rs"]
+mod module_scope;
+
+pub(super) use function_evidence::{
+    build_test_summary, collect_calls, collect_exception_handlers, collect_local_bindings,
+    collect_local_strings,
+};
+pub(super) use imports::collect_imports;
+pub(super) use module_scope::{
+    collect_class_summaries, collect_module_scope_calls, collect_pkg_strings,
+    collect_python_models, collect_top_level_bindings,
+};
 
 pub(super) fn is_test_file(path: &Path) -> bool {
     let file_name = path
@@ -38,43 +49,6 @@ pub(super) fn module_name_for_path(path: &Path) -> Option<String> {
     }
 
     Some(stem.to_string())
-}
-
-pub(super) fn collect_imports(root: Node<'_>, source: &str) -> Vec<ImportSpec> {
-    let mut imports = Vec::new();
-    visit_imports(root, source, &mut imports);
-    imports
-}
-
-pub(super) fn collect_pkg_strings(root: Node<'_>, source: &str) -> Vec<NamedLiteral> {
-    let mut literals = Vec::new();
-    visit_pkg_strings(root, source, &mut literals);
-    literals.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
-    literals
-}
-
-pub(super) fn collect_module_scope_calls(root: Node<'_>, source: &str) -> Vec<TopLevelCallSummary> {
-    let mut calls = Vec::new();
-    visit_module_scope_calls(root, source, &mut calls);
-    calls.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
-    calls
-}
-
-pub(super) fn collect_top_level_bindings(
-    root: Node<'_>,
-    source: &str,
-) -> Vec<TopLevelBindingSummary> {
-    let mut bindings = Vec::new();
-    visit_top_level_bindings(root, source, &mut bindings);
-    bindings.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
-    bindings
-}
-
-pub(super) fn collect_python_models(root: Node<'_>, source: &str) -> Vec<PythonModelSummary> {
-    let mut models = Vec::new();
-    visit_python_models(root, source, &mut models);
-    models.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
-    models
 }
 
 pub(super) fn collect_await_points(body_node: Node<'_>) -> Vec<usize> {
@@ -121,409 +95,6 @@ pub(super) fn collect_symbols(
     visit_class_symbols(root, source, &mut symbols);
     symbols.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
     symbols
-}
-
-pub(super) fn collect_class_summaries(root: Node<'_>, source: &str) -> Vec<ClassSummary> {
-    collect_phase4_class_summaries(root, source)
-}
-
-pub(super) fn collect_calls(body_node: Node<'_>, source: &str) -> Vec<CallSite> {
-    let mut calls = Vec::new();
-    visit_calls(body_node, source, &mut calls);
-    calls
-}
-
-pub(super) fn collect_local_strings(body_node: Node<'_>, source: &str) -> Vec<NamedLiteral> {
-    let mut literals = Vec::new();
-    visit_local_strings(body_node, source, &mut literals);
-    literals.sort_by(|left, right| left.line.cmp(&right.line).then(left.name.cmp(&right.name)));
-    literals
-}
-
-pub(super) fn collect_exception_handlers(
-    body_node: Node<'_>,
-    source: &str,
-) -> Vec<ExceptionHandler> {
-    let mut handlers = Vec::new();
-    visit_exception_handlers(body_node, source, &mut handlers);
-    handlers
-}
-
-pub(super) fn collect_local_bindings(function_node: Node<'_>, source: &str) -> Vec<String> {
-    let mut names = BTreeSet::new();
-
-    if let Some(parameters_node) = function_node.child_by_field_name("parameters")
-        && let Some(parameters_text) = source.get(parameters_node.byte_range())
-    {
-        for name in parameter_names(parameters_text) {
-            names.insert(name);
-        }
-    }
-
-    if let Some(body_node) = function_node.child_by_field_name("body") {
-        visit_assignment_bindings(body_node, source, &mut names);
-    }
-
-    names.into_iter().collect()
-}
-
-pub(super) fn build_test_summary(
-    function_name: &str,
-    body_node: Node<'_>,
-    source: &str,
-    is_test_file: bool,
-) -> Option<TestFunctionSummary> {
-    if !is_test_file || !function_name.starts_with("test_") {
-        return None;
-    }
-
-    let mut assertion_like_calls = 0;
-    let mut error_assertion_calls = 0;
-    let mut skip_calls = 0;
-    let mut production_calls = 0;
-    for call in collect_calls(body_node, source) {
-        match (call.receiver.as_deref(), call.name.as_str()) {
-            (_, "assert") | (Some("self"), _) if call.name.starts_with("assert") => {
-                assertion_like_calls += 1;
-                if matches!(call.name.as_str(), "assertRaises" | "assertRaisesRegex") {
-                    error_assertion_calls += 1;
-                }
-            }
-            (Some("pytest"), "raises") => {
-                assertion_like_calls += 1;
-                error_assertion_calls += 1;
-            }
-            (_, "skip") | (_, "skipTest") => {
-                skip_calls += 1;
-            }
-            (_, name) if !matches!(name, "print" | "assert") => {
-                production_calls += 1;
-            }
-            _ => {}
-        }
-    }
-
-    // Python's bare `assert` keyword is a statement, not a call, so
-    // collect_calls misses it. Count assert_statement AST nodes explicitly.
-    assertion_like_calls += count_assert_statements(body_node);
-
-    let body_text = source.get(body_node.byte_range()).unwrap_or_default();
-    let has_todo_marker = body_text.to_ascii_uppercase().contains("TODO");
-
-    Some(TestFunctionSummary {
-        assertion_like_calls,
-        error_assertion_calls,
-        skip_calls,
-        production_calls,
-        has_todo_marker,
-    })
-}
-
-fn visit_imports(node: Node<'_>, source: &str, imports: &mut Vec<ImportSpec>) {
-    match node.kind() {
-        "import_statement" => {
-            if let Some(text) = source.get(node.byte_range()) {
-                imports.extend(parse_import_statement_text(
-                    text,
-                    node.start_position().row + 1,
-                ));
-            }
-        }
-        "import_from_statement" => {
-            if let Some(text) = source.get(node.byte_range()) {
-                imports.extend(parse_import_from_stmt(text, node.start_position().row + 1));
-            }
-        }
-        _ => {}
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_imports(child, source, imports);
-    }
-}
-
-fn parse_import_statement_text(text: &str, line: usize) -> Vec<ImportSpec> {
-    let normalized = normalize_import_text(text);
-    let Some(rest) = normalized.strip_prefix("import ") else {
-        return Vec::new();
-    };
-
-    split_import_list(rest)
-        .into_iter()
-        .filter_map(|entry| {
-            let (path, alias) = parse_alias(&entry);
-            if path.is_empty() || alias.is_empty() {
-                return None;
-            }
-
-            Some(ImportSpec {
-                line,
-                group_line: line,
-                alias,
-                path: path.clone(),
-                namespace_path: namespace_path(&path),
-                imported_name: imported_name(&path),
-                is_public: false,
-            })
-        })
-        .collect()
-}
-
-fn parse_import_from_stmt(text: &str, line: usize) -> Vec<ImportSpec> {
-    let normalized = normalize_import_text(text);
-    let Some(rest) = normalized.strip_prefix("from ") else {
-        return Vec::new();
-    };
-    let Some((module_path, imports_text)) = rest.split_once(" import ") else {
-        return Vec::new();
-    };
-
-    split_import_list(imports_text)
-        .into_iter()
-        .filter_map(|entry| {
-            let (import_name, alias) = parse_alias(&entry);
-            if import_name.is_empty() || alias.is_empty() {
-                return None;
-            }
-
-            let full_path = if import_name == "*" {
-                format!("{module_path}.*")
-            } else {
-                format!("{module_path}.{import_name}")
-            };
-
-            Some(ImportSpec {
-                line,
-                group_line: line,
-                alias,
-                path: full_path,
-                namespace_path: Some(module_path.to_string()),
-                imported_name: Some(import_name),
-                is_public: false,
-            })
-        })
-        .collect()
-}
-
-fn visit_pkg_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLiteral>) {
-    if matches!(node.kind(), "assignment" | "annotated_assignment")
-        && is_module_level(node)
-        && let Some(text) = source.get(node.byte_range())
-        && let Some(literal) = named_literal_from_assignment(text, node.start_position().row + 1)
-    {
-        literals.push(literal);
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_pkg_strings(child, source, literals);
-    }
-}
-
-fn visit_module_scope_calls(node: Node<'_>, source: &str, calls: &mut Vec<TopLevelCallSummary>) {
-    if node.kind() == "call"
-        && is_module_level(node)
-        && let Some(function_node) = node.child_by_field_name("function")
-        && let Some(callee_text) = source.get(function_node.byte_range())
-        && let Some((receiver, name)) = parse_call_target(callee_text)
-    {
-        calls.push(TopLevelCallSummary {
-            line: node.start_position().row + 1,
-            receiver,
-            name,
-            text: source
-                .get(node.byte_range())
-                .unwrap_or_default()
-                .trim()
-                .to_string(),
-        });
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_module_scope_calls(child, source, calls);
-    }
-}
-
-fn visit_top_level_bindings(
-    node: Node<'_>,
-    source: &str,
-    bindings: &mut Vec<TopLevelBindingSummary>,
-) {
-    if matches!(node.kind(), "assignment" | "annotated_assignment")
-        && is_module_level(node)
-        && let Some(text) = source.get(node.byte_range())
-        && let Some((left, right)) = split_assignment(text)
-    {
-        for name in assignment_target_names(left) {
-            bindings.push(TopLevelBindingSummary {
-                name,
-                line: node.start_position().row + 1,
-                value_text: right.trim().to_string(),
-            });
-        }
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_top_level_bindings(child, source, bindings);
-    }
-}
-
-fn visit_python_models(node: Node<'_>, source: &str, models: &mut Vec<PythonModelSummary>) {
-    if node.kind() == "class_definition"
-        && let Some(model) = python_model_summary(node, source)
-    {
-        models.push(model);
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_python_models(child, source, models);
-    }
-}
-
-fn visit_await_points(node: Node<'_>, lines: &mut Vec<usize>) {
-    if should_skip_nested_scope(node) {
-        return;
-    }
-
-    if node.kind() == "await" {
-        lines.push(node.start_position().row + 1);
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_await_points(child, lines);
-    }
-}
-
-fn python_model_summary(node: Node<'_>, source: &str) -> Option<PythonModelSummary> {
-    let name_node = node.child_by_field_name("name")?;
-    let body_node = node.child_by_field_name("body")?;
-    let name = source.get(name_node.byte_range())?.trim().to_string();
-    let base_classes = collect_base_classes(node, source);
-    let decorators = collect_class_decorators(node, source);
-    let is_dataclass = decorators
-        .iter()
-        .any(|decorator| decorator.ends_with("dataclass") || decorator.contains(".dataclass"));
-    let is_typed_dict = base_classes
-        .iter()
-        .any(|base| base.ends_with("TypedDict") || base == "TypedDict");
-
-    let mut fields = Vec::new();
-    let mut method_names = Vec::new();
-    let mut cursor = body_node.walk();
-    for child in body_node.named_children(&mut cursor) {
-        match child.kind() {
-            "function_definition" => {
-                if let Some(method_name) = child
-                    .child_by_field_name("name")
-                    .and_then(|method_name| source.get(method_name.byte_range()))
-                {
-                    method_names.push(method_name.trim().to_string());
-                }
-            }
-            _ => visit_python_model_fields(child, source, &mut fields),
-        }
-    }
-
-    Some(PythonModelSummary {
-        name,
-        line: node.start_position().row + 1,
-        base_classes,
-        decorators,
-        is_dataclass,
-        is_typed_dict,
-        fields,
-        method_names,
-    })
-}
-
-fn python_field_summaries(node: Node<'_>, source: &str) -> Vec<PythonFieldSummary> {
-    let Some(text) = source.get(node.byte_range()) else {
-        return Vec::new();
-    };
-    let line = node.start_position().row + 1;
-
-    if node.kind() == "expression_statement"
-        && !text.contains('=')
-        && let Some((left, right)) = text.split_once(':')
-    {
-        let target_name = assignment_target_names(left);
-        if target_name.len() == 1 {
-            return vec![PythonFieldSummary {
-                name: target_name[0].clone(),
-                line,
-                annotation_text: Some(right.trim().to_string()),
-                default_text: None,
-            }];
-        }
-    }
-
-    if node.kind() == "annotated_assignment" {
-        let Some((left, right)) = split_assignment(text).or_else(|| text.split_once(':')) else {
-            return Vec::new();
-        };
-        let target_name = assignment_target_names(left);
-        if target_name.len() != 1 {
-            return Vec::new();
-        }
-        let name = target_name[0].clone();
-        let (annotation_text, default_text) = if text.contains('=') {
-            let (annotated_left, value) = split_assignment(text).unwrap_or((left, right));
-            (
-                annotated_left
-                    .split_once(':')
-                    .map(|(_, annotation)| annotation.trim().to_string()),
-                Some(value.trim().to_string()),
-            )
-        } else {
-            (Some(right.trim().to_string()), None)
-        };
-
-        return vec![PythonFieldSummary {
-            name,
-            line,
-            annotation_text,
-            default_text,
-        }];
-    }
-
-    if node.kind() == "assignment"
-        && let Some((left, right)) = split_assignment(text)
-    {
-        return assignment_target_names(left)
-            .into_iter()
-            .map(|name| PythonFieldSummary {
-                name,
-                line,
-                annotation_text: None,
-                default_text: Some(right.trim().to_string()),
-            })
-            .collect();
-    }
-
-    Vec::new()
-}
-
-fn visit_python_model_fields(node: Node<'_>, source: &str, fields: &mut Vec<PythonFieldSummary>) {
-    if matches!(node.kind(), "function_definition" | "class_definition") {
-        return;
-    }
-
-    if matches!(
-        node.kind(),
-        "assignment" | "annotated_assignment" | "expression_statement"
-    ) {
-        fields.extend(python_field_summaries(node, source));
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_python_model_fields(child, source, fields);
-    }
 }
 
 pub(super) fn build_function_fingerprint(
@@ -592,6 +163,41 @@ pub(super) fn build_function_fingerprint(
     })
 }
 
+pub(super) fn enclosing_class_name(node: Node<'_>, source: &str) -> Option<String> {
+    let mut parent = node.parent();
+    while let Some(current) = parent {
+        if current.kind() == "function_definition" {
+            return None;
+        }
+        if current.kind() == "class_definition" {
+            return current
+                .child_by_field_name("name")
+                .and_then(|name_node| source.get(name_node.byte_range()))
+                .map(str::trim)
+                .filter(|name| !name.is_empty())
+                .map(ToOwned::to_owned);
+        }
+        parent = current.parent();
+    }
+
+    None
+}
+
+fn visit_await_points(node: Node<'_>, lines: &mut Vec<usize>) {
+    if should_skip_nested_scope(node) {
+        return;
+    }
+
+    if node.kind() == "await" {
+        lines.push(node.start_position().row + 1);
+    }
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        visit_await_points(child, lines);
+    }
+}
+
 fn visit_class_symbols(node: Node<'_>, source: &str, symbols: &mut Vec<DeclaredSymbol>) {
     if node.kind() == "class_definition"
         && !is_nested_function(node)
@@ -613,19 +219,6 @@ fn visit_class_symbols(node: Node<'_>, source: &str, symbols: &mut Vec<DeclaredS
     }
 }
 
-fn count_assert_statements(node: Node<'_>) -> usize {
-    let mut count = if node.kind() == "assert_statement" {
-        1
-    } else {
-        0
-    };
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        count += count_assert_statements(child);
-    }
-    count
-}
-
 fn is_nested_function(node: Node<'_>) -> bool {
     let mut parent = node.parent();
     while let Some(current) = parent {
@@ -636,84 +229,6 @@ fn is_nested_function(node: Node<'_>) -> bool {
     }
 
     false
-}
-
-fn visit_calls(node: Node<'_>, source: &str, calls: &mut Vec<CallSite>) {
-    if should_skip_nested_scope(node) {
-        return;
-    }
-
-    if node.kind() == "call"
-        && let Some(function_node) = node.child_by_field_name("function")
-        && let Some(callee_text) = source.get(function_node.byte_range())
-        && let Some((receiver, name)) = parse_call_target(callee_text)
-    {
-        calls.push(CallSite {
-            receiver,
-            name,
-            line: node.start_position().row + 1,
-        });
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_calls(child, source, calls);
-    }
-}
-
-fn visit_local_strings(node: Node<'_>, source: &str, literals: &mut Vec<NamedLiteral>) {
-    if should_skip_nested_scope(node) {
-        return;
-    }
-
-    if matches!(node.kind(), "assignment" | "annotated_assignment")
-        && let Some(text) = source.get(node.byte_range())
-        && let Some(literal) = named_literal_from_assignment(text, node.start_position().row + 1)
-    {
-        literals.push(literal);
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_local_strings(child, source, literals);
-    }
-}
-
-fn visit_assignment_bindings(node: Node<'_>, source: &str, names: &mut BTreeSet<String>) {
-    if should_skip_nested_scope(node) {
-        return;
-    }
-
-    if matches!(node.kind(), "assignment" | "annotated_assignment")
-        && let Some(text) = source.get(node.byte_range())
-    {
-        for name in assignment_target_names(text) {
-            names.insert(name);
-        }
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_assignment_bindings(child, source, names);
-    }
-}
-
-fn visit_exception_handlers(node: Node<'_>, source: &str, handlers: &mut Vec<ExceptionHandler>) {
-    if should_skip_nested_scope(node) {
-        return;
-    }
-
-    if node.kind() == "except_clause"
-        && let Some(text) = source.get(node.byte_range())
-        && let Some(handler) = exception_handler_from_text(text, node.start_position().row + 1)
-    {
-        handlers.push(handler);
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit_exception_handlers(child, source, handlers);
-    }
 }
 
 fn collect_base_classes(node: Node<'_>, source: &str) -> Vec<String> {
@@ -768,60 +283,7 @@ fn parse_call_target(callee_text: &str) -> Option<(Option<String>, String)> {
     Some((None, normalized.to_string()))
 }
 
-fn exception_handler_from_text(text: &str, line: usize) -> Option<ExceptionHandler> {
-    let trimmed_lines = text
-        .lines()
-        .map(str::trim)
-        .filter(|line| !line.is_empty())
-        .collect::<Vec<_>>();
-    let clause_line = *trimmed_lines.first()?;
-    if !clause_line.starts_with("except") {
-        return None;
-    }
-
-    let action = handler_action(&trimmed_lines);
-    let normalized_clause = clause_line.to_ascii_lowercase();
-    let is_broad = normalized_clause == "except:"
-        || normalized_clause.starts_with("except exception")
-        || normalized_clause.starts_with("except baseexception")
-        || normalized_clause.starts_with("except (exception")
-        || normalized_clause.starts_with("except (baseexception");
-    let suppresses = action.as_deref().is_some_and(is_suppression_action);
-
-    Some(ExceptionHandler {
-        line,
-        clause: clause_line.to_string(),
-        action,
-        is_broad,
-        suppresses,
-    })
-}
-
-fn handler_action(trimmed_lines: &[&str]) -> Option<String> {
-    if trimmed_lines.is_empty() {
-        return None;
-    }
-
-    let clause_line = trimmed_lines[0];
-    if let Some((_, inline_action)) = clause_line.split_once(':') {
-        let inline_action = inline_action.trim();
-        if !inline_action.is_empty() {
-            return Some(inline_action.to_string());
-        }
-    }
-
-    trimmed_lines.get(1).map(|line| (*line).to_string())
-}
-
-fn is_suppression_action(action: &str) -> bool {
-    let normalized = action.trim().to_ascii_lowercase();
-    normalized == "pass"
-        || normalized == "continue"
-        || normalized == "break"
-        || normalized.starts_with("return")
-}
-
-fn named_literal_from_assignment(text: &str, line: usize) -> Option<NamedLiteral> {
+fn named_literal_from_assignment(text: &str, line: usize) -> Option<crate::analysis::NamedLiteral> {
     let (left, right) = split_assignment(text)?;
     let names = assignment_target_names(left);
     if names.len() != 1 {
@@ -829,7 +291,7 @@ fn named_literal_from_assignment(text: &str, line: usize) -> Option<NamedLiteral
     }
 
     let value = parse_string_literal_text(right.trim())?;
-    Some(NamedLiteral {
+    Some(crate::analysis::NamedLiteral {
         line,
         name: names.into_iter().next()?,
         value,
@@ -857,99 +319,6 @@ fn assignment_target_names(text: &str) -> Vec<String> {
         .collect()
 }
 
-fn parameter_names(parameters_text: &str) -> Vec<String> {
-    parameters_text
-        .trim()
-        .trim_start_matches('(')
-        .trim_end_matches(')')
-        .split(',')
-        .map(str::trim)
-        .filter(|entry| !entry.is_empty() && *entry != "/")
-        .filter_map(|entry| {
-            let entry = entry.trim_start_matches('*').trim();
-            let entry = entry.split('=').next().unwrap_or(entry).trim();
-            let entry = entry.split(':').next().unwrap_or(entry).trim();
-            is_valid_identifier(entry).then(|| entry.to_string())
-        })
-        .collect()
-}
-
-fn namespace_path(path: &str) -> Option<String> {
-    path.rsplit_once('.')
-        .map(|(namespace, _)| namespace.to_string())
-}
-
-fn imported_name(path: &str) -> Option<String> {
-    path.rsplit('.').next().map(str::to_string)
-}
-
-fn parse_alias(entry: &str) -> (String, String) {
-    let trimmed = entry
-        .trim()
-        .trim_matches(|character| character == '(' || character == ')');
-    if let Some((path, alias)) = trimmed.rsplit_once(" as ") {
-        return (path.trim().to_string(), alias.trim().to_string());
-    }
-
-    let alias = trimmed
-        .rsplit('.')
-        .next()
-        .unwrap_or(trimmed)
-        .trim()
-        .to_string();
-    (trimmed.to_string(), alias)
-}
-
-fn normalize_import_text(text: &str) -> String {
-    text.lines()
-        .map(strip_python_comment)
-        .map(str::trim)
-        .filter(|line| !line.is_empty())
-        .collect::<Vec<_>>()
-        .join(" ")
-        .replace("( ", "")
-        .replace(" )", "")
-}
-
-fn strip_python_comment(line: &str) -> &str {
-    let mut in_single = false;
-    let mut in_double = false;
-    let mut previous_was_escape = false;
-
-    for (index, character) in line.char_indices() {
-        match character {
-            '\\' if in_single || in_double => {
-                previous_was_escape = !previous_was_escape;
-                continue;
-            }
-            '\'' if !in_double && !previous_was_escape => {
-                in_single = !in_single;
-            }
-            '"' if !in_single && !previous_was_escape => {
-                in_double = !in_double;
-            }
-            '#' if !in_single && !in_double => {
-                return &line[..index];
-            }
-            _ => {}
-        }
-
-        if character != '\\' {
-            previous_was_escape = false;
-        }
-    }
-
-    line
-}
-
-fn split_import_list(text: &str) -> Vec<String> {
-    text.split(',')
-        .map(str::trim)
-        .filter(|entry| !entry.is_empty())
-        .map(str::to_string)
-        .collect()
-}
-
 fn is_module_level(node: Node<'_>) -> bool {
     let mut parent = node.parent();
     while let Some(current) = parent {
@@ -960,26 +329,6 @@ fn is_module_level(node: Node<'_>) -> bool {
     }
 
     true
-}
-
-pub(super) fn enclosing_class_name(node: Node<'_>, source: &str) -> Option<String> {
-    let mut parent = node.parent();
-    while let Some(current) = parent {
-        if current.kind() == "function_definition" {
-            return None;
-        }
-        if current.kind() == "class_definition" {
-            return current
-                .child_by_field_name("name")
-                .and_then(|name_node| source.get(name_node.byte_range()))
-                .map(str::trim)
-                .filter(|name| !name.is_empty())
-                .map(ToOwned::to_owned);
-        }
-        parent = current.parent();
-    }
-
-    None
 }
 
 fn should_skip_nested_scope(node: Node<'_>) -> bool {

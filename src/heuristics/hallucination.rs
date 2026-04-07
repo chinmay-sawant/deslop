@@ -1,4 +1,4 @@
-use crate::analysis::{ParsedFile, ParsedFunction};
+use crate::analysis::{Language, ParsedFile, ParsedFunction};
 use crate::index::{ImportResolution, RepositoryIndex};
 use crate::model::{Finding, Severity};
 
@@ -11,6 +11,13 @@ pub(super) fn hallucination_findings(
     function: &ParsedFunction,
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
+    // Rust uses a dedicated resolution family that understands module imports,
+    // scoped aliases, wildcard uses, local bindings, and constructor-like call
+    // sites better than this shared uppercase-symbol fallback.
+    if file.language == Language::Rust {
+        return Vec::new();
+    }
+
     let mut findings = Vec::new();
     let package_name = match &file.package_name {
         Some(package_name) => package_name,

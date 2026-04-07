@@ -126,6 +126,26 @@ fn test_python_advanceplan2_skips_serializer_to_dict_any_contract() {
 }
 
 #[test]
+fn test_python_advanceplan2_skips_framework_route_any_contracts() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "apps/api/main.py",
+        python_fixture!("integration/advanceplan2/contracts_framework_boundary_clean.txt"),
+    )]);
+
+    let report = workspace.scan();
+
+    assert_rules_absent(
+        &report,
+        &[
+            "public_any_type_leak",
+            "python_public_api_any_contract",
+            "weak_typing",
+        ],
+    );
+}
+
+#[test]
 fn test_python_advanceplan2_import_time_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[(
@@ -169,6 +189,19 @@ fn test_python_advanceplan2_import_time_clean() {
             "import_time_config_load",
         ],
     );
+}
+
+#[test]
+fn test_python_advanceplan2_skips_framework_entrypoint_env_bootstrap() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "apps/api/main.py",
+        python_fixture!("integration/advanceplan2/import_time_framework_entrypoint_clean.txt"),
+    )]);
+
+    let report = workspace.scan();
+
+    assert_rules_absent(&report, &["import_time_config_load"]);
 }
 
 #[test]

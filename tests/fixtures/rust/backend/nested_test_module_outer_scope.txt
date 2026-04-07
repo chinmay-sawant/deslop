@@ -1,0 +1,15 @@
+-- path: /repo/src/analysis/python/mod.rs
+mod parser;
+
+fn run() {
+    let _ = parser::parse_file();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parser;
+}
+-- path: /repo/src/analysis/python/parser/mod.rs
+pub fn parse_file() -> Result<(), ()> {
+    Ok(())
+}

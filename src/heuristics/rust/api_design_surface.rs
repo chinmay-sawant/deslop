@@ -56,7 +56,10 @@ pub(super) fn api_surface_findings(file: &ParsedFile, function: &ParsedFunction)
         .filter(|(_, type_text)| normalized_type(type_text) == "bool")
         .collect::<Vec<_>>();
 
-    if bool_params.len() == 1 && !builder_internal(function) {
+    if bool_params.len() == 1
+        && !builder_internal(function)
+        && !bool_param_is_explicit_mode_switch(function, &bool_params[0].0)
+    {
         let (param_name, _) = &bool_params[0];
         findings.push(function_finding(
             file,
@@ -134,4 +137,17 @@ pub(super) fn api_surface_findings(file: &ParsedFile, function: &ParsedFunction)
     }
 
     findings
+}
+
+fn bool_param_is_explicit_mode_switch(function: &ParsedFunction, param_name: &str) -> bool {
+    let lowered_name = function.fingerprint.name.to_ascii_lowercase();
+    let lowered_param = param_name.to_ascii_lowercase();
+
+    lowered_name.contains("_with_")
+        || lowered_name.starts_with("with_")
+        || [
+            "enable_", "disable_", "use_", "with_", "respect_", "allow_", "include_", "exclude_",
+        ]
+        .iter()
+        .any(|prefix| lowered_param.starts_with(prefix))
 }

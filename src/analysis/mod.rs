@@ -4,13 +4,14 @@ mod error;
 mod go;
 mod python;
 pub(crate) mod rust;
+#[cfg(test)]
+mod test_support;
 mod types;
 
 use std::path::Path;
 
 pub(crate) use backend::{
-    Language, LanguageBackend, backend_for_language, backend_for_path, registered_backends,
-    supported_extensions,
+    Language, LanguageBackend, backend_for_path, registered_backends, supported_extensions,
 };
 pub(crate) use config::AnalysisConfig;
 pub use error::Error;

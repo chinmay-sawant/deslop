@@ -1,0 +1,7 @@
+-- path: /repo/src/io.rs
+#[cfg(unix)]
+fn create_link(target: &str, link: &str) {
+    use std::os::unix::fs::symlink as create_fs_link;
+
+    assert!(create_fs_link(target, link).is_ok());
+}

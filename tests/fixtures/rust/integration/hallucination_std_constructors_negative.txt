@@ -1,0 +1,15 @@
+pub fn build_optional(flag: bool) -> Option<&'static str> {
+    if flag {
+        Some("ready")
+    } else {
+        None
+    }
+}
+
+pub fn build_result(flag: bool) -> Result<u32, &'static str> {
+    if flag {
+        Ok(1)
+    } else {
+        Err("nope")
+    }
+}

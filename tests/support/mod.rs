@@ -64,6 +64,37 @@ pub(crate) fn write_files(root: &Path, files: &[(&str, &str)]) {
 }
 
 #[allow(dead_code)]
+pub(crate) fn fixture_path(relative_path: &str) -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures")
+        .join(relative_path)
+}
+
+#[allow(dead_code)]
+pub(crate) fn load_fixture(relative_path: &str) -> String {
+    let path = fixture_path(relative_path);
+    fs::read_to_string(&path).unwrap_or_else(|error| {
+        panic!(
+            "fixture load should succeed for {}: {error}",
+            path.display()
+        )
+    })
+}
+
+#[allow(dead_code)]
+pub(crate) fn scan_single_file(relative_path: &str, contents: &str) -> ScanReport {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(relative_path, contents);
+    workspace.scan_with_options(false)
+}
+
+#[allow(dead_code)]
+pub(crate) fn scan_fixture(fixture_relative_path: &str, target_relative_path: &str) -> ScanReport {
+    let contents = load_fixture(fixture_relative_path);
+    scan_single_file(target_relative_path, &contents)
+}
+
+#[allow(dead_code)]
 pub(crate) fn scan_files(files: &[(&str, &str)]) -> ScanReport {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(files);
@@ -113,9 +144,27 @@ pub(crate) fn find_rule<'a>(report: &'a ScanReport, rule_id: &str) -> Option<&'a
 }
 
 #[allow(dead_code)]
+pub(crate) fn assert_rule_severity(report: &ScanReport, rule_id: &str, severity: deslop::Severity) {
+    let finding = find_rule(report, rule_id)
+        .unwrap_or_else(|| panic!("missing rule for severity assertion: {rule_id}"));
+    assert_eq!(
+        finding.severity, severity,
+        "unexpected severity for rule {rule_id}"
+    );
+}
+
+#[allow(dead_code)]
 pub(crate) fn assert_rules_present(report: &ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
-        assert!(report_has_rule(report, rule_id), "missing rule: {rule_id}");
+        assert!(
+            report_has_rule(report, rule_id),
+            "missing rule: {rule_id}; findings were {:?}",
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
+        );
     }
 }
 
@@ -124,7 +173,12 @@ pub(crate) fn assert_rules_absent(report: &ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
         assert!(
             !report_has_rule(report, rule_id),
-            "unexpected rule: {rule_id}"
+            "unexpected rule: {rule_id}; findings were {:?}",
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
         );
     }
 }

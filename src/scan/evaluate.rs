@@ -2,8 +2,8 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use crate::RepoConfig;
-use crate::analysis::{AnalysisConfig, ParsedFile, backend_for_language, registered_backends};
-use crate::heuristics::evaluate_shared_file;
+use crate::analysis::{AnalysisConfig, ParsedFile, registered_backends};
+use crate::heuristics::{evaluate_file, evaluate_repo};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
@@ -22,17 +22,7 @@ pub(super) fn evaluate_findings(
 ) -> Vec<Finding> {
     let mut findings: Vec<Finding> = files
         .par_iter()
-        .flat_map(|file| {
-            // Shared rules (naming, comments, secrets, test quality) apply to every language
-            // and are evaluated here once, outside any backend, so individual backends do not
-            // need to call them. Language-specific rules are then appended via the backend so
-            // that new languages gain shared coverage automatically without extra wiring.
-            let mut file_findings = evaluate_shared_file(file, index);
-            if let Some(backend) = backend_for_language(file.language) {
-                file_findings.extend(backend.evaluate_file(file, index, analysis_config));
-            }
-            file_findings
-        })
+        .flat_map(|file| evaluate_file(file, index, analysis_config))
         .collect();
 
     for &backend in registered_backends() {
@@ -40,7 +30,12 @@ pub(super) fn evaluate_findings(
             .iter()
             .filter(|file| file.language == backend.language())
             .collect::<Vec<_>>();
-        findings.extend(backend.evaluate_repo(&backend_files, index, analysis_config));
+        findings.extend(evaluate_repo(
+            backend.language(),
+            &backend_files,
+            index,
+            analysis_config,
+        ));
     }
 
     findings.retain(|finding| !is_suppressed(finding, suppressions));

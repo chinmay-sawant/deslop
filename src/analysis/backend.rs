@@ -1,14 +1,10 @@
 use std::path::Path;
 
-use crate::Result;
-use crate::index::RepositoryIndex;
-use crate::model::Finding;
-
-use super::config::AnalysisConfig;
 use super::go;
 use super::python;
 use super::rust;
 use super::types::ParsedFile;
+use crate::Result;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum Language {
@@ -25,24 +21,6 @@ pub(crate) trait LanguageBackend: Send + Sync {
     fn supports_path(&self, path: &Path) -> bool;
 
     fn parse_file(&self, path: &Path, source: &str) -> Result<ParsedFile>;
-
-    fn evaluate_file(
-        &self,
-        _file: &ParsedFile,
-        _index: &RepositoryIndex,
-        _analysis_config: &AnalysisConfig,
-    ) -> Vec<Finding> {
-        Vec::new()
-    }
-
-    fn evaluate_repo(
-        &self,
-        _files: &[&ParsedFile],
-        _index: &RepositoryIndex,
-        _analysis_config: &AnalysisConfig,
-    ) -> Vec<Finding> {
-        Vec::new()
-    }
 }
 
 static GO_BACKEND: go::GoAnalyzer = go::GoAnalyzer;
@@ -58,13 +36,6 @@ pub(crate) fn backend_for_path(path: &Path) -> Option<&'static dyn LanguageBacke
     registered_backends()
         .iter()
         .find(|backend| backend.supports_path(path))
-        .copied()
-}
-
-pub(crate) fn backend_for_language(language: Language) -> Option<&'static dyn LanguageBackend> {
-    registered_backends()
-        .iter()
-        .find(|backend| backend.language() == language)
         .copied()
 }
 

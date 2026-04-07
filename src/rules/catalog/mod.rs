@@ -26,49 +26,10 @@ pub(crate) fn rule_catalog() -> &'static [RuleDefinition] {
     CATALOG
         .get_or_init(|| {
             let mut catalog = Vec::new();
-            catalog.extend_from_slice(common::RULE_DEFINITIONS);
-
-            // Go Submodules
-            catalog.extend_from_slice(go::concurrency::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::consistency::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::context::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::data_access::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::errors::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::gin::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::hot_path::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::idioms::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::library::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::mod_rules::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::performance::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::security::RULE_DEFINITIONS);
-            catalog.extend_from_slice(go::style::RULE_DEFINITIONS);
-
-            // Python Submodules
-            catalog.extend_from_slice(python::ai_smells::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::duplication::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::framework::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::hot_path::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::hotpath::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::hotpath_ext::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::maintainability::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::mlops::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::packaging::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::performance::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::quality::RULE_DEFINITIONS);
-            catalog.extend_from_slice(python::structure::RULE_DEFINITIONS);
-
-            // Rust Submodules
-            catalog.extend_from_slice(rust::api_design::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::async_patterns::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::domain_modeling::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::hygiene::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::performance::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::runtime_boundary::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::unsafe_soundness::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::boundary::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::module_surface::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::runtime_ownership::RULE_DEFINITIONS);
-            catalog.extend_from_slice(rust::security_footguns::RULE_DEFINITIONS);
+            extend_definition_slices(&mut catalog, &[common::RULE_DEFINITIONS]);
+            extend_definition_slices(&mut catalog, go::FAMILY_RULES);
+            extend_definition_slices(&mut catalog, python::FAMILY_RULES);
+            extend_definition_slices(&mut catalog, rust::FAMILY_RULES);
             catalog.sort_by(|left, right| {
                 (&left.language, left.family, left.id).cmp(&(
                     &right.language,
@@ -79,4 +40,10 @@ pub(crate) fn rule_catalog() -> &'static [RuleDefinition] {
             catalog
         })
         .as_slice()
+}
+
+fn extend_definition_slices(catalog: &mut Vec<RuleDefinition>, groups: &[&[RuleDefinition]]) {
+    for group in groups {
+        catalog.extend_from_slice(group);
+    }
 }

@@ -15,3 +15,19 @@ pub(crate) mod mod_rules;
 pub(crate) mod performance;
 pub(crate) mod security;
 pub(crate) mod style;
+
+pub(crate) const FAMILY_RULES: &[&[RuleDefinition]] = &[
+    concurrency::RULE_DEFINITIONS,
+    consistency::RULE_DEFINITIONS,
+    context::RULE_DEFINITIONS,
+    data_access::RULE_DEFINITIONS,
+    errors::RULE_DEFINITIONS,
+    gin::RULE_DEFINITIONS,
+    hot_path::RULE_DEFINITIONS,
+    idioms::RULE_DEFINITIONS,
+    library::RULE_DEFINITIONS,
+    mod_rules::RULE_DEFINITIONS,
+    performance::RULE_DEFINITIONS,
+    security::RULE_DEFINITIONS,
+    style::RULE_DEFINITIONS,
+];
