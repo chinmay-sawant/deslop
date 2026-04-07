@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   cliCommands,
   commonRules,
@@ -18,7 +20,7 @@ import {
   type Language,
   type SectionId,
 } from '../docs-content'
-import { currentRelease } from '../../../content/site-content'
+import { currentRelease, getReleaseByVersion, releaseHistory } from '../../../content/site-content'
 import { CodeBlock } from './CodeBlock'
 
 interface DocsLayoutProps {
@@ -34,12 +36,14 @@ export function DocsLayout({
   onLangChange,
   onSectionChange,
 }: DocsLayoutProps) {
+  const [selectedReleaseVersion, setSelectedReleaseVersion] = useState(currentRelease.version)
 
   const langClass = `lang-${activeLang}`
   const overview = overviewContent[activeLang]
   const rules = activeLang === 'common' ? commonRules : activeLang === 'go' ? goRules : activeLang === 'python' ? pythonRules : rustRules
   const commands = cliCommands[activeLang]
   const limits = limitations[activeLang]
+  const selectedRelease = getReleaseByVersion(selectedReleaseVersion) ?? currentRelease
 
   const handleLangChange = (lang: Language) => {
     onLangChange(lang)
@@ -155,10 +159,30 @@ export function DocsLayout({
           <p className="docs-p">Install the CLI from crates.io using Cargo:</p>
           <CodeBlock code="cargo install deslop" />
           <p className="docs-p">Or download prebuilt binaries from the GitHub release page:</p>
+          <div className="release-selector" style={{ marginTop: '1rem', marginBottom: '1rem', maxWidth: '22rem' }}>
+            <label className="release-selector-label" htmlFor="docs-release-version">
+              Release tag
+            </label>
+            <select
+              id="docs-release-version"
+              className="release-select"
+              value={selectedReleaseVersion}
+              onChange={(event) => setSelectedReleaseVersion(event.target.value)}
+            >
+              {releaseHistory.map((release) => (
+                <option key={release.version} value={release.version}>
+                  {release.version}
+                </option>
+              ))}
+            </select>
+            <p className="release-selector-note">
+              Latest defaults to {currentRelease.version}. The previous tag stays available for compatibility checks and older binary downloads.
+            </p>
+          </div>
           <div className="docs-download-grid">
-            {currentRelease.assets.map((asset) => (
+            {selectedRelease.assets.map((asset) => (
               <a
-                key={asset.id}
+                key={`${selectedRelease.version}-${asset.id}`}
                 className="docs-download-card"
                 href={asset.url}
                 target="_blank"
@@ -171,8 +195,8 @@ export function DocsLayout({
           </div>
           <p className="docs-p">
             Release overview:{' '}
-            <a className="docs-link" href={currentRelease.releasePage} target="_blank" rel="noreferrer">
-              {currentRelease.releasePage}
+            <a className="docs-link" href={selectedRelease.releasePage} target="_blank" rel="noreferrer">
+              {selectedRelease.releasePage}
             </a>
           </p>
           <p className="docs-p">Or use the composite GitHub Action which downloads the correct binary for your runner automatically.</p>
