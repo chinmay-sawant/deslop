@@ -1,6 +1,6 @@
 [package]
 name = "deslop"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "A static analyzer that spots low-context and AI-assisted code patterns across naming, concurrency, security, performance, and test quality."
 repository = "https://github.com/chinmay-sawant/deslop"

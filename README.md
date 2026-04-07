@@ -1,4 +1,4 @@
-# AI is flooding your Go, Python, and Rust code with slop. Deslop finds it in seconds.
+# Deslop: The lightning-fast bad practice detector for AI-generated code. Deslop finds it in seconds.
 
 deslop is a Rust-based static analyzer for Go, Python, and Rust repositories that focuses on signals commonly associated with low-context AI-generated code. It currently scans a repository, parses Go, Python, and Rust files with tree-sitter, extracts structural fingerprints for each function, builds a lightweight local package index, runs early heuristic checks, and can benchmark the pipeline against real repositories.
 
