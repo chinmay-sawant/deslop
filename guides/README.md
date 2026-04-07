@@ -22,6 +22,8 @@ deslop uses three planning buckets:
 ## Backlog
 
 - [`backlog/roadmap-issue-backlog.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/roadmap-issue-backlog.md): canonical issue backlog derived from the master roadmap
+- [`backlog/rust-code-structure-improvement-plan.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/backlog/rust-code-structure-improvement-plan.md): detailed plan for tightening Rust code structure across `src/` and `tests/`
+- [`backlog/rust-code-structure-followup-plan.md`](/home/chinmay/ChinmayPersonalProjects/deslop/guides/backlog/rust-code-structure-followup-plan.md): post-refactor follow-up plan after the first Rust structure implementation pass
 - [`backlog/typescript-backend-research-spike.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/backlog/typescript-backend-research-spike.md): deferred research contract for the first new backend after Go, Python, and Rust governance work settles
 
 ## Completed Or Historical

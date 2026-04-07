@@ -113,9 +113,27 @@ pub(crate) fn find_rule<'a>(report: &'a ScanReport, rule_id: &str) -> Option<&'a
 }
 
 #[allow(dead_code)]
+pub(crate) fn assert_rule_severity(report: &ScanReport, rule_id: &str, severity: deslop::Severity) {
+    let finding = find_rule(report, rule_id)
+        .unwrap_or_else(|| panic!("missing rule for severity assertion: {rule_id}"));
+    assert_eq!(
+        finding.severity, severity,
+        "unexpected severity for rule {rule_id}"
+    );
+}
+
+#[allow(dead_code)]
 pub(crate) fn assert_rules_present(report: &ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
-        assert!(report_has_rule(report, rule_id), "missing rule: {rule_id}");
+        assert!(
+            report_has_rule(report, rule_id),
+            "missing rule: {rule_id}; findings were {:?}",
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
+        );
     }
 }
 
@@ -124,7 +142,12 @@ pub(crate) fn assert_rules_absent(report: &ScanReport, rule_ids: &[&str]) {
     for rule_id in rule_ids {
         assert!(
             !report_has_rule(report, rule_id),
-            "unexpected rule: {rule_id}"
+            "unexpected rule: {rule_id}; findings were {:?}",
+            report
+                .findings
+                .iter()
+                .map(|finding| finding.rule_id.as_str())
+                .collect::<Vec<_>>()
         );
     }
 }

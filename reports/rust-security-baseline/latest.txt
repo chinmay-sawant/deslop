@@ -104,7 +104,7 @@ src/heuristics/rust/security_footguns.rs:183:            name.contains("parent")
 src/rules/catalog/rust/api_design.rs:227:        description: "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
 
 ## unsafe_globals
-src/analysis/rust/parser/items.rs:452:            .is_some_and(|text| text.contains("static mut ")),
+src/analysis/rust/parser/items/statics.rs:53:            .is_some_and(|text| text.contains("static mut ")),
 src/heuristics/rust/security_footguns.rs:83:        description: "static mut global state that bypasses the safer shared-state models already in the scanner.",
 
 ## derive_default

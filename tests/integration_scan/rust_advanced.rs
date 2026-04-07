@@ -2,9 +2,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use deslop::ScanReport;
-
-use super::FixtureWorkspace;
+use super::{FixtureWorkspace, assert_rules_absent, assert_rules_present};
 
 #[test]
 fn test_rust_domain_modeling_rules() {
@@ -13,28 +11,18 @@ fn test_rust_domain_modeling_rules() {
 
     let report = workspace.scan();
 
-    for rule_id in [
-        "rust_domain_raw_primitive",
-        "rust_domain_float_for_money",
-        "rust_domain_impossible_combination",
-        "rust_domain_default_produces_invalid",
-        "rust_debug_secret",
-        "rust_serde_sensitive_deserialize",
-        "rust_serde_sensitive_serialize",
-    ] {
-        assert!(
-            report
-                .findings
-                .iter()
-                .any(|finding| finding.rule_id == rule_id),
-            "expected finding {rule_id:?}, got {:?}",
-            report
-                .findings
-                .iter()
-                .map(|finding| finding.rule_id.as_str())
-                .collect::<Vec<_>>()
-        );
-    }
+    assert_rules_present(
+        &report,
+        &[
+            "rust_domain_raw_primitive",
+            "rust_domain_float_for_money",
+            "rust_domain_impossible_combination",
+            "rust_domain_default_produces_invalid",
+            "rust_debug_secret",
+            "rust_serde_sensitive_deserialize",
+            "rust_serde_sensitive_serialize",
+        ],
+    );
 }
 
 #[test]
@@ -44,32 +32,22 @@ fn test_rust_async_and_performance_rules() {
 
     let report = workspace.scan();
 
-    for rule_id in [
-        "rust_blocking_io_in_async",
-        "rust_unbuffered_file_writes",
-        "rust_lines_allocate_per_line",
-        "rust_hashmap_default_hasher",
-        "rust_lock_across_await",
-        "rust_async_std_mutex_await",
-        "rust_async_hold_permit_across_await",
-        "rust_async_spawn_cancel_at_await",
-        "rust_async_missing_fuse_pin",
-        "rust_async_recreate_future_in_select",
-        "rust_async_lock_order_cycle",
-    ] {
-        assert!(
-            report
-                .findings
-                .iter()
-                .any(|finding| finding.rule_id == rule_id),
-            "expected finding {rule_id:?}, got {:?}",
-            report
-                .findings
-                .iter()
-                .map(|finding| finding.rule_id.as_str())
-                .collect::<Vec<_>>()
-        );
-    }
+    assert_rules_present(
+        &report,
+        &[
+            "rust_blocking_io_in_async",
+            "rust_unbuffered_file_writes",
+            "rust_lines_allocate_per_line",
+            "rust_hashmap_default_hasher",
+            "rust_lock_across_await",
+            "rust_async_std_mutex_await",
+            "rust_async_hold_permit_across_await",
+            "rust_async_spawn_cancel_at_await",
+            "rust_async_missing_fuse_pin",
+            "rust_async_recreate_future_in_select",
+            "rust_async_lock_order_cycle",
+        ],
+    );
 }
 
 #[test]
@@ -79,27 +57,17 @@ fn test_rust_unsafe_soundness_rules() {
 
     let report = workspace.scan();
 
-    for rule_id in [
-        "rust_unsafe_get_unchecked",
-        "rust_unsafe_from_raw_parts",
-        "rust_unsafe_set_len",
-        "rust_unsafe_assume_init",
-        "rust_unsafe_transmute",
-        "rust_unsafe_raw_pointer_cast",
-    ] {
-        assert!(
-            report
-                .findings
-                .iter()
-                .any(|finding| finding.rule_id == rule_id),
-            "expected finding {rule_id:?}, got {:?}",
-            report
-                .findings
-                .iter()
-                .map(|finding| finding.rule_id.as_str())
-                .collect::<Vec<_>>()
-        );
-    }
+    assert_rules_present(
+        &report,
+        &[
+            "rust_unsafe_get_unchecked",
+            "rust_unsafe_from_raw_parts",
+            "rust_unsafe_set_len",
+            "rust_unsafe_assume_init",
+            "rust_unsafe_transmute",
+            "rust_unsafe_raw_pointer_cast",
+        ],
+    );
 }
 
 #[test]
@@ -114,46 +82,34 @@ fn test_rust_advanced_negative_fixtures() {
 
     let report = workspace.scan();
 
-    let blocked = [
-        "rust_domain_raw_primitive",
-        "rust_domain_float_for_money",
-        "rust_domain_impossible_combination",
-        "rust_domain_default_produces_invalid",
-        "rust_debug_secret",
-        "rust_serde_sensitive_deserialize",
-        "rust_serde_sensitive_serialize",
-        "rust_blocking_io_in_async",
-        "rust_unbuffered_file_writes",
-        "rust_lines_allocate_per_line",
-        "rust_hashmap_default_hasher",
-        "rust_lock_across_await",
-        "rust_async_std_mutex_await",
-        "rust_async_hold_permit_across_await",
-        "rust_async_spawn_cancel_at_await",
-        "rust_async_missing_fuse_pin",
-        "rust_async_recreate_future_in_select",
-        "rust_unsafe_get_unchecked",
-        "rust_unsafe_from_raw_parts",
-        "rust_unsafe_set_len",
-        "rust_unsafe_assume_init",
-        "rust_unsafe_transmute",
-        "rust_unsafe_raw_pointer_cast",
-    ];
-
-    for rule_id in blocked {
-        assert!(
-            !report
-                .findings
-                .iter()
-                .any(|finding| finding.rule_id == rule_id),
-            "unexpected finding {rule_id:?}, got {:?}",
-            report
-                .findings
-                .iter()
-                .map(|finding| finding.rule_id.as_str())
-                .collect::<Vec<_>>()
-        );
-    }
+    assert_rules_absent(
+        &report,
+        &[
+            "rust_domain_raw_primitive",
+            "rust_domain_float_for_money",
+            "rust_domain_impossible_combination",
+            "rust_domain_default_produces_invalid",
+            "rust_debug_secret",
+            "rust_serde_sensitive_deserialize",
+            "rust_serde_sensitive_serialize",
+            "rust_blocking_io_in_async",
+            "rust_unbuffered_file_writes",
+            "rust_lines_allocate_per_line",
+            "rust_hashmap_default_hasher",
+            "rust_lock_across_await",
+            "rust_async_std_mutex_await",
+            "rust_async_hold_permit_across_await",
+            "rust_async_spawn_cancel_at_await",
+            "rust_async_missing_fuse_pin",
+            "rust_async_recreate_future_in_select",
+            "rust_unsafe_get_unchecked",
+            "rust_unsafe_from_raw_parts",
+            "rust_unsafe_set_len",
+            "rust_unsafe_assume_init",
+            "rust_unsafe_transmute",
+            "rust_unsafe_raw_pointer_cast",
+        ],
+    );
 }
 
 #[test]
@@ -163,26 +119,16 @@ fn test_rust_phase4_runtime_boundary_rules() {
 
     let report = workspace.scan();
 
-    for rule_id in [
-        "rust_tokio_runtime_built_per_call",
-        "rust_env_var_read_in_request_path",
-        "rust_axum_router_built_in_handler",
-        "rust_tonic_channel_connect_per_request",
-        "rust_clone_heavy_state_in_loop",
-    ] {
-        assert!(
-            report
-                .findings
-                .iter()
-                .any(|finding| finding.rule_id == rule_id),
-            "expected finding {rule_id:?}, got {:?}",
-            report
-                .findings
-                .iter()
-                .map(|finding| finding.rule_id.as_str())
-                .collect::<Vec<_>>()
-        );
-    }
+    assert_rules_present(
+        &report,
+        &[
+            "rust_tokio_runtime_built_per_call",
+            "rust_env_var_read_in_request_path",
+            "rust_axum_router_built_in_handler",
+            "rust_tonic_channel_connect_per_request",
+            "rust_clone_heavy_state_in_loop",
+        ],
+    );
 }
 
 #[test]
@@ -192,26 +138,16 @@ fn test_rust_phase4_runtime_boundary_clean() {
 
     let report = workspace.scan();
 
-    for rule_id in [
-        "rust_tokio_runtime_built_per_call",
-        "rust_env_var_read_in_request_path",
-        "rust_axum_router_built_in_handler",
-        "rust_tonic_channel_connect_per_request",
-        "rust_clone_heavy_state_in_loop",
-    ] {
-        assert!(
-            !report
-                .findings
-                .iter()
-                .any(|finding| finding.rule_id == rule_id),
-            "unexpected finding {rule_id:?}, got {:?}",
-            report
-                .findings
-                .iter()
-                .map(|finding| finding.rule_id.as_str())
-                .collect::<Vec<_>>()
-        );
-    }
+    assert_rules_absent(
+        &report,
+        &[
+            "rust_tokio_runtime_built_per_call",
+            "rust_env_var_read_in_request_path",
+            "rust_axum_router_built_in_handler",
+            "rust_tonic_channel_connect_per_request",
+            "rust_clone_heavy_state_in_loop",
+        ],
+    );
 }
 
 #[test]
@@ -222,18 +158,7 @@ fn test_rust_phase4_workspace_manifest_rule() {
 
     let report = workspace.scan();
 
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "rust_workspace_missing_resolver"),
-        "expected rust_workspace_missing_resolver, got {:?}",
-        report
-            .findings
-            .iter()
-            .map(|finding| finding.rule_id.as_str())
-            .collect::<Vec<_>>()
-    );
+    assert_rules_present(&report, &["rust_workspace_missing_resolver"]);
 }
 
 #[test]
@@ -247,18 +172,7 @@ fn test_rust_phase4_workspace_manifest_clean() {
 
     let report = workspace.scan();
 
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "rust_workspace_missing_resolver"),
-        "unexpected rust_workspace_missing_resolver, got {:?}",
-        report
-            .findings
-            .iter()
-            .map(|finding| finding.rule_id.as_str())
-            .collect::<Vec<_>>()
-    );
+    assert_rules_absent(&report, &["rust_workspace_missing_resolver"]);
 }
 
 #[test]
@@ -537,39 +451,5 @@ fn collect_rust_files(root: &Path, files: &mut Vec<PathBuf>) {
         } else if path.extension().and_then(|ext| ext.to_str()) == Some("rs") {
             files.push(path);
         }
-    }
-}
-
-fn assert_rules_present(report: &ScanReport, rule_ids: &[&str]) {
-    for rule_id in rule_ids {
-        assert!(
-            report
-                .findings
-                .iter()
-                .any(|finding| finding.rule_id == *rule_id),
-            "expected finding {rule_id:?}, got {:?}",
-            report
-                .findings
-                .iter()
-                .map(|finding| finding.rule_id.as_str())
-                .collect::<Vec<_>>()
-        );
-    }
-}
-
-fn assert_rules_absent(report: &ScanReport, rule_ids: &[&str]) {
-    for rule_id in rule_ids {
-        assert!(
-            !report
-                .findings
-                .iter()
-                .any(|finding| finding.rule_id == *rule_id),
-            "unexpected finding {rule_id:?}, got {:?}",
-            report
-                .findings
-                .iter()
-                .map(|finding| finding.rule_id.as_str())
-                .collect::<Vec<_>>()
-        );
     }
 }

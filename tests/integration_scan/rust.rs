@@ -1,4 +1,4 @@
-use super::FixtureWorkspace;
+use super::{FixtureWorkspace, assert_rule_severity, assert_rules_absent, assert_rules_present};
 
 #[test]
 fn test_rust_fingerprints() {
@@ -67,71 +67,21 @@ fn test_rust_rules() {
 
     let report = workspace.scan();
 
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "todo_macro_leftover")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "unimplemented_macro_leftover")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "dbg_macro_leftover")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "panic_macro_leftover")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "unreachable_macro_leftover")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "todo_doc_comment_leftover")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "fixme_doc_comment_leftover")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "hack_doc_comment_leftover")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "unwrap_in_non_test_code")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "expect_in_non_test_code")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "unsafe_without_safety_comment")
+    assert_rules_present(
+        &report,
+        &[
+            "todo_macro_leftover",
+            "unimplemented_macro_leftover",
+            "dbg_macro_leftover",
+            "panic_macro_leftover",
+            "unreachable_macro_leftover",
+            "todo_doc_comment_leftover",
+            "fixme_doc_comment_leftover",
+            "hack_doc_comment_leftover",
+            "unwrap_in_non_test_code",
+            "expect_in_non_test_code",
+            "unsafe_without_safety_comment",
+        ],
     );
 }
 
@@ -142,71 +92,21 @@ fn test_rust_suppressions() {
 
     let report = workspace.scan();
 
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "todo_macro_leftover")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "unimplemented_macro_leftover")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "dbg_macro_leftover")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "panic_macro_leftover")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "unreachable_macro_leftover")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "todo_doc_comment_leftover")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "fixme_doc_comment_leftover")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "hack_doc_comment_leftover")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "unwrap_in_non_test_code")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "expect_in_non_test_code")
-    );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "unsafe_without_safety_comment")
+    assert_rules_absent(
+        &report,
+        &[
+            "todo_macro_leftover",
+            "unimplemented_macro_leftover",
+            "dbg_macro_leftover",
+            "panic_macro_leftover",
+            "unreachable_macro_leftover",
+            "todo_doc_comment_leftover",
+            "fixme_doc_comment_leftover",
+            "hack_doc_comment_leftover",
+            "unwrap_in_non_test_code",
+            "expect_in_non_test_code",
+            "unsafe_without_safety_comment",
+        ],
     );
 }
 
@@ -227,24 +127,11 @@ pub fn demo() {
 
     let report = workspace.scan();
 
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "unwrap_in_non_test_code")
+    assert_rules_absent(
+        &report,
+        &["unwrap_in_non_test_code", "panic_macro_leftover"],
     );
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "panic_macro_leftover")
-    );
-    assert!(
-        report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "expect_in_non_test_code")
-    );
+    assert_rules_present(&report, &["expect_in_non_test_code"]);
 }
 
 #[test]
@@ -271,18 +158,8 @@ pub async fn demo() {
 
     let report = workspace.scan();
 
-    assert!(
-        !report
-            .findings
-            .iter()
-            .any(|finding| finding.rule_id == "rust_async_std_mutex_await")
-    );
-    let expect_finding = report
-        .findings
-        .iter()
-        .find(|finding| finding.rule_id == "expect_in_non_test_code")
-        .expect("expect finding should remain after config filtering");
-    assert!(matches!(expect_finding.severity, deslop::Severity::Error));
+    assert_rules_absent(&report, &["rust_async_std_mutex_await"]);
+    assert_rule_severity(&report, "expect_in_non_test_code", deslop::Severity::Error);
 }
 
 #[test]

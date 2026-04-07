@@ -54,7 +54,9 @@ mod security;
 mod style;
 mod test_quality;
 
-use support::{FixtureWorkspace, assert_rules_absent, assert_rules_present, scan_files};
+use support::{
+    FixtureWorkspace, assert_rule_severity, assert_rules_absent, assert_rules_present, scan_files,
+};
 
 #[test]
 fn test_error_slop() {
