@@ -202,6 +202,32 @@ fn test_python_phase5_name_responsibility_mismatch_skips_honest_transformers() {
 }
 
 #[test]
+fn test_python_phase5_name_responsibility_mismatch_skips_select_queries() {
+    let report = scan_python_files(&[(
+        "pkg/database.py",
+        python_fixture!("structure/name_responsibility_sql_read_negative.txt"),
+    )]);
+
+    assert!(
+        !report_has_rule(&report, "name_responsibility_mismatch"),
+        "did not expect name_responsibility_mismatch for read helpers issuing SELECT queries"
+    );
+}
+
+#[test]
+fn test_python_phase5_name_responsibility_mismatch_skips_contextmanager_factories() {
+    let report = scan_python_files(&[(
+        "pkg/context.py",
+        python_fixture!("structure/name_responsibility_contextmanager_negative.txt"),
+    )]);
+
+    assert!(
+        !report_has_rule(&report, "name_responsibility_mismatch"),
+        "did not expect name_responsibility_mismatch for context manager factories"
+    );
+}
+
+#[test]
 fn test_python_phase5_monolithic_module_skips_broad_legitimate_modules() {
     let report = scan_generated_files(|workspace| {
         let mut registry_module = String::from(python_fixture!(

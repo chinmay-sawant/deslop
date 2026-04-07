@@ -25,6 +25,24 @@ pub(super) fn quality_file_findings(file: &ParsedFile) -> Vec<Finding> {
     module_state_findings(file)
 }
 
+pub(super) fn should_skip_wide_contract_function(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> bool {
+    should_skip_wide_contract_rule(file)
+        || (signature_looks_json_like(&function.signature_text)
+            && (is_framework_route_function(function) || is_boundary_contract_module(file)))
+}
+
+pub(super) fn should_skip_weak_typing_function(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> bool {
+    should_skip_wide_contract_function(file, function)
+        || (function.fingerprint.name.starts_with('_')
+            && signature_looks_json_like(&function.signature_text))
+}
+
 pub(super) fn body_lines(function: &ParsedFunction) -> Vec<(usize, &str)> {
     function
         .body_text
@@ -341,9 +359,24 @@ pub(super) fn should_skip_wide_contract_rule(file: &ParsedFile) -> bool {
         let part = component.as_os_str().to_string_lossy().to_ascii_lowercase();
         matches!(
             part.as_str(),
-            "migrations" | "migration" | "serializers" | "serializer"
+            "migrations"
+                | "migration"
+                | "serializers"
+                | "serializer"
+                | "storage"
+                | "repositories"
+                | "repository"
+                | "exporters"
+                | "exporter"
         )
-    })
+    }) || matches!(
+        file.path
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .map(|stem| stem.to_ascii_lowercase())
+            .as_deref(),
+        Some("database" | "repository" | "serializer" | "export")
+    )
 }
 
 pub(super) fn typed_dict_field_is_optional(annotation_text: Option<&str>) -> bool {
@@ -563,6 +596,14 @@ pub(super) fn is_config_load_text(lower_text: &str) -> bool {
             || lower_text.contains("dotenv"))
 }
 
+pub(super) fn should_skip_import_time_config_finding(
+    file: &ParsedFile,
+    resolved_path: &str,
+    lower_text: &str,
+) -> bool {
+    is_framework_entrypoint_module(file) && is_env_bootstrap_lookup(resolved_path, lower_text)
+}
+
 pub(super) fn is_valid_identifier(candidate: &str) -> bool {
     let mut characters = candidate.chars();
     let Some(first) = characters.next() else {
@@ -573,4 +614,77 @@ pub(super) fn is_valid_identifier(candidate: &str) -> bool {
     }
 
     characters.all(|character| character == '_' || character.is_ascii_alphanumeric())
+}
+
+fn signature_looks_json_like(signature_text: &str) -> bool {
+    let lower = signature_text
+        .replace(char::is_whitespace, "")
+        .to_ascii_lowercase();
+    [
+        "dict[str,any]",
+        "dict[str,typing.any]",
+        "list[dict[str,any]]",
+        "list[dict[str,typing.any]]",
+        "mapping[str,any]",
+        "mapping[str,typing.any]",
+        "sequence[dict[str,any]]",
+        "sequence[dict[str,typing.any]]",
+    ]
+    .iter()
+    .any(|marker| lower.contains(marker))
+}
+
+fn is_framework_route_function(function: &ParsedFunction) -> bool {
+    function.signature_text.lines().any(|line| {
+        let lower = line.trim().to_ascii_lowercase();
+        lower.starts_with('@')
+            && [
+                ".get(",
+                ".post(",
+                ".put(",
+                ".patch(",
+                ".delete(",
+                ".route(",
+                ".api_route(",
+                ".websocket(",
+                ".head(",
+                ".options(",
+            ]
+            .iter()
+            .any(|marker| lower.contains(marker))
+    })
+}
+
+fn is_boundary_contract_module(file: &ParsedFile) -> bool {
+    file.path.components().any(|component| {
+        let part = component.as_os_str().to_string_lossy().to_ascii_lowercase();
+        matches!(part.as_str(), "api" | "views" | "handlers" | "endpoints")
+    })
+}
+
+fn is_framework_entrypoint_module(file: &ParsedFile) -> bool {
+    let file_name = file
+        .path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .map(|name| name.to_ascii_lowercase());
+    let is_entrypoint_name = matches!(file_name.as_deref(), Some("main.py" | "app.py"));
+    if !is_entrypoint_name {
+        return false;
+    }
+
+    file.imports.iter().any(|import| {
+        let path = import.path.to_ascii_lowercase();
+        path.starts_with("fastapi") || path.starts_with("flask") || path.starts_with("django")
+    })
+}
+
+fn is_env_bootstrap_lookup(resolved_path: &str, lower_text: &str) -> bool {
+    matches!(
+        resolved_path,
+        "os.getenv" | "os.environ.get" | "dotenv.load_dotenv" | "dotenv.dotenv_values"
+    ) || lower_text.contains("os.getenv(")
+        || lower_text.contains("os.environ.get(")
+        || lower_text.contains("load_dotenv(")
+        || lower_text.contains("dotenv_values(")
 }

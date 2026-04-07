@@ -51,6 +51,17 @@ pub(super) fn is_to_dict_wrapper(function: &ParsedFunction) -> bool {
     matches!(body_lines.as_slice(), [line] if line.starts_with("return _to_dict(self"))
 }
 
+pub(crate) fn should_skip_python_wide_contract(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> bool {
+    quality::should_skip_wide_contract_function(file, function)
+}
+
+pub(crate) fn should_skip_python_weak_typing(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    quality::should_skip_weak_typing_function(file, function)
+}
+
 pub(crate) fn python_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     evaluate_function_specs(FUNCTION_RULE_SPECS, file, function)
 }

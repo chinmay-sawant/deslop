@@ -8,7 +8,7 @@ use super::{
     function_line_text, has_retry_backoff_markers, heavy_post_init_detail, indented_block,
     is_subprocess_call, is_tempfile_cleanup_line, is_unrelated_await_line, is_valid_identifier,
     key_guarded_before, looks_like_lock_context, mutable_default_kind, nearby_tar_guard,
-    parameter_entries, resolve_call_path, should_skip_wide_contract_rule, split_assignment,
+    parameter_entries, resolve_call_path, should_skip_wide_contract_function, split_assignment,
     task_factory_marker, task_group_create_task, task_group_receivers, task_handle_observed,
     temp_resource_cleaned_later, typed_dict_field_is_optional, wide_contract_markers,
 };
@@ -346,7 +346,7 @@ fn public_any_type_leak_function_findings(
     }
 
     let markers = wide_contract_markers(&function.signature_text);
-    if markers.is_empty() || should_skip_wide_contract_rule(file) {
+    if markers.is_empty() || should_skip_wide_contract_function(file, function) {
         return Vec::new();
     }
 

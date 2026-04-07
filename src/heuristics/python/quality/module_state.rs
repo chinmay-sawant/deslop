@@ -7,8 +7,8 @@ use super::{
     OPTION_BAG_FIELD_THRESHOLD, OPTION_BAG_SIGNAL_THRESHOLD, is_client_constructor_text,
     is_config_load_call, is_config_load_text, is_file_io_call, is_network_call_path,
     is_subprocess_call, mutable_default_kind, mutates_binding, option_bag_boolean_field,
-    option_bag_optional_field, resolve_top_level_call_path, should_skip_wide_contract_rule,
-    wide_contract_markers,
+    option_bag_optional_field, resolve_top_level_call_path, should_skip_import_time_config_finding,
+    should_skip_wide_contract_rule, wide_contract_markers,
 };
 
 pub(super) fn module_state_findings(file: &ParsedFile) -> Vec<Finding> {
@@ -347,6 +347,9 @@ fn import_time_config_load_findings(file: &ParsedFile) -> Vec<Finding> {
         if !is_config_load_call(&resolved, &lower_text) {
             continue;
         }
+        if should_skip_import_time_config_finding(file, &resolved, &lower_text) {
+            continue;
+        }
 
         findings.push(Finding {
             rule_id: "import_time_config_load".to_string(),
@@ -363,6 +366,9 @@ fn import_time_config_load_findings(file: &ParsedFile) -> Vec<Finding> {
     for binding in &file.top_level_bindings {
         let lower_value = binding.value_text.to_ascii_lowercase();
         if !is_config_load_text(&lower_value) {
+            continue;
+        }
+        if should_skip_import_time_config_finding(file, "", &lower_value) {
             continue;
         }
 

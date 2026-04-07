@@ -349,14 +349,15 @@ pub(super) fn name_responsibility_mismatch_findings(
     }
 
     let lower_name = function.fingerprint.name.to_ascii_lowercase();
-    let mutating_call = function
-        .calls
-        .iter()
-        .find(|call| is_mutating_call(&call.name));
+    if is_read_style_name(&lower_name) && is_context_manager_factory(function) {
+        return Vec::new();
+    }
+
+    let mutating_call = find_mutating_operation(function);
     let concerns = classify_infrastructure_concerns(file, function);
 
     let (message, evidence_line, line) = if is_read_style_name(&lower_name) {
-        let Some(call) = mutating_call else {
+        let Some((operation, line)) = mutating_call else {
             return Vec::new();
         };
         (
@@ -364,8 +365,8 @@ pub(super) fn name_responsibility_mismatch_findings(
                 "function {} has a read-style name but performs a mutating operation",
                 function.fingerprint.name
             ),
-            format!("mutating call: {}", call.name),
-            call.line,
+            operation,
+            line,
         )
     } else if is_transformation_style_name(&lower_name)
         && (mutating_call.is_some()
@@ -373,7 +374,8 @@ pub(super) fn name_responsibility_mismatch_findings(
             || concerns.contains("persistence"))
     {
         let line = mutating_call
-            .map(|call| call.line)
+            .as_ref()
+            .map(|(_, line)| *line)
             .unwrap_or(function.fingerprint.start_line);
         (
             format!(
@@ -384,7 +386,8 @@ pub(super) fn name_responsibility_mismatch_findings(
                 "concern_categories={}{}",
                 concerns.iter().copied().collect::<Vec<_>>().join(","),
                 mutating_call
-                    .map(|call| format!(" mutating_call={}", call.name))
+                    .as_ref()
+                    .map(|(operation, _)| format!(" {operation}"))
                     .unwrap_or_default()
             ),
             line,
@@ -695,7 +698,7 @@ fn classify_over_abstracted_shape(
 fn is_mutating_call(call_name: &str) -> bool {
     matches!(
         call_name,
-        "write" | "save" | "delete" | "update" | "post" | "put" | "commit" | "execute"
+        "write" | "save" | "delete" | "update" | "post" | "put" | "commit"
     )
 }
 
@@ -718,4 +721,47 @@ fn is_transformation_style_name(name: &str) -> bool {
 
 fn is_utility_style_name(name: &str) -> bool {
     name.starts_with("helper_") || name.starts_with("util_") || name == "helper" || name == "util"
+}
+
+fn is_context_manager_factory(function: &ParsedFunction) -> bool {
+    let lower_signature = function.signature_text.to_ascii_lowercase();
+    lower_signature.contains("@contextmanager")
+        || lower_signature.contains("@asynccontextmanager")
+        || function
+            .body_text
+            .lines()
+            .map(str::trim)
+            .any(|line| line.starts_with("yield "))
+}
+
+fn find_mutating_operation(function: &ParsedFunction) -> Option<(String, usize)> {
+    if let Some(call) = function
+        .calls
+        .iter()
+        .find(|call| is_mutating_call(&call.name))
+    {
+        return Some((format!("mutating call: {}", call.name), call.line));
+    }
+
+    function
+        .body_text
+        .lines()
+        .enumerate()
+        .map(|(index, line)| (function.body_start_line + index, line.trim()))
+        .find_map(|(line_no, line)| {
+            let lower = line.to_ascii_lowercase();
+            if !lower.contains(".execute(") {
+                return None;
+            }
+            has_mutating_sql_keyword(&lower)
+                .then(|| (format!("mutating sql execute: {}", line), line_no))
+        })
+}
+
+fn has_mutating_sql_keyword(lower_line: &str) -> bool {
+    [
+        "insert ", "update ", "delete ", "replace ", "upsert ", "merge ", "alter ", "drop ",
+    ]
+    .iter()
+    .any(|keyword| lower_line.contains(keyword))
 }
