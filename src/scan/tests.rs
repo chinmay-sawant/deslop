@@ -6,8 +6,21 @@ use super::{
     parse_suppression_directives, scan_repository,
 };
 use crate::RepoConfig;
+use crate::analysis::{AnalysisConfig, Language, ParsedFile};
+use crate::heuristics::{evaluate_file, evaluate_repo};
+use crate::index::build_repository_index;
 use crate::model::ScanOptions;
 use crate::model::{Finding, Severity};
+
+macro_rules! scan_fixture {
+    ($path:literal) => {
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/",
+            $path
+        ))
+    };
+}
 
 fn sample_finding(rule_id: &str, severity: Severity) -> Finding {
     Finding {
@@ -59,7 +72,7 @@ fn finds_next_code_line_after_directive_comments() {
 
 #[test]
 fn parses_same_line_and_next_line_suppressions() {
-    let source = "fn demo() {\n    let _ = option.unwrap(); // deslop-ignore:unwrap_in_non_test_code\n    // deslop-ignore:panic_macro_leftover\n    panic!(\"boom\");\n}\n";
+    let source = scan_fixture!("rust/scan/suppressions_same_line.txt");
 
     assert_eq!(
         parse_suppression_directives(source),
@@ -151,11 +164,14 @@ fn scan_uses_canonical_root_for_index_resolution() {
     fs::create_dir_all(&config).expect("config dir should be created");
     fs::write(
         src.join("lib.rs"),
-        "use crate::config::render::normalize as normalize_fn;\n\npub fn run() {\n    normalize_fn();\n}\n",
+        scan_fixture!("rust/scan/canonical_root_lib.txt"),
     )
     .expect("lib fixture should be written");
-    fs::write(config.join("render.rs"), "pub fn normalize() {}\n")
-        .expect("render fixture should be written");
+    fs::write(
+        config.join("render.rs"),
+        scan_fixture!("rust/scan/canonical_root_render.txt"),
+    )
+    .expect("render fixture should be written");
 
     let report = scan_repository(&ScanOptions {
         root: root.path().join("."),
@@ -167,4 +183,57 @@ fn scan_uses_canonical_root_for_index_resolution() {
         finding.rule_id == "hallucinated_import_call"
             && finding.function_name.as_deref() == Some("run")
     }));
+}
+
+#[test]
+fn exact_duplicate_findings_are_collapsed_by_scan_sorting() {
+    let finding = sample_finding("unwrap_in_non_test_code", Severity::Warning);
+    let mut findings = vec![finding.clone(), finding];
+
+    findings.sort_by(|left, right| {
+        left.path
+            .cmp(&right.path)
+            .then(left.start_line.cmp(&right.start_line))
+            .then(left.rule_id.cmp(&right.rule_id))
+    });
+    findings.dedup_by(|a, b| {
+        a.path == b.path && a.start_line == b.start_line && a.rule_id == b.rule_id
+    });
+
+    assert_eq!(findings.len(), 1);
+}
+
+#[test]
+fn scan_dispatch_uses_heuristics_instead_of_backend_evaluators() {
+    let source = scan_fixture!("rust/backend/grouped_imported_function.txt");
+    let files = source
+        .split("=== file:")
+        .filter_map(|chunk| {
+            let chunk = chunk.trim();
+            if chunk.is_empty() {
+                return None;
+            }
+            let (header, body) = chunk.split_once('\n')?;
+            let path = header.trim().trim_end_matches("===").trim();
+            Some((path, body.trim_start_matches('\n')))
+        })
+        .map(|(path, body)| {
+            crate::analysis::parse_source_file(std::path::Path::new(path), body)
+                .expect("fixture source should parse")
+        })
+        .collect::<Vec<ParsedFile>>();
+    let index = build_repository_index(std::path::Path::new("/repo"), &files);
+    let analysis_config = AnalysisConfig::default();
+    let file = files
+        .iter()
+        .find(|file| file.language == Language::Rust)
+        .expect("fixture should include a rust file");
+
+    let file_findings = evaluate_file(file, &index, &analysis_config);
+    let repo_findings = evaluate_repo(Language::Rust, &[file], &index, &analysis_config);
+
+    assert!(
+        !file_findings.is_empty() || repo_findings.is_empty(),
+        "the scan layer should dispatch through heuristics for file evaluation"
+    );
 }

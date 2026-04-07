@@ -1,0 +1,34 @@
+use std::fmt::{self, Display as FmtDisplay};
+use crate::config::*;
+
+const API_TOKEN: &str = "sk_test_1234567890";
+
+pub struct Runner;
+enum Mode {
+    Fast,
+}
+trait Render {
+    fn render(&self);
+}
+type Output = String;
+
+impl Runner {
+    pub unsafe fn execute(&self) {
+        let password = "super-secret-value";
+        dbg!(password);
+        todo!();
+        value.unwrap();
+        unsafe {
+            dangerous();
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn detects_test_only_code() {
+        let api_key = "top-secret-value";
+        assert_eq!(api_key.len(), 16);
+    }
+}

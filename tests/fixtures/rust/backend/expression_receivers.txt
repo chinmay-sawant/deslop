@@ -1,0 +1,10 @@
+-- path: /repo/src/lib.rs
+mod parser {
+    pub fn parse_file() -> Result<(), ()> {
+        Ok(())
+    }
+}
+
+pub fn run() {
+    let _ = parser::parse_file().map_err(|_| ());
+}

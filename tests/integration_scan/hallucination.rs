@@ -19,34 +19,14 @@ fn test_hallucination() {
 #[test]
 fn test_hallucination_dir() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(
-        "main.go",
-        r#"package sample
-
-import render "github.com/acme/project/pkg/render"
-
-func Run(address string) string {
-    return render.Sanitize(address)
-}
-"#,
-    );
+    workspace.write_file("main.go", go_fixture!("hallucination/dir_main.txt"));
     workspace.write_file(
         "pkg/render/render.go",
-        r#"package render
-
-func Normalize(address string) string {
-    return address
-}
-"#,
+        go_fixture!("hallucination/dir_pkg_render.txt"),
     );
     workspace.write_file(
         "internal/render/render.go",
-        r#"package render
-
-func Sanitize(address string) string {
-    return address
-}
-"#,
+        go_fixture!("hallucination/dir_internal_render.txt"),
     );
 
     let report = workspace.scan();
@@ -63,18 +43,7 @@ fn test_alias_hallucination() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(
         "pdf/generator.go",
-        r#"package pdf
-
-import font "example.com/font"
-
-var (
-    IsCustomFont = font.IsCustomFont
-)
-
-func collectAllStandardFontsInTemplate() {
-    IsCustomFont("Helvetica")
-}
-"#,
+        go_fixture!("hallucination/alias_positive.txt"),
     );
 
     let report = workspace.scan();
@@ -91,30 +60,15 @@ fn test_rust_go_separation() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(
         "main.go",
-        r#"package sample
-
-import render "github.com/acme/project/pkg/render"
-
-func Run(address string) string {
-    return render.Normalize(address)
-}
-"#,
+        go_fixture!("hallucination/rust_go_separation_main.txt"),
     );
     workspace.write_file(
         "pkg/render/render.go",
-        r#"package render
-
-func Sanitize(address string) string {
-    return address
-}
-"#,
+        go_fixture!("hallucination/rust_go_separation_render.txt"),
     );
     workspace.write_file(
         "pkg/render/lib.rs",
-        r#"pub fn Normalize(address: &str) -> String {
-    address.to_string()
-}
-"#,
+        rust_fixture!("integration/rust_go_separation_lib.txt"),
     );
 
     let report = workspace.scan();

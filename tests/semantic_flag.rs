@@ -5,31 +5,11 @@ mod support;
 
 use support::FixtureWorkspace;
 
-const GO_NESTED_LOOP_ALLOC: &str = r#"package main
-
-import "fmt"
-
-func buildIndex(items []string) map[string][]string {
-	result := make(map[string][]string)
-	for _, item := range items {
-		for _, other := range items {
-			temp := make([]byte, 0, 128)
-			temp = append(temp, item...)
-			_ = temp
-			if item != other {
-				result[item] = append(result[item], other)
-			}
-		}
-	}
-	fmt.Println(result)
-	return result
-}
-"#;
-
 #[test]
 fn semantic_flag_defaults_to_true_without_config() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("main.go", GO_NESTED_LOOP_ALLOC);
+    let fixture = support::load_fixture("go/n_squared_alloc_slop.txt");
+    workspace.write_file("main.go", &fixture);
 
     let report = workspace.scan_with_go_semantic(false);
 
@@ -46,7 +26,8 @@ fn semantic_flag_defaults_to_true_without_config() {
 fn semantic_gated_rules_enabled_via_toggle() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(".deslop.toml", "go_semantic_experimental = false\n");
-    workspace.write_file("main.go", GO_NESTED_LOOP_ALLOC);
+    let fixture = support::load_fixture("go/n_squared_alloc_slop.txt");
+    workspace.write_file("main.go", &fixture);
 
     let report = workspace.scan_with_go_semantic(true);
 
@@ -65,7 +46,8 @@ fn semantic_gated_rules_enabled_via_toggle() {
 fn semantic_gated_rules_disabled_without_toggle() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(".deslop.toml", "go_semantic_experimental = false\n");
-    workspace.write_file("main.go", GO_NESTED_LOOP_ALLOC);
+    let fixture = support::load_fixture("go/n_squared_alloc_slop.txt");
+    workspace.write_file("main.go", &fixture);
 
     let report = workspace.scan_with_go_semantic(false);
 

@@ -30,14 +30,14 @@ pub(crate) fn import_matches_item(
     import_resolution::import_matches_item(index, file_path, import_spec)
 }
 
-pub(super) fn doc_marker_findings(
+pub(crate) fn doc_marker_findings(
     file: &crate::analysis::ParsedFile,
     function: &crate::analysis::ParsedFunction,
 ) -> Vec<crate::model::Finding> {
     docs::doc_marker_findings(file, function)
 }
 
-pub(super) fn non_test_call_findings(
+pub(crate) fn non_test_call_findings(
     file: &crate::analysis::ParsedFile,
     function: &crate::analysis::ParsedFunction,
     call_name: &str,
@@ -47,7 +47,7 @@ pub(super) fn non_test_call_findings(
     hygiene::non_test_call_findings(file, function, call_name, rule_id, message_suffix)
 }
 
-pub(super) fn non_test_macro_findings(
+pub(crate) fn non_test_macro_findings(
     file: &crate::analysis::ParsedFile,
     function: &crate::analysis::ParsedFunction,
     macro_name: &str,
@@ -57,14 +57,14 @@ pub(super) fn non_test_macro_findings(
     hygiene::non_test_macro_findings(file, function, macro_name, rule_id, message_suffix)
 }
 
-pub(super) fn unsafe_findings(
+pub(crate) fn unsafe_findings(
     file: &crate::analysis::ParsedFile,
     function: &crate::analysis::ParsedFunction,
 ) -> Vec<crate::model::Finding> {
     hygiene::unsafe_findings(file, function)
 }
 
-pub(super) fn rust_import_findings(
+pub(crate) fn rust_import_findings(
     file: &crate::analysis::ParsedFile,
     function: &crate::analysis::ParsedFunction,
     index: &crate::index::RepositoryIndex,
@@ -74,7 +74,7 @@ pub(super) fn rust_import_findings(
     import_resolution::rust_import_findings(file, function, index, imports, current_package)
 }
 
-pub(super) fn rust_call_findings(
+pub(crate) fn rust_call_findings(
     file: &crate::analysis::ParsedFile,
     function: &crate::analysis::ParsedFunction,
     index: &crate::index::RepositoryIndex,

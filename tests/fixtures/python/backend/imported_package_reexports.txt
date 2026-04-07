@@ -1,0 +1,24 @@
+-- path: /repo/pkg/widgets/__init__.py
+from .types import WidgetTemplate, LayoutConfig, Heading
+from .generator import render_widget
+-- path: /repo/pkg/widgets/types.py
+class WidgetTemplate:
+    pass
+
+class LayoutConfig:
+    pass
+
+class Heading:
+    pass
+-- path: /repo/pkg/widgets/generator.py
+def render_widget(template):
+    return {"ok": True}
+-- path: /repo/tests/test_widgets.py
+from widgets import render_widget, WidgetTemplate, LayoutConfig, Heading
+
+def test_basic_render():
+    template = WidgetTemplate(
+        config=LayoutConfig(mode="grid"),
+        heading=Heading(text="Test Widget"),
+    )
+    return render_widget(template)

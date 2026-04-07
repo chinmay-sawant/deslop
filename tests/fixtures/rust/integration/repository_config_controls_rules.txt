@@ -1,0 +1,10 @@
+use std::sync::Mutex;
+
+static LOCK: Mutex<u32> = Mutex::new(0);
+
+pub async fn demo() {
+    let guard = LOCK.lock().unwrap();
+    async {}.await;
+    drop(guard);
+    let _value = Some(2).expect("raised to error");
+}

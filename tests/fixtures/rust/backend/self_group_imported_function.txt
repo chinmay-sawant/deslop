@@ -1,0 +1,10 @@
+-- path: /repo/src/analysis/go/parser/mod.rs
+use self::general::{collect_calls, find_package_name};
+
+fn run() {
+    collect_calls();
+    find_package_name();
+}
+-- path: /repo/src/analysis/go/parser/general.rs
+pub(super) fn collect_calls() {}
+pub(super) fn find_package_name() {}

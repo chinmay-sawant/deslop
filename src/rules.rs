@@ -123,6 +123,8 @@ mod tests {
         RuleConfigurability, RuleLanguage, RuleStatus, catalog, is_detail_only_rule,
         rule_binding_location, rule_metadata, rule_metadata_variants, rule_registry,
     };
+    use crate::analysis::Language;
+    use crate::heuristics::registry::{language_rule_specs, shared_rule_specs};
     use crate::{DEFAULT_MAX_BYTES, read_to_string_limited};
 
     // Intentional maintenance guard. If this changes, review the source rule-id diff and
@@ -420,6 +422,45 @@ mod tests {
                 "go library binding location should stay pinned to the leaf implementation for {}",
                 definition.id
             );
+        }
+    }
+
+    #[test]
+    fn execution_specs_cover_shared_and_language_specific_layers() {
+        assert!(
+            !shared_rule_specs().is_empty(),
+            "shared rule execution specs should stay populated"
+        );
+        assert!(
+            language_rule_specs(Language::Go).len() >= 5,
+            "go should keep multiple execution families"
+        );
+        assert!(
+            !language_rule_specs(Language::Python).is_empty(),
+            "python should keep an execution registry entry"
+        );
+        assert!(
+            language_rule_specs(Language::Rust).len() >= 10,
+            "rust should remain decomposed into family-shaped execution specs instead of a single evaluator"
+        );
+    }
+
+    #[test]
+    fn every_execution_spec_has_a_family_name() {
+        for spec in shared_rule_specs() {
+            assert!(
+                !spec.family.is_empty(),
+                "shared execution specs should keep a stable family label"
+            );
+        }
+
+        for language in [Language::Go, Language::Python, Language::Rust] {
+            for spec in language_rule_specs(language) {
+                assert!(
+                    !spec.family.is_empty(),
+                    "{language:?} execution specs should keep a stable family label"
+                );
+            }
         }
     }
 

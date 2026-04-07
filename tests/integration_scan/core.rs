@@ -48,6 +48,7 @@ fn test_generated_syntax() {
     assert_eq!(
         report.files[0]
             .path
+            .as_path()
             .file_name()
             .and_then(|name| name.to_str()),
         Some("broken.go")

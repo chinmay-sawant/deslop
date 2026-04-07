@@ -2,6 +2,7 @@ mod api_design;
 mod async_patterns;
 pub(crate) mod boundary;
 mod domain_modeling;
+mod evaluate;
 pub(crate) mod module_surface;
 mod performance;
 mod runtime_boundary;
@@ -10,6 +11,7 @@ pub(crate) mod security_footguns;
 mod unsafe_soundness;
 
 pub(crate) const BOUNDARY_BINDING_LOCATION: &str = boundary::BINDING_LOCATION;
+pub(crate) const EVALUATE_BINDING_LOCATION: &str = evaluate::BINDING_LOCATION;
 pub(crate) const API_DESIGN_BINDING_LOCATION: &str = api_design::BINDING_LOCATION;
 pub(crate) const ASYNC_PATTERNS_BINDING_LOCATION: &str = async_patterns::BINDING_LOCATION;
 pub(crate) const DOMAIN_MODELING_BINDING_LOCATION: &str = domain_modeling::BINDING_LOCATION;
@@ -27,6 +29,17 @@ pub(crate) use api_design::{api_design_file_findings, api_design_function_findin
 pub(crate) use async_patterns::{async_file_findings, async_function_findings};
 pub(crate) use boundary::{boundary_file_findings, boundary_function_findings};
 pub(crate) use domain_modeling::domain_findings;
+#[cfg(test)]
+pub(crate) use evaluate::{alias_lookup, call_matches_import, import_matches_item};
+pub(crate) use evaluate::{
+    evaluate_rust_file_hygiene_findings, rust_api_design_file_findings,
+    rust_api_design_function_findings, rust_async_file_findings, rust_async_function_findings,
+    rust_boundary_file_findings, rust_boundary_function_findings, rust_domain_file_findings,
+    rust_import_resolution_findings, rust_local_call_findings, rust_module_surface_file_findings,
+    rust_performance_file_findings, rust_performance_function_findings, rust_runtime_file_findings,
+    rust_runtime_function_findings, rust_runtime_ownership_function_findings,
+    rust_security_file_findings, rust_security_function_findings, rust_unsafe_soundness_findings,
+};
 pub(crate) use module_surface::module_surface_file_findings;
 pub(crate) use performance::{performance_file_findings, performance_function_findings};
 pub(crate) use runtime_boundary::{runtime_file_findings, runtime_function_findings};

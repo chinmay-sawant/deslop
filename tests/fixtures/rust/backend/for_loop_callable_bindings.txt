@@ -1,0 +1,6 @@
+-- path: /repo/src/heuristics/engine.rs
+fn run(rules: Vec<fn()>) {
+    for rule in rules {
+        rule();
+    }
+}

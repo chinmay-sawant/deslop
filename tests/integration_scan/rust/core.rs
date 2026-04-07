@@ -115,14 +115,7 @@ fn test_rust_rule_ignore_directives() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(
         "src/lib.rs",
-        r#"
-pub fn demo() {
-    let _value = Some(1).unwrap(); // deslop-ignore:unwrap_in_non_test_code
-    // deslop-ignore:panic_macro_leftover
-    panic!("boom");
-    let _other = Some(2).expect("still flagged");
-}
-"#,
+        rust_fixture!("integration/rule_ignore_directives.txt"),
     );
 
     let report = workspace.scan();
@@ -142,18 +135,7 @@ fn test_rust_repository_config_controls_rules() {
     );
     workspace.write_file(
         "src/lib.rs",
-        r#"
-use std::sync::Mutex;
-
-static LOCK: Mutex<u32> = Mutex::new(0);
-
-pub async fn demo() {
-    let guard = LOCK.lock().unwrap();
-    async {}.await;
-    drop(guard);
-    let _value = Some(2).expect("raised to error");
-}
-"#,
+        rust_fixture!("integration/repository_config_controls_rules.txt"),
     );
 
     let report = workspace.scan();

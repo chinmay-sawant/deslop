@@ -3,23 +3,13 @@ use std::path::Path;
 use proptest::prelude::*;
 
 use super::parse_file;
-use crate::analysis::Language;
+use crate::analysis::{Language, test_support::load_fixture};
 
 #[test]
 fn test_parse_functions() {
-    let source = r#"
-pub fn sum_pair(left: i32, right: i32) -> i32 {
-    left + right
-}
+    let source = load_fixture("rust/parser/parse_functions.txt");
 
-impl Runner {
-    fn execute(&self) {
-        sum_pair(1, 2);
-    }
-}
-"#;
-
-    let parsed = parse_file(Path::new("src/main.rs"), source)
+    let parsed = parse_file(Path::new("src/main.rs"), &source)
         .expect("rust source should parse successfully");
 
     assert_eq!(parsed.language, Language::Rust);
@@ -38,45 +28,10 @@ impl Runner {
 
 #[test]
 fn test_extract_evidence() {
-    let source = r#"
-use std::fmt::{self, Display as FmtDisplay};
-use crate::config::*;
+    let source = load_fixture("rust/parser/extract_evidence.txt");
 
-const API_TOKEN: &str = "sk_test_1234567890";
-
-pub struct Runner;
-enum Mode {
-    Fast,
-}
-trait Render {
-    fn render(&self);
-}
-type Output = String;
-
-impl Runner {
-    pub unsafe fn execute(&self) {
-        let password = "super-secret-value";
-        dbg!(password);
-        todo!();
-        value.unwrap();
-        unsafe {
-            dangerous();
-        }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn detects_test_only_code() {
-        let api_key = "top-secret-value";
-        assert_eq!(api_key.len(), 16);
-    }
-}
-"#;
-
-    let parsed =
-        parse_file(Path::new("src/lib.rs"), source).expect("rust source should parse successfully");
+    let parsed = parse_file(Path::new("src/lib.rs"), &source)
+        .expect("rust source should parse successfully");
 
     assert_eq!(parsed.imports.len(), 3);
     assert!(
@@ -155,33 +110,10 @@ mod tests {
 
 #[test]
 fn test_collects_advanceplan2_rust_summaries() {
-    let source = r#"
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use std::collections::HashMap;
-use std::sync::{Mutex, OnceLock};
+    let source = load_fixture("rust/parser/advanceplan2_summaries.txt");
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct RequestConfig {
-    #[serde(default)]
-    pub mode: String,
-    #[serde(flatten)]
-    pub extra: HashMap<String, Value>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum WireValue {
-    Text(String),
-    Count(u64),
-}
-
-pub static CACHE: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
-"#;
-
-    let parsed =
-        parse_file(Path::new("src/lib.rs"), source).expect("rust source should parse successfully");
+    let parsed = parse_file(Path::new("src/lib.rs"), &source)
+        .expect("rust source should parse successfully");
 
     let config = parsed
         .structs()
@@ -225,9 +157,8 @@ pub static CACHE: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
 proptest! {
     #[test]
     fn parses_valid_function_names(name in "[a-z][a-z0-9_]{0,12}") {
-        let source = format!(
-            "pub fn {name}() -> usize {{\n    1\n}}\n"
-        );
+        let template = load_fixture("rust/parser/valid_function_template.txt");
+        let source = template.replace("__FUNCTION_NAME__", &name);
 
         let parsed = parse_file(Path::new("src/lib.rs"), &source)
             .expect("generated Rust source should parse successfully");
@@ -240,9 +171,9 @@ proptest! {
 
 #[test]
 fn test_syntax_error() {
-    let source = "pub fn broken( {\n    println!(\"oops\");\n}\n";
+    let source = load_fixture("rust/parser/syntax_error.txt");
 
-    let parsed = parse_file(Path::new("src/lib.rs"), source)
+    let parsed = parse_file(Path::new("src/lib.rs"), &source)
         .expect("tree-sitter should recover from syntax errors");
 
     assert!(parsed.syntax_error);

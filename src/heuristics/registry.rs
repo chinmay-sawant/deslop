@@ -1,4 +1,4 @@
-use crate::analysis::{ImportSpec, ParsedFile, ParsedFunction};
+use crate::analysis::{AnalysisConfig, ImportSpec, Language, ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
@@ -14,72 +14,433 @@ use super::go::{
 use super::hallucination::hallucination_findings;
 use super::naming::{generic_finding, overlong_finding, weak_finding};
 use super::python::{python_file_findings, python_findings, python_repo_findings};
+use super::rust::{
+    evaluate_rust_file_hygiene_findings, rust_api_design_file_findings,
+    rust_api_design_function_findings, rust_async_file_findings, rust_async_function_findings,
+    rust_boundary_file_findings, rust_boundary_function_findings, rust_domain_file_findings,
+    rust_import_resolution_findings, rust_local_call_findings, rust_module_surface_file_findings,
+    rust_performance_file_findings, rust_performance_function_findings, rust_runtime_file_findings,
+    rust_runtime_function_findings, rust_runtime_ownership_function_findings,
+    rust_security_file_findings, rust_security_function_findings, rust_unsafe_soundness_findings,
+};
 use super::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};
 use super::test_quality::test_findings;
 
-pub(super) type FileRule = fn(&ParsedFile) -> Vec<Finding>;
-pub(super) type FunctionRule = fn(&ParsedFile, &ParsedFunction) -> Vec<Finding>;
-pub(super) type OptionalFunctionRule = fn(&ParsedFile, &ParsedFunction) -> Option<Finding>;
-pub(super) type IndexedFunctionRule =
+pub(crate) type FileRule = fn(&ParsedFile) -> Vec<Finding>;
+pub(crate) type IndexedFileRule = fn(&ParsedFile, &RepositoryIndex) -> Vec<Finding>;
+pub(crate) type FunctionRule = fn(&ParsedFile, &ParsedFunction) -> Vec<Finding>;
+pub(crate) type OptionalFunctionRule = fn(&ParsedFile, &ParsedFunction) -> Option<Finding>;
+pub(crate) type IndexedFunctionRule =
     fn(&ParsedFile, &ParsedFunction, &RepositoryIndex) -> Vec<Finding>;
-pub(super) type FileFunctionRule = fn(&ParsedFile, &ParsedFunction, &[ImportSpec]) -> Vec<Finding>;
-pub(super) type ConfigurableFunctionRule = fn(&ParsedFile, &ParsedFunction, bool) -> Vec<Finding>;
-pub(super) type RepoRule = fn(&[&ParsedFile]) -> Vec<Finding>;
-pub(super) type IndexedRepoRule = fn(&[&ParsedFile], &RepositoryIndex) -> Vec<Finding>;
+pub(crate) type FileFunctionRule = fn(&ParsedFile, &ParsedFunction, &[ImportSpec]) -> Vec<Finding>;
+pub(crate) type ConfigurableFunctionRule = fn(&ParsedFile, &ParsedFunction, bool) -> Vec<Finding>;
+pub(crate) type RepoRule = fn(&[&ParsedFile]) -> Vec<Finding>;
+pub(crate) type IndexedRepoRule = fn(&[&ParsedFile], &RepositoryIndex) -> Vec<Finding>;
 
-pub(super) const SHARED_FILE_RULES: &[FileRule] = &[pkg_secret_findings];
+pub(crate) struct RuleExecutionSpec {
+    pub(crate) family: &'static str,
+    pub(crate) file_rules: &'static [FileRule],
+    pub(crate) indexed_file_rules: &'static [IndexedFileRule],
+    pub(crate) optional_function_rules: &'static [OptionalFunctionRule],
+    pub(crate) function_rules: &'static [FunctionRule],
+    pub(crate) file_function_rules: &'static [FileFunctionRule],
+    pub(crate) indexed_function_rules: &'static [IndexedFunctionRule],
+    pub(crate) configurable_function_rules: &'static [ConfigurableFunctionRule],
+    pub(crate) repo_rules: &'static [RepoRule],
+    pub(crate) indexed_repo_rules: &'static [IndexedRepoRule],
+    pub(crate) configurable_enabled: fn(&AnalysisConfig) -> bool,
+}
 
-pub(super) const SHARED_OPTIONAL_FUNCTION_RULES: &[OptionalFunctionRule] =
-    &[generic_finding, overlong_finding, weak_finding];
+const fn always_disabled(_: &AnalysisConfig) -> bool {
+    false
+}
 
-pub(super) const SHARED_FUNCTION_RULES: &[FunctionRule] =
-    &[comment_findings, secret_findings, test_findings];
+const fn go_semantic_enabled(config: &AnalysisConfig) -> bool {
+    config.enable_go_semantic
+}
 
-pub(super) const GO_FILE_RULES: &[FileRule] = &[
-    go_file_findings,
-    go_framework_patterns_file_findings,
-    go_library_misuse_file_findings,
-    tag_findings,
-    import_grouping_findings,
+pub(crate) const SHARED_RULE_SPECS: &[RuleExecutionSpec] = &[
+    RuleExecutionSpec {
+        family: "security",
+        file_rules: &[pkg_secret_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[secret_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "naming",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[generic_finding, overlong_finding, weak_finding],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "comments",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[comment_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "test_quality",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[test_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "hallucination",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[hallucination_findings],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
 ];
 
-pub(super) const GO_FUNCTION_RULES: &[FunctionRule] = &[
-    error_findings,
-    crypto_findings,
-    sql_findings,
-    ctx_findings,
-    cancel_findings,
-    sleep_findings,
-    busy_findings,
-    shutdown_findings,
-    deeper_goroutine_lifetime_findings,
-    alloc_findings,
-    fmt_findings,
-    reflect_findings,
-    concat_findings,
-    json_findings,
-    load_findings,
-    coordination_findings,
+const GO_RULE_SPECS: &[RuleExecutionSpec] = &[
+    RuleExecutionSpec {
+        family: "idioms",
+        file_rules: &[go_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[go_repo_findings],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "consistency",
+        file_rules: &[tag_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[receiver_findings],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "style",
+        file_rules: &[import_grouping_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[package_name_consistency],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "errors",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[error_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "context",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[ctx_findings, cancel_findings, busy_findings, sleep_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[propagate_findings],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "concurrency",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[
+            coordination_findings,
+            deeper_goroutine_lifetime_findings,
+            shutdown_findings,
+        ],
+        file_function_rules: &[mutex_findings],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "performance",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[
+            alloc_findings,
+            crypto_findings,
+            sql_findings,
+            fmt_findings,
+            reflect_findings,
+            concat_findings,
+            json_findings,
+            load_findings,
+        ],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[n_squared_findings, db_findings],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: go_semantic_enabled,
+    },
+    RuleExecutionSpec {
+        family: "framework_patterns",
+        file_rules: &[go_framework_patterns_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "library_misuse",
+        file_rules: &[go_library_misuse_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
 ];
 
-pub(super) const GO_FILE_FUNCTION_RULES: &[FileFunctionRule] = &[mutex_findings];
+const PYTHON_RULE_SPECS: &[RuleExecutionSpec] = &[RuleExecutionSpec {
+    family: "python_specs",
+    file_rules: &[python_file_findings],
+    indexed_file_rules: &[],
+    optional_function_rules: &[],
+    function_rules: &[python_findings],
+    file_function_rules: &[],
+    indexed_function_rules: &[],
+    configurable_function_rules: &[],
+    repo_rules: &[],
+    indexed_repo_rules: &[python_repo_findings],
+    configurable_enabled: always_disabled,
+}];
 
-pub(super) const GO_INDEXED_FUNCTION_RULES: &[IndexedFunctionRule] =
-    &[propagate_findings, hallucination_findings];
-
-pub(super) const GO_CONFIGURABLE_FUNCTION_RULES: &[ConfigurableFunctionRule] =
-    &[n_squared_findings, db_findings];
-
-pub(super) const GO_REPO_RULES: &[RepoRule] = &[
-    receiver_findings,
-    package_name_consistency,
-    go_repo_findings,
+const RUST_RULE_SPECS: &[RuleExecutionSpec] = &[
+    RuleExecutionSpec {
+        family: "hygiene",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[evaluate_rust_file_hygiene_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "api_design",
+        file_rules: &[rust_api_design_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[rust_api_design_function_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "async_patterns",
+        file_rules: &[rust_async_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[rust_async_function_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "domain_modeling",
+        file_rules: &[rust_domain_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "performance",
+        file_rules: &[rust_performance_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[rust_performance_function_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "runtime_boundary",
+        file_rules: &[],
+        indexed_file_rules: &[rust_runtime_file_findings],
+        optional_function_rules: &[],
+        function_rules: &[rust_runtime_function_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "unsafe_soundness",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[rust_unsafe_soundness_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "boundary",
+        file_rules: &[rust_boundary_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[rust_boundary_function_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "module_surface",
+        file_rules: &[rust_module_surface_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "runtime_ownership",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[rust_runtime_ownership_function_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "security_footguns",
+        file_rules: &[],
+        indexed_file_rules: &[rust_security_file_findings],
+        optional_function_rules: &[],
+        function_rules: &[rust_security_function_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "resolution",
+        file_rules: &[],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[rust_import_resolution_findings, rust_local_call_findings],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
 ];
 
-pub(super) const PYTHON_FILE_RULES: &[FileRule] = &[python_file_findings];
+pub(crate) fn shared_rule_specs() -> &'static [RuleExecutionSpec] {
+    SHARED_RULE_SPECS
+}
 
-pub(super) const PYTHON_FUNCTION_RULES: &[FunctionRule] = &[python_findings];
-
-pub(super) const PYTHON_INDEXED_FUNCTION_RULES: &[IndexedFunctionRule] = &[hallucination_findings];
-
-pub(super) const PYTHON_REPO_RULES: &[IndexedRepoRule] = &[python_repo_findings];
+pub(crate) fn language_rule_specs(language: Language) -> &'static [RuleExecutionSpec] {
+    match language {
+        Language::Go => GO_RULE_SPECS,
+        Language::Python => PYTHON_RULE_SPECS,
+        Language::Rust => RUST_RULE_SPECS,
+    }
+}

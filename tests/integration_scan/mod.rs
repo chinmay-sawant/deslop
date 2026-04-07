@@ -39,24 +39,18 @@ mod consistency;
 mod context;
 mod core;
 mod data_access;
-mod go_framework_patterns;
-mod go_library_misuse;
+mod go;
 mod go_resource_hygiene;
 mod hallucination;
 mod naming;
 mod performance;
 mod python;
 mod rust;
-mod rust_advanced;
-mod rust_api_design_ext;
-mod rust_module_surface;
 mod security;
 mod style;
 mod test_quality;
 
-use support::{
-    FixtureWorkspace, assert_rule_severity, assert_rules_absent, assert_rules_present, scan_files,
-};
+use support::{FixtureWorkspace, assert_rules_absent, assert_rules_present, scan_files};
 
 #[test]
 fn test_error_slop() {

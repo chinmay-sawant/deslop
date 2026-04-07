@@ -1,4 +1,4 @@
-use super::support::{assert_rules_absent, assert_rules_present, scan_files};
+use super::{assert_rules_absent, assert_rules_present, scan_files};
 
 fn source_for(path: &str) -> &'static str {
     match path {

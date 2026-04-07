@@ -1,0 +1,5 @@
+fn demo() {
+    let _ = option.unwrap(); // deslop-ignore:unwrap_in_non_test_code
+    // deslop-ignore:panic_macro_leftover
+    panic!("boom");
+}

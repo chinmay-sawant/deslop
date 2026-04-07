@@ -3,10 +3,7 @@ mod parser;
 
 use std::path::Path;
 
-use crate::analysis::{AnalysisConfig, Language, LanguageBackend, ParsedFile};
-use crate::heuristics::{evaluate_go_file, evaluate_go_repo};
-use crate::index::RepositoryIndex;
-use crate::model::Finding;
+use crate::analysis::{Language, LanguageBackend, ParsedFile};
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct GoAnalyzer;
@@ -26,23 +23,5 @@ impl LanguageBackend for GoAnalyzer {
 
     fn parse_file(&self, path: &Path, source: &str) -> crate::Result<ParsedFile> {
         parser::parse_file(path, source).map_err(crate::Error::from)
-    }
-
-    fn evaluate_file(
-        &self,
-        file: &ParsedFile,
-        index: &RepositoryIndex,
-        analysis_config: &AnalysisConfig,
-    ) -> Vec<Finding> {
-        evaluate_go_file(file, index, analysis_config.enable_go_semantic)
-    }
-
-    fn evaluate_repo(
-        &self,
-        files: &[&ParsedFile],
-        index: &RepositoryIndex,
-        _analysis_config: &AnalysisConfig,
-    ) -> Vec<Finding> {
-        evaluate_go_repo(files, index)
     }
 }

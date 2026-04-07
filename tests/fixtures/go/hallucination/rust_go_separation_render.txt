@@ -1,0 +1,5 @@
+package render
+
+func Sanitize(address string) string {
+    return address
+}

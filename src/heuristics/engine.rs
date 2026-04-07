@@ -1,102 +1,98 @@
-use crate::analysis::{ImportSpec, ParsedFile, ParsedFunction};
+use crate::analysis::{AnalysisConfig, Language, ParsedFile, ParsedFunction};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
 use super::registry::{
-    ConfigurableFunctionRule, FileFunctionRule, FileRule, FunctionRule,
-    GO_CONFIGURABLE_FUNCTION_RULES, GO_FILE_FUNCTION_RULES, GO_FILE_RULES, GO_FUNCTION_RULES,
-    GO_INDEXED_FUNCTION_RULES, GO_REPO_RULES, IndexedFunctionRule, IndexedRepoRule,
-    OptionalFunctionRule, PYTHON_FILE_RULES, PYTHON_FUNCTION_RULES, PYTHON_INDEXED_FUNCTION_RULES,
-    PYTHON_REPO_RULES, RepoRule, SHARED_FILE_RULES, SHARED_FUNCTION_RULES,
-    SHARED_OPTIONAL_FUNCTION_RULES,
+    ConfigurableFunctionRule, FileFunctionRule, FileRule, FunctionRule, IndexedFileRule,
+    IndexedFunctionRule, IndexedRepoRule, OptionalFunctionRule, RepoRule, RuleExecutionSpec,
+    language_rule_specs, shared_rule_specs,
 };
 
-pub(crate) fn evaluate_shared_file(file: &ParsedFile, _index: &RepositoryIndex) -> Vec<Finding> {
-    let mut findings = Vec::new();
-
-    extend_file_rules(&mut findings, file, SHARED_FILE_RULES);
-
-    for function in &file.functions {
-        extend_optional_function_rules(
-            &mut findings,
-            file,
-            function,
-            SHARED_OPTIONAL_FUNCTION_RULES,
-        );
-        extend_function_rules(&mut findings, file, function, SHARED_FUNCTION_RULES);
-    }
-
+pub(crate) fn evaluate_file(
+    file: &ParsedFile,
+    index: &RepositoryIndex,
+    analysis_config: &AnalysisConfig,
+) -> Vec<Finding> {
+    let mut findings = evaluate_file_specs(shared_rule_specs(), file, index, analysis_config);
+    findings.extend(evaluate_file_specs(
+        language_rule_specs(file.language),
+        file,
+        index,
+        analysis_config,
+    ));
     findings
 }
 
-pub(crate) fn evaluate_go_file(
+pub(crate) fn evaluate_repo(
+    language: Language,
+    files: &[&ParsedFile],
+    index: &RepositoryIndex,
+    analysis_config: &AnalysisConfig,
+) -> Vec<Finding> {
+    evaluate_repo_specs(language_rule_specs(language), files, index, analysis_config)
+}
+
+fn evaluate_file_specs(
+    specs: &[RuleExecutionSpec],
     file: &ParsedFile,
     index: &RepositoryIndex,
-    enable_go_semantic: bool,
+    analysis_config: &AnalysisConfig,
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    extend_file_rules(&mut findings, file, GO_FILE_RULES);
+    for spec in specs {
+        let _ = spec.family;
+        extend_file_rules(&mut findings, file, spec.file_rules);
+        extend_indexed_file_rules(&mut findings, file, index, spec.indexed_file_rules);
 
-    for function in &file.functions {
-        extend_function_rules(&mut findings, file, function, GO_FUNCTION_RULES);
-        extend_file_function_rules(
-            &mut findings,
-            file,
-            function,
-            &file.imports,
-            GO_FILE_FUNCTION_RULES,
-        );
-        extend_indexed_function_rules(
-            &mut findings,
-            file,
-            function,
-            index,
-            GO_INDEXED_FUNCTION_RULES,
-        );
-        extend_configurable_function_rules(
-            &mut findings,
-            file,
-            function,
-            enable_go_semantic,
-            GO_CONFIGURABLE_FUNCTION_RULES,
-        );
+        for function in &file.functions {
+            extend_optional_function_rules(
+                &mut findings,
+                file,
+                function,
+                spec.optional_function_rules,
+            );
+            extend_function_rules(&mut findings, file, function, spec.function_rules);
+            extend_file_function_rules(
+                &mut findings,
+                file,
+                function,
+                &file.imports,
+                spec.file_function_rules,
+            );
+            extend_indexed_function_rules(
+                &mut findings,
+                file,
+                function,
+                index,
+                spec.indexed_function_rules,
+            );
+            extend_configurable_function_rules(
+                &mut findings,
+                file,
+                function,
+                (spec.configurable_enabled)(analysis_config),
+                spec.configurable_function_rules,
+            );
+        }
     }
 
     findings
 }
 
-pub(crate) fn evaluate_go_repo(files: &[&ParsedFile], _index: &RepositoryIndex) -> Vec<Finding> {
+fn evaluate_repo_specs(
+    specs: &[RuleExecutionSpec],
+    files: &[&ParsedFile],
+    index: &RepositoryIndex,
+    _analysis_config: &AnalysisConfig,
+) -> Vec<Finding> {
     let mut findings = Vec::new();
 
-    extend_repo_rules(&mut findings, files, GO_REPO_RULES);
-
-    findings
-}
-
-pub(crate) fn evaluate_python_file(file: &ParsedFile, index: &RepositoryIndex) -> Vec<Finding> {
-    let mut findings = Vec::new();
-
-    extend_file_rules(&mut findings, file, PYTHON_FILE_RULES);
-
-    for function in &file.functions {
-        extend_function_rules(&mut findings, file, function, PYTHON_FUNCTION_RULES);
-        extend_indexed_function_rules(
-            &mut findings,
-            file,
-            function,
-            index,
-            PYTHON_INDEXED_FUNCTION_RULES,
-        );
+    for spec in specs {
+        let _ = spec.family;
+        extend_repo_rules(&mut findings, files, spec.repo_rules);
+        extend_indexed_repo_rules(&mut findings, files, index, spec.indexed_repo_rules);
     }
-
-    findings
-}
-
-pub(crate) fn evaluate_python_repo(files: &[&ParsedFile], index: &RepositoryIndex) -> Vec<Finding> {
-    let mut findings = Vec::new();
-
-    extend_indexed_repo_rules(&mut findings, files, index, PYTHON_REPO_RULES);
 
     findings
 }
@@ -108,6 +104,17 @@ pub(crate) fn extend_file_rules(
 ) {
     for rule in rules {
         findings.extend(rule(file));
+    }
+}
+
+pub(crate) fn extend_indexed_file_rules(
+    findings: &mut Vec<Finding>,
+    file: &ParsedFile,
+    index: &RepositoryIndex,
+    rules: &[IndexedFileRule],
+) {
+    for rule in rules {
+        findings.extend(rule(file, index));
     }
 }
 
@@ -139,7 +146,7 @@ pub(crate) fn extend_file_function_rules(
     findings: &mut Vec<Finding>,
     file: &ParsedFile,
     function: &ParsedFunction,
-    imports: &[ImportSpec],
+    imports: &[crate::analysis::ImportSpec],
     rules: &[FileFunctionRule],
 ) {
     for rule in rules {

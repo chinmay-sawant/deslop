@@ -17,11 +17,14 @@
 ///   source.  Rule-specific cleanliness is verified by the `assert_rules_absent`
 ///   calls inside `tests/integration_scan/`.  A global scan assertion here would
 ///   produce false failures whenever a new unrelated rule is added.
+#[path = "support/mod.rs"]
+mod support;
+
 use std::path::Path;
 
-use deslop::{ScanOptions, scan_repository};
 use proptest::prelude::*;
-use tempfile::TempDir;
+
+use support::scan_fixture;
 
 // ---------------------------------------------------------------------------
 // 1. Parser no-panic via proptest
@@ -48,118 +51,64 @@ proptest! {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Helper: write a single file into a temp dir and scan it.
-// ---------------------------------------------------------------------------
-
-fn scan_single(filename: &str, source: &str) -> Vec<String> {
-    let dir = TempDir::new().expect("temp dir should be created");
-    let file_path = dir.path().join(filename);
-    std::fs::write(&file_path, source).expect("fixture write should succeed");
-
-    let report = scan_repository(&ScanOptions {
-        root: dir.path().to_path_buf(),
-        respect_ignore: false,
-    })
-    .expect("scan should succeed");
-
-    report.findings.iter().map(|f| f.rule_id.clone()).collect()
-}
-
-// ---------------------------------------------------------------------------
-// 2. Positive-fixture invariant: Go
-// ---------------------------------------------------------------------------
-
-macro_rules! go_positive_invariant {
-    ($test_name:ident, $fixture_file:literal) => {
+macro_rules! positive_fixture_invariant {
+    ($test_name:ident, $fixture_path:literal, $target_path:literal) => {
         #[test]
         fn $test_name() {
-            let source = include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/fixtures/go/",
-                $fixture_file
-            ));
-            let findings = scan_single(concat!($fixture_file, ".go"), source);
+            let report = scan_fixture($fixture_path, $target_path);
             assert!(
-                !findings.is_empty(),
+                !report.findings.is_empty(),
                 "positive fixture '{}' should produce at least one finding",
-                $fixture_file
+                $fixture_path
             );
         }
     };
 }
 
-go_positive_invariant!(
+positive_fixture_invariant!(
     go_error_handling_slop_has_findings,
-    "error_handling_slop.txt"
+    "go/error_handling_slop.txt",
+    "error_handling_slop.go"
 );
-go_positive_invariant!(
+positive_fixture_invariant!(
     go_context_cancel_slop_has_findings,
-    "context_cancel_slop.txt"
+    "go/context_cancel_slop.txt",
+    "context_cancel_slop.go"
 );
-go_positive_invariant!(go_concurrency_slop_has_findings, "concurrency_slop.txt");
-go_positive_invariant!(go_busy_waiting_slop_has_findings, "busy_waiting_slop.txt");
-go_positive_invariant!(go_db_query_slop_has_findings, "db_query_slop.txt");
-
-// ---------------------------------------------------------------------------
-// 2. Positive-fixture invariant: Python
-// ---------------------------------------------------------------------------
-
-macro_rules! python_positive_invariant {
-    ($test_name:ident, $fixture_file:literal) => {
-        #[test]
-        fn $test_name() {
-            let source = include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/fixtures/python/",
-                $fixture_file
-            ));
-            let findings = scan_single(concat!($fixture_file, ".py"), source);
-            assert!(
-                !findings.is_empty(),
-                "positive fixture '{}' should produce at least one finding",
-                $fixture_file
-            );
-        }
-    };
-}
-
-python_positive_invariant!(
+positive_fixture_invariant!(
+    go_concurrency_slop_has_findings,
+    "go/concurrency_slop.txt",
+    "concurrency_slop.go"
+);
+positive_fixture_invariant!(
+    go_busy_waiting_slop_has_findings,
+    "go/busy_waiting_slop.txt",
+    "busy_waiting_slop.go"
+);
+positive_fixture_invariant!(
+    go_db_query_slop_has_findings,
+    "go/db_query_slop.txt",
+    "db_query_slop.go"
+);
+positive_fixture_invariant!(
     python_rule_pack_positive_has_findings,
-    "rule_pack_positive.txt"
+    "python/rule_pack_positive.txt",
+    "rule_pack_positive.py"
 );
-python_positive_invariant!(python_phase4_positive_has_findings, "phase4_positive.txt");
-
-// ---------------------------------------------------------------------------
-// 2. Positive-fixture invariant: Rust
-// ---------------------------------------------------------------------------
-
-macro_rules! rust_positive_invariant {
-    ($test_name:ident, $fixture_file:literal) => {
-        #[test]
-        fn $test_name() {
-            let source = include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/fixtures/rust/",
-                $fixture_file
-            ));
-            let findings = scan_single(concat!($fixture_file, ".rs"), source);
-            assert!(
-                !findings.is_empty(),
-                "positive fixture '{}' should produce at least one finding",
-                $fixture_file
-            );
-        }
-    };
-}
-
-rust_positive_invariant!(
+positive_fixture_invariant!(
+    python_phase4_positive_has_findings,
+    "python/phase4_positive.txt",
+    "phase4_positive.py"
+);
+positive_fixture_invariant!(
     rust_rule_pack_positive_has_findings,
-    "rule_pack_positive.txt"
+    "rust/rule_pack_positive.txt",
+    "rule_pack_positive.rs"
 );
-rust_positive_invariant!(
+positive_fixture_invariant!(
     rust_direct_call_hallucination_positive_has_findings,
-    "direct_call_hallucination_positive.txt"
+    "rust/direct_call_hallucination_positive.txt",
+    "direct_call_hallucination_positive.rs"
 );
 
 // ---------------------------------------------------------------------------
@@ -173,11 +122,11 @@ rust_positive_invariant!(
 
 #[test]
 fn go_zero_findings_baseline_produces_no_findings() {
-    let source = include_str!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/go/zero_findings_baseline.txt"
-    ));
-    let findings = scan_single("zero_findings_baseline.go", source);
+    let findings = scan_fixture("go/zero_findings_baseline.txt", "zero_findings_baseline.go")
+        .findings
+        .into_iter()
+        .map(|finding| finding.rule_id)
+        .collect::<Vec<_>>();
     assert!(
         findings.is_empty(),
         "zero-findings Go baseline produced unexpected findings: {findings:?}"
@@ -186,11 +135,14 @@ fn go_zero_findings_baseline_produces_no_findings() {
 
 #[test]
 fn python_zero_findings_baseline_produces_no_findings() {
-    let source = include_str!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/python/zero_findings_baseline.txt"
-    ));
-    let findings = scan_single("zero_findings_baseline.py", source);
+    let findings = scan_fixture(
+        "python/zero_findings_baseline.txt",
+        "zero_findings_baseline.py",
+    )
+    .findings
+    .into_iter()
+    .map(|finding| finding.rule_id)
+    .collect::<Vec<_>>();
     assert!(
         findings.is_empty(),
         "zero-findings Python baseline produced unexpected findings: {findings:?}"
@@ -199,11 +151,14 @@ fn python_zero_findings_baseline_produces_no_findings() {
 
 #[test]
 fn rust_zero_findings_baseline_produces_no_findings() {
-    let source = include_str!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/rust/zero_findings_baseline.txt"
-    ));
-    let findings = scan_single("zero_findings_baseline.rs", source);
+    let findings = scan_fixture(
+        "rust/zero_findings_baseline.txt",
+        "zero_findings_baseline.rs",
+    )
+    .findings
+    .into_iter()
+    .map(|finding| finding.rule_id)
+    .collect::<Vec<_>>();
     assert!(
         findings.is_empty(),
         "zero-findings Rust baseline produced unexpected findings: {findings:?}"
@@ -217,23 +172,7 @@ fn rust_zero_findings_baseline_produces_no_findings() {
 
 #[test]
 fn scan_results_contain_no_duplicate_findings() {
-    // Use a known-noisy Go fixture so multiple rules fire, giving the
-    // deduplication guard a realistic workout.
-    let source = include_str!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/go/error_handling_slop.txt"
-    ));
-    // scan_single returns Vec<String> of rule_ids; use the full ScanReport
-    // to access (start_line, rule_id) pairs for the duplicate check.
-    let dir = tempfile::TempDir::new().expect("temp dir");
-    let file_path = dir.path().join("dedup_check.go");
-    std::fs::write(&file_path, source).expect("write fixture");
-
-    let report = deslop::scan_repository(&deslop::ScanOptions {
-        root: dir.path().to_path_buf(),
-        respect_ignore: false,
-    })
-    .expect("scan should succeed");
+    let report = scan_fixture("go/error_handling_slop.txt", "dedup_check.go");
 
     let mut seen = std::collections::BTreeSet::new();
     for f in &report.findings {

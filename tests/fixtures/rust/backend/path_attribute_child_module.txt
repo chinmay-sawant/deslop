@@ -1,0 +1,11 @@
+-- path: /repo/src/analysis/rust/evaluate.rs
+#[path = "findings.rs"]
+mod findings;
+
+use self::findings::helper;
+
+fn run() {
+    helper();
+}
+-- path: /repo/src/analysis/rust/findings.rs
+pub(super) fn helper() {}

@@ -1,0 +1,5 @@
+package render
+
+func Normalize(address string) string {
+    return address
+}
