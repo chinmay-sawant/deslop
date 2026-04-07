@@ -13,8 +13,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+GUIDES_PATH = ROOT / "guides"
 README_PATH = ROOT / "README.md"
-FEATURES_PATH = ROOT / "guides" / "features-and-detections.md"
 DOCS_CONTENT_PATH = ROOT / "frontend" / "src" / "features" / "docs" / "docs-content.ts"
 ACTION_PATH = ROOT / "action.yml"
 CARGO_TOML_PATH = ROOT / "Cargo.toml"
@@ -24,6 +24,34 @@ LANGUAGE_ORDER = ["common", "go", "python", "rust"]
 STATUS_ORDER = ["stable", "experimental", "research"]
 README_ACTION_REF = "chinmay-sawant/deslop@v{version}"
 FRONTEND_ACTION_REF = "${currentRelease.actionRef}"
+
+
+def resolve_features_path() -> Path:
+    legacy_path = GUIDES_PATH / "features-and-detections.md"
+    if legacy_path.exists():
+        return legacy_path
+
+    versioned_candidates: list[tuple[tuple[int, int, int], Path]] = []
+    for child in GUIDES_PATH.iterdir():
+        if not child.is_dir():
+            continue
+        match = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", child.name)
+        if not match:
+            continue
+
+        candidate = child / "features-and-detections.md"
+        if candidate.exists():
+            versioned_candidates.append(
+                (tuple(int(part) for part in match.groups()), candidate)
+            )
+
+    if not versioned_candidates:
+        raise SystemExit(
+            "failed to find guides/features-and-detections.md or a versioned replacement"
+        )
+
+    versioned_candidates.sort(key=lambda item: item[0], reverse=True)
+    return versioned_candidates[0][1]
 
 
 def main() -> int:
@@ -286,7 +314,8 @@ def sync_features_inventory(
     *,
     check_only: bool,
 ) -> list[Path]:
-    original = FEATURES_PATH.read_text(encoding="utf-8")
+    features_path = resolve_features_path()
+    original = features_path.read_text(encoding="utf-8")
     generated = build_features_inventory(registry, cargo_version)
     pattern = re.compile(
         r"(## What deslop detects today\n\n)(.*?)(\n## Detection philosophy)",
@@ -297,14 +326,14 @@ def sync_features_inventory(
         original,
     )
     if count != 1:
-        raise SystemExit("failed to locate inventory section in guides/features-and-detections.md")
+        raise SystemExit(f"failed to locate inventory section in {features_path}")
 
     if updated == original:
         return []
 
     if not check_only:
-        FEATURES_PATH.write_text(updated, encoding="utf-8")
-    return [FEATURES_PATH]
+        features_path.write_text(updated, encoding="utf-8")
+    return [features_path]
 
 
 def build_readme_rule_summary(registry: list[dict]) -> str:

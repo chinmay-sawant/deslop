@@ -1,5 +1,9 @@
 # Rust Release Checklist
 
+## Shared Repo Release Gate
+
+Complete [../release-checklist.md](../release-checklist.md) before running the Rust-specific verification below.
+
 ## Purpose
 
 This checklist is the concrete Phase 4 release artifact for deslop's Rust backend. It is meant to be used when Rust support changes in observable ways, especially when parser evidence, local index behavior, or Rust-specific findings are added.
