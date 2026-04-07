@@ -24,16 +24,16 @@ This checklist is the concrete Phase 4 release artifact for deslop's Rust backen
 ## Documentation Sync
 
 - Update `README.md` when the observable Rust feature set changes.
-- Update `guides/features-and-detections.md` when new Rust rule IDs become user-visible.
-- Update `guides/implementation-guide.md` when Rust parser or index behavior changes materially.
-- Update `guides/rust/verification-performance-and-rollout.md` when rollout criteria or benchmark conventions change.
+- Update [features-and-detections.md](features-and-detections.md) when new Rust rule IDs become user-visible.
+- Update [implementation-guide.md](implementation-guide.md) when Rust parser or index behavior changes materially.
+- Update [verification-performance-and-rollout.md](verification-performance-and-rollout.md) when rollout criteria or benchmark conventions change.
 
 ## Benchmark Note Requirements
 
 - Keep one repeatable Rust-only benchmark target in addition to the existing Go baseline.
 - Use `cargo run -- bench --warmups 2 --repeats 5 <path>` for recorded notes.
 - Record discovered files, analyzed files, functions, findings, parse failures, and stage timings together.
-- Keep the current recorded rollout snapshot in `guides/rust/benchmark-note.md`.
+- Keep the current recorded rollout snapshot in [rust/benchmark-note.md](rust/benchmark-note.md).
 - Do not treat benchmark differences as hard release blockers until the benchmark target set is stable.
 
 ## Deferred Backlog To Recheck

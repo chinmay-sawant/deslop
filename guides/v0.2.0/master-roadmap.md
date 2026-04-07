@@ -22,8 +22,8 @@ This roadmap sets the default order of work:
 - Historical planning documents are numerous and useful, but many of them are now completed rather than active.
 - The detector surface has grown faster than the governance surface:
   - rule inventory is distributed across code, README, guides, and frontend content
-  - `guides/features-and-detections.md` under-reports the real implemented rule count
-  - the repo references `guides/implementation-guide.md`, but that file did not previously exist
+  - `features-and-detections.md` under-reports the real implemented rule count
+  - the repo references `implementation-guide.md`, but that file did not previously exist
 - The medium-term `500 rules` goal should be treated as a structured inventory target across `stable`, `experimental`, and `research`, not as the next default-on milestone.
 
 ## Phase 0 - Governance And Source Of Truth
@@ -37,7 +37,7 @@ This roadmap sets the default order of work:
 ### Deliverables
 
 - this roadmap as the active planning document
-- [`implementation-guide.md`](/home/chinmay/ChinmayPersonalProjects/deslop-codex/guides/implementation-guide.md) as the guide taxonomy and status map
+- [implementation-guide.md](implementation-guide.md) as the guide taxonomy and status map
 - a central rule registry with:
   - `id`
   - `language`
