@@ -250,3 +250,24 @@ fn test_rust_direct_ok() {
         )
     }));
 }
+
+#[test]
+fn test_rust_std_constructors_are_not_hallucinated() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("integration/hallucination_std_constructors_negative.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert!(!report.findings.iter().any(|finding| {
+        matches!(
+            finding.function_name.as_deref(),
+            Some("build_optional") | Some("build_result")
+        ) && matches!(
+            finding.rule_id.as_str(),
+            "hallucinated_import_call" | "hallucinated_local_call"
+        )
+    }));
+}

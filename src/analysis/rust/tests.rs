@@ -122,6 +122,38 @@ fn actual_go_module_imported_heuristic_call_is_resolved() {
 }
 
 #[test]
+fn actual_rust_rule_helpers_reexported_from_heuristics_are_resolved() {
+    let current = parse_source(
+        "/repo/src/analysis/rust/evaluate.rs",
+        include_str!("evaluate.rs"),
+    );
+    let heuristics = parse_source(
+        "/repo/src/heuristics/mod.rs",
+        include_str!("../../heuristics/mod.rs"),
+    );
+    let engine = parse_source(
+        "/repo/src/heuristics/engine.rs",
+        include_str!("../../heuristics/engine.rs"),
+    );
+    let files = vec![current, heuristics, engine];
+    let current = find_parsed_file(&files, "/repo/src/analysis/rust/evaluate.rs");
+    let index = build_repository_index(Path::new("/repo"), &files);
+
+    assert_no_rule(
+        current,
+        &index,
+        "hallucinated_import_call",
+        Some("extend_file_rules"),
+    );
+    assert_no_rule(
+        current,
+        &index,
+        "hallucinated_import_call",
+        Some("extend_function_rules"),
+    );
+}
+
+#[test]
 fn actual_go_parser_error_import_is_indexed_as_item() {
     let current = parse_source(
         "/repo/src/analysis/go/parser/mod.rs",

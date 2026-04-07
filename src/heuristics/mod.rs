@@ -1,6 +1,6 @@
 pub(crate) mod comments;
 mod common;
-mod engine;
+pub(crate) mod engine;
 pub(crate) mod go;
 pub(crate) mod hallucination;
 pub(crate) mod naming;

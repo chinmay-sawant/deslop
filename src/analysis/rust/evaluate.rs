@@ -17,7 +17,7 @@ use crate::heuristics::rust::{
     security_footguns_file_findings, security_footguns_function_findings,
     unsafe_soundness_findings,
 };
-use crate::heuristics::{extend_file_rules, extend_function_rules};
+use crate::heuristics::engine::{extend_file_rules, extend_function_rules};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
