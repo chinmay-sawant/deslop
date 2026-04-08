@@ -1,0 +1,24 @@
+package handler
+
+import (
+    "net/http"
+
+    "acme/project/internal/service"
+    "acme/project/internal/transport"
+    "github.com/gin-gonic/gin"
+)
+
+type UserService interface {
+    Create(req transport.CreateUserRequest) (transport.UserResponse, error)
+}
+
+type Handler struct {
+    service UserService
+}
+
+func (h *Handler) Create(c *gin.Context) {
+    var req transport.CreateUserRequest
+    _ = c.ShouldBindJSON(&req)
+    resp, _ := h.service.Create(req)
+    c.JSON(http.StatusCreated, resp)
+}

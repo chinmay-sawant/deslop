@@ -1,0 +1,49 @@
+package service
+
+import (
+    "database/sql"
+    "net/http"
+    "os"
+
+    "acme/project/internal/handlersupport"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+)
+
+type UserService struct {
+    db     *sql.DB
+    gormDB *gorm.DB
+}
+
+func NewUserService() *UserService {
+    _ = os.Getenv("SERVICE_MODE")
+    return &UserService{}
+}
+
+func (s *UserService) WithContext(c *gin.Context) map[string]any {
+    c.AbortWithStatus(http.StatusBadRequest)
+    return map[string]any{"error": "bad"}
+}
+
+func (s *UserService) Status() (int, error) {
+    return http.StatusAccepted, nil
+}
+
+func (s *UserService) Writer() http.ResponseWriter {
+    return nil
+}
+
+func (s *UserService) Builder() *gorm.DB {
+    return s.gormDB
+}
+
+func (s *UserService) Rows() *sql.Rows {
+    return nil
+}
+
+func (s *UserService) Input(payload map[string]any) error {
+    _ = handlersupport.Normalize("x")
+    _ = s.db.QueryRow("SELECT id FROM users WHERE email = ?", "x")
+    s.gormDB.Where("email = ?", "x").First(&struct{}{})
+    return nil
+}

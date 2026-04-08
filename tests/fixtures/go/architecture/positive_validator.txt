@@ -1,0 +1,10 @@
+package validation
+
+import "acme/project/internal/repository"
+
+type UserValidator struct{}
+
+func (v *UserValidator) Validate() error {
+    repo := repository.UserRepository{}
+    return repo.Query().Error
+}

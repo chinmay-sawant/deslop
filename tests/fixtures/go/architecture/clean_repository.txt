@@ -1,0 +1,26 @@
+package repository
+
+import (
+    "context"
+
+    "gorm.io/gorm"
+)
+
+type CreateUserSpec struct {
+    Name string
+}
+
+type UserRecord struct {
+    ID   int
+    Name string
+}
+
+type UserRepository struct {
+    db *gorm.DB
+}
+
+func (r *UserRepository) Create(ctx context.Context, input CreateUserSpec) (UserRecord, error) {
+    _ = ctx
+    _ = input
+    return UserRecord{}, nil
+}

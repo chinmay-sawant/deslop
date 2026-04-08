@@ -3,6 +3,7 @@ pub(super) use super::{
 };
 
 pub(crate) mod concurrency;
+pub(crate) mod architecture;
 pub(crate) mod consistency;
 pub(crate) mod context;
 pub(crate) mod data_access;
@@ -17,6 +18,7 @@ pub(crate) mod security;
 pub(crate) mod style;
 
 pub(crate) const FAMILY_RULES: &[&[RuleDefinition]] = &[
+    architecture::RULE_DEFINITIONS,
     concurrency::RULE_DEFINITIONS,
     consistency::RULE_DEFINITIONS,
     context::RULE_DEFINITIONS,

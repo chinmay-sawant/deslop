@@ -6,10 +6,12 @@ use super::comments::comment_findings;
 use super::go::{
     alloc_findings, busy_findings, cancel_findings, concat_findings, coordination_findings,
     ctx_findings, db_findings, deeper_goroutine_lifetime_findings, error_findings, fmt_findings,
-    go_file_findings, go_framework_patterns_file_findings, go_library_misuse_file_findings,
-    go_repo_findings, import_grouping_findings, json_findings, load_findings, mutex_findings,
-    n_squared_findings, package_name_consistency, propagate_findings, receiver_findings,
-    reflect_findings, shutdown_findings, sleep_findings, tag_findings,
+    go_architecture_file_findings, go_architecture_repo_findings, go_file_findings,
+    go_framework_patterns_file_findings,
+    go_library_misuse_file_findings, go_repo_findings, import_grouping_findings, json_findings,
+    load_findings, mutex_findings, n_squared_findings, package_name_consistency,
+    propagate_findings, receiver_findings, reflect_findings, shutdown_findings, sleep_findings,
+    tag_findings,
 };
 use super::hallucination::hallucination_findings;
 use super::naming::{generic_finding, overlong_finding, weak_finding};
@@ -128,6 +130,19 @@ pub(crate) const SHARED_RULE_SPECS: &[RuleExecutionSpec] = &[
 ];
 
 const GO_RULE_SPECS: &[RuleExecutionSpec] = &[
+    RuleExecutionSpec {
+        family: "architecture",
+        file_rules: &[go_architecture_file_findings],
+        indexed_file_rules: &[],
+        optional_function_rules: &[],
+        function_rules: &[],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[go_architecture_repo_findings],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
     RuleExecutionSpec {
         family: "idioms",
         file_rules: &[go_file_findings],

@@ -4,6 +4,7 @@ pub(crate) const NAMING: &str = crate::heuristics::naming::BINDING_LOCATION;
 pub(crate) const SHARED_SECURITY: &str = crate::heuristics::security::BINDING_LOCATION;
 pub(crate) const TEST_QUALITY: &str = crate::heuristics::test_quality::BINDING_LOCATION;
 
+pub(crate) const GO_ARCHITECTURE: &str = crate::heuristics::go::ARCHITECTURE_BINDING_LOCATION;
 pub(crate) const GO_CONCURRENCY: &str = crate::heuristics::go::CONCURRENCY_BINDING_LOCATION;
 pub(crate) const GO_CONSISTENCY: &str = crate::heuristics::go::CONSISTENCY_BINDING_LOCATION;
 pub(crate) const GO_CONTEXT: &str = crate::heuristics::go::CONTEXT_BINDING_LOCATION;

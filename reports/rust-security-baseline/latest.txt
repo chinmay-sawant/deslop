@@ -30,6 +30,15 @@ src/analysis/python/parser/hotpath_ext.rs:240:            let receiver = &trimme
 src/analysis/python/parser/hotpath_ext.rs:241:            let after = &trimmed[get_idx + 5..];
 src/analysis/python/parser/hotpath_ext.rs:243:                let key = after[..end].trim();
 src/analysis/rust/parser/evidence.rs:204:    text[vec_start + 4..].contains("Box<")
+src/heuristics/go/architecture.rs:3698:    signature[close_idx + 1..].trim()
+src/heuristics/go/architecture.rs:3705:    &signature[open_idx + 1..close_idx]
+src/heuristics/go/architecture.rs:4260:    let rest = &text[start + 1..];
+src/heuristics/go/architecture.rs:4262:    Some(rest[..end].to_string())
+src/heuristics/go/architecture.rs:4985:    let rest = &line[idx + marker.len()..];
+src/heuristics/go/architecture.rs:4987:    let rest = &rest[first_quote + 1..];
+src/heuristics/go/architecture.rs:4989:    Some(rest[..end_quote].to_string())
+src/heuristics/go/architecture.rs:5067:    let rest = &text[start..];
+src/heuristics/go/architecture.rs:5069:    let name = &rest[..end];
 src/heuristics/go/framework_patterns/data_access/sql.rs:554:                let after_like = &upper[like_pos + 4..];
 src/heuristics/go/framework_patterns/gin.rs:241:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
 src/heuristics/go/framework_patterns/gin.rs:696:        text = text[1..text.len() - 1].trim();

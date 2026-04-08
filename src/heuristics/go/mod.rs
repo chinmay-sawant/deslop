@@ -1,3 +1,4 @@
+mod architecture;
 mod concurrency;
 mod consistency;
 mod context;
@@ -9,6 +10,7 @@ mod performance;
 mod style;
 
 pub(crate) const BINDING_LOCATION: &str = file!();
+pub(crate) const ARCHITECTURE_BINDING_LOCATION: &str = architecture::BINDING_LOCATION;
 pub(crate) const CONCURRENCY_BINDING_LOCATION: &str = concurrency::BINDING_LOCATION;
 pub(crate) const CONSISTENCY_BINDING_LOCATION: &str = consistency::BINDING_LOCATION;
 pub(crate) const CONTEXT_BINDING_LOCATION: &str = context::BINDING_LOCATION;
@@ -31,6 +33,7 @@ pub(crate) const LIBRARY_MISUSE_SECURITY_BINDING_LOCATION: &str =
 pub(crate) const PERFORMANCE_BINDING_LOCATION: &str = performance::BINDING_LOCATION;
 pub(crate) const STYLE_BINDING_LOCATION: &str = style::BINDING_LOCATION;
 
+pub(super) use architecture::{go_architecture_file_findings, go_architecture_repo_findings};
 pub(super) use concurrency::{
     coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, shutdown_findings,
 };

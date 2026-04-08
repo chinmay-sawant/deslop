@@ -32,12 +32,12 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **637 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **847 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 312 | 2 | 0 | 314 |
+| go | 522 | 2 | 0 | 524 |
 | python | 212 | 0 | 0 | 212 |
 | rust | 88 | 12 | 0 | 100 |
 
@@ -67,7 +67,219 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `placeholder_test_body`: Tests that look skipped, TODO-shaped, or otherwise placeholder-like.
 - `test_without_assertion_signal`: Tests that exercise production code without an obvious assertion or failure signal.
 
-### Go rules (314)
+### Go rules (524)
+
+#### Architecture (210)
+- `admin_or_debug_endpoint_registration_mixed_into_public_router_setup`: Operational endpoints registered alongside public routes with no clear boundary.
+- `api_error_type_outside_transport_package`: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
+- `api_examples_embedded_in_handlers_instead_of_transport_docs_helpers`: Long example payload blocks hardcoded in handlers rather than doc or example helpers.
+- `application_lifecycle_missing_shutdown_owner`: Shared resources with visible startup paths but no obvious shutdown owner or lifecycle wrapper.
+- `audit_logging_executed_in_handler_before_service_success`: Audit writes that happen before the service has confirmed success.
+- `auth_or_tenant_extraction_duplicated_across_handlers`: Repeated auth, tenant, or principal extraction that should live in middleware or a shared boundary helper.
+- `background_goroutine_started_inside_transaction_scope`: Goroutines launched while relying on open transaction state.
+- `background_jobs_registered_from_gin_packages_instead_of_bootstrap`: Scheduler or worker registration hidden inside Gin transport packages.
+- `background_worker_started_from_http_handler_registration`: Route or middleware setup that also starts unrelated background jobs.
+- `body_binding_done_in_middleware_and_handler`: Endpoints where middleware parses the body and the handler also owns body binding.
+- `bootstrap_builds_clients_inside_route_registration`: Startup code that hides dependency construction inside route registration functions.
+- `business_validation_mixed_with_persistence_calls_in_handler`: Handlers that start querying or writing before finishing request validation.
+- `cache_invalidation_before_transaction_commit`: Cache mutation or eviction that happens before a write transaction commits.
+- `cmd_or_main_contains_domain_rules`: `main` or `cmd` packages that contain business-rule branches instead of wiring and startup concerns.
+- `column_name_literals_duplicated_outside_repository`: Repeated column-name strings outside repository or query packages.
+- `commit_or_rollback_split_across_functions_without_owner`: Transaction end-state logic spread across helper functions with unclear ownership.
+- `constructor_reads_env_directly`: Constructors that call `os.Getenv` instead of receiving normalized config.
+- `create_and_update_share_same_dto_despite_conflicting_requiredness`: A single DTO reused for create and update when validation rules clearly differ.
+- `cross_layer_import_violation_by_package_name`: Imports where package names clearly violate a layered direction such as `repository -> handler` or `model -> gin`.
+- `cross_repository_write_flow_without_shared_uow_boundary`: Service methods coordinating several repositories with no explicit shared transaction or consistency boundary.
+- `custom_recovery_logic_repeated_across_handlers`: Repeated recover or panic-to-response logic inside handlers instead of centralized recovery middleware.
+- `custom_validator_registration_inside_handler`: Per-request validator registration instead of startup-time validator wiring.
+- `default_value_injection_scattered_across_handlers`: Repeated defaulting logic for pagination, filters, or booleans across handlers.
+- `domain_constants_declared_in_handler_package`: Domain enums, statuses, and lifecycle constants that live in handler packages instead of domain-facing packages.
+- `domain_entity_contains_json_tags_without_boundary_exception`: Core domain entities that are directly annotated for API serialization without a deliberate boundary exception.
+- `domain_errors_declared_in_handler_package`: Business error types declared only in handlers instead of a reusable domain or service boundary.
+- `domain_identifiers_logged_under_inconsistent_field_keys`: The same entity ID being logged under many different keys across packages.
+- `dto_to_model_mapping_in_handler`: Handlers that own transport-to-model mapping instead of dedicated mappers or services.
+- `error_code_literals_duplicated_across_handlers`: Repeated string error codes without a centralized catalog.
+- `event_publish_before_transaction_commit`: Event or message publication before durable commit is confirmed.
+- `external_http_call_inside_transaction_scope`: Network calls performed while a DB transaction is open.
+- `feature_flag_lookup_without_config_abstraction`: Handlers or services that query feature flags directly without a focused flag interface.
+- `file_upload_validation_mixed_with_storage_write`: Functions that validate upload metadata and also persist the upload in the same boundary step.
+- `generic_base_repository_with_reflection_dispatch`: Catch-all repositories that depend on reflection-heavy generic CRUD instead of bounded repository APIs.
+- `generic_process_execute_handle_service_name_without_domain_noun`: Generic service names and methods that hide business intent instead of naming the actual use case.
+- `giant_model_struct_spans_multiple_subdomains`: Oversized model structs that appear to merge multiple bounded contexts into one persistence shape.
+- `gin_context_passed_beyond_request_boundary`: Code that passes `*gin.Context` into goroutines, repositories, or long-lived service objects instead of extracting `context.Context` and request values.
+- `gin_engine_as_global_singleton`: Package-level `*gin.Engine` singletons reused across unrelated startup paths.
+- `gin_handler_accepts_more_than_one_body_contract`: Handlers that try to bind or manually parse multiple body DTOs in one request path.
+- `gin_handler_binds_directly_into_model`: Handlers that bind request bodies directly into GORM or persistence structs.
+- `gin_handler_calls_multiple_repositories_directly`: Handlers that coordinate several repositories directly, which usually signals missing service orchestration.
+- `gin_handler_contains_retry_or_backoff_orchestration`: Handlers that implement retry loops or backoff decisions inline instead of delegating to service or client layers.
+- `gin_handler_executes_raw_sql_inline`: Handlers that execute literal SQL or repository-unaware raw queries.
+- `gin_handler_mixes_html_json_and_file_responses`: Handlers that serve fundamentally different transport modes from one function.
+- `gin_handler_parses_config_or_feature_flags_inline`: Handlers that read feature flags, tenant configuration, or rollout toggles directly instead of using injected policy/config abstractions.
+- `gin_handler_returns_multiple_response_shapes`: Handlers that manually build several unrelated success payload shapes instead of delegating to clearer endpoints or render helpers.
+- `gin_handler_returns_persistence_model_directly`: Handlers that serialize database models directly to the client instead of mapping to response DTOs.
+- `gin_handler_runs_authorization_business_rules_inline`: Handlers that contain complex permission matrices instead of delegating to policy or service logic.
+- `gin_handler_starts_transaction_inline`: Handlers that create or own transactions instead of delegating transactional work to services or unit-of-work helpers.
+- `gin_handler_stores_context_in_struct_field`: Code that saves `*gin.Context` onto long-lived structs.
+- `gin_handler_uses_action_param_switch_for_many_use_cases`: Handlers that branch on `action`, `type`, or mode strings to serve many workflows from one endpoint function.
+- `gin_handler_uses_global_singletons`: Handlers that reach for global DB, logger, cache, or config variables instead of injected dependencies.
+- `gin_route_paths_repeated_as_raw_strings`: Repeated route path literals that should be centralized or grouped more intentionally.
+- `gin_route_registration_anonymous_function_overuse`: Route registration that uses many inline anonymous handlers instead of named handler methods or functions.
+- `gorm_chain_built_in_handler`: Handlers that construct `Where`, `Joins`, `Scopes`, or `Order` chains directly.
+- `gorm_chain_built_in_service`: Services that own detailed ORM query shape instead of delegating to repositories.
+- `gorm_hook_mutates_unrelated_tables`: Hooks that reach beyond the owning aggregate and write unrelated records.
+- `gorm_locking_clauses_built_outside_repository`: `FOR UPDATE` or similar locking behavior built in handlers or services instead of repository-owned methods.
+- `gorm_model_contains_binding_or_validate_tags`: GORM models that accumulate transport validation and binding concerns.
+- `gorm_model_contains_calculated_response_fields`: Persistence structs that carry API-only derived presentation fields.
+- `gorm_model_hook_calls_service_or_repository`: Model hooks that depend on higher-layer services or repositories.
+- `gorm_model_hook_contains_external_io`: Hooks that call HTTP clients, queues, file I/O, or external side effects.
+- `gorm_model_outside_models_package`: GORM-backed structs with `gorm` tags declared outside `model` or `models` packages unless an explicit `entity` or `schema` package already exists.
+- `gorm_scopes_defined_inline_repeatedly`: Repeated ad hoc scope functions instead of shared named scopes.
+- `gorm_session_options_configured_outside_repository`: Code above the repository layer that changes `Session`, `Clauses`, or transaction options directly.
+- `handler_and_service_both_log_same_error_chain`: Duplicated logging ownership where both service and handler log the same failure.
+- `handler_calls_database_sql_directly_outside_repository`: Handler packages that import `database/sql`, `sqlx`, or `pgx` and execute queries directly.
+- `handler_calls_gorm_directly_outside_repository`: Handler packages that import `gorm.io/gorm` and build query chains directly.
+- `handler_calls_repository_directly_without_service`: Handlers that bypass a visible service layer and call repositories or query helpers directly for business orchestration.
+- `handler_opens_transaction`: Handlers that call `Begin`, `Transaction`, or unit-of-work start helpers directly.
+- `handler_switches_on_error_strings`: Handlers that branch on `err.Error()` text rather than typed errors.
+- `handler_tests_use_real_database_without_seam`: Handler tests that hit real DB setup even though repository or service seams exist.
+- `health_or_readiness_handlers_reach_into_business_repositories_directly`: Health endpoints that depend on full business repositories instead of focused probes.
+- `helper_or_utils_package_contains_domain_logic`: Generic `helper`, `common`, or `utils` packages that host concrete domain decisions.
+- `init_registers_routes_or_dependencies`: `init()` functions that register handlers, routes, or runtime dependencies.
+- `inline_error_to_status_mapping_duplicated`: Repeated error-to-status translation switches across handlers.
+- `main_or_cmd_mixes_cli_parsing_server_bootstrap_and_business_config`: Entrypoints that do too much without startup composition helpers.
+- `manual_required_checks_after_validate_tags_available`: Handlers that re-check required fields manually even though struct-tag validation already exists.
+- `map_based_updates_passed_from_handler_to_repository`: Update maps built from request payloads and passed through layers without typed ownership.
+- `mapper_outside_mapper_package_when_repo_uses_mappers`: Mapper functions scattered across handlers and services when the repo already has a dedicated mapping package.
+- `mapping_logic_duplicated_across_handlers`: Repeated field mapping blocks across multiple handlers.
+- `metrics_labels_built_inline_in_handlers`: Handlers that hand-build metric labels repeatedly instead of using focused observation helpers.
+- `middleware_and_handler_translate_same_error_domain`: Double translation layers where middleware and handlers both map the same error family to responses.
+- `middleware_calls_repository_directly`: Middleware that reaches into repositories instead of delegating through focused services or auth abstractions.
+- `middleware_contains_business_orchestration`: Middleware that performs domain workflows instead of cross-cutting concerns such as auth, tracing, or request enrichment.
+- `middleware_mutates_domain_model_state`: Middleware that writes business entities or persistence models as a side effect of request plumbing.
+- `middleware_opens_transaction`: Middleware that owns transaction lifetime for all downstream business logic.
+- `middleware_starts_db_transaction`: Middleware that opens database transactions for the whole request path by default.
+- `middleware_type_outside_middleware_package`: Shared middleware types and constructors declared in handlers or services instead of a middleware-focused package.
+- `middleware_uses_global_logger_or_config_singleton`: Middleware that depends on mutable globals instead of injected config and logger instances.
+- `middleware_writes_business_response_payloads`: Middleware that emits domain success payloads instead of leaving response bodies to handlers or render helpers.
+- `migration_or_seed_logic_callable_from_request_handlers`: Request handlers that can trigger migration or seed workflows.
+- `migration_runner_and_api_server_bootstrap_coupled`: One startup path that always runs migrations and serves traffic together.
+- `migration_tests_live_under_handler_packages`: Migration-specific tests located in transport packages.
+- `mock_repository_types_duplicated_across_tests`: Many copy-pasted mock repository structs with the same method sets.
+- `model_package_depends_on_transport_or_gin`: `model` or `models` packages that import transport-facing libraries or handler DTO packages.
+- `model_to_dto_mapping_in_handler`: Handlers that manually shape every response from persistence structs rather than using dedicated mapping helpers.
+- `multiple_bind_sources_into_same_struct_without_precedence_contract`: One DTO being filled from body, query, and path without a clear precedence policy.
+- `multiple_error_envelope_shapes_same_api_module`: Endpoints in the same API surface that serialize unrelated error payload structures.
+- `not_found_semantics_implemented_by_nil_nil_return`: Repository or service APIs that encode missing records as `nil, nil` with no explicit result contract.
+- `nullable_sql_types_leak_into_api_dto`: Response or request DTOs that expose `sql.Null*` types instead of boundary-friendly contract types.
+- `operational_command_handlers_reuse_http_services_without_adapter`: CLI or cron entrypoints that import Gin-only service contracts instead of neutral application services.
+- `optional_tx_nil_parameter_on_repository_api`: Repository APIs that use optional `tx *gorm.DB` parameters instead of explicit unit-of-work contracts.
+- `order_by_clause_literals_scattered_across_layers`: Raw sort expressions duplicated in handlers and services instead of query helpers.
+- `package_level_mutable_config_used_by_handlers_services`: Mutable package globals used as live config in request paths.
+- `package_name_role_drift`: Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role.
+- `pagination_binding_duplicated_outside_boundary_helper`: Repeated pagination DTO binding and defaulting logic across handler files.
+- `pagination_validation_missing_shared_bound_helper`: API modules that hand-roll page and page-size bounds in many handlers instead of a shared contract.
+- `patch_dto_uses_non_pointer_fields_for_optional_updates`: PATCH-like DTOs that cannot distinguish omitted fields from zero values.
+- `path_param_parsing_duplicated_across_handlers`: Repeated `strconv` or UUID path-param parsing logic that should live in helpers.
+- `persistence_model_contains_http_form_or_uri_tags`: Persistence models that are tied to form or URI binding tags.
+- `preload_rules_scattered_across_layers`: Preload decisions spread across handlers, services, and repositories instead of one query owner.
+- `query_path_and_body_merge_performed_in_handler`: Handlers that merge several request sources inline instead of normalizing inputs before service calls.
+- `raw_db_error_exposed_to_client`: Direct serialization of SQL or GORM error text into API responses.
+- `raw_sql_literal_in_handler`: Literal SQL strings declared and executed from handlers.
+- `raw_sql_literal_in_service`: Literal SQL strings executed from services instead of repositories or query packages.
+- `repository_accepts_gin_context`: Repositories that accept `*gin.Context` rather than `context.Context`.
+- `repository_accepts_http_request_dto`: Repositories that accept transport DTOs instead of repository inputs or domain values.
+- `repository_begins_transaction_without_uow_or_callback`: Repositories that quietly start transactions inside generic CRUD methods.
+- `repository_constructor_accepts_gin_engine_or_router`: Repository constructors that take transport objects.
+- `repository_depends_on_gin_or_http`: Repository packages that import Gin, `net/http`, or transport-only response helpers.
+- `repository_depends_on_service_package`: Repositories that import service packages, which inverts the expected dependency flow.
+- `repository_logs_with_http_status_or_route_labels`: Repositories that log transport metadata instead of persistence-domain details.
+- `repository_method_returns_partially_built_scopes_for_caller_chaining`: Repositories that expose scope-building fragments instead of complete query APIs.
+- `repository_mixes_raw_sql_and_gorm_same_method_without_adapter_boundary`: Repository methods that mix raw SQL and ORM clauses with no clear boundary.
+- `repository_or_service_packages_import_docs_or_generator_annotations`: Core business packages that depend on documentation-only tooling or generator-specific concerns.
+- `repository_returns_framework_builder_to_upper_layer`: Repositories that leak `*gorm.DB`, `sqlx.NamedStmt`, query builders, or raw rows to higher layers instead of returning results or domain abstractions.
+- `repository_returns_gorm_query_builder`: Repositories that return partially built `*gorm.DB` chains for callers to finish.
+- `repository_returns_http_status_errors`: Repositories that construct transport-layer error objects or status-code wrappers.
+- `repository_returns_transport_dto`: Repositories that know about response contracts instead of returning persistence or domain results.
+- `repository_tests_depend_on_http_transport_types`: Repository tests that assert HTTP DTOs or handler-layer types.
+- `repository_type_outside_repository_package`: Repository implementations declared outside `repository`, `repo`, or `store` packages when the repo already uses those roles elsewhere.
+- `request_context_value_extraction_duplicated_across_handlers`: Repeated current-user, tenant, locale, or auth extraction logic.
+- `request_dto_contains_gorm_tags`: Request DTOs that carry persistence-only `gorm` tags.
+- `request_dto_outside_transport_package`: Request binding structs that live in repositories or service packages instead of transport-facing packages.
+- `request_id_generation_duplicated_outside_middleware`: Repeated request-id creation logic spread across handlers.
+- `request_logging_fields_assembled_differently_across_handlers`: Inconsistent request-log field sets across the same API module.
+- `response_dto_contains_gorm_tags`: Response payload structs that carry persistence-only `gorm` tags.
+- `response_dto_outside_transport_package`: Response envelope structs that live in persistence or repository packages instead of transport or API contract packages.
+- `response_dto_uses_omitempty_on_required_contract_fields`: Response shapes that silently drop fields that should be stable parts of the API contract.
+- `response_envelope_shaping_duplicated_across_handlers`: Repeated success-response envelope formatting that should live in a renderer or transport helper.
+- `route_groups_created_inside_handlers`: Code that constructs or mutates route groups outside the startup router layer.
+- `route_param_name_and_dto_field_name_drift_without_mapping_helper`: Repeated manual renaming between route params and DTO fields that lacks a shared mapper.
+- `route_registration_contains_business_logic`: Router setup files that build queries, mutate models, or execute business actions while registering routes.
+- `route_registration_tests_duplicate_full_bootstrap_per_file`: Tests that rebuild the full application bootstrap repeatedly instead of using shared test setup.
+- `route_setup_scattered_without_router_package`: Route registration split across unrelated files without a clear `router`, `routes`, or `transport` home.
+- `router_constructor_builds_concrete_dependencies`: Router setup that creates DB clients, external clients, or repositories directly instead of receiving prebuilt dependencies.
+- `router_setup_runs_migrations`: Gin router or handler setup code that also performs migrations.
+- `same_dependency_wired_in_multiple_bootstrap_locations`: Duplicated construction of the same service or client in several startup files.
+- `same_domain_error_mapped_to_multiple_statuses`: The same error type being converted to different HTTP status codes in the same module.
+- `same_service_method_accepts_tx_and_begins_tx`: Service methods that sometimes reuse a transaction and sometimes open one themselves.
+- `same_struct_used_for_bind_persist_and_respond`: A single struct type reused for request binding, database persistence, and API response serialization.
+- `savepoint_or_nested_tx_logic_scattered_without_dedicated_helper`: Nested transaction or savepoint control scattered across services and repositories.
+- `service_calls_handler_helper`: Service packages that reach upward into handler helpers for parsing, rendering, or Gin-specific utilities.
+- `service_constructor_accepts_untyped_config_map`: Services configured by `map[string]any` or similar untyped blobs.
+- `service_constructor_instantiates_dependencies_internally`: Constructors that create repositories, clients, or loggers internally instead of accepting them explicitly.
+- `service_depends_on_gin_abort_or_context_error_response`: Services that own transport abort behavior.
+- `service_depends_on_transport_request_type`: Service signatures that accept request DTOs declared in handler or transport packages.
+- `service_imports_gin_directly`: Service packages that depend on `github.com/gin-gonic/gin` instead of transport-neutral inputs.
+- `service_method_accepts_dto_and_persistence_model_together`: Signatures that mix transport DTOs and GORM models in the same service API.
+- `service_method_accepts_gin_context`: Service methods that take `*gin.Context` instead of domain inputs plus `context.Context`.
+- `service_method_accepts_map_string_any_input`: Services that use map-shaped dynamic input instead of typed request contracts.
+- `service_method_combines_unrelated_write_paths_via_action_string`: Services that branch on action strings to implement many create, update, or delete variants in one method.
+- `service_method_handles_pagination_or_query_parsing`: Services that parse page, sort, filter, or URL values that should already be normalized at the transport boundary.
+- `service_method_handles_request_binding_or_header_extraction`: Services that extract headers, cookies, forms, or route params directly.
+- `service_method_imports_http_status_or_abort_semantics`: Services that depend on transport-specific status constants, abort helpers, or Gin response behavior.
+- `service_method_mutates_transport_dto_in_place`: Services that rewrite handler DTOs instead of mapping to service-layer inputs.
+- `service_method_returns_gorm_db_or_sql_rows`: Services that leak ORM or driver primitives upward instead of returning business results.
+- `service_method_returns_http_status`: Services that return raw HTTP status codes or transport response metadata.
+- `service_method_returns_map_string_any_output`: Services that return dynamic maps instead of typed result contracts.
+- `service_method_returns_transport_writer_or_gin_h`: Services that return `gin.H`, `http.ResponseWriter`, or response-writing helpers.
+- `service_returns_preformatted_client_message`: Services that return final client-facing message strings instead of typed domain errors.
+- `service_returns_tx_to_caller`: Services that hand transaction objects back to handlers or controllers.
+- `service_struct_has_excessive_dependency_count`: Services with too many unrelated dependencies, which often signals a god-service.
+- `service_tests_import_gin`: Service-level tests that depend on Gin when the service contract is supposed to be transport-neutral.
+- `service_type_outside_service_package`: Concrete use-case services declared outside `service` or `services` packages in layered web-service repos.
+- `shared_gorm_db_state_mutated_and_reused_across_requests`: Code that mutates shared `*gorm.DB` state and reuses it as if it were immutable configuration.
+- `shared_integration_test_setup_not_centralized_under_test_support`: Repeated app, DB, or router bootstrapping that is not moved into shared test support.
+- `shared_package_named_common_base_utils_with_mixed_exports`: Generic packages that mix services, models, DTOs, validators, and queries behind one broad shared namespace.
+- `soft_delete_filters_written_manually_in_many_queries`: Repeated `deleted_at IS NULL` style filters rather than a shared repository or scope policy.
+- `sort_or_filter_whitelist_logic_duplicated_across_handlers`: Repeated client-field whitelist logic across endpoints.
+- `sql_null_types_escape_repository_boundary`: Repository methods that leak driver-specific null wrappers beyond the persistence boundary.
+- `sql_query_constants_outside_repository_package`: Raw query templates stored in handlers, services, or DTO packages instead of repository-adjacent files.
+- `sql_query_text_asserted_in_handler_tests`: SQL-shape assertions written at handler level instead of repository tests.
+- `sql_rows_scan_logic_outside_repository`: Code outside repositories that manually scans rows into structs.
+- `success_response_contains_error_field_or_mixed_contract`: Endpoints that blend success and error shapes into one ambiguous contract.
+- `swagger_or_openapi_annotations_on_persistence_models`: Persistence structs used as the public docs contract instead of transport DTOs.
+- `table_driven_tests_mix_multiple_domains_in_one_cases_slice`: Oversized case tables that mix unrelated behaviors into one monolithic test.
+- `table_name_literals_duplicated_outside_repository`: Repeated table-name strings across handlers, services, and jobs.
+- `table_name_override_or_scope_logic_duplicated_across_models`: Repeated table-name or model-scope customization across many model files without a shared convention.
+- `test_bootstrap_package_reused_by_production_wiring`: Production startup code that imports test-only bootstrap helpers.
+- `test_fixture_builders_live_in_production_packages`: Fixture and factory helpers defined in non-test production files.
+- `test_helpers_duplicated_across_packages`: Near-identical helper builders or setup code duplicated across test packages.
+- `tests_assert_raw_json_strings_without_response_dto`: Brittle raw-JSON string assertions when typed response DTOs exist.
+- `tests_couple_to_gorm_model_for_api_contract_assertions`: API tests that assert persistence model shapes instead of response contracts.
+- `tests_stub_gin_context_instead_of_httptest_boundary`: Handler tests that mock Gin internals directly instead of using `httptest` when boundary behavior matters.
+- `tracing_span_names_duplicated_as_raw_strings`: Repeated raw span-name literals across handlers and services.
+- `transaction_error_translation_done_in_repository_and_handler`: Both repository and handler layers translating the same transaction errors.
+- `transaction_helper_outside_repository_or_uow_package`: Transaction helpers buried in handlers or services instead of a repository or unit-of-work package.
+- `transaction_object_crosses_more_than_one_layer_boundary`: Transaction handles passed through multiple layers as ordinary arguments.
+- `transport_layer_uses_untyped_string_codes_without_catalog`: Response code strings that have no shared type or catalog package.
+- `transport_metrics_emitted_from_repository_layer`: Repositories that record HTTP-route or handler-oriented metrics.
+- `transport_tests_bypass_service_interface_and_touch_repo_directly`: Transport tests that skip the service seam and assert repository behavior.
+- `unscoped_query_without_explicit_danger_naming`: `Unscoped()` usage in generic repository methods without a clearly dangerous or admin-only name.
+- `updates_with_struct_used_for_patch_without_field_intent_helper`: PATCH-style repository writes that rely on struct zero-value semantics without explicit field intent.
+- `validation_error_response_shape_inconsistent`: Handlers in the same API module that emit different validation error contracts.
+- `validation_logic_duplicated_across_handlers`: Repeated required-field or enum-validation blocks across multiple handler files.
+- `validator_depends_on_repository_directly`: Reusable validator code that reaches into repositories instead of receiving precomputed facts or focused services.
+- `validator_outside_validation_package`: Reusable validators that are scattered across handlers instead of living in a dedicated validation helper package.
+- `where_clause_templates_duplicated_across_repositories`: Repeated filter templates that should be shared through scopes or query builders.
 
 #### Concurrency (6)
 - `blocking_call_while_locked`: Potentially blocking calls observed between Lock and Unlock.
