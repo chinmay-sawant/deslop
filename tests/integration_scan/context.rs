@@ -375,3 +375,45 @@ fn test_context_propagation_severity_override() {
             && matches!(finding.severity, deslop::Severity::Error)
     }));
 }
+
+#[test]
+fn test_project_agnostic_context_gaps_positive() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/service/context_rules.go",
+        go_fixture!("context_project_agnostic_positive.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &[
+            "context_not_first_parameter",
+            "context_stored_in_struct_field",
+            "context_withvalue_used_for_dependencies_or_large_payloads",
+            "context_key_uses_exported_or_builtin_type",
+            "request_context_passed_to_background_task_without_detach",
+        ],
+    );
+}
+
+#[test]
+fn test_project_agnostic_context_gaps_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/service/context_rules.go",
+        go_fixture!("context_project_agnostic_clean.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &[
+            "context_not_first_parameter",
+            "context_stored_in_struct_field",
+            "context_withvalue_used_for_dependencies_or_large_payloads",
+            "context_key_uses_exported_or_builtin_type",
+            "request_context_passed_to_background_task_without_detach",
+        ],
+    );
+}

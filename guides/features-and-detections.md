@@ -32,12 +32,12 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **960 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **976 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 635 | 2 | 0 | 637 |
+| go | 651 | 2 | 0 | 653 |
 | python | 212 | 0 | 0 | 212 |
 | rust | 88 | 12 | 0 | 100 |
 
@@ -67,7 +67,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `placeholder_test_body`: Tests that look skipped, TODO-shaped, or otherwise placeholder-like.
 - `test_without_assertion_signal`: Tests that exercise production code without an obvious assertion or failure signal.
 
-### Go rules (637)
+### Go rules (653)
 
 #### Architecture (221)
 - `admin_or_debug_endpoint_registration_mixed_into_public_router_setup`: Operational endpoints registered alongside public routes with no clear boundary.
@@ -292,27 +292,34 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `validator_outside_validation_package`: Reusable validators that are scattered across handlers instead of living in a dedicated validation helper package.
 - `where_clause_templates_duplicated_across_repositories`: Repeated filter templates that should be shared through scopes or query builders.
 
-#### Concurrency (6)
+#### Concurrency (8)
 - `blocking_call_while_locked`: Potentially blocking calls observed between Lock and Unlock.
 - `goroutine_derived_context_unmanaged`: Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.
 - `goroutine_spawn_in_loop`: Raw go statements launched from inside loops without obvious WaitGroup coordination.
 - `goroutine_without_coordination`: Raw go statements without an obvious context or WaitGroup-like coordination signal.
 - `goroutine_without_shutdown_path`: Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.
 - `mutex_in_loop`: Repeated Lock or RLock acquisition inside loops.
+- `rwmutex_without_clear_read_heavy_signal`: sync.RWMutex usage without a clear read-heavy access pattern.
+- `waitgroup_fanout_without_errgroup_on_error_path`: WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup.
 
 #### Consistency (3)
 - `duplicate_struct_tag_key`: Struct field tags that repeat the same key more than once.
 - `malformed_struct_tag`: Struct field tags that do not parse as valid Go tag key/value pairs.
 - `mixed_receiver_kinds`: Methods on the same receiver type mix pointer and value receivers.
 
-#### Context (8)
+#### Context (13)
 - `busy_waiting`: select { default: ... } inside loops, which often spins instead of blocking.
 - `cache_interface_method_missing_context`: Cache-oriented interfaces whose IO-style methods omit context.Context.
 - `cache_method_uses_context_background`: Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.
 - `context_background_used`: Functions or request handlers that already have a caller-owned context available but still create context.Background() or context.TODO() locally.
+- `context_key_uses_exported_or_builtin_type`: context.WithValue keys or exported key declarations that use built-in scalar types instead of unexported key types.
+- `context_not_first_parameter`: Functions that accept context.Context but not as the first non-receiver parameter on context-aware call paths.
+- `context_stored_in_struct_field`: Struct fields that store context.Context instead of keeping context request-scoped through method parameters.
+- `context_withvalue_used_for_dependencies_or_large_payloads`: context.WithValue used for dependency-like objects or payload-like data instead of lightweight request metadata.
 - `missing_cancel_call`: Derived contexts where deslop cannot find a local cancel() or defer cancel() call.
 - `missing_context`: Standard-library context-aware calls from functions that do not accept context.Context.
 - `missing_context_propagation`: Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.
+- `request_context_passed_to_background_task_without_detach`: Background goroutines that still appear to inherit request-scoped context instead of detaching with context.WithoutCancel or equivalent.
 - `sleep_polling`: time.Sleep inside loops — often indicates polling or busy-wait style code.
 
 #### Data Access (59)
@@ -452,12 +459,17 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `url_parse_in_loop_on_invariant_base`: url.Parse(...) or ParseRequestURI(...) observed inside loops with a stable-looking base input.
 - `uuid_hash_formatting_only_for_logs`: UUID or hash formatting observed inside loops only for log output.
 
-#### Idioms (20)
+#### Idioms (29)
+- `ci_missing_go_test_race`: Repository automation that does not visibly run `go test -race` for Go code.
+- `db_pool_limits_not_configured_at_boot`: Bootstrap code that opens long-lived DB clients without visible pool sizing or lifetime limits.
 - `defer_in_loop_resource_growth`: defer statements inside loops that can accumulate resources until function exit.
 - `double_close_local_channel`: The same locally created channel appears to be closed more than once in one function body.
 - `file_handle_without_close`: File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path.
+- `http_client_allocated_per_call_without_reuse`: http.Client literals allocated on regular call paths instead of being reused as shared client state.
 - `http_client_without_timeout`: Local http.Client{} literals constructed without an explicit timeout.
 - `http_response_body_not_closed`: HTTP responses acquired locally without an observed resp.Body.Close() call.
+- `http_response_body_not_drained_before_close`: HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored.
+- `http_server_bootstrap_without_graceful_shutdown_flow`: HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown.
 - `http_server_without_timeouts`: Explicit http.Server{} values that omit common timeout fields.
 - `http_status_ignored_before_decode`: Response decoding or body consumption that happens without an observed StatusCode check.
 - `http_writeheader_after_write`: Handlers that write the response body before calling WriteHeader(...).
@@ -466,12 +478,16 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `passthrough_wrapper_interface`: Wrapper structs that mostly forward one-to-one through an interface field with little added policy.
 - `public_bool_parameter_api`: Exported functions or methods that expose raw boolean mode switches in their signatures.
 - `range_over_local_channel_without_close`: Functions that range over a locally owned channel without an observed close path.
+- `request_body_read_without_size_limit`: HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader.
+- `rows_iterated_without_rows_err_check`: Rows iterated with Next() but without a visible final Rows.Err() check.
 - `rows_without_close`: Query result handles that appear locally owned but have no observed rows.Close() call.
 - `send_after_local_close_risk`: A locally owned channel is closed and later used in a send expression.
 - `single_impl_interface`: Repository-local interfaces with one obvious implementation and a very small consumer surface.
+- `slow_work_inside_transaction_scope`: Loop-heavy or slow work performed while a transaction appears open.
 - `stmt_without_close`: Prepared statements or similar DB handles without an observed Close() call.
 - `ticker_without_stop`: time.NewTicker(...) is created without an observed Stop() call.
 - `time_after_in_loop`: time.After(...) is allocated inside loops instead of reusing a timer or deadline.
+- `timeoutless_http_default_client_or_helper_call`: net/http helper calls or http.DefaultClient usage that carry no explicit application timeout.
 - `tx_without_rollback_guard`: Transactions begun and later committed with no observed rollback guard.
 
 #### Library (29)

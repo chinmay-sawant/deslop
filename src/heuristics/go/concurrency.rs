@@ -1,6 +1,7 @@
 use std::collections::BTreeSet;
 
 use crate::analysis::{ImportSpec, ParsedFile, ParsedFunction};
+use crate::io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
@@ -8,6 +9,69 @@ pub(crate) const BINDING_LOCATION: &str = file!();
 use super::super::common::{import_alias_lookup, is_blocking_call};
 
 const COORDINATION_METHODS: &[&str] = &["Add", "Done", "Wait", "Go"];
+
+pub(crate) fn rwmutex_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let rwmutex_aliases = file
+        .imports
+        .iter()
+        .filter(|import| import.path == "sync")
+        .map(|import| import.alias.clone())
+        .collect::<Vec<_>>();
+    if rwmutex_aliases.is_empty() {
+        return Vec::new();
+    }
+
+    let Ok(source) = read_to_string_limited(&file.path, DEFAULT_MAX_BYTES) else {
+        return Vec::new();
+    };
+
+    let declaration_line = source.lines().enumerate().find_map(|(offset, raw_line)| {
+        let line = raw_line.trim();
+        rwmutex_aliases
+            .iter()
+            .any(|alias| line.contains(&format!("{alias}.RWMutex")))
+            .then_some(offset + 1)
+    });
+    let Some(declaration_line) = declaration_line else {
+        return Vec::new();
+    };
+
+    let mut lock_count = 0usize;
+    let mut rlock_count = 0usize;
+    for function in &file.functions {
+        for call in &function.calls {
+            match call.name.as_str() {
+                "Lock" | "Unlock" => lock_count += 1,
+                "RLock" | "RUnlock" => rlock_count += 1,
+                _ => {}
+            }
+        }
+    }
+
+    if lock_count == 0 || rlock_count > lock_count * 2 {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "rwmutex_without_clear_read_heavy_signal".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: declaration_line,
+        end_line: declaration_line,
+        message: "sync.RWMutex appears without a clear read-heavy access pattern".to_string(),
+        evidence: vec![
+            format!("RWMutex declaration observed at line {declaration_line}"),
+            format!("Lock/Unlock calls observed: {lock_count}"),
+            format!("RLock/RUnlock calls observed: {rlock_count}"),
+            "plain sync.Mutex is often simpler unless read-side contention clearly dominates".to_string(),
+        ],
+    }]
+}
 
 pub(crate) fn shutdown_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
@@ -269,4 +333,54 @@ fn has_coordination(function: &ParsedFunction) -> bool {
                     )
             })
         })
+}
+
+pub(crate) fn waitgroup_errgroup_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    if file.is_test_file || function.is_test_function || function.go_evidence().goroutines.is_empty() {
+        return Vec::new();
+    }
+
+    let lower_body = function.body_text.to_ascii_lowercase();
+    let has_waitgroup = lower_body.contains("waitgroup")
+        || (lower_body.contains(".add(") && lower_body.contains(".wait()"));
+    let has_errgroup = file
+        .imports
+        .iter()
+        .any(|import| import.path == "golang.org/x/sync/errgroup")
+        || lower_body.contains("errgroup.");
+    let error_signal = lower_body.contains("err != nil")
+        && (lower_body.contains("errch")
+            || lower_body.contains("errs")
+            || lower_body.contains("firsterr")
+            || lower_body.contains("result.err")
+            || lower_body.contains("err ="));
+
+    if !has_waitgroup || has_errgroup || !error_signal {
+        return Vec::new();
+    }
+
+    let line = function
+        .calls
+        .iter()
+        .find(|call| call.name == "Add")
+        .map(|call| call.line)
+        .unwrap_or(function.fingerprint.start_line);
+
+    vec![Finding {
+        rule_id: "waitgroup_fanout_without_errgroup_on_error_path".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: line,
+        end_line: line,
+        message: format!(
+            "function {} fans out work with WaitGroup while errors still need coordinated cancellation",
+            function.fingerprint.name
+        ),
+        evidence: vec![
+            "WaitGroup-style coordination was observed in the function body".to_string(),
+            "goroutine fan-out also contains explicit error-path handling".to_string(),
+            "errgroup is often a clearer fit when concurrent branches return fatal errors".to_string(),
+        ],
+    }]
 }

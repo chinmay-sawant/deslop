@@ -7,7 +7,7 @@ deslop `v0.2.0` turns the project from a Go-focused analyzer into a multi-langua
 ### Multi-language support
 
 - deslop now scans Go, Python, and Rust repositories.
-- The current inventory documents 637 language-scoped rules across common, Go, Python, and Rust rule families.
+- The current inventory documents 976 language-scoped rules across common, Go, Python, and Rust rule families, including 653 Go rules.
 - Mixed-language repository support is now part of the normal rollout and verification workflow.
 
 ### Rule registry and CLI improvements
@@ -38,7 +38,7 @@ deslop `v0.2.0` turns the project from a Go-focused analyzer into a multi-langua
 - 214 commits landed on `master` since `v0.1.0`
 - 58 commits touched markdown under `guides/`
 - 85 guide markdown files changed in the `v0.2.0` documentation set
-- 637 language-scoped rules are documented in the current inventory
+- 976 language-scoped rules are documented in the current inventory
 
 ## From v0.1.0 to v0.2.0
 

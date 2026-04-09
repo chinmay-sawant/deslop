@@ -125,3 +125,43 @@ fn test_deeper_goroutine_lifetime_clean() {
             .any(|finding| finding.rule_id == "goroutine_derived_context_unmanaged")
     );
 }
+
+#[test]
+fn test_project_agnostic_concurrency_gaps_positive() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "concurrency_project_agnostic.go",
+        go_fixture!("concurrency_project_agnostic_positive.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "waitgroup_fanout_without_errgroup_on_error_path"
+    }));
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "rwmutex_without_clear_read_heavy_signal"
+    }));
+}
+
+#[test]
+fn test_project_agnostic_concurrency_gaps_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "concurrency_project_agnostic.go",
+        go_fixture!("concurrency_project_agnostic_clean.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert!(
+        !report.findings.iter().any(|finding| {
+            finding.rule_id == "waitgroup_fanout_without_errgroup_on_error_path"
+        })
+    );
+    assert!(
+        !report.findings.iter().any(|finding| {
+            finding.rule_id == "rwmutex_without_clear_read_heavy_signal"
+        })
+    );
+}

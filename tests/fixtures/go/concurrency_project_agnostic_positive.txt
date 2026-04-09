@@ -1,0 +1,30 @@
+package service
+
+import "sync"
+
+type Cache struct {
+	mu     sync.RWMutex
+	values []string
+}
+
+func (c *Cache) StoreAll(items []string) error {
+	var wg sync.WaitGroup
+	errCh := make(chan error, len(items))
+	for _, item := range items {
+		wg.Add(1)
+		go func(v string) {
+			defer wg.Done()
+			if err := persist(v); err != nil {
+				errCh <- err
+			}
+		}(item)
+	}
+	wg.Wait()
+	close(errCh)
+	c.mu.Lock()
+	c.values = append(c.values, "done")
+	c.mu.Unlock()
+	return nil
+}
+
+func persist(v string) error { return nil }

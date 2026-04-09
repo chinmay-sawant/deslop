@@ -129,10 +129,10 @@ mod tests {
 
     // Intentional maintenance guard. If this changes, review the source rule-id diff and
     // update [guides/inventory-regression-guards.md] in the same change.
-    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 457;
+    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 473;
     const EXPECTED_RULE_COUNTS_BY_LANGUAGE: &[(RuleLanguage, usize)] = &[
         (RuleLanguage::Common, 11),
-        (RuleLanguage::Go, 637),
+        (RuleLanguage::Go, 653),
         (RuleLanguage::Python, 212),
         (RuleLanguage::Rust, 100),
     ];

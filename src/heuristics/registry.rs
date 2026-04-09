@@ -5,13 +5,15 @@ use crate::model::Finding;
 use super::comments::comment_findings;
 use super::go::{
     alloc_findings, busy_findings, cache_context_file_findings, cache_method_findings,
-    cancel_findings, concat_findings, coordination_findings, ctx_findings, db_findings,
-    deeper_goroutine_lifetime_findings, error_findings, extra_performance_findings, fmt_findings,
+    cancel_findings, concat_findings, context_parameter_findings, context_withvalue_findings,
+    coordination_findings, ctx_findings, db_findings, deeper_goroutine_lifetime_findings,
+    error_findings, extra_performance_findings, fmt_findings, generic_context_file_findings,
     go_architecture_file_findings, go_architecture_repo_findings, go_file_findings,
     go_framework_patterns_file_findings, go_library_misuse_file_findings, go_repo_findings,
     import_grouping_findings, json_findings, load_findings, mutex_findings, n_squared_findings,
-    package_name_consistency, propagate_findings, receiver_findings, reflect_findings,
-    shutdown_findings, sleep_findings, tag_findings,
+    package_name_consistency, propagate_findings, receiver_findings,
+    request_context_background_findings, reflect_findings, rwmutex_file_findings,
+    shutdown_findings, sleep_findings, tag_findings, waitgroup_errgroup_findings,
 };
 use super::hallucination::hallucination_findings;
 use super::naming::{generic_finding, overlong_finding, weak_finding};
@@ -197,13 +199,16 @@ const GO_RULE_SPECS: &[RuleExecutionSpec] = &[
     },
     RuleExecutionSpec {
         family: "context",
-        file_rules: &[cache_context_file_findings],
+        file_rules: &[cache_context_file_findings, generic_context_file_findings],
         indexed_file_rules: &[],
         optional_function_rules: &[],
         function_rules: &[
             ctx_findings,
             cancel_findings,
             cache_method_findings,
+            context_parameter_findings,
+            request_context_background_findings,
+            context_withvalue_findings,
             busy_findings,
             sleep_findings,
         ],
@@ -216,13 +221,14 @@ const GO_RULE_SPECS: &[RuleExecutionSpec] = &[
     },
     RuleExecutionSpec {
         family: "concurrency",
-        file_rules: &[],
+        file_rules: &[rwmutex_file_findings],
         indexed_file_rules: &[],
         optional_function_rules: &[],
         function_rules: &[
             coordination_findings,
             deeper_goroutine_lifetime_findings,
             shutdown_findings,
+            waitgroup_errgroup_findings,
         ],
         file_function_rules: &[mutex_findings],
         indexed_function_rules: &[],

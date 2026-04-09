@@ -37,12 +37,15 @@ pub(crate) const STYLE_BINDING_LOCATION: &str = style::BINDING_LOCATION;
 
 pub(super) use architecture::{go_architecture_file_findings, go_architecture_repo_findings};
 pub(super) use concurrency::{
-    coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, shutdown_findings,
+    coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, rwmutex_file_findings,
+    shutdown_findings, waitgroup_errgroup_findings,
 };
 pub(super) use consistency::{receiver_findings, tag_findings};
 pub(super) use context::{
     busy_findings, cache_context_file_findings, cache_method_findings, cancel_findings,
-    ctx_findings, propagate_findings, sleep_findings,
+    context_parameter_findings, context_withvalue_findings, ctx_findings,
+    generic_context_file_findings, propagate_findings, request_context_background_findings,
+    sleep_findings,
 };
 pub(super) use errors::error_findings;
 pub(super) use framework_patterns::go_framework_patterns_file_findings;

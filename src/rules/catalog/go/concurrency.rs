@@ -85,4 +85,32 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         description: "Repeated Lock or RLock acquisition inside loops.",
         binding_location: super::bindings::GO_CONCURRENCY,
     },
+    RuleDefinition {
+        id: "rwmutex_without_clear_read_heavy_signal",
+        language: RuleLanguage::Go,
+        family: "concurrency",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "sync.RWMutex usage without a clear read-heavy access pattern.",
+        binding_location: super::bindings::GO_CONCURRENCY,
+    },
+    RuleDefinition {
+        id: "waitgroup_fanout_without_errgroup_on_error_path",
+        language: RuleLanguage::Go,
+        family: "concurrency",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup.",
+        binding_location: super::bindings::GO_CONCURRENCY,
+    },
 ];

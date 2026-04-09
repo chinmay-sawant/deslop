@@ -44,4 +44,4 @@ Date: 2026-04-09
 - [x] Regenerate the synced docs surfaces, including `README.md`, `frontend/src/features/docs/docs-content.ts`, and `guides/features-and-detections.md`.
 - [x] Update the inventory-count guards in `src/rules.rs` and `guides/v0.2.0/inventory-regression-guards.md`.
 - [x] Re-run targeted Go architecture integration coverage after the new rules were added.
-- [x] End with the future-repo prevention plan represented by the existing 217-rule architecture base plus these 4 new prevention checks, for 221 Go architecture rules and 637 Go rules overall.
+- [x] End with the future-repo prevention plan represented by the existing 217-rule architecture base plus these 4 new prevention checks, for 221 Go architecture rules and 653 Go rules overall.

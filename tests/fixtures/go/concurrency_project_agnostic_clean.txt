@@ -1,0 +1,32 @@
+package service
+
+import (
+	"context"
+	"golang.org/x/sync/errgroup"
+	"sync"
+)
+
+type Cache struct {
+	mu     sync.Mutex
+	values []string
+}
+
+func (c *Cache) StoreAll(ctx context.Context, items []string) error {
+	var group errgroup.Group
+	for _, item := range items {
+		item := item
+		group.Go(func() error {
+			return persist(ctx, item)
+		})
+	}
+	c.mu.Lock()
+	c.values = append(c.values, "done")
+	c.mu.Unlock()
+	return group.Wait()
+}
+
+func persist(ctx context.Context, v string) error {
+	_ = ctx
+	_ = v
+	return nil
+}

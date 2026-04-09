@@ -87,12 +87,12 @@ When a codebase uses GORM for bootstrap or schema ownership but repositories unw
 
 #### Candidate: `gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary`
 
-- [ ] Flag layered Go service repos when:
-  - [ ] startup or bootstrap code visibly uses `gorm.Open(...)`, `AutoMigrate(...)`, or other GORM-owned initialization,
-  - [ ] repository code unwraps a GORM handle or otherwise uses raw `database/sql`-style query execution,
-  - [ ] and there is no obvious repository-package or adapter-package boundary that clearly documents the split.
-- [ ] Keep this distinct from `repository_mixes_raw_sql_and_gorm_same_method_without_adapter_boundary`.
-- [ ] Suppress for migration packages, generated SQL clients, explicit query adapters, and intentionally isolated raw-SQL packages.
+- [x] Flag layered Go service repos when:
+  - [x] startup or bootstrap code visibly uses `gorm.Open(...)`, `AutoMigrate(...)`, or other GORM-owned initialization,
+  - [x] repository code unwraps a GORM handle or otherwise uses raw `database/sql`-style query execution,
+  - [x] and there is no obvious repository-package or adapter-package boundary that clearly documents the split.
+- [x] Keep this distinct from `repository_mixes_raw_sql_and_gorm_same_method_without_adapter_boundary`.
+- [x] Suppress for migration packages, generated SQL clients, explicit query adapters, and intentionally isolated raw-SQL packages.
 
 ### Defensive Domain Layer
 
@@ -100,9 +100,9 @@ The current pack has good handler-side validation coverage, but the service/doma
 
 #### Candidate: `service_write_passthrough_without_domain_validation`
 
-- [ ] Flag write-oriented service methods when:
-  - [ ] the method is effectively a thin passthrough to a repository write call,
-  - [ ] the path has no visible guard clause, validation branch, or invariant check before persistence,
-  - [ ] and the method shape suggests the service layer is not adding meaningful domain behavior.
-- [ ] Keep this narrower than a generic “service should validate more” style rule by requiring a write-oriented repository call and a small passthrough-shaped method body.
-- [ ] Suppress for orchestration shells, compatibility shims, test doubles, and service methods whose validation is clearly delegated to a dedicated domain validator.
+- [x] Flag write-oriented service methods when:
+  - [x] the method is effectively a thin passthrough to a repository write call,
+  - [x] the path has no visible guard clause, validation branch, or invariant check before persistence,
+  - [x] and the method shape suggests the service layer is not adding meaningful domain behavior.
+- [x] Keep this narrower than a generic “service should validate more” style rule by requiring a write-oriented repository call and a small passthrough-shaped method body.
+- [x] Suppress for orchestration shells, compatibility shims, test doubles, and service methods whose validation is clearly delegated to a dedicated domain validator.
