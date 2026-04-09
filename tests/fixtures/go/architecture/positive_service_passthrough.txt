@@ -1,0 +1,19 @@
+package service
+
+import "context"
+
+type Patient struct {
+	ID int
+}
+
+type PatientRepository interface {
+	Create(context.Context, Patient) error
+}
+
+type PatientService struct {
+	repo PatientRepository
+}
+
+func (s *PatientService) CreatePatient(ctx context.Context, patient Patient) error {
+	return s.repo.Create(ctx, patient)
+}

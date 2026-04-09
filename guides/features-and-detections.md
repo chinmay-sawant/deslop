@@ -32,12 +32,12 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **851 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **853 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 526 | 2 | 0 | 528 |
+| go | 528 | 2 | 0 | 530 |
 | python | 212 | 0 | 0 | 212 |
 | rust | 88 | 12 | 0 | 100 |
 
@@ -67,9 +67,9 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `placeholder_test_body`: Tests that look skipped, TODO-shaped, or otherwise placeholder-like.
 - `test_without_assertion_signal`: Tests that exercise production code without an obvious assertion or failure signal.
 
-### Go rules (528)
+### Go rules (530)
 
-#### Architecture (214)
+#### Architecture (216)
 - `admin_or_debug_endpoint_registration_mixed_into_public_router_setup`: Operational endpoints registered alongside public routes with no clear boundary.
 - `api_error_type_outside_transport_package`: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
 - `api_examples_embedded_in_handlers_instead_of_transport_docs_helpers`: Long example payload blocks hardcoded in handlers rather than doc or example helpers.
@@ -125,6 +125,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `gin_handler_uses_global_singletons`: Handlers that reach for global DB, logger, cache, or config variables instead of injected dependencies.
 - `gin_route_paths_repeated_as_raw_strings`: Repeated route path literals that should be centralized or grouped more intentionally.
 - `gin_route_registration_anonymous_function_overuse`: Route registration that uses many inline anonymous handlers instead of named handler methods or functions.
+- `gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary`: Codebases that bootstrap persistence with GORM but run repository queries through raw SQL without a clear adapter boundary.
 - `gorm_chain_built_in_handler`: Handlers that construct `Where`, `Joins`, `Scopes`, or `Order` chains directly.
 - `gorm_chain_built_in_service`: Services that own detailed ORM query shape instead of delegating to repositories.
 - `gorm_hook_mutates_unrelated_tables`: Hooks that reach beyond the owning aggregate and write unrelated records.
@@ -248,6 +249,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `service_struct_has_excessive_dependency_count`: Services with too many unrelated dependencies, which often signals a god-service.
 - `service_tests_import_gin`: Service-level tests that depend on Gin when the service contract is supposed to be transport-neutral.
 - `service_type_outside_service_package`: Concrete use-case services declared outside `service` or `services` packages in layered web-service repos.
+- `service_write_passthrough_without_domain_validation`: Write-style service methods that mostly forward to repositories without visible domain guard checks.
 - `shared_gorm_db_state_mutated_and_reused_across_requests`: Code that mutates shared `*gorm.DB` state and reuses it as if it were immutable configuration.
 - `shared_integration_test_setup_not_centralized_under_test_support`: Repeated app, DB, or router bootstrapping that is not moved into shared test support.
 - `shared_package_named_common_base_utils_with_mixed_exports`: Generic packages that mix services, models, DTOs, validators, and queries behind one broad shared namespace.

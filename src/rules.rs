@@ -132,7 +132,7 @@ mod tests {
     const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 452;
     const EXPECTED_RULE_COUNTS_BY_LANGUAGE: &[(RuleLanguage, usize)] = &[
         (RuleLanguage::Common, 11),
-        (RuleLanguage::Go, 524),
+        (RuleLanguage::Go, 530),
         (RuleLanguage::Python, 212),
         (RuleLanguage::Rust, 100),
     ];

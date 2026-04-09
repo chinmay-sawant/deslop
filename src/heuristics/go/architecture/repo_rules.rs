@@ -2,9 +2,89 @@ use std::path::{Path, PathBuf};
 
 fn project_agnostic_repo_shape_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut findings = Vec::new();
+    findings.extend(gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary_findings(files));
     findings.extend(root_main_go_in_layered_service_repo_findings(files));
     findings.extend(upstream_consumed_interface_declared_in_provider_package_findings(files));
     findings.extend(tool_appeasement_noop_type_in_production_package_findings(files));
+    findings
+}
+
+fn gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    let layered_repo = files.iter().any(|file| is_service_file(file))
+        && files.iter().any(|file| is_repository_file(file));
+    if !layered_repo {
+        return findings;
+    }
+
+    let bootstrap_signal = files.iter().find_map(first_gorm_bootstrap_signal);
+    let Some((bootstrap_path, bootstrap_line, bootstrap_text)) = bootstrap_signal else {
+        return findings;
+    };
+
+    for file in files {
+        if file.is_test_file || !is_repository_file(file) || suppressed_raw_sql_strategy_file(file) {
+            continue;
+        }
+
+        for function in &file.functions {
+            let lines = body_lines(function);
+            let Some(unwrap_line) = lines
+                .iter()
+                .find(|line| line.text.contains(".DB()"))
+                .map(|line| line.line)
+            else {
+                continue;
+            };
+
+            let raw_sql_line = function
+                .go_evidence()
+                .db_query_calls
+                .iter()
+                .find(|call| {
+                    matches!(
+                        call.method_name.as_str(),
+                        "Query"
+                            | "QueryContext"
+                            | "QueryRow"
+                            | "QueryRowContext"
+                            | "Exec"
+                            | "ExecContext"
+                            | "Get"
+                            | "Select"
+                    )
+                })
+                .map(|call| call.line);
+
+            let Some(raw_sql_line) = raw_sql_line else {
+                continue;
+            };
+
+            findings.push(function_finding(
+                file,
+                function,
+                "gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary",
+                Severity::Info,
+                raw_sql_line,
+                "repo uses GORM for bootstrap but repository code unwraps into raw SQL without a clear adapter boundary",
+                vec![
+                    format!(
+                        "GORM bootstrap signal at {}:{} -> {}",
+                        bootstrap_path.display(),
+                        bootstrap_line,
+                        bootstrap_text
+                    ),
+                    format!("repository unwraps a GORM handle via .DB() at line {unwrap_line}"),
+                    format!("raw SQL-style query execution follows at line {raw_sql_line}"),
+                ],
+            ));
+            return findings;
+        }
+    }
+
     findings
 }
 
@@ -441,6 +521,42 @@ fn tooling_comment_text(text: &str) -> bool {
 
 fn compact_comment(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+fn first_gorm_bootstrap_signal(file: &&ParsedFile) -> Option<(PathBuf, usize, String)> {
+    if file.is_test_file || is_repository_file(file) {
+        return None;
+    }
+
+    for function in &file.functions {
+        let lines = body_lines(function);
+        if let Some(line) = lines
+            .iter()
+            .find(|line| line.text.contains("gorm.Open(") || line.text.contains(".AutoMigrate("))
+        {
+            return Some((
+                file.path.clone(),
+                line.line,
+                compact_comment(&line.text),
+            ));
+        }
+    }
+
+    file.module_scope_calls
+        .iter()
+        .find(|call| call.text.contains("gorm.Open(") || call.text.contains(".AutoMigrate("))
+        .map(|call| (file.path.clone(), call.line, compact_comment(&call.text)))
+}
+
+fn suppressed_raw_sql_strategy_file(file: &ParsedFile) -> bool {
+    let lower = file.path.to_string_lossy().to_ascii_lowercase();
+    lower.contains("/migration/")
+        || lower.contains("/migrations/")
+        || lower.contains("/adapter/")
+        || lower.contains("/adapters/")
+        || lower.contains("/sqlc/")
+        || lower.contains("/query/")
+        || lower.contains("/queries/")
 }
 
 fn noop_like_method(function: &ParsedFunction) -> bool {

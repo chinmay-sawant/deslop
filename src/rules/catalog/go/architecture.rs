@@ -186,6 +186,11 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "Handlers or services that query feature flags directly without a focused flag interface."
     ),
     architecture_rule!(
+        "gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary",
+        Info,
+        "Codebases that bootstrap persistence with GORM but run repository queries through raw SQL without a clear adapter boundary."
+    ),
+    architecture_rule!(
         "file_upload_validation_mixed_with_storage_write",
         Info,
         "Functions that validate upload metadata and also persist the upload in the same boundary step."
@@ -894,6 +899,11 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "service_returns_preformatted_client_message",
         Info,
         "Services that return final client-facing message strings instead of typed domain errors."
+    ),
+    architecture_rule!(
+        "service_write_passthrough_without_domain_validation",
+        Info,
+        "Write-style service methods that mostly forward to repositories without visible domain guard checks."
     ),
     architecture_rule!(
         "service_returns_tx_to_caller",

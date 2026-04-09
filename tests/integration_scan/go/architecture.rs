@@ -510,3 +510,83 @@ fn test_db_query_argument_erased_to_any_clean() {
     let report = workspace.scan();
     assert_rules_absent(&report, &["db_query_argument_erased_to_any"]);
 }
+
+#[test]
+fn test_gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "cmd/api/main.go",
+            go_fixture!("architecture/positive_gorm_bootstrap_main.txt"),
+        ),
+        (
+            "internal/service/patient_service.go",
+            go_fixture!("architecture/layered_service_file.txt"),
+        ),
+        (
+            "internal/repository/patient_repository.go",
+            go_fixture!("architecture/positive_gorm_bootstrap_repository.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &["gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary"],
+    );
+}
+
+#[test]
+fn test_gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "cmd/api/main.go",
+            go_fixture!("architecture/positive_gorm_bootstrap_main.txt"),
+        ),
+        (
+            "internal/service/patient_service.go",
+            go_fixture!("architecture/layered_service_file.txt"),
+        ),
+        (
+            "internal/repository/patient_repository.go",
+            go_fixture!("architecture/clean_gorm_bootstrap_repository.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &["gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary"],
+    );
+}
+
+#[test]
+fn test_service_write_passthrough_without_domain_validation() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/service/patient_service.go",
+        go_fixture!("architecture/positive_service_passthrough.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &["service_write_passthrough_without_domain_validation"],
+    );
+}
+
+#[test]
+fn test_service_write_passthrough_without_domain_validation_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/service/patient_service.go",
+        go_fixture!("architecture/clean_service_passthrough.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &["service_write_passthrough_without_domain_validation"],
+    );
+}

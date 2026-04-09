@@ -892,6 +892,20 @@ fn service_function_findings(
         ));
     }
 
+    if let Some((line, evidence)) =
+        service_write_passthrough_without_domain_validation_evidence(function, lines)
+    {
+        findings.push(function_finding(
+            file,
+            function,
+            "service_write_passthrough_without_domain_validation",
+            Severity::Info,
+            line,
+            "write-style service method mostly forwards to a repository without visible domain guard checks",
+            evidence,
+        ));
+    }
+
     if lines.iter().any(|line| (line.text.contains("logger.") || line.text.contains("log.")) && line.text.contains("err")) {
         let line = lines
             .iter()
@@ -910,4 +924,70 @@ fn service_function_findings(
     }
 
     findings
+}
+
+fn service_write_passthrough_without_domain_validation_evidence(
+    function: &ParsedFunction,
+    lines: &[super::framework_patterns::BodyLine],
+) -> Option<(usize, Vec<String>)> {
+    if function.fingerprint.line_count > 8 || function.fingerprint.call_count > 2 {
+        return None;
+    }
+
+    let write_call = function.calls.iter().find(|call| {
+        let receiver = call.receiver.as_deref().unwrap_or_default().to_ascii_lowercase();
+        let name = call.name.to_ascii_lowercase();
+        (receiver.contains("repo") || receiver.contains("repository") || receiver.contains("store"))
+            && matches!(
+                name.as_str(),
+                "create" | "save" | "update" | "delete" | "insert" | "upsert" | "add" | "remove"
+            )
+    })?;
+
+    if signature_params_text(&function.signature_text).trim().is_empty()
+        || signature_params_text(&function.signature_text).trim() == "ctx context.Context"
+    {
+        return None;
+    }
+
+    if required_validation_line(lines).is_some()
+        || lines.iter().any(|line| obvious_domain_validation_line(&line.text))
+    {
+        return None;
+    }
+
+    let meaningful_lines = lines
+        .iter()
+        .filter(|line| !line.text.is_empty() && line.text != "return" && !line.text.starts_with('}'))
+        .count();
+    if meaningful_lines > 4 {
+        return None;
+    }
+
+    Some((
+        write_call.line,
+        vec![
+            format!(
+                "repository write call: {}.{} at line {}",
+                write_call.receiver.as_deref().unwrap_or("repo"),
+                write_call.name,
+                write_call.line
+            ),
+            format!("service method line count: {}", function.fingerprint.line_count),
+            "no visible validation branch, guard clause, or invariant check was observed before persistence".to_string(),
+        ],
+    ))
+}
+
+fn obvious_domain_validation_line(text: &str) -> bool {
+    let lower = text.to_ascii_lowercase();
+    lower.contains("validate(")
+        || lower.contains(".validate(")
+        || lower.contains("ensure")
+        || lower.contains("guard")
+        || lower.contains("check")
+        || lower.contains("assert")
+        || lower.contains("normalize")
+        || lower.contains("sanitize")
+        || lower.contains("if ")
 }
