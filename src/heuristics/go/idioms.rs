@@ -13,6 +13,7 @@ struct BodyLine {
     line: usize,
     text: String,
     in_loop: bool,
+    in_nested_func_literal: bool,
 }
 
 pub(crate) fn go_file_findings(file: &ParsedFile) -> Vec<Finding> {
@@ -342,21 +343,32 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
         }
     }
 
-    for (name, line, target) in binding_matches(&lines, &[".Query(", ".QueryContext("]) {
+    for body_line in &lines {
+        let Some((name, target)) =
+            binding_for_patterns(&body_line.text, &[".Query(", ".QueryContext("])
+        else {
+            continue;
+        };
+        if !rows_binding_looks_database_like(&lines, &name, &body_line.text) {
+            continue;
+        }
         if !contains_text(&lines, &format!("{name}.Close()")) && !returns_binding(function, &name) {
             findings.push(Finding {
                 rule_id: "rows_without_close".to_string(),
                 severity: Severity::Warning,
                 path: file.path.clone(),
                 function_name: Some(function.fingerprint.name.clone()),
-                start_line: line,
-                end_line: line,
+                start_line: body_line.line,
+                end_line: body_line.line,
                 message: format!(
                     "function {} uses rows handle {} without an observed Close() call",
                     function.fingerprint.name, name
                 ),
                 evidence: vec![
-                    format!("rows binding {name} created from {target} at line {line}"),
+                    format!(
+                        "rows binding {name} created from {target} at line {}",
+                        body_line.line
+                    ),
                     format!(
                         "no {}.Close() call was observed in the owning function",
                         name
@@ -417,7 +429,10 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
     }
 
     for body_line in &lines {
-        if body_line.in_loop && body_line.text.starts_with("defer ") {
+        if body_line.in_loop
+            && !body_line.in_nested_func_literal
+            && body_line.text.starts_with("defer ")
+        {
             findings.push(Finding {
                 rule_id: "defer_in_loop_resource_growth".to_string(),
                 severity: Severity::Info,
@@ -915,6 +930,7 @@ fn split_assignment(text: &str) -> Option<(&str, &str)> {
 fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
     let mut brace_depth = 0usize;
     let mut loop_exit_depths = Vec::new();
+    let mut func_literal_exit_depths = Vec::new();
     let mut lines = Vec::new();
 
     for (offset, raw_line) in function.body_text.lines().enumerate() {
@@ -932,10 +948,19 @@ fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
             {
                 loop_exit_depths.pop();
             }
+            while func_literal_exit_depths
+                .last()
+                .is_some_and(|exit_depth| *exit_depth > brace_depth)
+            {
+                func_literal_exit_depths.pop();
+            }
         }
 
         let starts_loop = contains_keyword(&stripped, "for");
+        let starts_func_literal =
+            (stripped.contains("func(") || stripped.contains("func (")) && stripped.contains('{');
         let in_loop = !loop_exit_depths.is_empty() || starts_loop;
+        let in_nested_func_literal = !func_literal_exit_depths.is_empty() || starts_func_literal;
         let opening_braces = stripped
             .chars()
             .filter(|character| *character == '{')
@@ -943,12 +968,16 @@ fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
         if starts_loop {
             loop_exit_depths.push(brace_depth + opening_braces.max(1));
         }
+        if starts_func_literal {
+            func_literal_exit_depths.push(brace_depth + opening_braces.max(1));
+        }
 
         brace_depth += opening_braces;
         lines.push(BodyLine {
             line: line_no,
             text: stripped,
             in_loop,
+            in_nested_func_literal,
         });
     }
 
@@ -1020,6 +1049,57 @@ fn lines_for(lines: &[BodyLine], needle: &str) -> Vec<usize> {
         .filter(|body_line| body_line.text.contains(needle))
         .map(|body_line| body_line.line)
         .collect()
+}
+
+fn rows_binding_looks_database_like(lines: &[BodyLine], name: &str, line_text: &str) -> bool {
+    rows_binding_name_looks_like_handle(name)
+        || looks_like_sql_text(line_text)
+        || lines
+            .iter()
+            .any(|body_line| rows_handle_usage(&body_line.text, name))
+}
+
+fn rows_binding_name_looks_like_handle(name: &str) -> bool {
+    let lower = name.to_ascii_lowercase();
+    lower == "rows"
+        || lower.ends_with("rows")
+        || lower.ends_with("rowset")
+        || lower.contains("rows_")
+        || lower.contains("_rows")
+}
+
+fn rows_handle_usage(text: &str, name: &str) -> bool {
+    [
+        "Close(",
+        "Next(",
+        "Scan(",
+        "Err(",
+        "Columns(",
+        "ColumnTypes(",
+    ]
+    .iter()
+    .any(|method| text.contains(&format!("{name}.{method}")))
+}
+
+fn looks_like_sql_text(text: &str) -> bool {
+    let lower = text.to_ascii_lowercase();
+    [
+        "select ",
+        "insert ",
+        "update ",
+        "delete ",
+        "with ",
+        "from ",
+        "join ",
+        "where ",
+        " into ",
+        " values",
+        " order by ",
+        " group by ",
+        " having ",
+    ]
+    .iter()
+    .any(|marker| lower.contains(marker))
 }
 
 fn returns_binding(function: &ParsedFunction, name: &str) -> bool {

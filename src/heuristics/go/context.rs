@@ -435,10 +435,11 @@ fn file_looks_cache_related(file: &ParsedFile) -> bool {
         || lower_path.contains("_cache.")
         || lower_path.ends_with("/cache.go")
         || package.contains("cache")
-        || file
-            .imports
-            .iter()
-            .any(|import| CACHE_IMPORT_HINTS.iter().any(|hint| import.path.contains(hint)))
+        || file.imports.iter().any(|import| {
+            CACHE_IMPORT_HINTS
+                .iter()
+                .any(|hint| import.path.contains(hint))
+        })
 }
 
 fn interface_looks_cache_related(file: &ParsedFile, interface_name: &str) -> bool {

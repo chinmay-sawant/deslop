@@ -326,6 +326,19 @@ fn test_context_db_query_wrapper_slop() {
 }
 
 #[test]
+fn test_request_query_param_is_not_treated_as_missing_context_propagation() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("handler.go", go_fixture!("context_query_param_clean.txt"));
+
+    let report = workspace.scan();
+
+    assert!(!report.findings.iter().any(|finding| {
+        finding.rule_id == "missing_context_propagation"
+            && finding.function_name.as_deref() == Some("Handle")
+    }));
+}
+
+#[test]
 fn test_documented_context_detach_is_allowed() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(

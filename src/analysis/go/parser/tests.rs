@@ -136,6 +136,20 @@ fn test_concurrency_db() {
 }
 
 #[test]
+fn test_request_query_is_not_treated_as_db_call() {
+    let source = go_parser_fixture!("query_param_not_db");
+
+    let parsed = parse_file(Path::new("sample.go"), source).expect("parse should work");
+    let handle = parsed
+        .functions
+        .iter()
+        .find(|function| function.fingerprint.name == "Handle")
+        .expect("Handle should be parsed");
+
+    assert!(handle.go_evidence().db_query_calls.is_empty());
+}
+
+#[test]
 fn test_concat_goroutine() {
     let source = go_parser_fixture!("concat_goroutine");
 

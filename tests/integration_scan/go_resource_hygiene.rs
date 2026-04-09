@@ -161,6 +161,16 @@ fn test_go_advanceplan2_resource_hygiene_clean() {
 }
 
 #[test]
+fn test_request_query_param_does_not_trigger_rows_without_close() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("handler.go", go_fixture!("context_query_param_clean.txt"));
+
+    let report = workspace.scan();
+
+    assert!(!has_rule(&report, "rows_without_close"));
+}
+
+#[test]
 fn test_go_advanceplan2_architecture_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(

@@ -1,6 +1,9 @@
 package sample
 
-import "os"
+import (
+	"os"
+	"sync"
+)
 
 type Rows interface {
 	Close() error
@@ -46,4 +49,16 @@ func Load(db DB) error {
 	}
 	defer tx.Rollback()
 	return tx.Commit()
+}
+
+func WaitAsync(items []string) {
+	var wg sync.WaitGroup
+	for _, item := range items {
+		wg.Add(1)
+		go func(name string) {
+			defer wg.Done()
+			_ = name
+		}(item)
+	}
+	wg.Wait()
 }

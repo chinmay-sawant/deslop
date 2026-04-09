@@ -1,0 +1,8 @@
+package handler
+
+import "github.com/gin-gonic/gin"
+
+func Handle(c *gin.Context) string {
+	filename := c.Query("filename")
+	return filename
+}

@@ -272,6 +272,9 @@ fn slice_grow_without_cap_hint(
         if !is_identifier_name(target) {
             continue;
         }
+        if slice_reuses_existing_capacity(lines, target, bl.line, &bl.text) {
+            continue;
+        }
         let has_zero_cap_init = lines.iter().any(|line| {
             line.line < bl.line
                 && (line.text.starts_with(&format!("var {target} []"))
@@ -300,6 +303,24 @@ fn slice_grow_without_cap_hint(
         }
     }
     findings
+}
+
+fn slice_reuses_existing_capacity(
+    lines: &[BodyLine],
+    target: &str,
+    line: usize,
+    current_text: &str,
+) -> bool {
+    slice_capacity_reuse_marker(current_text, target)
+        || lines
+            .iter()
+            .any(|prior| prior.line < line && slice_capacity_reuse_marker(&prior.text, target))
+}
+
+fn slice_capacity_reuse_marker(text: &str, target: &str) -> bool {
+    let compact = text.split_whitespace().collect::<String>();
+    compact.starts_with(&format!("{target}={target}[:0"))
+        || compact.contains(&format!("append({target}[:0],"))
 }
 
 // B8
@@ -463,6 +484,12 @@ fn three_index_slice_for_append(
             .unwrap_or("")
             .trim();
         if !is_identifier_name(binding) {
+            continue;
+        }
+        let compact_right = right.split_whitespace().collect::<String>();
+        if compact_right == format!("{binding}[:0]")
+            || compact_right.starts_with(&format!("{binding}[:0:"))
+        {
             continue;
         }
         if let Some(next) = lines

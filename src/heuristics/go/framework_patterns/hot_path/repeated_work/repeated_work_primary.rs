@@ -311,12 +311,18 @@ fn slice_append_without_prealloc_findings(
             && !body_line.text.contains("cap(")
             && let Some(target) = append_target(&body_line.text)
         {
+            let reuses_existing_capacity = append_reuses_existing_slice_capacity(
+                lines,
+                &target,
+                body_line.line,
+                &body_line.text,
+            );
             let has_prealloc = lines.iter().any(|prior| {
                 prior.line < body_line.line
                     && prior.text.contains("make([]")
                     && prior.text.contains(&target)
             });
-            if !has_prealloc {
+            if !has_prealloc && !reuses_existing_capacity {
                 let has_range_bound = lines.iter().any(|prior| {
                     prior.line < body_line.line
                         && prior.text.contains("range ")
@@ -345,6 +351,24 @@ fn slice_append_without_prealloc_findings(
     }
 
     findings
+}
+
+fn append_reuses_existing_slice_capacity(
+    lines: &[BodyLine],
+    target: &str,
+    line: usize,
+    current_text: &str,
+) -> bool {
+    slice_capacity_reuse_marker(current_text, target)
+        || lines.iter().any(|prior| {
+            prior.line < line && slice_capacity_reuse_marker(&prior.text, target)
+        })
+}
+
+fn slice_capacity_reuse_marker(text: &str, target: &str) -> bool {
+    let compact = text.split_whitespace().collect::<String>();
+    compact.starts_with(&format!("{target}={target}[:0"))
+        || compact.contains(&format!("append({target}[:0],"))
 }
 
 fn nested_append_without_outer_capacity_findings(

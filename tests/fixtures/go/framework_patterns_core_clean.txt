@@ -185,6 +185,15 @@ func ResetScratchBuffer(items []string) {
 	_ = buf
 }
 
+func ReuseGrownScratchBuffer(items []string) {
+	var buf []byte
+	for _, item := range items {
+		buf = buf[:0]
+		buf = append(buf, item...)
+	}
+	_ = buf
+}
+
 func NormalizeOnce(rows []string, prefix string) {
 	lower := strings.ToLower(prefix)
 	for _, row := range rows {

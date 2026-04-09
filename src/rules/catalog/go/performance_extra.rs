@@ -20,104 +20,386 @@ macro_rules! performance_extra_rule {
 }
 
 pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
-    performance_extra_rule!("bytes_compare_equal_zero", "`bytes.Compare(...) == 0` instead of `bytes.Equal(...)`."),
-    performance_extra_rule!("bytes_compare_not_equal_zero", "`bytes.Compare(...) != 0` instead of `!bytes.Equal(...)`."),
-    performance_extra_rule!("bytes_index_not_minus_one_contains", "`bytes.Index(...) != -1` presence checks instead of `bytes.Contains(...)`."),
-    performance_extra_rule!("bytes_index_any_not_minus_one_contains_any", "`bytes.IndexAny(...) != -1` presence checks instead of `bytes.ContainsAny(...)`."),
-    performance_extra_rule!("bytes_count_gt_zero_contains", "`bytes.Count(...) > 0` instead of `bytes.Contains(...)`."),
-    performance_extra_rule!("strings_compare_equal_zero", "`strings.Compare(...) == 0` instead of direct string equality."),
-    performance_extra_rule!("strings_compare_not_equal_zero", "`strings.Compare(...) != 0` instead of direct string inequality."),
-    performance_extra_rule!("strings_index_any_not_minus_one_contains_any", "`strings.IndexAny(...) != -1` presence checks instead of `strings.ContainsAny(...)`."),
-    performance_extra_rule!("strings_count_gt_zero_contains", "`strings.Count(...) > 0` instead of `strings.Contains(...)`."),
-    performance_extra_rule!("strings_splitn_two_index_zero_cut", "`strings.SplitN(..., 2)[0]` instead of `strings.Cut(...)`."),
-    performance_extra_rule!("strings_splitn_two_index_one_cut", "`strings.SplitN(..., 2)[1]` instead of `strings.Cut(...)`."),
-    performance_extra_rule!("bytes_splitn_two_index_zero_cut", "`bytes.SplitN(..., 2)[0]` instead of `bytes.Cut(...)`."),
-    performance_extra_rule!("bytes_splitn_two_index_one_cut", "`bytes.SplitN(..., 2)[1]` instead of `bytes.Cut(...)`."),
-    performance_extra_rule!("strings_split_two_index_zero_cut", "`strings.Split(...)[0]` when only the first segment is needed."),
-    performance_extra_rule!("strings_split_two_index_one_cut", "`strings.Split(...)[1]` when only the second segment is needed."),
-    performance_extra_rule!("bytes_split_two_index_zero_cut", "`bytes.Split(...)[0]` when only the first segment is needed."),
-    performance_extra_rule!("bytes_split_two_index_one_cut", "`bytes.Split(...)[1]` when only the second segment is needed."),
-    performance_extra_rule!("strings_splitaftern_two_index_zero_cut", "`strings.SplitAfterN(..., 2)[0]` instead of a two-part `strings.Cut(...)` flow."),
-    performance_extra_rule!("strings_splitaftern_two_index_one_cut", "`strings.SplitAfterN(..., 2)[1]` instead of a two-part `strings.Cut(...)` flow."),
-    performance_extra_rule!("bytes_splitaftern_two_index_zero_cut", "`bytes.SplitAfterN(..., 2)[0]` instead of a two-part `bytes.Cut(...)` flow."),
-    performance_extra_rule!("bytes_splitaftern_two_index_one_cut", "`bytes.SplitAfterN(..., 2)[1]` instead of a two-part `bytes.Cut(...)` flow."),
-    performance_extra_rule!("strings_splitafter_two_index_zero_cut", "`strings.SplitAfter(...)[0]` when only the first segment is needed."),
-    performance_extra_rule!("strings_splitafter_two_index_one_cut", "`strings.SplitAfter(...)[1]` when only the second segment is needed."),
-    performance_extra_rule!("bytes_splitafter_two_index_zero_cut", "`bytes.SplitAfter(...)[0]` when only the first segment is needed."),
-    performance_extra_rule!("bytes_splitafter_two_index_one_cut", "`bytes.SplitAfter(...)[1]` when only the second segment is needed."),
-    performance_extra_rule!("strings_tolower_equalfold", "`strings.ToLower(...) == strings.ToLower(...)` instead of `strings.EqualFold(...)`."),
-    performance_extra_rule!("strings_toupper_equalfold", "`strings.ToUpper(...) == strings.ToUpper(...)` instead of `strings.EqualFold(...)`."),
-    performance_extra_rule!("bytes_tolower_equalfold", "`bytes.Equal(bytes.ToLower(...), bytes.ToLower(...))` instead of `bytes.EqualFold(...)`."),
-    performance_extra_rule!("bytes_toupper_equalfold", "`bytes.Equal(bytes.ToUpper(...), bytes.ToUpper(...))` instead of `bytes.EqualFold(...)`."),
-    performance_extra_rule!("writer_write_byte_slice_of_string", "`writer.Write([]byte(s))` instead of `io.WriteString(writer, s)`."),
-    performance_extra_rule!("builder_write_string_single_byte_literal", "`strings.Builder.WriteString(\"x\")` for single-byte literals instead of `WriteByte`."),
-    performance_extra_rule!("buffer_write_string_single_byte_literal", "`bytes.Buffer.WriteString(\"x\")` for single-byte literals instead of `WriteByte`."),
-    performance_extra_rule!("builder_write_rune_ascii_literal", "`strings.Builder.WriteRune('x')` for ASCII literals instead of `WriteByte`."),
-    performance_extra_rule!("buffer_write_rune_ascii_literal", "`bytes.Buffer.WriteRune('x')` for ASCII literals instead of `WriteByte`."),
-    performance_extra_rule!("bytes_newreader_on_string_conversion", "`bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`."),
-    performance_extra_rule!("strings_newreader_on_byte_slice_conversion", "`strings.NewReader(string(b))` instead of `bytes.NewReader(b)`."),
-    performance_extra_rule!("bytes_newbufferstring_on_string_conversion", "`bytes.NewBufferString(string(b))` instead of using the byte slice directly."),
-    performance_extra_rule!("strings_replace_neg_one_replaceall", "`strings.Replace(..., -1)` instead of `strings.ReplaceAll(...)`."),
-    performance_extra_rule!("bytes_replace_neg_one_replaceall", "`bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`."),
-    performance_extra_rule!("strings_trimleft_space_trimspace", "`strings.TrimLeft(..., whitespace)` instead of `strings.TrimSpace(...)`."),
-    performance_extra_rule!("strings_trimright_space_trimspace", "`strings.TrimRight(..., whitespace)` instead of `strings.TrimSpace(...)`."),
-    performance_extra_rule!("bytes_trimleft_space_trimspace", "`bytes.TrimLeft(..., whitespace)` instead of `bytes.TrimSpace(...)`."),
-    performance_extra_rule!("bytes_trimright_space_trimspace", "`bytes.TrimRight(..., whitespace)` instead of `bytes.TrimSpace(...)`."),
-    performance_extra_rule!("bytes_buffer_string_len", "`len(buf.String())` instead of `buf.Len()`."),
-    performance_extra_rule!("strings_builder_string_len", "`len(builder.String())` instead of `builder.Len()`."),
-    performance_extra_rule!("bytes_buffer_truncate_zero_reset", "`buf.Truncate(0)` instead of `buf.Reset()`."),
-    performance_extra_rule!("filepath_split_base_only", "`filepath.Split(...)` when only the base name is used."),
-    performance_extra_rule!("filepath_split_dir_only", "`filepath.Split(...)` when only the directory is used."),
-    performance_extra_rule!("path_split_base_only", "`path.Split(...)` when only the base name is used."),
-    performance_extra_rule!("path_split_dir_only", "`path.Split(...)` when only the directory is used."),
-    performance_extra_rule!("strings_hasprefix_manual_slice_after_len", "Manual `len` and slice prefix checks instead of `strings.HasPrefix(...)`."),
-    performance_extra_rule!("strings_hassuffix_manual_slice_after_len", "Manual `len` and slice suffix checks instead of `strings.HasSuffix(...)`."),
-    performance_extra_rule!("bytes_hasprefix_manual_slice_after_len", "Manual `len` and slice prefix checks instead of `bytes.HasPrefix(...)`."),
-    performance_extra_rule!("bytes_hassuffix_manual_slice_after_len", "Manual `len` and slice suffix checks instead of `bytes.HasSuffix(...)`."),
-    performance_extra_rule!("fmt_sprintf_bool_to_string", "`fmt.Sprintf(\"%t\", ...)` instead of `strconv.FormatBool(...)`."),
-    performance_extra_rule!("fmt_sprintf_float_to_string", "`fmt.Sprintf(\"%f\", ...)` instead of `strconv.FormatFloat(...)` when only a float string is needed."),
-    performance_extra_rule!("fmt_sprintf_binary_to_string", "`fmt.Sprintf(\"%b\", ...)` instead of direct `strconv` integer formatting."),
-    performance_extra_rule!("fmt_sprintf_octal_to_string", "`fmt.Sprintf(\"%o\", ...)` instead of direct `strconv` integer formatting."),
-    performance_extra_rule!("fmt_sprintf_hex_to_string", "`fmt.Sprintf(\"%x\", ...)` instead of a direct hex formatter when only the string is needed."),
-    performance_extra_rule!("fmt_sprintf_quote_to_string", "`fmt.Sprintf(\"%q\", s)` instead of `strconv.Quote(s)`."),
-    performance_extra_rule!("fmt_sprintf_single_string_passthrough", "`fmt.Sprintf(\"%s\", s)` instead of returning or writing the string directly."),
-    performance_extra_rule!("fmt_fprint_to_strings_builder", "`fmt.Fprint(&builder, ...)` instead of direct builder writes."),
-    performance_extra_rule!("fmt_fprintln_to_strings_builder", "`fmt.Fprintln(&builder, ...)` instead of direct builder writes."),
-    performance_extra_rule!("fmt_fprintf_single_string_to_strings_builder", "`fmt.Fprintf(&builder, \"%s\", s)` instead of `WriteString(s)`."),
-    performance_extra_rule!("fmt_fprint_to_bytes_buffer", "`fmt.Fprint(&buf, ...)` instead of direct buffer writes."),
-    performance_extra_rule!("fmt_fprintln_to_bytes_buffer", "`fmt.Fprintln(&buf, ...)` instead of direct buffer writes."),
-    performance_extra_rule!("fmt_fprintf_single_string_to_bytes_buffer", "`fmt.Fprintf(&buf, \"%s\", s)` instead of `WriteString(s)`."),
-    performance_extra_rule!("strconv_formatint_int64_cast_itoa", "`strconv.FormatInt(int64(v), 10)` instead of `strconv.Itoa(v)`."),
-    performance_extra_rule!("time_tick_per_call", "`time.Tick(...)` on regular call paths instead of owning a reusable ticker."),
-    performance_extra_rule!("time_newtimer_inside_loop", "`time.NewTimer(...)` inside loops."),
-    performance_extra_rule!("time_newticker_inside_loop", "`time.NewTicker(...)` inside loops."),
-    performance_extra_rule!("rand_seed_per_call", "`rand.Seed(...)` inside regular call paths instead of process startup."),
-    performance_extra_rule!("rand_newsource_per_call", "`rand.NewSource(...)` inside regular call paths."),
-    performance_extra_rule!("rand_newsource_with_time_now_per_call", "`rand.NewSource(...)` seeded from wall clock on each call path."),
-    performance_extra_rule!("rand_new_per_call", "`rand.New(...)` inside regular call paths instead of reusing a generator."),
-    performance_extra_rule!("time_since_candidate_via_now_sub", "`time.Now().Sub(start)` instead of `time.Since(start)`."),
-    performance_extra_rule!("time_until_candidate_via_deadline_sub_now", "`deadline.Sub(time.Now())` instead of `time.Until(deadline)`."),
-    performance_extra_rule!("duration_nanoseconds_zero_check", "Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`."),
-    performance_extra_rule!("runtime_numcpu_inside_loop", "`runtime.NumCPU()` inside loops instead of caching once."),
-    performance_extra_rule!("runtime_gomaxprocs_per_request", "`runtime.GOMAXPROCS(...)` on request paths."),
-    performance_extra_rule!("time_loadlocation_per_call", "`time.LoadLocation(...)` inside request or loop paths instead of reusing the location."),
-    performance_extra_rule!("time_fixedzone_per_call", "`time.FixedZone(...)` inside request or loop paths instead of reusing the location."),
-    performance_extra_rule!("sync_once_do_inside_loop", "`sync.Once.Do(...)` inside loops."),
-    performance_extra_rule!("context_withtimeout_inside_loop", "`context.WithTimeout(...)` inside loops."),
-    performance_extra_rule!("json_valid_then_unmarshal", "Code that validates JSON and then unmarshals the same payload again."),
-    performance_extra_rule!("json_marshalindent_in_loop", "`json.MarshalIndent(...)` inside loops."),
+    performance_extra_rule!(
+        "bytes_compare_equal_zero",
+        "`bytes.Compare(...) == 0` instead of `bytes.Equal(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_compare_not_equal_zero",
+        "`bytes.Compare(...) != 0` instead of `!bytes.Equal(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_index_not_minus_one_contains",
+        "`bytes.Index(...) != -1` presence checks instead of `bytes.Contains(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_index_any_not_minus_one_contains_any",
+        "`bytes.IndexAny(...) != -1` presence checks instead of `bytes.ContainsAny(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_count_gt_zero_contains",
+        "`bytes.Count(...) > 0` instead of `bytes.Contains(...)`."
+    ),
+    performance_extra_rule!(
+        "strings_compare_equal_zero",
+        "`strings.Compare(...) == 0` instead of direct string equality."
+    ),
+    performance_extra_rule!(
+        "strings_compare_not_equal_zero",
+        "`strings.Compare(...) != 0` instead of direct string inequality."
+    ),
+    performance_extra_rule!(
+        "strings_index_any_not_minus_one_contains_any",
+        "`strings.IndexAny(...) != -1` presence checks instead of `strings.ContainsAny(...)`."
+    ),
+    performance_extra_rule!(
+        "strings_count_gt_zero_contains",
+        "`strings.Count(...) > 0` instead of `strings.Contains(...)`."
+    ),
+    performance_extra_rule!(
+        "strings_splitn_two_index_zero_cut",
+        "`strings.SplitN(..., 2)[0]` instead of `strings.Cut(...)`."
+    ),
+    performance_extra_rule!(
+        "strings_splitn_two_index_one_cut",
+        "`strings.SplitN(..., 2)[1]` instead of `strings.Cut(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_splitn_two_index_zero_cut",
+        "`bytes.SplitN(..., 2)[0]` instead of `bytes.Cut(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_splitn_two_index_one_cut",
+        "`bytes.SplitN(..., 2)[1]` instead of `bytes.Cut(...)`."
+    ),
+    performance_extra_rule!(
+        "strings_split_two_index_zero_cut",
+        "`strings.Split(...)[0]` when only the first segment is needed."
+    ),
+    performance_extra_rule!(
+        "strings_split_two_index_one_cut",
+        "`strings.Split(...)[1]` when only the second segment is needed."
+    ),
+    performance_extra_rule!(
+        "bytes_split_two_index_zero_cut",
+        "`bytes.Split(...)[0]` when only the first segment is needed."
+    ),
+    performance_extra_rule!(
+        "bytes_split_two_index_one_cut",
+        "`bytes.Split(...)[1]` when only the second segment is needed."
+    ),
+    performance_extra_rule!(
+        "strings_splitaftern_two_index_zero_cut",
+        "`strings.SplitAfterN(..., 2)[0]` instead of a two-part `strings.Cut(...)` flow."
+    ),
+    performance_extra_rule!(
+        "strings_splitaftern_two_index_one_cut",
+        "`strings.SplitAfterN(..., 2)[1]` instead of a two-part `strings.Cut(...)` flow."
+    ),
+    performance_extra_rule!(
+        "bytes_splitaftern_two_index_zero_cut",
+        "`bytes.SplitAfterN(..., 2)[0]` instead of a two-part `bytes.Cut(...)` flow."
+    ),
+    performance_extra_rule!(
+        "bytes_splitaftern_two_index_one_cut",
+        "`bytes.SplitAfterN(..., 2)[1]` instead of a two-part `bytes.Cut(...)` flow."
+    ),
+    performance_extra_rule!(
+        "strings_splitafter_two_index_zero_cut",
+        "`strings.SplitAfter(...)[0]` when only the first segment is needed."
+    ),
+    performance_extra_rule!(
+        "strings_splitafter_two_index_one_cut",
+        "`strings.SplitAfter(...)[1]` when only the second segment is needed."
+    ),
+    performance_extra_rule!(
+        "bytes_splitafter_two_index_zero_cut",
+        "`bytes.SplitAfter(...)[0]` when only the first segment is needed."
+    ),
+    performance_extra_rule!(
+        "bytes_splitafter_two_index_one_cut",
+        "`bytes.SplitAfter(...)[1]` when only the second segment is needed."
+    ),
+    performance_extra_rule!(
+        "strings_tolower_equalfold",
+        "`strings.ToLower(...) == strings.ToLower(...)` instead of `strings.EqualFold(...)`."
+    ),
+    performance_extra_rule!(
+        "strings_toupper_equalfold",
+        "`strings.ToUpper(...) == strings.ToUpper(...)` instead of `strings.EqualFold(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_tolower_equalfold",
+        "`bytes.Equal(bytes.ToLower(...), bytes.ToLower(...))` instead of `bytes.EqualFold(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_toupper_equalfold",
+        "`bytes.Equal(bytes.ToUpper(...), bytes.ToUpper(...))` instead of `bytes.EqualFold(...)`."
+    ),
+    performance_extra_rule!(
+        "writer_write_byte_slice_of_string",
+        "`writer.Write([]byte(s))` instead of `io.WriteString(writer, s)`."
+    ),
+    performance_extra_rule!(
+        "builder_write_string_single_byte_literal",
+        "`strings.Builder.WriteString(\"x\")` for single-byte literals instead of `WriteByte`."
+    ),
+    performance_extra_rule!(
+        "buffer_write_string_single_byte_literal",
+        "`bytes.Buffer.WriteString(\"x\")` for single-byte literals instead of `WriteByte`."
+    ),
+    performance_extra_rule!(
+        "builder_write_rune_ascii_literal",
+        "`strings.Builder.WriteRune('x')` for ASCII literals instead of `WriteByte`."
+    ),
+    performance_extra_rule!(
+        "buffer_write_rune_ascii_literal",
+        "`bytes.Buffer.WriteRune('x')` for ASCII literals instead of `WriteByte`."
+    ),
+    performance_extra_rule!(
+        "bytes_newreader_on_string_conversion",
+        "`bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`."
+    ),
+    performance_extra_rule!(
+        "strings_newreader_on_byte_slice_conversion",
+        "`strings.NewReader(string(b))` instead of `bytes.NewReader(b)`."
+    ),
+    performance_extra_rule!(
+        "bytes_newbufferstring_on_string_conversion",
+        "`bytes.NewBufferString(string(b))` instead of using the byte slice directly."
+    ),
+    performance_extra_rule!(
+        "strings_replace_neg_one_replaceall",
+        "`strings.Replace(..., -1)` instead of `strings.ReplaceAll(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_replace_neg_one_replaceall",
+        "`bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`."
+    ),
+    performance_extra_rule!(
+        "strings_trimleft_space_trimspace",
+        "`strings.TrimLeft(..., whitespace)` instead of `strings.TrimSpace(...)`."
+    ),
+    performance_extra_rule!(
+        "strings_trimright_space_trimspace",
+        "`strings.TrimRight(..., whitespace)` instead of `strings.TrimSpace(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_trimleft_space_trimspace",
+        "`bytes.TrimLeft(..., whitespace)` instead of `bytes.TrimSpace(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_trimright_space_trimspace",
+        "`bytes.TrimRight(..., whitespace)` instead of `bytes.TrimSpace(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_buffer_string_len",
+        "`len(buf.String())` instead of `buf.Len()`."
+    ),
+    performance_extra_rule!(
+        "strings_builder_string_len",
+        "`len(builder.String())` instead of `builder.Len()`."
+    ),
+    performance_extra_rule!(
+        "bytes_buffer_truncate_zero_reset",
+        "`buf.Truncate(0)` instead of `buf.Reset()`."
+    ),
+    performance_extra_rule!(
+        "filepath_split_base_only",
+        "`filepath.Split(...)` when only the base name is used."
+    ),
+    performance_extra_rule!(
+        "filepath_split_dir_only",
+        "`filepath.Split(...)` when only the directory is used."
+    ),
+    performance_extra_rule!(
+        "path_split_base_only",
+        "`path.Split(...)` when only the base name is used."
+    ),
+    performance_extra_rule!(
+        "path_split_dir_only",
+        "`path.Split(...)` when only the directory is used."
+    ),
+    performance_extra_rule!(
+        "strings_hasprefix_manual_slice_after_len",
+        "Manual `len` and slice prefix checks instead of `strings.HasPrefix(...)`."
+    ),
+    performance_extra_rule!(
+        "strings_hassuffix_manual_slice_after_len",
+        "Manual `len` and slice suffix checks instead of `strings.HasSuffix(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_hasprefix_manual_slice_after_len",
+        "Manual `len` and slice prefix checks instead of `bytes.HasPrefix(...)`."
+    ),
+    performance_extra_rule!(
+        "bytes_hassuffix_manual_slice_after_len",
+        "Manual `len` and slice suffix checks instead of `bytes.HasSuffix(...)`."
+    ),
+    performance_extra_rule!(
+        "fmt_sprintf_bool_to_string",
+        "`fmt.Sprintf(\"%t\", ...)` instead of `strconv.FormatBool(...)`."
+    ),
+    performance_extra_rule!(
+        "fmt_sprintf_float_to_string",
+        "`fmt.Sprintf(\"%f\", ...)` instead of `strconv.FormatFloat(...)` when only a float string is needed."
+    ),
+    performance_extra_rule!(
+        "fmt_sprintf_binary_to_string",
+        "`fmt.Sprintf(\"%b\", ...)` instead of direct `strconv` integer formatting."
+    ),
+    performance_extra_rule!(
+        "fmt_sprintf_octal_to_string",
+        "`fmt.Sprintf(\"%o\", ...)` instead of direct `strconv` integer formatting."
+    ),
+    performance_extra_rule!(
+        "fmt_sprintf_hex_to_string",
+        "`fmt.Sprintf(\"%x\", ...)` instead of a direct hex formatter when only the string is needed."
+    ),
+    performance_extra_rule!(
+        "fmt_sprintf_quote_to_string",
+        "`fmt.Sprintf(\"%q\", s)` instead of `strconv.Quote(s)`."
+    ),
+    performance_extra_rule!(
+        "fmt_sprintf_single_string_passthrough",
+        "`fmt.Sprintf(\"%s\", s)` instead of returning or writing the string directly."
+    ),
+    performance_extra_rule!(
+        "fmt_fprint_to_strings_builder",
+        "`fmt.Fprint(&builder, ...)` instead of direct builder writes."
+    ),
+    performance_extra_rule!(
+        "fmt_fprintln_to_strings_builder",
+        "`fmt.Fprintln(&builder, ...)` instead of direct builder writes."
+    ),
+    performance_extra_rule!(
+        "fmt_fprintf_single_string_to_strings_builder",
+        "`fmt.Fprintf(&builder, \"%s\", s)` instead of `WriteString(s)`."
+    ),
+    performance_extra_rule!(
+        "fmt_fprint_to_bytes_buffer",
+        "`fmt.Fprint(&buf, ...)` instead of direct buffer writes."
+    ),
+    performance_extra_rule!(
+        "fmt_fprintln_to_bytes_buffer",
+        "`fmt.Fprintln(&buf, ...)` instead of direct buffer writes."
+    ),
+    performance_extra_rule!(
+        "fmt_fprintf_single_string_to_bytes_buffer",
+        "`fmt.Fprintf(&buf, \"%s\", s)` instead of `WriteString(s)`."
+    ),
+    performance_extra_rule!(
+        "strconv_formatint_int64_cast_itoa",
+        "`strconv.FormatInt(int64(v), 10)` instead of `strconv.Itoa(v)`."
+    ),
+    performance_extra_rule!(
+        "time_tick_per_call",
+        "`time.Tick(...)` on regular call paths instead of owning a reusable ticker."
+    ),
+    performance_extra_rule!(
+        "time_newtimer_inside_loop",
+        "`time.NewTimer(...)` inside loops."
+    ),
+    performance_extra_rule!(
+        "time_newticker_inside_loop",
+        "`time.NewTicker(...)` inside loops."
+    ),
+    performance_extra_rule!(
+        "rand_seed_per_call",
+        "`rand.Seed(...)` inside regular call paths instead of process startup."
+    ),
+    performance_extra_rule!(
+        "rand_newsource_per_call",
+        "`rand.NewSource(...)` inside regular call paths."
+    ),
+    performance_extra_rule!(
+        "rand_newsource_with_time_now_per_call",
+        "`rand.NewSource(...)` seeded from wall clock on each call path."
+    ),
+    performance_extra_rule!(
+        "rand_new_per_call",
+        "`rand.New(...)` inside regular call paths instead of reusing a generator."
+    ),
+    performance_extra_rule!(
+        "time_since_candidate_via_now_sub",
+        "`time.Now().Sub(start)` instead of `time.Since(start)`."
+    ),
+    performance_extra_rule!(
+        "time_until_candidate_via_deadline_sub_now",
+        "`deadline.Sub(time.Now())` instead of `time.Until(deadline)`."
+    ),
+    performance_extra_rule!(
+        "duration_nanoseconds_zero_check",
+        "Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`."
+    ),
+    performance_extra_rule!(
+        "runtime_numcpu_inside_loop",
+        "`runtime.NumCPU()` inside loops instead of caching once."
+    ),
+    performance_extra_rule!(
+        "runtime_gomaxprocs_per_request",
+        "`runtime.GOMAXPROCS(...)` on request paths."
+    ),
+    performance_extra_rule!(
+        "time_loadlocation_per_call",
+        "`time.LoadLocation(...)` inside request or loop paths instead of reusing the location."
+    ),
+    performance_extra_rule!(
+        "time_fixedzone_per_call",
+        "`time.FixedZone(...)` inside request or loop paths instead of reusing the location."
+    ),
+    performance_extra_rule!(
+        "sync_once_do_inside_loop",
+        "`sync.Once.Do(...)` inside loops."
+    ),
+    performance_extra_rule!(
+        "context_withtimeout_inside_loop",
+        "`context.WithTimeout(...)` inside loops."
+    ),
+    performance_extra_rule!(
+        "json_valid_then_unmarshal",
+        "Code that validates JSON and then unmarshals the same payload again."
+    ),
+    performance_extra_rule!(
+        "json_marshalindent_in_loop",
+        "`json.MarshalIndent(...)` inside loops."
+    ),
     performance_extra_rule!("json_indent_in_loop", "`json.Indent(...)` inside loops."),
-    performance_extra_rule!("base64_encode_to_string_in_loop", "Base64 encoding to string inside loops."),
-    performance_extra_rule!("base64_decode_string_in_loop", "Base64 decode from string inside loops."),
-    performance_extra_rule!("hex_encode_to_string_in_loop", "`hex.EncodeToString(...)` inside loops."),
-    performance_extra_rule!("hex_decode_string_in_loop", "`hex.DecodeString(...)` inside loops."),
+    performance_extra_rule!(
+        "base64_encode_to_string_in_loop",
+        "Base64 encoding to string inside loops."
+    ),
+    performance_extra_rule!(
+        "base64_decode_string_in_loop",
+        "Base64 decode from string inside loops."
+    ),
+    performance_extra_rule!(
+        "hex_encode_to_string_in_loop",
+        "`hex.EncodeToString(...)` inside loops."
+    ),
+    performance_extra_rule!(
+        "hex_decode_string_in_loop",
+        "`hex.DecodeString(...)` inside loops."
+    ),
     performance_extra_rule!("sha1_sum_in_loop", "`sha1.Sum(...)` inside loops."),
     performance_extra_rule!("sha256_sum_in_loop", "`sha256.Sum256(...)` inside loops."),
     performance_extra_rule!("sha512_sum_in_loop", "`sha512.Sum512(...)` inside loops."),
     performance_extra_rule!("md5_sum_in_loop", "`md5.Sum(...)` inside loops."),
-    performance_extra_rule!("crc32_checksum_in_loop", "`crc32.Checksum...` inside loops."),
-    performance_extra_rule!("crc64_checksum_in_loop", "`crc64.Checksum(...)` inside loops."),
-    performance_extra_rule!("adler32_checksum_in_loop", "`adler32.Checksum(...)` inside loops."),
+    performance_extra_rule!(
+        "crc32_checksum_in_loop",
+        "`crc32.Checksum...` inside loops."
+    ),
+    performance_extra_rule!(
+        "crc64_checksum_in_loop",
+        "`crc64.Checksum(...)` inside loops."
+    ),
+    performance_extra_rule!(
+        "adler32_checksum_in_loop",
+        "`adler32.Checksum(...)` inside loops."
+    ),
     performance_extra_rule!("hmac_new_in_loop", "`hmac.New(...)` inside loops."),
-    performance_extra_rule!("strings_newreplacer_per_call", "`strings.NewReplacer(...)` recreated on request or loop paths."),
+    performance_extra_rule!(
+        "strings_newreplacer_per_call",
+        "`strings.NewReplacer(...)` recreated on request or loop paths."
+    ),
 ];

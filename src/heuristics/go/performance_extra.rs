@@ -743,7 +743,10 @@ const PLAIN_RULES: &[PlainRuleSpec] = &[
     ),
 ];
 
-pub(crate) fn extra_performance_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn extra_performance_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if file.is_test_file || function.is_test_function {
         return Vec::new();
     }
@@ -764,12 +767,7 @@ pub(crate) fn extra_performance_findings(file: &ParsedFile, function: &ParsedFun
         &builder_names,
         &buffer_names,
     ));
-    findings.extend(sync_once_findings(
-        file,
-        function,
-        &lines,
-        &once_names,
-    ));
+    findings.extend(sync_once_findings(file, function, &lines, &once_names));
     findings.extend(json_valid_then_unmarshal_findings(file, function, &lines));
     findings
 }
@@ -790,7 +788,12 @@ fn alias_rule_findings(
                 .iter()
                 .find(|line| {
                     scope_matches(spec.scope, line, request_path)
-                        && alias_patterns_match(line.text.as_str(), &alias, spec.required, spec.excluded)
+                        && alias_patterns_match(
+                            line.text.as_str(),
+                            &alias,
+                            spec.required,
+                            spec.excluded,
+                        )
                 })
                 .map(|line| line.line);
 
@@ -800,7 +803,13 @@ fn alias_rule_findings(
         }
 
         if let Some(line) = matched_line {
-            findings.push(performance_finding(file, function, spec.id, line, spec.summary));
+            findings.push(performance_finding(
+                file,
+                function,
+                spec.id,
+                line,
+                spec.summary,
+            ));
         }
     }
 
@@ -816,7 +825,8 @@ fn plain_rule_findings(
     PLAIN_RULES
         .iter()
         .filter_map(|spec| {
-            lines.iter()
+            lines
+                .iter()
                 .find(|line| {
                     scope_matches(spec.scope, line, request_path)
                         && plain_patterns_match(line.text.as_str(), spec.required, spec.excluded)
@@ -923,7 +933,10 @@ fn builder_buffer_findings(
                         "`fmt.Fprintln(&buf, ...)` instead of direct buffer writes.",
                     ));
                 }
-                if line.text.contains(&format!("{alias}.Fprintf(&{name}, \"%s\"")) {
+                if line
+                    .text
+                    .contains(&format!("{alias}.Fprintf(&{name}, \"%s\""))
+                {
                     findings.push(performance_finding(
                         file,
                         function,
@@ -965,7 +978,10 @@ fn builder_buffer_findings(
                         "`fmt.Fprintln(&builder, ...)` instead of direct builder writes.",
                     ));
                 }
-                if line.text.contains(&format!("{alias}.Fprintf(&{name}, \"%s\"")) {
+                if line
+                    .text
+                    .contains(&format!("{alias}.Fprintf(&{name}, \"%s\""))
+                {
                     findings.push(performance_finding(
                         file,
                         function,
@@ -994,7 +1010,8 @@ fn sync_once_findings(
         return Vec::new();
     }
 
-    lines.iter()
+    lines
+        .iter()
         .find_map(|line| {
             line.text.contains(".Do(").then(|| {
                 performance_finding(
@@ -1137,7 +1154,8 @@ fn collect_buffer_names(file: &ParsedFile, lines: &[BodyLine]) -> BTreeSet<Strin
             {
                 names.insert(name);
             }
-            if let Some(name) = binding_name_for_assignment(line.text.as_str(), &new_buffer_marker) {
+            if let Some(name) = binding_name_for_assignment(line.text.as_str(), &new_buffer_marker)
+            {
                 names.insert(name);
             }
             if let Some(name) =

@@ -4,10 +4,9 @@ use crate::model::Finding;
 
 use super::comments::comment_findings;
 use super::go::{
-    alloc_findings, busy_findings, cancel_findings, concat_findings, coordination_findings,
-    cache_context_file_findings, cache_method_findings, ctx_findings, db_findings,
-    deeper_goroutine_lifetime_findings, error_findings, fmt_findings,
-    extra_performance_findings,
+    alloc_findings, busy_findings, cache_context_file_findings, cache_method_findings,
+    cancel_findings, concat_findings, coordination_findings, ctx_findings, db_findings,
+    deeper_goroutine_lifetime_findings, error_findings, extra_performance_findings, fmt_findings,
     go_architecture_file_findings, go_architecture_repo_findings, go_file_findings,
     go_framework_patterns_file_findings, go_library_misuse_file_findings, go_repo_findings,
     import_grouping_findings, json_findings, load_findings, mutex_findings, n_squared_findings,
