@@ -593,6 +593,80 @@ fn raw_db_error_response_line(lines: &[super::framework_patterns::BodyLine]) -> 
         .map(|line| line.line)
 }
 
+fn client_input_500_line(
+    function: &ParsedFunction,
+    lines: &[super::framework_patterns::BodyLine],
+) -> Option<usize> {
+    let mut candidate_lines = function
+        .go_evidence()
+        .parse_input_calls
+        .iter()
+        .map(|call| call.line)
+        .collect::<Vec<_>>();
+
+    candidate_lines.extend(
+        function
+            .go_evidence()
+            .gin_calls
+            .iter()
+            .filter(|call| {
+                matches!(
+                    call.operation.as_str(),
+                    "bind"
+                        | "should_bind"
+                        | "bind_json"
+                        | "should_bind_json"
+                        | "bind_query"
+                        | "should_bind_query"
+                        | "bind_uri"
+                        | "should_bind_uri"
+                )
+            })
+            .map(|call| call.line),
+    );
+
+    candidate_lines.extend(lines.iter().filter_map(|line| {
+        let text = line.text.as_str();
+        let parse_like = text.contains("strconv.Atoi(")
+            || text.contains("strconv.Parse")
+            || text.contains("time.Parse(")
+            || text.contains("time.ParseDuration(")
+            || text.contains("uuid.Parse(")
+            || text.contains(".Decode(&")
+            || text.contains(".Decode(")
+            || text.contains("json.Unmarshal(");
+        parse_like.then_some(line.line)
+    }));
+
+    candidate_lines.sort_unstable();
+    candidate_lines.dedup();
+
+    for candidate_line in candidate_lines {
+        if let Some(status_line) = lines
+            .iter()
+            .find(|line| {
+                line.line >= candidate_line
+                    && line.line <= candidate_line + 6
+                    && internal_server_status_line(line.text.as_str())
+            })
+            .map(|line| line.line)
+        {
+            return Some(status_line);
+        }
+    }
+
+    None
+}
+
+fn internal_server_status_line(text: &str) -> bool {
+    text.contains("StatusInternalServerError")
+        || text.contains(".AbortWithStatus(500")
+        || text.contains(".AbortWithStatusJSON(500")
+        || text.contains(".JSON(500")
+        || text.contains(".Status(500")
+        || text.contains("http.Error(") && text.contains(", 500")
+}
+
 fn success_payload_with_error_line(lines: &[super::framework_patterns::BodyLine]) -> Option<usize> {
     lines
         .iter()

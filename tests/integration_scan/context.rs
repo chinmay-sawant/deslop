@@ -1,4 +1,4 @@
-use super::FixtureWorkspace;
+use super::{FixtureWorkspace, assert_rules_absent, assert_rules_present};
 
 #[test]
 fn test_missing_ctx_http() {
@@ -237,6 +237,78 @@ fn test_context_nested_wrapper_slop() {
             && finding.function_name.as_deref() == Some("Fetch")
             && finding.message.contains("wrapper chain")
     }));
+}
+
+#[test]
+fn test_request_handler_background_context_slop() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "handler.go",
+        go_fixture!("context_request_handler_background_slop.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(&report, &["context_background_used"]);
+}
+
+#[test]
+fn test_request_handler_background_context_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "handler.go",
+        go_fixture!("context_request_handler_background_clean.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(&report, &["context_background_used"]);
+}
+
+#[test]
+fn test_cache_interface_missing_context() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/cache/patient_cache.go",
+        go_fixture!("context_cache_interface_positive.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(&report, &["cache_interface_method_missing_context"]);
+}
+
+#[test]
+fn test_cache_interface_missing_context_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/cache/patient_cache.go",
+        go_fixture!("context_cache_interface_clean.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(&report, &["cache_interface_method_missing_context"]);
+}
+
+#[test]
+fn test_cache_method_uses_context_background() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/cache/patient_cache.go",
+        go_fixture!("context_cache_background_positive.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(&report, &["cache_method_uses_context_background"]);
+}
+
+#[test]
+fn test_cache_method_uses_context_background_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/cache/patient_cache.go",
+        go_fixture!("context_cache_background_clean.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(&report, &["cache_method_uses_context_background"]);
 }
 
 #[test]

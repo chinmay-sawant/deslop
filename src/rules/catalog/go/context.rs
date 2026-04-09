@@ -16,6 +16,34 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         binding_location: super::bindings::GO_CONTEXT,
     },
     RuleDefinition {
+        id: "cache_interface_method_missing_context",
+        language: RuleLanguage::Go,
+        family: "context",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Cache-oriented interfaces whose IO-style methods omit context.Context.",
+        binding_location: super::bindings::GO_CONTEXT,
+    },
+    RuleDefinition {
+        id: "cache_method_uses_context_background",
+        language: RuleLanguage::Go,
+        family: "context",
+        default_severity: RuleDefaultSeverity::Warning,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.",
+        binding_location: super::bindings::GO_CONTEXT,
+    },
+    RuleDefinition {
         id: "context_background_used",
         language: RuleLanguage::Go,
         family: "context",
@@ -26,7 +54,7 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::Ignore,
             RuleConfigurability::SeverityOverride,
         ],
-        description: "Functions that already accept context.Context but still create context.Background() or context.TODO() locally.",
+        description: "Functions or request handlers that already have a caller-owned context available but still create context.Background() or context.TODO() locally.",
         binding_location: super::bindings::GO_CONTEXT,
     },
     RuleDefinition {

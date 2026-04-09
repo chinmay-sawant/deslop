@@ -1,0 +1,14 @@
+package handler
+
+import (
+    "context"
+    "net/http"
+    "time"
+)
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+    ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+    defer cancel()
+    _ = ctx
+    w.WriteHeader(http.StatusAccepted)
+}

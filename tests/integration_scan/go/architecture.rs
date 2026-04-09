@@ -590,3 +590,33 @@ fn test_service_write_passthrough_without_domain_validation_clean() {
         &["service_write_passthrough_without_domain_validation"],
     );
 }
+
+#[test]
+fn test_client_input_error_mapped_to_internal_server_error() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/handler/user_handler.go",
+        go_fixture!("architecture/positive_client_input_500.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &["client_input_error_mapped_to_internal_server_error"],
+    );
+}
+
+#[test]
+fn test_client_input_error_mapped_to_internal_server_error_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/handler/user_handler.go",
+        go_fixture!("architecture/clean_client_input_500.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &["client_input_error_mapped_to_internal_server_error"],
+    );
+}

@@ -32,13 +32,13 @@ src/analysis/python/parser/hotpath_ext.rs:243:                let key = after[..
 src/analysis/rust/parser/evidence.rs:204:    text[vec_start + 4..].contains("Box<")
 src/heuristics/go/architecture/helpers_core.rs:156:    signature[close_idx + 1..].trim()
 src/heuristics/go/architecture/helpers_core.rs:163:    &signature[open_idx + 1..close_idx]
+src/heuristics/go/architecture/helpers_patterns.rs:1020:    let rest = &text[start..];
+src/heuristics/go/architecture/helpers_patterns.rs:1022:    let name = &rest[..end];
 src/heuristics/go/architecture/helpers_patterns.rs:139:    let rest = &text[start + 1..];
 src/heuristics/go/architecture/helpers_patterns.rs:141:    Some(rest[..end].to_string())
-src/heuristics/go/architecture/helpers_patterns.rs:864:    let rest = &line[idx + marker.len()..];
-src/heuristics/go/architecture/helpers_patterns.rs:866:    let rest = &rest[first_quote + 1..];
-src/heuristics/go/architecture/helpers_patterns.rs:868:    Some(rest[..end_quote].to_string())
-src/heuristics/go/architecture/helpers_patterns.rs:946:    let rest = &text[start..];
-src/heuristics/go/architecture/helpers_patterns.rs:948:    let name = &rest[..end];
+src/heuristics/go/architecture/helpers_patterns.rs:938:    let rest = &line[idx + marker.len()..];
+src/heuristics/go/architecture/helpers_patterns.rs:940:    let rest = &rest[first_quote + 1..];
+src/heuristics/go/architecture/helpers_patterns.rs:942:    Some(rest[..end_quote].to_string())
 src/heuristics/go/framework_patterns/data_access/sql.rs:554:                let after_like = &upper[like_pos + 4..];
 src/heuristics/go/framework_patterns/gin.rs:241:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
 src/heuristics/go/framework_patterns/gin/gin_helpers.rs:233:        text = text[1..text.len() - 1].trim();
@@ -55,6 +55,10 @@ src/heuristics/go/library_misuse/performance/collections.rs:179:        let Some
 src/heuristics/go/library_misuse/performance/collections.rs:183:        let key_expr = bl.text[start + 1..end].trim();
 src/heuristics/go/library_misuse/performance/collections.rs:184:        let map_expr = bl.text[..start]
 src/heuristics/go/performance.rs:340:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/go/performance_extra.rs:1228:    let rest = &text[start + 1..];
+src/heuristics/go/performance_extra.rs:1232:    rest[..end].len() == 1
+src/heuristics/go/performance_extra.rs:1239:    let rest = &text[start + 1..];
+src/heuristics/go/performance_extra.rs:1243:    rest[..end].len() == 1
 src/heuristics/python/framework/django.rs:224:            let rhs = &trimmed[eq_idx + 3..];
 src/heuristics/python/framework/django.rs:226:                let var = trimmed[..eq_idx].trim().to_string();
 src/heuristics/python/hotpath_ext.rs:418:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`

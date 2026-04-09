@@ -6,12 +6,78 @@ use crate::model::{Finding, Severity};
 pub(crate) const BINDING_LOCATION: &str = file!();
 
 use super::super::common::import_alias_lookup;
+use super::framework_patterns::{is_gin_handler, is_http_handler};
 
 const CONTEXT_FACTORY_ESCAPES: &[&str] = &["Background", "TODO"];
 const HTTP_CONTEXTLESS_CALLS: &[&str] = &["Get", "Head", "Post", "PostForm", "NewRequest"];
 const EXEC_CONTEXTLESS_CALLS: &[&str] = &["Command"];
 const NET_CONTEXTLESS_CALLS: &[&str] = &["Dial", "DialTimeout"];
 const DB_CONTEXTLESS_CALLS: &[&str] = &["Query", "QueryRow", "Exec", "Get", "Select"];
+const CACHE_METHOD_HINTS: &[&str] = &[
+    "Get",
+    "Set",
+    "Delete",
+    "Del",
+    "Load",
+    "Store",
+    "Fetch",
+    "Remember",
+    "Put",
+    "Invalidate",
+    "Evict",
+];
+const CACHE_IMPORT_HINTS: &[&str] = &[
+    "github.com/redis/go-redis",
+    "github.com/go-redis/redis",
+    "github.com/bradfitz/gomemcache",
+    "github.com/allegro/bigcache",
+    "github.com/dgraph-io/ristretto",
+];
+
+pub(crate) fn cache_context_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file
+        || !file_looks_cache_related(file)
+        || file.imports.iter().any(|import| import.path == "context")
+    {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    for interface in file.interfaces() {
+        if !interface_looks_cache_related(file, &interface.name) {
+            continue;
+        }
+
+        for method in &interface.methods {
+            if !cache_method_signature_without_context(method) {
+                continue;
+            }
+
+            findings.push(Finding {
+                rule_id: "cache_interface_method_missing_context".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: interface.line,
+                end_line: interface.line,
+                message: format!(
+                    "cache-oriented interface {} exposes IO-style methods without context.Context",
+                    interface.name
+                ),
+                evidence: vec![
+                    format!("interface {} declared at line {}", interface.name, interface.line),
+                    format!("cache-style method: {method}"),
+                    "the file does not import context, so the cache interface cannot expose context-aware methods"
+                        .to_string(),
+                    "cache calls are often network-bound and benefit from request cancellation and deadlines"
+                        .to_string(),
+                ],
+            });
+        }
+    }
+
+    findings
+}
 
 pub(crate) fn ctx_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     if function.go_evidence().has_context_parameter {
@@ -94,6 +160,49 @@ pub(crate) fn cancel_findings(file: &ParsedFile, function: &ParsedFunction) -> V
         .collect()
 }
 
+pub(crate) fn cache_method_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+    let import_aliases = import_alias_lookup(&file.imports);
+
+    if file.is_test_file
+        || function.is_test_function
+        || !function_looks_cache_related(file, function)
+        || !function_uses_cache_client(file, function)
+    {
+        return Vec::new();
+    }
+
+    function
+        .calls
+        .iter()
+        .filter(|call| {
+            let Some(receiver) = call.receiver.as_deref() else {
+                return false;
+            };
+            import_aliases.get(receiver).is_some_and(|import_path| {
+                import_path == "context"
+                    && CONTEXT_FACTORY_ESCAPES.contains(&call.name.as_str())
+            })
+        })
+        .map(|call| Finding {
+            rule_id: "cache_method_uses_context_background".to_string(),
+            severity: Severity::Warning,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: call.line,
+            end_line: call.line,
+            message: format!(
+                "cache-oriented method {} creates a fresh background context instead of accepting or propagating one",
+                function.fingerprint.name
+            ),
+            evidence: vec![
+                format!("context.{} observed at line {}", call.name, call.line),
+                "cache clients often issue network IO and should honor caller cancellation"
+                    .to_string(),
+            ],
+        })
+        .collect()
+}
+
 pub(crate) fn sleep_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     function
         .go_evidence()
@@ -146,7 +255,7 @@ pub(crate) fn propagate_findings(
     function: &ParsedFunction,
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
-    if !function.go_evidence().has_context_parameter
+    if !function_has_available_context(file, function)
         || file.is_test_file
         || has_documented_context_decoupling(function)
     {
@@ -174,11 +283,15 @@ pub(crate) fn propagate_findings(
                 start_line: call.line,
                 end_line: call.line,
                 message: format!(
-                    "function {} accepts context.Context but creates context.{}() locally",
+                    "function {} has a caller-owned context available but still creates context.{}() locally",
                     function.fingerprint.name, call.name
                 ),
                 evidence: vec![
-                    "function signature already accepts context.Context".to_string(),
+                    if function.go_evidence().has_context_parameter {
+                        "function signature already accepts context.Context".to_string()
+                    } else {
+                        "request handler already has a request-scoped context available".to_string()
+                    },
                     format!("observed call: {receiver}.{}()", call.name),
                     "prefer propagating the incoming context instead of starting from Background or TODO"
                         .to_string(),
@@ -302,6 +415,80 @@ pub(crate) fn propagate_findings(
     }
 
     findings
+}
+
+fn function_has_available_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    function.go_evidence().has_context_parameter
+        || is_http_handler(file, function)
+        || is_gin_handler(file, function)
+}
+
+fn file_looks_cache_related(file: &ParsedFile) -> bool {
+    let lower_path = file.path.to_string_lossy().to_ascii_lowercase();
+    let package = file
+        .package_name
+        .as_deref()
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+
+    lower_path.contains("/cache/")
+        || lower_path.contains("_cache.")
+        || lower_path.ends_with("/cache.go")
+        || package.contains("cache")
+        || file
+            .imports
+            .iter()
+            .any(|import| CACHE_IMPORT_HINTS.iter().any(|hint| import.path.contains(hint)))
+}
+
+fn interface_looks_cache_related(file: &ParsedFile, interface_name: &str) -> bool {
+    file_looks_cache_related(file) || interface_name.to_ascii_lowercase().contains("cache")
+}
+
+fn cache_method_signature_without_context(signature: &str) -> bool {
+    let trimmed = signature.trim();
+    CACHE_METHOD_HINTS
+        .iter()
+        .any(|prefix| trimmed.starts_with(prefix))
+}
+
+fn function_looks_cache_related(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    let receiver = function
+        .fingerprint
+        .receiver_type
+        .as_deref()
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    let name = function.fingerprint.name.to_ascii_lowercase();
+
+    file_looks_cache_related(file)
+        || receiver.contains("cache")
+        || name.contains("cache")
+        || CACHE_METHOD_HINTS
+            .iter()
+            .any(|hint| function.fingerprint.name.starts_with(hint))
+}
+
+fn function_uses_cache_client(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    let lower_body = function.body_text.to_ascii_lowercase();
+    file.imports.iter().any(|import| {
+        CACHE_IMPORT_HINTS
+            .iter()
+            .any(|hint| import.path.contains(hint))
+    }) || [
+        ".get(",
+        ".set(",
+        ".del(",
+        ".delete(",
+        ".load(",
+        ".store(",
+        ".fetch(",
+        ".remember(",
+        ".invalidate(",
+        ".evict(",
+    ]
+    .iter()
+    .any(|marker| lower_body.contains(marker))
 }
 
 fn is_contextless_wrapper_call(import_path: &str, call_name: &str) -> bool {

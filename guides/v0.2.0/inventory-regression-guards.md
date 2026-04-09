@@ -7,6 +7,10 @@ They should only change when the underlying inventories change on purpose.
 
 The source rule-id guard lives in `src/rules.rs` as `EXPECTED_SOURCE_RULE_ID_COUNT`.
 
+Current intentional source rule-id count:
+
+- `455`
+
 When it fails:
 1. Review the diff under `src/` and confirm that rule-id additions or removals are intentional.
 2. Re-run `cargo test --quiet` to make sure the failure is only the expected inventory delta.
@@ -19,7 +23,7 @@ The grouped registry-count guard lives in `src/rules.rs` as `EXPECTED_RULE_COUNT
 Current intentional grouped counts:
 
 - `common`: 11
-- `go`: 530
+- `go`: 633
 - `python`: 212
 - `rust`: 100
 

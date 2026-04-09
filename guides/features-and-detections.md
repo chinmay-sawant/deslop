@@ -32,12 +32,12 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **853 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **956 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 528 | 2 | 0 | 530 |
+| go | 631 | 2 | 0 | 633 |
 | python | 212 | 0 | 0 | 212 |
 | rust | 88 | 12 | 0 | 100 |
 
@@ -67,9 +67,9 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `placeholder_test_body`: Tests that look skipped, TODO-shaped, or otherwise placeholder-like.
 - `test_without_assertion_signal`: Tests that exercise production code without an obvious assertion or failure signal.
 
-### Go rules (530)
+### Go rules (633)
 
-#### Architecture (216)
+#### Architecture (217)
 - `admin_or_debug_endpoint_registration_mixed_into_public_router_setup`: Operational endpoints registered alongside public routes with no clear boundary.
 - `api_error_type_outside_transport_package`: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
 - `api_examples_embedded_in_handlers_instead_of_transport_docs_helpers`: Long example payload blocks hardcoded in handlers rather than doc or example helpers.
@@ -83,6 +83,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `bootstrap_builds_clients_inside_route_registration`: Startup code that hides dependency construction inside route registration functions.
 - `business_validation_mixed_with_persistence_calls_in_handler`: Handlers that start querying or writing before finishing request validation.
 - `cache_invalidation_before_transaction_commit`: Cache mutation or eviction that happens before a write transaction commits.
+- `client_input_error_mapped_to_internal_server_error`: Request parsing or binding errors that are translated into `500` responses instead of client-error status codes.
 - `cmd_or_main_contains_domain_rules`: `main` or `cmd` packages that contain business-rule branches instead of wiring and startup concerns.
 - `column_name_literals_duplicated_outside_repository`: Repeated column-name strings outside repository or query packages.
 - `commit_or_rollback_split_across_functions_without_owner`: Transaction end-state logic spread across helper functions with unclear ownership.
@@ -300,9 +301,11 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `malformed_struct_tag`: Struct field tags that do not parse as valid Go tag key/value pairs.
 - `mixed_receiver_kinds`: Methods on the same receiver type mix pointer and value receivers.
 
-#### Context (6)
+#### Context (8)
 - `busy_waiting`: select { default: ... } inside loops, which often spins instead of blocking.
-- `context_background_used`: Functions that already accept context.Context but still create context.Background() or context.TODO() locally.
+- `cache_interface_method_missing_context`: Cache-oriented interfaces whose IO-style methods omit context.Context.
+- `cache_method_uses_context_background`: Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.
+- `context_background_used`: Functions or request handlers that already have a caller-owned context available but still create context.Background() or context.TODO() locally.
 - `missing_cancel_call`: Derived contexts where deslop cannot find a local cancel() or defer cancel() call.
 - `missing_context`: Standard-library context-aware calls from functions that do not accept context.Context.
 - `missing_context_propagation`: Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.
@@ -504,26 +507,82 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `xml_unmarshal_same_payload_multiple_times`: The same local XML payload binding is unmarshaled into multiple targets in one function.
 - `yaml_unmarshal_same_payload_multiple_times`: The same local YAML payload binding is unmarshaled into multiple targets in one function.
 
-#### Performance (61)
+#### Performance (161)
+- `adler32_checksum_in_loop`: `adler32.Checksum(...)` inside loops.
 - `allocation_churn_in_loop`: Obvious make, new, or buffer-construction calls inside loops.
+- `base64_decode_string_in_loop`: Base64 decode from string inside loops.
+- `base64_encode_to_string_in_loop`: Base64 encoding to string inside loops.
 - `binary_read_for_single_field`: `binary.Read(r, order, &singleField)` for reading a single integer
+- `buffer_write_rune_ascii_literal`: `bytes.Buffer.WriteRune('x')` for ASCII literals instead of `WriteByte`.
+- `buffer_write_string_single_byte_literal`: `bytes.Buffer.WriteString("x")` for single-byte literals instead of `WriteByte`.
 - `bufio_scanner_small_buffer_for_large_lines`: `bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB
+- `builder_write_rune_ascii_literal`: `strings.Builder.WriteRune('x')` for ASCII literals instead of `WriteByte`.
+- `builder_write_string_single_byte_literal`: `strings.Builder.WriteString("x")` for single-byte literals instead of `WriteByte`.
+- `bytes_buffer_string_len`: `len(buf.String())` instead of `buf.Len()`.
+- `bytes_buffer_truncate_zero_reset`: `buf.Truncate(0)` instead of `buf.Reset()`.
+- `bytes_compare_equal_zero`: `bytes.Compare(...) == 0` instead of `bytes.Equal(...)`.
+- `bytes_compare_not_equal_zero`: `bytes.Compare(...) != 0` instead of `!bytes.Equal(...)`.
+- `bytes_count_gt_zero_contains`: `bytes.Count(...) > 0` instead of `bytes.Contains(...)`.
+- `bytes_hasprefix_manual_slice_after_len`: Manual `len` and slice prefix checks instead of `bytes.HasPrefix(...)`.
+- `bytes_hassuffix_manual_slice_after_len`: Manual `len` and slice suffix checks instead of `bytes.HasSuffix(...)`.
+- `bytes_index_any_not_minus_one_contains_any`: `bytes.IndexAny(...) != -1` presence checks instead of `bytes.ContainsAny(...)`.
+- `bytes_index_not_minus_one_contains`: `bytes.Index(...) != -1` presence checks instead of `bytes.Contains(...)`.
+- `bytes_newbufferstring_on_string_conversion`: `bytes.NewBufferString(string(b))` instead of using the byte slice directly.
+- `bytes_newreader_on_string_conversion`: `bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`.
+- `bytes_replace_neg_one_replaceall`: `bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`.
+- `bytes_split_two_index_one_cut`: `bytes.Split(...)[1]` when only the second segment is needed.
+- `bytes_split_two_index_zero_cut`: `bytes.Split(...)[0]` when only the first segment is needed.
+- `bytes_splitafter_two_index_one_cut`: `bytes.SplitAfter(...)[1]` when only the second segment is needed.
+- `bytes_splitafter_two_index_zero_cut`: `bytes.SplitAfter(...)[0]` when only the first segment is needed.
+- `bytes_splitaftern_two_index_one_cut`: `bytes.SplitAfterN(..., 2)[1]` instead of a two-part `bytes.Cut(...)` flow.
+- `bytes_splitaftern_two_index_zero_cut`: `bytes.SplitAfterN(..., 2)[0]` instead of a two-part `bytes.Cut(...)` flow.
+- `bytes_splitn_two_index_one_cut`: `bytes.SplitN(..., 2)[1]` instead of `bytes.Cut(...)`.
+- `bytes_splitn_two_index_zero_cut`: `bytes.SplitN(..., 2)[0]` instead of `bytes.Cut(...)`.
+- `bytes_tolower_equalfold`: `bytes.Equal(bytes.ToLower(...), bytes.ToLower(...))` instead of `bytes.EqualFold(...)`.
+- `bytes_toupper_equalfold`: `bytes.Equal(bytes.ToUpper(...), bytes.ToUpper(...))` instead of `bytes.EqualFold(...)`.
+- `bytes_trimleft_space_trimspace`: `bytes.TrimLeft(..., whitespace)` instead of `bytes.TrimSpace(...)`.
+- `bytes_trimright_space_trimspace`: `bytes.TrimRight(..., whitespace)` instead of `bytes.TrimSpace(...)`.
 - `clear_map_go121`: `for k := range m { delete(m, k) }` in Go 1.21+ codebases
+- `context_withtimeout_inside_loop`: `context.WithTimeout(...)` inside loops.
 - `copy_append_idiom_waste`: `dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known
+- `crc32_checksum_in_loop`: `crc32.Checksum...` inside loops.
+- `crc64_checksum_in_loop`: `crc64.Checksum(...)` inside loops.
 - `csv_reader_reuse_record`: `csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored
 - `defer_in_tight_loop`: `defer` statements inside loops with > 100 iterations or visible hot-path markers
+- `duration_nanoseconds_zero_check`: Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`.
 - `empty_interface_parameter_overuse`: exported functions with `any` or `interface{}` parameters when concrete types would suffice
 - `error_string_comparison`: `if err.Error() == "some error"` string comparison for error checking
 - `errors_new_for_static_sentinel`: `errors.New("some error")` called repeatedly in hot paths instead of a package-level sentinel
+- `filepath_split_base_only`: `filepath.Split(...)` when only the base name is used.
+- `filepath_split_dir_only`: `filepath.Split(...)` when only the directory is used.
 - `fmt_errorf_without_wrap_verb`: `fmt.Errorf("context: %v", err)` instead of `%w`
+- `fmt_fprint_to_bytes_buffer`: `fmt.Fprint(&buf, ...)` instead of direct buffer writes.
+- `fmt_fprint_to_strings_builder`: `fmt.Fprint(&builder, ...)` instead of direct builder writes.
+- `fmt_fprintf_single_string_to_bytes_buffer`: `fmt.Fprintf(&buf, "%s", s)` instead of `WriteString(s)`.
+- `fmt_fprintf_single_string_to_strings_builder`: `fmt.Fprintf(&builder, "%s", s)` instead of `WriteString(s)`.
+- `fmt_fprintln_to_bytes_buffer`: `fmt.Fprintln(&buf, ...)` instead of direct buffer writes.
+- `fmt_fprintln_to_strings_builder`: `fmt.Fprintln(&builder, ...)` instead of direct builder writes.
 - `fmt_hot_path`: fmt formatting calls such as Sprintf inside loops.
+- `fmt_sprintf_binary_to_string`: `fmt.Sprintf("%b", ...)` instead of direct `strconv` integer formatting.
+- `fmt_sprintf_bool_to_string`: `fmt.Sprintf("%t", ...)` instead of `strconv.FormatBool(...)`.
+- `fmt_sprintf_float_to_string`: `fmt.Sprintf("%f", ...)` instead of `strconv.FormatFloat(...)` when only a float string is needed.
+- `fmt_sprintf_hex_to_string`: `fmt.Sprintf("%x", ...)` instead of a direct hex formatter when only the string is needed.
+- `fmt_sprintf_octal_to_string`: `fmt.Sprintf("%o", ...)` instead of direct `strconv` integer formatting.
+- `fmt_sprintf_quote_to_string`: `fmt.Sprintf("%q", s)` instead of `strconv.Quote(s)`.
+- `fmt_sprintf_single_string_passthrough`: `fmt.Sprintf("%s", s)` instead of returning or writing the string directly.
 - `full_dataset_load`: Calls that load an entire payload into memory instead of streaming.
 - `goroutine_for_sync_work`: `go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited
+- `hex_decode_string_in_loop`: `hex.DecodeString(...)` inside loops.
+- `hex_encode_to_string_in_loop`: `hex.EncodeToString(...)` inside loops.
+- `hmac_new_in_loop`: `hmac.New(...)` inside loops.
 - `http_body_readall_without_limitreader`: `io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`
 - `interface_slice_allocation`: `[]interface{}` or `[]any` used to pass homogeneous typed data
 - `ioutil_readall_still_used`: `ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+)
+- `json_indent_in_loop`: `json.Indent(...)` inside loops.
 - `json_marshal_then_write`: `data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly
+- `json_marshalindent_in_loop`: `json.MarshalIndent(...)` inside loops.
 - `json_number_vs_float64_decode`: `json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`
+- `json_valid_then_unmarshal`: Code that validates JSON and then unmarshals the same payload again.
 - `len_string_for_empty_check`: `len(s) == 0` used interchangeably with `s == ""`
 - `likely_n_squared_allocation`: Opt-in deeper semantic signal for allocations that also sit inside nested loop structure. *(status: experimental)*
 - `likely_n_squared_string_concat`: Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage. *(status: experimental)*
@@ -531,33 +590,76 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `map_delete_in_loop_vs_new_map`: `for k := range m { delete(m, k) }` patterns
 - `map_lookup_double_access`: `if _, ok := m[k]; ok { v := m[k] }` — two map lookups for the same key
 - `map_of_slices_prealloc`: `m[k] = append(m[k], v)` in loops without pre-allocating inner slices
+- `md5_sum_in_loop`: `md5.Sum(...)` inside loops.
 - `mutex_value_receiver`: `func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field
 - `n_plus_one_query`: Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear.
 - `panic_for_expected_errors`: `panic()` used for expected error conditions like invalid input or missing config
+- `path_split_base_only`: `path.Split(...)` when only the base name is used.
+- `path_split_dir_only`: `path.Split(...)` when only the directory is used.
+- `rand_new_per_call`: `rand.New(...)` inside regular call paths instead of reusing a generator.
+- `rand_newsource_per_call`: `rand.NewSource(...)` inside regular call paths.
+- `rand_newsource_with_time_now_per_call`: `rand.NewSource(...)` seeded from wall clock on each call path.
+- `rand_seed_per_call`: `rand.Seed(...)` inside regular call paths instead of process startup.
 - `range_copy_large_struct`: `for _, v := range largeStructSlice` where the struct is > 64 bytes
 - `range_over_string_by_index`: `for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes
 - `reflection_hot_path`: reflect package calls inside loops.
 - `repeated_json_marshaling`: encoding/json.Marshal or MarshalIndent inside loops — repeated allocation and serialization hot spots.
 - `repeated_string_trim_normalize`: chains like `strings.TrimSpace(strings.ToLower(strings.TrimPrefix(s, ...)))` that scan the string multiple times
+- `runtime_gomaxprocs_per_request`: `runtime.GOMAXPROCS(...)` on request paths.
+- `runtime_numcpu_inside_loop`: `runtime.NumCPU()` inside loops instead of caching once.
 - `select_with_single_case`: `select { case v := <-ch: ... }` with only one case and no default
+- `sha1_sum_in_loop`: `sha1.Sum(...)` inside loops.
+- `sha256_sum_in_loop`: `sha256.Sum256(...)` inside loops.
+- `sha512_sum_in_loop`: `sha512.Sum512(...)` inside loops.
 - `slice_grow_without_cap_hint`: `var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source
 - `sort_slice_vs_sort_sort`: `sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types
 - `sprintf_for_simple_int_to_string`: `fmt.Sprintf("%d", n)` where `n` is clearly an integer type
 - `sprintf_for_simple_string_format`: `fmt.Sprintf("%s:%s", a, b)` where only `%s` verbs are used
+- `strconv_formatint_int64_cast_itoa`: `strconv.FormatInt(int64(v), 10)` instead of `strconv.Itoa(v)`.
 - `string_builder_write_string_vs_plus`: `builder.WriteString(a + b)` where `a` and `b` are separate bindings
 - `string_concat_in_loop`: Repeated string concatenation inside loops (O(n^2) risk).
 - `string_concatenation_for_path_join`: `dir + "/" + file` or manual path assembly via `+` concatenation
 - `string_format_for_error_wrap`: `fmt.Errorf("failed: %s", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`
 - `string_to_byte_for_single_char_check`: `[]byte(s)[0]` or `string(b) == "x"` for single-character comparisons
+- `strings_builder_string_len`: `len(builder.String())` instead of `builder.Len()`.
+- `strings_compare_equal_zero`: `strings.Compare(...) == 0` instead of direct string equality.
+- `strings_compare_not_equal_zero`: `strings.Compare(...) != 0` instead of direct string inequality.
 - `strings_contains_vs_index`: `strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns
+- `strings_count_gt_zero_contains`: `strings.Count(...) > 0` instead of `strings.Contains(...)`.
+- `strings_hasprefix_manual_slice_after_len`: Manual `len` and slice prefix checks instead of `strings.HasPrefix(...)`.
 - `strings_hasprefix_then_trimprefix`: `if strings.HasPrefix(s, p) { s = strings.TrimPrefix(s, p) }`
+- `strings_hassuffix_manual_slice_after_len`: Manual `len` and slice suffix checks instead of `strings.HasSuffix(...)`.
 - `strings_hassuffix_then_trimsuffix`: `if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`
+- `strings_index_any_not_minus_one_contains_any`: `strings.IndexAny(...) != -1` presence checks instead of `strings.ContainsAny(...)`.
+- `strings_newreader_on_byte_slice_conversion`: `strings.NewReader(string(b))` instead of `bytes.NewReader(b)`.
+- `strings_newreplacer_per_call`: `strings.NewReplacer(...)` recreated on request or loop paths.
 - `strings_replace_all_for_single_char`: `strings.ReplaceAll(s, "x", "y")` where both old and new are single characters
+- `strings_replace_neg_one_replaceall`: `strings.Replace(..., -1)` instead of `strings.ReplaceAll(...)`.
+- `strings_split_two_index_one_cut`: `strings.Split(...)[1]` when only the second segment is needed.
+- `strings_split_two_index_zero_cut`: `strings.Split(...)[0]` when only the first segment is needed.
+- `strings_splitafter_two_index_one_cut`: `strings.SplitAfter(...)[1]` when only the second segment is needed.
+- `strings_splitafter_two_index_zero_cut`: `strings.SplitAfter(...)[0]` when only the first segment is needed.
+- `strings_splitaftern_two_index_one_cut`: `strings.SplitAfterN(..., 2)[1]` instead of a two-part `strings.Cut(...)` flow.
+- `strings_splitaftern_two_index_zero_cut`: `strings.SplitAfterN(..., 2)[0]` instead of a two-part `strings.Cut(...)` flow.
+- `strings_splitn_two_index_one_cut`: `strings.SplitN(..., 2)[1]` instead of `strings.Cut(...)`.
+- `strings_splitn_two_index_zero_cut`: `strings.SplitN(..., 2)[0]` instead of `strings.Cut(...)`.
+- `strings_tolower_equalfold`: `strings.ToLower(...) == strings.ToLower(...)` instead of `strings.EqualFold(...)`.
+- `strings_toupper_equalfold`: `strings.ToUpper(...) == strings.ToUpper(...)` instead of `strings.EqualFold(...)`.
+- `strings_trimleft_space_trimspace`: `strings.TrimLeft(..., whitespace)` instead of `strings.TrimSpace(...)`.
+- `strings_trimright_space_trimspace`: `strings.TrimRight(..., whitespace)` instead of `strings.TrimSpace(...)`.
 - `sync_mutex_for_atomic_counter`: `mu.Lock(); count++; mu.Unlock()` for simple integer counters
 - `sync_mutex_for_readonly_config`: `mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely
+- `sync_once_do_inside_loop`: `sync.Once.Do(...)` inside loops.
 - `sync_pool_ignored_for_frequent_small_allocs`: repeated `make([]byte, size)` or `new(T)` in hot paths where the object is short-lived and could be pooled
 - `three_index_slice_for_append_safety`: `sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound
+- `time_fixedzone_per_call`: `time.FixedZone(...)` inside request or loop paths instead of reusing the location.
+- `time_loadlocation_per_call`: `time.LoadLocation(...)` inside request or loop paths instead of reusing the location.
+- `time_newticker_inside_loop`: `time.NewTicker(...)` inside loops.
+- `time_newtimer_inside_loop`: `time.NewTimer(...)` inside loops.
 - `time_now_in_tight_loop`: `time.Now()` called on every iteration of a tight inner loop
+- `time_since_candidate_via_now_sub`: `time.Now().Sub(start)` instead of `time.Since(start)`.
+- `time_tick_per_call`: `time.Tick(...)` on regular call paths instead of owning a reusable ticker.
+- `time_until_candidate_via_deadline_sub_now`: `deadline.Sub(time.Now())` instead of `time.Until(deadline)`.
 - `type_assertion_without_comma_ok`: `v := i.(T)` without the comma-ok form in non-panic-safe code
 - `type_switch_vs_repeated_assertions`: multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns
 - `unbuffered_channel_for_known_producer_count`: unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time
@@ -565,6 +667,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `unnecessary_slice_copy_for_readonly`: `copy := append([]T(nil), original...)` when `copy` is only read, never mutated
 - `waitgroup_add_inside_loop`: `for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count
 - `wide_select_query`: Literal SELECT * query shapes.
+- `writer_write_byte_slice_of_string`: `writer.Write([]byte(s))` instead of `io.WriteString(writer, s)`.
 - `xml_decoder_without_strict`: `xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML
 
 #### Security (54)

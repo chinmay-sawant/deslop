@@ -86,6 +86,11 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "Cache mutation or eviction that happens before a write transaction commits."
     ),
     architecture_rule!(
+        "client_input_error_mapped_to_internal_server_error",
+        Warning,
+        "Request parsing or binding errors that are translated into `500` responses instead of client-error status codes."
+    ),
+    architecture_rule!(
         "cmd_or_main_contains_domain_rules",
         Info,
         "`main` or `cmd` packages that contain business-rule branches instead of wiring and startup concerns."

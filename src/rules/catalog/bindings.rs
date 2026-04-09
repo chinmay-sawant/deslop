@@ -23,6 +23,8 @@ pub(crate) const GO_LIBRARY_SECURITY: &str =
     crate::heuristics::go::LIBRARY_MISUSE_SECURITY_BINDING_LOCATION;
 pub(crate) const GO_MOD: &str = crate::heuristics::go::BINDING_LOCATION;
 pub(crate) const GO_PERFORMANCE: &str = crate::heuristics::go::PERFORMANCE_BINDING_LOCATION;
+pub(crate) const GO_PERFORMANCE_EXTRA: &str =
+    crate::heuristics::go::PERFORMANCE_EXTRA_BINDING_LOCATION;
 pub(crate) const GO_STYLE: &str = crate::heuristics::go::STYLE_BINDING_LOCATION;
 
 pub(crate) const PYTHON_AI_SMELLS: &str = crate::heuristics::python::AI_SMELLS_BINDING_LOCATION;

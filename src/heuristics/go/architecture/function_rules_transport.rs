@@ -501,6 +501,20 @@ fn handler_function_findings(
             ));
         }
 
+        if let Some(line) = client_input_500_line(function, lines) {
+            findings.push(function_finding(
+                file,
+                function,
+                "client_input_error_mapped_to_internal_server_error",
+                Severity::Warning,
+                line,
+                "handler appears to translate client input errors into an internal-server response",
+                vec![
+                    "request parsing or binding errors usually belong to 4xx response classes rather than 500".to_string(),
+                ],
+            ));
+        }
+
         if lines.iter().any(|line| line.text.contains("\"code\"")) && !import_path_has_any_role(file, &["code", "codes"]) {
             let line = lines
                 .iter()
