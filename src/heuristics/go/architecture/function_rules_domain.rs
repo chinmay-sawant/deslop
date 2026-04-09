@@ -103,6 +103,20 @@ fn repository_function_findings(
         ));
     }
 
+    if let Some((line, evidence)) =
+        repository_single_record_write_without_rows_affected_evidence(function, lines)
+    {
+        findings.push(function_finding(
+            file,
+            function,
+            "repository_single_record_write_without_rows_affected_check",
+            Severity::Warning,
+            line,
+            "repository write path looks single-record-oriented but never inspects RowsAffected",
+            evidence,
+        ));
+    }
+
     if signature_mentions_transaction(&function.signature_text)
         && lines.iter().any(|line| line.text.contains("tx == nil"))
     {
@@ -252,6 +266,82 @@ fn repository_function_findings(
     }
 
     findings
+}
+
+fn repository_single_record_write_without_rows_affected_evidence(
+    function: &ParsedFunction,
+    lines: &[super::framework_patterns::BodyLine],
+) -> Option<(usize, Vec<String>)> {
+    if !single_record_write_name(&function.fingerprint.name)
+        || lines.iter().any(|line| line.text.contains("RowsAffected"))
+    {
+        return None;
+    }
+
+    let go = function.go_evidence();
+    if let Some(call) = go.db_query_calls.iter().find(|call| {
+        matches!(call.method_name.as_str(), "Exec" | "ExecContext")
+            && call
+                .query_text
+                .as_deref()
+                .is_some_and(sql_update_or_delete_query)
+    }) {
+        let query = call
+            .query_text
+            .as_deref()
+            .map(str::trim)
+            .unwrap_or_default()
+            .to_string();
+        return Some((
+            call.line,
+            vec![
+                format!(
+                    "single-record write-like repository method name: {}",
+                    function.fingerprint.name
+                ),
+                format!("SQL write executed at line {}: {}", call.line, query),
+                "no RowsAffected check was observed in the repository method".to_string(),
+            ],
+        ));
+    }
+
+    if let Some(chain) = go.gorm_query_chains.iter().find(|chain| {
+        matches!(chain.terminal_method.as_str(), "Delete" | "Update" | "Updates")
+    }) {
+        return Some((
+            chain.line,
+            vec![
+                format!(
+                    "single-record write-like repository method name: {}",
+                    function.fingerprint.name
+                ),
+                format!(
+                    "GORM write chain ends with {} at line {}",
+                    chain.terminal_method, chain.line
+                ),
+                "no RowsAffected check was observed in the repository method".to_string(),
+            ],
+        ));
+    }
+
+    None
+}
+
+fn single_record_write_name(name: &str) -> bool {
+    let lower = name.to_ascii_lowercase();
+    let write_signal = ["update", "delete", "remove", "archive", "deactivate", "restore"]
+        .iter()
+        .any(|needle| lower.contains(needle));
+    let bulk_signal = ["all", "many", "batch", "bulk"]
+        .iter()
+        .any(|needle| lower.contains(needle));
+
+    write_signal && !bulk_signal
+}
+
+fn sql_update_or_delete_query(query: &str) -> bool {
+    let upper = query.trim_start().to_ascii_uppercase();
+    upper.starts_with("UPDATE ") || upper.starts_with("DELETE ")
 }
 
 fn db_query_argument_erased_to_any_evidence(
@@ -827,6 +917,20 @@ fn transaction_and_misc_function_findings(
     let is_service = is_service_file(file);
     let is_repository = is_repository_file(file);
 
+    if let Some((line, evidence)) =
+        placeholder_seed_function_in_production_evidence(file, function, lines)
+    {
+        findings.push(function_finding(
+            file,
+            function,
+            "placeholder_seed_function_in_production",
+            Severity::Info,
+            line,
+            "seed entrypoint still looks like a placeholder",
+            evidence,
+        ));
+    }
+
     if is_handler
         && lines
             .iter()
@@ -1284,4 +1388,107 @@ fn transaction_and_misc_function_findings(
     }
 
     findings
+}
+
+fn placeholder_seed_function_in_production_evidence(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[super::framework_patterns::BodyLine],
+) -> Option<(usize, Vec<String>)> {
+    if file.is_test_file || function.is_test_function || !seed_entrypoint_candidate(file, function) {
+        return None;
+    }
+
+    let non_empty = lines
+        .iter()
+        .filter(|line| !line.text.trim().is_empty())
+        .collect::<Vec<_>>();
+    if non_empty.is_empty() {
+        return Some((
+            function.fingerprint.start_line,
+            vec![
+                format!("seed-like function: {}", function.fingerprint.name),
+                "function body is effectively empty".to_string(),
+            ],
+        ));
+    }
+
+    if let Some(line) = non_empty
+        .iter()
+        .find(|line| seed_placeholder_marker(&line.text))
+        .map(|line| line.line)
+    {
+        return Some((
+            line,
+            vec![
+                format!("seed-like function: {}", function.fingerprint.name),
+                "body still contains TODO or not-implemented placeholder markers".to_string(),
+            ],
+        ));
+    }
+
+    if non_empty.len() <= 3
+        && non_empty
+            .iter()
+            .all(|line| trivial_seed_line(&line.text))
+    {
+        return Some((
+            non_empty[0].line,
+            vec![
+                format!("seed-like function: {}", function.fingerprint.name),
+                "body only returns trivial values without visible seeding work".to_string(),
+            ],
+        ));
+    }
+
+    None
+}
+
+fn seed_entrypoint_candidate(file: &ParsedFile, function: &ParsedFunction) -> bool {
+    let lower_path = file.path.to_string_lossy().to_ascii_lowercase();
+    let lower_package = file
+        .package_name
+        .as_deref()
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    let lower_name = function.fingerprint.name.to_ascii_lowercase();
+
+    if lower_name.starts_with("seed")
+        || lower_name.contains("seeddata")
+        || lower_name.contains("runseed")
+    {
+        return true;
+    }
+
+    if function.fingerprint.name == "main"
+        && (lower_path.contains("/cmd/seed/")
+            || lower_path.contains("/cmd/seeds/")
+            || lower_path.ends_with("/seed/main.go"))
+    {
+        return true;
+    }
+
+    lower_path.contains("/seed/")
+        || lower_path.contains("/seeds/")
+        || lower_path.contains("/seeder/")
+        || lower_path.ends_with("/seed.go")
+        || lower_package == "seed"
+        || lower_package == "seeds"
+}
+
+fn seed_placeholder_marker(text: &str) -> bool {
+    let lower = text.to_ascii_lowercase();
+    lower.contains("todo")
+        || lower.contains("not implemented")
+        || lower.contains("panic(\"todo")
+        || lower.contains("panic(\"not implemented")
+}
+
+fn trivial_seed_line(text: &str) -> bool {
+    let trimmed = text.trim();
+    trimmed == "return"
+        || trimmed.starts_with("if ")
+        || trimmed.starts_with('{')
+        || trimmed.starts_with('}')
+        || noop_like_return_line(trimmed)
 }

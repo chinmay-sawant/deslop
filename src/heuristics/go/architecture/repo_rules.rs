@@ -4,6 +4,8 @@ fn project_agnostic_repo_shape_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut findings = Vec::new();
     findings.extend(gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary_findings(files));
     findings.extend(root_main_go_in_layered_service_repo_findings(files));
+    findings.extend(readme_migration_strategy_claim_conflicts_with_startup_code_findings(files));
+    findings.extend(readme_claims_seeding_but_seed_entrypoint_is_placeholder_findings(files));
     findings.extend(upstream_consumed_interface_declared_in_provider_package_findings(files));
     findings.extend(tool_appeasement_noop_type_in_production_package_findings(files));
     findings
@@ -336,6 +338,95 @@ fn tool_appeasement_noop_type_in_production_package_findings(files: &[&ParsedFil
     findings
 }
 
+fn readme_migration_strategy_claim_conflicts_with_startup_code_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    let workspace_root = workspace_root_path(files);
+    let readme_path = workspace_root.join("README.md");
+    if !readme_path.exists() {
+        return Vec::new();
+    }
+
+    let Ok(source) = read_to_string_limited(&readme_path, DEFAULT_MAX_BYTES) else {
+        return Vec::new();
+    };
+    let Some((claim_line, claim_text, tool_name)) = explicit_migration_tool_claim(&source) else {
+        return Vec::new();
+    };
+    let Some((startup_path, startup_line, startup_text)) = first_auto_migrate_signal(files) else {
+        return Vec::new();
+    };
+    if migration_assets_present(&workspace_root, files) {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "readme_migration_strategy_claim_conflicts_with_startup_code".to_string(),
+        severity: Severity::Info,
+        path: readme_path,
+        function_name: None,
+        start_line: claim_line,
+        end_line: claim_line,
+        message: "README claims an explicit migration strategy but startup still uses AutoMigrate"
+            .to_string(),
+        evidence: vec![
+            format!("README migration claim at line {claim_line}: {claim_text}"),
+            format!(
+                "startup AutoMigrate signal at {}:{} -> {}",
+                startup_path.display(),
+                startup_line,
+                startup_text
+            ),
+            format!("no matching {tool_name} migration path was observed in the repo shape"),
+        ],
+    }]
+}
+
+fn readme_claims_seeding_but_seed_entrypoint_is_placeholder_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    let workspace_root = workspace_root_path(files);
+    let readme_path = workspace_root.join("README.md");
+    if !readme_path.exists() {
+        return Vec::new();
+    }
+
+    let Ok(source) = read_to_string_limited(&readme_path, DEFAULT_MAX_BYTES) else {
+        return Vec::new();
+    };
+    let Some((claim_line, claim_text)) = readme_seeding_claim(&source) else {
+        return Vec::new();
+    };
+    let Some((seed_path, seed_line, seed_name, seed_evidence)) =
+        first_placeholder_seed_entrypoint(files)
+    else {
+        return Vec::new();
+    };
+
+    let mut evidence = vec![
+        format!("README seeding claim at line {claim_line}: {claim_text}"),
+        format!(
+            "placeholder seed entrypoint at {}:{} -> {}",
+            seed_path.display(),
+            seed_line,
+            seed_name
+        ),
+    ];
+    evidence.extend(seed_evidence);
+
+    vec![Finding {
+        rule_id: "readme_claims_seeding_but_seed_entrypoint_is_placeholder".to_string(),
+        severity: Severity::Info,
+        path: readme_path,
+        function_name: None,
+        start_line: claim_line,
+        end_line: claim_line,
+        message: "README advertises seeding but the visible seed entrypoint still looks placeholder-like"
+            .to_string(),
+        evidence,
+    }]
+}
+
 fn upstream_interface_references(
     files: &[&ParsedFile],
     directory: &Path,
@@ -436,7 +527,25 @@ fn workspace_root_path(files: &[&ParsedFile]) -> PathBuf {
         }
     }
 
-    root
+    let common_root = root.clone();
+    let mut candidate = root.clone();
+    loop {
+        if [
+            candidate.join("README.md"),
+            candidate.join("go.mod"),
+            candidate.join(".git"),
+        ]
+        .iter()
+        .any(|path| path.exists())
+        {
+            return candidate;
+        }
+        if !candidate.pop() {
+            break;
+        }
+    }
+
+    common_root
 }
 
 fn is_repo_root_main_file(file: &ParsedFile, workspace_root: &Path) -> bool {
@@ -548,6 +657,31 @@ fn first_gorm_bootstrap_signal(file: &&ParsedFile) -> Option<(PathBuf, usize, St
         .map(|call| (file.path.clone(), call.line, compact_comment(&call.text)))
 }
 
+fn first_auto_migrate_signal(files: &[&ParsedFile]) -> Option<(PathBuf, usize, String)> {
+    for file in files {
+        if file.is_test_file {
+            continue;
+        }
+
+        for function in &file.functions {
+            let lines = body_lines(function);
+            if let Some(line) = lines.iter().find(|line| line.text.contains(".AutoMigrate(")) {
+                return Some((file.path.clone(), line.line, compact_comment(&line.text)));
+            }
+        }
+
+        if let Some(call) = file
+            .module_scope_calls
+            .iter()
+            .find(|call| call.text.contains(".AutoMigrate("))
+        {
+            return Some((file.path.clone(), call.line, compact_comment(&call.text)));
+        }
+    }
+
+    None
+}
+
 fn suppressed_raw_sql_strategy_file(file: &ParsedFile) -> bool {
     let lower = file.path.to_string_lossy().to_ascii_lowercase();
     lower.contains("/migration/")
@@ -557,6 +691,102 @@ fn suppressed_raw_sql_strategy_file(file: &ParsedFile) -> bool {
         || lower.contains("/sqlc/")
         || lower.contains("/query/")
         || lower.contains("/queries/")
+}
+
+fn explicit_migration_tool_claim(source: &str) -> Option<(usize, String, String)> {
+    for (idx, raw_line) in source.lines().enumerate() {
+        let line = raw_line.trim();
+        let lower = line.to_ascii_lowercase();
+        let tool = if lower.contains("golang-migrate") || lower.contains("github.com/golang-migrate")
+        {
+            Some("golang-migrate")
+        } else if lower.contains("pressly/goose") || lower.contains(" goose ") {
+            Some("goose")
+        } else if lower.contains("atlas migrate") || lower.contains(" atlas ") {
+            Some("atlas")
+        } else if lower.contains("dbmate") {
+            Some("dbmate")
+        } else if lower.contains("sql-migrate") {
+            Some("sql-migrate")
+        } else {
+            None
+        };
+        if let Some(tool) = tool {
+            return Some((idx + 1, compact_comment(line), tool.to_string()));
+        }
+    }
+
+    None
+}
+
+fn migration_assets_present(workspace_root: &Path, files: &[&ParsedFile]) -> bool {
+    let migration_dirs = [
+        workspace_root.join("migrations"),
+        workspace_root.join("db/migrations"),
+        workspace_root.join("database/migrations"),
+        workspace_root.join("internal/migrations"),
+    ];
+    if migration_dirs.iter().any(|path| path.exists()) {
+        return true;
+    }
+
+    files.iter().any(|file| {
+        let lower_path = file.path.to_string_lossy().to_ascii_lowercase();
+        lower_path.contains("/migration/")
+            || lower_path.contains("/migrations/")
+            || file.imports.iter().any(|import| {
+                let lower = import.path.to_ascii_lowercase();
+                lower.contains("golang-migrate")
+                    || lower.contains("pressly/goose")
+                    || lower.contains("ariga.io/atlas")
+                    || lower.contains("dbmate")
+                    || lower.contains("sql-migrate")
+            })
+    })
+}
+
+fn readme_seeding_claim(source: &str) -> Option<(usize, String)> {
+    for (idx, raw_line) in source.lines().enumerate() {
+        let line = raw_line.trim();
+        let lower = line.to_ascii_lowercase();
+        if (lower.starts_with('#') && lower.contains("seed"))
+            || lower.contains("make seed")
+            || lower.contains("cmd/seed")
+            || lower.contains("seed data")
+            || lower.contains("database seeding")
+            || lower.contains("run seed")
+        {
+            return Some((idx + 1, compact_comment(line)));
+        }
+    }
+
+    None
+}
+
+fn first_placeholder_seed_entrypoint(
+    files: &[&ParsedFile],
+) -> Option<(PathBuf, usize, String, Vec<String>)> {
+    for file in files {
+        if file.is_test_file {
+            continue;
+        }
+
+        for function in &file.functions {
+            let lines = body_lines(function);
+            if let Some((line, evidence)) =
+                placeholder_seed_function_in_production_evidence(file, function, &lines)
+            {
+                return Some((
+                    file.path.clone(),
+                    line,
+                    function.fingerprint.name.clone(),
+                    evidence,
+                ));
+            }
+        }
+    }
+
+    None
 }
 
 fn noop_like_method(function: &ParsedFunction) -> bool {

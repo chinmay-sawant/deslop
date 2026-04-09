@@ -82,6 +82,10 @@ tests/integration_scan/mod.rs:33:#[path = "../support/mod.rs"]
 
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
+src/heuristics/go/architecture/repo_rules.rs:346:    if !readme_path.exists() {
+src/heuristics/go/architecture/repo_rules.rs:390:    if !readme_path.exists() {
+src/heuristics/go/architecture/repo_rules.rs:539:        .any(|path| path.exists())
+src/heuristics/go/architecture/repo_rules.rs:729:    if migration_dirs.iter().any(|path| path.exists()) {
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/heuristics/python/packaging.rs:250:    candidate.exists().then_some(candidate)
 src/heuristics/rust/boundary.rs:203:            && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])

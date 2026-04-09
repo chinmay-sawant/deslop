@@ -620,3 +620,134 @@ fn test_client_input_error_mapped_to_internal_server_error_clean() {
         &["client_input_error_mapped_to_internal_server_error"],
     );
 }
+
+#[test]
+fn test_repository_single_record_write_without_rows_affected_check() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/repository/user_repository.go",
+        go_fixture!("architecture/positive_rows_affected.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &["repository_single_record_write_without_rows_affected_check"],
+    );
+}
+
+#[test]
+fn test_repository_single_record_write_without_rows_affected_check_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/repository/user_repository.go",
+        go_fixture!("architecture/clean_rows_affected.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &["repository_single_record_write_without_rows_affected_check"],
+    );
+}
+
+#[test]
+fn test_placeholder_seed_function_in_production() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/seed/bootstrap.go",
+        go_fixture!("architecture/positive_seed_placeholder.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(&report, &["placeholder_seed_function_in_production"]);
+}
+
+#[test]
+fn test_placeholder_seed_function_in_production_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/seed/bootstrap.go",
+        go_fixture!("architecture/clean_seed_placeholder.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(&report, &["placeholder_seed_function_in_production"]);
+}
+
+#[test]
+fn test_readme_migration_strategy_claim_conflicts_with_startup_code() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "README.md",
+        "# Service\n\nWe use golang-migrate for all schema changes before startup.\n",
+    );
+    workspace.write_file(
+        "cmd/api/main.go",
+        go_fixture!("architecture/positive_gorm_bootstrap_main.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &["readme_migration_strategy_claim_conflicts_with_startup_code"],
+    );
+}
+
+#[test]
+fn test_readme_migration_strategy_claim_conflicts_with_startup_code_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "README.md",
+        "# Service\n\nWe use golang-migrate for all schema changes before startup.\n",
+    );
+    workspace.write_file(
+        "cmd/api/main.go",
+        go_fixture!("architecture/positive_gorm_bootstrap_main.txt"),
+    );
+    workspace.write_file("migrations/0001_init.sql", "-- migration asset");
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &["readme_migration_strategy_claim_conflicts_with_startup_code"],
+    );
+}
+
+#[test]
+fn test_readme_claims_seeding_but_seed_entrypoint_is_placeholder() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "README.md",
+        "# Service\n\n## Seeding\nRun the seed flow before demos.\n",
+    );
+    workspace.write_file(
+        "internal/seed/bootstrap.go",
+        go_fixture!("architecture/positive_seed_placeholder.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &["readme_claims_seeding_but_seed_entrypoint_is_placeholder"],
+    );
+}
+
+#[test]
+fn test_readme_claims_seeding_but_seed_entrypoint_is_placeholder_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "README.md",
+        "# Service\n\n## Seeding\nRun the seed flow before demos.\n",
+    );
+    workspace.write_file(
+        "internal/seed/bootstrap.go",
+        go_fixture!("architecture/clean_seed_placeholder.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &["readme_claims_seeding_but_seed_entrypoint_is_placeholder"],
+    );
+}

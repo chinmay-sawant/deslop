@@ -32,12 +32,12 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **956 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **960 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 631 | 2 | 0 | 633 |
+| go | 635 | 2 | 0 | 637 |
 | python | 212 | 0 | 0 | 212 |
 | rust | 88 | 12 | 0 | 100 |
 
@@ -67,9 +67,9 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `placeholder_test_body`: Tests that look skipped, TODO-shaped, or otherwise placeholder-like.
 - `test_without_assertion_signal`: Tests that exercise production code without an obvious assertion or failure signal.
 
-### Go rules (633)
+### Go rules (637)
 
-#### Architecture (217)
+#### Architecture (221)
 - `admin_or_debug_endpoint_registration_mixed_into_public_router_setup`: Operational endpoints registered alongside public routes with no clear boundary.
 - `api_error_type_outside_transport_package`: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
 - `api_examples_embedded_in_handlers_instead_of_transport_docs_helpers`: Long example payload blocks hardcoded in handlers rather than doc or example helpers.
@@ -184,11 +184,14 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `patch_dto_uses_non_pointer_fields_for_optional_updates`: PATCH-like DTOs that cannot distinguish omitted fields from zero values.
 - `path_param_parsing_duplicated_across_handlers`: Repeated `strconv` or UUID path-param parsing logic that should live in helpers.
 - `persistence_model_contains_http_form_or_uri_tags`: Persistence models that are tied to form or URI binding tags.
+- `placeholder_seed_function_in_production`: Seed entrypoints in production code that are still TODO-shaped or effectively no-ops.
 - `preload_rules_scattered_across_layers`: Preload decisions spread across handlers, services, and repositories instead of one query owner.
 - `query_path_and_body_merge_performed_in_handler`: Handlers that merge several request sources inline instead of normalizing inputs before service calls.
 - `raw_db_error_exposed_to_client`: Direct serialization of SQL or GORM error text into API responses.
 - `raw_sql_literal_in_handler`: Literal SQL strings declared and executed from handlers.
 - `raw_sql_literal_in_service`: Literal SQL strings executed from services instead of repositories or query packages.
+- `readme_claims_seeding_but_seed_entrypoint_is_placeholder`: README seeding guidance that points to seed code which is still placeholder-like.
+- `readme_migration_strategy_claim_conflicts_with_startup_code`: README migration guidance that claims explicit migration tooling while startup code still uses `AutoMigrate` without a matching migration path.
 - `repository_accepts_gin_context`: Repositories that accept `*gin.Context` rather than `context.Context`.
 - `repository_accepts_http_request_dto`: Repositories that accept transport DTOs instead of repository inputs or domain values.
 - `repository_begins_transaction_without_uow_or_callback`: Repositories that quietly start transactions inside generic CRUD methods.
@@ -203,6 +206,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `repository_returns_gorm_query_builder`: Repositories that return partially built `*gorm.DB` chains for callers to finish.
 - `repository_returns_http_status_errors`: Repositories that construct transport-layer error objects or status-code wrappers.
 - `repository_returns_transport_dto`: Repositories that know about response contracts instead of returning persistence or domain results.
+- `repository_single_record_write_without_rows_affected_check`: Single-record-oriented repository updates or deletes that never inspect `RowsAffected` or an equivalent write-outcome signal.
 - `repository_tests_depend_on_http_transport_types`: Repository tests that assert HTTP DTOs or handler-layer types.
 - `repository_type_outside_repository_package`: Repository implementations declared outside `repository`, `repo`, or `store` packages when the repo already uses those roles elsewhere.
 - `request_context_value_extraction_duplicated_across_handlers`: Repeated current-user, tenant, locale, or auth extraction logic.

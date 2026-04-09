@@ -586,6 +586,11 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "API modules that hand-roll page and page-size bounds in many handlers instead of a shared contract."
     ),
     architecture_rule!(
+        "placeholder_seed_function_in_production",
+        Info,
+        "Seed entrypoints in production code that are still TODO-shaped or effectively no-ops."
+    ),
+    architecture_rule!(
         "patch_dto_uses_non_pointer_fields_for_optional_updates",
         Warning,
         "PATCH-like DTOs that cannot distinguish omitted fields from zero values."
@@ -686,6 +691,11 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "Repositories that return partially built `*gorm.DB` chains for callers to finish."
     ),
     architecture_rule!(
+        "repository_single_record_write_without_rows_affected_check",
+        Warning,
+        "Single-record-oriented repository updates or deletes that never inspect `RowsAffected` or an equivalent write-outcome signal."
+    ),
+    architecture_rule!(
         "repository_returns_http_status_errors",
         Warning,
         "Repositories that construct transport-layer error objects or status-code wrappers."
@@ -729,6 +739,16 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "request_logging_fields_assembled_differently_across_handlers",
         Info,
         "Inconsistent request-log field sets across the same API module."
+    ),
+    architecture_rule!(
+        "readme_claims_seeding_but_seed_entrypoint_is_placeholder",
+        Info,
+        "README seeding guidance that points to seed code which is still placeholder-like."
+    ),
+    architecture_rule!(
+        "readme_migration_strategy_claim_conflicts_with_startup_code",
+        Info,
+        "README migration guidance that claims explicit migration tooling while startup code still uses `AutoMigrate` without a matching migration path."
     ),
     architecture_rule!(
         "response_dto_contains_gorm_tags",

@@ -9,7 +9,7 @@ The source rule-id guard lives in `src/rules.rs` as `EXPECTED_SOURCE_RULE_ID_COU
 
 Current intentional source rule-id count:
 
-- `455`
+- `457`
 
 When it fails:
 1. Review the diff under `src/` and confirm that rule-id additions or removals are intentional.
@@ -23,7 +23,7 @@ The grouped registry-count guard lives in `src/rules.rs` as `EXPECTED_RULE_COUNT
 Current intentional grouped counts:
 
 - `common`: 11
-- `go`: 633
+- `go`: 637
 - `python`: 212
 - `rust`: 100
 

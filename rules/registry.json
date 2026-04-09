@@ -1625,6 +1625,19 @@
     "description": "Persistence models that are tied to form or URI binding tags."
   },
   {
+    "id": "placeholder_seed_function_in_production",
+    "language": "go",
+    "family": "architecture",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Seed entrypoints in production code that are still TODO-shaped or effectively no-ops."
+  },
+  {
     "id": "preload_rules_scattered_across_layers",
     "language": "go",
     "family": "architecture",
@@ -1688,6 +1701,32 @@
       "severity_override"
     ],
     "description": "Literal SQL strings executed from services instead of repositories or query packages."
+  },
+  {
+    "id": "readme_claims_seeding_but_seed_entrypoint_is_placeholder",
+    "language": "go",
+    "family": "architecture",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "README seeding guidance that points to seed code which is still placeholder-like."
+  },
+  {
+    "id": "readme_migration_strategy_claim_conflicts_with_startup_code",
+    "language": "go",
+    "family": "architecture",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "README migration guidance that claims explicit migration tooling while startup code still uses `AutoMigrate` without a matching migration path."
   },
   {
     "id": "repository_accepts_gin_context",
@@ -1870,6 +1909,19 @@
       "severity_override"
     ],
     "description": "Repositories that know about response contracts instead of returning persistence or domain results."
+  },
+  {
+    "id": "repository_single_record_write_without_rows_affected_check",
+    "language": "go",
+    "family": "architecture",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Single-record-oriented repository updates or deletes that never inspect `RowsAffected` or an equivalent write-outcome signal."
   },
   {
     "id": "repository_tests_depend_on_http_transport_types",

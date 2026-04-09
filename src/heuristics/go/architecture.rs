@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::analysis::{NamedLiteral, ParsedFile, ParsedFunction, StructTag};
+use crate::io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 use crate::model::{Finding, Severity};
 
 use super::super::common::is_generic_name;

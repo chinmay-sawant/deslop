@@ -1,0 +1,8 @@
+package seed
+
+import "context"
+
+func SeedData(ctx context.Context) error {
+	_ = ctx
+	panic("TODO: add real seed records before shipping this repo")
+}
