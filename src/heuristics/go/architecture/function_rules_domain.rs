@@ -350,10 +350,10 @@ fn any_binding_declaration(text: &str) -> Option<(&str, String)> {
 fn any_binding_assignment(text: &str, name: &str) -> Option<String> {
     let compact = text.trim();
 
-    if let Some(rest) = compact.strip_prefix(&format!("var {name} ")) {
-        if let Some((_, right)) = rest.split_once('=') {
-            return Some(right.trim().to_string());
-        }
+    if let Some(rest) = compact.strip_prefix(&format!("var {name} "))
+        && let Some((_, right)) = rest.split_once('=')
+    {
+        return Some(right.trim().to_string());
     }
 
     let (left, right) = split_assignment(compact)?;
@@ -575,18 +575,18 @@ fn middleware_and_bootstrap_function_findings(
         }
     }
 
-    if constructor_like(function) {
-        if let Some(line) = first_env_lookup_line(file, lines) {
-            findings.push(function_finding(
-                file,
-                function,
-                "constructor_reads_env_directly",
-                Severity::Info,
-                line,
-                "constructor reads environment or config directly",
-                vec!["constructors are easier to test when normalized config is injected instead of looked up inline".to_string()],
-            ));
-        }
+    if constructor_like(function)
+        && let Some(line) = first_env_lookup_line(file, lines)
+    {
+        findings.push(function_finding(
+            file,
+            function,
+            "constructor_reads_env_directly",
+            Severity::Info,
+            line,
+            "constructor reads environment or config directly",
+            vec!["constructors are easier to test when normalized config is injected instead of looked up inline".to_string()],
+        ));
     }
 
     if is_router_file(file)

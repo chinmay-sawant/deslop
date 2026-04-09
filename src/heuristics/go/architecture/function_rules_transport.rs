@@ -184,7 +184,7 @@ fn handler_function_findings(
             }
         }
 
-        if multiple_response_shapes(&go.gin_calls) {
+        if multiple_response_shapes(go.gin_calls) {
             findings.push(function_finding(
                 file,
                 function,
@@ -195,7 +195,7 @@ fn handler_function_findings(
                 vec!["handlers that return multiple unrelated response shapes are often trying to cover too many behaviors".to_string()],
             ));
         }
-        if !multiple_response_shapes(&go.gin_calls)
+        if !multiple_response_shapes(go.gin_calls)
             && lines.iter().any(|line| line.text.contains(".JSON("))
             && (lines.iter().any(|line| line.text.contains(".HTML("))
                 || lines.iter().any(|line| line.text.contains(".File("))
@@ -353,7 +353,7 @@ fn handler_function_findings(
             ));
         }
 
-        if mixes_html_json_and_file(&go.gin_calls) {
+        if mixes_html_json_and_file(go.gin_calls) {
             findings.push(function_finding(
                 file,
                 function,

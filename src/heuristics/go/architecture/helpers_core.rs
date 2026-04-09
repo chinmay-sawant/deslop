@@ -1,4 +1,4 @@
-fn struct_tag_map<'a>(file: &'a ParsedFile) -> BTreeMap<&'a str, Vec<&'a StructTag>> {
+fn struct_tag_map(file: &ParsedFile) -> BTreeMap<&str, Vec<&StructTag>> {
     let mut map = BTreeMap::<&str, Vec<&StructTag>>::new();
     for tag in file.struct_tags() {
         map.entry(tag.struct_name.as_str()).or_default().push(tag);

@@ -313,7 +313,7 @@ fn struct_contract_file_findings(
         }
 
         if request_struct_name(&go_struct.name)
-            && has_any_tag_for_struct(&tag_map, &go_struct.name, &["json:", "form:", "uri:", "binding:", "validate:"])
+            && has_any_tag_for_struct(tag_map, &go_struct.name, &["json:", "form:", "uri:", "binding:", "validate:"])
             && !is_transport_file(file)
         {
             findings.push(file_finding(
@@ -327,7 +327,7 @@ fn struct_contract_file_findings(
         }
 
         if response_struct_name(&go_struct.name)
-            && has_any_tag_for_struct(&tag_map, &go_struct.name, &["json:"])
+            && has_any_tag_for_struct(tag_map, &go_struct.name, &["json:"])
             && !is_transport_file(file)
         {
             findings.push(file_finding(
@@ -371,7 +371,7 @@ fn struct_contract_file_findings(
 
     for go_struct in file.go_structs() {
         if request_struct_name(&go_struct.name)
-            && has_any_tag_for_struct(&tag_map, &go_struct.name, &["gorm:"])
+            && has_any_tag_for_struct(tag_map, &go_struct.name, &["gorm:"])
         {
             findings.push(file_finding(
                 file,
@@ -384,7 +384,7 @@ fn struct_contract_file_findings(
         }
 
         if response_struct_name(&go_struct.name)
-            && has_any_tag_for_struct(&tag_map, &go_struct.name, &["gorm:"])
+            && has_any_tag_for_struct(tag_map, &go_struct.name, &["gorm:"])
         {
             findings.push(file_finding(
                 file,
@@ -397,7 +397,7 @@ fn struct_contract_file_findings(
         }
 
         if gorm_structs.contains(&go_struct.name)
-            && has_any_tag_for_struct(&tag_map, &go_struct.name, &["binding:", "validate:"])
+            && has_any_tag_for_struct(tag_map, &go_struct.name, &["binding:", "validate:"])
         {
             findings.push(file_finding(
                 file,
@@ -413,7 +413,7 @@ fn struct_contract_file_findings(
         }
 
         if gorm_structs.contains(&go_struct.name)
-            && has_any_tag_for_struct(&tag_map, &go_struct.name, &["form:", "uri:"])
+            && has_any_tag_for_struct(tag_map, &go_struct.name, &["form:", "uri:"])
         {
             findings.push(file_finding(
                 file,
