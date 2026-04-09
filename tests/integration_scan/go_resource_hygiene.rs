@@ -161,6 +161,16 @@ fn test_go_advanceplan2_resource_hygiene_clean() {
 }
 
 #[test]
+fn test_request_query_param_does_not_trigger_rows_without_close() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("handler.go", go_fixture!("context_query_param_clean.txt"));
+
+    let report = workspace.scan();
+
+    assert!(!has_rule(&report, "rows_without_close"));
+}
+
+#[test]
 fn test_go_advanceplan2_architecture_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(
@@ -216,4 +226,94 @@ fn test_go_advanceplan2_architecture_clean() {
     ] {
         assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
     }
+}
+
+#[test]
+fn test_project_agnostic_idioms_gaps_positive() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "idioms_project_agnostic.go",
+        go_fixture!("idioms_project_agnostic_positive.txt"),
+    );
+
+    let report = workspace.scan();
+
+    for rule_id in [
+        "timeoutless_http_default_client_or_helper_call",
+        "http_server_bootstrap_without_graceful_shutdown_flow",
+        "http_client_allocated_per_call_without_reuse",
+        "http_response_body_not_drained_before_close",
+        "request_body_read_without_size_limit",
+        "rows_iterated_without_rows_err_check",
+        "slow_work_inside_transaction_scope",
+    ] {
+        assert!(has_rule(&report, rule_id), "missing rule: {rule_id}");
+    }
+}
+
+#[test]
+fn test_project_agnostic_idioms_gaps_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "idioms_project_agnostic.go",
+        go_fixture!("idioms_project_agnostic_clean.txt"),
+    );
+
+    let report = workspace.scan();
+
+    for rule_id in [
+        "timeoutless_http_default_client_or_helper_call",
+        "http_server_bootstrap_without_graceful_shutdown_flow",
+        "http_client_allocated_per_call_without_reuse",
+        "http_response_body_not_drained_before_close",
+        "request_body_read_without_size_limit",
+        "rows_iterated_without_rows_err_check",
+        "slow_work_inside_transaction_scope",
+    ] {
+        assert!(!has_rule(&report, rule_id), "unexpected rule: {rule_id}");
+    }
+}
+
+#[test]
+fn test_ci_missing_go_test_race_positive() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("cmd/api/main.go", go_fixture!("db_pool_boot_positive.txt"));
+    workspace.write_file(
+        ".github/workflows/ci.yml",
+        "name: ci\non: [push]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: go test ./...\n",
+    );
+
+    let report = workspace.scan();
+    assert!(has_rule(&report, "ci_missing_go_test_race"));
+}
+
+#[test]
+fn test_ci_missing_go_test_race_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("cmd/api/main.go", go_fixture!("db_pool_boot_positive.txt"));
+    workspace.write_file(
+        ".github/workflows/ci.yml",
+        "name: ci\non: [push]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: go test -race ./...\n",
+    );
+
+    let report = workspace.scan();
+    assert!(!has_rule(&report, "ci_missing_go_test_race"));
+}
+
+#[test]
+fn test_db_pool_limits_not_configured_at_boot_positive() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("cmd/api/main.go", go_fixture!("db_pool_boot_positive.txt"));
+
+    let report = workspace.scan();
+    assert!(has_rule(&report, "db_pool_limits_not_configured_at_boot"));
+}
+
+#[test]
+fn test_db_pool_limits_not_configured_at_boot_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("cmd/api/main.go", go_fixture!("db_pool_boot_clean.txt"));
+
+    let report = workspace.scan();
+    assert!(!has_rule(&report, "db_pool_limits_not_configured_at_boot"));
 }

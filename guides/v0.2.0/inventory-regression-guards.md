@@ -7,10 +7,30 @@ They should only change when the underlying inventories change on purpose.
 
 The source rule-id guard lives in `src/rules.rs` as `EXPECTED_SOURCE_RULE_ID_COUNT`.
 
+Current intentional source rule-id count:
+
+- `473`
+
 When it fails:
 1. Review the diff under `src/` and confirm that rule-id additions or removals are intentional.
 2. Re-run `cargo test --quiet` to make sure the failure is only the expected inventory delta.
 3. Update `EXPECTED_SOURCE_RULE_ID_COUNT` in `src/rules.rs` in the same change that adds or removes the rule ids.
+
+## Registry Counts By Language
+
+The grouped registry-count guard lives in `src/rules.rs` as `EXPECTED_RULE_COUNTS_BY_LANGUAGE`.
+
+Current intentional grouped counts:
+
+- `common`: 11
+- `go`: 653
+- `python`: 212
+- `rust`: 100
+
+When it fails:
+1. Review the added or removed rule definitions and confirm the language delta is intentional.
+2. Re-run `cargo test --quiet` to make sure the failure is only the expected grouped inventory change.
+3. Update `EXPECTED_RULE_COUNTS_BY_LANGUAGE` in `src/rules.rs` in the same change.
 
 ## Corpus Regression Entries
 

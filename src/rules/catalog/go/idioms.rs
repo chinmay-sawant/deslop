@@ -2,6 +2,34 @@ use super::{RuleConfigurability, RuleDefaultSeverity, RuleDefinition, RuleLangua
 
 pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
     RuleDefinition {
+        id: "ci_missing_go_test_race",
+        language: RuleLanguage::Go,
+        family: "idioms",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Repository automation that does not visibly run `go test -race` for Go code.",
+        binding_location: super::bindings::GO_IDIOMS,
+    },
+    RuleDefinition {
+        id: "db_pool_limits_not_configured_at_boot",
+        language: RuleLanguage::Go,
+        family: "idioms",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Bootstrap code that opens long-lived DB clients without visible pool sizing or lifetime limits.",
+        binding_location: super::bindings::GO_IDIOMS,
+    },
+    RuleDefinition {
         id: "defer_in_loop_resource_growth",
         language: RuleLanguage::Go,
         family: "idioms",
@@ -44,6 +72,20 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
+        id: "http_client_allocated_per_call_without_reuse",
+        language: RuleLanguage::Go,
+        family: "idioms",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "http.Client literals allocated on regular call paths instead of being reused as shared client state.",
+        binding_location: super::bindings::GO_IDIOMS,
+    },
+    RuleDefinition {
         id: "http_client_without_timeout",
         language: RuleLanguage::Go,
         family: "idioms",
@@ -58,6 +100,20 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
+        id: "http_response_body_not_drained_before_close",
+        language: RuleLanguage::Go,
+        family: "idioms",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored.",
+        binding_location: super::bindings::GO_IDIOMS,
+    },
+    RuleDefinition {
         id: "http_response_body_not_closed",
         language: RuleLanguage::Go,
         family: "idioms",
@@ -69,6 +125,20 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "HTTP responses acquired locally without an observed resp.Body.Close() call.",
+        binding_location: super::bindings::GO_IDIOMS,
+    },
+    RuleDefinition {
+        id: "http_server_bootstrap_without_graceful_shutdown_flow",
+        language: RuleLanguage::Go,
+        family: "idioms",
+        default_severity: RuleDefaultSeverity::Warning,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown.",
         binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
@@ -97,6 +167,20 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Response decoding or body consumption that happens without an observed StatusCode check.",
+        binding_location: super::bindings::GO_IDIOMS,
+    },
+    RuleDefinition {
+        id: "request_body_read_without_size_limit",
+        language: RuleLanguage::Go,
+        family: "idioms",
+        default_severity: RuleDefaultSeverity::Warning,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader.",
         binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
@@ -198,6 +282,20 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
+        id: "rows_iterated_without_rows_err_check",
+        language: RuleLanguage::Go,
+        family: "idioms",
+        default_severity: RuleDefaultSeverity::Info,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Rows iterated with Next() but without a visible final Rows.Err() check.",
+        binding_location: super::bindings::GO_IDIOMS,
+    },
+    RuleDefinition {
         id: "send_after_local_close_risk",
         language: RuleLanguage::Go,
         family: "idioms",
@@ -226,6 +324,20 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {
+        id: "slow_work_inside_transaction_scope",
+        language: RuleLanguage::Go,
+        family: "idioms",
+        default_severity: RuleDefaultSeverity::Warning,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "Loop-heavy or slow work performed while a transaction appears open.",
+        binding_location: super::bindings::GO_IDIOMS,
+    },
+    RuleDefinition {
         id: "stmt_without_close",
         language: RuleLanguage::Go,
         family: "idioms",
@@ -237,6 +349,20 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
             RuleConfigurability::SeverityOverride,
         ],
         description: "Prepared statements or similar DB handles without an observed Close() call.",
+        binding_location: super::bindings::GO_IDIOMS,
+    },
+    RuleDefinition {
+        id: "timeoutless_http_default_client_or_helper_call",
+        language: RuleLanguage::Go,
+        family: "idioms",
+        default_severity: RuleDefaultSeverity::Warning,
+        status: RuleStatus::Stable,
+        configurability: &[
+            RuleConfigurability::Disable,
+            RuleConfigurability::Ignore,
+            RuleConfigurability::SeverityOverride,
+        ],
+        description: "net/http helper calls or http.DefaultClient usage that carry no explicit application timeout.",
         binding_location: super::bindings::GO_IDIOMS,
     },
     RuleDefinition {

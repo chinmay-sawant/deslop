@@ -1,0 +1,8 @@
+package main
+
+import "database/sql"
+
+func main() {
+	db, _ := sql.Open("postgres", "postgres://demo")
+	_ = db
+}

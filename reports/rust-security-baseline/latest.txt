@@ -30,22 +30,38 @@ src/analysis/python/parser/hotpath_ext.rs:240:            let receiver = &trimme
 src/analysis/python/parser/hotpath_ext.rs:241:            let after = &trimmed[get_idx + 5..];
 src/analysis/python/parser/hotpath_ext.rs:243:                let key = after[..end].trim();
 src/analysis/rust/parser/evidence.rs:204:    text[vec_start + 4..].contains("Box<")
+src/heuristics/go/architecture/helpers_core.rs:156:    signature[close_idx + 1..].trim()
+src/heuristics/go/architecture/helpers_core.rs:163:    &signature[open_idx + 1..close_idx]
+src/heuristics/go/architecture/helpers_patterns.rs:1020:    let rest = &text[start..];
+src/heuristics/go/architecture/helpers_patterns.rs:1022:    let name = &rest[..end];
+src/heuristics/go/architecture/helpers_patterns.rs:139:    let rest = &text[start + 1..];
+src/heuristics/go/architecture/helpers_patterns.rs:141:    Some(rest[..end].to_string())
+src/heuristics/go/architecture/helpers_patterns.rs:938:    let rest = &line[idx + marker.len()..];
+src/heuristics/go/architecture/helpers_patterns.rs:940:    let rest = &rest[first_quote + 1..];
+src/heuristics/go/architecture/helpers_patterns.rs:942:    Some(rest[..end_quote].to_string())
+src/heuristics/go/context.rs:1012:    for (offset, ch) in line[start..].char_indices() {
+src/heuristics/go/context.rs:1027:    Some(split_top_level_csv(&line[start..end]))
+src/heuristics/go/context.rs:963:        .map(|(start, end)| &signature[start + 1..*end])
 src/heuristics/go/framework_patterns/data_access/sql.rs:554:                let after_like = &upper[like_pos + 4..];
 src/heuristics/go/framework_patterns/gin.rs:241:            let mut evidence = vec![format!("FormFile(...) observed at line {}", call.line)];
-src/heuristics/go/framework_patterns/gin.rs:696:        text = text[1..text.len() - 1].trim();
-src/heuristics/go/framework_patterns/gin.rs:766:        for (end_index, current) in suffix[index + character.len_utf8()..].char_indices() {
-src/heuristics/go/framework_patterns/gin.rs:775:                return Some(suffix[start..end].to_string());
-src/heuristics/go/framework_patterns/gin.rs:801:                    return Some(suffix[..index].trim().to_string());
-src/heuristics/go/framework_patterns/gin.rs:805:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
-src/heuristics/go/framework_patterns/hot_path/repeated_work.rs:1248:                    return Some(suffix[..index].trim().to_string());
-src/heuristics/go/framework_patterns/hot_path/repeated_work.rs:1252:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
+src/heuristics/go/framework_patterns/gin/gin_helpers.rs:233:        text = text[1..text.len() - 1].trim();
+src/heuristics/go/framework_patterns/gin/gin_helpers.rs:303:        for (end_index, current) in suffix[index + character.len_utf8()..].char_indices() {
+src/heuristics/go/framework_patterns/gin/gin_helpers.rs:312:                return Some(suffix[start..end].to_string());
+src/heuristics/go/framework_patterns/gin/gin_helpers.rs:338:                    return Some(suffix[..index].trim().to_string());
+src/heuristics/go/framework_patterns/gin/gin_helpers.rs:342:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
+src/heuristics/go/framework_patterns/hot_path/repeated_work/repeated_work_secondary.rs:494:                    return Some(suffix[..index].trim().to_string());
+src/heuristics/go/framework_patterns/hot_path/repeated_work/repeated_work_secondary.rs:498:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
 src/heuristics/go/framework_patterns/mod.rs:319:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/go/idioms.rs:1039:    let parameters = &signature_text[parameters_start + 1..parameters_end];
-src/heuristics/go/idioms.rs:1085:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/go/idioms.rs:1396:    let parameters = &signature_text[parameters_start + 1..parameters_end];
+src/heuristics/go/idioms.rs:1442:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go/library_misuse/performance/collections.rs:179:        let Some(end) = bl.text[start..].find(']') else {
 src/heuristics/go/library_misuse/performance/collections.rs:183:        let key_expr = bl.text[start + 1..end].trim();
 src/heuristics/go/library_misuse/performance/collections.rs:184:        let map_expr = bl.text[..start]
 src/heuristics/go/performance.rs:340:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/go/performance_extra.rs:1246:    let rest = &text[start + 1..];
+src/heuristics/go/performance_extra.rs:1250:    rest[..end].len() == 1
+src/heuristics/go/performance_extra.rs:1257:    let rest = &text[start + 1..];
+src/heuristics/go/performance_extra.rs:1261:    rest[..end].len() == 1
 src/heuristics/python/framework/django.rs:224:            let rhs = &trimmed[eq_idx + 3..];
 src/heuristics/python/framework/django.rs:226:                let var = trimmed[..eq_idx].trim().to_string();
 src/heuristics/python/hotpath_ext.rs:418:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
@@ -69,6 +85,16 @@ tests/integration_scan/mod.rs:33:#[path = "../support/mod.rs"]
 
 ## toctou_fs_checks
 src/cli/rules.rs:201:    fn json_rules_report_renders_metadata() {
+src/heuristics/go/architecture/repo_rules.rs:346:    if !readme_path.exists() {
+src/heuristics/go/architecture/repo_rules.rs:390:    if !readme_path.exists() {
+src/heuristics/go/architecture/repo_rules.rs:539:        .any(|path| path.exists())
+src/heuristics/go/architecture/repo_rules.rs:729:    if migration_dirs.iter().any(|path| path.exists()) {
+src/heuristics/go/idioms.rs:1497:        } else if candidate.exists() {
+src/heuristics/go/idioms.rs:1606:        if probe.join(".github").exists()
+src/heuristics/go/idioms.rs:1607:            || probe.join("Makefile").exists()
+src/heuristics/go/idioms.rs:1608:            || probe.join("makefile").exists()
+src/heuristics/go/idioms.rs:1609:            || probe.join("action.yml").exists()
+src/heuristics/go/idioms.rs:1610:            || probe.join("action.yaml").exists()
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/heuristics/python/packaging.rs:250:    candidate.exists().then_some(candidate)
 src/heuristics/rust/boundary.rs:203:            && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])

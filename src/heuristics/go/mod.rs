@@ -1,3 +1,4 @@
+mod architecture;
 mod concurrency;
 mod consistency;
 mod context;
@@ -6,9 +7,11 @@ mod framework_patterns;
 mod idioms;
 mod library_misuse;
 mod performance;
+mod performance_extra;
 mod style;
 
 pub(crate) const BINDING_LOCATION: &str = file!();
+pub(crate) const ARCHITECTURE_BINDING_LOCATION: &str = architecture::BINDING_LOCATION;
 pub(crate) const CONCURRENCY_BINDING_LOCATION: &str = concurrency::BINDING_LOCATION;
 pub(crate) const CONSISTENCY_BINDING_LOCATION: &str = consistency::BINDING_LOCATION;
 pub(crate) const CONTEXT_BINDING_LOCATION: &str = context::BINDING_LOCATION;
@@ -29,14 +32,20 @@ pub(crate) const LIBRARY_MISUSE_LIBRARY_BINDING_LOCATION: &str =
 pub(crate) const LIBRARY_MISUSE_SECURITY_BINDING_LOCATION: &str =
     library_misuse::SECURITY_BINDING_LOCATION;
 pub(crate) const PERFORMANCE_BINDING_LOCATION: &str = performance::BINDING_LOCATION;
+pub(crate) const PERFORMANCE_EXTRA_BINDING_LOCATION: &str = performance_extra::BINDING_LOCATION;
 pub(crate) const STYLE_BINDING_LOCATION: &str = style::BINDING_LOCATION;
 
+pub(super) use architecture::{go_architecture_file_findings, go_architecture_repo_findings};
 pub(super) use concurrency::{
-    coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, shutdown_findings,
+    coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, rwmutex_file_findings,
+    shutdown_findings, waitgroup_errgroup_findings,
 };
 pub(super) use consistency::{receiver_findings, tag_findings};
 pub(super) use context::{
-    busy_findings, cancel_findings, ctx_findings, propagate_findings, sleep_findings,
+    busy_findings, cache_context_file_findings, cache_method_findings, cancel_findings,
+    context_parameter_findings, context_withvalue_findings, ctx_findings,
+    generic_context_file_findings, propagate_findings, request_context_background_findings,
+    sleep_findings,
 };
 pub(super) use errors::error_findings;
 pub(super) use framework_patterns::go_framework_patterns_file_findings;
@@ -46,4 +55,5 @@ pub(super) use performance::{
     alloc_findings, concat_findings, db_findings, fmt_findings, json_findings, load_findings,
     n_squared_findings, reflect_findings,
 };
+pub(super) use performance_extra::extra_performance_findings;
 pub(super) use style::{import_grouping_findings, package_name_consistency};

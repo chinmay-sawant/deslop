@@ -1,0 +1,13 @@
+package handlers
+
+import (
+	"context"
+
+	"github.com/gin-gonic/gin"
+	"database/sql"
+)
+
+func LoadUsers(c *gin.Context, db *sql.DB, values []string) error {
+	_, err := db.QueryContext(c.Request.Context(), "SELECT id FROM users WHERE id IN (?)", values...)
+	return err
+}

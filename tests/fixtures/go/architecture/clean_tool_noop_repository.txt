@@ -1,0 +1,13 @@
+package repository
+
+import "context"
+
+type AuditEvent struct {
+	ID string
+}
+
+type NoopAuditLogger struct{}
+
+func (l *NoopAuditLogger) Publish(ctx context.Context, event AuditEvent) error {
+	return nil
+}

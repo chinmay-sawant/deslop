@@ -1,0 +1,16 @@
+package cache
+
+import (
+    "context"
+
+    redis "github.com/redis/go-redis/v9"
+)
+
+type PatientCache struct {
+    client *redis.Client
+}
+
+func (c *PatientCache) Get(key string) (string, error) {
+    ctx := context.Background()
+    return c.client.Get(ctx, key).Result()
+}

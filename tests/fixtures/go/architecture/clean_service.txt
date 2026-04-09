@@ -1,0 +1,27 @@
+package service
+
+import "context"
+
+type CreateUserSpec struct {
+    Name string
+}
+
+type CreateUserResult struct {
+    ID int
+}
+
+type UserRepository interface {
+    Create(ctx context.Context, input CreateUserSpec) (CreateUserResult, error)
+}
+
+type UserService struct {
+    repo UserRepository
+}
+
+func NewUserService(repo UserRepository) *UserService {
+    return &UserService{repo: repo}
+}
+
+func (s *UserService) Create(ctx context.Context, input CreateUserSpec) (CreateUserResult, error) {
+    return s.repo.Create(ctx, input)
+}

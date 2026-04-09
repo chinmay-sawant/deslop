@@ -1,0 +1,32 @@
+package service
+
+import (
+	ctxpkg "context"
+	"database/sql"
+	"net/http"
+)
+
+type RequestKey string
+
+var userKey = "user_client"
+
+type Worker struct {
+	ctx ctxpkg.Context
+}
+
+func LoadPatient(db *sql.DB, ctx ctxpkg.Context, patientID string) error {
+	ctx = ctxpkg.WithValue(ctx, "request_id", patientID)
+	ctx = ctxpkg.WithValue(ctx, userKey, &http.Client{})
+	_, err := db.QueryContext(ctx, "SELECT 1")
+	return err
+}
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	go func() {
+		publishAudit(ctx)
+	}()
+	_, _ = w.Write([]byte("ok"))
+}
+
+func publishAudit(ctx ctxpkg.Context) {}

@@ -307,6 +307,18 @@ fn visit_db_queries(node: Node<'_>, source: &str, inside_loop: bool, calls: &mut
             let query_text = arguments_node
                 .and_then(|arguments| query_argument_node(arguments, &name))
                 .and_then(|query_node| first_string_literal(query_node, source));
+            if !db_call_looks_confident(
+                receiver.as_deref(),
+                &name,
+                query_text.as_deref(),
+                query_argument_text.as_deref(),
+            ) {
+                let mut cursor = node.walk();
+                for child in node.named_children(&mut cursor) {
+                    visit_db_queries(child, source, next_inside_loop, calls);
+                }
+                return;
+            }
             let query_uses_dynamic_construction =
                 query_argument_text.as_deref().is_some_and(is_dynamic_query);
             calls.push(DbQueryCall {
@@ -346,6 +358,40 @@ fn is_db_query_method(name: &str) -> bool {
     )
 }
 
+fn db_call_looks_confident(
+    receiver: Option<&str>,
+    method_name: &str,
+    query_text: Option<&str>,
+    query_argument_text: Option<&str>,
+) -> bool {
+    match method_name {
+        "Raw" | "First" | "Find" | "Take" | "Preload" => true,
+        _ => {
+            query_text.is_some_and(looks_like_sql_text)
+                || query_argument_text.is_some_and(|text| {
+                    looks_like_sql_text(text)
+                        || (is_dynamic_query(text) && looks_like_sql_text(text))
+                })
+                || receiver.is_some_and(receiver_looks_database_like)
+        }
+    }
+}
+
+fn receiver_looks_database_like(receiver: &str) -> bool {
+    let lower = receiver.to_ascii_lowercase();
+    [
+        "db", "sql", "tx", "stmt", "row", "rows", "repo", "store", "conn", "pool", "queryer",
+        "querier", "session",
+    ]
+    .iter()
+    .any(|marker| {
+        lower == *marker
+            || lower.ends_with(marker)
+            || lower.contains(&format!(".{marker}"))
+            || lower.contains(&format!("_{marker}"))
+    })
+}
+
 fn query_argument_node<'tree>(
     arguments_node: Node<'tree>,
     method_name: &str,
@@ -370,4 +416,25 @@ fn is_dynamic_query(expression: &str) -> bool {
         || compact.contains("fmt.Sprintf(")
         || compact.contains("fmt.Sprint(")
         || compact.contains("strings.Join(")
+}
+
+fn looks_like_sql_text(text: &str) -> bool {
+    let lower = text.to_ascii_lowercase();
+    [
+        "select ",
+        "insert ",
+        "update ",
+        "delete ",
+        "with ",
+        "from ",
+        "join ",
+        "where ",
+        " into ",
+        " values",
+        " order by ",
+        " group by ",
+        " having ",
+    ]
+    .iter()
+    .any(|marker| lower.contains(marker))
 }

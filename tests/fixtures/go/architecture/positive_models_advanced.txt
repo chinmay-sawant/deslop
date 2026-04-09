@@ -1,0 +1,55 @@
+package models
+
+import (
+    "database/sql"
+
+    "github.com/swaggo/swag"
+    "gorm.io/gorm"
+)
+
+type PatchUserRequest struct {
+    Name string `json:"name"`
+}
+
+type NullableResponse struct {
+    Description sql.NullString `json:"description"`
+}
+
+type CreateUpdateUserRequest struct {
+    Name string `json:"name" binding:"required"`
+}
+
+type User struct {
+    ID              string         `gorm:"column:id" json:"id" validate:"required" form:"id"`
+    Name            string         `gorm:"column:name" json:"name"`
+    Description     sql.NullString `gorm:"column:description" json:"description"`
+    DisplayName     string         `gorm:"-" json:"display_name"`
+    BillingCard     string         `gorm:"column:billing_card" json:"billing_card"`
+    ShippingAddress string         `gorm:"column:shipping_address" json:"shipping_address"`
+    ProfileAvatar   string         `gorm:"column:profile_avatar" json:"profile_avatar"`
+    InventorySKU    string         `gorm:"column:inventory_sku" json:"inventory_sku"`
+    TenantWorkspace string         `gorm:"column:tenant_workspace" json:"tenant_workspace"`
+    Label           string         `gorm:"-" json:"label"`
+    TotalCount      int            `gorm:"-" json:"total_count"`
+}
+
+type Audit struct {
+    ID   string `gorm:"column:id"`
+    Name string `gorm:"column:name"`
+}
+
+func (User) TableName() string {
+    return "users"
+}
+
+func (Audit) TableName() string {
+    return "audit_logs"
+}
+
+func (u *User) BeforeSave(tx *gorm.DB) error {
+    _ = swag.NameStrategy{}
+    tx.Model(&Audit{}).Create(&Audit{})
+    tx.Model(&Audit{}).Where("audit_type = ?", "write").Where("audit_type = ?", "write").Delete(&Audit{})
+    Publish("audit")
+    return nil
+}

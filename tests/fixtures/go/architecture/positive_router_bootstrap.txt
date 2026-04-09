@@ -1,0 +1,18 @@
+package router
+
+import "github.com/gin-gonic/gin"
+
+func RegisterSloppyRoutes(engine *gin.Engine) {
+    repo := NewUserRepository()
+    client := NewClient()
+    repo.Query().Where("status = ?", "active").First(&struct{}{})
+    other := NewClient()
+    _ = client
+    _ = other
+    engine.GET("/admin", func(c *gin.Context) {})
+    engine.GET("/admin", func(c *gin.Context) {})
+    StartWorker()
+    StartCron()
+    Migrate()
+    engine.Run()
+}

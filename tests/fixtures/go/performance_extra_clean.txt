@@ -1,0 +1,3 @@
+package perfextra
+
+func Clean() {}

@@ -1,0 +1,18 @@
+package repository
+
+import (
+	"context"
+	"database/sql"
+)
+
+type UserRepository struct {
+	db *sql.DB
+}
+
+func (r *UserRepository) UpdateUser(ctx context.Context, id string, active bool) error {
+	_, err := r.db.ExecContext(ctx, "UPDATE users SET active = ? WHERE id = ?", active, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

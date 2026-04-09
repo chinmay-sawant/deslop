@@ -1,0 +1,17 @@
+package router
+
+import (
+    "acme/project/internal/models"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+)
+
+func RegisterRoutes(engine *gin.Engine, db *gorm.DB) {
+    db.AutoMigrate(&models.User{})
+    engine.GET("/users", func(c *gin.Context) {})
+}
+
+func init() {
+    engine := gin.Default()
+    engine.Use()
+}

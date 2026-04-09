@@ -4,6 +4,7 @@ pub(crate) const NAMING: &str = crate::heuristics::naming::BINDING_LOCATION;
 pub(crate) const SHARED_SECURITY: &str = crate::heuristics::security::BINDING_LOCATION;
 pub(crate) const TEST_QUALITY: &str = crate::heuristics::test_quality::BINDING_LOCATION;
 
+pub(crate) const GO_ARCHITECTURE: &str = crate::heuristics::go::ARCHITECTURE_BINDING_LOCATION;
 pub(crate) const GO_CONCURRENCY: &str = crate::heuristics::go::CONCURRENCY_BINDING_LOCATION;
 pub(crate) const GO_CONSISTENCY: &str = crate::heuristics::go::CONSISTENCY_BINDING_LOCATION;
 pub(crate) const GO_CONTEXT: &str = crate::heuristics::go::CONTEXT_BINDING_LOCATION;
@@ -22,6 +23,8 @@ pub(crate) const GO_LIBRARY_SECURITY: &str =
     crate::heuristics::go::LIBRARY_MISUSE_SECURITY_BINDING_LOCATION;
 pub(crate) const GO_MOD: &str = crate::heuristics::go::BINDING_LOCATION;
 pub(crate) const GO_PERFORMANCE: &str = crate::heuristics::go::PERFORMANCE_BINDING_LOCATION;
+pub(crate) const GO_PERFORMANCE_EXTRA: &str =
+    crate::heuristics::go::PERFORMANCE_EXTRA_BINDING_LOCATION;
 pub(crate) const GO_STYLE: &str = crate::heuristics::go::STYLE_BINDING_LOCATION;
 
 pub(crate) const PYTHON_AI_SMELLS: &str = crate::heuristics::python::AI_SMELLS_BINDING_LOCATION;

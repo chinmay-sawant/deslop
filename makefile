@@ -72,7 +72,7 @@ clean:
 	rm -f results.txt temp_gopdfsuit.txt temp_snapback.txt temp_claw.txt
 
 temp:
-	cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/Daemon --no-fail > temp.txt
+	cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/GO_FHIR_DEMO --no-fail > temp.txt
 	python3 scripts/extract_finding_context.py temp.txt
 
 # Display help for make targets

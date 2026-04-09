@@ -1,0 +1,12 @@
+package handlers
+
+import (
+	"database/sql"
+
+	"github.com/gin-gonic/gin"
+)
+
+func SearchUsers(c *gin.Context, db *sql.DB) error {
+	_, err := db.QueryContext(c.Request.Context(), "SELECT id FROM users WHERE team = ? OR region = ? OR status = ? OR tier = ?", c.Query("team"), c.Query("region"), c.Query("status"), c.Query("tier"))
+	return err
+}

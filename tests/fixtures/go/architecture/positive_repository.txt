@@ -1,0 +1,29 @@
+package repository
+
+import (
+    "net/http"
+
+    "acme/project/internal/service"
+    "acme/project/internal/transport"
+    "github.com/gin-gonic/gin"
+    "github.com/prometheus/client_golang/prometheus"
+    "gorm.io/gorm"
+)
+
+type UserRepository struct {
+    db      *gorm.DB
+    counter prometheus.Counter
+}
+
+func (r *UserRepository) Load(c *gin.Context, req transport.CreateUserRequest, tx *gorm.DB) (transport.UserResponse, int, error) {
+    if tx == nil {
+        tx = r.db
+    }
+    _ = service.UserService{}
+    _ = r.counter
+    return transport.UserResponse{}, http.StatusBadRequest, nil
+}
+
+func (r *UserRepository) Query() *gorm.DB {
+    return r.db
+}

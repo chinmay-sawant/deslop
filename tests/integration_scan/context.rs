@@ -1,4 +1,4 @@
-use super::FixtureWorkspace;
+use super::{FixtureWorkspace, assert_rules_absent, assert_rules_present};
 
 #[test]
 fn test_missing_ctx_http() {
@@ -240,6 +240,78 @@ fn test_context_nested_wrapper_slop() {
 }
 
 #[test]
+fn test_request_handler_background_context_slop() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "handler.go",
+        go_fixture!("context_request_handler_background_slop.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(&report, &["context_background_used"]);
+}
+
+#[test]
+fn test_request_handler_background_context_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "handler.go",
+        go_fixture!("context_request_handler_background_clean.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(&report, &["context_background_used"]);
+}
+
+#[test]
+fn test_cache_interface_missing_context() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/cache/patient_cache.go",
+        go_fixture!("context_cache_interface_positive.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(&report, &["cache_interface_method_missing_context"]);
+}
+
+#[test]
+fn test_cache_interface_missing_context_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/cache/patient_cache.go",
+        go_fixture!("context_cache_interface_clean.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(&report, &["cache_interface_method_missing_context"]);
+}
+
+#[test]
+fn test_cache_method_uses_context_background() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/cache/patient_cache.go",
+        go_fixture!("context_cache_background_positive.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(&report, &["cache_method_uses_context_background"]);
+}
+
+#[test]
+fn test_cache_method_uses_context_background_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/cache/patient_cache.go",
+        go_fixture!("context_cache_background_clean.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(&report, &["cache_method_uses_context_background"]);
+}
+
+#[test]
 fn test_context_db_query_wrapper_slop() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("db_wrapper.go", go_fixture!("context_db_query_slop.txt"));
@@ -250,6 +322,19 @@ fn test_context_db_query_wrapper_slop() {
         finding.rule_id == "missing_context_propagation"
             && finding.function_name.as_deref() == Some("Load")
             && finding.message.contains("context-aware DB variant")
+    }));
+}
+
+#[test]
+fn test_request_query_param_is_not_treated_as_missing_context_propagation() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("handler.go", go_fixture!("context_query_param_clean.txt"));
+
+    let report = workspace.scan();
+
+    assert!(!report.findings.iter().any(|finding| {
+        finding.rule_id == "missing_context_propagation"
+            && finding.function_name.as_deref() == Some("Handle")
     }));
 }
 
@@ -289,4 +374,46 @@ fn test_context_propagation_severity_override() {
         finding.rule_id == "missing_context_propagation"
             && matches!(finding.severity, deslop::Severity::Error)
     }));
+}
+
+#[test]
+fn test_project_agnostic_context_gaps_positive() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/service/context_rules.go",
+        go_fixture!("context_project_agnostic_positive.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &[
+            "context_not_first_parameter",
+            "context_stored_in_struct_field",
+            "context_withvalue_used_for_dependencies_or_large_payloads",
+            "context_key_uses_exported_or_builtin_type",
+            "request_context_passed_to_background_task_without_detach",
+        ],
+    );
+}
+
+#[test]
+fn test_project_agnostic_context_gaps_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/service/context_rules.go",
+        go_fixture!("context_project_agnostic_clean.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &[
+            "context_not_first_parameter",
+            "context_stored_in_struct_field",
+            "context_withvalue_used_for_dependencies_or_large_payloads",
+            "context_key_uses_exported_or_builtin_type",
+            "request_context_passed_to_background_task_without_detach",
+        ],
+    );
 }

@@ -1,0 +1,52 @@
+package repository
+
+import (
+    "database/sql"
+    "net/http"
+    "reflect"
+
+    "acme/project/internal/transport"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+)
+
+var SharedDB *gorm.DB = DB.Session(&gorm.Session{})
+
+type BaseRepository struct {
+    db *gorm.DB
+}
+
+type AdvancedRepository struct {
+    db *gorm.DB
+}
+
+func NewAdvancedRepository(engine *gin.Engine) *AdvancedRepository {
+    _ = engine
+    return &AdvancedRepository{}
+}
+
+func (r *BaseRepository) SaveGeneric(entity any) error {
+    _ = reflect.TypeOf(entity)
+    return nil
+}
+
+func (r *AdvancedRepository) LoadByStatus() *gorm.DB {
+    return r.db.Where("status = ?", "active").Where("status = ?", "active").Unscoped()
+}
+
+func (r *AdvancedRepository) SaveWithTx() (sql.NullString, error) {
+    tx := r.db.Begin()
+    err := tx.Error
+    tx.Exec("DELETE FROM users WHERE status = ?", "inactive")
+    tx.Where("status = ?", "active").Delete(&transport.UserResponse{})
+    tx.SavePoint("before_delete")
+    tx.Status = http.StatusBadRequest
+    _ = err
+    logger.Info("status", http.StatusBadRequest, "route", "/users")
+    return sql.NullString{}, nil
+}
+
+func (r *AdvancedRepository) PatchUser(req transport.CreateUserRequest) error {
+    updates := map[string]any{"name": req.Name}
+    return r.db.Model(&transport.UserResponse{}).Updates(updates).Error
+}

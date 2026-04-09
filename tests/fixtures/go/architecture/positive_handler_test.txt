@@ -1,0 +1,47 @@
+package handler
+
+import (
+    "testing"
+
+    "acme/project/internal/models"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+)
+
+type FakeUserRepo struct{}
+type FakeAuditRepo struct{}
+
+func buildHandler() *Handler {
+    return &Handler{}
+}
+
+func makeHandler() *Handler {
+    return &Handler{}
+}
+
+func NewTestFixture() *gorm.DB {
+    return nil
+}
+
+func TestListUsers(t *testing.T) {
+    router := gin.New()
+    RegisterRoutes(router)
+    recorder := gin.New()
+    _ = recorder
+    gin.CreateTestContext(nil)
+    assert.JSONEq(t, "{\"data\":{\"id\":\"1\"}}", "{\"data\":{\"id\":\"1\"}}")
+    repo := NewRepo()
+    _ = repo
+    _ = models.User{}
+    assert.Equal(t, "SELECT * FROM users", "SELECT * FROM users")
+}
+
+func TestSeedUsers(t *testing.T) {
+    router := gin.New()
+    RegisterRoutes(router)
+    DB.AutoMigrate(&SessionModel{})
+    cases := []struct { userID string; orderID string; invoice string }{
+        {userID: "u1", orderID: "o1", invoice: "i1"},
+    }
+    _ = cases
+}

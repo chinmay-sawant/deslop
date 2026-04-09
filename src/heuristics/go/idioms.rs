@@ -1,18 +1,22 @@
 use std::collections::{BTreeMap, BTreeSet};
+use std::fs;
 use std::path::PathBuf;
 
 use crate::analysis::{InterfaceSummary, ParsedFile, ParsedFunction};
+use crate::io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 use crate::model::{Finding, Severity, SymbolKind};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
 use super::super::common::import_alias_lookup;
+use super::framework_patterns::{is_gin_handler, is_http_handler};
 
 #[derive(Debug, Clone)]
 struct BodyLine {
     line: usize,
     text: String,
     in_loop: bool,
+    in_nested_func_literal: bool,
 }
 
 pub(crate) fn go_file_findings(file: &ParsedFile) -> Vec<Finding> {
@@ -41,6 +45,8 @@ pub(crate) fn go_function_findings(file: &ParsedFile, function: &ParsedFunction)
 pub(crate) fn go_repo_findings(files: &[&ParsedFile]) -> Vec<Finding> {
     let mut findings = single_impl_interface_findings(files);
     findings.extend(passthrough_wrapper_interface_findings(files));
+    findings.extend(ci_missing_go_test_race_findings(files));
+    findings.extend(db_pool_limits_not_configured_at_boot_findings(files));
     findings
 }
 
@@ -216,6 +222,29 @@ fn http_boundary_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
             });
         }
 
+        if contains_text(&lines, &format!("{name}.Body.Close()"))
+            && !response_body_consumed(&lines, name)
+            && !returns_binding(function, name)
+        {
+            findings.push(Finding {
+                rule_id: "http_response_body_not_drained_before_close".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: *line,
+                end_line: *line,
+                message: format!(
+                    "function {} closes HTTP response {} without draining or consuming the body",
+                    function.fingerprint.name, name
+                ),
+                evidence: vec![
+                    format!("response binding {name} created from {target} at line {line}"),
+                    format!("{name}.Body.Close() was observed"),
+                    "no read, decode, or io.Copy(io.Discard, resp.Body) style drain was observed before close".to_string(),
+                ],
+            });
+        }
+
         let decode_line = lines
             .iter()
             .find(|body_line| {
@@ -249,8 +278,33 @@ fn http_boundary_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
         }
     }
 
+    findings.extend(timeoutless_http_helper_findings(file, function, &lines, &http_aliases));
+    findings.extend(graceful_shutdown_findings(file, function, &lines, &http_aliases));
+    findings.extend(request_body_limit_findings(file, function, &lines));
+
     for alias in &http_aliases {
         for (line, literal) in composite_literal_blocks(function, &format!("{alias}.Client{{")) {
+            if !function.fingerprint.name.starts_with("New")
+                && !function.fingerprint.name.starts_with("new")
+            {
+                findings.push(Finding {
+                    rule_id: "http_client_allocated_per_call_without_reuse".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: line,
+                    end_line: line,
+                    message: format!(
+                        "function {} allocates http.Client inline instead of reusing shared client state",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("{alias}.Client{{...}} literal observed at line {line}"),
+                        "creating HTTP clients on regular call paths can orphan reusable keep-alive state".to_string(),
+                    ],
+                });
+            }
+
             if !literal.contains("Timeout:") {
                 findings.push(Finding {
                     rule_id: "http_client_without_timeout".to_string(),
@@ -342,25 +396,59 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
         }
     }
 
-    for (name, line, target) in binding_matches(&lines, &[".Query(", ".QueryContext("]) {
+    for body_line in &lines {
+        let Some((name, target)) =
+            binding_for_patterns(&body_line.text, &[".Query(", ".QueryContext("])
+        else {
+            continue;
+        };
+        if !rows_binding_looks_database_like(&lines, &name, &body_line.text) {
+            continue;
+        }
         if !contains_text(&lines, &format!("{name}.Close()")) && !returns_binding(function, &name) {
             findings.push(Finding {
                 rule_id: "rows_without_close".to_string(),
                 severity: Severity::Warning,
                 path: file.path.clone(),
                 function_name: Some(function.fingerprint.name.clone()),
-                start_line: line,
-                end_line: line,
+                start_line: body_line.line,
+                end_line: body_line.line,
                 message: format!(
                     "function {} uses rows handle {} without an observed Close() call",
                     function.fingerprint.name, name
                 ),
                 evidence: vec![
-                    format!("rows binding {name} created from {target} at line {line}"),
+                    format!(
+                        "rows binding {name} created from {target} at line {}",
+                        body_line.line
+                    ),
                     format!(
                         "no {}.Close() call was observed in the owning function",
                         name
                     ),
+                ],
+            });
+        }
+
+        if contains_text(&lines, &format!("{name}.Next()"))
+            && !contains_text(&lines, &format!("{name}.Err()"))
+            && !returns_binding(function, &name)
+        {
+            findings.push(Finding {
+                rule_id: "rows_iterated_without_rows_err_check".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: body_line.line,
+                end_line: body_line.line,
+                message: format!(
+                    "function {} iterates rows handle {} without checking Rows.Err()",
+                    function.fingerprint.name, name
+                ),
+                evidence: vec![
+                    format!("rows binding {name} created from {target} at line {}", body_line.line),
+                    format!("{name}.Next() was observed"),
+                    format!("no {}.Err() call was observed after iteration", name),
                 ],
             });
         }
@@ -414,10 +502,33 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
                 ],
             });
         }
+
+        if let Some(slow_line) = slow_work_inside_transaction_line(&lines, &name, line) {
+            findings.push(Finding {
+                rule_id: "slow_work_inside_transaction_scope".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: slow_line,
+                end_line: slow_line,
+                message: format!(
+                    "function {} keeps slow or loop-heavy work inside transaction {}",
+                    function.fingerprint.name, name
+                ),
+                evidence: vec![
+                    format!("transaction {name} begins from {target} at line {line}"),
+                    format!("loop or slow work was observed before commit/rollback at line {slow_line}"),
+                    "long transaction spans can block pool capacity and enlarge contention windows".to_string(),
+                ],
+            });
+        }
     }
 
     for body_line in &lines {
-        if body_line.in_loop && body_line.text.starts_with("defer ") {
+        if body_line.in_loop
+            && !body_line.in_nested_func_literal
+            && body_line.text.starts_with("defer ")
+        {
             findings.push(Finding {
                 rule_id: "defer_in_loop_resource_growth".to_string(),
                 severity: Severity::Info,
@@ -442,6 +553,181 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
     }
 
     findings
+}
+
+fn response_body_consumed(lines: &[BodyLine], name: &str) -> bool {
+    lines.iter().any(|body_line| {
+        body_line.text.contains(&format!("{name}.Body"))
+            && (body_line.text.contains("Decode(")
+                || body_line.text.contains("ReadAll(")
+                || body_line.text.contains("Read(")
+                || body_line.text.contains("Unmarshal(")
+                || body_line.text.contains("io.Copy(io.Discard")
+                || body_line.text.contains("io.Copy(ioutil.Discard"))
+    })
+}
+
+fn timeoutless_http_helper_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+    http_aliases: &[String],
+) -> Vec<Finding> {
+    let helper_calls = ["Get(", "Head(", "Post(", "PostForm("];
+    let mut findings = Vec::new();
+
+    for alias in http_aliases {
+        for body_line in lines {
+            let default_client = body_line.text.contains(&format!("{alias}.DefaultClient."));
+            let helper_call = helper_calls
+                .iter()
+                .any(|marker| body_line.text.contains(&format!("{alias}.{marker}")));
+            if !default_client && !helper_call {
+                continue;
+            }
+
+            findings.push(Finding {
+                rule_id: "timeoutless_http_default_client_or_helper_call".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: body_line.line,
+                end_line: body_line.line,
+                message: format!(
+                    "function {} uses timeout-less net/http helper or default client state",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("observed HTTP helper/default-client call at line {}", body_line.line),
+                    "net/http helpers and http.DefaultClient omit explicit application timeouts".to_string(),
+                ],
+            });
+        }
+    }
+
+    findings
+}
+
+fn graceful_shutdown_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+    http_aliases: &[String],
+) -> Vec<Finding> {
+    let signal_aliases = import_aliases_for(file, "os/signal");
+    let listen_line = lines.iter().find(|body_line| {
+        http_aliases.iter().any(|alias| {
+            body_line.text.contains(&format!("{alias}.ListenAndServe("))
+                || body_line.text.contains(&format!("{alias}.ListenAndServeTLS("))
+                || body_line.text.contains(".ListenAndServe(")
+                || body_line.text.contains(".ListenAndServeTLS(")
+        })
+    });
+    let Some(listen_line) = listen_line else {
+        return Vec::new();
+    };
+
+    let has_shutdown = lines.iter().any(|body_line| {
+        body_line.text.contains(".Shutdown(") || body_line.text.contains(".Close(")
+    });
+    let has_signal_owner = signal_aliases.iter().any(|alias| {
+        lines.iter().any(|body_line| {
+            body_line.text.contains(&format!("{alias}.NotifyContext("))
+                || body_line.text.contains(&format!("{alias}.Notify("))
+        })
+    });
+    if has_shutdown && has_signal_owner {
+        return Vec::new();
+    }
+
+    vec![Finding {
+        rule_id: "http_server_bootstrap_without_graceful_shutdown_flow".to_string(),
+        severity: Severity::Warning,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: listen_line.line,
+        end_line: listen_line.line,
+        message: format!(
+            "function {} starts an HTTP server without an obvious graceful shutdown flow",
+            function.fingerprint.name
+        ),
+        evidence: vec![
+            format!("server start observed at line {}", listen_line.line),
+            "no signal.NotifyContext/Notify ownership and Shutdown(...) flow were observed in the same bootstrap path".to_string(),
+        ],
+    }]
+}
+
+fn request_body_limit_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    if !(is_http_handler(file, function) || is_gin_handler(file, function)) {
+        return Vec::new();
+    }
+
+    let bounded = lines.iter().any(|body_line| {
+        body_line.text.contains("LimitReader(")
+            || body_line.text.contains("MaxBytesReader(")
+            || body_line.text.contains("ParseMultipartForm(")
+    });
+    if bounded {
+        return Vec::new();
+    }
+
+    let risky_line = lines.iter().find(|body_line| {
+        (body_line.text.contains(".Body")
+            || body_line.text.contains("Request.Body")
+            || body_line.text.contains("req.Body"))
+            && (body_line.text.contains("NewDecoder(")
+                || body_line.text.contains("ReadAll(")
+                || body_line.text.contains("Copy(")
+                || body_line.text.contains("Read("))
+    });
+    let Some(risky_line) = risky_line else {
+        return Vec::new();
+    };
+
+    vec![Finding {
+        rule_id: "request_body_read_without_size_limit".to_string(),
+        severity: Severity::Warning,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: risky_line.line,
+        end_line: risky_line.line,
+        message: format!(
+            "function {} reads request body data without an obvious size limit",
+            function.fingerprint.name
+        ),
+        evidence: vec![
+            format!("request body read observed at line {}", risky_line.line),
+            "no io.LimitReader, http.MaxBytesReader, or multipart size bound was observed first".to_string(),
+        ],
+    }]
+}
+
+fn slow_work_inside_transaction_line(lines: &[BodyLine], tx_name: &str, begin_line: usize) -> Option<usize> {
+    let end_line = lines
+        .iter()
+        .find(|body_line| {
+            body_line.text.contains(&format!("{tx_name}.Commit()"))
+                || (body_line.text.contains(&format!("{tx_name}.Rollback()"))
+                    && !body_line.text.starts_with("defer "))
+        })
+        .map(|line| line.line)
+        .unwrap_or(usize::MAX);
+
+    lines
+        .iter()
+        .find(|body_line| {
+            body_line.line > begin_line
+                && body_line.line < end_line
+                && (body_line.text.starts_with("for ")
+                    || body_line.text.contains(" time.Sleep(")
+                    || body_line.text.contains(".Sleep("))
+        })
+        .map(|body_line| body_line.line)
 }
 
 fn init_side_effect_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
@@ -863,6 +1149,12 @@ fn http_response_bindings(
             ]
         })
         .collect::<Vec<_>>();
+    patterns.extend([
+        ".Get(".to_string(),
+        ".Head(".to_string(),
+        ".Post(".to_string(),
+        ".PostForm(".to_string(),
+    ]);
     patterns.push(".Do(".to_string());
 
     let string_patterns = patterns.iter().map(String::as_str).collect::<Vec<_>>();
@@ -915,6 +1207,7 @@ fn split_assignment(text: &str) -> Option<(&str, &str)> {
 fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
     let mut brace_depth = 0usize;
     let mut loop_exit_depths = Vec::new();
+    let mut func_literal_exit_depths = Vec::new();
     let mut lines = Vec::new();
 
     for (offset, raw_line) in function.body_text.lines().enumerate() {
@@ -932,10 +1225,19 @@ fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
             {
                 loop_exit_depths.pop();
             }
+            while func_literal_exit_depths
+                .last()
+                .is_some_and(|exit_depth| *exit_depth > brace_depth)
+            {
+                func_literal_exit_depths.pop();
+            }
         }
 
         let starts_loop = contains_keyword(&stripped, "for");
+        let starts_func_literal =
+            (stripped.contains("func(") || stripped.contains("func (")) && stripped.contains('{');
         let in_loop = !loop_exit_depths.is_empty() || starts_loop;
+        let in_nested_func_literal = !func_literal_exit_depths.is_empty() || starts_func_literal;
         let opening_braces = stripped
             .chars()
             .filter(|character| *character == '{')
@@ -943,12 +1245,16 @@ fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
         if starts_loop {
             loop_exit_depths.push(brace_depth + opening_braces.max(1));
         }
+        if starts_func_literal {
+            func_literal_exit_depths.push(brace_depth + opening_braces.max(1));
+        }
 
         brace_depth += opening_braces;
         lines.push(BodyLine {
             line: line_no,
             text: stripped,
             in_loop,
+            in_nested_func_literal,
         });
     }
 
@@ -1020,6 +1326,57 @@ fn lines_for(lines: &[BodyLine], needle: &str) -> Vec<usize> {
         .filter(|body_line| body_line.text.contains(needle))
         .map(|body_line| body_line.line)
         .collect()
+}
+
+fn rows_binding_looks_database_like(lines: &[BodyLine], name: &str, line_text: &str) -> bool {
+    rows_binding_name_looks_like_handle(name)
+        || looks_like_sql_text(line_text)
+        || lines
+            .iter()
+            .any(|body_line| rows_handle_usage(&body_line.text, name))
+}
+
+fn rows_binding_name_looks_like_handle(name: &str) -> bool {
+    let lower = name.to_ascii_lowercase();
+    lower == "rows"
+        || lower.ends_with("rows")
+        || lower.ends_with("rowset")
+        || lower.contains("rows_")
+        || lower.contains("_rows")
+}
+
+fn rows_handle_usage(text: &str, name: &str) -> bool {
+    [
+        "Close(",
+        "Next(",
+        "Scan(",
+        "Err(",
+        "Columns(",
+        "ColumnTypes(",
+    ]
+    .iter()
+    .any(|method| text.contains(&format!("{name}.{method}")))
+}
+
+fn looks_like_sql_text(text: &str) -> bool {
+    let lower = text.to_ascii_lowercase();
+    [
+        "select ",
+        "insert ",
+        "update ",
+        "delete ",
+        "with ",
+        "from ",
+        "join ",
+        "where ",
+        " into ",
+        " values",
+        " order by ",
+        " group by ",
+        " having ",
+    ]
+    .iter()
+    .any(|marker| lower.contains(marker))
 }
 
 fn returns_binding(function: &ParsedFunction, name: &str) -> bool {
@@ -1102,6 +1459,180 @@ fn contains_keyword(line: &str, keyword: &str) -> bool {
 
 fn strip_line_comment(line: &str) -> &str {
     line.split("//").next().unwrap_or("")
+}
+
+fn ci_missing_go_test_race_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+    if files.is_empty() {
+        return Vec::new();
+    }
+
+    let workspace_root = workspace_root_path(files);
+    if workspace_root.as_os_str().is_empty() {
+        return Vec::new();
+    }
+
+    let ci_candidates = [
+        workspace_root.join(".github/workflows"),
+        workspace_root.join("Makefile"),
+        workspace_root.join("makefile"),
+        workspace_root.join("action.yml"),
+        workspace_root.join("action.yaml"),
+    ];
+
+    let mut ci_sources = Vec::<PathBuf>::new();
+    for candidate in ci_candidates {
+        if candidate.is_dir() {
+            if let Ok(entries) = fs::read_dir(&candidate) {
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if path
+                        .extension()
+                        .and_then(|ext| ext.to_str())
+                        .is_some_and(|ext| matches!(ext, "yml" | "yaml"))
+                    {
+                        ci_sources.push(path);
+                    }
+                }
+            }
+        } else if candidate.exists() {
+            ci_sources.push(candidate);
+        }
+    }
+
+    if ci_sources.is_empty() {
+        return Vec::new();
+    }
+
+    let has_race = ci_sources.iter().any(|path| {
+        read_to_string_limited(path, DEFAULT_MAX_BYTES)
+            .map(|source| source.contains("go test -race"))
+            .unwrap_or(false)
+    });
+    if has_race {
+        return Vec::new();
+    }
+
+    let path = ci_sources.into_iter().next().unwrap_or(workspace_root);
+    vec![Finding {
+        rule_id: "ci_missing_go_test_race".to_string(),
+        severity: Severity::Info,
+        path,
+        function_name: None,
+        start_line: 1,
+        end_line: 1,
+        message: "repo CI or build automation does not visibly run `go test -race`".to_string(),
+        evidence: vec![
+            "Go concurrency issues are often caught early by the race detector".to_string(),
+            "no `go test -race` invocation was observed in workflow or build automation files".to_string(),
+        ],
+    }]
+}
+
+fn db_pool_limits_not_configured_at_boot_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+    for file in files {
+        if file.is_test_file {
+            continue;
+        }
+
+        let lower_path = file.path.to_string_lossy().to_ascii_lowercase();
+        if !(lower_path.ends_with("/main.go")
+            || lower_path.contains("/cmd/")
+            || lower_path.contains("bootstrap")
+            || lower_path.contains("server"))
+        {
+            continue;
+        }
+
+        let source = read_to_string_limited(&file.path, DEFAULT_MAX_BYTES).ok();
+        let lower_source = source
+            .as_deref()
+            .unwrap_or_default()
+            .to_ascii_lowercase();
+        let open_line = file.functions.iter().find_map(|function| {
+            function
+                .body_text
+                .lines()
+                .enumerate()
+                .find(|(_, line)| {
+                    line.contains("sql.Open(")
+                        || line.contains("sqlx.Open(")
+                        || line.contains("pgxpool.New(")
+                        || line.contains(".DB()")
+                })
+                .map(|(offset, _)| function.body_start_line + offset)
+        });
+        let Some(open_line) = open_line else {
+            continue;
+        };
+
+        let has_limits = [
+            "setmaxidleconns(",
+            "setmaxopenconns(",
+            "setconnmaxlifetime(",
+            "setconnmaxidletime(",
+        ]
+        .iter()
+        .any(|marker| lower_source.contains(marker));
+        if has_limits {
+            continue;
+        }
+
+        return vec![Finding {
+            rule_id: "db_pool_limits_not_configured_at_boot".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: None,
+            start_line: open_line,
+            end_line: open_line,
+            message: "bootstrap opens long-lived DB client state without visible pool sizing".to_string(),
+            evidence: vec![
+                format!("database bootstrap signal observed at line {open_line}"),
+                "no SetMaxIdleConns, SetMaxOpenConns, SetConnMaxLifetime, or SetConnMaxIdleTime call was observed in the bootstrap file".to_string(),
+            ],
+        }];
+    }
+
+    Vec::new()
+}
+
+fn workspace_root_path(files: &[&ParsedFile]) -> PathBuf {
+    let mut root = files
+        .first()
+        .and_then(|file| file.path.parent().map(PathBuf::from))
+        .unwrap_or_default();
+
+    let mut probe = root.clone();
+    loop {
+        if probe.join(".github").exists()
+            || probe.join("Makefile").exists()
+            || probe.join("makefile").exists()
+            || probe.join("action.yml").exists()
+            || probe.join("action.yaml").exists()
+        {
+            root = probe;
+            break;
+        }
+        let Some(parent) = probe.parent().map(PathBuf::from) else {
+            break;
+        };
+        if parent == probe {
+            break;
+        }
+        probe = parent;
+    }
+
+    for file in files.iter().skip(1) {
+        let Some(parent) = file.path.parent() else {
+            continue;
+        };
+        while !root.as_os_str().is_empty() && !parent.starts_with(&root) {
+            if !root.pop() {
+                break;
+            }
+        }
+    }
+
+    root
 }
 
 fn group_by_package<'a>(

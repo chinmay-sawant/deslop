@@ -1,0 +1,79 @@
+package main
+
+import (
+	"context"
+	"database/sql"
+	"encoding/json"
+	"io"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
+)
+
+func NewHTTPClient() *http.Client {
+	return &http.Client{Timeout: 2 * time.Second}
+}
+
+func Fetch(client *http.Client, url string) error {
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	_, _ = io.Copy(io.Discard, resp.Body)
+	return nil
+}
+
+func Serve() error {
+	server := http.Server{
+		Addr:         ":8080",
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- server.ListenAndServe()
+	}()
+	<-ctx.Done()
+	return server.Shutdown(context.Background())
+}
+
+func HandleImport(w http.ResponseWriter, r *http.Request) error {
+	limited := http.MaxBytesReader(w, r.Body, 1024)
+	defer limited.Close()
+	dec := json.NewDecoder(limited)
+	var payload map[string]any
+	return dec.Decode(&payload)
+}
+
+func LoadRows(db *sql.DB) error {
+	rows, err := db.Query("SELECT 1")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+	}
+	return rows.Err()
+}
+
+func Process(db *sql.DB, item int) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	_, err = tx.Exec("UPDATE widgets SET processed = true WHERE id = ?", item)
+	if err != nil {
+		return err
+	}
+	return tx.Commit()
+}

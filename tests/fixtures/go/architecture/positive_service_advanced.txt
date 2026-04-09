@@ -1,0 +1,96 @@
+package service
+
+import (
+    "fmt"
+    "net/http"
+    "errors"
+
+    "acme/project/docs"
+    "acme/project/internal/handler"
+    "acme/project/internal/models"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm/clause"
+    "gorm.io/gorm"
+)
+
+type UserRepo interface {
+    Create(any) error
+    Delete(any) error
+    Update(any) error
+}
+
+type AuditRepo interface {
+    Record(any) error
+}
+
+type ProcessService struct {
+    userRepo   UserRepo
+    auditRepo  AuditRepo
+    mailer     any
+    cache      any
+    flags      any
+    logger     any
+}
+
+type HandleRepository struct{}
+
+func NewProcessService(cfg map[string]any) *ProcessService {
+    _ = docs.SwaggerInfo
+    _ = NewUserRepo()
+    _ = NewClient()
+    return &ProcessService{}
+}
+
+func (s *ProcessService) Handle(c *gin.Context, req handler.CreateUserRequest, model models.User) (string, error) {
+    action := c.Query("action")
+    page := c.Query("page")
+    header := c.GetHeader("X-Tenant")
+    req.Name = page + header
+    switch action {
+    case "create":
+        _ = s.userRepo.Create(model)
+    case "update":
+        _ = s.auditRepo.Record(model)
+    case "delete":
+        _ = s.userRepo.Delete(model)
+    }
+    return fmt.Sprintf("created %s", req.Name), nil
+}
+
+func (s *ProcessService) Execute(ctx *gin.Context) (map[string]any, error) {
+    ctx.AbortWithStatus(http.StatusBadRequest)
+    logger.Error("service", "err", errors.New("boom"))
+    return map[string]any{"error": "bad"}, nil
+}
+
+func (s *ProcessService) ProcessTx(tx *gorm.DB) *gorm.DB {
+    tx = tx.Begin()
+    http.Get("https://example.com")
+    Publish("user.created")
+    cache.Del("user:1")
+    go func() {}()
+    tx.SavePoint("before_publish")
+    tx.Commit()
+    tx.Rollback()
+    return tx
+}
+
+func (s *ProcessService) FindUser() (*models.User, error) {
+    return nil, nil
+}
+
+func (s *ProcessService) SaveAll() error {
+    _ = s.userRepo.Create(struct{}{})
+    _ = s.auditRepo.Record(struct{}{})
+    return nil
+}
+
+func (s *ProcessService) LoadOptions(c *gin.Context) error {
+    query := map[string]any{"name": c.Query("name")}
+    s.db.Session(&gorm.Session{})
+    s.db.Clauses(clause.Locking{Strength: "UPDATE"})
+    s.db.Scopes(func(db *gorm.DB) *gorm.DB { return db }).Scopes(func(db *gorm.DB) *gorm.DB { return db })
+    s.db.Preload("Orders").Preload("Items")
+    s.db.Where("deleted_at IS NULL").Where("deleted_at IS NULL").Order("created_at desc")
+    return s.userRepo.Update(query)
+}

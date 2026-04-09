@@ -657,6 +657,32 @@ pub(super) fn sql_query_shape_findings(
         }
     }
 
+    for query_call in go.db_query_calls.iter() {
+        if let Some(query_text) = &query_call.query_text {
+            let upper = query_text.to_ascii_uppercase();
+            let or_count = upper.matches(" OR ").count();
+            if upper.contains(" WHERE ") && or_count >= 3 {
+                findings.push(Finding {
+                    rule_id: "many_column_or_filter_chain".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: query_call.line,
+                    end_line: query_call.line,
+                    message: format!(
+                        "function {} builds a large OR filter chain on a request path",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec![
+                        format!("query at line {}: {}", query_call.line, query_text),
+                        format!("{} OR clauses observed", or_count),
+                        "large OR chains can prevent index usage; consider a different query strategy".to_string(),
+                    ],
+                });
+            }
+        }
+    }
+
     findings
 }
 

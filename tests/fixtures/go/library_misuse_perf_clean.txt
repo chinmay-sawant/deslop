@@ -187,6 +187,15 @@ func SliceWithCap(items []string) []string {
 	return result
 }
 
+func ReuseScratchWithoutCapHint(items []string) []byte {
+	var buf []byte
+	for _, item := range items {
+		buf = buf[:0]
+		buf = append(buf, item...)
+	}
+	return buf
+}
+
 func GroupWithPrealloc(values []int) map[string][]int {
 	groups := map[string][]int{}
 	for _, v := range values {
