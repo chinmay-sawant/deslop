@@ -5,7 +5,7 @@ Functions fingerprinted: 876
 Findings: 1527
 Index summary: packages=63 symbols=1129 imports=755
 Parse failures: 0
-Timings: discover=88ms parse=630ms index=5ms heuristics=581ms total=1309ms
+Timings: discover=38ms parse=443ms index=3ms heuristics=344ms total=830ms
 
 Findings:
   - /home/chinmay/ChinmayPersonalProjects/gopdfsuit/bindings/python/pypdfsuit/_bindings.py:156 public function get_lib omits complete type hints [public_api_missing_type_hints]
