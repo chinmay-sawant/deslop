@@ -5,6 +5,7 @@ This folder contains the draft guide set for deslop `v0.3.0`.
 ## Current Contents
 
 - [go/architecture-and-governance-rule-backlog.md](go/architecture-and-governance-rule-backlog.md): checklist-driven backlog of 210 new Go rule candidates focused on architecture, layering, Gin boundaries, service and model ownership, error contracts, GORM/SQL governance, transactions, bootstrap, testing, and operational consistency.
+- [go/go-architecture-review-gap-checklist.md](go/go-architecture-review-gap-checklist.md): follow-up checklist that maps an external Go architecture review against the shipped registry, marks what is already covered, and queues only the remaining net-new rule candidates to avoid duplication.
 
 ## Scope Notes
 
