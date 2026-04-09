@@ -106,6 +106,11 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "Constructors that call `os.Getenv` instead of receiving normalized config."
     ),
     architecture_rule!(
+        "db_query_argument_erased_to_any",
+        Info,
+        "Concrete DB arguments erased to `any` or `interface{}` immediately before query execution."
+    ),
+    architecture_rule!(
         "create_and_update_share_same_dto_despite_conflicting_requiredness",
         Info,
         "A single DTO reused for create and update when validation rules clearly differ."
@@ -406,6 +411,11 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "Entrypoints that do too much without startup composition helpers."
     ),
     architecture_rule!(
+        "root_main_go_in_layered_service_repo",
+        Info,
+        "Layered service repos that keep the primary binary at repository-root `main.go` instead of `cmd/<name>/main.go`."
+    ),
+    architecture_rule!(
         "manual_required_checks_after_validate_tags_available",
         Info,
         "Handlers that re-check required fields manually even though struct-tag validation already exists."
@@ -549,6 +559,11 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "package_name_role_drift",
         Info,
         "Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role."
+    ),
+    architecture_rule!(
+        "tool_appeasement_noop_type_in_production_package",
+        Info,
+        "Production no-op or dummy types that appear to exist mainly to satisfy tooling instead of runtime behavior."
     ),
     architecture_rule!(
         "pagination_binding_duplicated_outside_boundary_helper",
@@ -929,6 +944,11 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "sql_null_types_escape_repository_boundary",
         Info,
         "Repository methods that leak driver-specific null wrappers beyond the persistence boundary."
+    ),
+    architecture_rule!(
+        "upstream_consumed_interface_declared_in_provider_package",
+        Info,
+        "Provider packages that declare an interface even though upstream packages appear to own the abstraction seam."
     ),
     architecture_rule!(
         "sql_query_constants_outside_repository_package",

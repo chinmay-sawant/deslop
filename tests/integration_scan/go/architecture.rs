@@ -217,29 +217,98 @@ pub(super) const ARCHITECTURE_RULES: &[&str] = &[
 fn test_go_architecture_positive() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
-        ("internal/transport/routes.go", go_fixture!("architecture/positive_transport_routes.txt")),
-        ("internal/handler/user_handler.go", go_fixture!("architecture/positive_handler.txt")),
-        ("internal/handler/advanced_handler.go", go_fixture!("architecture/positive_handler_advanced.txt")),
-        ("internal/handler/auth_middleware.go", go_fixture!("architecture/positive_middleware_transport.txt")),
-        ("internal/handler/advanced_routes.go", go_fixture!("architecture/positive_router_advanced.txt")),
-        ("internal/validation/user_validator.go", go_fixture!("architecture/positive_validator.txt")),
-        ("internal/utils/shared.go", go_fixture!("architecture/positive_utils.txt")),
-        ("internal/service/user_service.go", go_fixture!("architecture/positive_service.txt")),
-        ("internal/service/advanced_service.go", go_fixture!("architecture/positive_service_advanced.txt")),
-        ("internal/application/domain_types.go", go_fixture!("architecture/positive_service_outside.txt")),
-        ("internal/repository/user_repository.go", go_fixture!("architecture/positive_repository.txt")),
-        ("internal/repository/advanced_repository.go", go_fixture!("architecture/positive_repository_advanced.txt")),
-        ("internal/domain/persistence_types.go", go_fixture!("architecture/positive_repository_outside.txt")),
-        ("internal/entity/user.go", go_fixture!("architecture/positive_model_outside.txt")),
-        ("internal/models/user.go", go_fixture!("architecture/positive_models.txt")),
-        ("internal/models/advanced_models.go", go_fixture!("architecture/positive_models_advanced.txt")),
-        ("internal/contracts/user_contracts.go", go_fixture!("architecture/positive_contracts.txt")),
-        ("internal/router/routes.go", go_fixture!("architecture/positive_router.txt")),
-        ("internal/router/sloppy_routes.go", go_fixture!("architecture/positive_router_bootstrap.txt")),
-        ("cmd/api/main.go", go_fixture!("architecture/positive_cmd_main.txt")),
-        ("internal/handler/user_handler_test.go", go_fixture!("architecture/positive_handler_test.txt")),
-        ("internal/service/user_service_test.go", go_fixture!("architecture/positive_service_test.txt")),
-        ("internal/repository/user_repository_test.go", go_fixture!("architecture/positive_repository_test.txt")),
+        (
+            "internal/transport/routes.go",
+            go_fixture!("architecture/positive_transport_routes.txt"),
+        ),
+        (
+            "internal/handler/user_handler.go",
+            go_fixture!("architecture/positive_handler.txt"),
+        ),
+        (
+            "internal/handler/advanced_handler.go",
+            go_fixture!("architecture/positive_handler_advanced.txt"),
+        ),
+        (
+            "internal/handler/auth_middleware.go",
+            go_fixture!("architecture/positive_middleware_transport.txt"),
+        ),
+        (
+            "internal/handler/advanced_routes.go",
+            go_fixture!("architecture/positive_router_advanced.txt"),
+        ),
+        (
+            "internal/validation/user_validator.go",
+            go_fixture!("architecture/positive_validator.txt"),
+        ),
+        (
+            "internal/utils/shared.go",
+            go_fixture!("architecture/positive_utils.txt"),
+        ),
+        (
+            "internal/service/user_service.go",
+            go_fixture!("architecture/positive_service.txt"),
+        ),
+        (
+            "internal/service/advanced_service.go",
+            go_fixture!("architecture/positive_service_advanced.txt"),
+        ),
+        (
+            "internal/application/domain_types.go",
+            go_fixture!("architecture/positive_service_outside.txt"),
+        ),
+        (
+            "internal/repository/user_repository.go",
+            go_fixture!("architecture/positive_repository.txt"),
+        ),
+        (
+            "internal/repository/advanced_repository.go",
+            go_fixture!("architecture/positive_repository_advanced.txt"),
+        ),
+        (
+            "internal/domain/persistence_types.go",
+            go_fixture!("architecture/positive_repository_outside.txt"),
+        ),
+        (
+            "internal/entity/user.go",
+            go_fixture!("architecture/positive_model_outside.txt"),
+        ),
+        (
+            "internal/models/user.go",
+            go_fixture!("architecture/positive_models.txt"),
+        ),
+        (
+            "internal/models/advanced_models.go",
+            go_fixture!("architecture/positive_models_advanced.txt"),
+        ),
+        (
+            "internal/contracts/user_contracts.go",
+            go_fixture!("architecture/positive_contracts.txt"),
+        ),
+        (
+            "internal/router/routes.go",
+            go_fixture!("architecture/positive_router.txt"),
+        ),
+        (
+            "internal/router/sloppy_routes.go",
+            go_fixture!("architecture/positive_router_bootstrap.txt"),
+        ),
+        (
+            "cmd/api/main.go",
+            go_fixture!("architecture/positive_cmd_main.txt"),
+        ),
+        (
+            "internal/handler/user_handler_test.go",
+            go_fixture!("architecture/positive_handler_test.txt"),
+        ),
+        (
+            "internal/service/user_service_test.go",
+            go_fixture!("architecture/positive_service_test.txt"),
+        ),
+        (
+            "internal/repository/user_repository_test.go",
+            go_fixture!("architecture/positive_repository_test.txt"),
+        ),
     ]);
 
     let report = workspace.scan();
@@ -250,16 +319,194 @@ fn test_go_architecture_positive() {
 fn test_go_architecture_clean() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
-        ("internal/handler/user_handler.go", go_fixture!("architecture/clean_handler.txt")),
-        ("internal/service/user_service.go", go_fixture!("architecture/clean_service.txt")),
-        ("internal/repository/user_repository.go", go_fixture!("architecture/clean_repository.txt")),
-        ("internal/models/user.go", go_fixture!("architecture/clean_models.txt")),
-        ("internal/transport/contracts.go", go_fixture!("architecture/clean_contracts.txt")),
-        ("internal/router/routes.go", go_fixture!("architecture/clean_router.txt")),
-        ("internal/service/user_service_test.go", go_fixture!("architecture/clean_service_test.txt")),
-        ("internal/repository/user_repository_test.go", go_fixture!("architecture/clean_repository_test.txt")),
+        (
+            "internal/handler/user_handler.go",
+            go_fixture!("architecture/clean_handler.txt"),
+        ),
+        (
+            "internal/service/user_service.go",
+            go_fixture!("architecture/clean_service.txt"),
+        ),
+        (
+            "internal/repository/user_repository.go",
+            go_fixture!("architecture/clean_repository.txt"),
+        ),
+        (
+            "internal/models/user.go",
+            go_fixture!("architecture/clean_models.txt"),
+        ),
+        (
+            "internal/transport/contracts.go",
+            go_fixture!("architecture/clean_contracts.txt"),
+        ),
+        (
+            "internal/router/routes.go",
+            go_fixture!("architecture/clean_router.txt"),
+        ),
+        (
+            "internal/service/user_service_test.go",
+            go_fixture!("architecture/clean_service_test.txt"),
+        ),
+        (
+            "internal/repository/user_repository_test.go",
+            go_fixture!("architecture/clean_repository_test.txt"),
+        ),
     ]);
 
     let report = workspace.scan();
     assert_rules_absent(&report, ARCHITECTURE_RULES);
+}
+
+#[test]
+fn test_upstream_consumed_interface_declared_in_provider_package() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "internal/repository/user_repository.go",
+            go_fixture!("architecture/positive_provider_interface_repository.txt"),
+        ),
+        (
+            "internal/service/user_service.go",
+            go_fixture!("architecture/positive_provider_interface_service.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &["upstream_consumed_interface_declared_in_provider_package"],
+    );
+}
+
+#[test]
+fn test_upstream_consumed_interface_declared_in_provider_package_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "internal/service/user_service.go",
+            go_fixture!("architecture/clean_provider_interface_service.txt"),
+        ),
+        (
+            "internal/repository/user_repository.go",
+            go_fixture!("architecture/clean_provider_interface_repository.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &["upstream_consumed_interface_declared_in_provider_package"],
+    );
+}
+
+#[test]
+fn test_tool_appeasement_noop_type_in_production_package() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/repository/noop_patient_repository.go",
+        go_fixture!("architecture/positive_tool_noop.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(
+        &report,
+        &["tool_appeasement_noop_type_in_production_package"],
+    );
+}
+
+#[test]
+fn test_tool_appeasement_noop_type_in_production_package_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "internal/repository/noop_audit_logger.go",
+            go_fixture!("architecture/clean_tool_noop_repository.txt"),
+        ),
+        (
+            "internal/service/audit_service.go",
+            go_fixture!("architecture/clean_tool_noop_service.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+    assert_rules_absent(
+        &report,
+        &["tool_appeasement_noop_type_in_production_package"],
+    );
+}
+
+#[test]
+fn test_root_main_go_in_layered_service_repo() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "main.go",
+            go_fixture!("architecture/positive_root_main.txt"),
+        ),
+        (
+            "internal/service/user_service.go",
+            go_fixture!("architecture/layered_service_file.txt"),
+        ),
+        (
+            "internal/repository/user_repository.go",
+            go_fixture!("architecture/layered_repository_file.txt"),
+        ),
+        (
+            "internal/handler/user_handler.go",
+            go_fixture!("architecture/layered_handler_file.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+    assert_rules_present(&report, &["root_main_go_in_layered_service_repo"]);
+}
+
+#[test]
+fn test_root_main_go_in_layered_service_repo_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[
+        (
+            "cmd/api/main.go",
+            go_fixture!("architecture/clean_cmd_main.txt"),
+        ),
+        (
+            "internal/service/user_service.go",
+            go_fixture!("architecture/layered_service_file.txt"),
+        ),
+        (
+            "internal/repository/user_repository.go",
+            go_fixture!("architecture/layered_repository_file.txt"),
+        ),
+        (
+            "internal/handler/user_handler.go",
+            go_fixture!("architecture/layered_handler_file.txt"),
+        ),
+    ]);
+
+    let report = workspace.scan();
+    assert_rules_absent(&report, &["root_main_go_in_layered_service_repo"]);
+}
+
+#[test]
+fn test_db_query_argument_erased_to_any() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/repository/user_repository.go",
+        go_fixture!("architecture/positive_db_any.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_present(&report, &["db_query_argument_erased_to_any"]);
+}
+
+#[test]
+fn test_db_query_argument_erased_to_any_clean() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "internal/repository/user_repository.go",
+        go_fixture!("architecture/clean_db_any.txt"),
+    );
+
+    let report = workspace.scan();
+    assert_rules_absent(&report, &["db_query_argument_erased_to_any"]);
 }

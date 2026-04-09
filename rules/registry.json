@@ -429,6 +429,19 @@
     "description": "Per-request validator registration instead of startup-time validator wiring."
   },
   {
+    "id": "db_query_argument_erased_to_any",
+    "language": "go",
+    "family": "architecture",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Concrete DB arguments erased to `any` or `interface{}` immediately before query execution."
+  },
+  {
     "id": "default_value_injection_scattered_across_handlers",
     "language": "go",
     "family": "architecture",
@@ -1976,6 +1989,19 @@
     "description": "Repeated success-response envelope formatting that should live in a renderer or transport helper."
   },
   {
+    "id": "root_main_go_in_layered_service_repo",
+    "language": "go",
+    "family": "architecture",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layered service repos that keep the primary binary at repository-root `main.go` instead of `cmd/<name>/main.go`."
+  },
+  {
     "id": "route_groups_created_inside_handlers",
     "language": "go",
     "family": "architecture",
@@ -2691,6 +2717,19 @@
     "description": "Handler tests that mock Gin internals directly instead of using `httptest` when boundary behavior matters."
   },
   {
+    "id": "tool_appeasement_noop_type_in_production_package",
+    "language": "go",
+    "family": "architecture",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Production no-op or dummy types that appear to exist mainly to satisfy tooling instead of runtime behavior."
+  },
+  {
     "id": "tracing_span_names_duplicated_as_raw_strings",
     "language": "go",
     "family": "architecture",
@@ -2806,6 +2845,19 @@
       "severity_override"
     ],
     "description": "PATCH-style repository writes that rely on struct zero-value semantics without explicit field intent."
+  },
+  {
+    "id": "upstream_consumed_interface_declared_in_provider_package",
+    "language": "go",
+    "family": "architecture",
+    "default_severity": "info",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Provider packages that declare an interface even though upstream packages appear to own the abstraction seam."
   },
   {
     "id": "validation_error_response_shape_inconsistent",

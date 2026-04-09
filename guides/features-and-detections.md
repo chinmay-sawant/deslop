@@ -32,12 +32,12 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **847 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **851 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
-| go | 522 | 2 | 0 | 524 |
+| go | 526 | 2 | 0 | 528 |
 | python | 212 | 0 | 0 | 212 |
 | rust | 88 | 12 | 0 | 100 |
 
@@ -67,9 +67,9 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `placeholder_test_body`: Tests that look skipped, TODO-shaped, or otherwise placeholder-like.
 - `test_without_assertion_signal`: Tests that exercise production code without an obvious assertion or failure signal.
 
-### Go rules (524)
+### Go rules (528)
 
-#### Architecture (210)
+#### Architecture (214)
 - `admin_or_debug_endpoint_registration_mixed_into_public_router_setup`: Operational endpoints registered alongside public routes with no clear boundary.
 - `api_error_type_outside_transport_package`: API-facing error payload structs living in persistence or business packages instead of transport-boundary packages.
 - `api_examples_embedded_in_handlers_instead_of_transport_docs_helpers`: Long example payload blocks hardcoded in handlers rather than doc or example helpers.
@@ -92,6 +92,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `cross_repository_write_flow_without_shared_uow_boundary`: Service methods coordinating several repositories with no explicit shared transaction or consistency boundary.
 - `custom_recovery_logic_repeated_across_handlers`: Repeated recover or panic-to-response logic inside handlers instead of centralized recovery middleware.
 - `custom_validator_registration_inside_handler`: Per-request validator registration instead of startup-time validator wiring.
+- `db_query_argument_erased_to_any`: Concrete DB arguments erased to `any` or `interface{}` immediately before query execution.
 - `default_value_injection_scattered_across_handlers`: Repeated defaulting logic for pagination, filters, or booleans across handlers.
 - `domain_constants_declared_in_handler_package`: Domain enums, statuses, and lifecycle constants that live in handler packages instead of domain-facing packages.
 - `domain_entity_contains_json_tags_without_boundary_exception`: Core domain entities that are directly annotated for API serialization without a deliberate boundary exception.
@@ -211,6 +212,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `response_dto_outside_transport_package`: Response envelope structs that live in persistence or repository packages instead of transport or API contract packages.
 - `response_dto_uses_omitempty_on_required_contract_fields`: Response shapes that silently drop fields that should be stable parts of the API contract.
 - `response_envelope_shaping_duplicated_across_handlers`: Repeated success-response envelope formatting that should live in a renderer or transport helper.
+- `root_main_go_in_layered_service_repo`: Layered service repos that keep the primary binary at repository-root `main.go` instead of `cmd/<name>/main.go`.
 - `route_groups_created_inside_handlers`: Code that constructs or mutates route groups outside the startup router layer.
 - `route_param_name_and_dto_field_name_drift_without_mapping_helper`: Repeated manual renaming between route params and DTO fields that lacks a shared mapper.
 - `route_registration_contains_business_logic`: Router setup files that build queries, mutate models, or execute business actions while registering routes.
@@ -266,6 +268,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `tests_assert_raw_json_strings_without_response_dto`: Brittle raw-JSON string assertions when typed response DTOs exist.
 - `tests_couple_to_gorm_model_for_api_contract_assertions`: API tests that assert persistence model shapes instead of response contracts.
 - `tests_stub_gin_context_instead_of_httptest_boundary`: Handler tests that mock Gin internals directly instead of using `httptest` when boundary behavior matters.
+- `tool_appeasement_noop_type_in_production_package`: Production no-op or dummy types that appear to exist mainly to satisfy tooling instead of runtime behavior.
 - `tracing_span_names_duplicated_as_raw_strings`: Repeated raw span-name literals across handlers and services.
 - `transaction_error_translation_done_in_repository_and_handler`: Both repository and handler layers translating the same transaction errors.
 - `transaction_helper_outside_repository_or_uow_package`: Transaction helpers buried in handlers or services instead of a repository or unit-of-work package.
@@ -275,6 +278,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `transport_tests_bypass_service_interface_and_touch_repo_directly`: Transport tests that skip the service seam and assert repository behavior.
 - `unscoped_query_without_explicit_danger_naming`: `Unscoped()` usage in generic repository methods without a clearly dangerous or admin-only name.
 - `updates_with_struct_used_for_patch_without_field_intent_helper`: PATCH-style repository writes that rely on struct zero-value semantics without explicit field intent.
+- `upstream_consumed_interface_declared_in_provider_package`: Provider packages that declare an interface even though upstream packages appear to own the abstraction seam.
 - `validation_error_response_shape_inconsistent`: Handlers in the same API module that emit different validation error contracts.
 - `validation_logic_duplicated_across_handlers`: Repeated required-field or enum-validation blocks across multiple handler files.
 - `validator_depends_on_repository_directly`: Reusable validator code that reaches into repositories instead of receiving precomputed facts or focused services.

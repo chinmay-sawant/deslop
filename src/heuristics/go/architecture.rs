@@ -102,6 +102,8 @@ pub(crate) fn go_architecture_repo_findings(files: &[&ParsedFile]) -> Vec<Findin
         });
     }
 
+    findings.extend(project_agnostic_repo_shape_findings(files));
+
     findings
 }
 
@@ -109,6 +111,7 @@ include!("architecture/file_rules.rs");
 include!("architecture/file_rules_handlers.rs");
 include!("architecture/function_rules_transport.rs");
 include!("architecture/function_rules_domain.rs");
+include!("architecture/repo_rules.rs");
 include!("architecture/test_rules.rs");
 include!("architecture/helpers_core.rs");
 include!("architecture/helpers_patterns.rs");

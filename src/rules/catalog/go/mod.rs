@@ -2,8 +2,8 @@ pub(super) use super::{
     RuleConfigurability, RuleDefaultSeverity, RuleDefinition, RuleLanguage, RuleStatus, bindings,
 };
 
-pub(crate) mod concurrency;
 pub(crate) mod architecture;
+pub(crate) mod concurrency;
 pub(crate) mod consistency;
 pub(crate) mod context;
 pub(crate) mod data_access;

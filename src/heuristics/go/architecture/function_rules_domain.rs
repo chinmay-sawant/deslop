@@ -164,6 +164,18 @@ fn repository_function_findings(
         ));
     }
 
+    if let Some((line, evidence)) = db_query_argument_erased_to_any_evidence(function, lines) {
+        findings.push(function_finding(
+            file,
+            function,
+            "db_query_argument_erased_to_any",
+            Severity::Info,
+            line,
+            "repository erases a concrete DB argument to any immediately before query execution",
+            evidence,
+        ));
+    }
+
     if returns_text.contains("*gorm.DB")
         && (!go.gorm_query_chains.is_empty()
             || lines.iter().any(|line| line.text.contains(".Where(") || line.text.contains(".Scopes(")))
@@ -240,6 +252,198 @@ fn repository_function_findings(
     }
 
     findings
+}
+
+fn db_query_argument_erased_to_any_evidence(
+    function: &ParsedFunction,
+    lines: &[super::framework_patterns::BodyLine],
+) -> Option<(usize, Vec<String>)> {
+    let go = function.go_evidence();
+    if go.db_query_calls.is_empty() && go.gorm_query_chains.is_empty() {
+        return None;
+    }
+
+    let mut bindings = BTreeMap::<String, (usize, String)>::new();
+    for line in lines {
+        if let Some((name, decl_text)) = any_binding_declaration(&line.text) {
+            if is_deliberate_heterogeneous_binding(name, &decl_text) {
+                continue;
+            }
+            bindings.insert(name.to_string(), (line.line, decl_text));
+        }
+    }
+
+    for (name, (decl_line, decl_text)) in bindings {
+        let assignment = lines.iter().find_map(|line| {
+            any_binding_assignment(&line.text, &name).and_then(|rhs| {
+                if rhs_looks_like_erased_db_argument(&rhs) {
+                    Some((line.line, rhs))
+                } else {
+                    None
+                }
+            })
+        });
+        let Some((assignment_line, rhs)) = assignment else {
+            continue;
+        };
+
+        if let Some(call_line) = lines
+            .iter()
+            .find(|line| line.line >= assignment_line && db_call_line_mentions_symbol(&line.text, &name))
+            .map(|line| line.line)
+            .or_else(|| {
+                go.gorm_query_chains
+                    .iter()
+                    .flat_map(|chain| chain.steps.iter())
+                    .find(|step| {
+                        matches!(step.method_name.as_str(), "Raw" | "Create" | "Updates")
+                            && step.argument_texts.iter().any(|arg| arg.trim() == name)
+                    })
+                    .map(|step| step.line)
+            })
+        {
+            return Some((
+                call_line,
+                vec![
+                    format!("{name} declared as weakly typed value at line {decl_line}: {decl_text}"),
+                    format!("{name} assigned from concrete value at line {assignment_line}: {rhs}"),
+                    format!("{name} then passed to DB execution at line {call_line}"),
+                ],
+            ));
+        }
+    }
+
+    None
+}
+
+fn any_binding_declaration(text: &str) -> Option<(&str, String)> {
+    let compact = text.trim();
+
+    if let Some(rest) = compact.strip_prefix("var ") {
+        if let Some((left, right)) = rest.split_once('=') {
+            let mut parts = left.split_whitespace();
+            let name = parts.next()?.trim();
+            let type_text = parts.next()?.trim();
+            if matches!(type_text, "any" | "interface{}") && is_identifier_name(name) {
+                return Some((name, right.trim().to_string()));
+            }
+        }
+
+        let mut parts = rest.split_whitespace();
+        let name = parts.next()?.trim();
+        let type_text = parts.next()?.trim();
+        if matches!(type_text, "any" | "interface{}") && is_identifier_name(name) {
+            return Some((name, compact.to_string()));
+        }
+    }
+
+    let (left, right) = split_assignment(compact)?;
+    let left = left.trim();
+    let right = right.trim();
+    if is_identifier_name(left) && right.starts_with("any(") {
+        return Some((left, right.to_string()));
+    }
+
+    None
+}
+
+fn any_binding_assignment(text: &str, name: &str) -> Option<String> {
+    let compact = text.trim();
+
+    if let Some(rest) = compact.strip_prefix(&format!("var {name} ")) {
+        if let Some((_, right)) = rest.split_once('=') {
+            return Some(right.trim().to_string());
+        }
+    }
+
+    let (left, right) = split_assignment(compact)?;
+    if left.trim() != name {
+        return None;
+    }
+
+    Some(
+        right.trim()
+            .trim_start_matches("any(")
+            .trim_end_matches(')')
+            .trim()
+            .to_string(),
+    )
+}
+
+fn rhs_looks_like_erased_db_argument(rhs: &str) -> bool {
+    if rhs.is_empty()
+        || rhs == "nil"
+        || rhs.contains("[]any")
+        || rhs.contains("[]interface{}")
+        || rhs.contains("map[")
+        || rhs.contains("append(")
+    {
+        return false;
+    }
+
+    rhs.contains('.')
+        || rhs.starts_with('*')
+        || rhs.contains("sql.Null")
+        || rhs.contains("Valid")
+        || rhs.contains("String")
+        || rhs.contains("Int")
+        || rhs.contains("Bool")
+}
+
+fn is_deliberate_heterogeneous_binding(name: &str, decl_text: &str) -> bool {
+    matches!(name, "args" | "params" | "values" | "bindings")
+        || decl_text.contains("[]any")
+        || decl_text.contains("[]interface{}")
+}
+
+fn db_call_line_mentions_symbol(text: &str, name: &str) -> bool {
+    let db_marker = [
+        ".Query(",
+        ".QueryContext(",
+        ".QueryRow(",
+        ".QueryRowContext(",
+        ".Exec(",
+        ".ExecContext(",
+        ".Get(",
+        ".Select(",
+        ".Raw(",
+        ".Create(",
+        ".Updates(",
+    ]
+    .iter()
+    .any(|marker| text.contains(marker));
+
+    db_marker
+        && (text.contains(&format!(", {name}"))
+            || text.contains(&format!(",{name}"))
+            || text.contains(&format!("({name}"))
+            || text.contains(&format!("{name},"))
+            || text.ends_with(name))
+}
+
+fn split_assignment(text: &str) -> Option<(&str, &str)> {
+    if let Some((left, right)) = text.split_once(":=") {
+        return Some((left, right));
+    }
+
+    if text.contains("==") || text.contains("!=") || text.contains("<=") || text.contains(">=") {
+        return None;
+    }
+
+    text.split_once(" = ")
+        .or_else(|| text.split_once('='))
+        .filter(|(left, _)| !left.trim_start().starts_with("if "))
+}
+
+fn is_identifier_name(text: &str) -> bool {
+    !text.is_empty()
+        && text
+            .chars()
+            .all(|character| character == '_' || character.is_ascii_alphanumeric())
+        && text
+            .chars()
+            .next()
+            .is_some_and(|character| character == '_' || character.is_ascii_alphabetic())
 }
 
 fn middleware_and_bootstrap_function_findings(

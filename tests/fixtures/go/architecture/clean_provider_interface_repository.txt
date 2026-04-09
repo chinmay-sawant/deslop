@@ -1,0 +1,13 @@
+package repository
+
+import (
+	"context"
+
+	"example.com/project/internal/service"
+)
+
+type GormUserRepository struct{}
+
+func (r *GormUserRepository) ListActive(ctx context.Context) ([]service.User, error) {
+	return nil, nil
+}

@@ -1,0 +1,14 @@
+package repository
+
+import "context"
+
+type Patient struct {
+	ID string
+}
+
+// NoopPatientRepository exists only to satisfy the linter until the real repository lands.
+type NoopPatientRepository struct{}
+
+func (r *NoopPatientRepository) Save(ctx context.Context, patient Patient) error {
+	return nil
+}
