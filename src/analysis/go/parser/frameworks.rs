@@ -45,6 +45,7 @@ const GORM_QUERY_METHODS: &[&str] = &[
     "Offset",
     "Omit",
     "Order",
+    "Or",
     "Preload",
     "Raw",
     "Rows",

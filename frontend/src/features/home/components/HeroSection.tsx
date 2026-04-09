@@ -43,7 +43,7 @@ export function HeroSection() {
                   className={`flex flex-col ${isReady ? 'animate-sweep-text-col' : ''}`} 
                   style={{ animationDelay: isReady ? '150ms' : '0ms' }}
                 >
-                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Requires modern solutions.</span>
+                  <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Require modern solutions.</span>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Reviewed by the human.</span>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Flagging the context they miss.</span>
                   <span className="h-[1.3em] flex items-center justify-center whitespace-nowrap px-1">Human-validated.</span>

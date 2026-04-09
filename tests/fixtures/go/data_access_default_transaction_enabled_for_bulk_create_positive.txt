@@ -1,0 +1,12 @@
+package main
+
+import "gorm.io/gorm"
+
+type User struct {
+	ID   int
+	Name string
+}
+
+func BulkCreate(db *gorm.DB) {
+	db.Create(&[]User{{Name: "a"}, {Name: "b"}})
+}
