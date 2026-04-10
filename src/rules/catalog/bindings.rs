@@ -28,10 +28,12 @@ pub(crate) const GO_PERFORMANCE_EXTRA: &str =
 pub(crate) const GO_STYLE: &str = crate::heuristics::go::STYLE_BINDING_LOCATION;
 
 pub(crate) const PYTHON_AI_SMELLS: &str = crate::heuristics::python::AI_SMELLS_BINDING_LOCATION;
-pub(crate) const PYTHON_ARCHITECTURE: &str = crate::heuristics::python::ARCHITECTURE_BINDING_LOCATION;
+pub(crate) const PYTHON_ARCHITECTURE: &str =
+    crate::heuristics::python::ARCHITECTURE_BINDING_LOCATION;
 pub(crate) const PYTHON_BOUNDARIES: &str = crate::heuristics::python::BOUNDARIES_BINDING_LOCATION;
 pub(crate) const PYTHON_DISCIPLINE: &str = crate::heuristics::python::DISCIPLINE_BINDING_LOCATION;
-pub(crate) const PYTHON_OBSERVABILITY: &str = crate::heuristics::python::OBSERVABILITY_BINDING_LOCATION;
+pub(crate) const PYTHON_OBSERVABILITY: &str =
+    crate::heuristics::python::OBSERVABILITY_BINDING_LOCATION;
 pub(crate) const PYTHON_DUPLICATION: &str = crate::heuristics::python::DUPLICATION_BINDING_LOCATION;
 pub(crate) const PYTHON_FRAMEWORK: &str = crate::heuristics::python::FRAMEWORK_BINDING_LOCATION;
 pub(crate) const PYTHON_HOTPATH: &str = crate::heuristics::python::HOTPATH_BINDING_LOCATION;

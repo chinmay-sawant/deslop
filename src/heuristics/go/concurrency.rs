@@ -68,7 +68,8 @@ pub(crate) fn rwmutex_file_findings(file: &ParsedFile) -> Vec<Finding> {
             format!("RWMutex declaration observed at line {declaration_line}"),
             format!("Lock/Unlock calls observed: {lock_count}"),
             format!("RLock/RUnlock calls observed: {rlock_count}"),
-            "plain sync.Mutex is often simpler unless read-side contention clearly dominates".to_string(),
+            "plain sync.Mutex is often simpler unless read-side contention clearly dominates"
+                .to_string(),
         ],
     }]
 }
@@ -335,8 +336,14 @@ fn has_coordination(function: &ParsedFunction) -> bool {
         })
 }
 
-pub(crate) fn waitgroup_errgroup_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    if file.is_test_file || function.is_test_function || function.go_evidence().goroutines.is_empty() {
+pub(crate) fn waitgroup_errgroup_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if file.is_test_file
+        || function.is_test_function
+        || function.go_evidence().goroutines.is_empty()
+    {
         return Vec::new();
     }
 
@@ -380,7 +387,8 @@ pub(crate) fn waitgroup_errgroup_findings(file: &ParsedFile, function: &ParsedFu
         evidence: vec![
             "WaitGroup-style coordination was observed in the function body".to_string(),
             "goroutine fan-out also contains explicit error-path handling".to_string(),
-            "errgroup is often a clearer fit when concurrent branches return fatal errors".to_string(),
+            "errgroup is often a clearer fit when concurrent branches return fatal errors"
+                .to_string(),
         ],
     }]
 }

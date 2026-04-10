@@ -43,9 +43,24 @@ const REPO_ROLES: &[&str] = &["repository", "repo", "repositories"];
 const VIEW_ROLES: &[&str] = &["view", "views", "handler", "handlers"];
 const DOMAIN_ROLES: &[&str] = &["domain", "model", "models", "entity", "entities"];
 const ALL_ROLES: &[&str] = &[
-    "service", "services", "repository", "repo", "repositories",
-    "view", "views", "handler", "handlers", "domain", "model", "models",
-    "api", "router", "middleware", "schema", "schemas", "dto",
+    "service",
+    "services",
+    "repository",
+    "repo",
+    "repositories",
+    "view",
+    "views",
+    "handler",
+    "handlers",
+    "domain",
+    "model",
+    "models",
+    "api",
+    "router",
+    "middleware",
+    "schema",
+    "schemas",
+    "dto",
 ];
 
 // ── Section 1 · Architecture and Layer Boundaries ────────────────────────────
@@ -60,8 +75,13 @@ pub(super) fn service_accepts_http_request_findings(
     let sig = &function.signature_text;
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "flask.Request", "flask.request", "django.HttpRequest",
-        "fastapi.Request", "Request,", ": Request)", ": Request,",
+        "flask.Request",
+        "flask.request",
+        "django.HttpRequest",
+        "fastapi.Request",
+        "Request,",
+        ": Request)",
+        ": Request,",
     ];
     for p in PATTERNS {
         if sig.contains(p) || body.contains(p) {
@@ -69,7 +89,10 @@ pub(super) fn service_accepts_http_request_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "service_method_accepts_http_request_object",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "accepts an HTTP request object directly; extract domain values at the transport layer first",
             )];
         }
@@ -86,8 +109,11 @@ pub(super) fn repository_returns_query_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "return self.db.query(", "return session.query(", "return db.query(",
-        "return QuerySet", "return self.session.query(",
+        "return self.db.query(",
+        "return session.query(",
+        "return db.query(",
+        "return QuerySet",
+        "return self.session.query(",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -95,7 +121,10 @@ pub(super) fn repository_returns_query_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "repository_returns_unexecuted_orm_query",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "returns an unexecuted ORM query object; evaluate and return domain values instead",
             )];
         }
@@ -112,8 +141,12 @@ pub(super) fn view_builds_orm_query_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        ".filter(", ".annotate(", ".aggregate(", ".select_related(",
-        "session.query(", ".objects.filter(",
+        ".filter(",
+        ".annotate(",
+        ".aggregate(",
+        ".select_related(",
+        "session.query(",
+        ".objects.filter(",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -121,7 +154,10 @@ pub(super) fn view_builds_orm_query_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "view_or_handler_constructs_orm_query_directly",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "builds ORM query directly; delegate to a repository or query object",
             )];
         }
@@ -137,7 +173,14 @@ pub(super) fn domain_imports_http_findings(
         return Vec::new();
     }
     let imports: Vec<&str> = file.imports.iter().map(|i| i.path.as_str()).collect();
-    const HTTP_MODS: &[&str] = &["requests", "httpx", "http.client", "flask", "django.http", "fastapi"];
+    const HTTP_MODS: &[&str] = &[
+        "requests",
+        "httpx",
+        "http.client",
+        "flask",
+        "django.http",
+        "fastapi",
+    ];
     for m in HTTP_MODS {
         if imports.iter().any(|i| i.starts_with(m)) {
             return vec![Finding {
@@ -167,8 +210,11 @@ pub(super) fn service_raises_http_exception_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "HTTPException(", "raise HTTPException", "werkzeug.exceptions",
-        "abort(", "raise abort(",
+        "HTTPException(",
+        "raise HTTPException",
+        "werkzeug.exceptions",
+        "abort(",
+        "raise abort(",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -176,7 +222,10 @@ pub(super) fn service_raises_http_exception_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "service_raises_or_catches_http_exception_type",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "raises or catches an HTTP exception type; use domain-neutral errors instead",
             )];
         }
@@ -193,8 +242,12 @@ pub(super) fn handler_builds_raw_sql_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "cursor.execute(", ".execute(f\"", ".execute(\"SELECT",
-        ".execute(\"INSERT", ".execute(\"UPDATE", ".execute(\"DELETE",
+        "cursor.execute(",
+        ".execute(f\"",
+        ".execute(\"SELECT",
+        ".execute(\"INSERT",
+        ".execute(\"UPDATE",
+        ".execute(\"DELETE",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -202,7 +255,10 @@ pub(super) fn handler_builds_raw_sql_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "handler_or_view_builds_raw_sql",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "builds raw SQL inside a handler; delegate database access to a repository",
             )];
         }
@@ -219,8 +275,11 @@ pub(super) fn service_returns_http_response_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "return Response(", "return JsonResponse(", "return HTMLResponse(",
-        "return jsonify(", "return make_response(",
+        "return Response(",
+        "return JsonResponse(",
+        "return HTMLResponse(",
+        "return jsonify(",
+        "return make_response(",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -228,7 +287,10 @@ pub(super) fn service_returns_http_response_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "service_method_returns_http_response_object",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "returns an HTTP response object; return domain results instead",
             )];
         }
@@ -245,7 +307,10 @@ pub(super) fn handler_owns_transaction_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "session.begin(", "transaction.atomic(", "db.begin(", "conn.begin(",
+        "session.begin(",
+        "transaction.atomic(",
+        "db.begin(",
+        "conn.begin(",
         "with db.transaction(",
     ];
     for p in PATTERNS {
@@ -254,7 +319,10 @@ pub(super) fn handler_owns_transaction_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "handler_or_view_owns_transaction_lifecycle",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "owns transaction lifecycle directly; delegate transactional work to a service",
             )];
         }
@@ -279,7 +347,10 @@ pub(super) fn service_reads_settings_inline_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "service_reads_settings_inline_instead_of_injected",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "reads configuration inline; inject configuration at construction time instead",
         )];
     }
@@ -295,8 +366,14 @@ pub(super) fn handler_direct_file_io_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "open(", "os.rename(", "shutil.copy(", "shutil.move(",
-        "os.remove(", "Path(", ".write_text(", ".read_text(",
+        "open(",
+        "os.rename(",
+        "shutil.copy(",
+        "shutil.move(",
+        "os.remove(",
+        "Path(",
+        ".write_text(",
+        ".read_text(",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -304,7 +381,10 @@ pub(super) fn handler_direct_file_io_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "view_or_handler_performs_direct_file_system_io",
-                Severity::Info, file, function, line,
+                Severity::Info,
+                file,
+                function,
+                line,
                 "performs direct filesystem I/O; delegate to a storage service",
             )];
         }
@@ -321,8 +401,14 @@ pub(super) fn business_logic_in_middleware_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "pricing", "discount", "feature_flag", "charge(", "invoice",
-        "billing", "workflow(", "business_rule",
+        "pricing",
+        "discount",
+        "feature_flag",
+        "charge(",
+        "invoice",
+        "billing",
+        "workflow(",
+        "business_rule",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -330,7 +416,10 @@ pub(super) fn business_logic_in_middleware_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "business_logic_inside_middleware",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "implements business logic inside middleware; use a service instead",
             )];
         }
@@ -347,8 +436,12 @@ pub(super) fn di_bypassed_singleton_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "_instance.", "_singleton.", "GlobalClient.", "global_client.",
-        "MODULE_LEVEL_DB.", "APP_DB.",
+        "_instance.",
+        "_singleton.",
+        "GlobalClient.",
+        "global_client.",
+        "MODULE_LEVEL_DB.",
+        "APP_DB.",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -356,7 +449,10 @@ pub(super) fn di_bypassed_singleton_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "dependency_injection_bypassed_via_global_singleton",
-                Severity::Info, file, function, line,
+                Severity::Info,
+                file,
+                function,
+                line,
                 "uses a module-level singleton directly; prefer constructor injection",
             )];
         }
@@ -373,7 +469,10 @@ pub(super) fn auth_duplicated_across_views_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "request.user", "g.user", "get_current_user()", "request.state.user",
+        "request.user",
+        "g.user",
+        "get_current_user()",
+        "request.state.user",
     ];
     let count: usize = PATTERNS.iter().filter(|p| body.contains(**p)).count();
     if count >= 2 {
@@ -383,7 +482,10 @@ pub(super) fn auth_duplicated_across_views_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "auth_extraction_duplicated_across_views",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "duplicates auth extraction; centralize in middleware or a shared dependency",
         )];
     }
@@ -399,19 +501,29 @@ pub(super) fn background_job_uses_request_context_findings(
     }
     let sig = &function.signature_text;
     let body = &function.body_text;
-    let is_task = sig.contains("@celery.task") || sig.contains("@app.task")
-        || sig.contains("@shared_task") || sig.contains("@dramatiq.actor");
+    let is_task = sig.contains("@celery.task")
+        || sig.contains("@app.task")
+        || sig.contains("@shared_task")
+        || sig.contains("@dramatiq.actor");
     if !is_task {
         return Vec::new();
     }
-    const PATTERNS: &[&str] = &["flask.g", "request.state", "django.http.request", "from flask import g"];
+    const PATTERNS: &[&str] = &[
+        "flask.g",
+        "request.state",
+        "django.http.request",
+        "from flask import g",
+    ];
     for p in PATTERNS {
         if body.contains(p) {
             let line = find_line(body, p, function.fingerprint.start_line)
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "background_job_depends_on_request_context_object",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "references a request context object inside a background task",
             )];
         }
@@ -427,12 +539,21 @@ pub(super) fn repository_accepts_pydantic_schema_findings(
         return Vec::new();
     }
     let sig = &function.signature_text;
-    const PATTERNS: &[&str] = &["CreateRequest", "UpdateRequest", "RequestBody", "Schema,", ": Schema)"];
+    const PATTERNS: &[&str] = &[
+        "CreateRequest",
+        "UpdateRequest",
+        "RequestBody",
+        "Schema,",
+        ": Schema)",
+    ];
     for p in PATTERNS {
         if sig.contains(p) {
             return vec![make_finding(
                 "repository_method_accepts_pydantic_request_schema",
-                Severity::Info, file, function, function.fingerprint.start_line,
+                Severity::Info,
+                file,
+                function,
+                function.fingerprint.start_line,
                 "accepts a request schema directly; use domain-level inputs in repositories",
             )];
         }
@@ -448,7 +569,8 @@ pub(super) fn celery_task_imports_web_app_findings(
         return Vec::new();
     }
     let sig = &function.signature_text;
-    let is_task = sig.contains("@celery") || sig.contains("@app.task") || sig.contains("@shared_task");
+    let is_task =
+        sig.contains("@celery") || sig.contains("@app.task") || sig.contains("@shared_task");
     if !is_task {
         return Vec::new();
     }
@@ -482,14 +604,22 @@ pub(super) fn persistent_model_transport_field_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    const PATTERNS: &[&str] = &["status_code", "http_method", "response_body", "request_id ="];
+    const PATTERNS: &[&str] = &[
+        "status_code",
+        "http_method",
+        "response_body",
+        "request_id =",
+    ];
     for p in PATTERNS {
         if body.contains(p) {
             let line = find_line(body, p, function.fingerprint.start_line)
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "persistent_model_field_encodes_transport_concern",
-                Severity::Info, file, function, line,
+                Severity::Info,
+                file,
+                function,
+                line,
                 "ORM model contains a transport-concern field; move it to the transport layer",
             )];
         }
@@ -505,14 +635,22 @@ pub(super) fn orm_model_mixes_logic_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    let has_orm = body.contains("Column(") || body.contains("Field(") || body.contains("relationship(");
-    let has_business = body.contains("def calculate_") || body.contains("def apply_")
-        || body.contains("def process_") || body.contains("def validate_business");
-    let has_api = body.contains("def to_json") || body.contains("def serialize") || body.contains("def to_response");
+    let has_orm =
+        body.contains("Column(") || body.contains("Field(") || body.contains("relationship(");
+    let has_business = body.contains("def calculate_")
+        || body.contains("def apply_")
+        || body.contains("def process_")
+        || body.contains("def validate_business");
+    let has_api = body.contains("def to_json")
+        || body.contains("def serialize")
+        || body.contains("def to_response");
     if has_orm && has_business && has_api {
         return vec![make_finding(
             "orm_model_mixes_domain_logic_and_persistence_mapping",
-            Severity::Info, file, function, function.fingerprint.start_line,
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
             "ORM model mixes domain logic, persistence mapping, and API serialization",
         )];
     }
@@ -527,7 +665,12 @@ pub(super) fn validation_duplicated_dto_domain_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    const SCHEMA_PATTERNS: &[&str] = &["validator(", "@validator", "@field_validator", "model_validator"];
+    const SCHEMA_PATTERNS: &[&str] = &[
+        "validator(",
+        "@validator",
+        "@field_validator",
+        "model_validator",
+    ];
     const DOMAIN_PATTERNS: &[&str] = &["if not value", "raise ValueError", "raise ValidationError"];
     let has_schema = SCHEMA_PATTERNS.iter().any(|p| body.contains(p));
     let has_domain = DOMAIN_PATTERNS.iter().any(|p| body.contains(p));
@@ -538,7 +681,10 @@ pub(super) fn validation_duplicated_dto_domain_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "validation_rules_duplicated_at_dto_and_domain_layer",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "validates the same field in both the request schema and domain layer",
         )];
     }
@@ -560,7 +706,10 @@ pub(super) fn gather_without_return_exceptions_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "asyncio_gather_without_return_exceptions_on_partial_failure_path",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "uses asyncio.gather() without return_exceptions=True; individual task failures will propagate",
         )];
     }
@@ -585,7 +734,10 @@ pub(super) fn thread_local_in_async_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "thread_local_storage_read_from_async_function",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "reads thread-local storage inside an async function; thread identity is not stable across await points",
         )];
     }
@@ -602,11 +754,18 @@ pub(super) fn run_until_complete_in_running_loop_findings(
     let python = function.python_evidence();
     let body = &function.body_text;
     if python.is_async && body.contains("loop.run_until_complete(") {
-        let line = find_line(body, "loop.run_until_complete(", function.fingerprint.start_line)
-            .unwrap_or(function.fingerprint.start_line);
+        let line = find_line(
+            body,
+            "loop.run_until_complete(",
+            function.fingerprint.start_line,
+        )
+        .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "loop_run_until_complete_inside_running_loop",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "calls loop.run_until_complete() inside an already running loop",
         )];
     }
@@ -628,7 +787,10 @@ pub(super) fn sleep_zero_busy_wait_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "asyncio_sleep_zero_busy_wait_pattern",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "uses asyncio.sleep(0) as a busy-wait yield; use asyncio.Event or a condition variable",
         )];
     }
@@ -644,8 +806,7 @@ pub(super) fn non_daemon_thread_in_server_findings(
     }
     let body = &function.body_text;
     let has_framework = file.imports.iter().any(|i| {
-        i.path.starts_with("flask") || i.path.starts_with("fastapi")
-            || i.path.starts_with("django")
+        i.path.starts_with("flask") || i.path.starts_with("fastapi") || i.path.starts_with("django")
     });
     if !has_framework {
         return Vec::new();
@@ -655,7 +816,10 @@ pub(super) fn non_daemon_thread_in_server_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "threading_thread_without_daemon_true_in_server_code",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "creates a non-daemon thread in server code; set daemon=True to avoid blocking shutdown",
         )];
     }
@@ -684,7 +848,10 @@ pub(super) fn shared_mutable_mutated_across_threads_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "shared_mutable_collection_mutated_across_threads_without_lock",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "mutates a shared collection from spawned threads without a visible lock",
         )];
     }
@@ -699,14 +866,22 @@ pub(super) fn multiprocessing_pool_not_closed_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    if body.contains("multiprocessing.Pool(") && !body.contains("with multiprocessing.Pool(")
+    if body.contains("multiprocessing.Pool(")
+        && !body.contains("with multiprocessing.Pool(")
         && !(body.contains(".terminate()") || body.contains(".close()"))
     {
-        let line = find_line(body, "multiprocessing.Pool(", function.fingerprint.start_line)
-            .unwrap_or(function.fingerprint.start_line);
+        let line = find_line(
+            body,
+            "multiprocessing.Pool(",
+            function.fingerprint.start_line,
+        )
+        .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "multiprocessing_pool_created_without_context_manager_or_terminate",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "creates multiprocessing.Pool without a context manager or explicit terminate/close",
         )];
     }
@@ -721,15 +896,20 @@ pub(super) fn executor_not_shut_down_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    let has_executor = body.contains("ThreadPoolExecutor(") || body.contains("ProcessPoolExecutor(");
-    let has_cleanup = body.contains("with ThreadPoolExecutor") || body.contains("with ProcessPoolExecutor")
+    let has_executor =
+        body.contains("ThreadPoolExecutor(") || body.contains("ProcessPoolExecutor(");
+    let has_cleanup = body.contains("with ThreadPoolExecutor")
+        || body.contains("with ProcessPoolExecutor")
         || body.contains(".shutdown(");
     if has_executor && !has_cleanup {
         let line = find_line(body, "Executor(", function.fingerprint.start_line)
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "concurrent_futures_executor_not_shut_down",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "creates a futures Executor without context manager or .shutdown(wait=True)",
         )];
     }
@@ -759,8 +939,11 @@ pub(super) fn blocking_lock_in_async_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "threading.Lock().acquire()", "threading.RLock().acquire()",
-        ".acquire(blocking=True)", ".acquire(True)", "_lock.acquire()",
+        "threading.Lock().acquire()",
+        "threading.RLock().acquire()",
+        ".acquire(blocking=True)",
+        ".acquire(True)",
+        "_lock.acquire()",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -768,7 +951,10 @@ pub(super) fn blocking_lock_in_async_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "threading_lock_acquired_blocking_inside_async_def",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "acquires a threading.Lock inside an async function; use asyncio.Lock instead",
             )];
         }
@@ -792,7 +978,10 @@ pub(super) fn asyncio_queue_no_maxsize_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "asyncio_queue_created_without_maxsize_in_producer_path",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "creates asyncio.Queue without maxsize; unbounded queues can cause memory growth",
         )];
     }
@@ -814,7 +1003,10 @@ pub(super) fn coroutine_result_discarded_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "coroutine_result_discarded_without_await",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "coroutine result assigned without await; the coroutine will not execute",
         )];
     }
@@ -834,7 +1026,10 @@ pub(super) fn sync_called_from_async_without_executor_findings(
     }
     let body = &function.body_text;
     const BLOCKING: &[&str] = &[
-        "time.sleep(", "requests.get(", "requests.post(", "subprocess.run(",
+        "time.sleep(",
+        "requests.get(",
+        "requests.post(",
+        "subprocess.run(",
         "urllib.request.urlopen(",
     ];
     let has_executor = body.contains("run_in_executor") || body.contains("loop.run_in_executor");
@@ -847,7 +1042,10 @@ pub(super) fn sync_called_from_async_without_executor_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "sync_function_called_from_async_without_executor",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "calls a blocking function inside async def without run_in_executor",
             )];
         }
@@ -873,7 +1071,9 @@ pub(super) fn untracked_create_task_findings(
         {
             return vec![make_finding(
                 "untracked_create_task_result_may_hide_exception",
-                Severity::Warning, file, function,
+                Severity::Warning,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "discards asyncio.create_task() result; save the reference to observe exceptions",
             )];
@@ -895,7 +1095,10 @@ pub(super) fn semaphore_without_async_with_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "semaphore_acquired_without_async_with_context_manager",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "acquires semaphore manually; use `async with semaphore` to ensure release on exception",
         )];
     }
@@ -918,7 +1121,9 @@ pub(super) fn event_loop_at_module_scope_file_findings(file: &ParsedFile) -> Vec
                 function_name: None,
                 start_line: call.line,
                 end_line: call.line,
-                message: "asyncio event loop obtained at module scope; call inside an async entry point".to_string(),
+                message:
+                    "asyncio event loop obtained at module scope; call inside an async entry point"
+                        .to_string(),
                 evidence: vec!["pattern=module_scope_get_event_loop".to_string()],
             }];
         }

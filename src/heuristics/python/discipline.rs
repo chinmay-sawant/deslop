@@ -14,6 +14,90 @@ fn find_line(body: &str, needle: &str, base: usize) -> Option<usize> {
         .find_map(|(i, l)| l.contains(needle).then_some(base + i))
 }
 
+fn split_top_level_commas(text: &str) -> Vec<&str> {
+    let mut parts = Vec::new();
+    let mut start = 0;
+    let mut paren_depth = 0usize;
+    let mut bracket_depth = 0usize;
+    let mut brace_depth = 0usize;
+
+    for (index, ch) in text.char_indices() {
+        match ch {
+            '(' => paren_depth += 1,
+            ')' => paren_depth = paren_depth.saturating_sub(1),
+            '[' => bracket_depth += 1,
+            ']' => bracket_depth = bracket_depth.saturating_sub(1),
+            '{' => brace_depth += 1,
+            '}' => brace_depth = brace_depth.saturating_sub(1),
+            ',' if paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
+                parts.push(text[start..index].trim());
+                start = index + 1;
+            }
+            _ => {}
+        }
+    }
+
+    let tail = text[start..].trim();
+    if !tail.is_empty() {
+        parts.push(tail);
+    }
+
+    parts
+}
+
+fn extract_parameter_section(signature: &str) -> Option<&str> {
+    let def_start = signature.find("def ").or(signature.find("async def "))?;
+    let after_def = &signature[def_start..];
+    let open_offset = after_def.find('(')?;
+    let open_index = def_start + open_offset;
+    let mut depth = 0usize;
+
+    for (offset, ch) in signature[open_index + 1..].char_indices() {
+        match ch {
+            '(' => depth += 1,
+            ')' if depth == 0 => return Some(&signature[open_index + 1..open_index + 1 + offset]),
+            ')' => depth = depth.saturating_sub(1),
+            _ => {}
+        }
+    }
+
+    None
+}
+
+fn optional_parameter_names(signature: &str) -> Vec<String> {
+    let Some(parameters) = extract_parameter_section(signature) else {
+        return Vec::new();
+    };
+
+    split_top_level_commas(parameters)
+        .into_iter()
+        .filter_map(|entry| {
+            let trimmed = entry.trim().trim_start_matches('*').trim();
+            if trimmed.is_empty() || matches!(trimmed, "/" | "*" | "self" | "cls") {
+                return None;
+            }
+
+            let subject = trimmed.split('=').next().unwrap_or(trimmed).trim();
+            let annotation = subject.split(':').nth(1)?.trim().to_ascii_lowercase();
+            let is_optional = annotation.contains("optional[")
+                || annotation.contains(" | none")
+                || annotation.contains("none |");
+            if !is_optional {
+                return None;
+            }
+
+            Some(
+                subject
+                    .split(':')
+                    .next()
+                    .unwrap_or(subject)
+                    .trim()
+                    .to_string(),
+            )
+        })
+        .collect()
+}
+
 fn make_finding(
     rule_id: &str,
     severity: Severity,
@@ -51,14 +135,20 @@ pub(super) fn exception_raised_without_chaining_findings(
         if trimmed.starts_with("except ") || trimmed == "except:" {
             in_except = true;
         }
-        if in_except
-            && trimmed.starts_with("raise ")
-            && !trimmed.contains(" from ")
-            && !trimmed.ends_with("raise")
-        {
+        if in_except && trimmed.starts_with("raise ") && !trimmed.ends_with("raise") {
+            let chained = body
+                .lines()
+                .skip(i)
+                .take(8)
+                .any(|candidate| candidate.contains(" from "));
+            if chained {
+                continue;
+            }
             return vec![make_finding(
                 "exception_raised_without_chaining_original_cause",
-                Severity::Info, file, function,
+                Severity::Info,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "raises a new exception inside except without `from e`; original cause is lost",
             )];
@@ -82,7 +172,10 @@ pub(super) fn exception_branches_on_message_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "exception_handler_branches_on_error_message_string",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "branches on exception message string; match on exception type or typed attributes instead",
             )];
         }
@@ -103,7 +196,9 @@ pub(super) fn bare_except_catches_system_exit_findings(
         if trimmed == "except:" {
             return vec![make_finding(
                 "bare_except_clause_catches_system_exit",
-                Severity::Warning, file, function,
+                Severity::Warning,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "uses bare `except:` which catches SystemExit and KeyboardInterrupt",
             )];
@@ -135,7 +230,9 @@ pub(super) fn exception_logged_and_reraised_findings(
             if has_log && trimmed.starts_with("raise") {
                 return vec![make_finding(
                     "exception_logged_and_then_re_raised_redundantly",
-                    Severity::Info, file, function,
+                    Severity::Info,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "logs the exception and then re-raises; produces duplicate log entries",
                 )];
@@ -154,14 +251,25 @@ pub(super) fn validation_error_mapped_to_500_findings(
     }
     let body = &function.body_text;
     if (body.contains("except ValueError") || body.contains("except ValidationError"))
-        && (body.contains("500") || body.contains("status_code=500") || body.contains("return Response(content="))
+        && (body.contains("500")
+            || body.contains("status_code=500")
+            || body.contains("return Response(content="))
     {
         let line = find_line(body, "except ValueError", function.fingerprint.start_line)
-            .or_else(|| find_line(body, "except ValidationError", function.fingerprint.start_line))
+            .or_else(|| {
+                find_line(
+                    body,
+                    "except ValidationError",
+                    function.fingerprint.start_line,
+                )
+            })
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "validation_or_parse_error_mapped_to_500_status",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "maps input validation error to HTTP 500; use 400-class status for client errors",
         )];
     }
@@ -184,10 +292,17 @@ pub(super) fn exception_silenced_in_finally_findings(
         }
         if in_finally && trimmed.starts_with("except") {
             // Look ahead for pass
-            if body.lines().nth(i + 1).map(|l| l.trim() == "pass").unwrap_or(false) {
+            if body
+                .lines()
+                .nth(i + 1)
+                .map(|l| l.trim() == "pass")
+                .unwrap_or(false)
+            {
                 return vec![make_finding(
                     "exception_silenced_in_cleanup_or_finally_block",
-                    Severity::Warning, file, function,
+                    Severity::Warning,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "silences exception inside finally/cleanup block; failures are hidden from caller",
                 )];
@@ -208,13 +323,17 @@ pub(super) fn exception_not_inheriting_base_findings(
     for (i, line) in body.lines().enumerate() {
         let trimmed = line.trim();
         // class FooError(Exception): not inheriting project base
-        if trimmed.starts_with("class ") && trimmed.contains("Error(Exception)")
-            && !trimmed.contains("Base") && !trimmed.contains("Project")
+        if trimmed.starts_with("class ")
+            && trimmed.contains("Error(Exception)")
+            && !trimmed.contains("Base")
+            && !trimmed.contains("Project")
             && !trimmed.contains("App")
         {
             return vec![make_finding(
                 "project_exception_class_not_inheriting_shared_base",
-                Severity::Info, file, function,
+                Severity::Info,
+                file,
+                function,
                 function.fingerprint.start_line + i,
                 "defines exception inheriting directly from Exception; inherit from a project base instead",
             )];
@@ -240,7 +359,10 @@ pub(super) fn exception_for_control_flow_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "exception_raised_and_caught_for_control_flow_within_same_function",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "raises and catches exception for control flow within the same function; use early returns instead",
         )];
     }
@@ -256,7 +378,8 @@ pub(super) fn error_message_embeds_sensitive_data_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "raise ValueError(f\"", "raise RuntimeError(f\"",
+        "raise ValueError(f\"",
+        "raise RuntimeError(f\"",
         "raise Exception(f\"",
     ];
     const SENSITIVE: &[&str] = &["password", "secret", "token", "key", "credential", "sql"];
@@ -268,7 +391,10 @@ pub(super) fn error_message_embeds_sensitive_data_findings(
                     .unwrap_or(function.fingerprint.start_line);
                 return vec![make_finding(
                     "error_message_embeds_sensitive_data",
-                    Severity::Warning, file, function, line,
+                    Severity::Warning,
+                    file,
+                    function,
+                    line,
                     "interpolates sensitive data into an error message",
                 )];
             }
@@ -285,15 +411,26 @@ pub(super) fn retry_catches_broad_exception_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    let has_retry = body.contains("for attempt") || body.contains("while retry") || body.contains("retry_count");
+    let has_retry = body.contains("for attempt")
+        || body.contains("while retry")
+        || body.contains("retry_count");
     let has_broad = body.contains("except Exception:") || body.contains("except BaseException:");
     if has_retry && has_broad {
         let line = find_line(body, "except Exception:", function.fingerprint.start_line)
-            .or_else(|| find_line(body, "except BaseException:", function.fingerprint.start_line))
+            .or_else(|| {
+                find_line(
+                    body,
+                    "except BaseException:",
+                    function.fingerprint.start_line,
+                )
+            })
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "retry_loop_catches_broad_base_exception",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "retry loop catches broad Exception; declare a specific set of retryable exception types",
         )];
     }
@@ -308,7 +445,8 @@ pub(super) fn transaction_missing_rollback_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    let has_begin = body.contains("session.begin()") || body.contains("db.begin()")
+    let has_begin = body.contains("session.begin()")
+        || body.contains("db.begin()")
         || body.contains("conn.begin()");
     let has_rollback = body.contains(".rollback()");
     let has_except = body.contains("except ");
@@ -317,7 +455,10 @@ pub(super) fn transaction_missing_rollback_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "transaction_block_missing_rollback_on_exception",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "starts a DB transaction with except block but no .rollback() on error path",
         )];
     }
@@ -333,8 +474,11 @@ pub(super) fn assert_for_validation_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "assert isinstance(", "assert len(", "assert user",
-        "assert request", "assert value is not None",
+        "assert isinstance(",
+        "assert len(",
+        "assert user",
+        "assert request",
+        "assert value is not None",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -342,7 +486,10 @@ pub(super) fn assert_for_validation_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "assert_used_for_runtime_input_validation_in_production",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "uses assert for input validation; assert is stripped by -O flag",
             )];
         }
@@ -359,8 +506,10 @@ pub(super) fn warning_instead_of_exception_findings(
     }
     let body = &function.body_text;
     const PATTERNS: &[&str] = &[
-        "warnings.warn(", "warnings.warn(\"Invalid",
-        "warnings.warn(\"Missing", "warnings.warn(\"Unexpected",
+        "warnings.warn(",
+        "warnings.warn(\"Invalid",
+        "warnings.warn(\"Missing",
+        "warnings.warn(\"Unexpected",
     ];
     for p in PATTERNS {
         if body.contains(p) {
@@ -368,7 +517,10 @@ pub(super) fn warning_instead_of_exception_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "warning_issued_instead_of_exception_for_invalid_state",
-                Severity::Info, file, function, line,
+                Severity::Info,
+                file,
+                function,
+                line,
                 "issues a warning for an invalid state; raise an exception instead",
             )];
         }
@@ -383,33 +535,52 @@ pub(super) fn exception_handler_no_logging_findings(
     if function.is_test_function {
         return Vec::new();
     }
+    if function.fingerprint.name.starts_with("_safe_") {
+        return Vec::new();
+    }
     let body = &function.body_text;
     let mut in_except = false;
     let mut except_start = 0;
+    let mut except_indent = 0;
     for (i, line) in body.lines().enumerate() {
         let trimmed = line.trim();
         if trimmed.starts_with("except ") || trimmed == "except:" {
             in_except = true;
             except_start = i;
+            except_indent = indent_level(line);
         }
         if in_except && i > except_start {
             if trimmed.starts_with("return ") {
+                let return_value = trimmed.trim_start_matches("return").trim();
+                if matches!(return_value, "False" | "True")
+                    || function.signature_text.contains("-> bool")
+                {
+                    continue;
+                }
                 // Check no log in the block
-                let block: Vec<&str> = body.lines()
+                let block: Vec<&str> = body
+                    .lines()
                     .skip(except_start)
                     .take(i - except_start + 1)
                     .collect();
-                let has_log = block.iter().any(|l| l.contains("log") || l.contains("logger") || l.contains("print"));
+                let has_log = block
+                    .iter()
+                    .any(|l| l.contains("log") || l.contains("logger") || l.contains("print"));
                 if !has_log {
                     return vec![make_finding(
                         "exception_handler_returns_default_without_any_logging",
-                        Severity::Info, file, function,
+                        Severity::Info,
+                        file,
+                        function,
                         function.fingerprint.start_line + i,
                         "returns default from except block with no logging; suppressed failures are invisible",
                     )];
                 }
             }
-            if !trimmed.starts_with('#') && !trimmed.is_empty() && indent_level(line) <= 1 {
+            if !trimmed.starts_with('#')
+                && !trimmed.is_empty()
+                && indent_level(line) <= except_indent
+            {
                 in_except = false;
             }
         }
@@ -435,7 +606,10 @@ pub(super) fn deeply_nested_try_except_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "deeply_nested_try_except_beyond_two_levels",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "has 3+ nested try/except blocks; decompose into separate functions",
         )];
     }
@@ -450,12 +624,21 @@ pub(super) fn suppress_with_base_exception_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    if body.contains("contextlib.suppress(Exception)") || body.contains("contextlib.suppress(BaseException)") {
-        let line = find_line(body, "contextlib.suppress(", function.fingerprint.start_line)
-            .unwrap_or(function.fingerprint.start_line);
+    if body.contains("contextlib.suppress(Exception)")
+        || body.contains("contextlib.suppress(BaseException)")
+    {
+        let line = find_line(
+            body,
+            "contextlib.suppress(",
+            function.fingerprint.start_line,
+        )
+        .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "contextlib_suppress_applied_with_exception_base_class",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "suppresses all exceptions with contextlib.suppress(Exception); use a specific subset",
         )];
     }
@@ -471,14 +654,18 @@ pub(super) fn oserror_without_errno_findings(
     }
     let body = &function.body_text;
     if (body.contains("except OSError") || body.contains("except IOError"))
-        && !body.contains(".errno") && !body.contains("errno.")
+        && !body.contains(".errno")
+        && !body.contains("errno.")
     {
         let line = find_line(body, "except OSError", function.fingerprint.start_line)
             .or_else(|| find_line(body, "except IOError", function.fingerprint.start_line))
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "oserror_caught_without_errno_inspection",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "catches OSError without inspecting .errno; specific OS failure kind determines recovery",
         )];
     }
@@ -500,7 +687,10 @@ pub(super) fn custom_exception_string_code_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "custom_exception_encodes_identity_as_string_code_attribute",
-                Severity::Info, file, function, line,
+                Severity::Info,
+                file,
+                function,
+                line,
                 "exception class uses a string code attribute for identity; use the class hierarchy instead",
             )];
         }
@@ -518,7 +708,8 @@ pub(super) fn generator_close_without_finally_findings(
     let body = &function.body_text;
     // Detect generator functions with teardown but no finally/GeneratorExit handling
     let has_yield = body.contains("yield ");
-    let has_teardown = body.contains(".close()") || body.contains(".cleanup()") || body.contains(".disconnect()");
+    let has_teardown =
+        body.contains(".close()") || body.contains(".cleanup()") || body.contains(".disconnect()");
     let has_finally = body.contains("finally:");
     let has_generator_exit = body.contains("GeneratorExit");
     if has_yield && has_teardown && !has_finally && !has_generator_exit {
@@ -526,7 +717,10 @@ pub(super) fn generator_close_without_finally_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "generator_close_exception_not_handled_when_cleanup_required",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "generator with cleanup code lacks finally/GeneratorExit guard; teardown may be skipped on close",
         )];
     }
@@ -545,14 +739,18 @@ pub(super) fn overloaded_without_decorator_findings(
     let body = &function.body_text;
     // Multiple isinstance checks on same arg but no @overload
     let isinstance_count = body.matches("isinstance(").count();
-    if isinstance_count >= 3 && !function.signature_text.contains("@overload")
+    if isinstance_count >= 3
+        && !function.signature_text.contains("@overload")
         && !body.contains("@typing.overload")
     {
         let line = find_line(body, "isinstance(", function.fingerprint.start_line)
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "overloaded_dispatch_without_typing_overload_decorator",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "dispatches on isinstance for multiple types without @typing.overload signatures",
         )];
     }
@@ -570,16 +768,26 @@ pub(super) fn protocol_isinstance_without_runtime_checkable_findings(
     // Look for isinstance(obj, SomeProtocol) where Protocol is imported but @runtime_checkable is absent
     if body.contains("isinstance(") {
         let imports: Vec<&str> = file.imports.iter().map(|i| i.path.as_str()).collect();
-        let has_protocol = imports.iter().any(|i| i.contains("Protocol")) || body.contains("Protocol");
+        let has_protocol =
+            imports.iter().any(|i| i.contains("Protocol")) || body.contains("Protocol");
         let has_runtime_checkable = body.contains("runtime_checkable")
-            || file.imports.iter().any(|i| i.path.contains("runtime_checkable"))
-            || file.functions.iter().any(|f| f.body_text.contains("@runtime_checkable"));
+            || file
+                .imports
+                .iter()
+                .any(|i| i.path.contains("runtime_checkable"))
+            || file
+                .functions
+                .iter()
+                .any(|f| f.body_text.contains("@runtime_checkable"));
         if has_protocol && !has_runtime_checkable {
             let line = find_line(body, "isinstance(", function.fingerprint.start_line)
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "protocol_used_in_isinstance_without_runtime_checkable",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "uses Protocol in isinstance() without @runtime_checkable; raises TypeError at runtime",
             )];
         }
@@ -596,17 +804,33 @@ pub(super) fn optional_without_none_guard_findings(
     }
     let sig = &function.signature_text;
     let body = &function.body_text;
-    if (sig.contains("Optional[") || sig.contains("| None"))
-        && !body.contains(" is None") && !body.contains(" is not None")
-        && !body.contains("if not ") && !body.contains("or ")
-    {
-        return vec![make_finding(
-            "optional_parameter_used_without_none_guard",
-            Severity::Info, file, function, function.fingerprint.start_line,
-            "has Optional parameter but dereferences it without a None guard",
-        )];
+    let optional_parameters = optional_parameter_names(sig);
+    if optional_parameters.is_empty() {
+        return Vec::new();
     }
-    Vec::new()
+
+    let has_none_guard = body.contains(" is None")
+        || body.contains(" is not None")
+        || body.contains("if not ")
+        || body.contains(" or ");
+    if has_none_guard
+        || optional_parameters.iter().any(|name| {
+            body.contains(&format!("if {name}"))
+                || body.contains(&format!("{name} and"))
+                || body.contains(&format!("{name} else"))
+        })
+    {
+        return Vec::new();
+    }
+
+    return vec![make_finding(
+        "optional_parameter_used_without_none_guard",
+        Severity::Info,
+        file,
+        function,
+        function.fingerprint.start_line,
+        "has Optional parameter but dereferences it without a None guard",
+    )];
 }
 
 pub(super) fn callable_without_param_types_findings(
@@ -618,12 +842,17 @@ pub(super) fn callable_without_param_types_findings(
     }
     let sig = &function.signature_text;
     // Detect bare Callable annotations
-    if (sig.contains(": Callable)") || sig.contains(": Callable,") || sig.contains("Callable[..., Any]"))
+    if (sig.contains(": Callable)")
+        || sig.contains(": Callable,")
+        || sig.contains("Callable[..., Any]"))
         && !function.fingerprint.name.starts_with('_')
     {
         return vec![make_finding(
             "callable_annotation_without_parameter_types",
-            Severity::Info, file, function, function.fingerprint.start_line,
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
             "uses bare Callable annotation without parameter types on a public API boundary",
         )];
     }
@@ -640,13 +869,17 @@ pub(super) fn cast_without_narrowing_findings(
     let body = &function.body_text;
     if body.contains("typing.cast(") || body.contains("cast(") {
         // Check for guard before cast
-        let has_guard = body.contains("isinstance(") || body.contains("assert ") || body.contains("if ");
+        let has_guard =
+            body.contains("isinstance(") || body.contains("assert ") || body.contains("if ");
         if !has_guard {
             let line = find_line(body, "cast(", function.fingerprint.start_line)
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "cast_applied_without_preceding_type_narrowing_guard",
-                Severity::Info, file, function, line,
+                Severity::Info,
+                file,
+                function,
+                line,
                 "applies typing.cast without a preceding isinstance/assert guard",
             )];
         }
@@ -662,16 +895,23 @@ pub(super) fn type_alias_shadows_builtin_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    const BUILTINS: &[&str] = &["list", "dict", "set", "type", "id", "filter", "map", "input", "bytes"];
-    for b in BUILTINS {
-        let pattern = format!("{b} = ");
-        if body.contains(&pattern) {
-            let line = find_line(body, &pattern, function.fingerprint.start_line)
-                .unwrap_or(function.fingerprint.start_line);
+    const BUILTINS: &[&str] = &[
+        "list", "dict", "set", "type", "id", "filter", "map", "input", "bytes",
+    ];
+    for (i, line) in body.lines().enumerate() {
+        let trimmed = line.trim();
+        let Some((lhs, _rhs)) = trimmed.split_once(" = ") else {
+            continue;
+        };
+        let candidate = lhs.trim().split(':').next().unwrap_or(lhs.trim()).trim();
+        if BUILTINS.contains(&candidate) {
             return vec![make_finding(
                 "type_alias_shadows_builtin_name",
-                Severity::Warning, file, function, line,
-                &format!("assigns to name `{b}` which shadows a Python builtin"),
+                Severity::Warning,
+                file,
+                function,
+                function.fingerprint.start_line + i,
+                &format!("assigns to name `{candidate}` which shadows a Python builtin"),
             )];
         }
     }
@@ -693,7 +933,10 @@ pub(super) fn namedtuple_where_dataclass_fits_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "namedtuple_used_where_dataclass_better_fits",
-                Severity::Info, file, function, line,
+                Severity::Info,
+                file,
+                function,
+                line,
                 "uses namedtuple for mutable data; consider @dataclass instead",
             )];
         }
@@ -714,7 +957,10 @@ pub(super) fn public_return_union_many_types_findings(
     if union_count >= 3 {
         return vec![make_finding(
             "public_function_return_type_annotated_as_union_of_many_unrelated_types",
-            Severity::Info, file, function, function.fingerprint.start_line,
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
             "returns a Union of many unrelated types; use a more specific sum type or protocol",
         )];
     }
@@ -734,7 +980,10 @@ pub(super) fn typevar_without_bound_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "typevar_defined_without_bound_or_constraints_for_narrow_use",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "defines TypeVar without bound or constraints for a narrowly-typed use site",
         )];
     }
@@ -753,7 +1002,10 @@ pub(super) fn generic_class_without_type_param_findings(
     if sig.contains(": list)") || sig.contains(": dict)") || sig.contains(": set)") {
         return vec![make_finding(
             "generic_class_used_without_type_parameter_application",
-            Severity::Info, file, function, function.fingerprint.start_line,
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
             "uses bare generic container annotation without type parameters",
         )];
     }
@@ -769,15 +1021,15 @@ pub(super) fn protocol_method_lacks_annotations_findings(
     }
     let body = &function.body_text;
     // Class body with Protocol but methods have no return annotation
-    if body.contains("Protocol")
-        && body.contains("def ")
-        && !body.contains("->")
-    {
+    if body.contains("Protocol") && body.contains("def ") && !body.contains("->") {
         let line = find_line(body, "Protocol", function.fingerprint.start_line)
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "protocol_method_lacks_type_annotations",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "Protocol method lacks return type annotation; structural contract is incomplete",
         )];
     }
@@ -794,14 +1046,19 @@ pub(super) fn typed_dict_access_without_guard_findings(
     let body = &function.body_text;
     // Detect TypedDict key access without get or guard
     if (body.contains("TypedDict") || file.imports.iter().any(|i| i.path.contains("TypedDict")))
-        && body.contains("[\"") && !body.contains(".get(")
-        && !body.contains(" in ") && !body.contains("if \"")
+        && body.contains("[\"")
+        && !body.contains(".get(")
+        && !body.contains(" in ")
+        && !body.contains("if \"")
     {
         let line = find_line(body, "[\"", function.fingerprint.start_line)
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "typed_dict_key_access_without_get_or_guard",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "accesses optional TypedDict key by index without .get() or membership guard",
         )];
     }
@@ -816,14 +1073,19 @@ pub(super) fn typed_dict_total_false_no_doc_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    if body.contains("TypedDict") && body.contains("total=False")
-        && !body.contains("\"\"\"") && !body.contains("# optional")
+    if body.contains("TypedDict")
+        && body.contains("total=False")
+        && !body.contains("\"\"\"")
+        && !body.contains("# optional")
     {
         let line = find_line(body, "total=False", function.fingerprint.start_line)
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "typed_dict_total_false_without_docstring_noting_optional_keys",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "TypedDict with total=False lacks a docstring identifying which keys are optional",
         )];
     }
@@ -839,10 +1101,18 @@ pub(super) fn forward_ref_not_under_type_checking_findings(
     }
     let sig = &function.signature_text;
     // Forward references as strings not under TYPE_CHECKING
-    if sig.contains(": \"") && !file.imports.iter().any(|i| i.path.contains("TYPE_CHECKING")) {
+    if sig.contains(": \"")
+        && !file
+            .imports
+            .iter()
+            .any(|i| i.path.contains("TYPE_CHECKING"))
+    {
         return vec![make_finding(
             "string_forward_reference_in_annotation_not_under_type_checking_guard",
-            Severity::Info, file, function, function.fingerprint.start_line,
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
             "uses string forward reference without TYPE_CHECKING guard",
         )];
     }
@@ -864,7 +1134,10 @@ pub(super) fn test_too_many_patches_findings(
     if patch_count >= 5 {
         return vec![make_finding(
             "test_function_stacks_too_many_mock_patch_decorators",
-            Severity::Info, file, function, function.fingerprint.start_line,
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
             "stacks 5+ mock.patch decorators; the production code likely needs better dependency injection",
         )];
     }
@@ -887,7 +1160,10 @@ pub(super) fn test_sleeps_for_coordination_findings(
                 .unwrap_or(function.fingerprint.start_line);
             return vec![make_finding(
                 "test_calls_time_sleep_for_coordination",
-                Severity::Warning, file, function, line,
+                Severity::Warning,
+                file,
+                function,
+                line,
                 "uses time.sleep for test coordination; use events, mocks, or condition variables instead",
             )];
         }
@@ -904,14 +1180,19 @@ pub(super) fn test_mutates_global_without_restore_findings(
     }
     let body = &function.body_text;
     // Look for direct module-global assignment not through monkeypatch
-    let has_global_mutation = body.contains("module.") && body.contains(" = ") && !body.contains("monkeypatch");
-    let has_teardown = body.contains("yield") || body.contains("addCleanup") || body.contains("finally:");
+    let has_global_mutation =
+        body.contains("module.") && body.contains(" = ") && !body.contains("monkeypatch");
+    let has_teardown =
+        body.contains("yield") || body.contains("addCleanup") || body.contains("finally:");
     if has_global_mutation && !has_teardown {
         let line = find_line(body, " = ", function.fingerprint.start_line)
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "test_mutates_module_global_without_restore",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "mutates a module global without teardown; risks test-ordering pollution",
         )];
     }
@@ -930,10 +1211,13 @@ pub(super) fn test_asserts_private_attribute_findings(
     if body.contains("assert ") {
         for (i, line) in body.lines().enumerate() {
             let trimmed = line.trim();
-            if trimmed.starts_with("assert ") && trimmed.contains("._") && trimmed.contains(" == ") {
+            if trimmed.starts_with("assert ") && trimmed.contains("._") && trimmed.contains(" == ")
+            {
                 return vec![make_finding(
                     "test_asserts_private_attribute_value_instead_of_behavior",
-                    Severity::Info, file, function,
+                    Severity::Info,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "asserts on a private attribute; test observable public behavior instead",
                 )];
@@ -951,16 +1235,23 @@ pub(super) fn test_datetime_without_freeze_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    let has_time_call = body.contains("datetime.now()") || body.contains("datetime.utcnow()")
-        || body.contains("date.today()") || body.contains("time.time()");
-    let has_freeze = body.contains("freeze_time") || body.contains("time_machine") || body.contains("monkeypatch");
+    let has_time_call = body.contains("datetime.now()")
+        || body.contains("datetime.utcnow()")
+        || body.contains("date.today()")
+        || body.contains("time.time()");
+    let has_freeze = body.contains("freeze_time")
+        || body.contains("time_machine")
+        || body.contains("monkeypatch");
     if has_time_call && !has_freeze {
         let line = find_line(body, "datetime.now()", function.fingerprint.start_line)
             .or_else(|| find_line(body, "date.today()", function.fingerprint.start_line))
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "test_fixture_calls_datetime_now_without_freezing",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "calls datetime.now() without freezing time; test results are non-deterministic",
         )];
     }
@@ -980,7 +1271,10 @@ pub(super) fn test_wraps_sut_in_try_except_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "test_wraps_sut_in_try_except_hiding_exception_detail",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "wraps SUT in try/except without asserting exception type; hides unexpected exceptions",
         )];
     }
@@ -1001,7 +1295,10 @@ pub(super) fn test_parametrize_single_case_findings(
         if param_count <= 1 {
             return vec![make_finding(
                 "pytest_parametrize_with_single_test_case",
-                Severity::Info, file, function, function.fingerprint.start_line,
+                Severity::Info,
+                file,
+                function,
+                function.fingerprint.start_line,
                 "uses @pytest.mark.parametrize with a single case; use a plain test instead",
             )];
         }
@@ -1022,7 +1319,10 @@ pub(super) fn test_no_reason_skip_findings(
     {
         return vec![make_finding(
             "test_skipped_with_no_reason_string",
-            Severity::Info, file, function, function.fingerprint.start_line,
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
             "skips or xfails test without a reason= string",
         )];
     }
@@ -1040,13 +1340,19 @@ pub(super) fn test_float_equality_findings(
     if body.contains("assert ") && body.contains(" == ") {
         for (i, line) in body.lines().enumerate() {
             let trimmed = line.trim();
-            if trimmed.starts_with("assert ") && trimmed.contains(" == ")
-                && (trimmed.contains(".0") || trimmed.contains("float") || trimmed.contains("result"))
-                && !trimmed.contains("approx") && !trimmed.contains("isclose")
+            if trimmed.starts_with("assert ")
+                && trimmed.contains(" == ")
+                && (trimmed.contains(".0")
+                    || trimmed.contains("float")
+                    || trimmed.contains("result"))
+                && !trimmed.contains("approx")
+                && !trimmed.contains("isclose")
             {
                 return vec![make_finding(
                     "test_compares_float_with_equality_operator",
-                    Severity::Warning, file, function,
+                    Severity::Warning,
+                    file,
+                    function,
                     function.fingerprint.start_line + i,
                     "compares float with == operator; use pytest.approx() or math.isclose()",
                 )];
@@ -1069,7 +1375,10 @@ pub(super) fn test_loads_real_config_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "test_loads_real_application_config_or_secrets",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "loads real application config or .env file in tests; use isolated test configuration",
         )];
     }
@@ -1084,16 +1393,24 @@ pub(super) fn test_makes_real_http_call_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    let has_real_call = body.contains("requests.get(") || body.contains("requests.post(")
-        || body.contains("httpx.get(") || body.contains("httpx.post(");
-    let has_mock = body.contains("responses.") || body.contains("respx.") || body.contains("vcr") || body.contains("mock");
+    let has_real_call = body.contains("requests.get(")
+        || body.contains("requests.post(")
+        || body.contains("httpx.get(")
+        || body.contains("httpx.post(");
+    let has_mock = body.contains("responses.")
+        || body.contains("respx.")
+        || body.contains("vcr")
+        || body.contains("mock");
     if has_real_call && !has_mock {
         let line = find_line(body, "requests.get(", function.fingerprint.start_line)
             .or_else(|| find_line(body, "httpx.get(", function.fingerprint.start_line))
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "test_makes_real_outbound_http_call_without_mock_or_vcr",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "makes a real outbound HTTP call in a test without a mock or VCR cassette",
         )];
     }
@@ -1113,7 +1430,10 @@ pub(super) fn test_coverage_multiple_scenarios_findings(
     if assert_count >= 6 && has_many_setups {
         return vec![make_finding(
             "test_function_covers_multiple_unrelated_scenarios",
-            Severity::Info, file, function, function.fingerprint.start_line,
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
             "has 6+ assertions across multiple setups; split into focused test cases",
         )];
     }
@@ -1129,16 +1449,22 @@ pub(super) fn integration_test_without_cleanup_findings(
     }
     let body = &function.body_text;
     // integration test signature: write to DB or filesystem
-    let has_write = body.contains(".save()") || body.contains(".create(") || body.contains(".insert(")
+    let has_write = body.contains(".save()")
+        || body.contains(".create(")
+        || body.contains(".insert(")
         || body.contains("open(") && body.contains("\"w\"");
-    let has_cleanup = body.contains("finally:") || body.contains("addCleanup") || body.contains("yield");
+    let has_cleanup =
+        body.contains("finally:") || body.contains("addCleanup") || body.contains("yield");
     if has_write && !has_cleanup {
         let line = find_line(body, ".save()", function.fingerprint.start_line)
             .or_else(|| find_line(body, ".create(", function.fingerprint.start_line))
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "integration_test_writes_state_without_cleanup",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "integration test writes state without visible cleanup path",
         )];
     }
@@ -1154,11 +1480,18 @@ pub(super) fn pytest_raises_no_match_findings(
     }
     let body = &function.body_text;
     if body.contains("pytest.raises(Exception)") && !body.contains("match=") {
-        let line = find_line(body, "pytest.raises(Exception)", function.fingerprint.start_line)
-            .unwrap_or(function.fingerprint.start_line);
+        let line = find_line(
+            body,
+            "pytest.raises(Exception)",
+            function.fingerprint.start_line,
+        )
+        .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "pytest_raises_without_match_parameter_on_broad_exception",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "uses pytest.raises(Exception) without match=; any exception message satisfies the assertion",
         )];
     }
@@ -1175,14 +1508,18 @@ pub(super) fn test_reimplements_production_logic_findings(
     let body = &function.body_text;
     // Heuristic: test re-implements complex validation logic inline
     let has_direct_validation = (body.contains("if len(") || body.contains("if not re.match"))
-        && body.contains("ValidationError") && body.contains("assert ");
+        && body.contains("ValidationError")
+        && body.contains("assert ");
     if has_direct_validation {
         let line = find_line(body, "if len(", function.fingerprint.start_line)
             .or_else(|| find_line(body, "if not re.match", function.fingerprint.start_line))
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "test_re_implements_production_validation_logic",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "re-implements production validation logic in a test; use the production validator directly",
         )];
     }
@@ -1231,7 +1568,10 @@ pub(super) fn mock_return_incompatible_type_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "mock_return_value_is_incompatible_type_with_real_signature",
-            Severity::Info, file, function, line,
+            Severity::Info,
+            file,
+            function,
+            line,
             "mock return_value may be incompatible with the real function's return type annotation",
         )];
     }
@@ -1255,7 +1595,10 @@ pub(super) fn test_unittest_duplicated_setup_findings(
     {
         return vec![make_finding(
             "unittest_test_class_duplicates_setup_without_base_class",
-            Severity::Info, file, function, function.fingerprint.start_line,
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
             "test class provides large setUp without inheriting from a shared base class",
         )];
     }
@@ -1277,7 +1620,10 @@ pub(super) fn test_depends_on_sibling_side_effects_findings(
             .unwrap_or(function.fingerprint.start_line);
         return vec![make_finding(
             "test_depends_on_sibling_test_side_effects",
-            Severity::Warning, file, function, line,
+            Severity::Warning,
+            file,
+            function,
+            line,
             "test reads shared mutable state that may be set by a sibling test; ensure isolation",
         )];
     }

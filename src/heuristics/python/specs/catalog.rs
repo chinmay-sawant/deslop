@@ -8,11 +8,11 @@ use super::runtime::{
     boundaries_file_family_findings, boundaries_function_family_findings,
     cross_file_dupe_repo_findings, cross_file_literal_repo_findings,
     deep_inheritance_repo_findings, discipline_function_family_findings,
-    duplicate_query_fragment_repo_findings,
-    duplicate_transformation_pipeline_repo_findings, duplication_file_family_findings,
-    duplication_repo_family_findings, framework_family_findings, hotpath_ext_family_findings,
-    hotpath_family_findings, maintainability_family_findings, maintainability_file_family_findings,
-    mlops_family_findings, observability_file_family_findings, observability_function_family_findings,
+    duplicate_query_fragment_repo_findings, duplicate_transformation_pipeline_repo_findings,
+    duplication_file_family_findings, duplication_repo_family_findings, framework_family_findings,
+    hotpath_ext_family_findings, hotpath_family_findings, maintainability_family_findings,
+    maintainability_file_family_findings, mlops_family_findings,
+    observability_file_family_findings, observability_function_family_findings,
     performance_family_findings, structure_file_family_findings,
     structure_function_family_findings, structure_repo_family_findings,
     test_utility_logic_repo_findings,
@@ -795,9 +795,8 @@ pub(crate) const ARCHITECTURE_EVALUATORS: &[FunctionEvaluator] = &[
     architecture::semaphore_without_async_with_findings,
 ];
 
-pub(crate) const ARCHITECTURE_FILE_EVALUATORS: &[FileEvaluator] = &[
-    architecture::event_loop_at_module_scope_file_findings,
-];
+pub(crate) const ARCHITECTURE_FILE_EVALUATORS: &[FileEvaluator] =
+    &[architecture::event_loop_at_module_scope_file_findings];
 
 pub(crate) const DISCIPLINE_EVALUATORS: &[FunctionEvaluator] = &[
     discipline::exception_raised_without_chaining_findings,

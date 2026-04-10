@@ -107,10 +107,31 @@ pub(super) fn repeated_validation_pipeline_findings(file: &ParsedFile) -> Vec<Fi
 
     occurrences
         .into_iter()
-        .filter(|(_, lines)| lines.len() >= 2)
-        .map(|(signature, mut lines)| {
+        .filter_map(|(signature, mut lines)| {
+            if lines.len() < 2 {
+                return None;
+            }
+
+            let matching_functions: Vec<_> = file
+                .functions
+                .iter()
+                .filter(|function| {
+                    function
+                        .python_evidence()
+                        .validation_signature
+                        .is_some_and(|block| block.signature == signature)
+                })
+                .collect();
+
+            if !matching_functions
+                .iter()
+                .any(|function| !function.fingerprint.name.starts_with('_'))
+            {
+                return None;
+            }
+
             lines.sort_unstable();
-            Finding {
+            Some(Finding {
                 rule_id: "duplicate_validation_pipeline".to_string(),
                 severity: Severity::Info,
                 path: file.path.clone(),
@@ -122,7 +143,7 @@ pub(super) fn repeated_validation_pipeline_findings(file: &ParsedFile) -> Vec<Fi
                     format!("occurrences={}", lines.len()),
                     format!("shape={signature}"),
                 ],
-            }
+            })
         })
         .collect()
 }

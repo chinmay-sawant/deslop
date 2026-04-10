@@ -236,6 +236,9 @@ pub(crate) fn mlops_extra_findings(file: &ParsedFile, function: &ParsedFunction)
             || function.fingerprint.name.contains("load")
             || function.fingerprint.name.contains("ingest"))
     {
+        if function.fingerprint.name.starts_with("_safe_") {
+            return findings;
+        }
         let has_validation = body.contains("pydantic")
             || body.contains("marshmallow")
             || body.contains("cerberus")

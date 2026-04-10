@@ -1,4 +1,6 @@
-use super::{RuleConfigurability, RuleDefaultSeverity, RuleDefinition, RuleLanguage, RuleStatus, bindings};
+use super::{
+    RuleConfigurability, RuleDefaultSeverity, RuleDefinition, RuleLanguage, RuleStatus, bindings,
+};
 
 macro_rules! arch_rule {
     ($id:expr, $desc:expr) => {
