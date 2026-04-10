@@ -161,4 +161,84 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "asyncio_get_event_loop_at_module_scope",
         "asyncio.get_event_loop() or get_running_loop() called at module import scope outside any function."
     ),
+    arch_rule!(
+        "constructor_reads_global_config_inline",
+        "Flag classes whose constructors pull environment variables or global config directly instead of receiving normalized dependencies."
+    ),
+    arch_rule!(
+        "entrypoint_builds_dependency_graph_inside_hot_function",
+        "Flag request, batch, or loop entrypoints that reconstruct clients, caches, or providers on each call instead of wiring them once."
+    ),
+    arch_rule!(
+        "domain_object_performs_external_io",
+        "Flag domain or value-like objects that open files, spawn subprocesses, or call network clients during core operations."
+    ),
+    arch_rule!(
+        "business_rule_mixed_with_serialization_mapping",
+        "Flag functions that both enforce domain rules and convert to wire or storage payloads in the same block."
+    ),
+    arch_rule!(
+        "function_returns_domain_value_and_transport_metadata",
+        "Flag APIs that mix domain results with transport metadata such as status-like fields or side-channel details in one return shape."
+    ),
+    arch_rule!(
+        "storage_write_returns_driver_specific_object",
+        "Flag write helpers that return raw driver, session, or cursor objects instead of stable application data."
+    ),
+    arch_rule!(
+        "module_exposes_mutable_singleton_client",
+        "Flag modules that export long-lived mutable client instances for direct cross-module mutation."
+    ),
+    arch_rule!(
+        "feature_logic_embedded_in_process_entrypoint",
+        "Flag CLI, worker, or service entrypoints that own business branching instead of delegating to focused application services."
+    ),
+    arch_rule!(
+        "transaction_scope_split_across_unrelated_helpers",
+        "Flag flows where begin, commit, and rollback responsibilities are scattered across helpers with no single owner."
+    ),
+    arch_rule!(
+        "initializer_requires_half_built_instance_state",
+        "Flag methods that depend on object fields being patched in after construction before the object becomes usable."
+    ),
+    arch_rule!(
+        "object_construction_triggers_network_or_disk_side_effect",
+        "Flag constructors that perform expensive I/O instead of separating configuration from execution."
+    ),
+    arch_rule!(
+        "module_import_starts_runtime_bootstrap",
+        "Flag imports that eagerly start threads, background loops, watchers, or connection attempts at import time."
+    ),
+    arch_rule!(
+        "command_or_task_mutates_shared_process_state_directly",
+        "Flag command handlers or task functions that directly rewrite module-level caches or registries used elsewhere."
+    ),
+    arch_rule!(
+        "function_accepts_too_many_cross_cutting_dependencies",
+        "Flag functions or constructors that accept a broad mix of logging, config, cache, clock, auth, and persistence dependencies with no cohesive abstraction."
+    ),
+    arch_rule!(
+        "data_mapper_contains_business_decision_tree",
+        "Flag mappers or adapters that choose policy outcomes while converting data."
+    ),
+    arch_rule!(
+        "orchestrator_performs_low_level_tokenization_or_parsing",
+        "Flag high-level workflow functions that also own low-level parsing logic better isolated in helpers."
+    ),
+    arch_rule!(
+        "core_model_reads_process_environment",
+        "Flag core classes or pure helper layers that directly access os.environ, os.getenv, or global settings."
+    ),
+    arch_rule!(
+        "third_party_exception_type_leaks_across_architecture_boundary",
+        "Flag public or upper-layer APIs that expose low-level library exception types instead of stable local contracts."
+    ),
+    arch_rule!(
+        "retry_policy_scattered_across_multiple_callers",
+        "Flag repeated retry or backoff loops around the same dependency instead of one owner boundary."
+    ),
+    arch_rule!(
+        "adapter_boundary_missing_for_external_payload_shape",
+        "Flag code that lets raw third-party dicts, tuples, or response objects spread through unrelated modules without normalization."
+    ),
 ];

@@ -5,6 +5,20 @@
   "summary": "Repository, service, DTO, and package ownership drift.",
   "rules": [
     {
+      "id": "adapter_boundary_missing_for_external_payload_shape",
+      "label": "Adapter Boundary Missing for External Payload Shape",
+      "description": "Flag code that lets raw third-party dicts, tuples, or response objects spread through unrelated modules without normalization.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Adapter Boundary Missing for External Payload Shape matters because the pattern here, Flag code that lets raw third-party dicts, tuples, or response objects spread through unrelated modules without normalization, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Adapter Boundary Missing for External Payload Shape in Python, add normalization or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
       "id": "asyncio_gather_without_return_exceptions_on_partial_failure_path",
       "label": "Asyncio Gather without Return Exceptions on Partial Failure Path",
       "description": "asyncio.gather called without return_exceptions=True on a code path where partial failure should be recoverable.",
@@ -103,6 +117,20 @@
       "fix": "For Business Logic Inside Middleware in Python, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
     },
     {
+      "id": "business_rule_mixed_with_serialization_mapping",
+      "label": "Business Rule Mixed with Serialization Mapping",
+      "description": "Flag functions that both enforce domain rules and convert to wire or storage payloads in the same block.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Business Rule Mixed with Serialization Mapping matters because the pattern here, Flag functions that both enforce domain rules and convert to wire or storage payloads in the same block, is worth review because soft module boundaries make it easy for transport, persistence, and business logic to blur together over time.",
+      "fix": "For Business Rule Mixed with Serialization Mapping in Python, choose one owner for mapping, orchestration, and data access, then keep each package aligned with that role."
+    },
+    {
       "id": "celery_or_rq_task_imports_web_framework_app",
       "label": "Celery or Rq Task Imports Web Framework App",
       "description": "Celery or RQ task module imports the Flask app object or FastAPI application at the top level.",
@@ -115,6 +143,20 @@
       ],
       "explanation": "In Python, Celery or Rq Task Imports Web Framework App matters because the pattern here, Celery or RQ task module imports the Flask app object or FastAPI application at the top level, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
       "fix": "For Celery or Rq Task Imports Web Framework App in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "command_or_task_mutates_shared_process_state_directly",
+      "label": "Command or Task Mutates Shared Process State Directly",
+      "description": "Flag command handlers or task functions that directly rewrite module-level caches or registries used elsewhere.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Command or Task Mutates Shared Process State Directly matters because the pattern here, Flag command handlers or task functions that directly rewrite module-level caches or registries used elsewhere, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Command or Task Mutates Shared Process State Directly in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
     },
     {
       "id": "concurrent_futures_executor_not_shut_down",
@@ -131,6 +173,34 @@
       "fix": "For Concurrent Futures Executor Not Shut Down in Python, add shutdown() or a context manager, leaking threads or move the code to a path where that safeguard is guaranteed before the risky work happens."
     },
     {
+      "id": "constructor_reads_global_config_inline",
+      "label": "Constructor Reads Global Config Inline",
+      "description": "Flag classes whose constructors pull environment variables or global config directly instead of receiving normalized dependencies.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Constructor Reads Global Config Inline matters because the pattern here, Flag classes whose constructors pull environment variables or global config directly instead of receiving normalized dependencies, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Constructor Reads Global Config Inline in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "core_model_reads_process_environment",
+      "label": "Core Model Reads Process Environment",
+      "description": "Flag core classes or pure helper layers that directly access os.environ, os.getenv, or global settings.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Core Model Reads Process Environment matters because the pattern here, Flag core classes or pure helper layers that directly access os.environ, os.getenv, or global settings, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Core Model Reads Process Environment in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
       "id": "coroutine_result_discarded_without_await",
       "label": "Coroutine Result Discarded without Await",
       "description": "Coroutine object assigned or returned without await, so the coroutine body never executes.",
@@ -143,6 +213,20 @@
       ],
       "explanation": "In Python, Coroutine Result Discarded without Await matters because the pattern here, Coroutine object assigned or returned without await, so the coroutine body never executes, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
       "fix": "For Coroutine Result Discarded without Await in Python, add await, so the coroutine body never executes or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "data_mapper_contains_business_decision_tree",
+      "label": "Data Mapper Contains Business Decision Tree",
+      "description": "Flag mappers or adapters that choose policy outcomes while converting data.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Data Mapper Contains Business Decision Tree matters because the pattern here, Flag mappers or adapters that choose policy outcomes while converting data, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Data Mapper Contains Business Decision Tree in Python, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
     },
     {
       "id": "dependency_injection_bypassed_via_global_singleton",
@@ -173,6 +257,76 @@
       "fix": "For Domain Model Class Imports HTTP Library in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
     },
     {
+      "id": "domain_object_performs_external_io",
+      "label": "Domain Object Performs External I/O",
+      "description": "Flag domain or value-like objects that open files, spawn subprocesses, or call network clients during core operations.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Domain Object Performs External I/O matters because the pattern here, Flag domain or value-like objects that open files, spawn subprocesses, or call network clients during core operations, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Domain Object Performs External I/O in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "entrypoint_builds_dependency_graph_inside_hot_function",
+      "label": "Entrypoint Builds Dependency Graph Inside Hot Function",
+      "description": "Flag request, batch, or loop entrypoints that reconstruct clients, caches, or providers on each call instead of wiring them once.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Entrypoint Builds Dependency Graph Inside Hot Function matters because the pattern here, Flag request, batch, or loop entrypoints that reconstruct clients, caches, or providers on each call instead of wiring them once, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Entrypoint Builds Dependency Graph Inside Hot Function in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "feature_logic_embedded_in_process_entrypoint",
+      "label": "Feature Logic Embedded in Process Entrypoint",
+      "description": "Flag CLI, worker, or service entrypoints that own business branching instead of delegating to focused application services.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Feature Logic Embedded in Process Entrypoint matters because the pattern here, Flag CLI, worker, or service entrypoints that own business branching instead of delegating to focused application services, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Feature Logic Embedded in Process Entrypoint in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "function_accepts_too_many_cross_cutting_dependencies",
+      "label": "Function Accepts Too Many Cross Cutting Dependencies",
+      "description": "Flag functions or constructors that accept a broad mix of logging, config, cache, clock, auth, and persistence dependencies with no cohesive abstraction.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Function Accepts Too Many Cross Cutting Dependencies matters because the pattern here, Flag functions or constructors that accept a broad mix of logging, config, cache, clock, auth, and persistence dependencies with no cohesive abstraction, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Function Accepts Too Many Cross Cutting Dependencies in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "function_returns_domain_value_and_transport_metadata",
+      "label": "Function Returns Domain Value and Transport Metadata",
+      "description": "Flag APIs that mix domain results with transport metadata such as status-like fields or side-channel details in one return shape.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Function Returns Domain Value and Transport Metadata matters because the pattern here, Flag APIs that mix domain results with transport metadata such as status-like fields or side-channel details in one return shape, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Function Returns Domain Value and Transport Metadata in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
       "id": "handler_or_view_builds_raw_sql",
       "label": "Handler or View Builds Raw SQL",
       "description": "Route handler or view constructs a raw SQL string instead of delegating to a repository layer.",
@@ -201,6 +355,20 @@
       "fix": "For Handler or View Owns Transaction Lifecycle in Python, keep the transaction focused on the minimum database work and move unrelated orchestration outside the open transaction."
     },
     {
+      "id": "initializer_requires_half_built_instance_state",
+      "label": "Initializer Requires Half Built Instance State",
+      "description": "Flag methods that depend on object fields being patched in after construction before the object becomes usable.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Initializer Requires Half Built Instance State matters because the pattern here, Flag methods that depend on object fields being patched in after construction before the object becomes usable, is worth review because soft module boundaries make it easy for transport, persistence, and business logic to blur together over time.",
+      "fix": "For Initializer Requires Half Built Instance State in Python, choose one owner for mapping, orchestration, and data access, then keep each package aligned with that role."
+    },
+    {
       "id": "loop_run_until_complete_inside_running_loop",
       "label": "Loop Run Until Complete Inside Running Loop",
       "description": "loop.run_until_complete called from within a running event loop, which raises RuntimeError.",
@@ -215,6 +383,34 @@
       "fix": "For Loop Run Until Complete Inside Running Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
     },
     {
+      "id": "module_exposes_mutable_singleton_client",
+      "label": "Module Exposes Mutable Singleton Client",
+      "description": "Flag modules that export long-lived mutable client instances for direct cross-module mutation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Module Exposes Mutable Singleton Client matters because the pattern here, Flag modules that export long-lived mutable client instances for direct cross-module mutation, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Module Exposes Mutable Singleton Client in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "module_import_starts_runtime_bootstrap",
+      "label": "Module Import Starts Runtime Bootstrap",
+      "description": "Flag imports that eagerly start threads, background loops, watchers, or connection attempts at import time.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Module Import Starts Runtime Bootstrap matters because the pattern here, Flag imports that eagerly start threads, background loops, watchers, or connection attempts at import time, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Module Import Starts Runtime Bootstrap in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
       "id": "multiprocessing_pool_created_without_context_manager_or_terminate",
       "label": "Multiprocessing Pool Created without Context Manager or Terminate",
       "description": "multiprocessing.Pool created without a context manager or explicit .terminate() call, leaking worker processes.",
@@ -227,6 +423,34 @@
       ],
       "explanation": "In Python, Multiprocessing Pool Created without Context Manager or Terminate matters because the pattern here, multiprocessing.Pool created without a context manager or explicit .terminate() call, leaking worker processes, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
       "fix": "For Multiprocessing Pool Created without Context Manager or Terminate in Python, add a context manager or explicit .terminate() call, leaking worker processes or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "object_construction_triggers_network_or_disk_side_effect",
+      "label": "Object Construction Triggers Network or Disk Side Effect",
+      "description": "Flag constructors that perform expensive I/O instead of separating configuration from execution.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Object Construction Triggers Network or Disk Side Effect matters because the pattern here, Flag constructors that perform expensive I/O instead of separating configuration from execution, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Object Construction Triggers Network or Disk Side Effect in Python, prefer separating configuration from execution when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "orchestrator_performs_low_level_tokenization_or_parsing",
+      "label": "Orchestrator Performs Low Level Tokenization or Parsing",
+      "description": "Flag high-level workflow functions that also own low-level parsing logic better isolated in helpers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Orchestrator Performs Low Level Tokenization or Parsing matters because the pattern here, Flag high-level workflow functions that also own low-level parsing logic better isolated in helpers, is worth review because soft module boundaries make it easy for transport, persistence, and business logic to blur together over time.",
+      "fix": "For Orchestrator Performs Low Level Tokenization or Parsing in Python, choose one owner for mapping, orchestration, and data access, then keep each package aligned with that role."
     },
     {
       "id": "orm_model_mixes_domain_logic_and_persistence_mapping",
@@ -283,6 +507,20 @@
       ],
       "explanation": "In Python, Repository Returns Unexecuted ORM Query matters because the pattern here, Repository method returns a raw ORM query object instead of executing it and returning domain values, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
       "fix": "For Repository Returns Unexecuted ORM Query in Python, prefer executing it and returning domain values when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "retry_policy_scattered_across_multiple_callers",
+      "label": "Retry Policy Scattered Across Multiple Callers",
+      "description": "Flag repeated retry or backoff loops around the same dependency instead of one owner boundary.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Retry Policy Scattered Across Multiple Callers matters because the pattern here, Flag repeated retry or backoff loops around the same dependency instead of one owner boundary, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Retry Policy Scattered Across Multiple Callers in Python, prefer one owner boundary when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
       "id": "semaphore_acquired_without_async_with_context_manager",
@@ -369,6 +607,20 @@
       "fix": "For Shared Mutable Collection Mutated Across Threads without Lock in Python, add a lock or move the code to a path where that safeguard is guaranteed before the risky work happens."
     },
     {
+      "id": "storage_write_returns_driver_specific_object",
+      "label": "Storage Write Returns Driver Specific Object",
+      "description": "Flag write helpers that return raw driver, session, or cursor objects instead of stable application data.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Storage Write Returns Driver Specific Object matters because the pattern here, Flag write helpers that return raw driver, session, or cursor objects instead of stable application data, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Storage Write Returns Driver Specific Object in Python, prefer stable application data when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
       "id": "sync_function_called_from_async_without_executor",
       "label": "Sync Function Called From Async without Executor",
       "description": "Blocking I/O or CPU-bound function called directly inside async def without loop.run_in_executor.",
@@ -381,6 +633,20 @@
       ],
       "explanation": "In Python, Sync Function Called From Async without Executor matters because the pattern here, Blocking I/O or CPU-bound function called directly inside async def without loop.run_in_executor, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
       "fix": "For Sync Function Called From Async without Executor in Python, add loop.run_in_executor or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "third_party_exception_type_leaks_across_architecture_boundary",
+      "label": "Third Party Exception Type Leaks Across Architecture Boundary",
+      "description": "Flag public or upper-layer APIs that expose low-level library exception types instead of stable local contracts.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Third Party Exception Type Leaks Across Architecture Boundary matters because the pattern here, Flag public or upper-layer APIs that expose low-level library exception types instead of stable local contracts, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Third Party Exception Type Leaks Across Architecture Boundary in Python, prefer stable local contracts when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
       "id": "thread_local_storage_read_from_async_function",
@@ -423,6 +689,20 @@
       ],
       "explanation": "In Python, Threading Thread without Daemon True in Server Code matters because the pattern here, threading.Thread created in server-side code without daemon=True, which can block graceful shutdown, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
       "fix": "For Threading Thread without Daemon True in Server Code in Python, add daemon=True, which can block graceful shutdown or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "transaction_scope_split_across_unrelated_helpers",
+      "label": "Transaction Scope Split Across Unrelated Helpers",
+      "description": "Flag flows where begin, commit, and rollback responsibilities are scattered across helpers with no single owner.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Transaction Scope Split Across Unrelated Helpers matters because the pattern here, Flag flows where begin, commit, and rollback responsibilities are scattered across helpers with no single owner, stretches the write boundary and makes failure ownership harder to reason about.",
+      "fix": "For Transaction Scope Split Across Unrelated Helpers in Python, keep the transaction focused on the minimum database work and move unrelated orchestration outside the open transaction."
     },
     {
       "id": "untracked_create_task_result_may_hide_exception",

@@ -33,6 +33,20 @@
       "fix": "For Async Retry Sleep without Backoff in Python, add visible backoff, jitter, or bounded retry policy or move the code to a path where that safeguard is guaranteed before the risky work happens."
     },
     {
+      "id": "atomic_replace_semantics_implemented_with_non_atomic_file_write",
+      "label": "Atomic Replace Semantics Implemented with Non Atomic File Write",
+      "description": "Flag code that intends atomic replacement but uses non-atomic file writes.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Atomic Replace Semantics Implemented with Non Atomic File Write matters because the pattern here, Flag code that intends atomic replacement but uses non-atomic file writes, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Atomic Replace Semantics Implemented with Non Atomic File Write in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
       "id": "background_task_exception_unobserved",
       "label": "Background Task Exception Unobserved",
       "description": "Background task bindings with no obvious await, callback, supervisor, or observation path.",
@@ -45,6 +59,48 @@
       ],
       "explanation": "In Python, Background Task Exception Unobserved matters because the pattern here, Background task bindings with no obvious await, callback, supervisor, or observation path, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
       "fix": "For Background Task Exception Unobserved in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "broad_except_used_to_mask_type_or_shape_bug",
+      "label": "Broad Except Used to Mask Type or Shape Bug",
+      "description": "Flag broad exception handling that conceals structural bugs in the input or code.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Broad Except Used to Mask Type or Shape Bug matters because the pattern here, Flag broad exception handling that conceals structural bugs in the input or code, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Broad Except Used to Mask Type or Shape Bug in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "cache_key_derived_from_stringified_mutable_object",
+      "label": "Cache Key Derived From Stringified Mutable Object",
+      "description": "Flag cache keys built from unstable string forms of mutable objects.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Cache Key Derived From Stringified Mutable Object matters because the pattern here, Flag cache keys built from unstable string forms of mutable objects, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Cache Key Derived From Stringified Mutable Object in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "comparison_or_merge_logic_assumes_unique_keys_without_assertion",
+      "label": "Comparison or Merge Logic Assumes Unique Keys without Assertion",
+      "description": "Flag merge logic that silently assumes uniqueness of keys or identifiers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Comparison or Merge Logic Assumes Unique Keys without Assertion matters because the pattern here, Flag merge logic that silently assumes uniqueness of keys or identifiers, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Comparison or Merge Logic Assumes Unique Keys without Assertion in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
     },
     {
       "id": "dataclass_heavy_post_init",
@@ -73,6 +129,76 @@
       ],
       "explanation": "In Python, Dataclass Mutable Default matters because the pattern here, Dataclass fields that use mutable defaults instead of default_factory, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
       "fix": "For Dataclass Mutable Default in Python, prefer default_factory when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "default_timeout_missing_on_external_boundary_wrapper",
+      "label": "Default Timeout Missing on External Boundary Wrapper",
+      "description": "Flag wrappers around external boundaries that omit a timeout policy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Default Timeout Missing on External Boundary Wrapper matters because the pattern here, Flag wrappers around external boundaries that omit a timeout policy, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Default Timeout Missing on External Boundary Wrapper in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "duplicate_items_silently_dropped_without_contract_signal",
+      "label": "Duplicate Items Silently Dropped without Contract Signal",
+      "description": "Flag code that deduplicates caller data without making that behavior explicit.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Duplicate Items Silently Dropped without Contract Signal matters because the pattern here, Flag code that deduplicates caller data without making that behavior explicit, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Duplicate Items Silently Dropped without Contract Signal in Python, add making that behavior explicit or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "fallback_branch_swallows_invariant_violation_and_returns_plausible_default",
+      "label": "Fallback Branch Swallows Invariant Violation and Returns Plausible Default",
+      "description": "Flag fallback logic that hides broken invariants by returning believable defaults.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Fallback Branch Swallows Invariant Violation and Returns Plausible Default matters because the pattern here, Flag fallback logic that hides broken invariants by returning believable defaults, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Fallback Branch Swallows Invariant Violation and Returns Plausible Default in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "float_equality_controls_branching_on_computed_values",
+      "label": "Float Equality Controls Branching on Computed Values",
+      "description": "Flag control flow that depends on exact float equality after computation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Float Equality Controls Branching on Computed Values matters because the pattern here, Flag control flow that depends on exact float equality after computation, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Float Equality Controls Branching on Computed Values in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "helper_returns_success_shape_even_when_substeps_partially_fail",
+      "label": "Helper Returns Success Shape Even When Substeps Partially Fail",
+      "description": "Flag helpers that claim success while hiding partial failures.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Helper Returns Success Shape Even When Substeps Partially Fail matters because the pattern here, Flag helpers that claim success while hiding partial failures, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Helper Returns Success Shape Even When Substeps Partially Fail in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
     },
     {
       "id": "import_time_config_load",
@@ -187,6 +313,34 @@
       "fix": "For Option Bag Model in Python, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
     },
     {
+      "id": "order_dependent_set_to_list_conversion_exposed_in_public_result",
+      "label": "Order Dependent Set to List Conversion Exposed in Public Result",
+      "description": "Flag public outputs that rely on unstable set iteration order.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Order Dependent Set to List Conversion Exposed in Public Result matters because the pattern here, Flag public outputs that rely on unstable set iteration order, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Order Dependent Set to List Conversion Exposed in Public Result in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "partial_update_mutates_input_before_validation_succeeds",
+      "label": "Partial Update Mutates Input Before Validation Succeeds",
+      "description": "Flag update helpers that mutate caller data before all validation passes.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Partial Update Mutates Input Before Validation Succeeds matters because the pattern here, Flag update helpers that mutate caller data before all validation passes, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Partial Update Mutates Input Before Validation Succeeds in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
       "id": "pickle_deserialization_boundary",
       "label": "Pickle Deserialization Boundary",
       "description": "pickle.load(s) or dill.load(s) style deserialization in production code.",
@@ -213,6 +367,76 @@
       ],
       "explanation": "In Python, Public Any Type Leak matters because the pattern here, Public functions or model fields that expose Any, object, or similarly wide contracts, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
       "fix": "For Public Any Type Leak in Python, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "public_api_returns_none_or_value_without_explicit_optional_contract",
+      "label": "Public API Returns None or Value without Explicit Optional Contract",
+      "description": "Flag public APIs that sometimes return None and sometimes a value without an explicit contract.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Public API Returns None or Value without Explicit Optional Contract matters because the pattern here, Flag public APIs that sometimes return None and sometimes a value without an explicit contract, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Public API Returns None or Value without Explicit Optional Contract in Python, add an explicit contract or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "public_iterator_yields_heterogeneous_item_shapes",
+      "label": "Public Iterator Yields Heterogeneous Item Shapes",
+      "description": "Flag iterators that yield different shapes or types without an explicit sum-type contract.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Public Iterator Yields Heterogeneous Item Shapes matters because the pattern here, Flag iterators that yield different shapes or types without an explicit sum-type contract, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Public Iterator Yields Heterogeneous Item Shapes in Python, add an explicit sum-type contract or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "recursive_walk_over_untrusted_input_lacks_depth_limit",
+      "label": "Recursive Walk Over Untrusted Input Lacks Depth Limit",
+      "description": "Flag recursion over caller-provided structures with no depth guard.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Recursive Walk Over Untrusted Input Lacks Depth Limit matters because the pattern here, Flag recursion over caller-provided structures with no depth guard, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Recursive Walk Over Untrusted Input Lacks Depth Limit in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "sort_order_depends_on_non_explicit_mapping_iteration_semantics",
+      "label": "Sort Order Depends on Non Explicit Mapping Iteration Semantics",
+      "description": "Flag ordering logic that depends on implicit mapping iteration instead of explicit keys.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Sort Order Depends on Non Explicit Mapping Iteration Semantics matters because the pattern here, Flag ordering logic that depends on implicit mapping iteration instead of explicit keys, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Sort Order Depends on Non Explicit Mapping Iteration Semantics in Python, prefer explicit keys when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "string_mode_parameter_replaces_enum_or_literal_contract",
+      "label": "String Mode Parameter Replaces Enum or Literal Contract",
+      "description": "Flag string mode parameters that should be constrained by an enum or literal contract.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, String Mode Parameter Replaces Enum or Literal Contract matters because the pattern here, Flag string mode parameters that should be constrained by an enum or literal contract, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For String Mode Parameter Replaces Enum or Literal Contract in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
     },
     {
       "id": "subprocess_shell_true",
@@ -257,6 +481,20 @@
       "fix": "For Tempfile without Cleanup in Python, add a visible cleanup or context-manager ownership path or move the code to a path where that safeguard is guaranteed before the risky work happens."
     },
     {
+      "id": "timezone_naive_datetime_accepted_in_public_contract",
+      "label": "Timezone Naive Datetime Accepted in Public Contract",
+      "description": "Flag public contracts that accept datetimes with ambiguous timezone semantics.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Timezone Naive Datetime Accepted in Public Contract matters because the pattern here, Flag public contracts that accept datetimes with ambiguous timezone semantics, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Timezone Naive Datetime Accepted in Public Contract in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
       "id": "typeddict_unchecked_access",
       "label": "Typeddict Unchecked Access",
       "description": "Direct indexing of optional TypedDict keys without an obvious guard path.",
@@ -297,6 +535,20 @@
       ],
       "explanation": "In Python, Untracked Asyncio Task matters because the pattern here, asyncio.create_task(...) or similar task creation whose handle is discarded immediately, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
       "fix": "For Untracked Asyncio Task in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "validation_only_happens_after_expensive_side_effect_has_started",
+      "label": "Validation Only Happens After Expensive Side Effect Has Started",
+      "description": "Flag flows where validation happens only after I/O or irreversible work has begun.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Validation Only Happens After Expensive Side Effect Has Started matters because the pattern here, Flag flows where validation happens only after I/O or irreversible work has begun, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Validation Only Happens After Expensive Side Effect Has Started in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
     }
   ]
 }

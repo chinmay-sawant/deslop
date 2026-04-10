@@ -1130,3 +1130,512 @@ pub(super) fn event_loop_at_module_scope_file_findings(file: &ParsedFile) -> Vec
     }
     Vec::new()
 }
+
+fn contains_any(text: &str, needles: &[&str]) -> bool {
+    needles.iter().any(|needle| text.contains(needle))
+}
+
+fn architecture_file_finding(
+    file: &ParsedFile,
+    rule_id: &str,
+    line: usize,
+    severity: Severity,
+    message: &str,
+    evidence: &str,
+) -> Finding {
+    Finding {
+        rule_id: rule_id.to_string(),
+        severity,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: line,
+        end_line: line,
+        message: message.to_string(),
+        evidence: vec![evidence.to_string()],
+    }
+}
+
+pub(super) fn project_agnostic_architecture_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+    let sig = function.signature_text.replace('\n', " ");
+    let body = &function.body_text;
+    let lower_body = body.to_ascii_lowercase();
+    let lower_name = function.fingerprint.name.to_ascii_lowercase();
+    let is_constructor = function.fingerprint.name == "__init__";
+    let is_entrypoint =
+        matches!(
+            lower_name.as_str(),
+            "main" | "run" | "handle" | "execute" | "process" | "cli" | "entrypoint"
+        ) || contains_any(&path, &["main.py", "cli.py", "entry", "command", "worker"]);
+    let is_domainish = contains_any(&path, &["domain", "model", "entity", "entities"]);
+    let public_function = !function.fingerprint.name.starts_with('_');
+
+    if is_constructor
+        && contains_any(
+            body,
+            &["os.getenv(", "os.environ[", "settings.", "config.get("],
+        )
+    {
+        let line = find_line(body, "os.getenv(", function.fingerprint.start_line)
+            .or_else(|| find_line(body, "os.environ[", function.fingerprint.start_line))
+            .or_else(|| find_line(body, "settings.", function.fingerprint.start_line))
+            .or_else(|| find_line(body, "config.get(", function.fingerprint.start_line))
+            .unwrap_or(function.fingerprint.start_line);
+        findings.push(make_finding(
+            "constructor_reads_global_config_inline",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "reads global configuration inline during construction; prefer injected normalized dependencies",
+        ));
+    }
+
+    let constructor_signals = [
+        body.matches("Client(").count(),
+        body.matches("Session(").count(),
+        body.matches("Repository(").count(),
+        body.matches("Cache(").count(),
+        body.matches("Service(").count(),
+        body.matches("Provider(").count(),
+    ]
+    .into_iter()
+    .sum::<usize>();
+    if is_entrypoint && constructor_signals >= 3 {
+        findings.push(make_finding(
+            "entrypoint_builds_dependency_graph_inside_hot_function",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "constructs several collaborators inside a frequently reached entrypoint instead of wiring once at startup",
+        ));
+    }
+
+    if is_domainish
+        && contains_any(
+            body,
+            &[
+                "open(",
+                "requests.",
+                "httpx.",
+                "subprocess.",
+                "socket.",
+                "urllib.",
+            ],
+        )
+    {
+        let line = find_line(body, "open(", function.fingerprint.start_line)
+            .or_else(|| find_line(body, "requests.", function.fingerprint.start_line))
+            .or_else(|| find_line(body, "httpx.", function.fingerprint.start_line))
+            .or_else(|| find_line(body, "subprocess.", function.fingerprint.start_line))
+            .unwrap_or(function.fingerprint.start_line);
+        findings.push(make_finding(
+            "domain_object_performs_external_io",
+            Severity::Warning,
+            file,
+            function,
+            line,
+            "performs external I/O from a domain-like module; isolate side effects behind an adapter boundary",
+        ));
+    }
+
+    if (body.contains("if ") || body.contains("elif "))
+        && contains_any(
+            body,
+            &[
+                "return {",
+                "json.dumps(",
+                ".model_dump(",
+                ".dict()",
+                ".to_dict(",
+            ],
+        )
+        && contains_any(
+            &lower_body,
+            &["policy", "discount", "tier", "eligib", "price", "status"],
+        )
+    {
+        findings.push(make_finding(
+            "business_rule_mixed_with_serialization_mapping",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "mixes business decision logic with payload mapping or serialization in one function",
+        ));
+    }
+
+    if contains_any(
+        body,
+        &[
+            "\"status\":",
+            "'status':",
+            "\"headers\":",
+            "'headers':",
+            "status_code=",
+            "return payload, status",
+            "return data, status",
+        ],
+    ) && contains_any(body, &["return {", "return data", "return payload"])
+    {
+        let line = find_line(body, "\"status\":", function.fingerprint.start_line)
+            .or_else(|| find_line(body, "status_code=", function.fingerprint.start_line))
+            .or_else(|| {
+                find_line(
+                    body,
+                    "return payload, status",
+                    function.fingerprint.start_line,
+                )
+            })
+            .unwrap_or(function.fingerprint.start_line);
+        findings.push(make_finding(
+            "function_returns_domain_value_and_transport_metadata",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "returns domain data together with transport metadata; keep the boundary contract focused",
+        ));
+    }
+
+    if contains_any(&lower_name, &["save", "write", "insert", "update"])
+        && contains_any(
+            body,
+            &[
+                "return cursor",
+                "return session",
+                "return connection",
+                "return result",
+                "return response",
+            ],
+        )
+    {
+        findings.push(make_finding(
+            "storage_write_returns_driver_specific_object",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "returns a driver-specific write result instead of a stable application contract",
+        ));
+    }
+
+    if is_entrypoint
+        && lower_body.matches("if ").count() + lower_body.matches("elif ").count() >= 3
+        && contains_any(
+            &lower_body,
+            &["customer", "policy", "order", "price", "eligib"],
+        )
+    {
+        findings.push(make_finding(
+            "feature_logic_embedded_in_process_entrypoint",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "owns feature or business branching directly in an entrypoint-style function",
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &["begin_transaction", "start_transaction", ".begin("],
+    ) && contains_any(
+        &lower_body,
+        &[
+            "commit_transaction",
+            ".commit(",
+            "rollback_transaction",
+            ".rollback(",
+        ],
+    ) && contains_any(&lower_body, &["helper(", "service.", "repo."])
+    {
+        findings.push(make_finding(
+            "transaction_scope_split_across_unrelated_helpers",
+            Severity::Warning,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "appears to split transaction lifecycle ownership across unrelated helpers",
+        ));
+    }
+
+    if !is_constructor
+        && body.contains("if self.")
+        && body.contains(" is None")
+        && contains_any(
+            body,
+            &[
+                "raise RuntimeError",
+                "raise ValueError",
+                "raise AssertionError",
+            ],
+        )
+    {
+        findings.push(make_finding(
+            "initializer_requires_half_built_instance_state",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "depends on instance fields being patched in after construction before the object becomes valid",
+        ));
+    }
+
+    if is_constructor
+        && contains_any(
+            body,
+            &["open(", "requests.", "httpx.", "subprocess.", "Path("],
+        )
+    {
+        let line = find_line(body, "open(", function.fingerprint.start_line)
+            .or_else(|| find_line(body, "requests.", function.fingerprint.start_line))
+            .or_else(|| find_line(body, "httpx.", function.fingerprint.start_line))
+            .or_else(|| find_line(body, "subprocess.", function.fingerprint.start_line))
+            .unwrap_or(function.fingerprint.start_line);
+        findings.push(make_finding(
+            "object_construction_triggers_network_or_disk_side_effect",
+            Severity::Warning,
+            file,
+            function,
+            line,
+            "performs network or disk side effects during object construction",
+        ));
+    }
+
+    if contains_any(&lower_name, &["task", "job", "command"])
+        && (contains_any(body, &["CACHE[", "REGISTRY[", "STATE["])
+            || contains_any(&lower_body, &["global ", "global_state", "shared_state"]))
+    {
+        findings.push(make_finding(
+            "command_or_task_mutates_shared_process_state_directly",
+            Severity::Warning,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "mutates shared process state directly from a task or command path",
+        ));
+    }
+
+    let dependency_params = [
+        "logger", "cache", "config", "clock", "auth", "client", "repo", "session", "tracer",
+        "metrics",
+    ]
+    .into_iter()
+    .filter(|name| sig.contains(name))
+    .count();
+    if dependency_params >= 4 {
+        findings.push(make_finding(
+            "function_accepts_too_many_cross_cutting_dependencies",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "accepts many cross-cutting dependencies directly; the boundary may be too broad",
+        ));
+    }
+
+    if contains_any(&lower_name, &["map", "mapper", "serialize", "adapter"])
+        && lower_body.matches("if ").count() + lower_body.matches("elif ").count() >= 2
+        && contains_any(
+            &lower_body,
+            &["policy", "discount", "price", "tier", "eligib", "priority"],
+        )
+    {
+        findings.push(make_finding(
+            "data_mapper_contains_business_decision_tree",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "contains business branching inside a mapper or adapter function",
+        ));
+    }
+
+    if contains_any(&lower_name, &["orchestr", "process", "run", "execute"])
+        && contains_any(
+            body,
+            &[
+                ".split(",
+                "json.loads(",
+                "re.compile(",
+                "ast.literal_eval(",
+                "parse(",
+            ],
+        )
+    {
+        findings.push(make_finding(
+            "orchestrator_performs_low_level_tokenization_or_parsing",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "combines high-level orchestration with low-level parsing or tokenization work",
+        ));
+    }
+
+    if is_domainish && contains_any(body, &["os.getenv(", "os.environ["]) {
+        let line = find_line(body, "os.getenv(", function.fingerprint.start_line)
+            .or_else(|| find_line(body, "os.environ[", function.fingerprint.start_line))
+            .unwrap_or(function.fingerprint.start_line);
+        findings.push(make_finding(
+            "core_model_reads_process_environment",
+            Severity::Warning,
+            file,
+            function,
+            line,
+            "reads process environment from a core model boundary",
+        ));
+    }
+
+    if public_function
+        && contains_any(
+            &sig,
+            &[
+                "requests.",
+                "httpx.",
+                "sqlalchemy.",
+                "ValidationError",
+                "RedisError",
+            ],
+        )
+        || (public_function
+            && contains_any(
+                body,
+                &[
+                    "except requests.",
+                    "except httpx.",
+                    "except sqlalchemy.",
+                    "raise requests.",
+                    "raise httpx.",
+                    "raise ValidationError",
+                ],
+            ))
+    {
+        findings.push(make_finding(
+            "third_party_exception_type_leaks_across_architecture_boundary",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "exposes third-party exception types directly across an application boundary",
+        ));
+    }
+
+    if contains_any(body, &["for attempt in", "while retries", "retry("])
+        && contains_any(body, &["requests.", "httpx.", "client."])
+    {
+        findings.push(make_finding(
+            "retry_policy_scattered_across_multiple_callers",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "implements retry logic directly at the call site instead of centralizing dependency policy",
+        ));
+    }
+
+    if contains_any(
+        body,
+        &["requests.get(", "requests.post(", "httpx.get(", ".json()"],
+    ) && contains_any(
+        body,
+        &[
+            "[\"data\"]",
+            "['data']",
+            "[\"attributes\"]",
+            "['attributes']",
+            "[\"items\"]",
+            "['items']",
+        ],
+    ) {
+        findings.push(make_finding(
+            "adapter_boundary_missing_for_external_payload_shape",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "passes external payload shapes through the function without normalization behind an adapter",
+        ));
+    }
+
+    findings
+}
+
+pub(super) fn project_agnostic_architecture_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+
+    for binding in &file.top_level_bindings {
+        if contains_any(
+            &binding.value_text,
+            &["Client(", "Session(", "Cache(", "Repository(", "Redis("],
+        ) {
+            findings.push(architecture_file_finding(
+                file,
+                "module_exposes_mutable_singleton_client",
+                binding.line,
+                Severity::Info,
+                "module exposes a singleton-style client binding at import time",
+                &format!("binding={}", binding.name),
+            ));
+        }
+    }
+
+    for call in &file.module_scope_calls {
+        if contains_any(
+            &call.text,
+            &[
+                "Thread(",
+                ".start()",
+                "asyncio.run(",
+                "app.run(",
+                "serve(",
+                "watch(",
+            ],
+        ) {
+            findings.push(architecture_file_finding(
+                file,
+                "module_import_starts_runtime_bootstrap",
+                call.line,
+                Severity::Warning,
+                "module starts runtime bootstrap work during import",
+                &format!("module_scope_call={}", call.text.trim()),
+            ));
+        }
+    }
+
+    let retry_functions = file
+        .functions
+        .iter()
+        .filter(|function| {
+            let lower = function.body_text.to_ascii_lowercase();
+            contains_any(&lower, &["for attempt in", "while retries", "retry("])
+                && contains_any(&lower, &["requests.", "httpx.", "client."])
+        })
+        .count();
+    if retry_functions >= 3 {
+        findings.push(architecture_file_finding(
+            file,
+            "retry_policy_scattered_across_multiple_callers",
+            1,
+            Severity::Info,
+            "file repeats retry policy across several callers instead of centralizing it",
+            &format!("retry_like_functions={retry_functions}"),
+        ));
+    }
+
+    findings
+}

@@ -1629,3 +1629,277 @@ pub(super) fn test_depends_on_sibling_side_effects_findings(
     }
     Vec::new()
 }
+
+fn contains_any(text: &str, needles: &[&str]) -> bool {
+    needles.iter().any(|needle| text.contains(needle))
+}
+
+pub(super) fn project_agnostic_discipline_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let sig = function.signature_text.replace('\n', " ");
+    let body = &function.body_text;
+    let lower_body = body.to_ascii_lowercase();
+    let line = function.fingerprint.start_line;
+
+    if contains_any(&sig, &["=False", "=True", ": bool"]) && lower_body.matches("if ").count() >= 2
+    {
+        findings.push(make_finding(
+            "boolean_flag_parameter_controls_unrelated_behaviors",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "uses a boolean parameter to select materially different behaviors",
+        ));
+    }
+
+    if contains_any(&lower_body, &["validate", "schema", "check_"])
+        && contains_any(&lower_body, &["execute", "process", "run", "save"])
+        && contains_any(&lower_body, &["format", "serialize", "json", "render"])
+    {
+        findings.push(make_finding(
+            "function_body_contains_setup_validation_execution_and_formatting_all_at_once",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "packs setup, validation, execution, and formatting concerns into one function body",
+        ));
+    }
+
+    if lower_body.matches("if ").count() + lower_body.matches("elif ").count() >= 4
+        && lower_body.matches("    if ").count() >= 2
+    {
+        findings.push(make_finding(
+            "condition_tree_nests_past_two_business_decision_levels",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "contains a deeply nested decision tree that would benefit from decomposition",
+        ));
+    }
+
+    if contains_any(
+        body,
+        &["requests.", "httpx.", "open(", "subprocess.", ".read_text("],
+    ) && contains_any(&lower_body, &["if not ", "raise valueerror", "assert "])
+    {
+        findings.push(make_finding(
+            "expensive_work_starts_before_input_validation",
+            Severity::Warning,
+            file,
+            function,
+            line,
+            "starts expensive work before validating cheap preconditions",
+        ));
+    }
+
+    if body.matches(".close()").count() >= 2 || body.matches("finally:").count() >= 2 {
+        findings.push(make_finding(
+            "duplicated_cleanup_paths_instead_of_context_manager",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "duplicates cleanup logic that could likely be owned by a helper or context manager",
+        ));
+    }
+
+    let read_like_name = contains_any(
+        &function.fingerprint.name.to_ascii_lowercase(),
+        &["get", "list", "format", "render", "load"],
+    );
+    if read_like_name && contains_any(&lower_body, &[".write(", ".save(", "requests.", "open("]) {
+        findings.push(make_finding(
+            "helper_name_hides_mutation_or_io_side_effect",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "helper name sounds pure but the body performs mutation or I/O",
+        ));
+    }
+
+    if body.contains("self.")
+        && contains_any(&lower_body, &["self.", " = "])
+        && contains_any(
+            &lower_body,
+            &["return {", "return json", "return str(", "f\""],
+        )
+    {
+        findings.push(make_finding(
+            "method_mutates_state_and_emits_user_facing_representation",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "both mutates object state and formats output in one method",
+        ));
+    }
+
+    if (body.contains("for ") || body.contains("while "))
+        && contains_any(&lower_body, &["logger.", "logging."])
+        && contains_any(&lower_body, &["except ", "retry", "continue"])
+    {
+        findings.push(make_finding(
+            "loop_interleaves_core_work_logging_and_recovery_logic",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "interleaves core work, logging, and recovery logic in the same loop body",
+        ));
+    }
+
+    if contains_any(&lower_body, &["isinstance(", "type("])
+        && contains_any(&lower_body, &["mode", "kind", "strategy"])
+    {
+        findings.push(make_finding(
+            "type_branch_and_mode_branch_compounded_in_same_function",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "branches on both runtime type and mode-like values in the same function",
+        ));
+    }
+
+    if body.matches("try:").count() >= 2 && body.matches("finally:").count() >= 1 {
+        findings.push(make_finding(
+            "repeated_try_finally_release_pattern_not_extracted",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "repeats try/finally release patterns that could be extracted behind one boundary",
+        ));
+    }
+
+    let primitive_param_count = sig.matches(": str").count()
+        + sig.matches(": int").count()
+        + sig.matches(": bool").count()
+        + sig.matches(": float").count();
+    if primitive_param_count >= 5 {
+        findings.push(make_finding(
+            "long_parameter_list_of_primitives_without_options_object",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "takes many primitive parameters and may need a focused options object",
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &["not enabled", "not should", "enabled = not", "valid = not"],
+    ) {
+        findings.push(make_finding(
+            "negated_boolean_reassigned_and_inverted_again",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "reassigns and re-inverts boolean state instead of naming the intended condition directly",
+        ));
+    }
+
+    if body.matches("self.").count() >= 2
+        && contains_any(&lower_body, &["other.", "peer.", "target."])
+    {
+        findings.push(make_finding(
+            "method_mutates_self_and_peer_object_in_same_block",
+            Severity::Warning,
+            file,
+            function,
+            line,
+            "mutates both local state and peer state inside the same unit of work",
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &["items[0]", "first_item", "return process_one("],
+    ) && contains_any(
+        &function.fingerprint.name.to_ascii_lowercase(),
+        &["batch", "bulk"],
+    ) {
+        findings.push(make_finding(
+            "batch_api_silently_falls_back_to_single_item_semantics",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "batch-oriented function appears to fall back to single-item semantics",
+        ));
+    }
+
+    if lower_body.matches("if not ").count() >= 2
+        || lower_body.matches("if value is None").count() >= 2
+    {
+        findings.push(make_finding(
+            "same_precondition_checked_in_multiple_sibling_branches",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "repeats the same precondition in several branches instead of normalizing once",
+        ));
+    }
+
+    if body.contains("return (")
+        || (body.contains("return {") && lower_body.matches("return ").count() >= 2)
+    {
+        findings.push(make_finding(
+            "function_returns_multiple_unlabeled_shape_variants",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "returns multiple unlabeled shapes from the same function",
+        ));
+    }
+
+    if file.top_level_bindings.len() >= 4
+        && file.functions.len() >= 4
+        && contains_any(&lower_body, &["class ", "def ", "return "])
+    {
+        findings.push(make_finding(
+            "module_mixes_constants_types_helpers_and_execution_flow",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "lives in a module that mixes constants, helper logic, and execution flow densely",
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &[
+            "call init first",
+            "must initialize",
+            "must load before",
+            "after setup call",
+        ],
+    ) {
+        findings.push(make_finding(
+            "correctness_depends_on_specific_call_order_not_encoded_in_api",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "documents call ordering in text instead of encoding the safe sequence in the API",
+        ));
+    }
+
+    findings
+}

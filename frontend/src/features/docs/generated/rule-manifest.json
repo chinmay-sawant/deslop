@@ -4147,7 +4147,7 @@
       ]
     },
     "python": {
-      "ruleCount": 391,
+      "ruleCount": 591,
       "families": [
         {
           "id": "ai_smells",
@@ -4191,8 +4191,14 @@
           "id": "architecture",
           "label": "Architecture",
           "summary": "Repository, service, DTO, and package ownership drift.",
-          "ruleCount": 34,
+          "ruleCount": 54,
           "rules": [
+            {
+              "id": "adapter_boundary_missing_for_external_payload_shape",
+              "label": "Adapter Boundary Missing for External Payload Shape",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
             {
               "id": "asyncio_gather_without_return_exceptions_on_partial_failure_path",
               "label": "Asyncio Gather without Return Exceptions on Partial Failure Path",
@@ -4236,8 +4242,20 @@
               "status": "stable"
             },
             {
+              "id": "business_rule_mixed_with_serialization_mapping",
+              "label": "Business Rule Mixed with Serialization Mapping",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "celery_or_rq_task_imports_web_framework_app",
               "label": "Celery or Rq Task Imports Web Framework App",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "command_or_task_mutates_shared_process_state_directly",
+              "label": "Command or Task Mutates Shared Process State Directly",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4248,8 +4266,26 @@
               "status": "stable"
             },
             {
+              "id": "constructor_reads_global_config_inline",
+              "label": "Constructor Reads Global Config Inline",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "core_model_reads_process_environment",
+              "label": "Core Model Reads Process Environment",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "coroutine_result_discarded_without_await",
               "label": "Coroutine Result Discarded without Await",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "data_mapper_contains_business_decision_tree",
+              "label": "Data Mapper Contains Business Decision Tree",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4266,6 +4302,36 @@
               "status": "stable"
             },
             {
+              "id": "domain_object_performs_external_io",
+              "label": "Domain Object Performs External I/O",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "entrypoint_builds_dependency_graph_inside_hot_function",
+              "label": "Entrypoint Builds Dependency Graph Inside Hot Function",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "feature_logic_embedded_in_process_entrypoint",
+              "label": "Feature Logic Embedded in Process Entrypoint",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "function_accepts_too_many_cross_cutting_dependencies",
+              "label": "Function Accepts Too Many Cross Cutting Dependencies",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "function_returns_domain_value_and_transport_metadata",
+              "label": "Function Returns Domain Value and Transport Metadata",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "handler_or_view_builds_raw_sql",
               "label": "Handler or View Builds Raw SQL",
               "defaultSeverity": "contextual",
@@ -4278,14 +4344,44 @@
               "status": "stable"
             },
             {
+              "id": "initializer_requires_half_built_instance_state",
+              "label": "Initializer Requires Half Built Instance State",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "loop_run_until_complete_inside_running_loop",
               "label": "Loop Run Until Complete Inside Running Loop",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
             {
+              "id": "module_exposes_mutable_singleton_client",
+              "label": "Module Exposes Mutable Singleton Client",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "module_import_starts_runtime_bootstrap",
+              "label": "Module Import Starts Runtime Bootstrap",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "multiprocessing_pool_created_without_context_manager_or_terminate",
               "label": "Multiprocessing Pool Created without Context Manager or Terminate",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "object_construction_triggers_network_or_disk_side_effect",
+              "label": "Object Construction Triggers Network or Disk Side Effect",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "orchestrator_performs_low_level_tokenization_or_parsing",
+              "label": "Orchestrator Performs Low Level Tokenization or Parsing",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4310,6 +4406,12 @@
             {
               "id": "repository_returns_unexecuted_orm_query",
               "label": "Repository Returns Unexecuted ORM Query",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "retry_policy_scattered_across_multiple_callers",
+              "label": "Retry Policy Scattered Across Multiple Callers",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4350,8 +4452,20 @@
               "status": "stable"
             },
             {
+              "id": "storage_write_returns_driver_specific_object",
+              "label": "Storage Write Returns Driver Specific Object",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "sync_function_called_from_async_without_executor",
               "label": "Sync Function Called From Async without Executor",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "third_party_exception_type_leaks_across_architecture_boundary",
+              "label": "Third Party Exception Type Leaks Across Architecture Boundary",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4370,6 +4484,12 @@
             {
               "id": "threading_thread_without_daemon_true_in_server_code",
               "label": "Threading Thread without Daemon True in Server Code",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "transaction_scope_split_across_unrelated_helpers",
+              "label": "Transaction Scope Split Across Unrelated Helpers",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4403,7 +4523,7 @@
           "id": "boundaries",
           "label": "Boundaries",
           "summary": "Boundary hygiene for network, files, config, resources, and security edges.",
-          "ruleCount": 44,
+          "ruleCount": 64,
           "rules": [
             {
               "id": "application_config_values_validated_lazily_on_first_use",
@@ -4418,8 +4538,26 @@
               "status": "stable"
             },
             {
+              "id": "async_api_returns_plain_iterator_with_blocking_iteration",
+              "label": "Async API Returns Plain Iterator with Blocking Iteration",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "closure_captures_large_object_after_producing_function_returns",
               "label": "Closure Captures Large Object After Producing Function Returns",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "closure_captures_loop_variable_without_binding",
+              "label": "Closure Captures Loop Variable without Binding",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "context_manager_yields_global_mutable_resource",
+              "label": "Context Manager Yields Global Mutable Resource",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4432,6 +4570,18 @@
             {
               "id": "cryptographic_secret_hardcoded_in_test_fixture_or_seed",
               "label": "Cryptographic Secret Hardcoded in Test Fixture or Seed",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "dataclass_mutable_default_without_default_factory",
+              "label": "Dataclass Mutable Default without Default Factory",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "datetime_boundary_mixes_naive_and_aware_values",
+              "label": "Datetime Boundary Mixes Naive and Aware Values",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4478,6 +4628,12 @@
               "status": "stable"
             },
             {
+              "id": "function_accepts_mapping_protocol_but_mutates_input",
+              "label": "Function Accepts Mapping Protocol But Mutates Input",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "functools_lru_cache_applied_to_instance_method",
               "label": "Functools Lru Cache Applied to Instance Method",
               "defaultSeverity": "contextual",
@@ -4490,6 +4646,18 @@
               "status": "stable"
             },
             {
+              "id": "helper_requires_caller_to_know_hidden_ordering_constraints",
+              "label": "Helper Requires Caller to Know Hidden Ordering Constraints",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "helper_returns_live_internal_collection_reference",
+              "label": "Helper Returns Live Internal Collection Reference",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "http_client_url_built_from_user_input_without_allowlist",
               "label": "HTTP Client URL Built From User Input without Allowlist",
               "defaultSeverity": "contextual",
@@ -4498,6 +4666,12 @@
             {
               "id": "insecure_hash_algorithm_used_for_security_sensitive_purpose",
               "label": "Insecure Hash Algorithm Used for Security Sensitive Purpose",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "iterator_argument_consumed_then_reused_later",
+              "label": "Iterator Argument Consumed Then Reused Later",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4520,8 +4694,32 @@
               "status": "stable"
             },
             {
+              "id": "lock_acquire_and_release_owned_by_different_callers",
+              "label": "Lock Acquire and Release Owned by Different Callers",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "module_cache_exposed_without_invalidation_boundary",
+              "label": "Module Cache Exposed without Invalidation Boundary",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "module_constant_rebound_after_public_import",
+              "label": "Module Constant Rebound After Public Import",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "multiple_config_sources_merged_without_documented_precedence_order",
               "label": "Multiple Config Sources Merged without Documented Precedence Order",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "mutable_default_argument_leaks_state_across_calls",
+              "label": "Mutable Default Argument Leaks State Across Calls",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4534,6 +4732,30 @@
             {
               "id": "open_redirect_via_user_supplied_url_without_allowlist",
               "label": "Open Redirect Via User Supplied URL without Allowlist",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "path_boundary_accepts_unexpanded_or_relative_input_without_normalization",
+              "label": "Path Boundary Accepts Unexpanded or Relative Input without Normalization",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "property_returns_live_internal_cache_object",
+              "label": "Property Returns Live Internal Cache Object",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "public_api_forwards_library_specific_exception_shape",
+              "label": "Public API Forwards Library Specific Exception Shape",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "public_api_mutates_argument_in_place_without_signal",
+              "label": "Public API Mutates Argument in Place without Signal",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4586,6 +4808,12 @@
               "status": "stable"
             },
             {
+              "id": "sentinel_default_value_overlaps_valid_business_value",
+              "label": "Sentinel Default Value Overlaps Valid Business Value",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "server_side_template_injection_via_user_input_in_template_source",
               "label": "Server Side Template Injection Via User Input in Template Source",
               "defaultSeverity": "contextual",
@@ -4624,6 +4852,18 @@
             {
               "id": "subprocess_pipe_without_communicate_for_large_output",
               "label": "Subprocess Pipe without Communicate for Large Output",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "sync_api_accepts_coroutine_object_as_regular_value",
+              "label": "Sync API Accepts Coroutine Object as Regular Value",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "text_bytes_boundary_relies_on_implicit_default_encoding",
+              "label": "Text Bytes Boundary Relies on Implicit Default Encoding",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4675,7 +4915,7 @@
           "id": "discipline",
           "label": "Discipline",
           "summary": "Error handling, typing, and testing discipline.",
-          "ruleCount": 52,
+          "ruleCount": 70,
           "rules": [
             {
               "id": "assert_used_for_runtime_input_validation_in_production",
@@ -4686,6 +4926,18 @@
             {
               "id": "bare_except_clause_catches_system_exit",
               "label": "Bare Except Clause Catches System Exit",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "batch_api_silently_falls_back_to_single_item_semantics",
+              "label": "Batch API Silently Falls Back to Single Item Semantics",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "boolean_flag_parameter_controls_unrelated_behaviors",
+              "label": "Boolean Flag Parameter Controls Unrelated Behaviors",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4702,8 +4954,20 @@
               "status": "stable"
             },
             {
+              "id": "condition_tree_nests_past_two_business_decision_levels",
+              "label": "Condition Tree Nests Past Two Business Decision Levels",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "contextlib_suppress_applied_with_exception_base_class",
               "label": "Contextlib Suppress Applied with Exception Base Class",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "correctness_depends_on_specific_call_order_not_encoded_in_api",
+              "label": "Correctness Depends on Specific Call Order Not Encoded in API",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4716,6 +4980,12 @@
             {
               "id": "deeply_nested_try_except_beyond_two_levels",
               "label": "Deeply Nested Try Except Beyond Two Levels",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "duplicated_cleanup_paths_instead_of_context_manager",
+              "label": "Duplicated Cleanup Paths Instead of Context Manager",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4762,6 +5032,24 @@
               "status": "stable"
             },
             {
+              "id": "expensive_work_starts_before_input_validation",
+              "label": "Expensive Work Starts Before Input Validation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "function_body_contains_setup_validation_execution_and_formatting_all_at_once",
+              "label": "Function Body Contains Setup Validation Execution and Formatting All at Once",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "function_returns_multiple_unlabeled_shape_variants",
+              "label": "Function Returns Multiple Unlabeled Shape Variants",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "generator_close_exception_not_handled_when_cleanup_required",
               "label": "Generator Close Exception Not Handled When Cleanup Required",
               "defaultSeverity": "contextual",
@@ -4774,8 +5062,38 @@
               "status": "stable"
             },
             {
+              "id": "helper_name_hides_mutation_or_io_side_effect",
+              "label": "Helper Name Hides Mutation or I/O Side Effect",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "integration_test_writes_state_without_cleanup",
               "label": "Integration Test Writes State without Cleanup",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "long_parameter_list_of_primitives_without_options_object",
+              "label": "Long Parameter List of Primitives without Options Object",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "loop_interleaves_core_work_logging_and_recovery_logic",
+              "label": "Loop Interleaves Core Work Logging and Recovery Logic",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "method_mutates_self_and_peer_object_in_same_block",
+              "label": "Method Mutates Self and Peer Object in Same Block",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "method_mutates_state_and_emits_user_facing_representation",
+              "label": "Method Mutates State and Emits User Facing Representation",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4786,8 +5104,20 @@
               "status": "stable"
             },
             {
+              "id": "module_mixes_constants_types_helpers_and_execution_flow",
+              "label": "Module Mixes Constants Types Helpers and Execution Flow",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "namedtuple_used_where_dataclass_better_fits",
               "label": "Namedtuple Used Where Dataclass Better Fits",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "negated_boolean_reassigned_and_inverted_again",
+              "label": "Negated Boolean Reassigned and Inverted Again",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4846,8 +5176,20 @@
               "status": "stable"
             },
             {
+              "id": "repeated_try_finally_release_pattern_not_extracted",
+              "label": "Repeated Try Finally Release Pattern Not Extracted",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "retry_loop_catches_broad_base_exception",
               "label": "Retry Loop Catches Broad Base Exception",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "same_precondition_checked_in_multiple_sibling_branches",
+              "label": "Same Precondition Checked in Multiple Sibling Branches",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -4950,6 +5292,12 @@
             {
               "id": "type_alias_shadows_builtin_name",
               "label": "Type Alias Shadows Builtin Name",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "type_branch_and_mode_branch_compounded_in_same_function",
+              "label": "Type Branch and Mode Branch Compounded in Same Function",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -5365,11 +5713,17 @@
           "id": "hot_path",
           "label": "Hot Path",
           "summary": "Hot-path loops and repeated work in frequently executed code.",
-          "ruleCount": 17,
+          "ruleCount": 37,
           "rules": [
             {
               "id": "append_then_sort_each_iteration",
               "label": "Append Then Sort Each Iteration",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "constant_frozenset_or_dict_rebuilt_on_each_call",
+              "label": "Constant Frozenset or Dict Rebuilt on Each Call",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -5392,14 +5746,50 @@
               "status": "stable"
             },
             {
+              "id": "environment_lookup_repeated_in_hot_path",
+              "label": "Environment Lookup Repeated in Hot Path",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "exception_used_for_expected_lookup_miss_in_loop",
+              "label": "Exception Used for Expected Lookup Miss in Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "filter_then_count_then_iterate",
               "label": "Filter Then Count Then Iterate",
               "defaultSeverity": "info",
               "status": "stable"
             },
             {
+              "id": "full_sort_performed_inside_outer_iteration",
+              "label": "Full Sort Performed Inside Outer Iteration",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "function_local_import_executed_in_frequent_path",
+              "label": "Function Local Import Executed in Frequent Path",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "in_check_on_list_literal",
               "label": "In Check on List Literal",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "incremental_list_or_tuple_concatenation_in_accumulation_loop",
+              "label": "Incremental List or Tuple Concatenation in Accumulation Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "iterator_materialized_to_list_before_single_pass_loop",
+              "label": "Iterator Materialized to List Before Single Pass Loop",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -5416,8 +5806,38 @@
               "status": "stable"
             },
             {
+              "id": "json_roundtrip_used_for_object_copy",
+              "label": "JSON Roundtrip Used for Object Copy",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "lambda_or_closure_allocated_per_item_when_static_helper_suffices",
+              "label": "Lambda or Closure Allocated Per Item When Static Helper Suffices",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "list_comprehension_only_for_length",
               "label": "List Comprehension Only for Length",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "list_of_keys_materialized_for_membership_check",
+              "label": "List of Keys Materialized for Membership Check",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "membership_test_against_list_or_tuple_literal_inside_loop",
+              "label": "Membership Test Against List or Tuple Literal Inside Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "pathlib_path_reconstructed_from_same_base_in_loop",
+              "label": "Pathlib Path Reconstructed From Same Base in Loop",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -5440,14 +5860,56 @@
               "status": "stable"
             },
             {
+              "id": "regex_compiled_on_each_hot_call",
+              "label": "Regex Compiled on Each Hot Call",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "repeated_attribute_chain_lookup_inside_tight_loop",
+              "label": "Repeated Attribute Chain Lookup Inside Tight Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "repeated_datetime_parse_inside_loop",
+              "label": "Repeated Datetime Parse Inside Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "repeated_json_dumps_same_object",
               "label": "Repeated JSON Dumps Same Object",
               "defaultSeverity": "info",
               "status": "stable"
             },
             {
+              "id": "repeated_normalization_of_same_string_in_loop",
+              "label": "Repeated Normalization of Same String in Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "repeated_open_same_file_in_function",
               "label": "Repeated Open Same File in Function",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "repeated_pure_helper_call_on_same_input_without_local_cache",
+              "label": "Repeated Pure Helper Call on Same Input without Local Cache",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "repeated_split_or_join_on_invariant_separator_inside_loop",
+              "label": "Repeated Split or Join on Invariant Separator Inside Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "same_buffer_or_prefix_reencoded_each_iteration",
+              "label": "Same Buffer or Prefix Reencoded Each Iteration",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -5464,6 +5926,12 @@
               "status": "stable"
             },
             {
+              "id": "subprocess_or_shell_call_inside_record_processing_loop",
+              "label": "Subprocess or Shell Call Inside Record Processing Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "write_without_buffering_in_loop",
               "label": "Write without Buffering in Loop",
               "defaultSeverity": "info",
@@ -5475,8 +5943,20 @@
           "id": "hot_path_ext",
           "label": "Hot Path Extended",
           "summary": "Expanded hot-path checks for profiling-sensitive waste.",
-          "ruleCount": 21,
+          "ruleCount": 41,
           "rules": [
+            {
+              "id": "any_or_all_wraps_list_comprehension_instead_of_generator",
+              "label": "Any or All Wraps List Comprehension Instead of Generator",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "blocking_io_call_executed_per_item_without_batching",
+              "label": "Blocking I/O Call Executed Per Item without Batching",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
             {
               "id": "concatenation_in_comprehension_body",
               "label": "Concatenation in Comprehension Body",
@@ -5490,14 +5970,62 @@
               "status": "stable"
             },
             {
+              "id": "expensive_sort_key_recomputed_without_preprojection",
+              "label": "Expensive Sort Key Recomputed without Preprojection",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "formatted_log_or_debug_payload_built_for_each_item_without_guard",
+              "label": "Formatted Log or Debug Payload Built for Each Item without Guard",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "generator_pipeline_materialized_between_each_transformation_stage",
+              "label": "Generator Pipeline Materialized Between Each Transformation Stage",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "gzip_open_per_chunk",
               "label": "Gzip Open Per Chunk",
               "defaultSeverity": "info",
               "status": "stable"
             },
             {
+              "id": "invariant_computation_not_hoisted_out_of_nested_loop",
+              "label": "Invariant Computation Not Hoisted Out of Nested Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "invariant_template_or_prefix_string_reformatted_inside_loop",
+              "label": "Invariant Template or Prefix String Reformatted Inside Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "large_slice_copy_created_each_iteration_for_sliding_window",
+              "label": "Large Slice Copy Created Each Iteration for Sliding Window",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "linear_search_helper_called_from_nested_loops",
+              "label": "Linear Search Helper Called From Nested Loops",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "list_copy_in_loop_same_source",
               "label": "List Copy in Loop Same Source",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "lookup_table_derived_from_constants_rebuilt_per_invocation",
+              "label": "Lookup Table Derived From Constants Rebuilt Per Invocation",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -5514,8 +6042,32 @@
               "status": "stable"
             },
             {
+              "id": "per_item_copy_of_large_config_or_context_object",
+              "label": "Per Item Copy of Large Config or Context Object",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "per_item_deduplication_uses_list_instead_of_hash_index",
+              "label": "Per Item Deduplication Uses List Instead of Hash Index",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "pickle_dumps_in_loop_same_structure",
               "label": "Pickle Dumps in Loop Same Structure",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "polling_loop_uses_tiny_sleep_instead_of_blocking_primitive",
+              "label": "Polling Loop Uses Tiny Sleep Instead of Blocking Primitive",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "repeated_casefold_or_lower_calls_before_multiple_comparisons",
+              "label": "Repeated Casefold or Lower Calls Before Multiple Comparisons",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -5528,6 +6080,12 @@
             {
               "id": "repeated_dict_get_same_key_no_cache",
               "label": "Repeated Dict Get Same Key No Cache",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "repeated_directory_scan_inside_nested_loop",
+              "label": "Repeated Directory Scan Inside Nested Loop",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -5556,8 +6114,32 @@
               "status": "stable"
             },
             {
+              "id": "repeated_open_read_close_of_same_small_file_in_single_workflow",
+              "label": "Repeated Open Read Close of Same Small File in Single Workflow",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "repeated_path_exists_check_before_open_or_replace_in_loop",
+              "label": "Repeated Path Exists Check Before Open or Replace in Loop",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
               "id": "repeated_string_format_invariant_template",
               "label": "Repeated String Format Invariant Template",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "same_sequence_scanned_multiple_times_for_related_aggregates",
+              "label": "Same Sequence Scanned Multiple Times for Related Aggregates",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "serialization_then_deserialization_between_adjacent_helpers",
+              "label": "Serialization Then Deserialization Between Adjacent Helpers",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -5576,6 +6158,12 @@
             {
               "id": "string_join_without_generator",
               "label": "String Join without Generator",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "sum_max_min_wrap_list_comprehension_instead_of_generator",
+              "label": "Sum Max Min Wrap List Comprehension Instead of Generator",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -5609,8 +6197,20 @@
           "id": "maintainability",
           "label": "Maintainability",
           "summary": "Commented-out code, sync/async confusion, and other upkeep signals.",
-          "ruleCount": 20,
+          "ruleCount": 38,
           "rules": [
+            {
+              "id": "anonymous_dict_shape_repeated_without_shared_type_or_builder",
+              "label": "Anonymous Dict Shape Repeated without Shared Type or Builder",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "branching_on_file_suffix_or_mode_string_scattered_across_codebase",
+              "label": "Branching on File Suffix or Mode String Scattered Across Codebase",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
             {
               "id": "broad_exception_handler",
               "label": "Broad Exception Handler",
@@ -5620,6 +6220,18 @@
             {
               "id": "builtin_reduction_candidate",
               "label": "Builtin Reduction Candidate",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "cache_object_exists_without_size_or_eviction_policy_documentation",
+              "label": "Cache Object Exists without Size or Eviction Policy Documentation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "comment_required_to_explain_opaque_branching_that_code_could_express",
+              "label": "Comment Required to Explain Opaque Branching That Code Could Express",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -5666,6 +6278,30 @@
               "status": "stable"
             },
             {
+              "id": "helper_module_accumulates_unrelated_cross_domain_utilities",
+              "label": "Helper Module Accumulates Unrelated Cross Domain Utilities",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "helper_returns_index_based_tuple_instead_of_named_structure",
+              "label": "Helper Returns Index Based Tuple Instead of Named Structure",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "hidden_dependency_arrives_via_import_time_side_effect",
+              "label": "Hidden Dependency Arrives Via Import Time Side Effect",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "magic_thresholds_duplicated_across_modules",
+              "label": "Magic Thresholds Duplicated Across Modules",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "magic_value_branching",
               "label": "Magic Value Branching",
               "defaultSeverity": "contextual",
@@ -5678,8 +6314,26 @@
               "status": "stable"
             },
             {
+              "id": "mixed_mutation_and_query_methods_share_same_manager_class",
+              "label": "Mixed Mutation and Query Methods Share Same Manager Class",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "mixed_sync_async_module",
               "label": "Mixed Sync Async Module",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "monolithic_utils_module_becomes_default_dependency_sink",
+              "label": "Monolithic Utils Module Becomes Default Dependency Sink",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "mutable_class_attribute_used_as_instance_storage",
+              "label": "Mutable Class Attribute Used as Instance Storage",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -5692,6 +6346,18 @@
             {
               "id": "none_comparison",
               "label": "None Comparison",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "normalization_logic_duplicated_across_call_sites",
+              "label": "Normalization Logic Duplicated Across Call Sites",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "parallel_lists_used_instead_of_record_object",
+              "label": "Parallel Lists Used Instead of Record Object",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -5720,14 +6386,44 @@
               "status": "stable"
             },
             {
+              "id": "same_contextmanager_pattern_copied_across_modules",
+              "label": "Same Contextmanager Pattern Copied Across Modules",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "side_effect_comprehension",
               "label": "Side Effect Comprehension",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
             {
+              "id": "single_feature_requires_edits_in_many_unrelated_modules_due_to_scattered_policy",
+              "label": "Single Feature Requires Edits in Many Unrelated Modules Due to Scattered Policy",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "string_sentinel_values_duplicated_instead_of_constant_or_enum",
+              "label": "String Sentinel Values Duplicated Instead of Constant or Enum",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "tuple_return_with_three_or_more_positional_fields_in_public_api",
+              "label": "Tuple Return with Three or More Positional Fields in Public API",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "variadic_public_api",
               "label": "Variadic Public API",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "wrapper_function_only_renames_arguments_and_passthroughs_behavior",
+              "label": "Wrapper Function Only Renames Arguments and Passthroughs Behavior",
               "defaultSeverity": "contextual",
               "status": "stable"
             }
@@ -6015,7 +6711,7 @@
           "id": "observability",
           "label": "Observability",
           "summary": "Logging, metrics, module design, and operational visibility issues.",
-          "ruleCount": 49,
+          "ruleCount": 67,
           "rules": [
             {
               "id": "alert_or_slo_threshold_hardcoded_inside_application_logic",
@@ -6054,6 +6750,12 @@
               "status": "stable"
             },
             {
+              "id": "correlation_id_recomputed_multiple_times_in_same_workflow",
+              "label": "Correlation ID Recomputed Multiple Times in Same Workflow",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "counter_most_common_all_items_retrieved_for_top_one",
               "label": "Counter Most Common All Items Retrieved for Top One",
               "defaultSeverity": "contextual",
@@ -6062,6 +6764,12 @@
             {
               "id": "cursor_based_pagination_missing_stable_sort_tiebreaker",
               "label": "Cursor Based Pagination Missing Stable Sort Tiebreaker",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "debug_log_serializes_full_large_object_graph",
+              "label": "Debug Log Serializes Full Large Object Graph",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6084,8 +6792,20 @@
               "status": "stable"
             },
             {
+              "id": "exception_log_omits_operation_identifier_or_input_summary",
+              "label": "Exception Log Omits Operation Identifier or Input Summary",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "exception_swallowed_before_sentry_or_error_tracker_capture",
               "label": "Exception Swallowed Before Sentry or Error Tracker Capture",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "expensive_log_argument_built_without_is_enabled_guard",
+              "label": "Expensive Log Argument Built without Is Enabled Guard",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6114,6 +6834,12 @@
               "status": "stable"
             },
             {
+              "id": "health_probe_executes_full_dependency_workflow",
+              "label": "Health Probe Executes Full Dependency Workflow",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "high_frequency_code_path_logs_without_sampling_or_rate_limit",
               "label": "High Frequency Code Path Logs without Sampling or Rate Limit",
               "defaultSeverity": "contextual",
@@ -6134,6 +6860,18 @@
             {
               "id": "init_file_re_exports_private_module_symbols",
               "label": "Init File Re Exports Private Module Symbols",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "instrumentation_helper_mutates_business_return_shape",
+              "label": "Instrumentation Helper Mutates Business Return Shape",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "instrumentation_import_or_setup_occurs_on_first_live_request",
+              "label": "Instrumentation Import or Setup Occurs on First Live Request",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6162,6 +6900,12 @@
               "status": "stable"
             },
             {
+              "id": "logger_instance_created_inside_function_body",
+              "label": "Logger Instance Created Inside Function Body",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "logging_basic_config_called_from_library_package",
               "label": "Logging Basic Config Called From Library Package",
               "defaultSeverity": "contextual",
@@ -6186,6 +6930,24 @@
               "status": "stable"
             },
             {
+              "id": "metric_emission_occurs_per_item_inside_inner_loop",
+              "label": "Metric Emission Occurs Per Item Inside Inner Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "metric_name_contains_dynamic_user_or_data_values",
+              "label": "Metric Name Contains Dynamic User or Data Values",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "metric_or_span_labels_use_high_cardinality_raw_inputs",
+              "label": "Metric or Span Labels Use High Cardinality Raw Inputs",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "module_level_side_effect_outside_main_guard",
               "label": "Module Level Side Effect Outside Main Guard",
               "defaultSeverity": "contextual",
@@ -6198,6 +6960,12 @@
               "status": "stable"
             },
             {
+              "id": "observability_context_extracted_manually_at_many_call_sites",
+              "label": "Observability Context Extracted Manually at Many Call Sites",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "observability_metric_names_use_inconsistent_separators",
               "label": "Observability Metric Names Use Inconsistent Separators",
               "defaultSeverity": "contextual",
@@ -6206,6 +6974,12 @@
             {
               "id": "opentelemetry_span_attribute_attaches_pii_fields",
               "label": "Opentelemetry Span Attribute Attaches Pii Fields",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+              "label": "Operation Lacks Single Stable Name Across Logs Metrics and Traces",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6270,6 +7044,12 @@
               "status": "stable"
             },
             {
+              "id": "retry_loop_logs_without_attempt_count_or_backoff_context",
+              "label": "Retry Loop Logs without Attempt Count or Backoff Context",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "sorted_full_collection_to_extract_top_n_elements",
               "label": "Sorted Full Collection to Extract Top N Elements",
               "defaultSeverity": "contextual",
@@ -6300,8 +7080,32 @@
               "status": "stable"
             },
             {
+              "id": "success_and_failure_paths_use_inconsistent_structured_log_keys",
+              "label": "Success and Failure Paths Use Inconsistent Structured Log Keys",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "synchronous_log_handler_or_flush_called_on_fast_path",
+              "label": "Synchronous Log Handler or Flush Called on Fast Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "test_support_helpers_located_inside_production_package",
               "label": "Test Support Helpers Located Inside Production Package",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation",
+              "label": "Timing Metric Wraps Setup and Teardown Noise Instead of Core Operation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "warning_or_error_logs_emit_unbounded_payload_text",
+              "label": "Warning or Error Logs Emit Unbounded Payload Text",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6317,11 +7121,71 @@
           "id": "packaging",
           "label": "Packaging",
           "summary": "Entrypoints, package layout, and import-surface hygiene.",
-          "ruleCount": 4,
+          "ruleCount": 16,
           "rules": [
+            {
+              "id": "circular_import_hidden_by_function_local_import_on_hot_path",
+              "label": "Circular Import Hidden by Function Local Import on Hot Path",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "cli_only_dependency_imported_by_library_entry_module",
+              "label": "CLI Only Dependency Imported by Library Entry Module",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
             {
               "id": "cross_package_internal_import",
               "label": "Cross Package Internal Import",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "environment_or_config_read_during_package_import",
+              "label": "Environment or Config Read During Package Import",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "heavy_optional_dependency_imported_by_package_root",
+              "label": "Heavy Optional Dependency Imported by Package Root",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "monolithic_common_package_becomes_transitive_dependency_for_most_modules",
+              "label": "Monolithic Common Package Becomes Transitive Dependency for Most Modules",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "package_exports_same_symbol_name_from_multiple_submodules_with_different_meanings",
+              "label": "Package Exports Same Symbol Name From Multiple Submodules with Different Meanings",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "package_init_performs_metadata_version_lookup_on_import",
+              "label": "Package Init Performs Metadata Version Lookup on Import",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "package_root_reexports_large_dependency_tree_by_default",
+              "label": "Package Root Reexports Large Dependency Tree by Default",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "plugin_discovery_scans_filesystem_each_invocation",
+              "label": "Plugin Discovery Scans Filesystem Each Invocation",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "public_api_surface_defined_only_by_import_side_effects",
+              "label": "Public API Surface Defined Only by Import Side Effects",
               "defaultSeverity": "info",
               "status": "stable"
             },
@@ -6342,6 +7206,18 @@
               "label": "Python Public API Any Contract",
               "defaultSeverity": "warning",
               "status": "stable"
+            },
+            {
+              "id": "runtime_data_file_assumption_in_implicit_namespace_package",
+              "label": "Runtime Data File Assumption in Implicit Namespace Package",
+              "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "test_helpers_shipped_inside_production_package_path",
+              "label": "Test Helpers Shipped Inside Production Package Path",
+              "defaultSeverity": "info",
+              "status": "stable"
             }
           ]
         },
@@ -6349,11 +7225,35 @@
           "id": "performance",
           "label": "Performance",
           "summary": "General performance patterns outside the hot-path packs.",
-          "ruleCount": 9,
+          "ruleCount": 29,
           "rules": [
+            {
+              "id": "batchable_writes_executed_one_at_a_time",
+              "label": "Batchable Writes Executed One at a Time",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
             {
               "id": "blocking_sync_io_in_async",
               "label": "Blocking Sync I/O in Async",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "bytes_text_bytes_roundtrip_without_transformation",
+              "label": "Bytes Text Bytes Roundtrip without Transformation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "compression_hashing_or_encoding_performed_before_cheap_reject_checks",
+              "label": "Compression Hashing or Encoding Performed Before Cheap Reject Checks",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "copy_of_mapping_created_only_to_read_values",
+              "label": "Copy of Mapping Created Only to Read Values",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6364,9 +7264,51 @@
               "status": "stable"
             },
             {
+              "id": "eager_full_file_or_stream_read_when_incremental_iteration_suffices",
+              "label": "Eager Full File or Stream Read When Incremental Iteration Suffices",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "event_loop_path_executes_cpu_bound_transformation_synchronously",
+              "label": "Event Loop Path Executes CPU Bound Transformation Synchronously",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "full_collection_sorted_when_partial_order_or_selection_suffices",
+              "label": "Full Collection Sorted When Partial Order or Selection Suffices",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "full_dataset_load",
               "label": "Full Dataset Load",
               "defaultSeverity": "info",
+              "status": "stable"
+            },
+            {
+              "id": "full_response_or_export_buffered_before_incremental_consumer_use",
+              "label": "Full Response or Export Buffered Before Incremental Consumer Use",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "generator_materialized_to_tuple_or_list_only_for_len_or_truthiness",
+              "label": "Generator Materialized to Tuple or List Only for Len or Truthiness",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "large_in_memory_intermediate_created_where_streaming_pipeline_would_do",
+              "label": "Large in Memory Intermediate Created Where Streaming Pipeline Would Do",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "large_object_cloned_before_read_only_operation",
+              "label": "Large Object Cloned Before Read Only Operation",
+              "defaultSeverity": "contextual",
               "status": "stable"
             },
             {
@@ -6382,14 +7324,56 @@
               "status": "stable"
             },
             {
+              "id": "multiple_regex_passes_over_same_text_without_precompiled_plan",
+              "label": "Multiple Regex Passes Over Same Text without Precompiled Plan",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "quadratic_string_building_via_plus_equals",
+              "label": "Quadratic String Building Via Plus Equals",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "recursive_traversal_risk",
               "label": "Recursive Traversal Risk",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
             {
+              "id": "repeated_file_open_for_same_resource_within_single_operation",
+              "label": "Repeated File Open for Same Resource Within Single Operation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "repeated_len_in_loop",
               "label": "Repeated Len in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "repeated_small_writes_without_buffering_or_join",
+              "label": "Repeated Small Writes without Buffering or Join",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "repeated_stat_or_exists_calls_before_single_followup_operation",
+              "label": "Repeated Stat or Exists Calls Before Single Followup Operation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "same_dataset_normalized_in_multiple_full_passes",
+              "label": "Same Dataset Normalized in Multiple Full Passes",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "serialization_cost_paid_only_to_compare_or_hash_intermediate_state",
+              "label": "Serialization Cost Paid Only to Compare or Hash Intermediate State",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6404,6 +7388,18 @@
               "label": "Temporary Collection in Loop",
               "defaultSeverity": "contextual",
               "status": "stable"
+            },
+            {
+              "id": "temporary_file_used_for_pure_in_memory_transformation",
+              "label": "Temporary File Used for Pure in Memory Transformation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "thread_pool_or_process_pool_created_and_destroyed_per_call",
+              "label": "Thread Pool or Process Pool Created and Destroyed Per Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
             }
           ]
         },
@@ -6411,7 +7407,7 @@
           "id": "quality",
           "label": "Quality",
           "summary": "Baseline code-quality rules for reliability and clarity.",
-          "ruleCount": 21,
+          "ruleCount": 39,
           "rules": [
             {
               "id": "async_lock_held_across_await",
@@ -6426,8 +7422,32 @@
               "status": "stable"
             },
             {
+              "id": "atomic_replace_semantics_implemented_with_non_atomic_file_write",
+              "label": "Atomic Replace Semantics Implemented with Non Atomic File Write",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "background_task_exception_unobserved",
               "label": "Background Task Exception Unobserved",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "broad_except_used_to_mask_type_or_shape_bug",
+              "label": "Broad Except Used to Mask Type or Shape Bug",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "cache_key_derived_from_stringified_mutable_object",
+              "label": "Cache Key Derived From Stringified Mutable Object",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "comparison_or_merge_logic_assumes_unique_keys_without_assertion",
+              "label": "Comparison or Merge Logic Assumes Unique Keys without Assertion",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6440,6 +7460,36 @@
             {
               "id": "dataclass_mutable_default",
               "label": "Dataclass Mutable Default",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "default_timeout_missing_on_external_boundary_wrapper",
+              "label": "Default Timeout Missing on External Boundary Wrapper",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "duplicate_items_silently_dropped_without_contract_signal",
+              "label": "Duplicate Items Silently Dropped without Contract Signal",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "fallback_branch_swallows_invariant_violation_and_returns_plausible_default",
+              "label": "Fallback Branch Swallows Invariant Violation and Returns Plausible Default",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "float_equality_controls_branching_on_computed_values",
+              "label": "Float Equality Controls Branching on Computed Values",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "helper_returns_success_shape_even_when_substeps_partially_fail",
+              "label": "Helper Returns Success Shape Even When Substeps Partially Fail",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6492,6 +7542,18 @@
               "status": "stable"
             },
             {
+              "id": "order_dependent_set_to_list_conversion_exposed_in_public_result",
+              "label": "Order Dependent Set to List Conversion Exposed in Public Result",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "partial_update_mutates_input_before_validation_succeeds",
+              "label": "Partial Update Mutates Input Before Validation Succeeds",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "pickle_deserialization_boundary",
               "label": "Pickle Deserialization Boundary",
               "defaultSeverity": "contextual",
@@ -6500,6 +7562,36 @@
             {
               "id": "public_any_type_leak",
               "label": "Public Any Type Leak",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "public_api_returns_none_or_value_without_explicit_optional_contract",
+              "label": "Public API Returns None or Value without Explicit Optional Contract",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "public_iterator_yields_heterogeneous_item_shapes",
+              "label": "Public Iterator Yields Heterogeneous Item Shapes",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "recursive_walk_over_untrusted_input_lacks_depth_limit",
+              "label": "Recursive Walk Over Untrusted Input Lacks Depth Limit",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "sort_order_depends_on_non_explicit_mapping_iteration_semantics",
+              "label": "Sort Order Depends on Non Explicit Mapping Iteration Semantics",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "string_mode_parameter_replaces_enum_or_literal_contract",
+              "label": "String Mode Parameter Replaces Enum or Literal Contract",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6522,6 +7614,12 @@
               "status": "stable"
             },
             {
+              "id": "timezone_naive_datetime_accepted_in_public_contract",
+              "label": "Timezone Naive Datetime Accepted in Public Contract",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "typeddict_unchecked_access",
               "label": "Typeddict Unchecked Access",
               "defaultSeverity": "contextual",
@@ -6538,6 +7636,12 @@
               "label": "Untracked Asyncio Task",
               "defaultSeverity": "contextual",
               "status": "stable"
+            },
+            {
+              "id": "validation_only_happens_after_expensive_side_effect_has_started",
+              "label": "Validation Only Happens After Expensive Side Effect Has Started",
+              "defaultSeverity": "contextual",
+              "status": "stable"
             }
           ]
         },
@@ -6545,8 +7649,56 @@
           "id": "structure",
           "label": "Structure",
           "summary": "Classes, functions, state, and responsibility boundaries.",
-          "ruleCount": 11,
+          "ruleCount": 27,
           "rules": [
+            {
+              "id": "abstract_contracts_and_heavy_concrete_implementations_live_in_same_file",
+              "label": "Abstract Contracts and Heavy Concrete Implementations Live in Same File",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "abstractions_named_utils_helpers_common_or_manager_hide_true_ownership",
+              "label": "Abstractions Named Utils Helpers Common or Manager Hide True Ownership",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "base_class_exists_only_to_share_data_fields_not_behavior",
+              "label": "Base Class Exists Only to Share Data Fields Not Behavior",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "bidirectional_import_between_feature_modules",
+              "label": "Bidirectional Import Between Feature Modules",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "class_mixes_factory_parsing_persistence_and_presentation_roles",
+              "label": "Class Mixes Factory Parsing Persistence and Presentation Roles",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "composition_candidate_for_optional_behavior_implemented_as_inheritance",
+              "label": "Composition Candidate for Optional Behavior Implemented as Inheritance",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "constructor_performs_real_work_beyond_state_initialization",
+              "label": "Constructor Performs Real Work Beyond State Initialization",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary",
+              "label": "Cross Cutting Policies Embedded in Leaf Modules Instead of Shared Boundary",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
             {
               "id": "deep_inheritance_hierarchy",
               "label": "Deep Inheritance Hierarchy",
@@ -6556,6 +7708,12 @@
             {
               "id": "eager_constructor_collaborators",
               "label": "Eager Constructor Collaborators",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "generic_manager_or_processor_class_controls_many_unrelated_modes",
+              "label": "Generic Manager or Processor Class Controls Many Unrelated Modes",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6572,8 +7730,20 @@
               "status": "stable"
             },
             {
+              "id": "helper_collection_object_also_owns_process_lifecycle",
+              "label": "Helper Collection Object Also Owns Process Lifecycle",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "mixed_concerns_function",
               "label": "Mixed Concerns Function",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "module_global_registry_mutated_from_import_time_registration",
+              "label": "Module Global Registry Mutated From Import Time Registration",
               "defaultSeverity": "contextual",
               "status": "stable"
             },
@@ -6590,6 +7760,12 @@
               "status": "stable"
             },
             {
+              "id": "monolithic_module_owns_parsing_validation_execution_and_rendering",
+              "label": "Monolithic Module Owns Parsing Validation Execution and Rendering",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
               "id": "name_responsibility_mismatch",
               "label": "Name Responsibility Mismatch",
               "defaultSeverity": "contextual",
@@ -6598,6 +7774,30 @@
             {
               "id": "over_abstracted_wrapper",
               "label": "Over Abstracted Wrapper",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "read_and_write_paths_share_mutable_internal_cache_without_boundary",
+              "label": "Read and Write Paths Share Mutable Internal Cache without Boundary",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "same_feature_path_crosses_many_layers_for_simple_data_transform",
+              "label": "Same Feature Path Crosses Many Layers for Simple Data Transform",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "sibling_modules_depend_on_private_helpers_from_each_other",
+              "label": "Sibling Modules Depend on Private Helpers From Each Other",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "sync_and_async_contracts_mixed_on_same_interface_family",
+              "label": "Sync and Async Contracts Mixed on Same Interface Family",
               "defaultSeverity": "contextual",
               "status": "stable"
             },

@@ -222,4 +222,76 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "response_envelope_shape_inconsistent_across_siblings_in_same_router",
         "Response envelope shape inconsistent across sibling endpoints in the same router file."
     ),
+    obs_rule!(
+        "logger_instance_created_inside_function_body",
+        "Flag functions that create loggers repeatedly instead of reusing module-level logger references."
+    ),
+    obs_rule!(
+        "expensive_log_argument_built_without_is_enabled_guard",
+        "Flag log calls that eagerly build costly payloads without first checking the log level."
+    ),
+    obs_rule!(
+        "metric_name_contains_dynamic_user_or_data_values",
+        "Flag dynamic metric names that explode the series count."
+    ),
+    obs_rule!(
+        "metric_or_span_labels_use_high_cardinality_raw_inputs",
+        "Flag labels or attributes built from raw IDs, paths, or user-provided values."
+    ),
+    obs_rule!(
+        "metric_emission_occurs_per_item_inside_inner_loop",
+        "Flag inner loops that emit one metric per item instead of aggregating."
+    ),
+    obs_rule!(
+        "health_probe_executes_full_dependency_workflow",
+        "Flag health checks that run the full production path instead of a cheap signal."
+    ),
+    obs_rule!(
+        "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+        "Flag operations that are named inconsistently across observability surfaces."
+    ),
+    obs_rule!(
+        "retry_loop_logs_without_attempt_count_or_backoff_context",
+        "Flag retry logging that omits attempt number, delay, or terminal outcome."
+    ),
+    obs_rule!(
+        "exception_log_omits_operation_identifier_or_input_summary",
+        "Flag exception logs that lose the operation context needed to diagnose failures."
+    ),
+    obs_rule!(
+        "correlation_id_recomputed_multiple_times_in_same_workflow",
+        "Flag code that regenerates correlation IDs instead of propagating one value."
+    ),
+    obs_rule!(
+        "debug_log_serializes_full_large_object_graph",
+        "Flag debug logging that walks and serializes large object graphs."
+    ),
+    obs_rule!(
+        "success_and_failure_paths_use_inconsistent_structured_log_keys",
+        "Flag logging paths that use different keys for the same concept."
+    ),
+    obs_rule!(
+        "timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation",
+        "Flag timers that measure unrelated setup work and make latency metrics noisy."
+    ),
+    obs_rule!(
+        "instrumentation_helper_mutates_business_return_shape",
+        "Flag instrumentation wrappers that alter the shape of business return values."
+    ),
+    obs_rule!(
+        "observability_context_extracted_manually_at_many_call_sites",
+        "Flag repeated manual extraction of the same tracing or logging context."
+    ),
+    obs_rule!(
+        "warning_or_error_logs_emit_unbounded_payload_text",
+        "Flag logs that dump unbounded input or result payloads."
+    ),
+    obs_rule!(
+        "synchronous_log_handler_or_flush_called_on_fast_path",
+        "Flag code that forces synchronous log flushing in latency-sensitive paths."
+    ),
+    obs_rule!(
+        "instrumentation_import_or_setup_occurs_on_first_live_request",
+        "Flag observability setup that waits until the first request or task instead of initializing predictably."
+    ),
 ];

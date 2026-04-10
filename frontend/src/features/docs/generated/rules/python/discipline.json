@@ -33,6 +33,34 @@
       "fix": "For Bare Except Clause Catches System Exit in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
     },
     {
+      "id": "batch_api_silently_falls_back_to_single_item_semantics",
+      "label": "Batch API Silently Falls Back to Single Item Semantics",
+      "description": "Flag APIs that claim batch behavior but quietly process items one by one with different semantics.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Batch API Silently Falls Back to Single Item Semantics matters because the pattern here, Flag APIs that claim batch behavior but quietly process items one by one with different semantics, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Batch API Silently Falls Back to Single Item Semantics in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
+    },
+    {
+      "id": "boolean_flag_parameter_controls_unrelated_behaviors",
+      "label": "Boolean Flag Parameter Controls Unrelated Behaviors",
+      "description": "Flag parameters whose boolean value switches between materially different behaviors instead of selecting clear separate entrypoints.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Boolean Flag Parameter Controls Unrelated Behaviors matters because the pattern here, Flag parameters whose boolean value switches between materially different behaviors instead of selecting clear separate entrypoints, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Boolean Flag Parameter Controls Unrelated Behaviors in Python, prefer selecting clear separate entrypoints when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
       "id": "callable_annotation_without_parameter_types",
       "label": "Callable Annotation without Parameter Types",
       "description": "Callable annotation used without explicit parameter types, losing type information downstream.",
@@ -61,6 +89,20 @@
       "fix": "For Cast Applied without Preceding Type Narrowing Guard in Python, tighten the type, annotation, schema, or response contract so callers can see the expected shape at the boundary."
     },
     {
+      "id": "condition_tree_nests_past_two_business_decision_levels",
+      "label": "Condition Tree Nests Past Two Business Decision Levels",
+      "description": "Flag functions with deeply nested business condition trees that would be clearer as smaller helpers or dispatch tables.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Condition Tree Nests Past Two Business Decision Levels matters because the pattern here, Flag functions with deeply nested business condition trees that would be clearer as smaller helpers or dispatch tables, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
+      "fix": "For Condition Tree Nests Past Two Business Decision Levels in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
+    },
+    {
       "id": "contextlib_suppress_applied_with_exception_base_class",
       "label": "Contextlib Suppress Applied with Exception Base Class",
       "description": "contextlib.suppress used with Exception or BaseException, silently swallowing unexpected errors.",
@@ -73,6 +115,20 @@
       ],
       "explanation": "In Python, Contextlib Suppress Applied with Exception Base Class matters because the pattern here, contextlib.suppress used with Exception or BaseException, silently swallowing unexpected errors, concentrates too much responsibility into one shape and makes future change riskier.",
       "fix": "For Contextlib Suppress Applied with Exception Base Class in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "correctness_depends_on_specific_call_order_not_encoded_in_api",
+      "label": "Correctness Depends on Specific Call Order Not Encoded in API",
+      "description": "Flag APIs whose safe use depends on an undocumented sequence of method calls.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Correctness Depends on Specific Call Order Not Encoded in API matters because the pattern here, Flag APIs whose safe use depends on an undocumented sequence of method calls, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
+      "fix": "For Correctness Depends on Specific Call Order Not Encoded in API in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
     },
     {
       "id": "custom_exception_encodes_identity_as_string_code_attribute",
@@ -101,6 +157,20 @@
       ],
       "explanation": "In Python, Deeply Nested Try Except Beyond Two Levels matters because the pattern here, try/except blocks nested more than two levels deep, obscuring error propagation, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
       "fix": "For Deeply Nested Try Except Beyond Two Levels in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
+    },
+    {
+      "id": "duplicated_cleanup_paths_instead_of_context_manager",
+      "label": "Duplicated Cleanup Paths Instead of Context Manager",
+      "description": "Flag repeated cleanup logic that should be centralized with a context manager or helper.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Duplicated Cleanup Paths Instead of Context Manager matters because the pattern here, Flag repeated cleanup logic that should be centralized with a context manager or helper, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Duplicated Cleanup Paths Instead of Context Manager in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
     },
     {
       "id": "error_message_embeds_sensitive_data",
@@ -201,6 +271,48 @@
       "fix": "For Exception Silenced in Cleanup or Finally Block in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
     },
     {
+      "id": "expensive_work_starts_before_input_validation",
+      "label": "Expensive Work Starts Before Input Validation",
+      "description": "Flag functions that begin heavy computation or I/O before validating cheap preconditions.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Expensive Work Starts Before Input Validation matters because the pattern here, Flag functions that begin heavy computation or I/O before validating cheap preconditions, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
+      "fix": "For Expensive Work Starts Before Input Validation in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
+    },
+    {
+      "id": "function_body_contains_setup_validation_execution_and_formatting_all_at_once",
+      "label": "Function Body Contains Setup Validation Execution and Formatting All at Once",
+      "description": "Flag functions that pack too many lifecycle phases into one body.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Function Body Contains Setup Validation Execution and Formatting All at Once matters because the pattern here, Flag functions that pack too many lifecycle phases into one body, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
+      "fix": "For Function Body Contains Setup Validation Execution and Formatting All at Once in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
+    },
+    {
+      "id": "function_returns_multiple_unlabeled_shape_variants",
+      "label": "Function Returns Multiple Unlabeled Shape Variants",
+      "description": "Flag functions that return unrelated tuple or dict shapes depending on the path taken.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Function Returns Multiple Unlabeled Shape Variants matters because the pattern here, Flag functions that return unrelated tuple or dict shapes depending on the path taken, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
+      "fix": "For Function Returns Multiple Unlabeled Shape Variants in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
+    },
+    {
       "id": "generator_close_exception_not_handled_when_cleanup_required",
       "label": "Generator Close Exception Not Handled When Cleanup Required",
       "description": "Generator or context manager performs resource acquisition in a finally block without a try/finally guard.",
@@ -229,6 +341,20 @@
       "fix": "For Generic Class Used without Type Parameter Application in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
     },
     {
+      "id": "helper_name_hides_mutation_or_io_side_effect",
+      "label": "Helper Name Hides Mutation or I/O Side Effect",
+      "description": "Flag helpers whose names sound pure but actually mutate state or perform I/O.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Helper Name Hides Mutation or I/O Side Effect matters because the pattern here, Flag helpers whose names sound pure but actually mutate state or perform I/O, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Helper Name Hides Mutation or I/O Side Effect in Python, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
       "id": "integration_test_writes_state_without_cleanup",
       "label": "Integration Test Writes State without Cleanup",
       "description": "Integration test creates database rows or files without a teardown or transactional rollback.",
@@ -241,6 +367,62 @@
       ],
       "explanation": "In Python, Integration Test Writes State without Cleanup matters because the pattern here, Integration test creates database rows or files without a teardown or transactional rollback, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
       "fix": "For Integration Test Writes State without Cleanup in Python, add a teardown or transactional rollback or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "long_parameter_list_of_primitives_without_options_object",
+      "label": "Long Parameter List of Primitives without Options Object",
+      "description": "Flag functions whose many primitive parameters obscure meaning and encourage call-site mistakes.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Long Parameter List of Primitives without Options Object matters because the pattern here, Flag functions whose many primitive parameters obscure meaning and encourage call-site mistakes, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
+      "fix": "For Long Parameter List of Primitives without Options Object in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
+    },
+    {
+      "id": "loop_interleaves_core_work_logging_and_recovery_logic",
+      "label": "Loop Interleaves Core Work Logging and Recovery Logic",
+      "description": "Flag loops that mix primary business logic, logging, and error recovery in one dense block.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Loop Interleaves Core Work Logging and Recovery Logic matters because the pattern here, Flag loops that mix primary business logic, logging, and error recovery in one dense block, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Loop Interleaves Core Work Logging and Recovery Logic in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "method_mutates_self_and_peer_object_in_same_block",
+      "label": "Method Mutates Self and Peer Object in Same Block",
+      "description": "Flag methods that change both local state and a collaborator's state in the same unit of work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Method Mutates Self and Peer Object in Same Block matters because the pattern here, Flag methods that change both local state and a collaborator's state in the same unit of work, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
+      "fix": "For Method Mutates Self and Peer Object in Same Block in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
+    },
+    {
+      "id": "method_mutates_state_and_emits_user_facing_representation",
+      "label": "Method Mutates State and Emits User Facing Representation",
+      "description": "Flag methods that both change internal state and format user-facing output.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Method Mutates State and Emits User Facing Representation matters because the pattern here, Flag methods that both change internal state and format user-facing output, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
+      "fix": "For Method Mutates State and Emits User Facing Representation in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
     },
     {
       "id": "mock_return_value_is_incompatible_type_with_real_signature",
@@ -257,6 +439,20 @@
       "fix": "For Mock Return Value Is Incompatible Type with Real Signature in Python, tighten the tests until the failure mode, edge case, or assertion signal is obvious to a reviewer."
     },
     {
+      "id": "module_mixes_constants_types_helpers_and_execution_flow",
+      "label": "Module Mixes Constants Types Helpers and Execution Flow",
+      "description": "Flag modules that combine unrelated responsibilities and become hard to scan.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Module Mixes Constants Types Helpers and Execution Flow matters because the pattern here, Flag modules that combine unrelated responsibilities and become hard to scan, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Module Mixes Constants Types Helpers and Execution Flow in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
       "id": "namedtuple_used_where_dataclass_better_fits",
       "label": "Namedtuple Used Where Dataclass Better Fits",
       "description": "collections.namedtuple used for a record that needs default values, mutation, or methods.",
@@ -269,6 +465,20 @@
       ],
       "explanation": "In Python, Namedtuple Used Where Dataclass Better Fits matters because the pattern here, collections.namedtuple used for a record that needs default values, mutation, or methods, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
       "fix": "For Namedtuple Used Where Dataclass Better Fits in Python, tighten contracts, preserve error intent, and make tests prove both the success path and the failure behavior that matters."
+    },
+    {
+      "id": "negated_boolean_reassigned_and_inverted_again",
+      "label": "Negated Boolean Reassigned and Inverted Again",
+      "description": "Flag control flow that repeatedly flips boolean state instead of naming the intended condition directly.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Negated Boolean Reassigned and Inverted Again matters because the pattern here, Flag control flow that repeatedly flips boolean state instead of naming the intended condition directly, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Negated Boolean Reassigned and Inverted Again in Python, rename the symbol so its domain job is obvious without reading the whole body."
     },
     {
       "id": "optional_parameter_used_without_none_guard",
@@ -397,6 +607,20 @@
       "fix": "For Pytest Raises without Match Parameter on Broad Exception in Python, add a match= pattern to verify the message or move the code to a path where that safeguard is guaranteed before the risky work happens."
     },
     {
+      "id": "repeated_try_finally_release_pattern_not_extracted",
+      "label": "Repeated Try Finally Release Pattern Not Extracted",
+      "description": "Flag repeated manual release patterns that should live behind one helper or context manager.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Try Finally Release Pattern Not Extracted matters because the pattern here, Flag repeated manual release patterns that should live behind one helper or context manager, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Try Finally Release Pattern Not Extracted in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
       "id": "retry_loop_catches_broad_base_exception",
       "label": "Retry Loop Catches Broad Base Exception",
       "description": "Retry loop catches Exception or BaseException instead of the specific transient errors that warrant a retry.",
@@ -409,6 +633,20 @@
       ],
       "explanation": "In Python, Retry Loop Catches Broad Base Exception matters because the pattern here, Retry loop catches Exception or BaseException instead of the specific transient errors that warrant a retry, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
       "fix": "For Retry Loop Catches Broad Base Exception in Python, prefer the specific transient errors that warrant a retry when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "same_precondition_checked_in_multiple_sibling_branches",
+      "label": "Same Precondition Checked in Multiple Sibling Branches",
+      "description": "Flag functions that repeat the same guard in several branches instead of normalizing once.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Same Precondition Checked in Multiple Sibling Branches matters because the pattern here, Flag functions that repeat the same guard in several branches instead of normalizing once, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Same Precondition Checked in Multiple Sibling Branches in Python, prefer normalizing once when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
       "id": "string_forward_reference_in_annotation_not_under_type_checking_guard",
@@ -647,6 +885,20 @@
       ],
       "explanation": "In Python, Type Alias Shadows Builtin Name matters because the pattern here, Type alias variable assigned a name that shadows a Python builtin such as list, dict, or type, hides the real job of the symbol behind wording that is harder to scan during review.",
       "fix": "For Type Alias Shadows Builtin Name in Python, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "type_branch_and_mode_branch_compounded_in_same_function",
+      "label": "Type Branch and Mode Branch Compounded in Same Function",
+      "description": "Flag functions that branch on both runtime type and mode string in the same decision tree.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Type Branch and Mode Branch Compounded in Same Function matters because the pattern here, Flag functions that branch on both runtime type and mode string in the same decision tree, is worth review because permissive Python code can keep moving while quietly dropping guarantees about types, failures, and tests.",
+      "fix": "For Type Branch and Mode Branch Compounded in Same Function in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
     },
     {
       "id": "typed_dict_key_access_without_get_or_guard",

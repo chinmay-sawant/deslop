@@ -110,9 +110,9 @@ deslop now publishes a central rule registry that drives the CLI and the synced 
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
 | go | 651 | 2 | 0 | 653 |
-| python | 391 | 0 | 0 | 391 |
+| python | 591 | 0 | 0 | 591 |
 | rust | 88 | 12 | 0 | 100 |
-| total | 1141 | 14 | 0 | 1155 |
+| total | 1341 | 14 | 0 | 1355 |
 
 The totals above are language-scoped rule entries, so a shared rule ID implemented in more than one backend appears in each relevant language bucket.
 The registry is now the source of truth for `deslop rules`, the frontend rule catalog, and the generated detection inventory guide.

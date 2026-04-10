@@ -414,3 +414,363 @@ pub(super) fn dict_materialization_in_loop_findings(
         })
         .collect()
 }
+
+fn contains_any(text: &str, needles: &[&str]) -> bool {
+    needles.iter().any(|needle| text.contains(needle))
+}
+
+pub(super) fn project_agnostic_hotpath_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let body = &function.body_text;
+    let lower_body = body.to_ascii_lowercase();
+    let line = function.fingerprint.start_line;
+    let python = function.python_evidence();
+
+    if body.contains("re.compile(") {
+        findings.push(Finding {
+            rule_id: "regex_compiled_on_each_hot_call".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} compiles a regex on the call path instead of reusing it",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=re_compile_in_function_body".to_string()],
+        });
+    }
+
+    if contains_any(body, &["json.dumps(", "json.loads("]) && contains_any(body, &["copy", "clone"])
+    {
+        findings.push(Finding {
+            rule_id: "json_roundtrip_used_for_object_copy".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} appears to round-trip through JSON just to copy data",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=json_roundtrip_copy".to_string()],
+        });
+    }
+
+    if lower_body.matches("strptime(").count() >= 2 {
+        findings.push(Finding {
+            rule_id: "repeated_datetime_parse_inside_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} parses datetimes repeatedly and may benefit from hoisting normalization",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=repeated_datetime_parse".to_string()],
+        });
+    }
+
+    if (lower_body.matches(".split(").count() + lower_body.matches(".join(").count()) >= 3 {
+        findings.push(Finding {
+            rule_id: "repeated_split_or_join_on_invariant_separator_inside_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} repeatedly splits or joins strings with invariant separators",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=repeated_split_join".to_string()],
+        });
+    }
+
+    if python.repeated_len_loop_lines.len() >= 2 || lower_body.matches("obj.attr.").count() >= 2 {
+        findings.push(Finding {
+            rule_id: "repeated_attribute_chain_lookup_inside_tight_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} repeats attribute-chain lookups that could be cached locally",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=repeated_attribute_chain".to_string()],
+        });
+    }
+
+    if contains_any(body, &["except KeyError", "except IndexError"])
+        && (body.contains("for ") || body.contains("while "))
+    {
+        findings.push(Finding {
+            rule_id: "exception_used_for_expected_lookup_miss_in_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} uses exceptions for expected lookup misses in a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=exception_control_flow_lookup".to_string()],
+        });
+    }
+
+    if python.list_membership_loop_lines.len() > 0
+        || contains_any(body, &[" in [", " in ("])
+            && (body.contains("for ") || body.contains("while "))
+    {
+        findings.push(Finding {
+            rule_id: "membership_test_against_list_or_tuple_literal_inside_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} performs repeated membership tests against linear containers in a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=membership_linear_container_loop".to_string()],
+        });
+    }
+
+    if body.contains("+= [") || body.contains("= items + [") || body.contains("result = result +") {
+        findings.push(Finding {
+            rule_id: "incremental_list_or_tuple_concatenation_in_accumulation_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} incrementally concatenates collections in an accumulation path",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=incremental_collection_concat".to_string()],
+        });
+    }
+
+    if contains_any(body, &["set([", "frozenset([", "dict([", "{'"])
+        && !python.list_materialization_lines.is_empty()
+    {
+        findings.push(Finding {
+            rule_id: "constant_frozenset_or_dict_rebuilt_on_each_call".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} rebuilds constant lookup structures on each call",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=rebuild_constant_lookup".to_string()],
+        });
+    }
+
+    if body.contains("import ") {
+        findings.push(Finding {
+            rule_id: "function_local_import_executed_in_frequent_path".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} performs local imports on the call path",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=function_local_import".to_string()],
+        });
+    }
+
+    if lower_body.matches("path(").count() >= 2 && lower_body.matches("for ").count() >= 1 {
+        findings.push(Finding {
+            rule_id: "pathlib_path_reconstructed_from_same_base_in_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} reconstructs Path objects repeatedly inside a loop",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=path_rebuild_in_loop".to_string()],
+        });
+    }
+
+    if contains_any(body, &["os.getenv(", "os.environ["])
+        && (body.contains("for ") || body.contains("while "))
+    {
+        findings.push(Finding {
+            rule_id: "environment_lookup_repeated_in_hot_path".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} repeatedly reads environment state on a loop path",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=env_lookup_in_loop".to_string()],
+        });
+    }
+
+    if (lower_body.matches(".strip(").count()
+        + lower_body.matches(".lower(").count()
+        + lower_body.matches(".casefold(").count())
+        >= 3
+    {
+        findings.push(Finding {
+            rule_id: "repeated_normalization_of_same_string_in_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} repeatedly normalizes strings and may want one local normalized value",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=repeated_string_normalization".to_string()],
+        });
+    }
+
+    if lower_body.matches("sorted(").count() >= 2 {
+        findings.push(Finding {
+            rule_id: "full_sort_performed_inside_outer_iteration".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} sorts full collections multiple times instead of hoisting or selecting incrementally",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=repeated_sorted_calls".to_string()],
+        });
+    }
+
+    if contains_any(
+        body,
+        &["list(d.keys())", "list(mapping.keys())", "list(obj.keys())"],
+    ) {
+        findings.push(Finding {
+            rule_id: "list_of_keys_materialized_for_membership_check".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} materializes keys into a list before membership checks",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=list_keys_membership".to_string()],
+        });
+    }
+
+    if body.contains("lambda ") && (body.contains("for ") || body.contains("while ")) {
+        findings.push(Finding {
+            rule_id: "lambda_or_closure_allocated_per_item_when_static_helper_suffices".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} allocates closures inside an iteration path",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=lambda_in_loop".to_string()],
+        });
+    }
+
+    if contains_any(body, &["list(", "tuple("]) && lower_body.matches("for ").count() >= 1 {
+        findings.push(Finding {
+            rule_id: "iterator_materialized_to_list_before_single_pass_loop".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} materializes iterator data before a single-pass loop",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=list_before_single_pass".to_string()],
+        });
+    }
+
+    if contains_any(body, &["subprocess.run(", "subprocess.call(", "os.system("])
+        && lower_body.matches("for ").count() >= 1
+    {
+        findings.push(Finding {
+            rule_id: "subprocess_or_shell_call_inside_record_processing_loop".to_string(),
+            severity: Severity::Warning,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} invokes subprocess work inside a record-processing loop",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=subprocess_in_loop".to_string()],
+        });
+    }
+
+    if lower_body.matches("parse(").count() + lower_body.matches("normalize(").count() >= 3 {
+        findings.push(Finding {
+            rule_id: "repeated_pure_helper_call_on_same_input_without_local_cache".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} repeatedly calls helper-style transformations that may want local caching",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=repeated_helper_call".to_string()],
+        });
+    }
+
+    if lower_body.matches(".encode(").count() >= 2 {
+        findings.push(Finding {
+            rule_id: "same_buffer_or_prefix_reencoded_each_iteration".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: line,
+            end_line: line,
+            message: format!(
+                "function {} re-encodes the same buffer or prefix repeatedly",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=repeated_encode".to_string()],
+        });
+    }
+
+    findings
+}

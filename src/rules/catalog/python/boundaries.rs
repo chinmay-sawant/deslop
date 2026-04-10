@@ -201,4 +201,84 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "pydantic_settings_model_missing_env_prefix_isolation",
         "Pydantic BaseSettings model does not define env_prefix, mixing its env vars with system environment."
     ),
+    bound_rule!(
+        "mutable_default_argument_leaks_state_across_calls",
+        "Flag function signatures that use mutable defaults such as [], {}, or set() and allow state sharing between calls."
+    ),
+    bound_rule!(
+        "helper_returns_live_internal_collection_reference",
+        "Flag helpers that hand out direct references to mutable internal lists, dicts, or sets instead of copies or read-only views."
+    ),
+    bound_rule!(
+        "public_api_mutates_argument_in_place_without_signal",
+        "Flag public APIs that rewrite caller-owned containers or objects without naming or documentation that makes the mutation obvious."
+    ),
+    bound_rule!(
+        "dataclass_mutable_default_without_default_factory",
+        "Flag dataclass fields that use mutable defaults without default_factory."
+    ),
+    bound_rule!(
+        "context_manager_yields_global_mutable_resource",
+        "Flag context managers that expose a shared global mutable resource while implying call-local ownership."
+    ),
+    bound_rule!(
+        "module_cache_exposed_without_invalidation_boundary",
+        "Flag modules that expose cache internals directly with no clear invalidation or ownership boundary."
+    ),
+    bound_rule!(
+        "closure_captures_loop_variable_without_binding",
+        "Flag closures created in loops that capture the loop variable without binding the current value."
+    ),
+    bound_rule!(
+        "function_accepts_mapping_protocol_but_mutates_input",
+        "Flag functions that advertise broad mapping or sequence inputs and then mutate the received object in place."
+    ),
+    bound_rule!(
+        "iterator_argument_consumed_then_reused_later",
+        "Flag functions that exhaust an iterator and later treat it as if it were reusable data."
+    ),
+    bound_rule!(
+        "public_api_forwards_library_specific_exception_shape",
+        "Flag public interfaces that require callers to understand raw exceptions from underlying libraries."
+    ),
+    bound_rule!(
+        "datetime_boundary_mixes_naive_and_aware_values",
+        "Flag APIs that accept or combine timezone-aware and timezone-naive datetimes without normalization."
+    ),
+    bound_rule!(
+        "text_bytes_boundary_relies_on_implicit_default_encoding",
+        "Flag code that crosses text and bytes boundaries without an explicit encoding contract."
+    ),
+    bound_rule!(
+        "path_boundary_accepts_unexpanded_or_relative_input_without_normalization",
+        "Flag filesystem-facing APIs that accept relative paths or ~ forms without normalizing them before downstream use."
+    ),
+    bound_rule!(
+        "sentinel_default_value_overlaps_valid_business_value",
+        "Flag APIs whose sentinel or fallback value can also be a valid domain value."
+    ),
+    bound_rule!(
+        "sync_api_accepts_coroutine_object_as_regular_value",
+        "Flag synchronous interfaces that can accidentally receive coroutine objects and treat them as plain values."
+    ),
+    bound_rule!(
+        "async_api_returns_plain_iterator_with_blocking_iteration",
+        "Flag async-facing APIs that return plain iterators whose consumption can still block."
+    ),
+    bound_rule!(
+        "property_returns_live_internal_cache_object",
+        "Flag properties that expose live mutable cache objects directly to callers."
+    ),
+    bound_rule!(
+        "lock_acquire_and_release_owned_by_different_callers",
+        "Flag APIs that require one caller to acquire a lock and another caller to release it."
+    ),
+    bound_rule!(
+        "module_constant_rebound_after_public_import",
+        "Flag modules that expose apparent constants and later rebind them during normal runtime flow."
+    ),
+    bound_rule!(
+        "helper_requires_caller_to_know_hidden_ordering_constraints",
+        "Flag helpers whose correctness depends on the caller invoking them in a specific undocumented order."
+    ),
 ];

@@ -1355,3 +1355,474 @@ pub(super) fn pydantic_settings_no_prefix_findings(
     }
     Vec::new()
 }
+
+fn contains_any(text: &str, needles: &[&str]) -> bool {
+    needles.iter().any(|needle| text.contains(needle))
+}
+
+fn boundary_param_names(signature: &str) -> Vec<String> {
+    let Some(start) = signature.find('(') else {
+        return Vec::new();
+    };
+    let Some(end) = signature.rfind(')') else {
+        return Vec::new();
+    };
+
+    signature[start + 1..end]
+        .split(',')
+        .filter_map(|entry| {
+            let trimmed = entry.trim().trim_start_matches('*').trim();
+            if trimmed.is_empty() || matches!(trimmed, "/" | "*" | "self" | "cls") {
+                return None;
+            }
+            Some(
+                trimmed
+                    .split('=')
+                    .next()
+                    .unwrap_or(trimmed)
+                    .split(':')
+                    .next()
+                    .unwrap_or(trimmed)
+                    .trim()
+                    .to_string(),
+            )
+        })
+        .collect()
+}
+
+fn boundaries_file_finding(
+    file: &ParsedFile,
+    rule_id: &str,
+    line: usize,
+    severity: Severity,
+    message: &str,
+    evidence: &str,
+) -> Finding {
+    Finding {
+        rule_id: rule_id.to_string(),
+        severity,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: line,
+        end_line: line,
+        message: message.to_string(),
+        evidence: vec![evidence.to_string()],
+    }
+}
+
+pub(super) fn project_agnostic_boundaries_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let sig = function.signature_text.replace('\n', " ");
+    let body = &function.body_text;
+    let lower_body = body.to_ascii_lowercase();
+    let params = boundary_param_names(&sig);
+    let public_api = !function.fingerprint.name.starts_with('_');
+
+    if sig.contains("=[]")
+        || sig.contains("={}")
+        || sig.contains("=set()")
+        || sig.contains("=list()")
+        || sig.contains("=dict()")
+    {
+        findings.push(make_finding(
+            "mutable_default_argument_leaks_state_across_calls",
+            Severity::Warning,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "uses a mutable default argument and risks leaking state across calls",
+        ));
+    }
+
+    if public_api
+        && contains_any(
+            body,
+            &[
+                "return self._",
+                "return self.cache",
+                "return self.items",
+                "return self.data",
+            ],
+        )
+    {
+        let line = find_line(body, "return self.", function.fingerprint.start_line)
+            .unwrap_or(function.fingerprint.start_line);
+        findings.push(make_finding(
+            "helper_returns_live_internal_collection_reference",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "returns a live internal mutable collection reference",
+        ));
+    }
+
+    if (body.contains("for ") || body.contains("while "))
+        && contains_any(body, &["lambda", "def inner"])
+        && !contains_any(body, &["lambda item=", "lambda value=", "def inner(item="])
+    {
+        findings.push(make_finding(
+            "closure_captures_loop_variable_without_binding",
+            Severity::Warning,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "creates closures inside a loop without binding the current loop value",
+        ));
+    }
+
+    if public_api {
+        for param in &params {
+            if contains_any(
+                body,
+                &[
+                    &format!("{param}.append("),
+                    &format!("{param}.extend("),
+                    &format!("{param}.update("),
+                    &format!("{param}.pop("),
+                    &format!("{param}.sort("),
+                    &format!("{param}.clear("),
+                ],
+            ) {
+                findings.push(make_finding(
+                    "public_api_mutates_argument_in_place_without_signal",
+                    Severity::Info,
+                    file,
+                    function,
+                    function.fingerprint.start_line,
+                    "mutates a caller-owned argument in place without an explicit boundary contract",
+                ));
+                break;
+            }
+        }
+    }
+
+    if lower_body.contains("yield ")
+        && contains_any(
+            body,
+            &[
+                "yield CACHE",
+                "yield cache",
+                "yield registry",
+                "yield shared_state",
+            ],
+        )
+    {
+        findings.push(make_finding(
+            "context_manager_yields_global_mutable_resource",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "yields a shared mutable resource from a context manager and blurs ownership",
+        ));
+    }
+
+    if sig.contains("Mapping[") || sig.contains("MutableMapping") || sig.contains("Sequence[") {
+        for param in &params {
+            if contains_any(
+                body,
+                &[
+                    &format!("{param}.update("),
+                    &format!("{param}.append("),
+                    &format!("{param}["),
+                ],
+            ) {
+                findings.push(make_finding(
+                    "function_accepts_mapping_protocol_but_mutates_input",
+                    Severity::Warning,
+                    file,
+                    function,
+                    function.fingerprint.start_line,
+                    "accepts a broad protocol type but mutates the received object",
+                ));
+                break;
+            }
+        }
+    }
+
+    if sig.contains("Iterator[") || sig.contains("Iterable[") {
+        for param in &params {
+            if contains_any(
+                body,
+                &[
+                    &format!("list({param})"),
+                    &format!("tuple({param})"),
+                    &format!("next({param})"),
+                ],
+            ) && contains_any(
+                body,
+                &[
+                    &format!("for item in {param}"),
+                    &format!("for value in {param}"),
+                    &format!("return {param}"),
+                ],
+            ) {
+                findings.push(make_finding(
+                    "iterator_argument_consumed_then_reused_later",
+                    Severity::Warning,
+                    file,
+                    function,
+                    function.fingerprint.start_line,
+                    "consumes an iterator argument and later treats it as reusable data",
+                ));
+                break;
+            }
+        }
+    }
+
+    if public_api
+        && contains_any(
+            body,
+            &[
+                "except requests.",
+                "except httpx.",
+                "except sqlalchemy.",
+                "raise requests.",
+                "raise httpx.",
+            ],
+        )
+    {
+        findings.push(make_finding(
+            "public_api_forwards_library_specific_exception_shape",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "forwards library-specific exception shapes directly through a public boundary",
+        ));
+    }
+
+    if contains_any(body, &["datetime.now()", "datetime.utcnow()", "tzinfo="])
+        && contains_any(
+            body,
+            &[
+                "astimezone(",
+                "timezone.utc",
+                "replace(tzinfo",
+                "fromisoformat(",
+            ],
+        )
+    {
+        findings.push(make_finding(
+            "datetime_boundary_mixes_naive_and_aware_values",
+            Severity::Warning,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "mixes naive and timezone-aware datetime handling in one boundary",
+        ));
+    }
+
+    if (contains_any(body, &[".encode()", ".decode()", "open("]))
+        && !contains_any(
+            body,
+            &[
+                "encoding=",
+                ".encode(\"",
+                ".decode(\"",
+                ".encode('",
+                ".decode('",
+            ],
+        )
+    {
+        findings.push(make_finding(
+            "text_bytes_boundary_relies_on_implicit_default_encoding",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "crosses text and bytes boundaries without an explicit encoding contract",
+        ));
+    }
+
+    let uses_path_directly = body.contains("open(path")
+        || body.contains("Path(path")
+        || body.contains("os.path.join(path");
+    if params.iter().any(|param| param.contains("path"))
+        && uses_path_directly
+        && !contains_any(
+            body,
+            &["resolve()", "expanduser()", "normpath(", "absolute("],
+        )
+    {
+        findings.push(make_finding(
+            "path_boundary_accepts_unexpanded_or_relative_input_without_normalization",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "accepts a path-like argument without normalizing it before use",
+        ));
+    }
+
+    if sig.contains("=0") || sig.contains("=''") || sig.contains("=\"\"") {
+        findings.push(make_finding(
+            "sentinel_default_value_overlaps_valid_business_value",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "uses a sentinel default that could also be a valid business value",
+        ));
+    }
+
+    if !sig.contains("async def")
+        && contains_any(body, &["iscoroutine(", "awaitable", "asyncio.iscoroutine("])
+    {
+        findings.push(make_finding(
+            "sync_api_accepts_coroutine_object_as_regular_value",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "appears to accept coroutine objects in a synchronous API surface",
+        ));
+    }
+
+    if sig.contains("async def")
+        && contains_any(body, &["return iter(", "return map(", "return filter("])
+    {
+        findings.push(make_finding(
+            "async_api_returns_plain_iterator_with_blocking_iteration",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "returns a plain iterator from an async boundary without clarifying blocking iteration semantics",
+        ));
+    }
+
+    if contains_any(
+        body,
+        &[
+            "return self._cache",
+            "return self.cache",
+            "return self._memo",
+        ],
+    ) {
+        findings.push(make_finding(
+            "property_returns_live_internal_cache_object",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "returns a live internal cache object directly to callers",
+        ));
+    }
+
+    if contains_any(&lower_body, &["acquire_lock(", "lock.acquire("])
+        && contains_any(&lower_body, &["release_lock(", "lock.release("])
+        && lower_body.matches("def ").count() == 0
+    {
+        findings.push(make_finding(
+            "lock_acquire_and_release_owned_by_different_callers",
+            Severity::Warning,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "spreads lock acquire and release responsibility across callers",
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &[
+            "must call",
+            "before calling",
+            "after calling",
+            "initialize first",
+            "load first",
+        ],
+    ) {
+        findings.push(make_finding(
+            "helper_requires_caller_to_know_hidden_ordering_constraints",
+            Severity::Info,
+            file,
+            function,
+            function.fingerprint.start_line,
+            "depends on hidden call ordering constraints rather than encoding them in the API",
+        ));
+    }
+
+    findings
+}
+
+pub(super) fn project_agnostic_boundaries_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let source = file
+        .top_level_bindings
+        .iter()
+        .map(|binding| binding.value_text.as_str())
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    if source.contains("@dataclass")
+        && (source.contains("= []") || source.contains("= {}") || source.contains("= set()"))
+        && !source.contains("default_factory")
+    {
+        findings.push(boundaries_file_finding(
+            file,
+            "dataclass_mutable_default_without_default_factory",
+            1,
+            Severity::Warning,
+            "dataclass-like module contains a mutable default without default_factory",
+            "pattern=mutable_dataclass_default",
+        ));
+    }
+
+    let cache_bindings = file
+        .top_level_bindings
+        .iter()
+        .filter(|binding| {
+            let lower = binding.name.to_ascii_lowercase();
+            lower.contains("cache") || lower.contains("memo") || lower.contains("registry")
+        })
+        .count();
+    if cache_bindings > 0
+        && !file.functions.iter().any(|function| {
+            let lower = function.fingerprint.name.to_ascii_lowercase();
+            lower.contains("invalidate") || lower.contains("clear") || lower.contains("reset")
+        })
+    {
+        findings.push(boundaries_file_finding(
+            file,
+            "module_cache_exposed_without_invalidation_boundary",
+            1,
+            Severity::Info,
+            "module exposes cache-like state without an explicit invalidation boundary",
+            &format!("cache_bindings={cache_bindings}"),
+        ));
+    }
+
+    for binding in &file.top_level_bindings {
+        if binding
+            .name
+            .chars()
+            .all(|ch| ch.is_ascii_uppercase() || ch == '_')
+            && contains_any(&binding.value_text, &["[", "{", "set("])
+        {
+            findings.push(boundaries_file_finding(
+                file,
+                "module_constant_rebound_after_public_import",
+                binding.line,
+                Severity::Info,
+                "module defines mutable constant-like state at top level",
+                &format!("binding={}", binding.name),
+            ));
+        }
+    }
+
+    findings
+}

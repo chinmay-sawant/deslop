@@ -36,6 +36,24 @@ const QUALITY_FUNCTION_RULE_IDS: &[&str] = &[
     "typeddict_unchecked_access",
     "unsafe_yaml_loader",
     "untracked_asyncio_task",
+    "public_api_returns_none_or_value_without_explicit_optional_contract",
+    "fallback_branch_swallows_invariant_violation_and_returns_plausible_default",
+    "broad_except_used_to_mask_type_or_shape_bug",
+    "order_dependent_set_to_list_conversion_exposed_in_public_result",
+    "default_timeout_missing_on_external_boundary_wrapper",
+    "float_equality_controls_branching_on_computed_values",
+    "recursive_walk_over_untrusted_input_lacks_depth_limit",
+    "public_iterator_yields_heterogeneous_item_shapes",
+    "partial_update_mutates_input_before_validation_succeeds",
+    "cache_key_derived_from_stringified_mutable_object",
+    "sort_order_depends_on_non_explicit_mapping_iteration_semantics",
+    "duplicate_items_silently_dropped_without_contract_signal",
+    "timezone_naive_datetime_accepted_in_public_contract",
+    "atomic_replace_semantics_implemented_with_non_atomic_file_write",
+    "string_mode_parameter_replaces_enum_or_literal_contract",
+    "helper_returns_success_shape_even_when_substeps_partially_fail",
+    "comparison_or_merge_logic_assumes_unique_keys_without_assertion",
+    "validation_only_happens_after_expensive_side_effect_has_started",
 ];
 
 const PERFORMANCE_FUNCTION_RULE_IDS: &[&str] = &[
@@ -48,6 +66,26 @@ const PERFORMANCE_FUNCTION_RULE_IDS: &[&str] = &[
     "repeated_len_in_loop",
     "string_concat_in_loop",
     "temporary_collection_in_loop",
+    "repeated_file_open_for_same_resource_within_single_operation",
+    "eager_full_file_or_stream_read_when_incremental_iteration_suffices",
+    "bytes_text_bytes_roundtrip_without_transformation",
+    "quadratic_string_building_via_plus_equals",
+    "multiple_regex_passes_over_same_text_without_precompiled_plan",
+    "full_response_or_export_buffered_before_incremental_consumer_use",
+    "temporary_file_used_for_pure_in_memory_transformation",
+    "thread_pool_or_process_pool_created_and_destroyed_per_call",
+    "large_object_cloned_before_read_only_operation",
+    "repeated_stat_or_exists_calls_before_single_followup_operation",
+    "batchable_writes_executed_one_at_a_time",
+    "same_dataset_normalized_in_multiple_full_passes",
+    "generator_materialized_to_tuple_or_list_only_for_len_or_truthiness",
+    "full_collection_sorted_when_partial_order_or_selection_suffices",
+    "compression_hashing_or_encoding_performed_before_cheap_reject_checks",
+    "event_loop_path_executes_cpu_bound_transformation_synchronously",
+    "repeated_small_writes_without_buffering_or_join",
+    "copy_of_mapping_created_only_to_read_values",
+    "serialization_cost_paid_only_to_compare_or_hash_intermediate_state",
+    "large_in_memory_intermediate_created_where_streaming_pipeline_would_do",
 ];
 
 const MAINTAINABILITY_FUNCTION_RULE_IDS: &[&str] = &[
@@ -69,12 +107,32 @@ const MAINTAINABILITY_FUNCTION_RULE_IDS: &[&str] = &[
     "reinvented_utility",
     "side_effect_comprehension",
     "variadic_public_api",
+    "magic_thresholds_duplicated_across_modules",
+    "tuple_return_with_three_or_more_positional_fields_in_public_api",
+    "parallel_lists_used_instead_of_record_object",
+    "normalization_logic_duplicated_across_call_sites",
+    "mutable_class_attribute_used_as_instance_storage",
+    "helper_module_accumulates_unrelated_cross_domain_utilities",
+    "string_sentinel_values_duplicated_instead_of_constant_or_enum",
+    "same_contextmanager_pattern_copied_across_modules",
+    "wrapper_function_only_renames_arguments_and_passthroughs_behavior",
+    "anonymous_dict_shape_repeated_without_shared_type_or_builder",
+    "branching_on_file_suffix_or_mode_string_scattered_across_codebase",
+    "hidden_dependency_arrives_via_import_time_side_effect",
+    "cache_object_exists_without_size_or_eviction_policy_documentation",
+    "comment_required_to_explain_opaque_branching_that_code_could_express",
+    "helper_returns_index_based_tuple_instead_of_named_structure",
+    "mixed_mutation_and_query_methods_share_same_manager_class",
+    "monolithic_utils_module_becomes_default_dependency_sink",
+    "single_feature_requires_edits_in_many_unrelated_modules_due_to_scattered_policy",
 ];
 
 const STRUCTURE_FUNCTION_RULE_IDS: &[&str] = &[
     "god_function",
     "mixed_concerns_function",
     "name_responsibility_mismatch",
+    "same_feature_path_crosses_many_layers_for_simple_data_transform",
+    "cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary",
 ];
 
 const AI_SMELLS_FUNCTION_RULE_IDS: &[&str] = &["textbook_docstring_small_helper"];
@@ -94,6 +152,26 @@ const HOTPATH_FUNCTION_RULE_IDS: &[&str] = &[
     "sorted_only_for_first_element",
     "string_startswith_endswith_chain",
     "write_without_buffering_in_loop",
+    "regex_compiled_on_each_hot_call",
+    "json_roundtrip_used_for_object_copy",
+    "repeated_datetime_parse_inside_loop",
+    "repeated_split_or_join_on_invariant_separator_inside_loop",
+    "repeated_attribute_chain_lookup_inside_tight_loop",
+    "exception_used_for_expected_lookup_miss_in_loop",
+    "membership_test_against_list_or_tuple_literal_inside_loop",
+    "incremental_list_or_tuple_concatenation_in_accumulation_loop",
+    "constant_frozenset_or_dict_rebuilt_on_each_call",
+    "function_local_import_executed_in_frequent_path",
+    "pathlib_path_reconstructed_from_same_base_in_loop",
+    "environment_lookup_repeated_in_hot_path",
+    "repeated_normalization_of_same_string_in_loop",
+    "full_sort_performed_inside_outer_iteration",
+    "list_of_keys_materialized_for_membership_check",
+    "lambda_or_closure_allocated_per_item_when_static_helper_suffices",
+    "iterator_materialized_to_list_before_single_pass_loop",
+    "subprocess_or_shell_call_inside_record_processing_loop",
+    "repeated_pure_helper_call_on_same_input_without_local_cache",
+    "same_buffer_or_prefix_reencoded_each_iteration",
 ];
 
 const HOTPATH_EXT_FUNCTION_RULE_IDS: &[&str] = &[
@@ -121,6 +199,26 @@ const HOTPATH_EXT_FUNCTION_RULE_IDS: &[&str] = &[
     "urlparse_in_loop_on_invariant_base",
     "xml_parse_same_payload_multiple_times",
     "yaml_load_same_payload_multiple_times",
+    "blocking_io_call_executed_per_item_without_batching",
+    "repeated_directory_scan_inside_nested_loop",
+    "invariant_computation_not_hoisted_out_of_nested_loop",
+    "any_or_all_wraps_list_comprehension_instead_of_generator",
+    "sum_max_min_wrap_list_comprehension_instead_of_generator",
+    "per_item_copy_of_large_config_or_context_object",
+    "same_sequence_scanned_multiple_times_for_related_aggregates",
+    "generator_pipeline_materialized_between_each_transformation_stage",
+    "linear_search_helper_called_from_nested_loops",
+    "repeated_path_exists_check_before_open_or_replace_in_loop",
+    "serialization_then_deserialization_between_adjacent_helpers",
+    "large_slice_copy_created_each_iteration_for_sliding_window",
+    "per_item_deduplication_uses_list_instead_of_hash_index",
+    "expensive_sort_key_recomputed_without_preprojection",
+    "repeated_casefold_or_lower_calls_before_multiple_comparisons",
+    "formatted_log_or_debug_payload_built_for_each_item_without_guard",
+    "repeated_open_read_close_of_same_small_file_in_single_workflow",
+    "polling_loop_uses_tiny_sleep_instead_of_blocking_primitive",
+    "invariant_template_or_prefix_string_reformatted_inside_loop",
+    "lookup_table_derived_from_constants_rebuilt_per_invocation",
 ];
 
 const FRAMEWORK_FUNCTION_RULE_IDS: &[&str] = &[
@@ -247,6 +345,18 @@ const STRUCTURE_FILE_RULE_IDS: &[&str] = &[
     "name_responsibility_mismatch",
     "over_abstracted_wrapper",
     "too_many_instance_attributes",
+    "monolithic_module_owns_parsing_validation_execution_and_rendering",
+    "class_mixes_factory_parsing_persistence_and_presentation_roles",
+    "abstract_contracts_and_heavy_concrete_implementations_live_in_same_file",
+    "generic_manager_or_processor_class_controls_many_unrelated_modes",
+    "composition_candidate_for_optional_behavior_implemented_as_inheritance",
+    "base_class_exists_only_to_share_data_fields_not_behavior",
+    "constructor_performs_real_work_beyond_state_initialization",
+    "module_global_registry_mutated_from_import_time_registration",
+    "read_and_write_paths_share_mutable_internal_cache_without_boundary",
+    "sync_and_async_contracts_mixed_on_same_interface_family",
+    "helper_collection_object_also_owns_process_lifecycle",
+    "abstractions_named_utils_helpers_common_or_manager_hide_true_ownership",
 ];
 
 const AI_SMELLS_FILE_RULE_IDS: &[&str] = &[
@@ -264,7 +374,12 @@ const DUPLICATION_FILE_RULE_IDS: &[&str] = &[
     "repeated_string_literal",
 ];
 
-const STRUCTURE_REPO_RULE_IDS: &[&str] = &["deep_inheritance_hierarchy", "tight_module_coupling"];
+const STRUCTURE_REPO_RULE_IDS: &[&str] = &[
+    "deep_inheritance_hierarchy",
+    "tight_module_coupling",
+    "bidirectional_import_between_feature_modules",
+    "sibling_modules_depend_on_private_helpers_from_each_other",
+];
 
 const DUPLICATION_REPO_RULE_IDS: &[&str] = &[
     "cross_file_copy_paste_function",
@@ -278,6 +393,18 @@ const PACKAGING_REPO_RULE_IDS: &[&str] = &[
     "cross_package_internal_import",
     "pyproject_missing_requires_python",
     "pyproject_script_entrypoint_unresolved",
+    "heavy_optional_dependency_imported_by_package_root",
+    "cli_only_dependency_imported_by_library_entry_module",
+    "package_init_performs_metadata_version_lookup_on_import",
+    "environment_or_config_read_during_package_import",
+    "circular_import_hidden_by_function_local_import_on_hot_path",
+    "plugin_discovery_scans_filesystem_each_invocation",
+    "package_exports_same_symbol_name_from_multiple_submodules_with_different_meanings",
+    "runtime_data_file_assumption_in_implicit_namespace_package",
+    "test_helpers_shipped_inside_production_package_path",
+    "public_api_surface_defined_only_by_import_side_effects",
+    "package_root_reexports_large_dependency_tree_by_default",
+    "monolithic_common_package_becomes_transitive_dependency_for_most_modules",
 ];
 
 const ARCHITECTURE_FUNCTION_RULE_IDS: &[&str] = &[
@@ -314,9 +441,31 @@ const ARCHITECTURE_FUNCTION_RULE_IDS: &[&str] = &[
     "sync_function_called_from_async_without_executor",
     "untracked_create_task_result_may_hide_exception",
     "semaphore_acquired_without_async_with_context_manager",
+    "constructor_reads_global_config_inline",
+    "entrypoint_builds_dependency_graph_inside_hot_function",
+    "domain_object_performs_external_io",
+    "business_rule_mixed_with_serialization_mapping",
+    "function_returns_domain_value_and_transport_metadata",
+    "storage_write_returns_driver_specific_object",
+    "feature_logic_embedded_in_process_entrypoint",
+    "transaction_scope_split_across_unrelated_helpers",
+    "initializer_requires_half_built_instance_state",
+    "object_construction_triggers_network_or_disk_side_effect",
+    "command_or_task_mutates_shared_process_state_directly",
+    "function_accepts_too_many_cross_cutting_dependencies",
+    "data_mapper_contains_business_decision_tree",
+    "orchestrator_performs_low_level_tokenization_or_parsing",
+    "core_model_reads_process_environment",
+    "third_party_exception_type_leaks_across_architecture_boundary",
+    "retry_policy_scattered_across_multiple_callers",
+    "adapter_boundary_missing_for_external_payload_shape",
 ];
 
-const ARCHITECTURE_FILE_RULE_IDS: &[&str] = &["asyncio_get_event_loop_at_module_scope"];
+const ARCHITECTURE_FILE_RULE_IDS: &[&str] = &[
+    "asyncio_get_event_loop_at_module_scope",
+    "module_exposes_mutable_singleton_client",
+    "module_import_starts_runtime_bootstrap",
+];
 
 const DISCIPLINE_FUNCTION_RULE_IDS: &[&str] = &[
     "exception_raised_without_chaining_original_cause",
@@ -371,6 +520,24 @@ const DISCIPLINE_FUNCTION_RULE_IDS: &[&str] = &[
     "mock_return_value_is_incompatible_type_with_real_signature",
     "unittest_test_class_duplicates_setup_without_base_class",
     "test_depends_on_sibling_test_side_effects",
+    "boolean_flag_parameter_controls_unrelated_behaviors",
+    "function_body_contains_setup_validation_execution_and_formatting_all_at_once",
+    "condition_tree_nests_past_two_business_decision_levels",
+    "expensive_work_starts_before_input_validation",
+    "duplicated_cleanup_paths_instead_of_context_manager",
+    "helper_name_hides_mutation_or_io_side_effect",
+    "method_mutates_state_and_emits_user_facing_representation",
+    "loop_interleaves_core_work_logging_and_recovery_logic",
+    "type_branch_and_mode_branch_compounded_in_same_function",
+    "repeated_try_finally_release_pattern_not_extracted",
+    "long_parameter_list_of_primitives_without_options_object",
+    "negated_boolean_reassigned_and_inverted_again",
+    "method_mutates_self_and_peer_object_in_same_block",
+    "batch_api_silently_falls_back_to_single_item_semantics",
+    "same_precondition_checked_in_multiple_sibling_branches",
+    "function_returns_multiple_unlabeled_shape_variants",
+    "module_mixes_constants_types_helpers_and_execution_flow",
+    "correctness_depends_on_specific_call_order_not_encoded_in_api",
 ];
 
 const BOUNDARIES_FUNCTION_RULE_IDS: &[&str] = &[
@@ -415,12 +582,32 @@ const BOUNDARIES_FUNCTION_RULE_IDS: &[&str] = &[
     "sensitive_config_key_included_in_debug_level_log_dict_dump",
     "multiple_config_sources_merged_without_documented_precedence_order",
     "pydantic_settings_model_missing_env_prefix_isolation",
+    "mutable_default_argument_leaks_state_across_calls",
+    "helper_returns_live_internal_collection_reference",
+    "public_api_mutates_argument_in_place_without_signal",
+    "context_manager_yields_global_mutable_resource",
+    "closure_captures_loop_variable_without_binding",
+    "function_accepts_mapping_protocol_but_mutates_input",
+    "iterator_argument_consumed_then_reused_later",
+    "public_api_forwards_library_specific_exception_shape",
+    "datetime_boundary_mixes_naive_and_aware_values",
+    "text_bytes_boundary_relies_on_implicit_default_encoding",
+    "path_boundary_accepts_unexpanded_or_relative_input_without_normalization",
+    "sentinel_default_value_overlaps_valid_business_value",
+    "sync_api_accepts_coroutine_object_as_regular_value",
+    "async_api_returns_plain_iterator_with_blocking_iteration",
+    "property_returns_live_internal_cache_object",
+    "lock_acquire_and_release_owned_by_different_callers",
+    "helper_requires_caller_to_know_hidden_ordering_constraints",
 ];
 
 const BOUNDARIES_FILE_RULE_IDS: &[&str] = &[
     "cryptographic_secret_hardcoded_in_test_fixture_or_seed",
     "dotenv_load_dotenv_called_from_multiple_modules",
     "feature_flag_checked_via_inline_env_lookup_across_handlers",
+    "dataclass_mutable_default_without_default_factory",
+    "module_cache_exposed_without_invalidation_boundary",
+    "module_constant_rebound_after_public_import",
 ];
 
 const OBSERVABILITY_FUNCTION_RULE_IDS: &[&str] = &[
@@ -467,6 +654,23 @@ const OBSERVABILITY_FUNCTION_RULE_IDS: &[&str] = &[
     "large_response_body_fully_buffered_in_memory_before_send",
     "api_versioning_in_url_without_matching_router_group",
     "response_envelope_shape_inconsistent_across_siblings_in_same_router",
+    "logger_instance_created_inside_function_body",
+    "expensive_log_argument_built_without_is_enabled_guard",
+    "metric_name_contains_dynamic_user_or_data_values",
+    "metric_or_span_labels_use_high_cardinality_raw_inputs",
+    "metric_emission_occurs_per_item_inside_inner_loop",
+    "health_probe_executes_full_dependency_workflow",
+    "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+    "retry_loop_logs_without_attempt_count_or_backoff_context",
+    "exception_log_omits_operation_identifier_or_input_summary",
+    "correlation_id_recomputed_multiple_times_in_same_workflow",
+    "debug_log_serializes_full_large_object_graph",
+    "success_and_failure_paths_use_inconsistent_structured_log_keys",
+    "timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation",
+    "instrumentation_helper_mutates_business_return_shape",
+    "observability_context_extracted_manually_at_many_call_sites",
+    "warning_or_error_logs_emit_unbounded_payload_text",
+    "synchronous_log_handler_or_flush_called_on_fast_path",
 ];
 
 const OBSERVABILITY_FILE_RULE_IDS: &[&str] = &[
@@ -476,6 +680,7 @@ const OBSERVABILITY_FILE_RULE_IDS: &[&str] = &[
     "test_support_helpers_located_inside_production_package",
     "init_file_re_exports_private_module_symbols",
     "public_package_missing_all_list",
+    "instrumentation_import_or_setup_occurs_on_first_live_request",
 ];
 
 pub(crate) const FUNCTION_RULE_SPECS: &[PythonFunctionRuleSpec] = &[
@@ -622,6 +827,7 @@ pub(crate) const PERFORMANCE_EVALUATORS: &[FunctionEvaluator] = &[
     performance::recursive_traversal_findings,
     performance::list_membership_findings,
     performance::repeated_len_findings,
+    performance::project_agnostic_performance_findings,
 ];
 
 pub(crate) const MAINTAINABILITY_EVALUATORS: &[FunctionEvaluator] = &[
@@ -643,12 +849,14 @@ pub(crate) const MAINTAINABILITY_EVALUATORS: &[FunctionEvaluator] = &[
     maintainability::input_validation_findings,
     maintainability::api_type_hint_findings,
     maintainability::variadic_public_api_findings,
+    maintainability::project_agnostic_maintainability_findings,
 ];
 
 pub(crate) const STRUCTURE_FUNCTION_EVALUATORS: &[FunctionEvaluator] = &[
     structure::god_function_findings,
     structure::mixed_concern_findings,
     structure::name_responsibility_mismatch_findings,
+    structure::project_agnostic_structure_function_findings,
 ];
 
 pub(crate) const HOTPATH_EVALUATORS: &[FunctionEvaluator] = &[
@@ -665,6 +873,7 @@ pub(crate) const HOTPATH_EVALUATORS: &[FunctionEvaluator] = &[
     hotpath::write_in_loop_findings,
     hotpath::repeated_open_findings,
     hotpath::dict_materialization_in_loop_findings,
+    hotpath::project_agnostic_hotpath_findings,
 ];
 
 pub(crate) const HOTPATH_EXT_EVALUATORS: &[FunctionEvaluator] = &[
@@ -688,6 +897,7 @@ pub(crate) const HOTPATH_EXT_EVALUATORS: &[FunctionEvaluator] = &[
     hotpath_ext::isinstance_chain_findings,
     hotpath_ext::concat_in_comprehension_findings,
     hotpath_ext::tuple_unpacking_in_tight_loop_findings,
+    hotpath_ext::project_agnostic_hotpath_ext_findings,
 ];
 
 pub(crate) const FRAMEWORK_EVALUATORS: &[FunctionEvaluator] = &[
@@ -726,6 +936,7 @@ pub(crate) const STRUCTURE_FILE_EVALUATORS: &[FileEvaluator] = &[
     structure::eager_constructor_collaborator_findings,
     structure::over_abstracted_wrapper_findings,
     structure::module_name_mismatch_findings,
+    structure::project_agnostic_structure_file_findings,
 ];
 
 pub(crate) const AI_SMELLS_FILE_EVALUATORS: &[FileEvaluator] = &[
@@ -749,6 +960,7 @@ pub(crate) const DUPLICATION_FILE_EVALUATORS: &[FileEvaluator] = &[
 pub(crate) const STRUCTURE_REPO_EVALUATORS: &[RepoEvaluator] = &[
     deep_inheritance_repo_findings,
     structure::tight_module_coupling_findings,
+    structure::project_agnostic_structure_repo_findings,
 ];
 
 pub(crate) const DUPLICATION_REPO_EVALUATORS: &[RepoEvaluator] = &[
@@ -793,10 +1005,13 @@ pub(crate) const ARCHITECTURE_EVALUATORS: &[FunctionEvaluator] = &[
     architecture::sync_called_from_async_without_executor_findings,
     architecture::untracked_create_task_findings,
     architecture::semaphore_without_async_with_findings,
+    architecture::project_agnostic_architecture_findings,
 ];
 
-pub(crate) const ARCHITECTURE_FILE_EVALUATORS: &[FileEvaluator] =
-    &[architecture::event_loop_at_module_scope_file_findings];
+pub(crate) const ARCHITECTURE_FILE_EVALUATORS: &[FileEvaluator] = &[
+    architecture::event_loop_at_module_scope_file_findings,
+    architecture::project_agnostic_architecture_file_findings,
+];
 
 pub(crate) const DISCIPLINE_EVALUATORS: &[FunctionEvaluator] = &[
     discipline::exception_raised_without_chaining_findings,
@@ -851,6 +1066,7 @@ pub(crate) const DISCIPLINE_EVALUATORS: &[FunctionEvaluator] = &[
     discipline::mock_return_incompatible_type_findings,
     discipline::test_unittest_duplicated_setup_findings,
     discipline::test_depends_on_sibling_side_effects_findings,
+    discipline::project_agnostic_discipline_findings,
 ];
 
 pub(crate) const BOUNDARIES_EVALUATORS: &[FunctionEvaluator] = &[
@@ -896,12 +1112,14 @@ pub(crate) const BOUNDARIES_EVALUATORS: &[FunctionEvaluator] = &[
     boundaries::same_config_different_defaults_findings,
     boundaries::multiple_config_sources_no_precedence_findings,
     boundaries::pydantic_settings_no_prefix_findings,
+    boundaries::project_agnostic_boundaries_findings,
 ];
 
 pub(crate) const BOUNDARIES_FILE_EVALUATORS: &[FileEvaluator] = &[
     boundaries::hardcoded_secret_in_fixture_file_findings,
     boundaries::dotenv_load_dotenv_multi_file_findings,
     boundaries::feature_flag_scattered_findings,
+    boundaries::project_agnostic_boundaries_file_findings,
 ];
 
 pub(crate) const OBSERVABILITY_EVALUATORS: &[FunctionEvaluator] = &[
@@ -948,6 +1166,7 @@ pub(crate) const OBSERVABILITY_EVALUATORS: &[FunctionEvaluator] = &[
     observability::large_response_fully_buffered_findings,
     observability::api_versioning_no_router_group_findings,
     observability::response_envelope_inconsistent_findings,
+    observability::project_agnostic_observability_findings,
 ];
 
 pub(crate) const OBSERVABILITY_FILE_EVALUATORS: &[FileEvaluator] = &[
@@ -957,4 +1176,5 @@ pub(crate) const OBSERVABILITY_FILE_EVALUATORS: &[FileEvaluator] = &[
     observability::test_helpers_in_production_file_findings,
     observability::init_reexports_private_file_findings,
     observability::public_package_missing_all_file_findings,
+    observability::project_agnostic_observability_file_findings,
 ];

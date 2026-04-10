@@ -56,17 +56,16 @@ pub(super) fn pyproject_repo_findings(
     files: &[&ParsedFile],
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
+    let mut findings = project_agnostic_packaging_repo_findings(files, index);
     let Some(pyproject_path) = locate_pyproject(index.root()) else {
-        return Vec::new();
+        return findings;
     };
     let Ok(source) = read_to_string_limited(&pyproject_path, DEFAULT_MAX_BYTES) else {
-        return Vec::new();
+        return findings;
     };
     let Ok(parsed) = source.parse::<Value>() else {
-        return Vec::new();
+        return findings;
     };
-
-    let mut findings = Vec::new();
     findings.extend(pyproject_requires_python_findings(&pyproject_path, &parsed));
     findings.extend(pyproject_script_findings(
         &pyproject_path,
@@ -337,4 +336,420 @@ fn looks_internal_module(path: &str) -> bool {
         || path.contains(".private")
         || path.contains("._")
         || path.contains(".impl")
+}
+
+fn project_agnostic_packaging_repo_findings(
+    files: &[&ParsedFile],
+    index: &RepositoryIndex,
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    findings.extend(heavy_optional_dependency_imported_by_package_root_findings(
+        files,
+    ));
+    findings.extend(cli_only_dependency_imported_by_library_entry_module_findings(files));
+    findings.extend(package_init_metadata_lookup_findings(files));
+    findings.extend(environment_or_config_read_during_import_findings(files));
+    findings.extend(circular_import_hidden_by_function_local_import_findings(
+        files,
+    ));
+    findings.extend(plugin_discovery_scans_filesystem_each_invocation_findings(
+        files,
+    ));
+    findings.extend(package_exports_same_symbol_name_findings(files));
+    findings
+        .extend(runtime_data_file_assumption_in_implicit_namespace_package_findings(files, index));
+    findings.extend(test_helpers_shipped_inside_production_package_path_findings(files));
+    findings.extend(public_api_surface_defined_only_by_import_side_effects_findings(files));
+    findings.extend(package_root_reexports_large_dependency_tree_by_default_findings(files));
+    findings.extend(
+        monolithic_common_package_becomes_transitive_dependency_for_most_modules_findings(files),
+    );
+    findings
+}
+
+fn packaging_repo_finding(
+    file: &ParsedFile,
+    rule_id: &str,
+    line: usize,
+    severity: Severity,
+    message: String,
+    evidence: String,
+) -> Finding {
+    Finding {
+        rule_id: rule_id.to_string(),
+        severity,
+        path: file.path.clone(),
+        function_name: None,
+        start_line: line,
+        end_line: line,
+        message,
+        evidence: vec![evidence],
+    }
+}
+
+fn heavy_optional_dependency_imported_by_package_root_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    const HEAVY: &[&str] = &[
+        "pandas",
+        "numpy",
+        "torch",
+        "tensorflow",
+        "boto3",
+        "sklearn",
+        "matplotlib",
+        "cv2",
+    ];
+
+    files
+        .iter()
+        .filter(|file| file.path.file_name().and_then(|name| name.to_str()) == Some("__init__.py"))
+        .filter_map(|file| {
+            let imported = file
+                .imports
+                .iter()
+                .find(|import| HEAVY.iter().any(|heavy| import.path.starts_with(heavy)))?;
+            Some(packaging_repo_finding(
+                file,
+                "heavy_optional_dependency_imported_by_package_root",
+                imported.line,
+                Severity::Info,
+                format!(
+                    "package root imports heavy optional dependency {} by default",
+                    imported.path
+                ),
+                format!("import={}", imported.path),
+            ))
+        })
+        .collect()
+}
+
+fn cli_only_dependency_imported_by_library_entry_module_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    files
+        .iter()
+        .filter(|file| {
+            let path = file.path.to_string_lossy().to_ascii_lowercase();
+            !path.contains("/cli") && !path.contains("command")
+        })
+        .filter_map(|file| {
+            let imported = file.imports.iter().find(|import| {
+                ["argparse", "click", "typer", "rich.console"]
+                    .iter()
+                    .any(|name| import.path.starts_with(name))
+            })?;
+            Some(packaging_repo_finding(
+                file,
+                "cli_only_dependency_imported_by_library_entry_module",
+                imported.line,
+                Severity::Info,
+                format!(
+                    "library-style module imports CLI-only dependency {}",
+                    imported.path
+                ),
+                format!("import={}", imported.path),
+            ))
+        })
+        .collect()
+}
+
+fn package_init_metadata_lookup_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    for file in files
+        .iter()
+        .filter(|file| file.path.file_name().and_then(|name| name.to_str()) == Some("__init__.py"))
+    {
+        if let Some(call) = file.module_scope_calls.iter().find(|call| {
+            call.text.contains("importlib.metadata.version(")
+                || call.text.contains("pkg_resources.get_distribution(")
+        }) {
+            findings.push(packaging_repo_finding(
+                file,
+                "package_init_performs_metadata_version_lookup_on_import",
+                call.line,
+                Severity::Info,
+                "package __init__ performs runtime metadata version lookup during import"
+                    .to_string(),
+                format!("module_scope_call={}", call.text.trim()),
+            ));
+            continue;
+        }
+
+        if let Some(binding) = file
+            .top_level_bindings
+            .iter()
+            .find(|binding| binding.value_text.contains("version(") || binding.value_text.contains("get_distribution("))
+        {
+            findings.push(packaging_repo_finding(
+                file,
+                "package_init_performs_metadata_version_lookup_on_import",
+                binding.line,
+                Severity::Info,
+                "package __init__ performs runtime metadata version lookup during import"
+                    .to_string(),
+                format!("binding={}", binding.name),
+            ));
+        }
+    }
+    findings
+}
+
+fn environment_or_config_read_during_import_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    for file in files {
+        if let Some(call) = file.module_scope_calls.iter().find(|call| {
+            call.text.contains("os.getenv(")
+                || call.text.contains("os.environ[")
+                || call.text.contains("config.get(")
+                || call.text.contains("load_dotenv(")
+        }) {
+            findings.push(packaging_repo_finding(
+                file,
+                "environment_or_config_read_during_package_import",
+                call.line,
+                Severity::Warning,
+                "module reads environment or config while being imported".to_string(),
+                format!("module_scope_call={}", call.text.trim()),
+            ));
+        }
+    }
+    findings
+}
+
+fn circular_import_hidden_by_function_local_import_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    for file in files {
+        for function in &file.functions {
+            if function.body_text.contains("import ")
+                && (function.body_text.contains("for ") || function.fingerprint.call_count >= 4)
+            {
+                findings.push(Finding {
+                    rule_id: "circular_import_hidden_by_function_local_import_on_hot_path"
+                        .to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: function.fingerprint.start_line,
+                    end_line: function.fingerprint.start_line,
+                    message: format!(
+                        "function {} hides an import inside the body on a live call path",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec!["pattern=function_local_import".to_string()],
+                });
+                break;
+            }
+        }
+    }
+    findings
+}
+
+fn plugin_discovery_scans_filesystem_each_invocation_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    for file in files {
+        for function in &file.functions {
+            let lower = function.body_text.to_ascii_lowercase();
+            if (lower.contains("pkgutil.iter_modules(")
+                || lower.contains("os.listdir(")
+                || lower.contains("glob(")
+                || lower.contains("entry_points("))
+                && (lower.contains("plugin") || lower.contains("extension"))
+            {
+                findings.push(Finding {
+                    rule_id: "plugin_discovery_scans_filesystem_each_invocation".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: function.fingerprint.start_line,
+                    end_line: function.fingerprint.start_line,
+                    message: format!(
+                        "function {} rescans plugins or extensions on each invocation",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec!["pattern=runtime_plugin_discovery".to_string()],
+                });
+                break;
+            }
+        }
+    }
+    findings
+}
+
+fn package_exports_same_symbol_name_findings(files: &[&ParsedFile]) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    for file in files {
+        if file.path.file_name().and_then(|name| name.to_str()) != Some("__init__.py") {
+            continue;
+        }
+        let mut seen = std::collections::BTreeSet::new();
+        for import in &file.imports {
+            let exported = import
+                .imported_name
+                .as_deref()
+                .unwrap_or(import.alias.as_str());
+            if !seen.insert(exported.to_string()) {
+                findings.push(packaging_repo_finding(
+                    file,
+                    "package_exports_same_symbol_name_from_multiple_submodules_with_different_meanings",
+                    import.line,
+                    Severity::Info,
+                    format!("package re-exports the symbol name {} from multiple places", exported),
+                    format!("export={exported}"),
+                ));
+                break;
+            }
+        }
+    }
+    findings
+}
+
+fn runtime_data_file_assumption_in_implicit_namespace_package_findings(
+    files: &[&ParsedFile],
+    index: &RepositoryIndex,
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    let root = index.root();
+    for file in files {
+        let path = file.path.to_string_lossy().to_string();
+        if !file
+            .module_scope_calls
+            .iter()
+            .any(|call| call.text.contains("read_text(") || call.text.contains("read_bytes("))
+        {
+            continue;
+        }
+        let Some(parent) = file.path.parent() else {
+            continue;
+        };
+        if parent.join("__init__.py").exists() {
+            continue;
+        }
+        if file.path.strip_prefix(root).is_err() {
+            continue;
+        }
+        findings.push(packaging_repo_finding(
+            file,
+            "runtime_data_file_assumption_in_implicit_namespace_package",
+            1,
+            Severity::Info,
+            "module reads package-adjacent data files from a directory without __init__.py"
+                .to_string(),
+            format!("path={path}"),
+        ));
+    }
+    findings
+}
+
+fn test_helpers_shipped_inside_production_package_path_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    files
+        .iter()
+        .filter_map(|file| {
+            let path = file.path.to_string_lossy().to_ascii_lowercase();
+            if path.contains("/tests/") {
+                return None;
+            }
+            if !(path.contains("fixture")
+                || path.contains("fake")
+                || path.contains("mock")
+                || path.contains("factory"))
+            {
+                return None;
+            }
+            Some(packaging_repo_finding(
+                file,
+                "test_helpers_shipped_inside_production_package_path",
+                1,
+                Severity::Info,
+                "test helper naming appears inside a production package path".to_string(),
+                format!("path={path}"),
+            ))
+        })
+        .collect()
+}
+
+fn public_api_surface_defined_only_by_import_side_effects_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    files
+        .iter()
+        .filter(|file| file.path.file_name().and_then(|name| name.to_str()) == Some("__init__.py"))
+        .filter_map(|file| {
+            if file.imports.len() < 4
+                || file
+                    .top_level_bindings
+                    .iter()
+                    .any(|binding| binding.name == "__all__")
+            {
+                return None;
+            }
+            Some(packaging_repo_finding(
+                file,
+                "public_api_surface_defined_only_by_import_side_effects",
+                1,
+                Severity::Info,
+                "package root appears to define its public API primarily by import side effects"
+                    .to_string(),
+                format!("reexports={}", file.imports.len()),
+            ))
+        })
+        .collect()
+}
+
+fn package_root_reexports_large_dependency_tree_by_default_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    files
+        .iter()
+        .filter(|file| file.path.file_name().and_then(|name| name.to_str()) == Some("__init__.py"))
+        .filter_map(|file| {
+            (file.imports.len() >= 6).then(|| {
+                packaging_repo_finding(
+                    file,
+                    "package_root_reexports_large_dependency_tree_by_default",
+                    1,
+                    Severity::Info,
+                    "package root re-exports a large dependency tree by default".to_string(),
+                    format!("import_count={}", file.imports.len()),
+                )
+            })
+        })
+        .collect()
+}
+
+fn monolithic_common_package_becomes_transitive_dependency_for_most_modules_findings(
+    files: &[&ParsedFile],
+) -> Vec<Finding> {
+    let import_count = files
+        .iter()
+        .flat_map(|file| file.imports.iter())
+        .filter(|import| {
+            let root = import.path.split('.').next().unwrap_or_default();
+            matches!(root, "common" | "utils" | "shared" | "core")
+        })
+        .count();
+
+    if import_count < 8 {
+        return Vec::new();
+    }
+
+    let path = files
+        .first()
+        .map(|file| file.path.clone())
+        .unwrap_or_default();
+    vec![Finding {
+        rule_id: "monolithic_common_package_becomes_transitive_dependency_for_most_modules"
+            .to_string(),
+        severity: Severity::Info,
+        path,
+        function_name: None,
+        start_line: 1,
+        end_line: 1,
+        message: "repository relies heavily on a broad common/utils/shared package".to_string(),
+        evidence: vec![format!("common_package_imports={import_count}")],
+    }]
 }

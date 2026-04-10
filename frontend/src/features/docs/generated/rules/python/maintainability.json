@@ -5,6 +5,34 @@
   "summary": "Commented-out code, sync/async confusion, and other upkeep signals.",
   "rules": [
     {
+      "id": "anonymous_dict_shape_repeated_without_shared_type_or_builder",
+      "label": "Anonymous Dict Shape Repeated without Shared Type or Builder",
+      "description": "Flag repeated ad hoc dict payload shapes with no shared type or builder.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Anonymous Dict Shape Repeated without Shared Type or Builder matters because the pattern here, Flag repeated ad hoc dict payload shapes with no shared type or builder, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Anonymous Dict Shape Repeated without Shared Type or Builder in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "branching_on_file_suffix_or_mode_string_scattered_across_codebase",
+      "label": "Branching on File Suffix or Mode String Scattered Across Codebase",
+      "description": "Flag suffix or mode dispatch logic duplicated across distant modules.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Branching on File Suffix or Mode String Scattered Across Codebase matters because the pattern here, Flag suffix or mode dispatch logic duplicated across distant modules, is worth review because cleanup debt compounds until every file carries a little uncertainty about what is still real.",
+      "fix": "For Branching on File Suffix or Mode String Scattered Across Codebase in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
       "id": "broad_exception_handler",
       "label": "Broad Exception Handler",
       "description": "Broad except Exception: style handlers that still obscure failure shape even when not fully swallowed.",
@@ -31,6 +59,34 @@
       ],
       "explanation": "In Python, Builtin Reduction Candidate matters because the pattern here, Loop shapes that look like obvious sum, any, or all candidates, turns local work into repeated cost that spreads with traffic or input size.",
       "fix": "For Builtin Reduction Candidate in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "cache_object_exists_without_size_or_eviction_policy_documentation",
+      "label": "Cache Object Exists without Size or Eviction Policy Documentation",
+      "description": "Flag caches that exist as long-lived process state with no documented retention policy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Cache Object Exists without Size or Eviction Policy Documentation matters because the pattern here, Flag caches that exist as long-lived process state with no documented retention policy, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Cache Object Exists without Size or Eviction Policy Documentation in Python, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "comment_required_to_explain_opaque_branching_that_code_could_express",
+      "label": "Comment Required to Explain Opaque Branching That Code Could Express",
+      "description": "Flag code whose control flow stays unclear even with comments because the structure itself is weak.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Comment Required to Explain Opaque Branching That Code Could Express matters because the pattern here, Flag code whose control flow stays unclear even with comments because the structure itself is weak, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Comment Required to Explain Opaque Branching That Code Could Express in Python, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
     },
     {
       "id": "commented_out_code",
@@ -131,6 +187,62 @@
       "fix": "For Hardcoded Path String in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
     },
     {
+      "id": "helper_module_accumulates_unrelated_cross_domain_utilities",
+      "label": "Helper Module Accumulates Unrelated Cross Domain Utilities",
+      "description": "Flag helper modules that mix string, filesystem, caching, parsing, and process logic in one place.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Helper Module Accumulates Unrelated Cross Domain Utilities matters because the pattern here, Flag helper modules that mix string, filesystem, caching, parsing, and process logic in one place, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Helper Module Accumulates Unrelated Cross Domain Utilities in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "helper_returns_index_based_tuple_instead_of_named_structure",
+      "label": "Helper Returns Index Based Tuple Instead of Named Structure",
+      "description": "Flag helper returns that require callers to remember tuple positions by convention.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Helper Returns Index Based Tuple Instead of Named Structure matters because the pattern here, Flag helper returns that require callers to remember tuple positions by convention, is worth review because cleanup debt compounds until every file carries a little uncertainty about what is still real.",
+      "fix": "For Helper Returns Index Based Tuple Instead of Named Structure in Python, delete dead code, keep async and sync boundaries explicit, and reduce shapes that future maintainers have to second-guess."
+    },
+    {
+      "id": "hidden_dependency_arrives_via_import_time_side_effect",
+      "label": "Hidden Dependency Arrives Via Import Time Side Effect",
+      "description": "Flag code that becomes initialized only because another import happened first.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Hidden Dependency Arrives Via Import Time Side Effect matters because the pattern here, Flag code that becomes initialized only because another import happened first, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Hidden Dependency Arrives Via Import Time Side Effect in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "magic_thresholds_duplicated_across_modules",
+      "label": "Magic Thresholds Duplicated Across Modules",
+      "description": "Flag repeated numeric thresholds with shared meaning that are copied across modules.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Magic Thresholds Duplicated Across Modules matters because the pattern here, Flag repeated numeric thresholds with shared meaning that are copied across modules, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Magic Thresholds Duplicated Across Modules in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
       "id": "magic_value_branching",
       "label": "Magic Value Branching",
       "description": "Repeated branch-shaping numeric or string literals that likely want an explicit constant or policy name.",
@@ -159,6 +271,20 @@
       "fix": "For Missing Context Manager in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
     },
     {
+      "id": "mixed_mutation_and_query_methods_share_same_manager_class",
+      "label": "Mixed Mutation and Query Methods Share Same Manager Class",
+      "description": "Flag manager-style classes that both mutate and answer read-model queries with no boundary.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Mixed Mutation and Query Methods Share Same Manager Class matters because the pattern here, Flag manager-style classes that both mutate and answer read-model queries with no boundary, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Mixed Mutation and Query Methods Share Same Manager Class in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
       "id": "mixed_sync_async_module",
       "label": "Mixed Sync Async Module",
       "description": "Modules that expose public sync and async entry points together.",
@@ -171,6 +297,34 @@
       ],
       "explanation": "In Python, Mixed Sync Async Module matters because the pattern here, Modules that expose public sync and async entry points together, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
       "fix": "For Mixed Sync Async Module in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "monolithic_utils_module_becomes_default_dependency_sink",
+      "label": "Monolithic Utils Module Becomes Default Dependency Sink",
+      "description": "Flag utility modules that attract unrelated dependencies and spread coupling.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Monolithic Utils Module Becomes Default Dependency Sink matters because the pattern here, Flag utility modules that attract unrelated dependencies and spread coupling, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Monolithic Utils Module Becomes Default Dependency Sink in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "mutable_class_attribute_used_as_instance_storage",
+      "label": "Mutable Class Attribute Used as Instance Storage",
+      "description": "Flag class attributes that accidentally store per-instance mutable state.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Mutable Class Attribute Used as Instance Storage matters because the pattern here, Flag class attributes that accidentally store per-instance mutable state, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Mutable Class Attribute Used as Instance Storage in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
     },
     {
       "id": "network_boundary_without_timeout",
@@ -199,6 +353,34 @@
       ],
       "explanation": "In Python, None Comparison matters because the pattern here, == None or != None checks instead of is None or is not None, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
       "fix": "For None Comparison in Python, prefer is None or is not None when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "normalization_logic_duplicated_across_call_sites",
+      "label": "Normalization Logic Duplicated Across Call Sites",
+      "description": "Flag the same value-cleaning or canonicalization logic repeated in several places.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Normalization Logic Duplicated Across Call Sites matters because the pattern here, Flag the same value-cleaning or canonicalization logic repeated in several places, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Normalization Logic Duplicated Across Call Sites in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "parallel_lists_used_instead_of_record_object",
+      "label": "Parallel Lists Used Instead of Record Object",
+      "description": "Flag code that keeps related values synchronized across multiple lists instead of using one record type.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Parallel Lists Used Instead of Record Object matters because the pattern here, Flag code that keeps related values synchronized across multiple lists instead of using one record type, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Parallel Lists Used Instead of Record Object in Python, prefer using one record type when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
       "id": "print_debugging_leftover",
@@ -257,6 +439,20 @@
       "fix": "For Reinvented Utility in Python, delete dead code, keep async and sync boundaries explicit, and reduce shapes that future maintainers have to second-guess."
     },
     {
+      "id": "same_contextmanager_pattern_copied_across_modules",
+      "label": "Same Contextmanager Pattern Copied Across Modules",
+      "description": "Flag duplicate context manager behavior implemented in several modules.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Same Contextmanager Pattern Copied Across Modules matters because the pattern here, Flag duplicate context manager behavior implemented in several modules, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Same Contextmanager Pattern Copied Across Modules in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
       "id": "side_effect_comprehension",
       "label": "Side Effect Comprehension",
       "description": "List, set, or dicit comprehensions used as standalone statements where the result is discarded.",
@@ -271,6 +467,48 @@
       "fix": "For Side Effect Comprehension in Python, delete dead code, keep async and sync boundaries explicit, and reduce shapes that future maintainers have to second-guess."
     },
     {
+      "id": "single_feature_requires_edits_in_many_unrelated_modules_due_to_scattered_policy",
+      "label": "Single Feature Requires Edits in Many Unrelated Modules Due to Scattered Policy",
+      "description": "Flag feature flows whose policy is fragmented across many unrelated modules.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Single Feature Requires Edits in Many Unrelated Modules Due to Scattered Policy matters because the pattern here, Flag feature flows whose policy is fragmented across many unrelated modules, is worth review because cleanup debt compounds until every file carries a little uncertainty about what is still real.",
+      "fix": "For Single Feature Requires Edits in Many Unrelated Modules Due to Scattered Policy in Python, delete dead code, keep async and sync boundaries explicit, and reduce shapes that future maintainers have to second-guess."
+    },
+    {
+      "id": "string_sentinel_values_duplicated_instead_of_constant_or_enum",
+      "label": "String Sentinel Values Duplicated Instead of Constant or Enum",
+      "description": "Flag repeated mode or status strings that should be centralized.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, String Sentinel Values Duplicated Instead of Constant or Enum matters because the pattern here, Flag repeated mode or status strings that should be centralized, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For String Sentinel Values Duplicated Instead of Constant or Enum in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "tuple_return_with_three_or_more_positional_fields_in_public_api",
+      "label": "Tuple Return with Three or More Positional Fields in Public API",
+      "description": "Flag public APIs that return positional tuples too wide to be self-documenting.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Tuple Return with Three or More Positional Fields in Public API matters because the pattern here, Flag public APIs that return positional tuples too wide to be self-documenting, is worth review because cleanup debt compounds until every file carries a little uncertainty about what is still real.",
+      "fix": "For Tuple Return with Three or More Positional Fields in Public API in Python, delete dead code, keep async and sync boundaries explicit, and reduce shapes that future maintainers have to second-guess."
+    },
+    {
       "id": "variadic_public_api",
       "label": "Variadic Public API",
       "description": "Public Python functions that expose *args or **kwargs instead of a clearer interface.",
@@ -283,6 +521,20 @@
       ],
       "explanation": "In Python, Variadic Public API matters because the pattern here, Public Python functions that expose *args or **kwargs instead of a clearer interface, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
       "fix": "For Variadic Public API in Python, prefer a clearer interface when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "wrapper_function_only_renames_arguments_and_passthroughs_behavior",
+      "label": "Wrapper Function Only Renames Arguments and Passthroughs Behavior",
+      "description": "Flag wrappers that add no policy, safety, or abstraction value.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Wrapper Function Only Renames Arguments and Passthroughs Behavior matters because the pattern here, Flag wrappers that add no policy, safety, or abstraction value, is worth review because cleanup debt compounds until every file carries a little uncertainty about what is still real.",
+      "fix": "For Wrapper Function Only Renames Arguments and Passthroughs Behavior in Python, delete dead code, keep async and sync boundaries explicit, and reduce shapes that future maintainers have to second-guess."
     }
   ]
 }

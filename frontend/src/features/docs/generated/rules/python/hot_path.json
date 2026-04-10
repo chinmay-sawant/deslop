@@ -19,6 +19,20 @@
       "fix": "For Append Then Sort Each Iteration in Python, prefer sorting once after accumulation when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
+      "id": "constant_frozenset_or_dict_rebuilt_on_each_call",
+      "label": "Constant Frozenset or Dict Rebuilt on Each Call",
+      "description": "Flag frequent call paths that reconstruct constant lookup tables each invocation.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Constant Frozenset or Dict Rebuilt on Each Call matters because the pattern here, Flag frequent call paths that reconstruct constant lookup tables each invocation, is worth review because repeated work in Python gets expensive fast when the path runs for every request, batch, or record.",
+      "fix": "For Constant Frozenset or Dict Rebuilt on Each Call in Python, precompute what you can once, reuse objects or compiled state, and avoid rebuilding the same work inside the loop."
+    },
+    {
       "id": "csv_writer_flush_per_row",
       "label": "Csv Writer Flush Per Row",
       "description": "csv.Writer flushes on each row instead of buffering a larger batch.",
@@ -61,6 +75,34 @@
       "fix": "For Enumerate on Range Len in Python, add extra value or move the code to a path where that safeguard is guaranteed before the risky work happens."
     },
     {
+      "id": "environment_lookup_repeated_in_hot_path",
+      "label": "Environment Lookup Repeated in Hot Path",
+      "description": "Flag hot functions that repeatedly read environment variables or global config values that do not change.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Environment Lookup Repeated in Hot Path matters because the pattern here, Flag hot functions that repeatedly read environment variables or global config values that do not change, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Environment Lookup Repeated in Hot Path in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "exception_used_for_expected_lookup_miss_in_loop",
+      "label": "Exception Used for Expected Lookup Miss in Loop",
+      "description": "Flag loops that rely on exceptions for common cache or dict misses.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Exception Used for Expected Lookup Miss in Loop matters because the pattern here, Flag loops that rely on exceptions for common cache or dict misses, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Exception Used for Expected Lookup Miss in Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
       "id": "filter_then_count_then_iterate",
       "label": "Filter Then Count Then Iterate",
       "description": "The same collection is traversed repeatedly for filtering, counting, and later iteration.",
@@ -75,6 +117,34 @@
       "fix": "For Filter Then Count Then Iterate in Python, precompute what you can once, reuse objects or compiled state, and avoid rebuilding the same work inside the loop."
     },
     {
+      "id": "full_sort_performed_inside_outer_iteration",
+      "label": "Full Sort Performed Inside Outer Iteration",
+      "description": "Flag outer loops that sort a full collection during each iteration.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Full Sort Performed Inside Outer Iteration matters because the pattern here, Flag outer loops that sort a full collection during each iteration, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Full Sort Performed Inside Outer Iteration in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "function_local_import_executed_in_frequent_path",
+      "label": "Function Local Import Executed in Frequent Path",
+      "description": "Flag hot call paths that perform imports inside the function body.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Function Local Import Executed in Frequent Path matters because the pattern here, Flag hot call paths that perform imports inside the function body, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Function Local Import Executed in Frequent Path in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
       "id": "in_check_on_list_literal",
       "label": "In Check on List Literal",
       "description": "Membership tests against list literals where a tuple or set would be clearer or cheaper.",
@@ -87,6 +157,34 @@
       ],
       "explanation": "In Python, In Check on List Literal matters because the pattern here, Membership tests against list literals where a tuple or set would be clearer or cheaper, is worth review because repeated work in Python gets expensive fast when the path runs for every request, batch, or record.",
       "fix": "For In Check on List Literal in Python, precompute what you can once, reuse objects or compiled state, and avoid rebuilding the same work inside the loop."
+    },
+    {
+      "id": "incremental_list_or_tuple_concatenation_in_accumulation_loop",
+      "label": "Incremental List or Tuple Concatenation in Accumulation Loop",
+      "description": "Flag accumulation loops that repeatedly concatenate instead of appending and joining once.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Incremental List or Tuple Concatenation in Accumulation Loop matters because the pattern here, Flag accumulation loops that repeatedly concatenate instead of appending and joining once, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Incremental List or Tuple Concatenation in Accumulation Loop in Python, prefer appending and joining once when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "iterator_materialized_to_list_before_single_pass_loop",
+      "label": "Iterator Materialized to List Before Single Pass Loop",
+      "description": "Flag iterators converted to lists in hot paths when only one pass is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Iterator Materialized to List Before Single Pass Loop matters because the pattern here, Flag iterators converted to lists in hot paths when only one pass is needed, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Iterator Materialized to List Before Single Pass Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
     },
     {
       "id": "json_encoder_recreated_per_item",
@@ -117,6 +215,34 @@
       "fix": "For JSON Loads Same Payload Multiple Times in Python, prefer caching the parsed value when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
+      "id": "json_roundtrip_used_for_object_copy",
+      "label": "JSON Roundtrip Used for Object Copy",
+      "description": "Flag code that serializes and deserializes objects only to make a copy.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, JSON Roundtrip Used for Object Copy matters because the pattern here, Flag code that serializes and deserializes objects only to make a copy, is worth review because repeated work in Python gets expensive fast when the path runs for every request, batch, or record.",
+      "fix": "For JSON Roundtrip Used for Object Copy in Python, precompute what you can once, reuse objects or compiled state, and avoid rebuilding the same work inside the loop."
+    },
+    {
+      "id": "lambda_or_closure_allocated_per_item_when_static_helper_suffices",
+      "label": "Lambda or Closure Allocated Per Item When Static Helper Suffices",
+      "description": "Flag per-item closure allocation in hot loops when a stable helper would work.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Lambda or Closure Allocated Per Item When Static Helper Suffices matters because the pattern here, Flag per-item closure allocation in hot loops when a stable helper would work, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Lambda or Closure Allocated Per Item When Static Helper Suffices in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
       "id": "list_comprehension_only_for_length",
       "label": "List Comprehension Only for Length",
       "description": "A list comprehension is built only so len(...) can be called on it.",
@@ -129,6 +255,48 @@
       ],
       "explanation": "In Python, List Comprehension Only for Length matters because the pattern here, A list comprehension is built only so len(...) can be called on it, is worth review because repeated work in Python gets expensive fast when the path runs for every request, batch, or record.",
       "fix": "For List Comprehension Only for Length in Python, precompute what you can once, reuse objects or compiled state, and avoid rebuilding the same work inside the loop."
+    },
+    {
+      "id": "list_of_keys_materialized_for_membership_check",
+      "label": "List of Keys Materialized for Membership Check",
+      "description": "Flag code that builds list(mapping.keys()) before checking membership.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, List of Keys Materialized for Membership Check matters because the pattern here, Flag code that builds list(mapping.keys()) before checking membership, is worth review because repeated work in Python gets expensive fast when the path runs for every request, batch, or record.",
+      "fix": "For List of Keys Materialized for Membership Check in Python, precompute what you can once, reuse objects or compiled state, and avoid rebuilding the same work inside the loop."
+    },
+    {
+      "id": "membership_test_against_list_or_tuple_literal_inside_loop",
+      "label": "Membership Test Against List or Tuple Literal Inside Loop",
+      "description": "Flag repeated membership tests against small linear containers in a hot path.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Membership Test Against List or Tuple Literal Inside Loop matters because the pattern here, Flag repeated membership tests against small linear containers in a hot path, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Membership Test Against List or Tuple Literal Inside Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "pathlib_path_reconstructed_from_same_base_in_loop",
+      "label": "Pathlib Path Reconstructed From Same Base in Loop",
+      "description": "Flag loops that rebuild the same base Path object every iteration.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pathlib Path Reconstructed From Same Base in Loop matters because the pattern here, Flag loops that rebuild the same base Path object every iteration, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Pathlib Path Reconstructed From Same Base in Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
     },
     {
       "id": "read_then_splitlines",
@@ -173,6 +341,48 @@
       "fix": "For Regex Compile in Hot Path in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
     },
     {
+      "id": "regex_compiled_on_each_hot_call",
+      "label": "Regex Compiled on Each Hot Call",
+      "description": "Flag hot functions that compile the same regular expression repeatedly instead of reusing a compiled pattern.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Regex Compiled on Each Hot Call matters because the pattern here, Flag hot functions that compile the same regular expression repeatedly instead of reusing a compiled pattern, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Regex Compiled on Each Hot Call in Python, prefer reusing a compiled pattern when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "repeated_attribute_chain_lookup_inside_tight_loop",
+      "label": "Repeated Attribute Chain Lookup Inside Tight Loop",
+      "description": "Flag tight loops that repeatedly traverse the same attribute chain instead of binding a local reference.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Attribute Chain Lookup Inside Tight Loop matters because the pattern here, Flag tight loops that repeatedly traverse the same attribute chain instead of binding a local reference, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Repeated Attribute Chain Lookup Inside Tight Loop in Python, prefer binding a local reference when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "repeated_datetime_parse_inside_loop",
+      "label": "Repeated Datetime Parse Inside Loop",
+      "description": "Flag loops that parse timestamps repeatedly when values could be normalized once.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Datetime Parse Inside Loop matters because the pattern here, Flag loops that parse timestamps repeatedly when values could be normalized once, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Datetime Parse Inside Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
       "id": "repeated_json_dumps_same_object",
       "label": "Repeated JSON Dumps Same Object",
       "description": "json.dumps(...) is repeated for the same object instead of caching the serialized value.",
@@ -187,6 +397,20 @@
       "fix": "For Repeated JSON Dumps Same Object in Python, prefer caching the serialized value when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
+      "id": "repeated_normalization_of_same_string_in_loop",
+      "label": "Repeated Normalization of Same String in Loop",
+      "description": "Flag repeated .strip(), .lower(), .casefold(), or similar normalization on the same value inside a loop.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Normalization of Same String in Loop matters because the pattern here, Flag repeated .strip(), .lower(), .casefold(), or similar normalization on the same value inside a loop, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Normalization of Same String in Loop in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
       "id": "repeated_open_same_file_in_function",
       "label": "Repeated Open Same File in Function",
       "description": "The same file appears to be opened multiple times within one function.",
@@ -199,6 +423,48 @@
       ],
       "explanation": "In Python, Repeated Open Same File in Function matters because the pattern here, The same file appears to be opened multiple times within one function, turns local work into repeated cost that spreads with traffic or input size.",
       "fix": "For Repeated Open Same File in Function in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "repeated_pure_helper_call_on_same_input_without_local_cache",
+      "label": "Repeated Pure Helper Call on Same Input without Local Cache",
+      "description": "Flag hot loops that recompute the same pure helper result for identical inputs in one scope.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Pure Helper Call on Same Input without Local Cache matters because the pattern here, Flag hot loops that recompute the same pure helper result for identical inputs in one scope, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Pure Helper Call on Same Input without Local Cache in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "repeated_split_or_join_on_invariant_separator_inside_loop",
+      "label": "Repeated Split or Join on Invariant Separator Inside Loop",
+      "description": "Flag loops that repeatedly rebuild the same separator-driven string operations.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Split or Join on Invariant Separator Inside Loop matters because the pattern here, Flag loops that repeatedly rebuild the same separator-driven string operations, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Split or Join on Invariant Separator Inside Loop in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "same_buffer_or_prefix_reencoded_each_iteration",
+      "label": "Same Buffer or Prefix Reencoded Each Iteration",
+      "description": "Flag loops that re-encode identical prefixes or headers on each iteration.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Same Buffer or Prefix Reencoded Each Iteration matters because the pattern here, Flag loops that re-encode identical prefixes or headers on each iteration, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Same Buffer or Prefix Reencoded Each Iteration in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
     },
     {
       "id": "sorted_only_for_first_element",
@@ -227,6 +493,20 @@
       ],
       "explanation": "In Python, String Startswith Endswith Chain matters because the pattern here, Repeated startswith(...) or endswith(...) checks that can often be combined into tuple-based calls, turns local work into repeated cost that spreads with traffic or input size.",
       "fix": "For String Startswith Endswith Chain in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "subprocess_or_shell_call_inside_record_processing_loop",
+      "label": "Subprocess or Shell Call Inside Record Processing Loop",
+      "description": "Flag per-record subprocess work that should be batched or hoisted.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Subprocess or Shell Call Inside Record Processing Loop matters because the pattern here, Flag per-record subprocess work that should be batched or hoisted, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Subprocess or Shell Call Inside Record Processing Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
     },
     {
       "id": "write_without_buffering_in_loop",

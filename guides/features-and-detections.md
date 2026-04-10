@@ -32,13 +32,13 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **1155 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **1355 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
 | go | 651 | 2 | 0 | 653 |
-| python | 391 | 0 | 0 | 391 |
+| python | 591 | 0 | 0 | 591 |
 | rust | 88 | 12 | 0 | 100 |
 
 The sections below are generated from the rule registry and grouped by language and family.
@@ -750,7 +750,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `inconsistent_package_name`: Directories that mix base Go package names after ignoring the _test suffix.
 - `misgrouped_imports`: Import blocks that place stdlib imports after third-party imports.
 
-### Python rules (391)
+### Python rules (591)
 
 #### Ai Smells (5)
 - `enthusiastic_commentary`: Unusually enthusiastic or emoji-heavy production comments.
@@ -759,7 +759,8 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `textbook_docstring_small_helper`: Very small helper functions that have unusually long, textbook-style docstrings.
 - `unrelated_heavy_import`: Heavy ecosystem imports with little local evidence of real need.
 
-#### Architecture (34)
+#### Architecture (54)
+- `adapter_boundary_missing_for_external_payload_shape`: Flag code that lets raw third-party dicts, tuples, or response objects spread through unrelated modules without normalization.
 - `asyncio_gather_without_return_exceptions_on_partial_failure_path`: asyncio.gather called without return_exceptions=True on a code path where partial failure should be recoverable.
 - `asyncio_get_event_loop_at_module_scope`: asyncio.get_event_loop() or get_running_loop() called at module import scope outside any function.
 - `asyncio_queue_created_without_maxsize_in_producer_path`: asyncio.Queue created without maxsize on a producer code path, allowing unbounded memory growth.
@@ -767,40 +768,64 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `auth_extraction_duplicated_across_views`: Multiple view functions repeat identical auth or principal-extraction logic instead of sharing via middleware or dependency.
 - `background_job_depends_on_request_context_object`: Celery, RQ, or background task function holds a reference to an HTTP request context object across the task boundary.
 - `business_logic_inside_middleware`: Middleware component encodes domain decision logic beyond cross-cutting concerns such as auth and logging.
+- `business_rule_mixed_with_serialization_mapping`: Flag functions that both enforce domain rules and convert to wire or storage payloads in the same block.
 - `celery_or_rq_task_imports_web_framework_app`: Celery or RQ task module imports the Flask app object or FastAPI application at the top level.
+- `command_or_task_mutates_shared_process_state_directly`: Flag command handlers or task functions that directly rewrite module-level caches or registries used elsewhere.
 - `concurrent_futures_executor_not_shut_down`: ThreadPoolExecutor or ProcessPoolExecutor created without shutdown() or a context manager, leaking threads.
+- `constructor_reads_global_config_inline`: Flag classes whose constructors pull environment variables or global config directly instead of receiving normalized dependencies.
+- `core_model_reads_process_environment`: Flag core classes or pure helper layers that directly access os.environ, os.getenv, or global settings.
 - `coroutine_result_discarded_without_await`: Coroutine object assigned or returned without await, so the coroutine body never executes.
+- `data_mapper_contains_business_decision_tree`: Flag mappers or adapters that choose policy outcomes while converting data.
 - `dependency_injection_bypassed_via_global_singleton`: Function bypasses the DI container and retrieves a collaborator via a global variable or module-level singleton.
 - `domain_model_class_imports_http_library`: Domain model or entity file imports an HTTP framework module such as Flask, Django, or FastAPI.
+- `domain_object_performs_external_io`: Flag domain or value-like objects that open files, spawn subprocesses, or call network clients during core operations.
+- `entrypoint_builds_dependency_graph_inside_hot_function`: Flag request, batch, or loop entrypoints that reconstruct clients, caches, or providers on each call instead of wiring them once.
+- `feature_logic_embedded_in_process_entrypoint`: Flag CLI, worker, or service entrypoints that own business branching instead of delegating to focused application services.
+- `function_accepts_too_many_cross_cutting_dependencies`: Flag functions or constructors that accept a broad mix of logging, config, cache, clock, auth, and persistence dependencies with no cohesive abstraction.
+- `function_returns_domain_value_and_transport_metadata`: Flag APIs that mix domain results with transport metadata such as status-like fields or side-channel details in one return shape.
 - `handler_or_view_builds_raw_sql`: Route handler or view constructs a raw SQL string instead of delegating to a repository layer.
 - `handler_or_view_owns_transaction_lifecycle`: Route handler or view manually manages database transaction boundaries (begin/commit/rollback).
+- `initializer_requires_half_built_instance_state`: Flag methods that depend on object fields being patched in after construction before the object becomes usable.
 - `loop_run_until_complete_inside_running_loop`: loop.run_until_complete called from within a running event loop, which raises RuntimeError.
+- `module_exposes_mutable_singleton_client`: Flag modules that export long-lived mutable client instances for direct cross-module mutation.
+- `module_import_starts_runtime_bootstrap`: Flag imports that eagerly start threads, background loops, watchers, or connection attempts at import time.
 - `multiprocessing_pool_created_without_context_manager_or_terminate`: multiprocessing.Pool created without a context manager or explicit .terminate() call, leaking worker processes.
+- `object_construction_triggers_network_or_disk_side_effect`: Flag constructors that perform expensive I/O instead of separating configuration from execution.
+- `orchestrator_performs_low_level_tokenization_or_parsing`: Flag high-level workflow functions that also own low-level parsing logic better isolated in helpers.
 - `orm_model_mixes_domain_logic_and_persistence_mapping`: ORM model class contains domain business logic methods alongside column mapping, coupling persistence and domain concerns.
 - `persistent_model_field_encodes_transport_concern`: SQLAlchemy or Django ORM model carries a field that encodes HTTP or transport metadata such as status codes.
 - `repository_method_accepts_pydantic_request_schema`: Repository method parameter type is a Pydantic request schema that belongs to the presentation layer.
 - `repository_returns_unexecuted_orm_query`: Repository method returns a raw ORM query object instead of executing it and returning domain values.
+- `retry_policy_scattered_across_multiple_callers`: Flag repeated retry or backoff loops around the same dependency instead of one owner boundary.
 - `semaphore_acquired_without_async_with_context_manager`: asyncio.Semaphore acquired via .acquire() without async with, risking a missed release on exception.
 - `service_method_accepts_http_request_object`: Service-layer method parameter list includes an HTTP request type from Flask, Django, or FastAPI.
 - `service_method_returns_http_response_object`: Service-layer method returns an HTTP response object that belongs to the transport layer.
 - `service_raises_or_catches_http_exception_type`: Service-layer function raises or catches HTTP exception types that belong to the transport layer.
 - `service_reads_settings_inline_instead_of_injected`: Service reads configuration from os.getenv or settings module inline rather than receiving it via injection.
 - `shared_mutable_collection_mutated_across_threads_without_lock`: Shared mutable collection such as a list or dict is mutated from multiple threads without a lock.
+- `storage_write_returns_driver_specific_object`: Flag write helpers that return raw driver, session, or cursor objects instead of stable application data.
 - `sync_function_called_from_async_without_executor`: Blocking I/O or CPU-bound function called directly inside async def without loop.run_in_executor.
+- `third_party_exception_type_leaks_across_architecture_boundary`: Flag public or upper-layer APIs that expose low-level library exception types instead of stable local contracts.
 - `thread_local_storage_read_from_async_function`: Async function reads from threading.local() storage, which is per-thread not per-coroutine.
 - `threading_lock_acquired_blocking_inside_async_def`: threading.Lock.acquire() called with blocking=True inside an async function, blocking the event loop thread.
 - `threading_thread_without_daemon_true_in_server_code`: threading.Thread created in server-side code without daemon=True, which can block graceful shutdown.
+- `transaction_scope_split_across_unrelated_helpers`: Flag flows where begin, commit, and rollback responsibilities are scattered across helpers with no single owner.
 - `untracked_create_task_result_may_hide_exception`: asyncio.create_task result discarded without storing a reference; exceptions raised in the task are silenced.
 - `validation_rules_duplicated_at_dto_and_domain_layer`: Identical validation constraint is applied at both the DTO/schema layer and the domain entity layer.
 - `view_or_handler_constructs_orm_query_directly`: View or route handler builds an ORM query rather than delegating to a repository or service.
 - `view_or_handler_performs_direct_file_system_io`: Route handler or view calls open(), os.path, or pathlib directly on the request path.
 
-#### Boundaries (44)
+#### Boundaries (64)
 - `application_config_values_validated_lazily_on_first_use`: Config values validated inside request handlers rather than at startup, deferring misconfiguration errors.
 - `arbitrary_file_write_via_user_controlled_path`: File write operation uses a path derived from user input without containment check.
+- `async_api_returns_plain_iterator_with_blocking_iteration`: Flag async-facing APIs that return plain iterators whose consumption can still block.
 - `closure_captures_large_object_after_producing_function_returns`: Inner function or lambda captures a large local variable after the producer returns, preventing GC.
+- `closure_captures_loop_variable_without_binding`: Flag closures created in loops that capture the loop variable without binding the current value.
+- `context_manager_yields_global_mutable_resource`: Flag context managers that expose a shared global mutable resource while implying call-local ownership.
 - `cors_allow_all_origins_set_without_production_environment_check`: CORS configuration allows all origins (*) without a conditional check for the production environment.
 - `cryptographic_secret_hardcoded_in_test_fixture_or_seed`: Real-looking cryptographic secret, token, or private key hardcoded in a test fixture or seed file.
+- `dataclass_mutable_default_without_default_factory`: Flag dataclass fields that use mutable defaults without default_factory.
+- `datetime_boundary_mixes_naive_and_aware_values`: Flag APIs that accept or combine timezone-aware and timezone-naive datetimes without normalization.
 - `db_connection_pool_size_exceeds_server_max_connections`: Database connection pool max_overflow or pool_size configured above the database server's max_connections.
 - `debug_or_admin_endpoint_registered_without_environment_guard`: Debug, admin, or diagnostics route registered without an environment variable guard.
 - `deserialization_from_external_or_user_controlled_source_with_pickle`: pickle.loads or pickle.load called on data from an external or user-controlled source.
@@ -808,16 +833,28 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `feature_flag_checked_via_inline_env_lookup_across_handlers`: Feature flag checked via repeated inline os.getenv in multiple handlers instead of a single flag service.
 - `file_object_returned_or_stored_without_clear_close_path`: File object returned from a function or stored in an attribute without a guaranteed close path.
 - `file_path_from_user_input_without_normalization_or_anchor_check`: File path derived from user input without Path.resolve() or anchor containment check.
+- `function_accepts_mapping_protocol_but_mutates_input`: Flag functions that advertise broad mapping or sequence inputs and then mutate the received object in place.
 - `functools_lru_cache_applied_to_instance_method`: @functools.lru_cache applied to an instance method, holding a reference to self and preventing GC.
 - `generator_consumed_twice_without_recreation`: Same generator object iterated a second time after it has already been exhausted.
+- `helper_requires_caller_to_know_hidden_ordering_constraints`: Flag helpers whose correctness depends on the caller invoking them in a specific undocumented order.
+- `helper_returns_live_internal_collection_reference`: Flag helpers that hand out direct references to mutable internal lists, dicts, or sets instead of copies or read-only views.
 - `http_client_url_built_from_user_input_without_allowlist`: HTTP client URL constructed from user-controlled input without an allowlist or URL validation.
 - `insecure_hash_algorithm_used_for_security_sensitive_purpose`: MD5 or SHA-1 used for password hashing, token generation, or a security-sensitive digest.
+- `iterator_argument_consumed_then_reused_later`: Flag functions that exhaust an iterator and later treat it as if it were reusable data.
 - `jinja2_environment_created_with_autoescape_disabled`: Jinja2 Environment created without autoescape=True or with autoescape=False, enabling XSS.
 - `jwt_decode_allows_none_algorithm_or_no_algorithm_restriction`: JWT decoded without restricting the allowed algorithm list, permitting the none algorithm bypass.
 - `ldap_search_filter_built_from_user_input_without_escaping`: LDAP search filter string built from user-controlled input without ldap3 or python-ldap escaping.
+- `lock_acquire_and_release_owned_by_different_callers`: Flag APIs that require one caller to acquire a lock and another caller to release it.
+- `module_cache_exposed_without_invalidation_boundary`: Flag modules that expose cache internals directly with no clear invalidation or ownership boundary.
+- `module_constant_rebound_after_public_import`: Flag modules that expose apparent constants and later rebind them during normal runtime flow.
 - `multiple_config_sources_merged_without_documented_precedence_order`: Application merges environment variables, config files, and defaults without explicit precedence documentation.
+- `mutable_default_argument_leaks_state_across_calls`: Flag function signatures that use mutable defaults such as [], {}, or set() and allow state sharing between calls.
 - `object_allocated_in_tight_loop_expected_to_be_pooled`: Heavyweight object such as HTTPSession or DB connection allocated fresh on every loop iteration.
 - `open_redirect_via_user_supplied_url_without_allowlist`: HTTP redirect target constructed from user-supplied URL without allowlist validation.
+- `path_boundary_accepts_unexpanded_or_relative_input_without_normalization`: Flag filesystem-facing APIs that accept relative paths or ~ forms without normalizing them before downstream use.
+- `property_returns_live_internal_cache_object`: Flag properties that expose live mutable cache objects directly to callers.
+- `public_api_forwards_library_specific_exception_shape`: Flag public interfaces that require callers to understand raw exceptions from underlying libraries.
+- `public_api_mutates_argument_in_place_without_signal`: Flag public APIs that rewrite caller-owned containers or objects without naming or documentation that makes the mutation obvious.
 - `pydantic_settings_model_allows_post_init_mutation`: Pydantic Settings model does not set frozen=True, allowing accidental mutation of config values.
 - `pydantic_settings_model_does_not_forbid_extra_fields`: Pydantic Settings model does not set model_config = ConfigDict(extra='forbid'), allowing silent typos.
 - `pydantic_settings_model_missing_env_prefix_isolation`: Pydantic BaseSettings model does not define env_prefix, mixing its env vars with system environment.
@@ -826,6 +863,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `repeated_deepcopy_in_loop_on_same_source_object`: copy.deepcopy called on the same large object on every iteration of a loop.
 - `secrets_manager_client_created_per_function_call`: AWS Secrets Manager or Vault client instantiated on every function call instead of being cached.
 - `sensitive_config_key_included_in_debug_level_log_dict_dump`: Debug log statement dumps the full config dict including keys that may hold secrets.
+- `sentinel_default_value_overlaps_valid_business_value`: Flag APIs whose sentinel or fallback value can also be a valid domain value.
 - `server_side_template_injection_via_user_input_in_template_source`: User-supplied data used as the template source string for Jinja2 or Mako, enabling SSTI.
 - `socket_opened_without_context_manager_or_guaranteed_close`: socket.socket opened without a context manager or explicit .close() in a finally block.
 - `sql_query_built_with_string_formatting_instead_of_parameters`: SQL query string built via f-string or % formatting instead of parameterised query binding.
@@ -833,6 +871,8 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `state_changing_endpoint_missing_csrf_protection`: State-changing POST/PUT/DELETE endpoint lacks CSRF token validation or SameSite enforcement.
 - `subprocess_invoked_with_shell_true_and_user_derived_input`: subprocess called with shell=True and a command string that includes user-controlled data.
 - `subprocess_pipe_without_communicate_for_large_output`: subprocess.Popen with PIPE but .communicate() not called, risking deadlock on large output.
+- `sync_api_accepts_coroutine_object_as_regular_value`: Flag synchronous interfaces that can accidentally receive coroutine objects and treat them as plain values.
+- `text_bytes_boundary_relies_on_implicit_default_encoding`: Flag code that crosses text and bytes boundaries without an explicit encoding contract.
 - `toml_or_ini_config_file_parsed_on_request_path`: TOML, INI, or YAML config file parsed inside a request handler on every request.
 - `unbounded_list_accumulation_inside_long_running_function`: List grows unboundedly inside a long-running function or loop without a cap or periodic flush.
 - `unclosed_tempfile_or_tmp_directory_from_tempfile_module`: tempfile.NamedTemporaryFile or TemporaryDirectory created without delete=False or a context manager.
@@ -841,14 +881,19 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `xml_parsing_with_external_dtd_or_entity_processing_enabled`: XML parsed with a parser that processes external DTDs or entities, enabling XXE attacks.
 - `yaml_config_loaded_without_safe_loader`: YAML configuration file loaded with yaml.load instead of yaml.safe_load or yaml.load + Loader=SafeLoader.
 
-#### Discipline (52)
+#### Discipline (70)
 - `assert_used_for_runtime_input_validation_in_production`: assert statement used to validate user-provided input or production logic, which is stripped by -O.
 - `bare_except_clause_catches_system_exit`: Bare `except:` or `except BaseException` catches SystemExit and KeyboardInterrupt unintentionally.
+- `batch_api_silently_falls_back_to_single_item_semantics`: Flag APIs that claim batch behavior but quietly process items one by one with different semantics.
+- `boolean_flag_parameter_controls_unrelated_behaviors`: Flag parameters whose boolean value switches between materially different behaviors instead of selecting clear separate entrypoints.
 - `callable_annotation_without_parameter_types`: Callable annotation used without explicit parameter types, losing type information downstream.
 - `cast_applied_without_preceding_type_narrowing_guard`: typing.cast applied to a value without a preceding isinstance or type narrowing check.
+- `condition_tree_nests_past_two_business_decision_levels`: Flag functions with deeply nested business condition trees that would be clearer as smaller helpers or dispatch tables.
 - `contextlib_suppress_applied_with_exception_base_class`: contextlib.suppress used with Exception or BaseException, silently swallowing unexpected errors.
+- `correctness_depends_on_specific_call_order_not_encoded_in_api`: Flag APIs whose safe use depends on an undocumented sequence of method calls.
 - `custom_exception_encodes_identity_as_string_code_attribute`: Custom exception stores its error identity as a plain string code attribute instead of sub-classing.
 - `deeply_nested_try_except_beyond_two_levels`: try/except blocks nested more than two levels deep, obscuring error propagation.
+- `duplicated_cleanup_paths_instead_of_context_manager`: Flag repeated cleanup logic that should be centralized with a context manager or helper.
 - `error_message_embeds_sensitive_data`: Exception message or error response string interpolated with credentials, keys, or PII.
 - `exception_handler_branches_on_error_message_string`: Exception handler inspects str(e) or e.message in a condition instead of matching on exception type.
 - `exception_handler_returns_default_without_any_logging`: Broad except block returns a default value without logging the caught exception.
@@ -856,11 +901,21 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `exception_raised_and_caught_for_control_flow_within_same_function`: Exception raised and immediately caught within the same function as an alternative to a conditional return.
 - `exception_raised_without_chaining_original_cause`: New exception raised inside except block without `from e`, discarding the original cause.
 - `exception_silenced_in_cleanup_or_finally_block`: Exception or return statement inside a finally block silences an in-flight exception from the try body.
+- `expensive_work_starts_before_input_validation`: Flag functions that begin heavy computation or I/O before validating cheap preconditions.
+- `function_body_contains_setup_validation_execution_and_formatting_all_at_once`: Flag functions that pack too many lifecycle phases into one body.
+- `function_returns_multiple_unlabeled_shape_variants`: Flag functions that return unrelated tuple or dict shapes depending on the path taken.
 - `generator_close_exception_not_handled_when_cleanup_required`: Generator or context manager performs resource acquisition in a finally block without a try/finally guard.
 - `generic_class_used_without_type_parameter_application`: Generic class subclassed or instantiated without supplying the required type parameters.
+- `helper_name_hides_mutation_or_io_side_effect`: Flag helpers whose names sound pure but actually mutate state or perform I/O.
 - `integration_test_writes_state_without_cleanup`: Integration test creates database rows or files without a teardown or transactional rollback.
+- `long_parameter_list_of_primitives_without_options_object`: Flag functions whose many primitive parameters obscure meaning and encourage call-site mistakes.
+- `loop_interleaves_core_work_logging_and_recovery_logic`: Flag loops that mix primary business logic, logging, and error recovery in one dense block.
+- `method_mutates_self_and_peer_object_in_same_block`: Flag methods that change both local state and a collaborator's state in the same unit of work.
+- `method_mutates_state_and_emits_user_facing_representation`: Flag methods that both change internal state and format user-facing output.
 - `mock_return_value_is_incompatible_type_with_real_signature`: Mock return value set to a type that is incompatible with the real object's declared return type.
+- `module_mixes_constants_types_helpers_and_execution_flow`: Flag modules that combine unrelated responsibilities and become hard to scan.
 - `namedtuple_used_where_dataclass_better_fits`: collections.namedtuple used for a record that needs default values, mutation, or methods.
+- `negated_boolean_reassigned_and_inverted_again`: Flag control flow that repeatedly flips boolean state instead of naming the intended condition directly.
 - `optional_parameter_used_without_none_guard`: Optional[T] parameter accessed via attribute or subscript without a preceding None guard.
 - `oserror_caught_without_errno_inspection`: OSError caught as a broad class without inspecting errno to distinguish ENOENT, EACCES, and others.
 - `overloaded_dispatch_without_typing_overload_decorator`: Function branches on isinstance to dispatch overloads but does not use @typing.overload decorators.
@@ -870,7 +925,9 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `public_function_return_type_annotated_as_union_of_many_unrelated_types`: Public function return annotation is Union of four or more unrelated types, indicating mixed concerns.
 - `pytest_parametrize_with_single_test_case`: @pytest.mark.parametrize applied with only one parameter set; use a plain test function instead.
 - `pytest_raises_without_match_parameter_on_broad_exception`: pytest.raises used with a broad exception type without a match= pattern to verify the message.
+- `repeated_try_finally_release_pattern_not_extracted`: Flag repeated manual release patterns that should live behind one helper or context manager.
 - `retry_loop_catches_broad_base_exception`: Retry loop catches Exception or BaseException instead of the specific transient errors that warrant a retry.
+- `same_precondition_checked_in_multiple_sibling_branches`: Flag functions that repeat the same guard in several branches instead of normalizing once.
 - `string_forward_reference_in_annotation_not_under_type_checking_guard`: String forward reference annotation not placed under `if TYPE_CHECKING:`, causing import at runtime.
 - `test_asserts_private_attribute_value_instead_of_behavior`: Test asserts the value of a private attribute (_name) instead of observable public behavior.
 - `test_calls_time_sleep_for_coordination`: Test calls time.sleep to coordinate with async or threaded code instead of events or monkeypatching.
@@ -888,6 +945,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `test_wraps_sut_in_try_except_hiding_exception_detail`: Test wraps the system-under-test call in try/except, hiding the raised exception from pytest output.
 - `transaction_block_missing_rollback_on_exception`: Database transaction started manually without a corresponding rollback in an except or finally clause.
 - `type_alias_shadows_builtin_name`: Type alias variable assigned a name that shadows a Python builtin such as list, dict, or type.
+- `type_branch_and_mode_branch_compounded_in_same_function`: Flag functions that branch on both runtime type and mode string in the same decision tree.
 - `typed_dict_key_access_without_get_or_guard`: TypedDict with total=False has a key accessed via direct subscript without .get() or a guard.
 - `typed_dict_total_false_without_docstring_noting_optional_keys`: TypedDict(total=False) class has no docstring indicating which keys are optional.
 - `typevar_defined_without_bound_or_constraints_for_narrow_use`: TypeVar defined without a bound or constraints for a generic that is only used with one or two concrete types.
@@ -958,51 +1016,95 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `upstream_http_call_per_item_in_handler`: Request handlers make sequential upstream HTTP calls inside loops instead of batching or bounded concurrency.
 - `upstream_response_not_checked_before_decode`: Handlers decode upstream responses without visible status checks such as raise_for_status() or status_code guards.
 
-#### Hot Path (17)
+#### Hot Path (37)
 - `append_then_sort_each_iteration`: A collection is appended to and then sorted on each iteration instead of sorting once after accumulation.
+- `constant_frozenset_or_dict_rebuilt_on_each_call`: Flag frequent call paths that reconstruct constant lookup tables each invocation.
 - `csv_writer_flush_per_row`: csv.Writer flushes on each row instead of buffering a larger batch.
 - `dict_items_or_keys_materialized_in_loop`: dict.items(), keys(), or values() are repeatedly materialized inside loops.
 - `enumerate_on_range_len`: enumerate(range(len(...))) style loops that add indexing ceremony without extra value.
+- `environment_lookup_repeated_in_hot_path`: Flag hot functions that repeatedly read environment variables or global config values that do not change.
+- `exception_used_for_expected_lookup_miss_in_loop`: Flag loops that rely on exceptions for common cache or dict misses.
 - `filter_then_count_then_iterate`: The same collection is traversed repeatedly for filtering, counting, and later iteration.
+- `full_sort_performed_inside_outer_iteration`: Flag outer loops that sort a full collection during each iteration.
+- `function_local_import_executed_in_frequent_path`: Flag hot call paths that perform imports inside the function body.
 - `in_check_on_list_literal`: Membership tests against list literals where a tuple or set would be clearer or cheaper.
+- `incremental_list_or_tuple_concatenation_in_accumulation_loop`: Flag accumulation loops that repeatedly concatenate instead of appending and joining once.
+- `iterator_materialized_to_list_before_single_pass_loop`: Flag iterators converted to lists in hot paths when only one pass is needed.
 - `json_encoder_recreated_per_item`: A JSON encoder object is recreated per item instead of being reused for the stream.
 - `json_loads_same_payload_multiple_times`: The same JSON payload is decoded multiple times inside one function instead of caching the parsed value.
+- `json_roundtrip_used_for_object_copy`: Flag code that serializes and deserializes objects only to make a copy.
+- `lambda_or_closure_allocated_per_item_when_static_helper_suffices`: Flag per-item closure allocation in hot loops when a stable helper would work.
 - `list_comprehension_only_for_length`: A list comprehension is built only so len(...) can be called on it.
+- `list_of_keys_materialized_for_membership_check`: Flag code that builds list(mapping.keys()) before checking membership.
+- `membership_test_against_list_or_tuple_literal_inside_loop`: Flag repeated membership tests against small linear containers in a hot path.
+- `pathlib_path_reconstructed_from_same_base_in_loop`: Flag loops that rebuild the same base Path object every iteration.
 - `read_then_splitlines`: File contents are fully read and then splitlines() is called instead of streaming lines.
 - `readlines_then_iterate`: readlines() materializes the whole file before line-by-line iteration.
 - `regex_compile_in_hot_path`: re.compile(...) or similar regex compilation repeated inside hot code paths.
+- `regex_compiled_on_each_hot_call`: Flag hot functions that compile the same regular expression repeatedly instead of reusing a compiled pattern.
+- `repeated_attribute_chain_lookup_inside_tight_loop`: Flag tight loops that repeatedly traverse the same attribute chain instead of binding a local reference.
+- `repeated_datetime_parse_inside_loop`: Flag loops that parse timestamps repeatedly when values could be normalized once.
 - `repeated_json_dumps_same_object`: json.dumps(...) is repeated for the same object instead of caching the serialized value.
+- `repeated_normalization_of_same_string_in_loop`: Flag repeated .strip(), .lower(), .casefold(), or similar normalization on the same value inside a loop.
 - `repeated_open_same_file_in_function`: The same file appears to be opened multiple times within one function.
+- `repeated_pure_helper_call_on_same_input_without_local_cache`: Flag hot loops that recompute the same pure helper result for identical inputs in one scope.
+- `repeated_split_or_join_on_invariant_separator_inside_loop`: Flag loops that repeatedly rebuild the same separator-driven string operations.
+- `same_buffer_or_prefix_reencoded_each_iteration`: Flag loops that re-encode identical prefixes or headers on each iteration.
 - `sorted_only_for_first_element`: A sequence is fully sorted even though only the first or smallest element is used.
 - `string_startswith_endswith_chain`: Repeated startswith(...) or endswith(...) checks that can often be combined into tuple-based calls.
+- `subprocess_or_shell_call_inside_record_processing_loop`: Flag per-record subprocess work that should be batched or hoisted.
 - `write_without_buffering_in_loop`: Repeated writes inside loops with no visible buffering or batching.
 
-#### Hot Path Ext (21)
+#### Hot Path Ext (41)
+- `any_or_all_wraps_list_comprehension_instead_of_generator`: Flag any([...]) and all([...]) forms that force unnecessary list materialization.
+- `blocking_io_call_executed_per_item_without_batching`: Flag per-item blocking I/O where batching or grouping is possible.
 - `concatenation_in_comprehension_body`: String or collection concatenation happens inside a comprehension body, creating avoidable churn.
 - `dict_copy_in_loop_same_source`: A dict-like source is copied on each loop iteration instead of being reused or hoisted.
+- `expensive_sort_key_recomputed_without_preprojection`: Flag repeated expensive key computation during sorting when values could be precomputed once.
+- `formatted_log_or_debug_payload_built_for_each_item_without_guard`: Flag per-item log payload construction without checking whether the level is enabled.
+- `generator_pipeline_materialized_between_each_transformation_stage`: Flag pipelines that repeatedly materialize intermediate lists between stages.
 - `gzip_open_per_chunk`: gzip open/create calls are repeated per chunk instead of per stream.
+- `invariant_computation_not_hoisted_out_of_nested_loop`: Flag nested loops that recompute invariant values on every inner iteration.
+- `invariant_template_or_prefix_string_reformatted_inside_loop`: Flag loops that reformat constant template fragments on each iteration.
+- `large_slice_copy_created_each_iteration_for_sliding_window`: Flag windowed algorithms that copy large slices every step instead of tracking indexes.
+- `linear_search_helper_called_from_nested_loops`: Flag nested loops that call helpers performing linear scans on each iteration.
 - `list_copy_in_loop_same_source`: A list is copied on each loop iteration even though the source appears unchanged.
+- `lookup_table_derived_from_constants_rebuilt_per_invocation`: Flag functions that reconstruct lookup tables from static constants every call.
 - `nested_list_search_map_candidate`: Nested linear list searches that look like they want a temporary map or set index.
 - `path_resolve_or_expanduser_in_loop`: Path resolution helpers such as resolve() or expanduser() run inside loops on invariant inputs.
+- `per_item_copy_of_large_config_or_context_object`: Flag loops that copy large config or context structures for each item despite read-mostly behavior.
+- `per_item_deduplication_uses_list_instead_of_hash_index`: Flag high-cardinality deduplication done with linear container membership checks.
 - `pickle_dumps_in_loop_same_structure`: pickle.dumps(...) is called repeatedly for the same structural shape in a loop.
+- `polling_loop_uses_tiny_sleep_instead_of_blocking_primitive`: Flag loops that wake repeatedly on a tiny sleep interval instead of a blocking queue, event, or condition.
+- `repeated_casefold_or_lower_calls_before_multiple_comparisons`: Flag code that normalizes the same candidate repeatedly before several comparisons.
 - `repeated_datetime_strptime_same_format`: datetime.strptime(...) is repeated with the same format string instead of reusing a parsed shape or preprocessing once.
 - `repeated_dict_get_same_key_no_cache`: The same dictionary key is fetched repeatedly instead of storing the value in a local binding.
+- `repeated_directory_scan_inside_nested_loop`: Flag nested loops that rescan the same directory or file listing.
 - `repeated_hashlib_new_same_algorithm`: The same hashing algorithm is repeatedly constructed in a loop or tight path.
 - `repeated_isinstance_chain_same_object`: The same object goes through repeated isinstance(...) checks that could be consolidated.
 - `repeated_list_index_lookup`: The same list index lookup is performed repeatedly instead of caching the accessed value.
 - `repeated_locale_or_codec_lookup_in_loop`: Locale or codec lookups repeat inside loops instead of being cached once.
+- `repeated_open_read_close_of_same_small_file_in_single_workflow`: Flag workflows that reopen the same file many times instead of caching its contents or handle.
+- `repeated_path_exists_check_before_open_or_replace_in_loop`: Flag loops that perform a separate existence check before every file operation.
 - `repeated_string_format_invariant_template`: An invariant string template is formatted repeatedly in a loop instead of being partially precomputed.
+- `same_sequence_scanned_multiple_times_for_related_aggregates`: Flag code that makes several full passes over the same data for related summaries.
+- `serialization_then_deserialization_between_adjacent_helpers`: Flag neighboring helpers that bounce data through serialized text or bytes without need.
 - `set_created_per_iteration_same_elements`: A set with the same elements is rebuilt on each iteration instead of being hoisted.
 - `sort_then_first_or_membership_only`: A collection is sorted even though only the first element or a membership-style check is needed.
 - `string_join_without_generator`: String joins that materialize an unnecessary list comprehension instead of using a generator or direct iterable.
+- `sum_max_min_wrap_list_comprehension_instead_of_generator`: Flag reductions that build transient lists instead of using generator expressions.
 - `tuple_unpacking_in_tight_loop`: Tuple unpacking is repeated in tight loops where reducing per-iteration overhead may help.
 - `urlparse_in_loop_on_invariant_base`: urlparse() or urlsplit() is repeated inside loops for invariant base values.
 - `xml_parse_same_payload_multiple_times`: The same XML payload is parsed repeatedly within one function.
 - `yaml_load_same_payload_multiple_times`: The same YAML payload is parsed repeatedly within one function.
 
-#### Maintainability (20)
+#### Maintainability (38)
+- `anonymous_dict_shape_repeated_without_shared_type_or_builder`: Flag repeated ad hoc dict payload shapes with no shared type or builder.
+- `branching_on_file_suffix_or_mode_string_scattered_across_codebase`: Flag suffix or mode dispatch logic duplicated across distant modules.
 - `broad_exception_handler`: Broad except Exception: style handlers that still obscure failure shape even when not fully swallowed.
 - `builtin_reduction_candidate`: Loop shapes that look like obvious sum, any, or all candidates.
+- `cache_object_exists_without_size_or_eviction_policy_documentation`: Flag caches that exist as long-lived process state with no documented retention policy.
+- `comment_required_to_explain_opaque_branching_that_code_could_express`: Flag code whose control flow stays unclear even with comments because the structure itself is weak.
 - `commented_out_code`: Blocks of commented-out source code left in production files.
 - `environment_boundary_without_fallback`: Environment-variable lookups that omit a default value or explicit failure handler.
 - `eval_exec_usage`: Direct eval() or exec() usage in non-test Python code.
@@ -1010,17 +1112,31 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `external_input_without_validation`: Request or CLI entry points that trust external input without obvious validation or guard checks.
 - `hardcoded_business_rule`: Hardcoded threshold, rate-limit, or pricing-style literals assigned inside non-test Python functions.
 - `hardcoded_path_string`: Hardcoded filesystem path literals assigned inside non-test Python functions.
+- `helper_module_accumulates_unrelated_cross_domain_utilities`: Flag helper modules that mix string, filesystem, caching, parsing, and process logic in one place.
+- `helper_returns_index_based_tuple_instead_of_named_structure`: Flag helper returns that require callers to remember tuple positions by convention.
+- `hidden_dependency_arrives_via_import_time_side_effect`: Flag code that becomes initialized only because another import happened first.
+- `magic_thresholds_duplicated_across_modules`: Flag repeated numeric thresholds with shared meaning that are copied across modules.
 - `magic_value_branching`: Repeated branch-shaping numeric or string literals that likely want an explicit constant or policy name.
 - `missing_context_manager`: Resource management (files, network connections) inside non-test Python functions that omits with-statement context managers.
+- `mixed_mutation_and_query_methods_share_same_manager_class`: Flag manager-style classes that both mutate and answer read-model queries with no boundary.
 - `mixed_sync_async_module`: Modules that expose public sync and async entry points together.
+- `monolithic_utils_module_becomes_default_dependency_sink`: Flag utility modules that attract unrelated dependencies and spread coupling.
+- `mutable_class_attribute_used_as_instance_storage`: Flag class attributes that accidentally store per-instance mutable state.
 - `network_boundary_without_timeout`: Request, sync, or job-style Python functions that call HTTP boundaries with no obvious timeout or retry policy.
 - `none_comparison`: == None or != None checks instead of is None or is not None.
+- `normalization_logic_duplicated_across_call_sites`: Flag the same value-cleaning or canonicalization logic repeated in several places.
+- `parallel_lists_used_instead_of_record_object`: Flag code that keeps related values synchronized across multiple lists instead of using one record type.
 - `print_debugging_leftover`: print() calls left in non-test Python functions that do not look like obvious main-entrypoint output.
 - `public_api_missing_type_hints`: Public Python functions that omit complete parameter or return annotations.
 - `redundant_return_none`: Explicit return None in simple code paths where Python would already return None implicitly.
 - `reinvented_utility`: Obvious locally implemented utility helpers that overlap with already-imported standard-library style helpers.
+- `same_contextmanager_pattern_copied_across_modules`: Flag duplicate context manager behavior implemented in several modules.
 - `side_effect_comprehension`: List, set, or dicit comprehensions used as standalone statements where the result is discarded.
+- `single_feature_requires_edits_in_many_unrelated_modules_due_to_scattered_policy`: Flag feature flows whose policy is fragmented across many unrelated modules.
+- `string_sentinel_values_duplicated_instead_of_constant_or_enum`: Flag repeated mode or status strings that should be centralized.
+- `tuple_return_with_three_or_more_positional_fields_in_public_api`: Flag public APIs that return positional tuples too wide to be self-documenting.
 - `variadic_public_api`: Public Python functions that expose *args or **kwargs instead of a clearer interface.
+- `wrapper_function_only_renames_arguments_and_passthroughs_behavior`: Flag wrappers that add no policy, safety, or abstraction value.
 
 #### Mlops (45)
 - `data_pipeline_no_error_handling`: Pipeline-style functions with no visible error handling or recovery path.
@@ -1069,39 +1185,52 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `vector_store_client_created_per_request`: Vector-store clients created on request paths instead of reused application state.
 - `wandb_mlflow_log_in_tight_loop`: wandb or mlflow metrics are logged in inner loops instead of batched or reported at coarser boundaries.
 
-#### Observability (49)
+#### Observability (67)
 - `alert_or_slo_threshold_hardcoded_inside_application_logic`: SLO error rate or latency threshold hardcoded in application code instead of external configuration.
 - `api_endpoint_returns_json_without_documented_response_schema`: API endpoint returns JSON without a Pydantic response_model or documented response schema.
 - `api_versioning_in_url_without_matching_router_group`: URL path contains a version segment (/v1/) without a corresponding versioned router or blueprint.
 - `binary_or_multipart_response_missing_explicit_content_type`: Binary or streaming response returned without an explicit Content-Type header.
 - `bulk_endpoint_partial_failure_contract_ambiguous`: Bulk endpoint processes items in a loop without a documented all-or-nothing or partial-failure contract.
 - `chain_of_boolean_or_conditions_over_same_value_not_using_in_operator`: Three or more `x == 'a' or x == 'b' or ...` conditions chained; use `x in {'a', 'b', ...}`.
+- `correlation_id_recomputed_multiple_times_in_same_workflow`: Flag code that regenerates correlation IDs instead of propagating one value.
 - `counter_most_common_all_items_retrieved_for_top_one`: Counter.most_common() called without an argument and subscripted with [0]; pass n=1 or use max().
 - `cursor_based_pagination_missing_stable_sort_tiebreaker`: Cursor-based pagination implemented without a stable unique sort key tiebreaker.
+- `debug_log_serializes_full_large_object_graph`: Flag debug logging that walks and serializes large object graphs.
 - `defaultdict_created_with_lambda_instead_of_builtin_factory`: defaultdict(lambda: []) or similar lambda factory; use defaultdict(list) or defaultdict(int).
 - `distributed_trace_span_created_without_parent_context_propagation`: OpenTelemetry or custom trace span created without extracting the parent context from the incoming request.
 - `dynamic_plugin_loaded_from_config_without_registry_allowlist`: Plugin loaded via importlib.import_module from config without validating against an allowlist.
+- `exception_log_omits_operation_identifier_or_input_summary`: Flag exception logs that lose the operation context needed to diagnose failures.
 - `exception_swallowed_before_sentry_or_error_tracker_capture`: Exception re-wrapped before capture_exception, causing Sentry or similar to lose the original traceback.
+- `expensive_log_argument_built_without_is_enabled_guard`: Flag log calls that eagerly build costly payloads without first checking the log level.
 - `f_string_evaluated_eagerly_inside_logging_call`: f-string passed directly to logger.debug/info/warning, eagerly evaluating even when the level is disabled.
 - `filter_and_map_results_materialized_to_list_at_each_step`: list(filter(...)) followed by list(map(...)), materializing intermediate collections; use a generator pipeline.
 - `frozenset_not_used_for_constant_membership_set_rebuilt_per_call`: Constant set literal rebuilt on every function call; hoist as frozenset at module scope.
 - `health_check_handler_queries_slow_database_table`: Health-check endpoint executes a full ORM query instead of a lightweight SELECT 1 probe.
+- `health_probe_executes_full_dependency_workflow`: Flag health checks that run the full production path instead of a cheap signal.
 - `high_frequency_code_path_logs_without_sampling_or_rate_limit`: logger.info or logger.debug called inside a loop without a sampling guard, risking log flood.
 - `importlib_import_module_called_inside_request_handler`: importlib.import_module called inside a request handler instead of at application startup.
 - `importlib_metadata_version_queried_inside_request_loop`: importlib.metadata.version() called inside a request handler; cache the result at startup.
 - `init_file_re_exports_private_module_symbols`: __init__.py re-exports a symbol with a leading underscore, leaking private implementation details.
+- `instrumentation_helper_mutates_business_return_shape`: Flag instrumentation wrappers that alter the shape of business return values.
+- `instrumentation_import_or_setup_occurs_on_first_live_request`: Flag observability setup that waits until the first request or task instead of initializing predictably.
 - `large_response_body_fully_buffered_in_memory_before_send`: Large response body buffered completely in memory before writing; use StreamingResponse.
 - `linear_membership_test_in_loop_over_large_static_list`: Membership test `in list` used inside a loop; convert to a set for O(1) lookup.
 - `list_pop_zero_used_as_queue_operation`: list.pop(0) or list.insert(0, ...) used as a FIFO queue; use collections.deque.popleft().
 - `logger_error_inside_except_without_exc_info`: logger.error or logger.critical called inside an except block without exc_info=True, discarding the stack trace.
+- `logger_instance_created_inside_function_body`: Flag functions that create loggers repeatedly instead of reusing module-level logger references.
 - `logging_basic_config_called_from_library_package`: Library module calls logging.basicConfig or addHandler at import time, overriding application log config.
 - `logging_call_inside_signal_handler_function`: logging call inside a signal handler; logging uses locks and is not async-signal-safe.
 - `logging_set_level_hardcoded_at_module_scope`: logger.setLevel(logging.DEBUG) or similar hardcoded at module scope instead of via application config.
 - `manual_dict_increment_instead_of_counter_or_defaultdict`: Frequency counter maintained with manual if-key-in-dict increment; use collections.Counter.
+- `metric_emission_occurs_per_item_inside_inner_loop`: Flag inner loops that emit one metric per item instead of aggregating.
+- `metric_name_contains_dynamic_user_or_data_values`: Flag dynamic metric names that explode the series count.
+- `metric_or_span_labels_use_high_cardinality_raw_inputs`: Flag labels or attributes built from raw IDs, paths, or user-provided values.
 - `module_level_side_effect_outside_main_guard`: Module-level side effect such as signal.signal or threading.Thread outside an if __name__ guard.
 - `namedtuple_fields_accessed_by_integer_index`: namedtuple fields accessed by integer index instead of by named attribute.
+- `observability_context_extracted_manually_at_many_call_sites`: Flag repeated manual extraction of the same tracing or logging context.
 - `observability_metric_names_use_inconsistent_separators`: Metric names in the same codebase mix dot and underscore separators.
 - `opentelemetry_span_attribute_attaches_pii_fields`: OpenTelemetry span attribute set to a key that likely carries PII such as email, phone, or IP address.
+- `operation_lacks_single_stable_name_across_logs_metrics_and_traces`: Flag operations that are named inconsistently across observability surfaces.
 - `optional_library_import_checked_on_hot_code_path`: Optional-dependency import guarded by try/except ImportError checked on every request.
 - `ordered_dict_used_in_python_37_plus_where_dict_suffices`: OrderedDict used in Python 3.7+ code where a plain dict preserves insertion order.
 - `pkg_resources_used_for_runtime_version_lookup`: pkg_resources.get_distribution used at runtime; use importlib.metadata.version() instead.
@@ -1112,37 +1241,83 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `relative_import_crossing_sibling_package_boundary`: Relative import uses three or more dots, crossing into a sibling package boundary.
 - `repeated_key_hash_via_dict_lookup_in_tight_loop`: Same dict key looked up repeatedly inside a loop; cache the value in a local variable.
 - `response_envelope_shape_inconsistent_across_siblings_in_same_router`: Response envelope shape inconsistent across sibling endpoints in the same router file.
+- `retry_loop_logs_without_attempt_count_or_backoff_context`: Flag retry logging that omits attempt number, delay, or terminal outcome.
 - `sorted_full_collection_to_extract_top_n_elements`: sorted() called on a full collection just to slice the first N elements; use heapq.nsmallest/nlargest.
 - `sorted_list_maintained_with_insert_instead_of_bisect_insort`: Sorted list maintained by appending then calling .sort(); use bisect.insort() instead.
 - `star_import_used_in_non_init_production_module`: Star import (from x import *) used in a production module other than __init__.py.
 - `state_changing_endpoint_returns_200_with_empty_body`: State-changing POST/PUT endpoint returns HTTP 200 with an empty body; prefer 201/202/204.
 - `structured_log_record_missing_trace_or_correlation_id`: Structured log record in a request handler lacks trace_id or request_id for distributed tracing.
+- `success_and_failure_paths_use_inconsistent_structured_log_keys`: Flag logging paths that use different keys for the same concept.
+- `synchronous_log_handler_or_flush_called_on_fast_path`: Flag code that forces synchronous log flushing in latency-sensitive paths.
 - `test_support_helpers_located_inside_production_package`: Test helper or factory file with _test_helpers.py or _factories.py suffix is inside the production package.
+- `timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation`: Flag timers that measure unrelated setup work and make latency metrics noisy.
+- `warning_or_error_logs_emit_unbounded_payload_text`: Flag logs that dump unbounded input or result payloads.
 - `zip_range_len_used_instead_of_enumerate`: zip(range(len(x)), x) pattern used; replace with enumerate(x).
 
-#### Packaging (4)
+#### Packaging (16)
+- `circular_import_hidden_by_function_local_import_on_hot_path`: Flag circular import workarounds that push imports into frequent code paths.
+- `cli_only_dependency_imported_by_library_entry_module`: Flag library entry modules that pull in CLI-only dependencies on import.
 - `cross_package_internal_import`: Local Python packages reaching into another package's internal or private modules.
+- `environment_or_config_read_during_package_import`: Flag package import paths that read environment or config eagerly.
+- `heavy_optional_dependency_imported_by_package_root`: Flag package roots that import heavy optional dependencies by default.
+- `monolithic_common_package_becomes_transitive_dependency_for_most_modules`: Flag package designs where one vague common package becomes a hidden dependency hub.
+- `package_exports_same_symbol_name_from_multiple_submodules_with_different_meanings`: Flag packages that reuse one exported name for unrelated implementations.
+- `package_init_performs_metadata_version_lookup_on_import`: Flag package __init__ files that do runtime metadata lookups just to expose a version.
+- `package_root_reexports_large_dependency_tree_by_default`: Flag root packages that re-export many heavy submodules automatically.
+- `plugin_discovery_scans_filesystem_each_invocation`: Flag plugin or extension discovery that rescans disk on every invocation.
+- `public_api_surface_defined_only_by_import_side_effects`: Flag packages whose public surface is created indirectly by import order.
 - `pyproject_missing_requires_python`: pyproject metadata missing an explicit Python runtime requirement.
 - `pyproject_script_entrypoint_unresolved`: pyproject script entrypoints that do not resolve to a locally indexed module callable.
 - `python_public_api_any_contract`: Public Python APIs that expose Any in parameter or return contracts.
+- `runtime_data_file_assumption_in_implicit_namespace_package`: Flag implicit namespace packages that assume local data-file discovery at runtime.
+- `test_helpers_shipped_inside_production_package_path`: Flag test-only helpers living under the production import path.
 
-#### Performance (9)
+#### Performance (29)
+- `batchable_writes_executed_one_at_a_time`: Flag repeated write operations that could be grouped or buffered.
 - `blocking_sync_io_in_async`: Synchronous network, subprocess, sleep, or file I/O calls made from async def functions.
+- `bytes_text_bytes_roundtrip_without_transformation`: Flag code that decodes and re-encodes data without changing it.
+- `compression_hashing_or_encoding_performed_before_cheap_reject_checks`: Flag expensive transforms performed before simple guard checks that could skip the work.
+- `copy_of_mapping_created_only_to_read_values`: Flag mappings copied defensively even though the next code only reads.
 - `deque_candidate_queue`: Queue-style list operations like pop(0) or insert(0, ...) that may want collections.deque.
+- `eager_full_file_or_stream_read_when_incremental_iteration_suffices`: Flag code that reads whole files or streams into memory before simple sequential processing.
+- `event_loop_path_executes_cpu_bound_transformation_synchronously`: Flag async paths that perform large CPU-bound transforms inline.
+- `full_collection_sorted_when_partial_order_or_selection_suffices`: Flag full sorts used where top-k or one-pass selection would work.
 - `full_dataset_load`: Calls that load an entire payload into memory instead of streaming.
+- `full_response_or_export_buffered_before_incremental_consumer_use`: Flag producers that fully buffer large outputs before handing them to a consumer.
+- `generator_materialized_to_tuple_or_list_only_for_len_or_truthiness`: Flag iterator pipelines that materialize only to test truthiness or size.
+- `large_in_memory_intermediate_created_where_streaming_pipeline_would_do`: Flag workflows that build large temporary structures where streaming would suffice.
+- `large_object_cloned_before_read_only_operation`: Flag code that deep-copies large structures even when the next steps are read-only.
 - `list_materialization_first_element`: list(...)[0] style access that materializes a whole list just to read the first element.
 - `list_membership_in_loop`: Repeated membership checks against obviously list-like containers inside loops.
+- `multiple_regex_passes_over_same_text_without_precompiled_plan`: Flag code that re-runs several overlapping regex passes on the same text.
+- `quadratic_string_building_via_plus_equals`: Flag loops that grow large strings with repeated +=.
 - `recursive_traversal_risk`: Direct recursion in traversal-style helpers that may be safer as iterative walks for deep inputs.
+- `repeated_file_open_for_same_resource_within_single_operation`: Flag workflows that reopen the same file repeatedly during one logical operation.
 - `repeated_len_in_loop`: Repeated len(...) checks inside loops when the receiver appears unchanged locally.
+- `repeated_small_writes_without_buffering_or_join`: Flag code that emits many tiny writes instead of buffering.
+- `repeated_stat_or_exists_calls_before_single_followup_operation`: Flag paths that perform duplicate filesystem checks before one operation.
+- `same_dataset_normalized_in_multiple_full_passes`: Flag code that walks the same dataset several times for normalization steps that can be fused.
+- `serialization_cost_paid_only_to_compare_or_hash_intermediate_state`: Flag serialization used only for equality, cache key, or hashing comparisons.
 - `string_concat_in_loop`: Repeated string concatenation inside loops can create O(n^2) growth and extra allocations.
 - `temporary_collection_in_loop`: Loop-local list, dict, or set construction that likely adds avoidable allocation churn.
+- `temporary_file_used_for_pure_in_memory_transformation`: Flag workflows that spill to disk despite an in-memory transform being sufficient.
+- `thread_pool_or_process_pool_created_and_destroyed_per_call`: Flag per-call executor allocation for repeatable work.
 
-#### Quality (21)
+#### Quality (39)
 - `async_lock_held_across_await`: Async lock scopes or explicit acquire/release regions that continue across unrelated await points.
 - `async_retry_sleep_without_backoff`: Retry-style async loops that sleep a fixed interval without visible backoff, jitter, or bounded retry policy.
+- `atomic_replace_semantics_implemented_with_non_atomic_file_write`: Flag code that intends atomic replacement but uses non-atomic file writes.
 - `background_task_exception_unobserved`: Background task bindings with no obvious await, callback, supervisor, or observation path.
+- `broad_except_used_to_mask_type_or_shape_bug`: Flag broad exception handling that conceals structural bugs in the input or code.
+- `cache_key_derived_from_stringified_mutable_object`: Flag cache keys built from unstable string forms of mutable objects.
+- `comparison_or_merge_logic_assumes_unique_keys_without_assertion`: Flag merge logic that silently assumes uniqueness of keys or identifiers.
 - `dataclass_heavy_post_init`: Dataclass __post_init__ methods that perform I/O, subprocess, network, or heavyweight client setup.
 - `dataclass_mutable_default`: Dataclass fields that use mutable defaults instead of default_factory.
+- `default_timeout_missing_on_external_boundary_wrapper`: Flag wrappers around external boundaries that omit a timeout policy.
+- `duplicate_items_silently_dropped_without_contract_signal`: Flag code that deduplicates caller data without making that behavior explicit.
+- `fallback_branch_swallows_invariant_violation_and_returns_plausible_default`: Flag fallback logic that hides broken invariants by returning believable defaults.
+- `float_equality_controls_branching_on_computed_values`: Flag control flow that depends on exact float equality after computation.
+- `helper_returns_success_shape_even_when_substeps_partially_fail`: Flag helpers that claim success while hiding partial failures.
 - `import_time_config_load`: Module-scope configuration or secret loading that runs during import instead of an explicit startup path.
 - `import_time_file_io`: Module-scope file reads, writes, or directory scans that happen during import.
 - `import_time_network_call`: Module-scope HTTP or socket calls executed while the module is imported.
@@ -1151,25 +1326,50 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `mutable_default_argument`: Function parameters that use mutable defaults such as [], {}, or set() directly in the signature.
 - `mutable_module_global_state`: Mutable module globals updated from multiple functions.
 - `option_bag_model`: Dataclass or TypedDict models that accumulate many optional fields and boolean switches.
+- `order_dependent_set_to_list_conversion_exposed_in_public_result`: Flag public outputs that rely on unstable set iteration order.
+- `partial_update_mutates_input_before_validation_succeeds`: Flag update helpers that mutate caller data before all validation passes.
 - `pickle_deserialization_boundary`: pickle.load(s) or dill.load(s) style deserialization in production code.
 - `public_any_type_leak`: Public functions or model fields that expose Any, object, or similarly wide contracts.
+- `public_api_returns_none_or_value_without_explicit_optional_contract`: Flag public APIs that sometimes return None and sometimes a value without an explicit contract.
+- `public_iterator_yields_heterogeneous_item_shapes`: Flag iterators that yield different shapes or types without an explicit sum-type contract.
+- `recursive_walk_over_untrusted_input_lacks_depth_limit`: Flag recursion over caller-provided structures with no depth guard.
+- `sort_order_depends_on_non_explicit_mapping_iteration_semantics`: Flag ordering logic that depends on implicit mapping iteration instead of explicit keys.
+- `string_mode_parameter_replaces_enum_or_literal_contract`: Flag string mode parameters that should be constrained by an enum or literal contract.
 - `subprocess_shell_true`: Subprocess boundaries that enable shell=True.
 - `tar_extractall_unfiltered`: tarfile.extractall(...) without an obvious filter, members list, or path-validation helper.
 - `tempfile_without_cleanup`: Temporary files or directories created without a visible cleanup or context-manager ownership path.
+- `timezone_naive_datetime_accepted_in_public_contract`: Flag public contracts that accept datetimes with ambiguous timezone semantics.
 - `typeddict_unchecked_access`: Direct indexing of optional TypedDict keys without an obvious guard path.
 - `unsafe_yaml_loader`: yaml.load(...) or full_load(...) style loaders used where safe loading is more appropriate.
 - `untracked_asyncio_task`: asyncio.create_task(...) or similar task creation whose handle is discarded immediately.
+- `validation_only_happens_after_expensive_side_effect_has_started`: Flag flows where validation happens only after I/O or irreversible work has begun.
 
-#### Structure (11)
+#### Structure (27)
+- `abstract_contracts_and_heavy_concrete_implementations_live_in_same_file`: Flag files that mix contracts with large concrete implementations and grow unstable dependencies.
+- `abstractions_named_utils_helpers_common_or_manager_hide_true_ownership`: Flag vague abstractions whose names obscure actual ownership and responsibility.
+- `base_class_exists_only_to_share_data_fields_not_behavior`: Flag base classes that provide only data containers with no meaningful shared behavior.
+- `bidirectional_import_between_feature_modules`: Flag feature modules that depend on each other directly.
+- `class_mixes_factory_parsing_persistence_and_presentation_roles`: Flag classes that combine unrelated lifecycle roles.
+- `composition_candidate_for_optional_behavior_implemented_as_inheritance`: Flag optional behavior modeled through inheritance when composition would isolate concerns better.
+- `constructor_performs_real_work_beyond_state_initialization`: Flag constructors that do heavy work instead of leaving execution to explicit methods.
+- `cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary`: Flag retries, normalization, or policy checks embedded in leaf modules instead of one shared boundary.
 - `deep_inheritance_hierarchy`: Repository-local Python class chains with unusually deep inheritance depth.
 - `eager_constructor_collaborators`: Constructors that instantiate several collaborators eagerly inside __init__.
+- `generic_manager_or_processor_class_controls_many_unrelated_modes`: Flag vague manager-style classes that centralize unrelated behaviors behind mode flags.
 - `god_class`: Python classes that concentrate unusually high method count, public surface area, and mutable instance state.
 - `god_function`: Very large Python functions with high control-flow and call-surface concentration.
+- `helper_collection_object_also_owns_process_lifecycle`: Flag collection-like helper objects that also start, stop, or supervise process lifecycle work.
 - `mixed_concerns_function`: Functions that mix HTTP, persistence, and filesystem-style concerns in one body.
+- `module_global_registry_mutated_from_import_time_registration`: Flag global registries that are populated by import side effects.
 - `monolithic_init_module`: __init__.py files that carry enough imports and behavior to look like monolithic modules.
 - `monolithic_module`: Non-__init__.py modules that are unusually large and combine many imports with orchestration-heavy behavior.
+- `monolithic_module_owns_parsing_validation_execution_and_rendering`: Flag modules that contain the whole pipeline and become hard to reason about.
 - `name_responsibility_mismatch`: Read-style, transformation-style, or utility-style names that still perform mutation or own multiple infrastructure concerns.
 - `over_abstracted_wrapper`: Ceremonial wrapper-style or tiny data-container classes that add little beyond storing constructor state.
+- `read_and_write_paths_share_mutable_internal_cache_without_boundary`: Flag read and write paths that couple through one mutable cache object.
+- `same_feature_path_crosses_many_layers_for_simple_data_transform`: Flag simple transformations that bounce through too many layers or wrappers.
+- `sibling_modules_depend_on_private_helpers_from_each_other`: Flag sibling modules that reach into each other's private helpers instead of using a shared boundary.
+- `sync_and_async_contracts_mixed_on_same_interface_family`: Flag interface families that mix sync and async methods without a clear separation.
 - `tight_module_coupling`: Modules that depend on a large number of repository-local Python modules.
 - `too_many_instance_attributes`: Classes that assign an unusually large number of instance attributes across their methods.
 

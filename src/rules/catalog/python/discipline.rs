@@ -233,4 +233,76 @@ pub(crate) const RULE_DEFINITIONS: &[RuleDefinition] = &[
         "test_depends_on_sibling_test_side_effects",
         "Test function depends on state left behind by a sibling test in the same module."
     ),
+    disc_rule!(
+        "boolean_flag_parameter_controls_unrelated_behaviors",
+        "Flag parameters whose boolean value switches between materially different behaviors instead of selecting clear separate entrypoints."
+    ),
+    disc_rule!(
+        "function_body_contains_setup_validation_execution_and_formatting_all_at_once",
+        "Flag functions that pack too many lifecycle phases into one body."
+    ),
+    disc_rule!(
+        "condition_tree_nests_past_two_business_decision_levels",
+        "Flag functions with deeply nested business condition trees that would be clearer as smaller helpers or dispatch tables."
+    ),
+    disc_rule!(
+        "expensive_work_starts_before_input_validation",
+        "Flag functions that begin heavy computation or I/O before validating cheap preconditions."
+    ),
+    disc_rule!(
+        "duplicated_cleanup_paths_instead_of_context_manager",
+        "Flag repeated cleanup logic that should be centralized with a context manager or helper."
+    ),
+    disc_rule!(
+        "helper_name_hides_mutation_or_io_side_effect",
+        "Flag helpers whose names sound pure but actually mutate state or perform I/O."
+    ),
+    disc_rule!(
+        "method_mutates_state_and_emits_user_facing_representation",
+        "Flag methods that both change internal state and format user-facing output."
+    ),
+    disc_rule!(
+        "loop_interleaves_core_work_logging_and_recovery_logic",
+        "Flag loops that mix primary business logic, logging, and error recovery in one dense block."
+    ),
+    disc_rule!(
+        "type_branch_and_mode_branch_compounded_in_same_function",
+        "Flag functions that branch on both runtime type and mode string in the same decision tree."
+    ),
+    disc_rule!(
+        "repeated_try_finally_release_pattern_not_extracted",
+        "Flag repeated manual release patterns that should live behind one helper or context manager."
+    ),
+    disc_rule!(
+        "long_parameter_list_of_primitives_without_options_object",
+        "Flag functions whose many primitive parameters obscure meaning and encourage call-site mistakes."
+    ),
+    disc_rule!(
+        "negated_boolean_reassigned_and_inverted_again",
+        "Flag control flow that repeatedly flips boolean state instead of naming the intended condition directly."
+    ),
+    disc_rule!(
+        "method_mutates_self_and_peer_object_in_same_block",
+        "Flag methods that change both local state and a collaborator's state in the same unit of work."
+    ),
+    disc_rule!(
+        "batch_api_silently_falls_back_to_single_item_semantics",
+        "Flag APIs that claim batch behavior but quietly process items one by one with different semantics."
+    ),
+    disc_rule!(
+        "same_precondition_checked_in_multiple_sibling_branches",
+        "Flag functions that repeat the same guard in several branches instead of normalizing once."
+    ),
+    disc_rule!(
+        "function_returns_multiple_unlabeled_shape_variants",
+        "Flag functions that return unrelated tuple or dict shapes depending on the path taken."
+    ),
+    disc_rule!(
+        "module_mixes_constants_types_helpers_and_execution_flow",
+        "Flag modules that combine unrelated responsibilities and become hard to scan."
+    ),
+    disc_rule!(
+        "correctness_depends_on_specific_call_order_not_encoded_in_api",
+        "Flag APIs whose safe use depends on an undocumented sequence of method calls."
+    ),
 ];

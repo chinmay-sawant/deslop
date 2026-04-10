@@ -89,6 +89,20 @@
       "fix": "For Chain of Boolean or Conditions Over Same Value Not Using in Operator in Python, log once with useful fields, keep observation helpers shared, and avoid scattering module-level operational policy across the repo."
     },
     {
+      "id": "correlation_id_recomputed_multiple_times_in_same_workflow",
+      "label": "Correlation ID Recomputed Multiple Times in Same Workflow",
+      "description": "Flag code that regenerates correlation IDs instead of propagating one value.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Correlation ID Recomputed Multiple Times in Same Workflow matters because the pattern here, Flag code that regenerates correlation IDs instead of propagating one value, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Correlation ID Recomputed Multiple Times in Same Workflow in Python, prefer propagating one value when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
       "id": "counter_most_common_all_items_retrieved_for_top_one",
       "label": "Counter Most Common All Items Retrieved for Top One",
       "description": "Counter.most_common() called without an argument and subscripted with [0]; pass n=1 or use max().",
@@ -115,6 +129,20 @@
       ],
       "explanation": "In Python, Cursor Based Pagination Missing Stable Sort Tiebreaker matters because the pattern here, Cursor-based pagination implemented without a stable unique sort key tiebreaker, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
       "fix": "For Cursor Based Pagination Missing Stable Sort Tiebreaker in Python, add a stable unique sort key tiebreaker or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "debug_log_serializes_full_large_object_graph",
+      "label": "Debug Log Serializes Full Large Object Graph",
+      "description": "Flag debug logging that walks and serializes large object graphs.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Debug Log Serializes Full Large Object Graph matters because the pattern here, Flag debug logging that walks and serializes large object graphs, is worth review because weak logging and module boundaries make production behavior harder to reason about under pressure.",
+      "fix": "For Debug Log Serializes Full Large Object Graph in Python, log once with useful fields, keep observation helpers shared, and avoid scattering module-level operational policy across the repo."
     },
     {
       "id": "defaultdict_created_with_lambda_instead_of_builtin_factory",
@@ -159,6 +187,20 @@
       "fix": "For Dynamic Plugin Loaded From Config without Registry Allowlist in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
     },
     {
+      "id": "exception_log_omits_operation_identifier_or_input_summary",
+      "label": "Exception Log Omits Operation Identifier or Input Summary",
+      "description": "Flag exception logs that lose the operation context needed to diagnose failures.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Exception Log Omits Operation Identifier or Input Summary matters because the pattern here, Flag exception logs that lose the operation context needed to diagnose failures, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Exception Log Omits Operation Identifier or Input Summary in Python, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
       "id": "exception_swallowed_before_sentry_or_error_tracker_capture",
       "label": "Exception Swallowed Before Sentry or Error Tracker Capture",
       "description": "Exception re-wrapped before capture_exception, causing Sentry or similar to lose the original traceback.",
@@ -171,6 +213,20 @@
       ],
       "explanation": "In Python, Exception Swallowed Before Sentry or Error Tracker Capture matters because the pattern here, Exception re-wrapped before capture_exception, causing Sentry or similar to lose the original traceback, is worth review because weak logging and module boundaries make production behavior harder to reason about under pressure.",
       "fix": "For Exception Swallowed Before Sentry or Error Tracker Capture in Python, log once with useful fields, keep observation helpers shared, and avoid scattering module-level operational policy across the repo."
+    },
+    {
+      "id": "expensive_log_argument_built_without_is_enabled_guard",
+      "label": "Expensive Log Argument Built without Is Enabled Guard",
+      "description": "Flag log calls that eagerly build costly payloads without first checking the log level.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Expensive Log Argument Built without Is Enabled Guard matters because the pattern here, Flag log calls that eagerly build costly payloads without first checking the log level, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Expensive Log Argument Built without Is Enabled Guard in Python, add first checking the log level or move the code to a path where that safeguard is guaranteed before the risky work happens."
     },
     {
       "id": "f_string_evaluated_eagerly_inside_logging_call",
@@ -229,6 +285,20 @@
       "fix": "For Health Check Handler Queries Slow Database Table in Python, prefer a lightweight SELECT 1 probe when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
+      "id": "health_probe_executes_full_dependency_workflow",
+      "label": "Health Probe Executes Full Dependency Workflow",
+      "description": "Flag health checks that run the full production path instead of a cheap signal.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Health Probe Executes Full Dependency Workflow matters because the pattern here, Flag health checks that run the full production path instead of a cheap signal, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Health Probe Executes Full Dependency Workflow in Python, prefer a cheap signal when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
       "id": "high_frequency_code_path_logs_without_sampling_or_rate_limit",
       "label": "High Frequency Code Path Logs without Sampling or Rate Limit",
       "description": "logger.info or logger.debug called inside a loop without a sampling guard, risking log flood.",
@@ -283,6 +353,34 @@
       ],
       "explanation": "In Python, Init File Re Exports Private Module Symbols matters because the pattern here, __init__.py re-exports a symbol with a leading underscore, leaking private implementation details, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
       "fix": "For Init File Re Exports Private Module Symbols in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "instrumentation_helper_mutates_business_return_shape",
+      "label": "Instrumentation Helper Mutates Business Return Shape",
+      "description": "Flag instrumentation wrappers that alter the shape of business return values.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Instrumentation Helper Mutates Business Return Shape matters because the pattern here, Flag instrumentation wrappers that alter the shape of business return values, is worth review because weak logging and module boundaries make production behavior harder to reason about under pressure.",
+      "fix": "For Instrumentation Helper Mutates Business Return Shape in Python, log once with useful fields, keep observation helpers shared, and avoid scattering module-level operational policy across the repo."
+    },
+    {
+      "id": "instrumentation_import_or_setup_occurs_on_first_live_request",
+      "label": "Instrumentation Import or Setup Occurs on First Live Request",
+      "description": "Flag observability setup that waits until the first request or task instead of initializing predictably.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Instrumentation Import or Setup Occurs on First Live Request matters because the pattern here, Flag observability setup that waits until the first request or task instead of initializing predictably, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Instrumentation Import or Setup Occurs on First Live Request in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
     },
     {
       "id": "large_response_body_fully_buffered_in_memory_before_send",
@@ -341,6 +439,20 @@
       "fix": "For Logger Error Inside Except without Exc Info in Python, add exc_info=True, discarding the stack trace or move the code to a path where that safeguard is guaranteed before the risky work happens."
     },
     {
+      "id": "logger_instance_created_inside_function_body",
+      "label": "Logger Instance Created Inside Function Body",
+      "description": "Flag functions that create loggers repeatedly instead of reusing module-level logger references.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Logger Instance Created Inside Function Body matters because the pattern here, Flag functions that create loggers repeatedly instead of reusing module-level logger references, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Logger Instance Created Inside Function Body in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
       "id": "logging_basic_config_called_from_library_package",
       "label": "Logging Basic Config Called From Library Package",
       "description": "Library module calls logging.basicConfig or addHandler at import time, overriding application log config.",
@@ -397,6 +509,48 @@
       "fix": "For Manual Dict Increment Instead of Counter or Defaultdict in Python, log once with useful fields, keep observation helpers shared, and avoid scattering module-level operational policy across the repo."
     },
     {
+      "id": "metric_emission_occurs_per_item_inside_inner_loop",
+      "label": "Metric Emission Occurs Per Item Inside Inner Loop",
+      "description": "Flag inner loops that emit one metric per item instead of aggregating.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Metric Emission Occurs Per Item Inside Inner Loop matters because the pattern here, Flag inner loops that emit one metric per item instead of aggregating, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Metric Emission Occurs Per Item Inside Inner Loop in Python, prefer aggregating when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "metric_name_contains_dynamic_user_or_data_values",
+      "label": "Metric Name Contains Dynamic User or Data Values",
+      "description": "Flag dynamic metric names that explode the series count.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Metric Name Contains Dynamic User or Data Values matters because the pattern here, Flag dynamic metric names that explode the series count, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Metric Name Contains Dynamic User or Data Values in Python, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "metric_or_span_labels_use_high_cardinality_raw_inputs",
+      "label": "Metric or Span Labels Use High Cardinality Raw Inputs",
+      "description": "Flag labels or attributes built from raw IDs, paths, or user-provided values.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Metric or Span Labels Use High Cardinality Raw Inputs matters because the pattern here, Flag labels or attributes built from raw IDs, paths, or user-provided values, depends on an invariant that future maintainers also have to preserve exactly.",
+      "fix": "For Metric or Span Labels Use High Cardinality Raw Inputs in Python, shrink the unsafe surface, document the invariant, or move the behavior behind a safe abstraction."
+    },
+    {
       "id": "module_level_side_effect_outside_main_guard",
       "label": "Module Level Side Effect Outside Main Guard",
       "description": "Module-level side effect such as signal.signal or threading.Thread outside an if __name__ guard.",
@@ -425,6 +579,20 @@
       "fix": "For Namedtuple Fields Accessed by Integer Index in Python, prefer by named attribute when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
+      "id": "observability_context_extracted_manually_at_many_call_sites",
+      "label": "Observability Context Extracted Manually at Many Call Sites",
+      "description": "Flag repeated manual extraction of the same tracing or logging context.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Observability Context Extracted Manually at Many Call Sites matters because the pattern here, Flag repeated manual extraction of the same tracing or logging context, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Observability Context Extracted Manually at Many Call Sites in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
       "id": "observability_metric_names_use_inconsistent_separators",
       "label": "Observability Metric Names Use Inconsistent Separators",
       "description": "Metric names in the same codebase mix dot and underscore separators.",
@@ -451,6 +619,20 @@
       ],
       "explanation": "In Python, Opentelemetry Span Attribute Attaches Pii Fields matters because the pattern here, OpenTelemetry span attribute set to a key that likely carries PII such as email, phone, or IP address, is worth review because weak logging and module boundaries make production behavior harder to reason about under pressure.",
       "fix": "For Opentelemetry Span Attribute Attaches Pii Fields in Python, log once with useful fields, keep observation helpers shared, and avoid scattering module-level operational policy across the repo."
+    },
+    {
+      "id": "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+      "label": "Operation Lacks Single Stable Name Across Logs Metrics and Traces",
+      "description": "Flag operations that are named inconsistently across observability surfaces.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Operation Lacks Single Stable Name Across Logs Metrics and Traces matters because the pattern here, Flag operations that are named inconsistently across observability surfaces, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Operation Lacks Single Stable Name Across Logs Metrics and Traces in Python, rename the symbol so its domain job is obvious without reading the whole body."
     },
     {
       "id": "optional_library_import_checked_on_hot_code_path",
@@ -593,6 +775,20 @@
       "fix": "For Response Envelope Shape Inconsistent Across Siblings in Same Router in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
     },
     {
+      "id": "retry_loop_logs_without_attempt_count_or_backoff_context",
+      "label": "Retry Loop Logs without Attempt Count or Backoff Context",
+      "description": "Flag retry logging that omits attempt number, delay, or terminal outcome.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Retry Loop Logs without Attempt Count or Backoff Context matters because the pattern here, Flag retry logging that omits attempt number, delay, or terminal outcome, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Retry Loop Logs without Attempt Count or Backoff Context in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
       "id": "sorted_full_collection_to_extract_top_n_elements",
       "label": "Sorted Full Collection to Extract Top N Elements",
       "description": "sorted() called on a full collection just to slice the first N elements; use heapq.nsmallest/nlargest.",
@@ -663,6 +859,34 @@
       "fix": "For Structured Log Record Missing Trace or Correlation ID in Python, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
     },
     {
+      "id": "success_and_failure_paths_use_inconsistent_structured_log_keys",
+      "label": "Success and Failure Paths Use Inconsistent Structured Log Keys",
+      "description": "Flag logging paths that use different keys for the same concept.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Success and Failure Paths Use Inconsistent Structured Log Keys matters because the pattern here, Flag logging paths that use different keys for the same concept, is worth review because weak logging and module boundaries make production behavior harder to reason about under pressure.",
+      "fix": "For Success and Failure Paths Use Inconsistent Structured Log Keys in Python, log once with useful fields, keep observation helpers shared, and avoid scattering module-level operational policy across the repo."
+    },
+    {
+      "id": "synchronous_log_handler_or_flush_called_on_fast_path",
+      "label": "Synchronous Log Handler or Flush Called on Fast Path",
+      "description": "Flag code that forces synchronous log flushing in latency-sensitive paths.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Synchronous Log Handler or Flush Called on Fast Path matters because the pattern here, Flag code that forces synchronous log flushing in latency-sensitive paths, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Synchronous Log Handler or Flush Called on Fast Path in Python, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
       "id": "test_support_helpers_located_inside_production_package",
       "label": "Test Support Helpers Located Inside Production Package",
       "description": "Test helper or factory file with _test_helpers.py or _factories.py suffix is inside the production package.",
@@ -675,6 +899,34 @@
       ],
       "explanation": "In Python, Test Support Helpers Located Inside Production Package matters because the pattern here, Test helper or factory file with _test_helpers.py or _factories.py suffix is inside the production package, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
       "fix": "For Test Support Helpers Located Inside Production Package in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation",
+      "label": "Timing Metric Wraps Setup and Teardown Noise Instead of Core Operation",
+      "description": "Flag timers that measure unrelated setup work and make latency metrics noisy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Timing Metric Wraps Setup and Teardown Noise Instead of Core Operation matters because the pattern here, Flag timers that measure unrelated setup work and make latency metrics noisy, is worth review because weak logging and module boundaries make production behavior harder to reason about under pressure.",
+      "fix": "For Timing Metric Wraps Setup and Teardown Noise Instead of Core Operation in Python, log once with useful fields, keep observation helpers shared, and avoid scattering module-level operational policy across the repo."
+    },
+    {
+      "id": "warning_or_error_logs_emit_unbounded_payload_text",
+      "label": "Warning or Error Logs Emit Unbounded Payload Text",
+      "description": "Flag logs that dump unbounded input or result payloads.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Warning or Error Logs Emit Unbounded Payload Text matters because the pattern here, Flag logs that dump unbounded input or result payloads, is worth review because weak logging and module boundaries make production behavior harder to reason about under pressure.",
+      "fix": "For Warning or Error Logs Emit Unbounded Payload Text in Python, log once with useful fields, keep observation helpers shared, and avoid scattering module-level operational policy across the repo."
     },
     {
       "id": "zip_range_len_used_instead_of_enumerate",

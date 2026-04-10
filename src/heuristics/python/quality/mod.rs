@@ -18,11 +18,15 @@ pub(super) fn quality_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    function_rules_findings(file, function)
+    let mut findings = function_rules_findings(file, function);
+    findings.extend(project_agnostic_quality_function_findings(file, function));
+    findings
 }
 
 pub(super) fn quality_file_findings(file: &ParsedFile) -> Vec<Finding> {
-    module_state_findings(file)
+    let mut findings = module_state_findings(file);
+    findings.extend(project_agnostic_quality_file_findings(file));
+    findings
 }
 
 pub(super) fn should_skip_wide_contract_function(
@@ -335,6 +339,282 @@ fn is_heavy_post_init_call(resolved_call: &str) -> bool {
         || resolved_call.contains("sessionmaker")
         || resolved_call.contains("redis")
         || resolved_call.contains("mongoclient")
+}
+
+fn contains_any(text: &str, needles: &[&str]) -> bool {
+    needles.iter().any(|needle| text.contains(needle))
+}
+
+fn project_agnostic_quality_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let body = &function.body_text;
+    let lower_body = body.to_ascii_lowercase();
+    let sig = function.signature_text.replace('\n', " ");
+    let line = function.fingerprint.start_line;
+
+    let push = |rule_id: &str, severity: crate::model::Severity, message: String| Finding {
+        rule_id: rule_id.to_string(),
+        severity,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: line,
+        end_line: line,
+        message,
+        evidence: vec![format!("function={}", function.fingerprint.name)],
+    };
+
+    if sig.contains("->") && body.contains("return None") && body.contains("return ") {
+        findings.push(push(
+            "public_api_returns_none_or_value_without_explicit_optional_contract",
+            crate::model::Severity::Info,
+            format!(
+                "function {} returns None on some paths without an explicit optional contract",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &["except ", "return default", "return {}", "return []"],
+    ) {
+        findings.push(push(
+            "fallback_branch_swallows_invariant_violation_and_returns_plausible_default",
+            crate::model::Severity::Warning,
+            format!(
+                "function {} returns a plausible default from a failure path and may hide invariant violations",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if body.contains("except Exception")
+        && contains_any(&lower_body, &["typeerror", "keyerror", "attributeerror"])
+    {
+        findings.push(push(
+            "broad_except_used_to_mask_type_or_shape_bug",
+            crate::model::Severity::Warning,
+            format!(
+                "function {} uses a broad except that can conceal type or shape bugs",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &["list(set(", "sorted(set("]) {
+        findings.push(push(
+            "order_dependent_set_to_list_conversion_exposed_in_public_result",
+            crate::model::Severity::Info,
+            format!(
+                "function {} converts set-like data to list in a public result path",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        body,
+        &[
+            "requests.get(",
+            "requests.post(",
+            "httpx.get(",
+            "httpx.post(",
+        ],
+    ) && !contains_any(body, &["timeout=", "Timeout("])
+    {
+        findings.push(push(
+            "default_timeout_missing_on_external_boundary_wrapper",
+            crate::model::Severity::Warning,
+            format!(
+                "function {} wraps an external call without a visible timeout policy",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &["== 0.1", "== 0.2", "== result", "!= result"])
+        && contains_any(&lower_body, &["float", "round", "ratio", "score"])
+    {
+        findings.push(push(
+            "float_equality_controls_branching_on_computed_values",
+            crate::model::Severity::Info,
+            format!(
+                "function {} uses exact float equality in control flow",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if function.python_evidence().recursive_call_lines.len() > 0
+        && !contains_any(&lower_body, &["max_depth", "depth >", "level >"])
+    {
+        findings.push(push(
+            "recursive_walk_over_untrusted_input_lacks_depth_limit",
+            crate::model::Severity::Warning,
+            format!(
+                "function {} recurses without an obvious depth limit",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if sig.contains("Iterator[")
+        && contains_any(body, &["yield {", "yield (", "yield value", "yield error"])
+    {
+        findings.push(push(
+            "public_iterator_yields_heterogeneous_item_shapes",
+            crate::model::Severity::Info,
+            format!(
+                "function {} appears to yield heterogeneous item shapes from one iterator contract",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["payload[", "data["])
+        && contains_any(&lower_body, &["validate", "schema", "raise"])
+    {
+        findings.push(push(
+            "partial_update_mutates_input_before_validation_succeeds",
+            crate::model::Severity::Warning,
+            format!(
+                "function {} mutates update payloads before all validation has succeeded",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["cache_key =", "key = str("]) {
+        findings.push(push(
+            "cache_key_derived_from_stringified_mutable_object",
+            crate::model::Severity::Info,
+            format!(
+                "function {} derives a cache key from stringified mutable state",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["for key in mapping", "for key in data"])
+        && !contains_any(&lower_body, &["sorted(", "order_by", "key="])
+    {
+        findings.push(push(
+            "sort_order_depends_on_non_explicit_mapping_iteration_semantics",
+            crate::model::Severity::Info,
+            format!(
+                "function {} appears to rely on mapping iteration order without making it explicit",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["set(", "seen ="])
+        && contains_any(&lower_body, &["return", "yield"])
+    {
+        findings.push(push(
+            "duplicate_items_silently_dropped_without_contract_signal",
+            crate::model::Severity::Info,
+            format!(
+                "function {} silently deduplicates items without making the contract explicit",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if sig.contains("datetime") && !contains_any(&sig, &["timezone", "tzinfo", "AwareDatetime"]) {
+        findings.push(push(
+            "timezone_naive_datetime_accepted_in_public_contract",
+            crate::model::Severity::Warning,
+            format!(
+                "function {} accepts datetimes without an explicit timezone contract",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["open(", "write_text(", "write_bytes("])
+        && contains_any(&lower_body, &["replace", "atomic"])
+    {
+        findings.push(push(
+            "atomic_replace_semantics_implemented_with_non_atomic_file_write",
+            crate::model::Severity::Warning,
+            format!(
+                "function {} appears to promise atomic replace semantics with non-atomic file writes",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&sig, &["mode: str", "kind: str", "strategy: str"]) {
+        findings.push(push(
+            "string_mode_parameter_replaces_enum_or_literal_contract",
+            crate::model::Severity::Info,
+            format!(
+                "function {} uses string mode parameters that may want enums or literal types",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["errors.append(", "failed.append("])
+        && contains_any(
+            &lower_body,
+            &[
+                "return success",
+                "return {\"ok\": true",
+                "return {'ok': true",
+            ],
+        )
+    {
+        findings.push(push(
+            "helper_returns_success_shape_even_when_substeps_partially_fail",
+            crate::model::Severity::Warning,
+            format!(
+                "function {} returns success-like shapes while collecting partial failures",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["merge(", "combine(", "update("])
+        && !contains_any(&lower_body, &["assert", "raise", "duplicate"])
+    {
+        findings.push(push(
+            "comparison_or_merge_logic_assumes_unique_keys_without_assertion",
+            crate::model::Severity::Info,
+            format!(
+                "function {} merges or compares records without asserting uniqueness assumptions",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["requests.", "httpx.", "open(", "write("])
+        && contains_any(&lower_body, &["validate", "schema"])
+    {
+        findings.push(push(
+            "validation_only_happens_after_expensive_side_effect_has_started",
+            crate::model::Severity::Warning,
+            format!(
+                "function {} begins expensive work before completing validation",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    findings
+}
+
+fn project_agnostic_quality_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    let _ = file;
+    Vec::new()
 }
 
 pub(super) fn wide_contract_markers(text: &str) -> Vec<String> {

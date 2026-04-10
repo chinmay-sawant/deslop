@@ -5,6 +5,34 @@
   "summary": "Expanded hot-path checks for profiling-sensitive waste.",
   "rules": [
     {
+      "id": "any_or_all_wraps_list_comprehension_instead_of_generator",
+      "label": "Any or All Wraps List Comprehension Instead of Generator",
+      "description": "Flag any([...]) and all([...]) forms that force unnecessary list materialization.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Any or All Wraps List Comprehension Instead of Generator matters because the pattern here, Flag any([...]) and all([...]) forms that force unnecessary list materialization, is worth review because profiling usually shows the same avoidable patterns repeating in slightly different forms.",
+      "fix": "For Any or All Wraps List Comprehension Instead of Generator in Python, treat frequently executed code as a budget: keep the inner loop lean and move expensive setup or conversion work outward."
+    },
+    {
+      "id": "blocking_io_call_executed_per_item_without_batching",
+      "label": "Blocking I/O Call Executed Per Item without Batching",
+      "description": "Flag per-item blocking I/O where batching or grouping is possible.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Blocking I/O Call Executed Per Item without Batching matters because the pattern here, Flag per-item blocking I/O where batching or grouping is possible, is worth review because profiling usually shows the same avoidable patterns repeating in slightly different forms.",
+      "fix": "For Blocking I/O Call Executed Per Item without Batching in Python, treat frequently executed code as a budget: keep the inner loop lean and move expensive setup or conversion work outward."
+    },
+    {
       "id": "concatenation_in_comprehension_body",
       "label": "Concatenation in Comprehension Body",
       "description": "String or collection concatenation happens inside a comprehension body, creating avoidable churn.",
@@ -33,6 +61,48 @@
       "fix": "For Dict Copy in Loop Same Source in Python, prefer being reused or hoisted when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
+      "id": "expensive_sort_key_recomputed_without_preprojection",
+      "label": "Expensive Sort Key Recomputed without Preprojection",
+      "description": "Flag repeated expensive key computation during sorting when values could be precomputed once.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Expensive Sort Key Recomputed without Preprojection matters because the pattern here, Flag repeated expensive key computation during sorting when values could be precomputed once, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Expensive Sort Key Recomputed without Preprojection in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "formatted_log_or_debug_payload_built_for_each_item_without_guard",
+      "label": "Formatted Log or Debug Payload Built for Each Item without Guard",
+      "description": "Flag per-item log payload construction without checking whether the level is enabled.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Formatted Log or Debug Payload Built for Each Item without Guard matters because the pattern here, Flag per-item log payload construction without checking whether the level is enabled, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Formatted Log or Debug Payload Built for Each Item without Guard in Python, add checking whether the level is enabled or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "generator_pipeline_materialized_between_each_transformation_stage",
+      "label": "Generator Pipeline Materialized Between Each Transformation Stage",
+      "description": "Flag pipelines that repeatedly materialize intermediate lists between stages.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Generator Pipeline Materialized Between Each Transformation Stage matters because the pattern here, Flag pipelines that repeatedly materialize intermediate lists between stages, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Generator Pipeline Materialized Between Each Transformation Stage in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
       "id": "gzip_open_per_chunk",
       "label": "Gzip Open Per Chunk",
       "description": "gzip open/create calls are repeated per chunk instead of per stream.",
@@ -47,6 +117,62 @@
       "fix": "For Gzip Open Per Chunk in Python, prefer per stream when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
+      "id": "invariant_computation_not_hoisted_out_of_nested_loop",
+      "label": "Invariant Computation Not Hoisted Out of Nested Loop",
+      "description": "Flag nested loops that recompute invariant values on every inner iteration.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Invariant Computation Not Hoisted Out of Nested Loop matters because the pattern here, Flag nested loops that recompute invariant values on every inner iteration, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Invariant Computation Not Hoisted Out of Nested Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "invariant_template_or_prefix_string_reformatted_inside_loop",
+      "label": "Invariant Template or Prefix String Reformatted Inside Loop",
+      "description": "Flag loops that reformat constant template fragments on each iteration.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Invariant Template or Prefix String Reformatted Inside Loop matters because the pattern here, Flag loops that reformat constant template fragments on each iteration, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Invariant Template or Prefix String Reformatted Inside Loop in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "large_slice_copy_created_each_iteration_for_sliding_window",
+      "label": "Large Slice Copy Created Each Iteration for Sliding Window",
+      "description": "Flag windowed algorithms that copy large slices every step instead of tracking indexes.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Large Slice Copy Created Each Iteration for Sliding Window matters because the pattern here, Flag windowed algorithms that copy large slices every step instead of tracking indexes, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Large Slice Copy Created Each Iteration for Sliding Window in Python, prefer tracking indexes when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "linear_search_helper_called_from_nested_loops",
+      "label": "Linear Search Helper Called From Nested Loops",
+      "description": "Flag nested loops that call helpers performing linear scans on each iteration.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Linear Search Helper Called From Nested Loops matters because the pattern here, Flag nested loops that call helpers performing linear scans on each iteration, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Linear Search Helper Called From Nested Loops in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
       "id": "list_copy_in_loop_same_source",
       "label": "List Copy in Loop Same Source",
       "description": "A list is copied on each loop iteration even though the source appears unchanged.",
@@ -59,6 +185,20 @@
       ],
       "explanation": "In Python, List Copy in Loop Same Source matters because the pattern here, A list is copied on each loop iteration even though the source appears unchanged, turns local work into repeated cost that spreads with traffic or input size.",
       "fix": "For List Copy in Loop Same Source in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "lookup_table_derived_from_constants_rebuilt_per_invocation",
+      "label": "Lookup Table Derived From Constants Rebuilt Per Invocation",
+      "description": "Flag functions that reconstruct lookup tables from static constants every call.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Lookup Table Derived From Constants Rebuilt Per Invocation matters because the pattern here, Flag functions that reconstruct lookup tables from static constants every call, is worth review because profiling usually shows the same avoidable patterns repeating in slightly different forms.",
+      "fix": "For Lookup Table Derived From Constants Rebuilt Per Invocation in Python, treat frequently executed code as a budget: keep the inner loop lean and move expensive setup or conversion work outward."
     },
     {
       "id": "nested_list_search_map_candidate",
@@ -89,6 +229,34 @@
       "fix": "For Path Resolve or Expanduser in Loop in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
     },
     {
+      "id": "per_item_copy_of_large_config_or_context_object",
+      "label": "Per Item Copy of Large Config or Context Object",
+      "description": "Flag loops that copy large config or context structures for each item despite read-mostly behavior.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Per Item Copy of Large Config or Context Object matters because the pattern here, Flag loops that copy large config or context structures for each item despite read-mostly behavior, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Per Item Copy of Large Config or Context Object in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "per_item_deduplication_uses_list_instead_of_hash_index",
+      "label": "Per Item Deduplication Uses List Instead of Hash Index",
+      "description": "Flag high-cardinality deduplication done with linear container membership checks.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Per Item Deduplication Uses List Instead of Hash Index matters because the pattern here, Flag high-cardinality deduplication done with linear container membership checks, is worth review because profiling usually shows the same avoidable patterns repeating in slightly different forms.",
+      "fix": "For Per Item Deduplication Uses List Instead of Hash Index in Python, treat frequently executed code as a budget: keep the inner loop lean and move expensive setup or conversion work outward."
+    },
+    {
       "id": "pickle_dumps_in_loop_same_structure",
       "label": "Pickle Dumps in Loop Same Structure",
       "description": "pickle.dumps(...) is called repeatedly for the same structural shape in a loop.",
@@ -101,6 +269,34 @@
       ],
       "explanation": "In Python, Pickle Dumps in Loop Same Structure matters because the pattern here, pickle.dumps(...) is called repeatedly for the same structural shape in a loop, turns local work into repeated cost that spreads with traffic or input size.",
       "fix": "For Pickle Dumps in Loop Same Structure in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "polling_loop_uses_tiny_sleep_instead_of_blocking_primitive",
+      "label": "Polling Loop Uses Tiny Sleep Instead of Blocking Primitive",
+      "description": "Flag loops that wake repeatedly on a tiny sleep interval instead of a blocking queue, event, or condition.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Polling Loop Uses Tiny Sleep Instead of Blocking Primitive matters because the pattern here, Flag loops that wake repeatedly on a tiny sleep interval instead of a blocking queue, event, or condition, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Polling Loop Uses Tiny Sleep Instead of Blocking Primitive in Python, prefer a blocking queue, event, or condition when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "repeated_casefold_or_lower_calls_before_multiple_comparisons",
+      "label": "Repeated Casefold or Lower Calls Before Multiple Comparisons",
+      "description": "Flag code that normalizes the same candidate repeatedly before several comparisons.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Casefold or Lower Calls Before Multiple Comparisons matters because the pattern here, Flag code that normalizes the same candidate repeatedly before several comparisons, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Casefold or Lower Calls Before Multiple Comparisons in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
     },
     {
       "id": "repeated_datetime_strptime_same_format",
@@ -129,6 +325,20 @@
       ],
       "explanation": "In Python, Repeated Dict Get Same Key No Cache matters because the pattern here, The same dictionary key is fetched repeatedly instead of storing the value in a local binding, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
       "fix": "For Repeated Dict Get Same Key No Cache in Python, prefer storing the value in a local binding when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "repeated_directory_scan_inside_nested_loop",
+      "label": "Repeated Directory Scan Inside Nested Loop",
+      "description": "Flag nested loops that rescan the same directory or file listing.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Directory Scan Inside Nested Loop matters because the pattern here, Flag nested loops that rescan the same directory or file listing, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Directory Scan Inside Nested Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
     },
     {
       "id": "repeated_hashlib_new_same_algorithm",
@@ -187,6 +397,34 @@
       "fix": "For Repeated Locale or Codec Lookup in Loop in Python, prefer being cached once when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
+      "id": "repeated_open_read_close_of_same_small_file_in_single_workflow",
+      "label": "Repeated Open Read Close of Same Small File in Single Workflow",
+      "description": "Flag workflows that reopen the same file many times instead of caching its contents or handle.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Open Read Close of Same Small File in Single Workflow matters because the pattern here, Flag workflows that reopen the same file many times instead of caching its contents or handle, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Repeated Open Read Close of Same Small File in Single Workflow in Python, prefer caching its contents or handle when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "repeated_path_exists_check_before_open_or_replace_in_loop",
+      "label": "Repeated Path Exists Check Before Open or Replace in Loop",
+      "description": "Flag loops that perform a separate existence check before every file operation.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Path Exists Check Before Open or Replace in Loop matters because the pattern here, Flag loops that perform a separate existence check before every file operation, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Path Exists Check Before Open or Replace in Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
       "id": "repeated_string_format_invariant_template",
       "label": "Repeated String Format Invariant Template",
       "description": "An invariant string template is formatted repeatedly in a loop instead of being partially precomputed.",
@@ -199,6 +437,34 @@
       ],
       "explanation": "In Python, Repeated String Format Invariant Template matters because the pattern here, An invariant string template is formatted repeatedly in a loop instead of being partially precomputed, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
       "fix": "For Repeated String Format Invariant Template in Python, prefer being partially precomputed when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "same_sequence_scanned_multiple_times_for_related_aggregates",
+      "label": "Same Sequence Scanned Multiple Times for Related Aggregates",
+      "description": "Flag code that makes several full passes over the same data for related summaries.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Same Sequence Scanned Multiple Times for Related Aggregates matters because the pattern here, Flag code that makes several full passes over the same data for related summaries, is worth review because profiling usually shows the same avoidable patterns repeating in slightly different forms.",
+      "fix": "For Same Sequence Scanned Multiple Times for Related Aggregates in Python, treat frequently executed code as a budget: keep the inner loop lean and move expensive setup or conversion work outward."
+    },
+    {
+      "id": "serialization_then_deserialization_between_adjacent_helpers",
+      "label": "Serialization Then Deserialization Between Adjacent Helpers",
+      "description": "Flag neighboring helpers that bounce data through serialized text or bytes without need.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Serialization Then Deserialization Between Adjacent Helpers matters because the pattern here, Flag neighboring helpers that bounce data through serialized text or bytes without need, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Serialization Then Deserialization Between Adjacent Helpers in Python, add need or move the code to a path where that safeguard is guaranteed before the risky work happens."
     },
     {
       "id": "set_created_per_iteration_same_elements",
@@ -241,6 +507,20 @@
       ],
       "explanation": "In Python, String Join without Generator matters because the pattern here, String joins that materialize an unnecessary list comprehension instead of using a generator or direct iterable, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
       "fix": "For String Join without Generator in Python, prefer using a generator or direct iterable when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "sum_max_min_wrap_list_comprehension_instead_of_generator",
+      "label": "Sum Max Min Wrap List Comprehension Instead of Generator",
+      "description": "Flag reductions that build transient lists instead of using generator expressions.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Sum Max Min Wrap List Comprehension Instead of Generator matters because the pattern here, Flag reductions that build transient lists instead of using generator expressions, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Sum Max Min Wrap List Comprehension Instead of Generator in Python, prefer using generator expressions when the semantics match, and keep the expected or cheaper API choice as the default."
     },
     {
       "id": "tuple_unpacking_in_tight_loop",

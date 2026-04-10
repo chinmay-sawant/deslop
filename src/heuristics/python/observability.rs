@@ -1489,3 +1489,315 @@ pub(super) fn response_envelope_inconsistent_findings(
     }
     Vec::new()
 }
+
+fn contains_any(text: &str, needles: &[&str]) -> bool {
+    needles.iter().any(|needle| text.contains(needle))
+}
+
+pub(super) fn project_agnostic_observability_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let body = &function.body_text;
+    let lower_body = body.to_ascii_lowercase();
+    let line = function.fingerprint.start_line;
+
+    let push = |rule_id: &str, severity: Severity, message: String| Finding {
+        rule_id: rule_id.to_string(),
+        severity,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: line,
+        end_line: line,
+        message,
+        evidence: vec![format!("function={}", function.fingerprint.name)],
+    };
+
+    if contains_any(body, &["logging.getLogger(", "getLogger(__name__)"]) {
+        findings.push(push(
+            "logger_instance_created_inside_function_body",
+            Severity::Info,
+            format!(
+                "function {} creates a logger inside the function body instead of reusing module scope logging",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        body,
+        &["logger.debug(f\"", "logger.info(f\"", "logger.warning(f\""],
+    ) && !contains_any(body, &["isEnabledFor", "if logger.isEnabledFor"])
+    {
+        findings.push(push(
+            "expensive_log_argument_built_without_is_enabled_guard",
+            Severity::Info,
+            format!(
+                "function {} eagerly builds log arguments without a visible log-level guard",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &["metric_name =", "counter(", "histogram("])
+        && contains_any(&lower_body, &["user_id", "path", "email", "request_id"])
+    {
+        findings.push(push(
+            "metric_name_contains_dynamic_user_or_data_values",
+            Severity::Warning,
+            format!(
+                "function {} appears to build metric names from dynamic data",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["labels(", "set_attribute(", "attributes={"])
+        && contains_any(
+            &lower_body,
+            &["user_id", "email", "path", "query", "request_id"],
+        )
+    {
+        findings.push(push(
+            "metric_or_span_labels_use_high_cardinality_raw_inputs",
+            Severity::Warning,
+            format!(
+                "function {} attaches high-cardinality raw inputs to metrics or spans",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if (body.contains("for ") || body.contains("while "))
+        && contains_any(
+            &lower_body,
+            &["counter.inc(", "histogram.observe(", "statsd.", "meter."],
+        )
+    {
+        findings.push(push(
+            "metric_emission_occurs_per_item_inside_inner_loop",
+            Severity::Info,
+            format!(
+                "function {} emits metrics per item inside an inner loop",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        &function.fingerprint.name.to_ascii_lowercase(),
+        &["health", "ready", "live"],
+    ) && contains_any(
+        &lower_body,
+        &["requests.", "session.query(", ".objects.", "subprocess."],
+    ) {
+        findings.push(push(
+            "health_probe_executes_full_dependency_workflow",
+            Severity::Warning,
+            format!(
+                "function {} executes heavyweight dependency work inside a health probe",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["logger.", "counter.", "start_span("])
+        && !contains_any(&lower_body, &["operation=", "op_name", "name="])
+    {
+        findings.push(push(
+            "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+            Severity::Info,
+            format!(
+                "function {} does not show a single stable operation name across observability surfaces",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["retry", "attempt"])
+        && contains_any(&lower_body, &["logger.", "logging."])
+        && !contains_any(&lower_body, &["attempt=", "backoff", "delay", "sleep"])
+    {
+        findings.push(push(
+            "retry_loop_logs_without_attempt_count_or_backoff_context",
+            Severity::Info,
+            format!(
+                "function {} logs retries without attempt or backoff context",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if body.contains("except ")
+        && contains_any(&lower_body, &["logger.error(", "logger.exception("])
+        && !contains_any(
+            &lower_body,
+            &["request_id", "operation", "input", "user_id"],
+        )
+    {
+        findings.push(push(
+            "exception_log_omits_operation_identifier_or_input_summary",
+            Severity::Info,
+            format!(
+                "function {} logs exceptions without an operation identifier or input summary",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("uuid4(").count() >= 2 || lower_body.matches("request_id =").count() >= 2
+    {
+        findings.push(push(
+            "correlation_id_recomputed_multiple_times_in_same_workflow",
+            Severity::Info,
+            format!(
+                "function {} appears to regenerate correlation identifiers instead of propagating one value",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["logger.debug(", "logger.info("])
+        && contains_any(
+            &lower_body,
+            &["json.dumps(", "model_dump(", "vars(", "__dict__"],
+        )
+    {
+        findings.push(push(
+            "debug_log_serializes_full_large_object_graph",
+            Severity::Info,
+            format!(
+                "function {} serializes large object graphs for debug logging",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if body.contains("logger.")
+        && contains_any(&lower_body, &["userid", "user_id", "uid", "account_id"])
+    {
+        findings.push(push(
+            "success_and_failure_paths_use_inconsistent_structured_log_keys",
+            Severity::Info,
+            format!(
+                "function {} appears to use inconsistent structured log key names",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &["timer(", "histogram.time(", "observe_duration"],
+    ) && contains_any(&lower_body, &["setup", "connect", "cleanup"])
+    {
+        findings.push(push(
+            "timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation",
+            Severity::Info,
+            format!(
+                "function {} wraps setup and teardown noise into a timing metric",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &[
+            "return result, span",
+            "return payload, trace",
+            "return value, metric",
+        ],
+    ) {
+        findings.push(push(
+            "instrumentation_helper_mutates_business_return_shape",
+            Severity::Warning,
+            format!(
+                "function {} changes the return shape while adding instrumentation",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &[
+            "trace_id = context.",
+            "request_id = context.",
+            "span = context.",
+        ],
+    ) {
+        findings.push(push(
+            "observability_context_extracted_manually_at_many_call_sites",
+            Severity::Info,
+            format!(
+                "function {} manually extracts observability context instead of using a shared boundary",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["logger.warning(", "logger.error("])
+        && contains_any(
+            &lower_body,
+            &["payload", "body", "response.text", "request.text"],
+        )
+    {
+        findings.push(push(
+            "warning_or_error_logs_emit_unbounded_payload_text",
+            Severity::Warning,
+            format!(
+                "function {} logs potentially unbounded payload text on warning/error paths",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &["handler.flush(", "logging.shutdown(", "force_flush("],
+    ) {
+        findings.push(push(
+            "synchronous_log_handler_or_flush_called_on_fast_path",
+            Severity::Warning,
+            format!(
+                "function {} forces synchronous log flushing on a live execution path",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    findings
+}
+
+pub(super) fn project_agnostic_observability_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    for call in &file.module_scope_calls {
+        if contains_any(
+            &call.text.to_ascii_lowercase(),
+            &["init_tracer(", "setup_logging(", "instrument("],
+        ) {
+            findings.push(Finding {
+                rule_id: "instrumentation_import_or_setup_occurs_on_first_live_request".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: call.line,
+                end_line: call.line,
+                message: "module appears to defer instrumentation setup into a live execution path"
+                    .to_string(),
+                evidence: vec![format!("module_scope_call={}", call.text.trim())],
+            });
+        }
+    }
+    findings
+}
