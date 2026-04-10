@@ -1,0 +1,302 @@
+{
+  "language": "python",
+  "family": "quality",
+  "label": "Quality",
+  "summary": "Baseline code-quality rules for reliability and clarity.",
+  "rules": [
+    {
+      "id": "async_lock_held_across_await",
+      "label": "Async Lock Held Across Await",
+      "description": "Async lock scopes or explicit acquire/release regions that continue across unrelated await points.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Async Lock Held Across Await matters because the pattern here, Async lock scopes or explicit acquire/release regions that continue across unrelated await points, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Async Lock Held Across Await in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "async_retry_sleep_without_backoff",
+      "label": "Async Retry Sleep without Backoff",
+      "description": "Retry-style async loops that sleep a fixed interval without visible backoff, jitter, or bounded retry policy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Async Retry Sleep without Backoff matters because the pattern here, Retry-style async loops that sleep a fixed interval without visible backoff, jitter, or bounded retry policy, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Async Retry Sleep without Backoff in Python, add visible backoff, jitter, or bounded retry policy or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "background_task_exception_unobserved",
+      "label": "Background Task Exception Unobserved",
+      "description": "Background task bindings with no obvious await, callback, supervisor, or observation path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Background Task Exception Unobserved matters because the pattern here, Background task bindings with no obvious await, callback, supervisor, or observation path, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Background Task Exception Unobserved in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "dataclass_heavy_post_init",
+      "label": "Dataclass Heavy Post Init",
+      "description": "Dataclass __post_init__ methods that perform I/O, subprocess, network, or heavyweight client setup.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Dataclass Heavy Post Init matters because the pattern here, Dataclass __post_init__ methods that perform I/O, subprocess, network, or heavyweight client setup, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Dataclass Heavy Post Init in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "dataclass_mutable_default",
+      "label": "Dataclass Mutable Default",
+      "description": "Dataclass fields that use mutable defaults instead of default_factory.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Dataclass Mutable Default matters because the pattern here, Dataclass fields that use mutable defaults instead of default_factory, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Dataclass Mutable Default in Python, prefer default_factory when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "import_time_config_load",
+      "label": "Import Time Config Load",
+      "description": "Module-scope configuration or secret loading that runs during import instead of an explicit startup path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Import Time Config Load matters because the pattern here, Module-scope configuration or secret loading that runs during import instead of an explicit startup path, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Import Time Config Load in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "import_time_file_io",
+      "label": "Import Time File I/O",
+      "description": "Module-scope file reads, writes, or directory scans that happen during import.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Import Time File I/O matters because the pattern here, Module-scope file reads, writes, or directory scans that happen during import, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Import Time File I/O in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "import_time_network_call",
+      "label": "Import Time Network Call",
+      "description": "Module-scope HTTP or socket calls executed while the module is imported.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Import Time Network Call matters because the pattern here, Module-scope HTTP or socket calls executed while the module is imported, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Import Time Network Call in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "import_time_subprocess",
+      "label": "Import Time Subprocess",
+      "description": "Subprocess launches triggered from module scope during import.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Import Time Subprocess matters because the pattern here, Subprocess launches triggered from module scope during import, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Import Time Subprocess in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "module_singleton_client_side_effect",
+      "label": "Module Singleton Client Side Effect",
+      "description": "Eagerly constructed network, database, or cloud clients bound at module scope.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Module Singleton Client Side Effect matters because the pattern here, Eagerly constructed network, database, or cloud clients bound at module scope, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Module Singleton Client Side Effect in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "mutable_default_argument",
+      "label": "Mutable Default Argument",
+      "description": "Function parameters that use mutable defaults such as [], {}, or set() directly in the signature.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Mutable Default Argument matters because the pattern here, Function parameters that use mutable defaults such as [], {}, or set() directly in the signature, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Mutable Default Argument in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "mutable_module_global_state",
+      "label": "Mutable Module Global State",
+      "description": "Mutable module globals updated from multiple functions.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Mutable Module Global State matters because the pattern here, Mutable module globals updated from multiple functions, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Mutable Module Global State in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "option_bag_model",
+      "label": "Option Bag Model",
+      "description": "Dataclass or TypedDict models that accumulate many optional fields and boolean switches.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Option Bag Model matters because the pattern here, Dataclass or TypedDict models that accumulate many optional fields and boolean switches, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Option Bag Model in Python, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "pickle_deserialization_boundary",
+      "label": "Pickle Deserialization Boundary",
+      "description": "pickle.load(s) or dill.load(s) style deserialization in production code.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pickle Deserialization Boundary matters because the pattern here, pickle.load(s) or dill.load(s) style deserialization in production code, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Pickle Deserialization Boundary in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "public_any_type_leak",
+      "label": "Public Any Type Leak",
+      "description": "Public functions or model fields that expose Any, object, or similarly wide contracts.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Public Any Type Leak matters because the pattern here, Public functions or model fields that expose Any, object, or similarly wide contracts, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Public Any Type Leak in Python, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "subprocess_shell_true",
+      "label": "Subprocess Shell True",
+      "description": "Subprocess boundaries that enable shell=True.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Subprocess Shell True matters because the pattern here, Subprocess boundaries that enable shell=True, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Subprocess Shell True in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    },
+    {
+      "id": "tar_extractall_unfiltered",
+      "label": "Tar Extractall Unfiltered",
+      "description": "tarfile.extractall(...) without an obvious filter, members list, or path-validation helper.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Tar Extractall Unfiltered matters because the pattern here, tarfile.extractall(...) without an obvious filter, members list, or path-validation helper, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Tar Extractall Unfiltered in Python, add an obvious filter, members list, or path-validation helper or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "tempfile_without_cleanup",
+      "label": "Tempfile without Cleanup",
+      "description": "Temporary files or directories created without a visible cleanup or context-manager ownership path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Tempfile without Cleanup matters because the pattern here, Temporary files or directories created without a visible cleanup or context-manager ownership path, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Tempfile without Cleanup in Python, add a visible cleanup or context-manager ownership path or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "typeddict_unchecked_access",
+      "label": "Typeddict Unchecked Access",
+      "description": "Direct indexing of optional TypedDict keys without an obvious guard path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Typeddict Unchecked Access matters because the pattern here, Direct indexing of optional TypedDict keys without an obvious guard path, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Typeddict Unchecked Access in Python, add an obvious guard path or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "unsafe_yaml_loader",
+      "label": "Unsafe Yaml Loader",
+      "description": "yaml.load(...) or full_load(...) style loaders used where safe loading is more appropriate.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Unsafe Yaml Loader matters because the pattern here, yaml.load(...) or full_load(...) style loaders used where safe loading is more appropriate, depends on an invariant that future maintainers also have to preserve exactly.",
+      "fix": "For Unsafe Yaml Loader in Python, shrink the unsafe surface, document the invariant, or move the behavior behind a safe abstraction."
+    },
+    {
+      "id": "untracked_asyncio_task",
+      "label": "Untracked Asyncio Task",
+      "description": "asyncio.create_task(...) or similar task creation whose handle is discarded immediately.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Untracked Asyncio Task matters because the pattern here, asyncio.create_task(...) or similar task creation whose handle is discarded immediately, is worth review because small structural shortcuts often make the code look finished before it is actually review-safe.",
+      "fix": "For Untracked Asyncio Task in Python, prefer explicit intent, clearer failure handling, and one obvious place for each responsibility."
+    }
+  ]
+}

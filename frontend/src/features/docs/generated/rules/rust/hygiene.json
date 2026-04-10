@@ -1,0 +1,162 @@
+{
+  "language": "rust",
+  "family": "hygiene",
+  "label": "Hygiene",
+  "summary": "Leftovers, placeholder code, and repository-local hygiene checks.",
+  "rules": [
+    {
+      "id": "dbg_macro_leftover",
+      "label": "Dbg Macro Leftover",
+      "description": "dbg!() left in non-test Rust code.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Dbg Macro Leftover matters because the pattern here, dbg!() left in non-test Rust code, weakens the evidence that tests or review are supposed to provide.",
+      "fix": "For Dbg Macro Leftover in Rust, tighten the tests until the failure mode, edge case, or assertion signal is obvious to a reviewer."
+    },
+    {
+      "id": "expect_in_non_test_code",
+      "label": "Expect in Non Test Code",
+      "description": "expect() used in non-test Rust code.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Expect in Non Test Code matters because the pattern here, expect() used in non-test Rust code, weakens the evidence that tests or review are supposed to provide.",
+      "fix": "For Expect in Non Test Code in Rust, tighten the tests until the failure mode, edge case, or assertion signal is obvious to a reviewer."
+    },
+    {
+      "id": "fixme_doc_comment_leftover",
+      "label": "Fixme Doc Comment Leftover",
+      "description": "Rust doc comments that still contain a FIXME marker in non-test code.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Fixme Doc Comment Leftover matters because the pattern here, Rust doc comments that still contain a FIXME marker in non-test code, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Fixme Doc Comment Leftover in Rust, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "hack_doc_comment_leftover",
+      "label": "Hack Doc Comment Leftover",
+      "description": "Rust doc comments that still contain a HACK marker in non-test code.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Hack Doc Comment Leftover matters because the pattern here, Rust doc comments that still contain a HACK marker in non-test code, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Hack Doc Comment Leftover in Rust, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "panic_macro_leftover",
+      "label": "Panic Macro Leftover",
+      "description": "panic macro left in non-test Rust code.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Panic Macro Leftover matters because the pattern here, panic macro left in non-test Rust code, weakens the evidence that tests or review are supposed to provide.",
+      "fix": "For Panic Macro Leftover in Rust, tighten the tests until the failure mode, edge case, or assertion signal is obvious to a reviewer."
+    },
+    {
+      "id": "todo_doc_comment_leftover",
+      "label": "Todo Doc Comment Leftover",
+      "description": "Rust doc comments that still contain a TODO marker in non-test code.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Todo Doc Comment Leftover matters because the pattern here, Rust doc comments that still contain a TODO marker in non-test code, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Todo Doc Comment Leftover in Rust, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "todo_macro_leftover",
+      "label": "Todo Macro Leftover",
+      "description": "todo!() left in non-test Rust code.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Todo Macro Leftover matters because the pattern here, todo!() left in non-test Rust code, weakens the evidence that tests or review are supposed to provide.",
+      "fix": "For Todo Macro Leftover in Rust, tighten the tests until the failure mode, edge case, or assertion signal is obvious to a reviewer."
+    },
+    {
+      "id": "unimplemented_macro_leftover",
+      "label": "Unimplemented Macro Leftover",
+      "description": "unimplemented!() left in non-test Rust code.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Unimplemented Macro Leftover matters because the pattern here, unimplemented!() left in non-test Rust code, weakens the evidence that tests or review are supposed to provide.",
+      "fix": "For Unimplemented Macro Leftover in Rust, tighten the tests until the failure mode, edge case, or assertion signal is obvious to a reviewer."
+    },
+    {
+      "id": "unreachable_macro_leftover",
+      "label": "Unreachable Macro Leftover",
+      "description": "unreachable!() left in non-test Rust code.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Unreachable Macro Leftover matters because the pattern here, unreachable!() left in non-test Rust code, weakens the evidence that tests or review are supposed to provide.",
+      "fix": "For Unreachable Macro Leftover in Rust, tighten the tests until the failure mode, edge case, or assertion signal is obvious to a reviewer."
+    },
+    {
+      "id": "unsafe_without_safety_comment",
+      "label": "Unsafe without Safety Comment",
+      "description": "unsafe fn or unsafe block without a nearby SAFETY: comment within the previous two lines.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Unsafe without Safety Comment matters because the pattern here, unsafe fn or unsafe block without a nearby SAFETY: comment within the previous two lines, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Unsafe without Safety Comment in Rust, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "unwrap_in_non_test_code",
+      "label": "Unwrap in Non Test Code",
+      "description": "unwrap() used in non-test Rust code.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Unwrap in Non Test Code matters because the pattern here, unwrap() used in non-test Rust code, weakens the evidence that tests or review are supposed to provide.",
+      "fix": "For Unwrap in Non Test Code in Rust, tighten the tests until the failure mode, edge case, or assertion signal is obvious to a reviewer."
+    }
+  ]
+}

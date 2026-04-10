@@ -2,26 +2,24 @@ import { useState } from 'react'
 
 import {
   cliCommands,
-  commonRules,
   goEcosystemSupport,
   githubActionInputs,
   githubActionBenchExample,
   githubActionJsonExample,
   githubActionWorkflow,
-  goRules,
   languages,
   limitations,
   overviewContent,
   pipelineStages,
-  pythonRules,
   repositoryConfigExample,
-  rustRules,
   sections,
   type Language,
   type SectionId,
 } from '../docs-content'
 import { currentRelease, getReleaseByVersion, releaseHistory } from '../../../content/site-content'
 import { CodeBlock } from './CodeBlock'
+import { RulesExplorer } from './RulesExplorer'
+import { ruleCatalog } from '../rule-catalog'
 
 interface DocsLayoutProps {
   activeLang: Language
@@ -40,7 +38,7 @@ export function DocsLayout({
 
   const langClass = `lang-${activeLang}`
   const overview = overviewContent[activeLang]
-  const rules = activeLang === 'common' ? commonRules : activeLang === 'go' ? goRules : activeLang === 'python' ? pythonRules : rustRules
+  const languageCatalog = ruleCatalog.languages[activeLang]
   const commands = cliCommands[activeLang]
   const limits = limitations[activeLang]
   const selectedRelease = getReleaseByVersion(selectedReleaseVersion) ?? currentRelease
@@ -53,10 +51,10 @@ export function DocsLayout({
   const setActiveSection = onSectionChange
 
   const ruleCounts: Record<Language, number> = {
-    go: goRules.length,
-    python: pythonRules.length,
-    rust: rustRules.length,
-    common: commonRules.length,
+    go: ruleCatalog.languages.go.ruleCount,
+    python: ruleCatalog.languages.python.ruleCount,
+    rust: ruleCatalog.languages.rust.ruleCount,
+    common: ruleCatalog.languages.common.ruleCount,
   }
 
   return (
@@ -233,12 +231,12 @@ export function DocsLayout({
         </div>
 
         {/* DETECTION RULES */}
-        <div className={`docs-section${activeSection === 'detection-rules' ? ' active' : ''}`}>
+        <div className={`docs-section docs-section-rules${activeSection === 'detection-rules' ? ' active' : ''}`}>
           <div className={`docs-eyebrow ${langClass}`}>Detection rules</div>
           <h1 className="docs-h1">
             {activeLang === 'common'
-              ? `${rules.length} generic rules.`
-              : `${rules.length} rules for ${activeLang === 'go' ? 'Go' : activeLang === 'python' ? 'Python' : 'Rust'}.`}
+              ? `${languageCatalog.ruleCount} generic rules.`
+              : `${languageCatalog.ruleCount} rules for ${activeLang === 'go' ? 'Go' : activeLang === 'python' ? 'Python' : 'Rust'}.`}
           </h1>
           <p className="docs-lead">
             Each rule produces a finding with a rule ID, severity, file path, line number, and human-readable evidence.
@@ -252,19 +250,8 @@ export function DocsLayout({
             </p>
           </div>
 
-          <h2 className="docs-h2">All {activeLang === 'go' ? 'Go' : activeLang === 'python' ? 'Python' : activeLang === 'rust' ? 'Rust' : 'Common'} rules</h2>
-          <div className="rule-grid">
-            {rules.map((rule) => (
-              <div key={rule.id} className="rule-item">
-                <div>
-                  <span className={`rule-tag ${langClass}`}>{rule.id}</span>
-                </div>
-                <div>
-                  <p className="rule-desc">{rule.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <h2 className="docs-h2">Browse {activeLang === 'go' ? 'Go' : activeLang === 'python' ? 'Python' : activeLang === 'rust' ? 'Rust' : 'Common'} rules</h2>
+          <RulesExplorer activeLang={activeLang} />
 
           {activeLang === 'go' && (
             <>

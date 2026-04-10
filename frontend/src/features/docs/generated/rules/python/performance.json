@@ -1,0 +1,134 @@
+{
+  "language": "python",
+  "family": "performance",
+  "label": "Performance",
+  "summary": "General performance patterns outside the hot-path packs.",
+  "rules": [
+    {
+      "id": "blocking_sync_io_in_async",
+      "label": "Blocking Sync I/O in Async",
+      "description": "Synchronous network, subprocess, sleep, or file I/O calls made from async def functions.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Blocking Sync I/O in Async matters because the pattern here, Synchronous network, subprocess, sleep, or file I/O calls made from async def functions, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Blocking Sync I/O in Async in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "deque_candidate_queue",
+      "label": "Deque Candidate Queue",
+      "description": "Queue-style list operations like pop(0) or insert(0, ...) that may want collections.deque.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Deque Candidate Queue matters because the pattern here, Queue-style list operations like pop(0) or insert(0, ...) that may want collections.deque, is worth review because a few avoidable data-shape or allocation choices can dominate runtime costs in Python.",
+      "fix": "For Deque Candidate Queue in Python, choose the cheaper structure early, avoid repeated conversions, and reserve broad materialization for places where it is actually needed."
+    },
+    {
+      "id": "full_dataset_load",
+      "label": "Full Dataset Load",
+      "description": "Calls that load an entire payload into memory instead of streaming.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Full Dataset Load matters because the pattern here, Calls that load an entire payload into memory instead of streaming, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Full Dataset Load in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "list_materialization_first_element",
+      "label": "List Materialization First Element",
+      "description": "list(...)[0] style access that materializes a whole list just to read the first element.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, List Materialization First Element matters because the pattern here, list(...)[0] style access that materializes a whole list just to read the first element, is worth review because a few avoidable data-shape or allocation choices can dominate runtime costs in Python.",
+      "fix": "For List Materialization First Element in Python, choose the cheaper structure early, avoid repeated conversions, and reserve broad materialization for places where it is actually needed."
+    },
+    {
+      "id": "list_membership_in_loop",
+      "label": "List Membership in Loop",
+      "description": "Repeated membership checks against obviously list-like containers inside loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, List Membership in Loop matters because the pattern here, Repeated membership checks against obviously list-like containers inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For List Membership in Loop in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "recursive_traversal_risk",
+      "label": "Recursive Traversal Risk",
+      "description": "Direct recursion in traversal-style helpers that may be safer as iterative walks for deep inputs.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Recursive Traversal Risk matters because the pattern here, Direct recursion in traversal-style helpers that may be safer as iterative walks for deep inputs, is worth review because a few avoidable data-shape or allocation choices can dominate runtime costs in Python.",
+      "fix": "For Recursive Traversal Risk in Python, choose the cheaper structure early, avoid repeated conversions, and reserve broad materialization for places where it is actually needed."
+    },
+    {
+      "id": "repeated_len_in_loop",
+      "label": "Repeated Len in Loop",
+      "description": "Repeated len(...) checks inside loops when the receiver appears unchanged locally.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Len in Loop matters because the pattern here, Repeated len(...) checks inside loops when the receiver appears unchanged locally, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Repeated Len in Loop in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "string_concat_in_loop",
+      "label": "String Concat in Loop",
+      "description": "Repeated string concatenation inside loops can create O(n^2) growth and extra allocations.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, String Concat in Loop matters because the pattern here, Repeated string concatenation inside loops can create O(n^2) growth and extra allocations, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For String Concat in Loop in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "temporary_collection_in_loop",
+      "label": "Temporary Collection in Loop",
+      "description": "Loop-local list, dict, or set construction that likely adds avoidable allocation churn.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Temporary Collection in Loop matters because the pattern here, Loop-local list, dict, or set construction that likely adds avoidable allocation churn, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Temporary Collection in Loop in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    }
+  ]
+}

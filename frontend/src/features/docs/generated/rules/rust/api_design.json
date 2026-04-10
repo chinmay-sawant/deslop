@@ -1,0 +1,302 @@
+{
+  "language": "rust",
+  "family": "api_design",
+  "label": "API Design",
+  "summary": "API shapes, contracts, and surface-area design smells.",
+  "rules": [
+    {
+      "id": "rust_arc_mutex_option_state",
+      "label": "Rust Arc Mutex Option State",
+      "description": "Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Arc Mutex Option State matters because the pattern here, Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers, is worth review because good ownership and type contracts are a large part of what keeps Rust code ergonomic and safe.",
+      "fix": "For Rust Arc Mutex Option State in Rust, use the type system to make the contract obvious, and avoid APIs that force callers to remember hidden modes or invalid states."
+    },
+    {
+      "id": "rust_boolean_state_machine",
+      "label": "Rust Boolean State Machine",
+      "description": "State structs encoded with multiple booleans instead of a dedicated enum.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Boolean State Machine matters because the pattern here, State structs encoded with multiple booleans instead of a dedicated enum, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Boolean State Machine in Rust, prefer a dedicated enum when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_borrowed_pathbuf_api",
+      "label": "Rust Borrowed Pathbuf API",
+      "description": "Public signatures that borrow &PathBuf instead of &Path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Borrowed Pathbuf API matters because the pattern here, Public signatures that borrow &PathBuf instead of &Path, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Borrowed Pathbuf API in Rust, prefer &Path when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_borrowed_string_api",
+      "label": "Rust Borrowed String API",
+      "description": "Public signatures that borrow &String instead of &str.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Borrowed String API matters because the pattern here, Public signatures that borrow &String instead of &str, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Borrowed String API in Rust, prefer &str when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_borrowed_vec_api",
+      "label": "Rust Borrowed Vec API",
+      "description": "Public signatures that borrow &Vec<T> instead of &[T].",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Borrowed Vec API matters because the pattern here, Public signatures that borrow &Vec<T> instead of &[T], shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Borrowed Vec API in Rust, prefer &[T] when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_builder_without_validate",
+      "label": "Rust Builder without Validate",
+      "description": "Builders that expose build() without an obvious validation step.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Builder without Validate matters because the pattern here, Builders that expose build() without an obvious validation step, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Builder without Validate in Rust, add an obvious validation step or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_constructor_many_flags",
+      "label": "Rust Constructor Many Flags",
+      "description": "Constructor-like APIs that use multiple boolean flags.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Constructor Many Flags matters because the pattern here, Constructor-like APIs that use multiple boolean flags, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Rust Constructor Many Flags in Rust, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "rust_global_lock_state",
+      "label": "Rust Global Lock State",
+      "description": "Static or lazy global state wrapped in mutable lock-based containers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Global Lock State matters because the pattern here, Static or lazy global state wrapped in mutable lock-based containers, is worth review because good ownership and type contracts are a large part of what keeps Rust code ergonomic and safe.",
+      "fix": "For Rust Global Lock State in Rust, use the type system to make the contract obvious, and avoid APIs that force callers to remember hidden modes or invalid states."
+    },
+    {
+      "id": "rust_mutex_wrapped_collection",
+      "label": "Rust Mutex Wrapped Collection",
+      "description": "Collection-plus-lock fields embedded directly in public or central state structs.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Mutex Wrapped Collection matters because the pattern here, Collection-plus-lock fields embedded directly in public or central state structs, is worth review because good ownership and type contracts are a large part of what keeps Rust code ergonomic and safe.",
+      "fix": "For Rust Mutex Wrapped Collection in Rust, use the type system to make the contract obvious, and avoid APIs that force callers to remember hidden modes or invalid states."
+    },
+    {
+      "id": "rust_option_bag_config",
+      "label": "Rust Option Bag Config",
+      "description": "Config-like structs with many Option fields and no obvious validation path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Option Bag Config matters because the pattern here, Config-like structs with many Option fields and no obvious validation path, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Option Bag Config in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_partial_init_escape",
+      "label": "Rust Partial Init Escape",
+      "description": "Constructor-like functions that return or store partially initialized structs.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Partial Init Escape matters because the pattern here, Constructor-like functions that return or store partially initialized structs, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Rust Partial Init Escape in Rust, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "rust_pub_interior_mutability_field",
+      "label": "Rust Pub Interior Mutability Field",
+      "description": "Public structs that expose Mutex, RwLock, RefCell, Cell, or similar fields directly.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Pub Interior Mutability Field matters because the pattern here, Public structs that expose Mutex, RwLock, RefCell, Cell, or similar fields directly, is worth review because good ownership and type contracts are a large part of what keeps Rust code ergonomic and safe.",
+      "fix": "For Rust Pub Interior Mutability Field in Rust, use the type system to make the contract obvious, and avoid APIs that force callers to remember hidden modes or invalid states."
+    },
+    {
+      "id": "rust_public_anyhow_result",
+      "label": "Rust Public Anyhow Result",
+      "description": "Public library-facing APIs that return anyhow-style Result types instead of a clearer domain error.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Public Anyhow Result matters because the pattern here, Public library-facing APIs that return anyhow-style Result types instead of a clearer domain error, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Public Anyhow Result in Rust, prefer a clearer domain error when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_public_bool_parameter_api",
+      "label": "Rust Public Bool Parameter API",
+      "description": "Public APIs that expose a raw boolean mode switch.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Public Bool Parameter API matters because the pattern here, Public APIs that expose a raw boolean mode switch, depends on an invariant that future maintainers also have to preserve exactly.",
+      "fix": "For Rust Public Bool Parameter API in Rust, shrink the unsafe surface, document the invariant, or move the behavior behind a safe abstraction."
+    },
+    {
+      "id": "rust_public_box_dyn_error",
+      "label": "Rust Public Box Dyn Error",
+      "description": "Public APIs that expose Box<dyn Error> rather than a clearer error surface.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Public Box Dyn Error matters because the pattern here, Public APIs that expose Box<dyn Error> rather than a clearer error surface, is worth review because good ownership and type contracts are a large part of what keeps Rust code ergonomic and safe.",
+      "fix": "For Rust Public Box Dyn Error in Rust, use the type system to make the contract obvious, and avoid APIs that force callers to remember hidden modes or invalid states."
+    },
+    {
+      "id": "rust_rc_refcell_domain_model",
+      "label": "Rust Rc Refcell Domain Model",
+      "description": "Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rc Refcell Domain Model matters because the pattern here, Domain-style structs built around Rc<RefCell<T>> instead of clearer ownership boundaries, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Rc Refcell Domain Model in Rust, prefer clearer ownership boundaries when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_serde_default_on_required_field",
+      "label": "Rust Serde Default on Required Field",
+      "description": "Required-looking contract fields that opt into #[serde(default)].",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Default on Required Field matters because the pattern here, Required-looking contract fields that opt into #[serde(default)], is worth review because good ownership and type contracts are a large part of what keeps Rust code ergonomic and safe.",
+      "fix": "For Rust Serde Default on Required Field in Rust, use the type system to make the contract obvious, and avoid APIs that force callers to remember hidden modes or invalid states."
+    },
+    {
+      "id": "rust_serde_flatten_catchall",
+      "label": "Rust Serde Flatten Catchall",
+      "description": "#[serde(flatten)] catch-all maps or loose value bags that absorb unknown fields.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Flatten Catchall matters because the pattern here, #[serde(flatten)] catch-all maps or loose value bags that absorb unknown fields, is worth review because good ownership and type contracts are a large part of what keeps Rust code ergonomic and safe.",
+      "fix": "For Rust Serde Flatten Catchall in Rust, use the type system to make the contract obvious, and avoid APIs that force callers to remember hidden modes or invalid states."
+    },
+    {
+      "id": "rust_serde_unknown_fields_allowed",
+      "label": "Rust Serde Unknown Fields Allowed",
+      "description": "Strict-looking config or request structs that deserialize without deny_unknown_fields.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Unknown Fields Allowed matters because the pattern here, Strict-looking config or request structs that deserialize without deny_unknown_fields, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Serde Unknown Fields Allowed in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_serde_untagged_enum_boundary",
+      "label": "Rust Serde Untagged Enum Boundary",
+      "description": "Boundary-facing enums that derive #[serde(untagged)] and risk ambiguous wire formats.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Untagged Enum Boundary matters because the pattern here, Boundary-facing enums that derive #[serde(untagged)] and risk ambiguous wire formats, is worth review because good ownership and type contracts are a large part of what keeps Rust code ergonomic and safe.",
+      "fix": "For Rust Serde Untagged Enum Boundary in Rust, use the type system to make the contract obvious, and avoid APIs that force callers to remember hidden modes or invalid states."
+    },
+    {
+      "id": "rust_stringly_typed_enum_boundary",
+      "label": "Rust Stringly Typed Enum Boundary",
+      "description": "Enum-like boundary fields kept as String instead of a dedicated enum.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Stringly Typed Enum Boundary matters because the pattern here, Enum-like boundary fields kept as String instead of a dedicated enum, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Stringly Typed Enum Boundary in Rust, prefer a dedicated enum when the semantics match, and keep the expected or cheaper API choice as the default."
+    }
+  ]
+}

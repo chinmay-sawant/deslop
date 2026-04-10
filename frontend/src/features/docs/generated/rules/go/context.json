@@ -1,0 +1,190 @@
+{
+  "language": "go",
+  "family": "context",
+  "label": "Context",
+  "summary": "Context propagation, cancellation, detaching, and request-lifetime misuse.",
+  "rules": [
+    {
+      "id": "busy_waiting",
+      "label": "Busy Waiting",
+      "description": "select { default: ... } inside loops, which often spins instead of blocking.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Busy Waiting matters because the pattern here, select { default: ... } inside loops, which often spins instead of blocking, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Busy Waiting in Go, prefer blocking when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "cache_interface_method_missing_context",
+      "label": "Cache Interface Method Missing Context",
+      "description": "Cache-oriented interfaces whose IO-style methods omit context.Context.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Cache Interface Method Missing Context matters because the pattern here, Cache-oriented interfaces whose IO-style methods omit context.Context, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Cache Interface Method Missing Context in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "cache_method_uses_context_background",
+      "label": "Cache Method Uses Context Background",
+      "description": "Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Cache Method Uses Context Background matters because the pattern here, Cache implementations that call context.Background() or context.TODO() instead of propagating caller context, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Cache Method Uses Context Background in Go, prefer propagating caller context when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "context_background_used",
+      "label": "Context Background Used",
+      "description": "Functions or request handlers that already have a caller-owned context available but still create context.Background() or context.TODO() locally.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Context Background Used matters because the pattern here, Functions or request handlers that already have a caller-owned context available but still create context.Background() or context.TODO() locally, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Context Background Used in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "context_key_uses_exported_or_builtin_type",
+      "label": "Context Key Uses Exported or Builtin Type",
+      "description": "context.WithValue keys or exported key declarations that use built-in scalar types instead of unexported key types.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Context Key Uses Exported or Builtin Type matters because the pattern here, context.WithValue keys or exported key declarations that use built-in scalar types instead of unexported key types, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Context Key Uses Exported or Builtin Type in Go, prefer unexported key types when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "context_not_first_parameter",
+      "label": "Context Not First Parameter",
+      "description": "Functions that accept context.Context but not as the first non-receiver parameter on context-aware call paths.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Context Not First Parameter matters because the pattern here, Functions that accept context.Context but not as the first non-receiver parameter on context-aware call paths, makes the API contract harder to scan and easier to misuse.",
+      "fix": "For Context Not First Parameter in Go, reshape the signature so context stays explicit at the call boundary and the expected parameter order is visible immediately."
+    },
+    {
+      "id": "context_stored_in_struct_field",
+      "label": "Context Stored in Struct Field",
+      "description": "Struct fields that store context.Context instead of keeping context request-scoped through method parameters.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Context Stored in Struct Field matters because the pattern here, Struct fields that store context.Context instead of keeping context request-scoped through method parameters, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Context Stored in Struct Field in Go, prefer keeping context request-scoped through method parameters when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "context_withvalue_used_for_dependencies_or_large_payloads",
+      "label": "Context Withvalue Used for Dependencies or Large Payloads",
+      "description": "context.WithValue used for dependency-like objects or payload-like data instead of lightweight request metadata.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Context Withvalue Used for Dependencies or Large Payloads matters because the pattern here, context.WithValue used for dependency-like objects or payload-like data instead of lightweight request metadata, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Context Withvalue Used for Dependencies or Large Payloads in Go, prefer lightweight request metadata when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "missing_cancel_call",
+      "label": "Missing Cancel Call",
+      "description": "Derived contexts where deslop cannot find a local cancel() or defer cancel() call.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Missing Cancel Call matters because the pattern here, Derived contexts where deslop cannot find a local cancel() or defer cancel() call, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Missing Cancel Call in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "missing_context",
+      "label": "Missing Context",
+      "description": "Standard-library context-aware calls from functions that do not accept context.Context.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Missing Context matters because the pattern here, Standard-library context-aware calls from functions that do not accept context.Context, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Missing Context in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "missing_context_propagation",
+      "label": "Missing Context Propagation",
+      "description": "Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Missing Context Propagation matters because the pattern here, Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command, makes the API contract harder to scan and easier to misuse.",
+      "fix": "For Missing Context Propagation in Go, reshape the signature so context stays explicit at the call boundary and the expected parameter order is visible immediately."
+    },
+    {
+      "id": "request_context_passed_to_background_task_without_detach",
+      "label": "Request Context Passed to Background Task without Detach",
+      "description": "Background goroutines that still appear to inherit request-scoped context instead of detaching with context.WithoutCancel or equivalent.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Request Context Passed to Background Task without Detach matters because the pattern here, Background goroutines that still appear to inherit request-scoped context instead of detaching with context.WithoutCancel or equivalent, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Request Context Passed to Background Task without Detach in Go, prefer detaching with context.WithoutCancel or equivalent when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "sleep_polling",
+      "label": "Sleep Polling",
+      "description": "time.Sleep inside loops \u2014 often indicates polling or busy-wait style code.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sleep Polling matters because the pattern here, time.Sleep inside loops \u2014 often indicates polling or busy-wait style code, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Sleep Polling in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    }
+  ]
+}

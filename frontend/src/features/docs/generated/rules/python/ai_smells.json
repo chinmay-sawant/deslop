@@ -1,0 +1,78 @@
+{
+  "language": "python",
+  "family": "ai_smells",
+  "label": "AI Smells",
+  "summary": "Generated-looking helper, naming, and commentary patterns.",
+  "rules": [
+    {
+      "id": "enthusiastic_commentary",
+      "label": "Enthusiastic Commentary",
+      "description": "Unusually enthusiastic or emoji-heavy production comments.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Enthusiastic Commentary matters because the pattern here, Unusually enthusiastic or emoji-heavy production comments, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Enthusiastic Commentary in Python, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "mixed_naming_conventions",
+      "label": "Mixed Naming Conventions",
+      "description": "File mixes snake_case and camelCase function naming conventions.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Mixed Naming Conventions matters because the pattern here, File mixes snake_case and camelCase function naming conventions, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Mixed Naming Conventions in Python, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "obvious_commentary",
+      "label": "Obvious Commentary",
+      "description": "Comments that narrate obvious implementation steps instead of explaining intent.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Obvious Commentary matters because the pattern here, Comments that narrate obvious implementation steps instead of explaining intent, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Obvious Commentary in Python, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "textbook_docstring_small_helper",
+      "label": "Textbook Docstring Small Helper",
+      "description": "Very small helper functions that have unusually long, textbook-style docstrings.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Textbook Docstring Small Helper matters because the pattern here, Very small helper functions that have unusually long, textbook-style docstrings, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Textbook Docstring Small Helper in Python, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "unrelated_heavy_import",
+      "label": "Unrelated Heavy Import",
+      "description": "Heavy ecosystem imports with little local evidence of real need.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Unrelated Heavy Import matters because the pattern here, Heavy ecosystem imports with little local evidence of real need, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Unrelated Heavy Import in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    }
+  ]
+}

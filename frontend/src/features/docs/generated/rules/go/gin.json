@@ -1,0 +1,484 @@
+{
+  "language": "go",
+  "family": "gin",
+  "label": "Gin",
+  "summary": "Gin-specific routing, binding, handlers, and transport boundary issues.",
+  "rules": [
+    {
+      "id": "bindjson_into_map_any_hot_endpoint",
+      "label": "Bindjson Into Map Any Hot Endpoint",
+      "description": "Gin handlers that bind JSON into map[string]any or map[string]interface{} on hot request paths.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bindjson Into Map Any Hot Endpoint matters because the pattern here, Gin handlers that bind JSON into map[string]any or map[string]interface{} on hot request paths, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Bindjson Into Map Any Hot Endpoint in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "bindquery_into_map_any_hot_endpoint",
+      "label": "Bindquery Into Map Any Hot Endpoint",
+      "description": "Gin handlers that bind query parameters into map[string]any or map[string]interface{} on hot request paths.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bindquery Into Map Any Hot Endpoint matters because the pattern here, Gin handlers that bind query parameters into map[string]any or map[string]interface{} on hot request paths, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Bindquery Into Map Any Hot Endpoint in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "dumprequest_or_dumpresponse_in_hot_path",
+      "label": "Dumprequest or Dumpresponse in Hot Path",
+      "description": "Request-path handlers that dump full HTTP requests or responses with httputil.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Dumprequest or Dumpresponse in Hot Path matters because the pattern here, Request-path handlers that dump full HTTP requests or responses with httputil, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Dumprequest or Dumpresponse in Hot Path in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "duplicate_upstream_calls_same_url_same_handler",
+      "label": "Duplicate Upstream Calls Same URL Same Handler",
+      "description": "Same upstream URL called multiple times in one handler.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Duplicate Upstream Calls Same URL Same Handler matters because the pattern here, Same upstream URL called multiple times in one handler, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Duplicate Upstream Calls Same URL Same Handler in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "env_or_config_lookup_per_request",
+      "label": "Env or Config Lookup Per Request",
+      "description": "Environment variable reads observed on request paths instead of cached configuration.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Env or Config Lookup Per Request matters because the pattern here, Environment variable reads observed on request paths instead of cached configuration, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Env or Config Lookup Per Request in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "errgroup_fanout_without_limit_in_handler",
+      "label": "Errgroup Fanout without Limit in Handler",
+      "description": "errgroup goroutine fanout without a visible concurrency limit in handlers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Errgroup Fanout without Limit in Handler matters because the pattern here, errgroup goroutine fanout without a visible concurrency limit in handlers, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Errgroup Fanout without Limit in Handler in Go, add a visible concurrency limit in handlers or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "file_or_template_read_per_request",
+      "label": "File or Template Read Per Request",
+      "description": "Request-path handlers that read files directly instead of using startup caching or dedicated file-serving paths.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, File or Template Read Per Request matters because the pattern here, Request-path handlers that read files directly instead of using startup caching or dedicated file-serving paths, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For File or Template Read Per Request in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "formfile_open_readall_whole_upload",
+      "label": "Formfile Open Readall Whole Upload",
+      "description": "Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...).",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Formfile Open Readall Whole Upload matters because the pattern here, Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...), blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Formfile Open Readall Whole Upload in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "get_raw_data_then_should_bindjson_duplicate_body",
+      "label": "Get Raw Data Then Should Bindjson Duplicate Body",
+      "description": "Gin handlers that read GetRawData() and later bind JSON from the same request body.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Get Raw Data Then Should Bindjson Duplicate Body matters because the pattern here, Gin handlers that read GetRawData() and later bind JSON from the same request body, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Get Raw Data Then Should Bindjson Duplicate Body in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "gin_context_copy_for_each_item_fanout",
+      "label": "Gin Context Copy for Each Item Fanout",
+      "description": "Gin handlers that call c.Copy() once per loop iteration before goroutine fanout.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Gin Context Copy for Each Item Fanout matters because the pattern here, Gin handlers that call c.Copy() once per loop iteration before goroutine fanout, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Gin Context Copy for Each Item Fanout in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "gin_logger_debug_body_logging_on_hot_routes",
+      "label": "Gin Logger Debug Body Logging on Hot Routes",
+      "description": "Verbose body or payload logging observed on likely high-volume Gin routes.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Gin Logger Debug Body Logging on Hot Routes matters because the pattern here, Verbose body or payload logging observed on likely high-volume Gin routes, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Gin Logger Debug Body Logging on Hot Routes in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "gzip_or_zip_writer_created_per_chunk",
+      "label": "Gzip or Zip Writer Created Per Chunk",
+      "description": "Gzip or zip writers recreated per chunk inside handler loops instead of reusing per stream.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Gzip or Zip Writer Created Per Chunk matters because the pattern here, Gzip or zip writers recreated per chunk inside handler loops instead of reusing per stream, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Gzip or Zip Writer Created Per Chunk in Go, prefer reusing per stream when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "indentedjson_in_hot_path",
+      "label": "Indentedjson in Hot Path",
+      "description": "IndentedJSON(...) used on a request path instead of compact JSON rendering.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Indentedjson in Hot Path matters because the pattern here, IndentedJSON(...) used on a request path instead of compact JSON rendering, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Indentedjson in Hot Path in Go, prefer compact JSON rendering when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "json_marshaled_manually_then_c_data",
+      "label": "JSON Marshaled Manually Then C Data",
+      "description": "Handlers that manually marshal JSON and then write it through gin.Context.Data(...).",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, JSON Marshaled Manually Then C Data matters because the pattern here, Handlers that manually marshal JSON and then write it through gin.Context.Data(...), blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For JSON Marshaled Manually Then C Data in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "large_csv_or_json_export_without_bufio",
+      "label": "Large Csv or JSON Export without Bufio",
+      "description": "Export data written in loops without visible buffering in handlers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Large Csv or JSON Export without Bufio matters because the pattern here, Export data written in loops without visible buffering in handlers, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Large Csv or JSON Export without Bufio in Go, add visible buffering in handlers or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "large_h_payload_built_only_for_json_response",
+      "label": "Large H Payload Built Only for JSON Response",
+      "description": "Large gin.H payloads built as transient dynamic maps right before JSON rendering.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Large H Payload Built Only for JSON Response matters because the pattern here, Large gin.H payloads built as transient dynamic maps right before JSON rendering, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Large H Payload Built Only for JSON Response in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "loadhtmlglob_or_loadhtmlfiles_in_request_path",
+      "label": "Loadhtmlglob or Loadhtmlfiles in Request Path",
+      "description": "LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Loadhtmlglob or Loadhtmlfiles in Request Path matters because the pattern here, LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Loadhtmlglob or Loadhtmlfiles in Request Path in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "middleware_allocates_db_or_gorm_handle_per_request",
+      "label": "Middleware Allocates DB or GORM Handle Per Request",
+      "description": "Database or GORM connections opened inside handlers or middleware instead of process-level setup.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Middleware Allocates DB or GORM Handle Per Request matters because the pattern here, Database or GORM connections opened inside handlers or middleware instead of process-level setup, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Middleware Allocates DB or GORM Handle Per Request in Go, prefer process-level setup when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "middleware_allocates_http_client_per_request",
+      "label": "Middleware Allocates HTTP Client Per Request",
+      "description": "HTTP client allocated inside Gin handlers or middleware instead of being shared.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Middleware Allocates HTTP Client Per Request matters because the pattern here, HTTP client allocated inside Gin handlers or middleware instead of being shared, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Middleware Allocates HTTP Client Per Request in Go, prefer being shared when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "middleware_allocates_regex_or_template_per_request",
+      "label": "Middleware Allocates Regex or Template Per Request",
+      "description": "Regexp compilation inside Gin handlers instead of using precompiled patterns.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Middleware Allocates Regex or Template Per Request matters because the pattern here, Regexp compilation inside Gin handlers instead of using precompiled patterns, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Middleware Allocates Regex or Template Per Request in Go, prefer using precompiled patterns when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "middleware_rebinds_body_after_handler_bind",
+      "label": "Middleware Rebinds Body After Handler Bind",
+      "description": "Middleware or helper chains that parse the request body after the main handler has already bound it.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Middleware Rebinds Body After Handler Bind matters because the pattern here, Middleware or helper chains that parse the request body after the main handler has already bound it, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Middleware Rebinds Body After Handler Bind in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "multiple_shouldbind_calls_same_handler",
+      "label": "Multiple Shouldbind Calls Same Handler",
+      "description": "Gin handlers that bind the request body multiple times in one function.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Multiple Shouldbind Calls Same Handler matters because the pattern here, Gin handlers that bind the request body multiple times in one function, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Multiple Shouldbind Calls Same Handler in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "no_batching_on_handler_driven_db_write_loop",
+      "label": "No Batching on Handler Driven DB Write Loop",
+      "description": "Request handlers that drive row-by-row DB writes with no batch path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, No Batching on Handler Driven DB Write Loop matters because the pattern here, Request handlers that drive row-by-row DB writes with no batch path, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For No Batching on Handler Driven DB Write Loop in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "no_streaming_for_large_export_handler",
+      "label": "No Streaming for Large Export Handler",
+      "description": "Large list or export handlers that materialize everything before writing rather than using chunked or streaming output.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, No Streaming for Large Export Handler matters because the pattern here, Large list or export handlers that materialize everything before writing rather than using chunked or streaming output, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For No Streaming for Large Export Handler in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "parsemultipartform_large_default_memory",
+      "label": "Parsemultipartform Large Default Memory",
+      "description": "Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Parsemultipartform Large Default Memory matters because the pattern here, Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Parsemultipartform Large Default Memory in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "readall_body_then_bind_duplicate_deserialize",
+      "label": "Readall Body Then Bind Duplicate Deserialize",
+      "description": "Gin handlers that materialize c.Request.Body with io.ReadAll(...) and then bind the same body again.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Readall Body Then Bind Duplicate Deserialize matters because the pattern here, Gin handlers that materialize c.Request.Body with io.ReadAll(...) and then bind the same body again, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Readall Body Then Bind Duplicate Deserialize in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "repeated_body_rewind_for_multiple_decoders",
+      "label": "Repeated Body Rewind for Multiple Decoders",
+      "description": "Gin handlers that read, rewind, and decode the same request body multiple times.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Repeated Body Rewind for Multiple Decoders matters because the pattern here, Gin handlers that read, rewind, and decode the same request body multiple times, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Body Rewind for Multiple Decoders in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "repeated_c_json_inside_stream_loop",
+      "label": "Repeated C JSON Inside Stream Loop",
+      "description": "Gin handlers that call c.JSON(...) or c.PureJSON(...) from inside loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Repeated C JSON Inside Stream Loop matters because the pattern here, Gin handlers that call c.JSON(...) or c.PureJSON(...) from inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Repeated C JSON Inside Stream Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "repeated_large_map_literal_response_construction",
+      "label": "Repeated Large Map Literal Response Construction",
+      "description": "Large map-literal response assembly on hot routes where a stable typed response would be cheaper.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Repeated Large Map Literal Response Construction matters because the pattern here, Large map-literal response assembly on hot routes where a stable typed response would be cheaper, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Large Map Literal Response Construction in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "servefile_via_readfile_then_c_data",
+      "label": "Servefile Via Readfile Then C Data",
+      "description": "Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Servefile Via Readfile Then C Data matters because the pattern here, Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Servefile Via Readfile Then C Data in Go, prefer using file helpers or streaming when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "shouldbindbodywith_when_single_bind_is_enough",
+      "label": "Shouldbindbodywith When Single Bind Is Enough",
+      "description": "Gin handlers that use ShouldBindBodyWith(...) even though only one body bind is observed.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Shouldbindbodywith When Single Bind Is Enough matters because the pattern here, Gin handlers that use ShouldBindBodyWith(...) even though only one body bind is observed, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Shouldbindbodywith When Single Bind Is Enough in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "template_parse_in_handler",
+      "label": "Template Parse in Handler",
+      "description": "Template construction or parsing inside Gin handlers instead of startup-time caching.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Template Parse in Handler matters because the pattern here, Template construction or parsing inside Gin handlers instead of startup-time caching, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Template Parse in Handler in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "upstream_http_call_per_item_in_handler_loop",
+      "label": "Upstream HTTP Call Per Item in Handler Loop",
+      "description": "Upstream HTTP calls made per item inside handler loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Upstream HTTP Call Per Item in Handler Loop matters because the pattern here, Upstream HTTP calls made per item inside handler loops, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Upstream HTTP Call Per Item in Handler Loop in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "upstream_json_decode_same_response_multiple_times",
+      "label": "Upstream JSON Decode Same Response Multiple Times",
+      "description": "One upstream HTTP response body decoded into multiple targets in the same handler.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Upstream JSON Decode Same Response Multiple Times matters because the pattern here, One upstream HTTP response body decoded into multiple targets in the same handler, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Upstream JSON Decode Same Response Multiple Times in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    }
+  ]
+}

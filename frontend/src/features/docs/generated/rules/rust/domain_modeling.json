@@ -1,0 +1,120 @@
+{
+  "language": "rust",
+  "family": "domain_modeling",
+  "label": "Domain Modeling",
+  "summary": "Types and domain objects that hide business intent or invalid states.",
+  "rules": [
+    {
+      "id": "rust_debug_secret",
+      "label": "Rust Debug Secret",
+      "description": "Debug is derived on a type that carries secret-like fields.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Debug Secret matters because the pattern here, Debug is derived on a type that carries secret-like fields, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Rust Debug Secret in Rust, pull the sensitive value from env, config, or a secret manager instead of embedding it directly in source."
+    },
+    {
+      "id": "rust_domain_default_produces_invalid",
+      "label": "Rust Domain Default Produces Invalid",
+      "description": "Default is derived or implemented on a type that likely cannot have a safe default state.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Domain Default Produces Invalid matters because the pattern here, Default is derived or implemented on a type that likely cannot have a safe default state, is worth review because rust gives you strong tools to encode intent, and weak modeling throws that advantage away.",
+      "fix": "For Rust Domain Default Produces Invalid in Rust, model the real business state directly in the types, and keep impossible or unsupported states out of normal flows."
+    },
+    {
+      "id": "rust_domain_float_for_money",
+      "label": "Rust Domain Float for Money",
+      "description": "Floating-point storage is used for money-like values.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Domain Float for Money matters because the pattern here, Floating-point storage is used for money-like values, is worth review because rust gives you strong tools to encode intent, and weak modeling throws that advantage away.",
+      "fix": "For Rust Domain Float for Money in Rust, model the real business state directly in the types, and keep impossible or unsupported states out of normal flows."
+    },
+    {
+      "id": "rust_domain_impossible_combination",
+      "label": "Rust Domain Impossible Combination",
+      "description": "A boolean toggle is mixed with optional credentials, creating invalid-state combinations.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Domain Impossible Combination matters because the pattern here, A boolean toggle is mixed with optional credentials, creating invalid-state combinations, is worth review because rust gives you strong tools to encode intent, and weak modeling throws that advantage away.",
+      "fix": "For Rust Domain Impossible Combination in Rust, model the real business state directly in the types, and keep impossible or unsupported states out of normal flows."
+    },
+    {
+      "id": "rust_domain_optional_secret_default",
+      "label": "Rust Domain Optional Secret Default",
+      "description": "A defaultable type includes optional secret-like fields, which can hide invalid configuration.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Domain Optional Secret Default matters because the pattern here, A defaultable type includes optional secret-like fields, which can hide invalid configuration, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Rust Domain Optional Secret Default in Rust, pull the sensitive value from env, config, or a secret manager instead of embedding it directly in source."
+    },
+    {
+      "id": "rust_domain_raw_primitive",
+      "label": "Rust Domain Raw Primitive",
+      "description": "Business-facing data is stored as a raw primitive instead of a stronger domain type.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Domain Raw Primitive matters because the pattern here, Business-facing data is stored as a raw primitive instead of a stronger domain type, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Domain Raw Primitive in Rust, prefer a stronger domain type when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_serde_sensitive_deserialize",
+      "label": "Rust Serde Sensitive Deserialize",
+      "description": "Deserialize is derived for sensitive fields without obvious validation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Sensitive Deserialize matters because the pattern here, Deserialize is derived for sensitive fields without obvious validation, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Serde Sensitive Deserialize in Rust, add obvious validation or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_serde_sensitive_serialize",
+      "label": "Rust Serde Sensitive Serialize",
+      "description": "Serialize is derived for secret-like fields that may need redaction or exclusion.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Sensitive Serialize matters because the pattern here, Serialize is derived for secret-like fields that may need redaction or exclusion, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Rust Serde Sensitive Serialize in Rust, pull the sensitive value from env, config, or a secret manager instead of embedding it directly in source."
+    }
+  ]
+}

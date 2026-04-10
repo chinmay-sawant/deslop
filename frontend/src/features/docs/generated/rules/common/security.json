@@ -1,0 +1,22 @@
+{
+  "language": "common",
+  "family": "security",
+  "label": "Security",
+  "summary": "Shared secret-handling and boundary checks that apply across languages.",
+  "rules": [
+    {
+      "id": "hardcoded_secret",
+      "label": "Hardcoded Secret",
+      "description": "Secret-like identifiers assigned direct string literals instead of environment lookups.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Common, Hardcoded Secret matters because the pattern here, Secret-like identifiers assigned direct string literals instead of environment lookups, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Hardcoded Secret in Common, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    }
+  ]
+}

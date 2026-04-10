@@ -1,0 +1,106 @@
+{
+  "language": "rust",
+  "family": "module_surface",
+  "label": "Module Surface",
+  "summary": "Module exports, placement, and surface-area drift.",
+  "rules": [
+    {
+      "id": "rust_broad_allow_dead_code",
+      "label": "Rust Broad Allow Dead Code",
+      "description": "Broad dead_code suppression that can hide real wiring or maintenance gaps.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Broad Allow Dead Code matters because the pattern here, Broad dead_code suppression that can hide real wiring or maintenance gaps, is worth review because every extra public edge expands what future changes have to preserve.",
+      "fix": "For Rust Broad Allow Dead Code in Rust, expose the smallest surface that supports the use case, and keep module roles obvious from their location and exports."
+    },
+    {
+      "id": "rust_duplicate_bootstrap_sequence",
+      "label": "Rust Duplicate Bootstrap Sequence",
+      "description": "Repeated startup or bootstrap wiring in multiple functions within the same file.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Duplicate Bootstrap Sequence matters because the pattern here, Repeated startup or bootstrap wiring in multiple functions within the same file, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Duplicate Bootstrap Sequence in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_mod_rs_catchall",
+      "label": "Rust Mod Rs Catchall",
+      "description": "mod.rs files that look like catch-all subsystem dumps.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Mod Rs Catchall matters because the pattern here, mod.rs files that look like catch-all subsystem dumps, is worth review because every extra public edge expands what future changes have to preserve.",
+      "fix": "For Rust Mod Rs Catchall in Rust, expose the smallest surface that supports the use case, and keep module roles obvious from their location and exports."
+    },
+    {
+      "id": "rust_oversized_module_file",
+      "label": "Rust Oversized Module File",
+      "description": "Rust module files that grow too large and mix too many responsibilities.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Oversized Module File matters because the pattern here, Rust module files that grow too large and mix too many responsibilities, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Rust Oversized Module File in Rust, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "rust_pub_use_glob_surface",
+      "label": "Rust Pub Use Glob Surface",
+      "description": "Public glob re-exports that flatten the crate surface.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Pub Use Glob Surface matters because the pattern here, Public glob re-exports that flatten the crate surface, is worth review because every extra public edge expands what future changes have to preserve.",
+      "fix": "For Rust Pub Use Glob Surface in Rust, expose the smallest surface that supports the use case, and keep module roles obvious from their location and exports."
+    },
+    {
+      "id": "rust_redundant_path_attribute",
+      "label": "Rust Redundant Path Attribute",
+      "description": "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Redundant Path Attribute matters because the pattern here, Same-directory #[path = \"...\"] module attributes that standard resolution could replace, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Rust Redundant Path Attribute in Rust, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "rust_root_reexport_wall",
+      "label": "Rust Root Reexport Wall",
+      "description": "Crate roots that expose too many public re-exports at once.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Root Reexport Wall matters because the pattern here, Crate roots that expose too many public re-exports at once, is worth review because every extra public edge expands what future changes have to preserve.",
+      "fix": "For Rust Root Reexport Wall in Rust, expose the smallest surface that supports the use case, and keep module roles obvious from their location and exports."
+    }
+  ]
+}

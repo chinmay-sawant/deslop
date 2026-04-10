@@ -1,0 +1,2264 @@
+{
+  "language": "go",
+  "family": "performance",
+  "label": "Performance",
+  "summary": "Low-level CPU, allocation, and repeated-work performance smells.",
+  "rules": [
+    {
+      "id": "adler32_checksum_in_loop",
+      "label": "Adler32 Checksum in Loop",
+      "description": "`adler32.Checksum(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Adler32 Checksum in Loop matters because the pattern here, `adler32.Checksum(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Adler32 Checksum in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "allocation_churn_in_loop",
+      "label": "Allocation Churn in Loop",
+      "description": "Obvious make, new, or buffer-construction calls inside loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Allocation Churn in Loop matters because the pattern here, Obvious make, new, or buffer-construction calls inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Allocation Churn in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "base64_decode_string_in_loop",
+      "label": "Base64 Decode String in Loop",
+      "description": "Base64 decode from string inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Base64 Decode String in Loop matters because the pattern here, Base64 decode from string inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Base64 Decode String in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "base64_encode_to_string_in_loop",
+      "label": "Base64 Encode to String in Loop",
+      "description": "Base64 encoding to string inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Base64 Encode to String in Loop matters because the pattern here, Base64 encoding to string inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Base64 Encode to String in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "binary_read_for_single_field",
+      "label": "Binary Read for Single Field",
+      "description": "`binary.Read(r, order, &singleField)` for reading a single integer",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Binary Read for Single Field matters because the pattern here, `binary.Read(r, order, &singleField)` for reading a single integer, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Binary Read for Single Field in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "buffer_write_rune_ascii_literal",
+      "label": "Buffer Write Rune Ascii Literal",
+      "description": "`bytes.Buffer.WriteRune('x')` for ASCII literals instead of `WriteByte`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Buffer Write Rune Ascii Literal matters because the pattern here, `bytes.Buffer.WriteRune('x')` for ASCII literals instead of `WriteByte`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Buffer Write Rune Ascii Literal in Go, prefer `WriteByte` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "buffer_write_string_single_byte_literal",
+      "label": "Buffer Write String Single Byte Literal",
+      "description": "`bytes.Buffer.WriteString(\"x\")` for single-byte literals instead of `WriteByte`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Buffer Write String Single Byte Literal matters because the pattern here, `bytes.Buffer.WriteString(\"x\")` for single-byte literals instead of `WriteByte`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Buffer Write String Single Byte Literal in Go, prefer `WriteByte` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bufio_scanner_small_buffer_for_large_lines",
+      "label": "Bufio Scanner Small Buffer for Large Lines",
+      "description": "`bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bufio Scanner Small Buffer for Large Lines matters because the pattern here, `bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Bufio Scanner Small Buffer for Large Lines in Go, add `scanner.Buffer()` when processing files with lines > 64KB or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "builder_write_rune_ascii_literal",
+      "label": "Builder Write Rune Ascii Literal",
+      "description": "`strings.Builder.WriteRune('x')` for ASCII literals instead of `WriteByte`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Builder Write Rune Ascii Literal matters because the pattern here, `strings.Builder.WriteRune('x')` for ASCII literals instead of `WriteByte`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Builder Write Rune Ascii Literal in Go, prefer `WriteByte` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "builder_write_string_single_byte_literal",
+      "label": "Builder Write String Single Byte Literal",
+      "description": "`strings.Builder.WriteString(\"x\")` for single-byte literals instead of `WriteByte`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Builder Write String Single Byte Literal matters because the pattern here, `strings.Builder.WriteString(\"x\")` for single-byte literals instead of `WriteByte`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Builder Write String Single Byte Literal in Go, prefer `WriteByte` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_buffer_string_len",
+      "label": "Bytes Buffer String Len",
+      "description": "`len(buf.String())` instead of `buf.Len()`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Buffer String Len matters because the pattern here, `len(buf.String())` instead of `buf.Len()`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Buffer String Len in Go, prefer `buf.Len()` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_buffer_truncate_zero_reset",
+      "label": "Bytes Buffer Truncate Zero Reset",
+      "description": "`buf.Truncate(0)` instead of `buf.Reset()`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Buffer Truncate Zero Reset matters because the pattern here, `buf.Truncate(0)` instead of `buf.Reset()`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Buffer Truncate Zero Reset in Go, prefer `buf.Reset()` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_compare_equal_zero",
+      "label": "Bytes Compare Equal Zero",
+      "description": "`bytes.Compare(...) == 0` instead of `bytes.Equal(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Compare Equal Zero matters because the pattern here, `bytes.Compare(...) == 0` instead of `bytes.Equal(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Compare Equal Zero in Go, prefer `bytes.Equal(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_compare_not_equal_zero",
+      "label": "Bytes Compare Not Equal Zero",
+      "description": "`bytes.Compare(...) != 0` instead of `!bytes.Equal(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Compare Not Equal Zero matters because the pattern here, `bytes.Compare(...) != 0` instead of `!bytes.Equal(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Compare Not Equal Zero in Go, prefer `!bytes.Equal(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_count_gt_zero_contains",
+      "label": "Bytes Count Gt Zero Contains",
+      "description": "`bytes.Count(...) > 0` instead of `bytes.Contains(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Count Gt Zero Contains matters because the pattern here, `bytes.Count(...) > 0` instead of `bytes.Contains(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Count Gt Zero Contains in Go, prefer `bytes.Contains(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_hasprefix_manual_slice_after_len",
+      "label": "Bytes Hasprefix Manual Slice After Len",
+      "description": "Manual `len` and slice prefix checks instead of `bytes.HasPrefix(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Hasprefix Manual Slice After Len matters because the pattern here, Manual `len` and slice prefix checks instead of `bytes.HasPrefix(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Hasprefix Manual Slice After Len in Go, prefer `bytes.HasPrefix(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_hassuffix_manual_slice_after_len",
+      "label": "Bytes Hassuffix Manual Slice After Len",
+      "description": "Manual `len` and slice suffix checks instead of `bytes.HasSuffix(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Hassuffix Manual Slice After Len matters because the pattern here, Manual `len` and slice suffix checks instead of `bytes.HasSuffix(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Hassuffix Manual Slice After Len in Go, prefer `bytes.HasSuffix(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_index_any_not_minus_one_contains_any",
+      "label": "Bytes Index Any Not Minus One Contains Any",
+      "description": "`bytes.IndexAny(...) != -1` presence checks instead of `bytes.ContainsAny(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Index Any Not Minus One Contains Any matters because the pattern here, `bytes.IndexAny(...) != -1` presence checks instead of `bytes.ContainsAny(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Index Any Not Minus One Contains Any in Go, prefer `bytes.ContainsAny(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_index_not_minus_one_contains",
+      "label": "Bytes Index Not Minus One Contains",
+      "description": "`bytes.Index(...) != -1` presence checks instead of `bytes.Contains(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Index Not Minus One Contains matters because the pattern here, `bytes.Index(...) != -1` presence checks instead of `bytes.Contains(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Index Not Minus One Contains in Go, prefer `bytes.Contains(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_newbufferstring_on_string_conversion",
+      "label": "Bytes Newbufferstring on String Conversion",
+      "description": "`bytes.NewBufferString(string(b))` instead of using the byte slice directly.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Newbufferstring on String Conversion matters because the pattern here, `bytes.NewBufferString(string(b))` instead of using the byte slice directly, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Newbufferstring on String Conversion in Go, prefer using the byte slice directly when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_newreader_on_string_conversion",
+      "label": "Bytes Newreader on String Conversion",
+      "description": "`bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Newreader on String Conversion matters because the pattern here, `bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Newreader on String Conversion in Go, prefer `strings.NewReader(s)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_replace_neg_one_replaceall",
+      "label": "Bytes Replace Neg One Replaceall",
+      "description": "`bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Replace Neg One Replaceall matters because the pattern here, `bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Replace Neg One Replaceall in Go, prefer `bytes.ReplaceAll(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_split_two_index_one_cut",
+      "label": "Bytes Split Two Index One Cut",
+      "description": "`bytes.Split(...)[1]` when only the second segment is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Split Two Index One Cut matters because the pattern here, `bytes.Split(...)[1]` when only the second segment is needed, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Bytes Split Two Index One Cut in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "bytes_split_two_index_zero_cut",
+      "label": "Bytes Split Two Index Zero Cut",
+      "description": "`bytes.Split(...)[0]` when only the first segment is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Split Two Index Zero Cut matters because the pattern here, `bytes.Split(...)[0]` when only the first segment is needed, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Bytes Split Two Index Zero Cut in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "bytes_splitafter_two_index_one_cut",
+      "label": "Bytes Splitafter Two Index One Cut",
+      "description": "`bytes.SplitAfter(...)[1]` when only the second segment is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Splitafter Two Index One Cut matters because the pattern here, `bytes.SplitAfter(...)[1]` when only the second segment is needed, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Bytes Splitafter Two Index One Cut in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "bytes_splitafter_two_index_zero_cut",
+      "label": "Bytes Splitafter Two Index Zero Cut",
+      "description": "`bytes.SplitAfter(...)[0]` when only the first segment is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Splitafter Two Index Zero Cut matters because the pattern here, `bytes.SplitAfter(...)[0]` when only the first segment is needed, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Bytes Splitafter Two Index Zero Cut in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "bytes_splitaftern_two_index_one_cut",
+      "label": "Bytes Splitaftern Two Index One Cut",
+      "description": "`bytes.SplitAfterN(..., 2)[1]` instead of a two-part `bytes.Cut(...)` flow.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Splitaftern Two Index One Cut matters because the pattern here, `bytes.SplitAfterN(..., 2)[1]` instead of a two-part `bytes.Cut(...)` flow, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Splitaftern Two Index One Cut in Go, prefer a two-part `bytes.Cut(...)` flow when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_splitaftern_two_index_zero_cut",
+      "label": "Bytes Splitaftern Two Index Zero Cut",
+      "description": "`bytes.SplitAfterN(..., 2)[0]` instead of a two-part `bytes.Cut(...)` flow.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Splitaftern Two Index Zero Cut matters because the pattern here, `bytes.SplitAfterN(..., 2)[0]` instead of a two-part `bytes.Cut(...)` flow, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Splitaftern Two Index Zero Cut in Go, prefer a two-part `bytes.Cut(...)` flow when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_splitn_two_index_one_cut",
+      "label": "Bytes Splitn Two Index One Cut",
+      "description": "`bytes.SplitN(..., 2)[1]` instead of `bytes.Cut(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Splitn Two Index One Cut matters because the pattern here, `bytes.SplitN(..., 2)[1]` instead of `bytes.Cut(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Splitn Two Index One Cut in Go, prefer `bytes.Cut(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_splitn_two_index_zero_cut",
+      "label": "Bytes Splitn Two Index Zero Cut",
+      "description": "`bytes.SplitN(..., 2)[0]` instead of `bytes.Cut(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Splitn Two Index Zero Cut matters because the pattern here, `bytes.SplitN(..., 2)[0]` instead of `bytes.Cut(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Splitn Two Index Zero Cut in Go, prefer `bytes.Cut(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_tolower_equalfold",
+      "label": "Bytes Tolower Equalfold",
+      "description": "`bytes.Equal(bytes.ToLower(...), bytes.ToLower(...))` instead of `bytes.EqualFold(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Tolower Equalfold matters because the pattern here, `bytes.Equal(bytes.ToLower(...), bytes.ToLower(...))` instead of `bytes.EqualFold(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Tolower Equalfold in Go, prefer `bytes.EqualFold(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_toupper_equalfold",
+      "label": "Bytes Toupper Equalfold",
+      "description": "`bytes.Equal(bytes.ToUpper(...), bytes.ToUpper(...))` instead of `bytes.EqualFold(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Toupper Equalfold matters because the pattern here, `bytes.Equal(bytes.ToUpper(...), bytes.ToUpper(...))` instead of `bytes.EqualFold(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Toupper Equalfold in Go, prefer `bytes.EqualFold(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_trimleft_space_trimspace",
+      "label": "Bytes Trimleft Space Trimspace",
+      "description": "`bytes.TrimLeft(..., whitespace)` instead of `bytes.TrimSpace(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Trimleft Space Trimspace matters because the pattern here, `bytes.TrimLeft(..., whitespace)` instead of `bytes.TrimSpace(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Trimleft Space Trimspace in Go, prefer `bytes.TrimSpace(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "bytes_trimright_space_trimspace",
+      "label": "Bytes Trimright Space Trimspace",
+      "description": "`bytes.TrimRight(..., whitespace)` instead of `bytes.TrimSpace(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Bytes Trimright Space Trimspace matters because the pattern here, `bytes.TrimRight(..., whitespace)` instead of `bytes.TrimSpace(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Bytes Trimright Space Trimspace in Go, prefer `bytes.TrimSpace(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "clear_map_go121",
+      "label": "Clear Map Go121",
+      "description": "`for k := range m { delete(m, k) }` in Go 1.21+ codebases",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Clear Map Go121 matters because the pattern here, `for k := range m { delete(m, k) }` in Go 1.21+ codebases, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Clear Map Go121 in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "context_withtimeout_inside_loop",
+      "label": "Context Withtimeout Inside Loop",
+      "description": "`context.WithTimeout(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Context Withtimeout Inside Loop matters because the pattern here, `context.WithTimeout(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Context Withtimeout Inside Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "copy_append_idiom_waste",
+      "label": "Copy Append Idiom Waste",
+      "description": "`dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Copy Append Idiom Waste matters because the pattern here, `dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Copy Append Idiom Waste in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "crc32_checksum_in_loop",
+      "label": "Crc32 Checksum in Loop",
+      "description": "`crc32.Checksum...` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Crc32 Checksum in Loop matters because the pattern here, `crc32.Checksum...` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Crc32 Checksum in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "crc64_checksum_in_loop",
+      "label": "Crc64 Checksum in Loop",
+      "description": "`crc64.Checksum(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Crc64 Checksum in Loop matters because the pattern here, `crc64.Checksum(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Crc64 Checksum in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "csv_reader_reuse_record",
+      "label": "Csv Reader Reuse Record",
+      "description": "`csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Csv Reader Reuse Record matters because the pattern here, `csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Csv Reader Reuse Record in Go, add `ReuseRecord = true` when records are processed one at a time and not stored or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "defer_in_tight_loop",
+      "label": "Defer in Tight Loop",
+      "description": "`defer` statements inside loops with > 100 iterations or visible hot-path markers",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Defer in Tight Loop matters because the pattern here, `defer` statements inside loops with > 100 iterations or visible hot-path markers, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Defer in Tight Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "duration_nanoseconds_zero_check",
+      "label": "Duration Nanoseconds Zero Check",
+      "description": "Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Duration Nanoseconds Zero Check matters because the pattern here, Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Duration Nanoseconds Zero Check in Go, prefer `d == 0` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "empty_interface_parameter_overuse",
+      "label": "Empty Interface Parameter Overuse",
+      "description": "exported functions with `any` or `interface{}` parameters when concrete types would suffice",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Empty Interface Parameter Overuse matters because the pattern here, exported functions with `any` or `interface{}` parameters when concrete types would suffice, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Empty Interface Parameter Overuse in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "error_string_comparison",
+      "label": "Error String Comparison",
+      "description": "`if err.Error() == \"some error\"` string comparison for error checking",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Error String Comparison matters because the pattern here, `if err.Error() == \"some error\"` string comparison for error checking, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Error String Comparison in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "errors_new_for_static_sentinel",
+      "label": "Errors New for Static Sentinel",
+      "description": "`errors.New(\"some error\")` called repeatedly in hot paths instead of a package-level sentinel",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Errors New for Static Sentinel matters because the pattern here, `errors.New(\"some error\")` called repeatedly in hot paths instead of a package-level sentinel, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Errors New for Static Sentinel in Go, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "filepath_split_base_only",
+      "label": "Filepath Split Base Only",
+      "description": "`filepath.Split(...)` when only the base name is used.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Filepath Split Base Only matters because the pattern here, `filepath.Split(...)` when only the base name is used, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Filepath Split Base Only in Go, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "filepath_split_dir_only",
+      "label": "Filepath Split Dir Only",
+      "description": "`filepath.Split(...)` when only the directory is used.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Filepath Split Dir Only matters because the pattern here, `filepath.Split(...)` when only the directory is used, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Filepath Split Dir Only in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "fmt_errorf_without_wrap_verb",
+      "label": "Fmt Errorf without Wrap Verb",
+      "description": "`fmt.Errorf(\"context: %v\", err)` instead of `%w`",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Errorf without Wrap Verb matters because the pattern here, `fmt.Errorf(\"context: %v\", err)` instead of `%w`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Errorf without Wrap Verb in Go, prefer `%w` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_fprint_to_bytes_buffer",
+      "label": "Fmt Fprint to Bytes Buffer",
+      "description": "`fmt.Fprint(&buf, ...)` instead of direct buffer writes.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Fprint to Bytes Buffer matters because the pattern here, `fmt.Fprint(&buf, ...)` instead of direct buffer writes, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Fprint to Bytes Buffer in Go, prefer direct buffer writes when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_fprint_to_strings_builder",
+      "label": "Fmt Fprint to Strings Builder",
+      "description": "`fmt.Fprint(&builder, ...)` instead of direct builder writes.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Fprint to Strings Builder matters because the pattern here, `fmt.Fprint(&builder, ...)` instead of direct builder writes, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Fprint to Strings Builder in Go, prefer direct builder writes when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_fprintf_single_string_to_bytes_buffer",
+      "label": "Fmt Fprintf Single String to Bytes Buffer",
+      "description": "`fmt.Fprintf(&buf, \"%s\", s)` instead of `WriteString(s)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Fprintf Single String to Bytes Buffer matters because the pattern here, `fmt.Fprintf(&buf, \"%s\", s)` instead of `WriteString(s)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Fprintf Single String to Bytes Buffer in Go, prefer `WriteString(s)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_fprintf_single_string_to_strings_builder",
+      "label": "Fmt Fprintf Single String to Strings Builder",
+      "description": "`fmt.Fprintf(&builder, \"%s\", s)` instead of `WriteString(s)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Fprintf Single String to Strings Builder matters because the pattern here, `fmt.Fprintf(&builder, \"%s\", s)` instead of `WriteString(s)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Fprintf Single String to Strings Builder in Go, prefer `WriteString(s)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_fprintln_to_bytes_buffer",
+      "label": "Fmt Fprintln to Bytes Buffer",
+      "description": "`fmt.Fprintln(&buf, ...)` instead of direct buffer writes.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Fprintln to Bytes Buffer matters because the pattern here, `fmt.Fprintln(&buf, ...)` instead of direct buffer writes, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Fprintln to Bytes Buffer in Go, prefer direct buffer writes when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_fprintln_to_strings_builder",
+      "label": "Fmt Fprintln to Strings Builder",
+      "description": "`fmt.Fprintln(&builder, ...)` instead of direct builder writes.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Fprintln to Strings Builder matters because the pattern here, `fmt.Fprintln(&builder, ...)` instead of direct builder writes, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Fprintln to Strings Builder in Go, prefer direct builder writes when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_hot_path",
+      "label": "Fmt Hot Path",
+      "description": "fmt formatting calls such as Sprintf inside loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Hot Path matters because the pattern here, fmt formatting calls such as Sprintf inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Fmt Hot Path in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "fmt_sprintf_binary_to_string",
+      "label": "Fmt Sprintf Binary to String",
+      "description": "`fmt.Sprintf(\"%b\", ...)` instead of direct `strconv` integer formatting.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Sprintf Binary to String matters because the pattern here, `fmt.Sprintf(\"%b\", ...)` instead of direct `strconv` integer formatting, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Sprintf Binary to String in Go, prefer direct `strconv` integer formatting when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_sprintf_bool_to_string",
+      "label": "Fmt Sprintf Bool to String",
+      "description": "`fmt.Sprintf(\"%t\", ...)` instead of `strconv.FormatBool(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Sprintf Bool to String matters because the pattern here, `fmt.Sprintf(\"%t\", ...)` instead of `strconv.FormatBool(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Sprintf Bool to String in Go, prefer `strconv.FormatBool(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_sprintf_float_to_string",
+      "label": "Fmt Sprintf Float to String",
+      "description": "`fmt.Sprintf(\"%f\", ...)` instead of `strconv.FormatFloat(...)` when only a float string is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Sprintf Float to String matters because the pattern here, `fmt.Sprintf(\"%f\", ...)` instead of `strconv.FormatFloat(...)` when only a float string is needed, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Sprintf Float to String in Go, prefer `strconv.FormatFloat(...)` when only a float string is needed when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_sprintf_hex_to_string",
+      "label": "Fmt Sprintf Hex to String",
+      "description": "`fmt.Sprintf(\"%x\", ...)` instead of a direct hex formatter when only the string is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Sprintf Hex to String matters because the pattern here, `fmt.Sprintf(\"%x\", ...)` instead of a direct hex formatter when only the string is needed, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Sprintf Hex to String in Go, prefer a direct hex formatter when only the string is needed when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_sprintf_octal_to_string",
+      "label": "Fmt Sprintf Octal to String",
+      "description": "`fmt.Sprintf(\"%o\", ...)` instead of direct `strconv` integer formatting.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Sprintf Octal to String matters because the pattern here, `fmt.Sprintf(\"%o\", ...)` instead of direct `strconv` integer formatting, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Sprintf Octal to String in Go, prefer direct `strconv` integer formatting when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_sprintf_quote_to_string",
+      "label": "Fmt Sprintf Quote to String",
+      "description": "`fmt.Sprintf(\"%q\", s)` instead of `strconv.Quote(s)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Sprintf Quote to String matters because the pattern here, `fmt.Sprintf(\"%q\", s)` instead of `strconv.Quote(s)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Sprintf Quote to String in Go, prefer `strconv.Quote(s)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "fmt_sprintf_single_string_passthrough",
+      "label": "Fmt Sprintf Single String Passthrough",
+      "description": "`fmt.Sprintf(\"%s\", s)` instead of returning or writing the string directly.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Fmt Sprintf Single String Passthrough matters because the pattern here, `fmt.Sprintf(\"%s\", s)` instead of returning or writing the string directly, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Fmt Sprintf Single String Passthrough in Go, prefer returning or writing the string directly when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "full_dataset_load",
+      "label": "Full Dataset Load",
+      "description": "Calls that load an entire payload into memory instead of streaming.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Full Dataset Load matters because the pattern here, Calls that load an entire payload into memory instead of streaming, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Full Dataset Load in Go, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "goroutine_for_sync_work",
+      "label": "Goroutine for Sync Work",
+      "description": "`go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Goroutine for Sync Work matters because the pattern here, `go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Goroutine for Sync Work in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "hex_decode_string_in_loop",
+      "label": "Hex Decode String in Loop",
+      "description": "`hex.DecodeString(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Hex Decode String in Loop matters because the pattern here, `hex.DecodeString(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Hex Decode String in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "hex_encode_to_string_in_loop",
+      "label": "Hex Encode to String in Loop",
+      "description": "`hex.EncodeToString(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Hex Encode to String in Loop matters because the pattern here, `hex.EncodeToString(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Hex Encode to String in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "hmac_new_in_loop",
+      "label": "Hmac New in Loop",
+      "description": "`hmac.New(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Hmac New in Loop matters because the pattern here, `hmac.New(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Hmac New in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "http_body_readall_without_limitreader",
+      "label": "HTTP Body Readall without Limitreader",
+      "description": "`io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, HTTP Body Readall without Limitreader matters because the pattern here, `io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For HTTP Body Readall without Limitreader in Go, add `io.LimitReader` or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "interface_slice_allocation",
+      "label": "Interface Slice Allocation",
+      "description": "`[]interface{}` or `[]any` used to pass homogeneous typed data",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Interface Slice Allocation matters because the pattern here, `[]interface{}` or `[]any` used to pass homogeneous typed data, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Interface Slice Allocation in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "ioutil_readall_still_used",
+      "label": "Ioutil Readall Still Used",
+      "description": "`ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+)",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Ioutil Readall Still Used matters because the pattern here, `ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+), is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Ioutil Readall Still Used in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "json_indent_in_loop",
+      "label": "JSON Indent in Loop",
+      "description": "`json.Indent(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, JSON Indent in Loop matters because the pattern here, `json.Indent(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For JSON Indent in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "json_marshal_then_write",
+      "label": "JSON Marshal Then Write",
+      "description": "`data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, JSON Marshal Then Write matters because the pattern here, `data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For JSON Marshal Then Write in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "json_marshalindent_in_loop",
+      "label": "JSON Marshalindent in Loop",
+      "description": "`json.MarshalIndent(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, JSON Marshalindent in Loop matters because the pattern here, `json.MarshalIndent(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For JSON Marshalindent in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "json_number_vs_float64_decode",
+      "label": "JSON Number vs Float64 Decode",
+      "description": "`json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, JSON Number vs Float64 Decode matters because the pattern here, `json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For JSON Number vs Float64 Decode in Go, add `UseNumber()` or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "json_valid_then_unmarshal",
+      "label": "JSON Valid Then Unmarshal",
+      "description": "Code that validates JSON and then unmarshals the same payload again.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, JSON Valid Then Unmarshal matters because the pattern here, Code that validates JSON and then unmarshals the same payload again, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For JSON Valid Then Unmarshal in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "len_string_for_empty_check",
+      "label": "Len String for Empty Check",
+      "description": "`len(s) == 0` used interchangeably with `s == \"\"`",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Len String for Empty Check matters because the pattern here, `len(s) == 0` used interchangeably with `s == \"\"`, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Len String for Empty Check in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "likely_n_squared_allocation",
+      "label": "Likely N Squared Allocation",
+      "description": "Opt-in deeper semantic signal for allocations that also sit inside nested loop structure.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "go_semantic_experimental"
+      ],
+      "explanation": "In Go, Likely N Squared Allocation matters because the pattern here, Opt-in deeper semantic signal for allocations that also sit inside nested loop structure, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Likely N Squared Allocation in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "likely_n_squared_string_concat",
+      "label": "Likely N Squared String Concat",
+      "description": "Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "go_semantic_experimental"
+      ],
+      "explanation": "In Go, Likely N Squared String Concat matters because the pattern here, Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Likely N Squared String Concat in Go, add obvious builder usage or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "likely_unindexed_query",
+      "label": "Likely Unindexed Query",
+      "description": "Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Likely Unindexed Query matters because the pattern here, Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Likely Unindexed Query in Go, add LIMIT that often scale poorly or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "map_delete_in_loop_vs_new_map",
+      "label": "Map Delete in Loop vs New Map",
+      "description": "`for k := range m { delete(m, k) }` patterns",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Map Delete in Loop vs New Map matters because the pattern here, `for k := range m { delete(m, k) }` patterns, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Map Delete in Loop vs New Map in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "map_lookup_double_access",
+      "label": "Map Lookup Double Access",
+      "description": "`if _, ok := m[k]; ok { v := m[k] }` \u2014 two map lookups for the same key",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Map Lookup Double Access matters because the pattern here, `if _, ok := m[k]; ok { v := m[k] }` \u2014 two map lookups for the same key, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Map Lookup Double Access in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "map_of_slices_prealloc",
+      "label": "Map of Slices Prealloc",
+      "description": "`m[k] = append(m[k], v)` in loops without pre-allocating inner slices",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Map of Slices Prealloc matters because the pattern here, `m[k] = append(m[k], v)` in loops without pre-allocating inner slices, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Map of Slices Prealloc in Go, add pre-allocating inner slices or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "md5_sum_in_loop",
+      "label": "Md5 Sum in Loop",
+      "description": "`md5.Sum(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Md5 Sum in Loop matters because the pattern here, `md5.Sum(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Md5 Sum in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "mutex_value_receiver",
+      "label": "Mutex Value Receiver",
+      "description": "`func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Mutex Value Receiver matters because the pattern here, `func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Mutex Value Receiver in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "n_plus_one_query",
+      "label": "N Plus One Query",
+      "description": "Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, N Plus One Query matters because the pattern here, Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For N Plus One Query in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "panic_for_expected_errors",
+      "label": "Panic for Expected Errors",
+      "description": "`panic()` used for expected error conditions like invalid input or missing config",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Panic for Expected Errors matters because the pattern here, `panic()` used for expected error conditions like invalid input or missing config, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Panic for Expected Errors in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "path_split_base_only",
+      "label": "Path Split Base Only",
+      "description": "`path.Split(...)` when only the base name is used.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Path Split Base Only matters because the pattern here, `path.Split(...)` when only the base name is used, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Path Split Base Only in Go, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "path_split_dir_only",
+      "label": "Path Split Dir Only",
+      "description": "`path.Split(...)` when only the directory is used.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Path Split Dir Only matters because the pattern here, `path.Split(...)` when only the directory is used, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Path Split Dir Only in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "rand_new_per_call",
+      "label": "Rand New Per Call",
+      "description": "`rand.New(...)` inside regular call paths instead of reusing a generator.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Rand New Per Call matters because the pattern here, `rand.New(...)` inside regular call paths instead of reusing a generator, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rand New Per Call in Go, prefer reusing a generator when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rand_newsource_per_call",
+      "label": "Rand Newsource Per Call",
+      "description": "`rand.NewSource(...)` inside regular call paths.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Rand Newsource Per Call matters because the pattern here, `rand.NewSource(...)` inside regular call paths, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Rand Newsource Per Call in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "rand_newsource_with_time_now_per_call",
+      "label": "Rand Newsource with Time Now Per Call",
+      "description": "`rand.NewSource(...)` seeded from wall clock on each call path.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Rand Newsource with Time Now Per Call matters because the pattern here, `rand.NewSource(...)` seeded from wall clock on each call path, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Rand Newsource with Time Now Per Call in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "rand_seed_per_call",
+      "label": "Rand Seed Per Call",
+      "description": "`rand.Seed(...)` inside regular call paths instead of process startup.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Rand Seed Per Call matters because the pattern here, `rand.Seed(...)` inside regular call paths instead of process startup, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rand Seed Per Call in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "range_copy_large_struct",
+      "label": "Range Copy Large Struct",
+      "description": "`for _, v := range largeStructSlice` where the struct is > 64 bytes",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Range Copy Large Struct matters because the pattern here, `for _, v := range largeStructSlice` where the struct is > 64 bytes, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Range Copy Large Struct in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "range_over_string_by_index",
+      "label": "Range Over String by Index",
+      "description": "`for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Range Over String by Index matters because the pattern here, `for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Range Over String by Index in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "reflection_hot_path",
+      "label": "Reflection Hot Path",
+      "description": "reflect package calls inside loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Reflection Hot Path matters because the pattern here, reflect package calls inside loops, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Reflection Hot Path in Go, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "repeated_json_marshaling",
+      "label": "Repeated JSON Marshaling",
+      "description": "encoding/json.Marshal or MarshalIndent inside loops \u2014 repeated allocation and serialization hot spots.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Repeated JSON Marshaling matters because the pattern here, encoding/json.Marshal or MarshalIndent inside loops \u2014 repeated allocation and serialization hot spots, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Repeated JSON Marshaling in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "repeated_string_trim_normalize",
+      "label": "Repeated String Trim Normalize",
+      "description": "chains like `strings.TrimSpace(strings.ToLower(strings.TrimPrefix(s, ...)))` that scan the string multiple times",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Repeated String Trim Normalize matters because the pattern here, chains like `strings.TrimSpace(strings.ToLower(strings.TrimPrefix(s, ...)))` that scan the string multiple times, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated String Trim Normalize in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "runtime_gomaxprocs_per_request",
+      "label": "Runtime Gomaxprocs Per Request",
+      "description": "`runtime.GOMAXPROCS(...)` on request paths.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Runtime Gomaxprocs Per Request matters because the pattern here, `runtime.GOMAXPROCS(...)` on request paths, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Runtime Gomaxprocs Per Request in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "runtime_numcpu_inside_loop",
+      "label": "Runtime Numcpu Inside Loop",
+      "description": "`runtime.NumCPU()` inside loops instead of caching once.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Runtime Numcpu Inside Loop matters because the pattern here, `runtime.NumCPU()` inside loops instead of caching once, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Runtime Numcpu Inside Loop in Go, prefer caching once when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "select_with_single_case",
+      "label": "Select with Single Case",
+      "description": "`select { case v := <-ch: ... }` with only one case and no default",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Select with Single Case matters because the pattern here, `select { case v := <-ch: ... }` with only one case and no default, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Select with Single Case in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "sha1_sum_in_loop",
+      "label": "Sha1 Sum in Loop",
+      "description": "`sha1.Sum(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sha1 Sum in Loop matters because the pattern here, `sha1.Sum(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Sha1 Sum in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "sha256_sum_in_loop",
+      "label": "Sha256 Sum in Loop",
+      "description": "`sha256.Sum256(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sha256 Sum in Loop matters because the pattern here, `sha256.Sum256(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Sha256 Sum in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "sha512_sum_in_loop",
+      "label": "Sha512 Sum in Loop",
+      "description": "`sha512.Sum512(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sha512 Sum in Loop matters because the pattern here, `sha512.Sum512(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Sha512 Sum in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "slice_grow_without_cap_hint",
+      "label": "Slice Grow without Cap Hint",
+      "description": "`var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Slice Grow without Cap Hint matters because the pattern here, `var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Slice Grow without Cap Hint in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "sort_slice_vs_sort_sort",
+      "label": "Sort Slice vs Sort Sort",
+      "description": "`sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sort Slice vs Sort Sort matters because the pattern here, `sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Sort Slice vs Sort Sort in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "sprintf_for_simple_int_to_string",
+      "label": "Sprintf for Simple Int to String",
+      "description": "`fmt.Sprintf(\"%d\", n)` where `n` is clearly an integer type",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sprintf for Simple Int to String matters because the pattern here, `fmt.Sprintf(\"%d\", n)` where `n` is clearly an integer type, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Sprintf for Simple Int to String in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "sprintf_for_simple_string_format",
+      "label": "Sprintf for Simple String Format",
+      "description": "`fmt.Sprintf(\"%s:%s\", a, b)` where only `%s` verbs are used",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sprintf for Simple String Format matters because the pattern here, `fmt.Sprintf(\"%s:%s\", a, b)` where only `%s` verbs are used, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Sprintf for Simple String Format in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "strconv_formatint_int64_cast_itoa",
+      "label": "Strconv Formatint Int64 Cast Itoa",
+      "description": "`strconv.FormatInt(int64(v), 10)` instead of `strconv.Itoa(v)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strconv Formatint Int64 Cast Itoa matters because the pattern here, `strconv.FormatInt(int64(v), 10)` instead of `strconv.Itoa(v)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strconv Formatint Int64 Cast Itoa in Go, prefer `strconv.Itoa(v)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "string_builder_write_string_vs_plus",
+      "label": "String Builder Write String vs Plus",
+      "description": "`builder.WriteString(a + b)` where `a` and `b` are separate bindings",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, String Builder Write String vs Plus matters because the pattern here, `builder.WriteString(a + b)` where `a` and `b` are separate bindings, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For String Builder Write String vs Plus in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "string_concat_in_loop",
+      "label": "String Concat in Loop",
+      "description": "Repeated string concatenation inside loops (O(n^2) risk).",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, String Concat in Loop matters because the pattern here, Repeated string concatenation inside loops (O(n^2) risk), pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For String Concat in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "string_concatenation_for_path_join",
+      "label": "String Concatenation for Path Join",
+      "description": "`dir + \"/\" + file` or manual path assembly via `+` concatenation",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, String Concatenation for Path Join matters because the pattern here, `dir + \"/\" + file` or manual path assembly via `+` concatenation, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For String Concatenation for Path Join in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "string_format_for_error_wrap",
+      "label": "String Format for Error Wrap",
+      "description": "`fmt.Errorf(\"failed: %s\", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, String Format for Error Wrap matters because the pattern here, `fmt.Errorf(\"failed: %s\", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For String Format for Error Wrap in Go, prefer `%w` on `err` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "string_to_byte_for_single_char_check",
+      "label": "String to Byte for Single Char Check",
+      "description": "`[]byte(s)[0]` or `string(b) == \"x\"` for single-character comparisons",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, String to Byte for Single Char Check matters because the pattern here, `[]byte(s)[0]` or `string(b) == \"x\"` for single-character comparisons, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For String to Byte for Single Char Check in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "strings_builder_string_len",
+      "label": "Strings Builder String Len",
+      "description": "`len(builder.String())` instead of `builder.Len()`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Builder String Len matters because the pattern here, `len(builder.String())` instead of `builder.Len()`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Builder String Len in Go, prefer `builder.Len()` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_compare_equal_zero",
+      "label": "Strings Compare Equal Zero",
+      "description": "`strings.Compare(...) == 0` instead of direct string equality.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Compare Equal Zero matters because the pattern here, `strings.Compare(...) == 0` instead of direct string equality, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Compare Equal Zero in Go, prefer direct string equality when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_compare_not_equal_zero",
+      "label": "Strings Compare Not Equal Zero",
+      "description": "`strings.Compare(...) != 0` instead of direct string inequality.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Compare Not Equal Zero matters because the pattern here, `strings.Compare(...) != 0` instead of direct string inequality, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Compare Not Equal Zero in Go, prefer direct string inequality when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_contains_vs_index",
+      "label": "Strings Contains vs Index",
+      "description": "`strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Contains vs Index matters because the pattern here, `strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Strings Contains vs Index in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "strings_count_gt_zero_contains",
+      "label": "Strings Count Gt Zero Contains",
+      "description": "`strings.Count(...) > 0` instead of `strings.Contains(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Count Gt Zero Contains matters because the pattern here, `strings.Count(...) > 0` instead of `strings.Contains(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Count Gt Zero Contains in Go, prefer `strings.Contains(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_hasprefix_manual_slice_after_len",
+      "label": "Strings Hasprefix Manual Slice After Len",
+      "description": "Manual `len` and slice prefix checks instead of `strings.HasPrefix(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Hasprefix Manual Slice After Len matters because the pattern here, Manual `len` and slice prefix checks instead of `strings.HasPrefix(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Hasprefix Manual Slice After Len in Go, prefer `strings.HasPrefix(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_hasprefix_then_trimprefix",
+      "label": "Strings Hasprefix Then Trimprefix",
+      "description": "`if strings.HasPrefix(s, p) { s = strings.TrimPrefix(s, p) }`",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Hasprefix Then Trimprefix matters because the pattern here, `if strings.HasPrefix(s, p) { s = strings.TrimPrefix(s, p) }`, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Strings Hasprefix Then Trimprefix in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "strings_hassuffix_manual_slice_after_len",
+      "label": "Strings Hassuffix Manual Slice After Len",
+      "description": "Manual `len` and slice suffix checks instead of `strings.HasSuffix(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Hassuffix Manual Slice After Len matters because the pattern here, Manual `len` and slice suffix checks instead of `strings.HasSuffix(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Hassuffix Manual Slice After Len in Go, prefer `strings.HasSuffix(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_hassuffix_then_trimsuffix",
+      "label": "Strings Hassuffix Then Trimsuffix",
+      "description": "`if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Hassuffix Then Trimsuffix matters because the pattern here, `if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Strings Hassuffix Then Trimsuffix in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "strings_index_any_not_minus_one_contains_any",
+      "label": "Strings Index Any Not Minus One Contains Any",
+      "description": "`strings.IndexAny(...) != -1` presence checks instead of `strings.ContainsAny(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Index Any Not Minus One Contains Any matters because the pattern here, `strings.IndexAny(...) != -1` presence checks instead of `strings.ContainsAny(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Index Any Not Minus One Contains Any in Go, prefer `strings.ContainsAny(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_newreader_on_byte_slice_conversion",
+      "label": "Strings Newreader on Byte Slice Conversion",
+      "description": "`strings.NewReader(string(b))` instead of `bytes.NewReader(b)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Newreader on Byte Slice Conversion matters because the pattern here, `strings.NewReader(string(b))` instead of `bytes.NewReader(b)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Newreader on Byte Slice Conversion in Go, prefer `bytes.NewReader(b)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_newreplacer_per_call",
+      "label": "Strings Newreplacer Per Call",
+      "description": "`strings.NewReplacer(...)` recreated on request or loop paths.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Newreplacer Per Call matters because the pattern here, `strings.NewReplacer(...)` recreated on request or loop paths, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Strings Newreplacer Per Call in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "strings_replace_all_for_single_char",
+      "label": "Strings Replace All for Single Char",
+      "description": "`strings.ReplaceAll(s, \"x\", \"y\")` where both old and new are single characters",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Replace All for Single Char matters because the pattern here, `strings.ReplaceAll(s, \"x\", \"y\")` where both old and new are single characters, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Strings Replace All for Single Char in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "strings_replace_neg_one_replaceall",
+      "label": "Strings Replace Neg One Replaceall",
+      "description": "`strings.Replace(..., -1)` instead of `strings.ReplaceAll(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Replace Neg One Replaceall matters because the pattern here, `strings.Replace(..., -1)` instead of `strings.ReplaceAll(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Replace Neg One Replaceall in Go, prefer `strings.ReplaceAll(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_split_two_index_one_cut",
+      "label": "Strings Split Two Index One Cut",
+      "description": "`strings.Split(...)[1]` when only the second segment is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Split Two Index One Cut matters because the pattern here, `strings.Split(...)[1]` when only the second segment is needed, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Strings Split Two Index One Cut in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "strings_split_two_index_zero_cut",
+      "label": "Strings Split Two Index Zero Cut",
+      "description": "`strings.Split(...)[0]` when only the first segment is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Split Two Index Zero Cut matters because the pattern here, `strings.Split(...)[0]` when only the first segment is needed, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Strings Split Two Index Zero Cut in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "strings_splitafter_two_index_one_cut",
+      "label": "Strings Splitafter Two Index One Cut",
+      "description": "`strings.SplitAfter(...)[1]` when only the second segment is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Splitafter Two Index One Cut matters because the pattern here, `strings.SplitAfter(...)[1]` when only the second segment is needed, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Strings Splitafter Two Index One Cut in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "strings_splitafter_two_index_zero_cut",
+      "label": "Strings Splitafter Two Index Zero Cut",
+      "description": "`strings.SplitAfter(...)[0]` when only the first segment is needed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Splitafter Two Index Zero Cut matters because the pattern here, `strings.SplitAfter(...)[0]` when only the first segment is needed, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Strings Splitafter Two Index Zero Cut in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "strings_splitaftern_two_index_one_cut",
+      "label": "Strings Splitaftern Two Index One Cut",
+      "description": "`strings.SplitAfterN(..., 2)[1]` instead of a two-part `strings.Cut(...)` flow.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Splitaftern Two Index One Cut matters because the pattern here, `strings.SplitAfterN(..., 2)[1]` instead of a two-part `strings.Cut(...)` flow, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Splitaftern Two Index One Cut in Go, prefer a two-part `strings.Cut(...)` flow when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_splitaftern_two_index_zero_cut",
+      "label": "Strings Splitaftern Two Index Zero Cut",
+      "description": "`strings.SplitAfterN(..., 2)[0]` instead of a two-part `strings.Cut(...)` flow.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Splitaftern Two Index Zero Cut matters because the pattern here, `strings.SplitAfterN(..., 2)[0]` instead of a two-part `strings.Cut(...)` flow, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Splitaftern Two Index Zero Cut in Go, prefer a two-part `strings.Cut(...)` flow when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_splitn_two_index_one_cut",
+      "label": "Strings Splitn Two Index One Cut",
+      "description": "`strings.SplitN(..., 2)[1]` instead of `strings.Cut(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Splitn Two Index One Cut matters because the pattern here, `strings.SplitN(..., 2)[1]` instead of `strings.Cut(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Splitn Two Index One Cut in Go, prefer `strings.Cut(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_splitn_two_index_zero_cut",
+      "label": "Strings Splitn Two Index Zero Cut",
+      "description": "`strings.SplitN(..., 2)[0]` instead of `strings.Cut(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Splitn Two Index Zero Cut matters because the pattern here, `strings.SplitN(..., 2)[0]` instead of `strings.Cut(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Splitn Two Index Zero Cut in Go, prefer `strings.Cut(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_tolower_equalfold",
+      "label": "Strings Tolower Equalfold",
+      "description": "`strings.ToLower(...) == strings.ToLower(...)` instead of `strings.EqualFold(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Tolower Equalfold matters because the pattern here, `strings.ToLower(...) == strings.ToLower(...)` instead of `strings.EqualFold(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Tolower Equalfold in Go, prefer `strings.EqualFold(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_toupper_equalfold",
+      "label": "Strings Toupper Equalfold",
+      "description": "`strings.ToUpper(...) == strings.ToUpper(...)` instead of `strings.EqualFold(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Toupper Equalfold matters because the pattern here, `strings.ToUpper(...) == strings.ToUpper(...)` instead of `strings.EqualFold(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Toupper Equalfold in Go, prefer `strings.EqualFold(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_trimleft_space_trimspace",
+      "label": "Strings Trimleft Space Trimspace",
+      "description": "`strings.TrimLeft(..., whitespace)` instead of `strings.TrimSpace(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Trimleft Space Trimspace matters because the pattern here, `strings.TrimLeft(..., whitespace)` instead of `strings.TrimSpace(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Trimleft Space Trimspace in Go, prefer `strings.TrimSpace(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "strings_trimright_space_trimspace",
+      "label": "Strings Trimright Space Trimspace",
+      "description": "`strings.TrimRight(..., whitespace)` instead of `strings.TrimSpace(...)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Strings Trimright Space Trimspace matters because the pattern here, `strings.TrimRight(..., whitespace)` instead of `strings.TrimSpace(...)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Strings Trimright Space Trimspace in Go, prefer `strings.TrimSpace(...)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "sync_mutex_for_atomic_counter",
+      "label": "Sync Mutex for Atomic Counter",
+      "description": "`mu.Lock(); count++; mu.Unlock()` for simple integer counters",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sync Mutex for Atomic Counter matters because the pattern here, `mu.Lock(); count++; mu.Unlock()` for simple integer counters, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Sync Mutex for Atomic Counter in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "sync_mutex_for_readonly_config",
+      "label": "Sync Mutex for Readonly Config",
+      "description": "`mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sync Mutex for Readonly Config matters because the pattern here, `mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Sync Mutex for Readonly Config in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "sync_once_do_inside_loop",
+      "label": "Sync Once Do Inside Loop",
+      "description": "`sync.Once.Do(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sync Once Do Inside Loop matters because the pattern here, `sync.Once.Do(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Sync Once Do Inside Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "sync_pool_ignored_for_frequent_small_allocs",
+      "label": "Sync Pool Ignored for Frequent Small Allocs",
+      "description": "repeated `make([]byte, size)` or `new(T)` in hot paths where the object is short-lived and could be pooled",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Sync Pool Ignored for Frequent Small Allocs matters because the pattern here, repeated `make([]byte, size)` or `new(T)` in hot paths where the object is short-lived and could be pooled, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Sync Pool Ignored for Frequent Small Allocs in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "three_index_slice_for_append_safety",
+      "label": "Three Index Slice for Append Safety",
+      "description": "`sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Three Index Slice for Append Safety matters because the pattern here, `sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Three Index Slice for Append Safety in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "time_fixedzone_per_call",
+      "label": "Time Fixedzone Per Call",
+      "description": "`time.FixedZone(...)` inside request or loop paths instead of reusing the location.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Time Fixedzone Per Call matters because the pattern here, `time.FixedZone(...)` inside request or loop paths instead of reusing the location, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Time Fixedzone Per Call in Go, prefer reusing the location when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "time_loadlocation_per_call",
+      "label": "Time Loadlocation Per Call",
+      "description": "`time.LoadLocation(...)` inside request or loop paths instead of reusing the location.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Time Loadlocation Per Call matters because the pattern here, `time.LoadLocation(...)` inside request or loop paths instead of reusing the location, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Time Loadlocation Per Call in Go, prefer reusing the location when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "time_newticker_inside_loop",
+      "label": "Time Newticker Inside Loop",
+      "description": "`time.NewTicker(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Time Newticker Inside Loop matters because the pattern here, `time.NewTicker(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Time Newticker Inside Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "time_newtimer_inside_loop",
+      "label": "Time Newtimer Inside Loop",
+      "description": "`time.NewTimer(...)` inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Time Newtimer Inside Loop matters because the pattern here, `time.NewTimer(...)` inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Time Newtimer Inside Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "time_now_in_tight_loop",
+      "label": "Time Now in Tight Loop",
+      "description": "`time.Now()` called on every iteration of a tight inner loop",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Time Now in Tight Loop matters because the pattern here, `time.Now()` called on every iteration of a tight inner loop, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Time Now in Tight Loop in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "time_since_candidate_via_now_sub",
+      "label": "Time Since Candidate Via Now Sub",
+      "description": "`time.Now().Sub(start)` instead of `time.Since(start)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Time Since Candidate Via Now Sub matters because the pattern here, `time.Now().Sub(start)` instead of `time.Since(start)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Time Since Candidate Via Now Sub in Go, prefer `time.Since(start)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "time_tick_per_call",
+      "label": "Time Tick Per Call",
+      "description": "`time.Tick(...)` on regular call paths instead of owning a reusable ticker.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Time Tick Per Call matters because the pattern here, `time.Tick(...)` on regular call paths instead of owning a reusable ticker, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Time Tick Per Call in Go, prefer owning a reusable ticker when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "time_until_candidate_via_deadline_sub_now",
+      "label": "Time Until Candidate Via Deadline Sub Now",
+      "description": "`deadline.Sub(time.Now())` instead of `time.Until(deadline)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Time Until Candidate Via Deadline Sub Now matters because the pattern here, `deadline.Sub(time.Now())` instead of `time.Until(deadline)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Time Until Candidate Via Deadline Sub Now in Go, prefer `time.Until(deadline)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "type_assertion_without_comma_ok",
+      "label": "Type Assertion without Comma Ok",
+      "description": "`v := i.(T)` without the comma-ok form in non-panic-safe code",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Type Assertion without Comma Ok matters because the pattern here, `v := i.(T)` without the comma-ok form in non-panic-safe code, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Type Assertion without Comma Ok in Go, add the comma-ok form in non-panic-safe code or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "type_switch_vs_repeated_assertions",
+      "label": "Type Switch vs Repeated Assertions",
+      "description": "multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Type Switch vs Repeated Assertions matters because the pattern here, multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Type Switch vs Repeated Assertions in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "unbuffered_channel_for_known_producer_count",
+      "label": "Unbuffered Channel for Known Producer Count",
+      "description": "unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Unbuffered Channel for Known Producer Count matters because the pattern here, unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Unbuffered Channel for Known Producer Count in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "unnecessary_map_for_set_of_ints",
+      "label": "Unnecessary Map for Set of Ints",
+      "description": "`map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Unnecessary Map for Set of Ints matters because the pattern here, `map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Unnecessary Map for Set of Ints in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "unnecessary_slice_copy_for_readonly",
+      "label": "Unnecessary Slice Copy for Readonly",
+      "description": "`copy := append([]T(nil), original...)` when `copy` is only read, never mutated",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Unnecessary Slice Copy for Readonly matters because the pattern here, `copy := append([]T(nil), original...)` when `copy` is only read, never mutated, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Unnecessary Slice Copy for Readonly in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "waitgroup_add_inside_loop",
+      "label": "Waitgroup Add Inside Loop",
+      "description": "`for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Waitgroup Add Inside Loop matters because the pattern here, `for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Waitgroup Add Inside Loop in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "wide_select_query",
+      "label": "Wide Select Query",
+      "description": "Literal SELECT * query shapes.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Wide Select Query matters because the pattern here, Literal SELECT * query shapes, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Wide Select Query in Go, switch to parameterized access, validated input, or a reviewed helper so the data boundary stays explicit and safe."
+    },
+    {
+      "id": "writer_write_byte_slice_of_string",
+      "label": "Writer Write Byte Slice of String",
+      "description": "`writer.Write([]byte(s))` instead of `io.WriteString(writer, s)`.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Writer Write Byte Slice of String matters because the pattern here, `writer.Write([]byte(s))` instead of `io.WriteString(writer, s)`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Writer Write Byte Slice of String in Go, prefer `io.WriteString(writer, s)` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "xml_decoder_without_strict",
+      "label": "Xml Decoder without Strict",
+      "description": "`xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Xml Decoder without Strict matters because the pattern here, `xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Xml Decoder without Strict in Go, add setting `Strict = false` when processing trusted XML or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    }
+  ]
+}

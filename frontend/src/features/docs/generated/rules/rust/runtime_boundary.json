@@ -1,0 +1,92 @@
+{
+  "language": "rust",
+  "family": "runtime_boundary",
+  "label": "Runtime Boundary",
+  "summary": "Runtime-layer ownership and boundary mismatches.",
+  "rules": [
+    {
+      "id": "rust_axum_router_built_in_handler",
+      "label": "Rust Axum Router Built in Handler",
+      "description": "Axum routers assembled inside handler call paths instead of startup wiring.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Axum Router Built in Handler matters because the pattern here, Axum routers assembled inside handler call paths instead of startup wiring, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Rust Axum Router Built in Handler in Rust, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "rust_clone_heavy_state_in_loop",
+      "label": "Rust Clone Heavy State in Loop",
+      "description": "Likely heavy state cloned repeatedly inside loops in Rust application code.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clone Heavy State in Loop matters because the pattern here, Likely heavy state cloned repeatedly inside loops in Rust application code, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Clone Heavy State in Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_env_var_read_in_request_path",
+      "label": "Rust Env Var Read in Request Path",
+      "description": "Rust request handlers reading environment configuration on the hot request path.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Env Var Read in Request Path matters because the pattern here, Rust request handlers reading environment configuration on the hot request path, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Env Var Read in Request Path in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_tokio_runtime_built_per_call",
+      "label": "Rust Tokio Runtime Built Per Call",
+      "description": "Tokio runtimes created per call instead of being owned at process or bootstrap boundaries.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tokio Runtime Built Per Call matters because the pattern here, Tokio runtimes created per call instead of being owned at process or bootstrap boundaries, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Tokio Runtime Built Per Call in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_tonic_channel_connect_per_request",
+      "label": "Rust Tonic Channel Connect Per Request",
+      "description": "tonic transport channels dialed on request paths instead of reusing configured clients.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tonic Channel Connect Per Request matters because the pattern here, tonic transport channels dialed on request paths instead of reusing configured clients, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Tonic Channel Connect Per Request in Rust, prefer reusing configured clients when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_workspace_missing_resolver",
+      "label": "Rust Workspace Missing Resolver",
+      "description": "Workspace Cargo manifests with multiple members but no explicit resolver version.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Workspace Missing Resolver matters because the pattern here, Workspace Cargo manifests with multiple members but no explicit resolver version, is worth review because async executors, blocking work, and runtime-owned resources need clear placement.",
+      "fix": "For Rust Workspace Missing Resolver in Rust, keep blocking work, runtime setup, and request-scope behavior on the side of the boundary that owns them."
+    }
+  ]
+}

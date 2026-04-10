@@ -1,0 +1,120 @@
+{
+  "language": "go",
+  "family": "concurrency",
+  "label": "Concurrency",
+  "summary": "Channels, goroutines, shutdown paths, and coordination hazards.",
+  "rules": [
+    {
+      "id": "blocking_call_while_locked",
+      "label": "Blocking Call While Locked",
+      "description": "Potentially blocking calls observed between Lock and Unlock.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Blocking Call While Locked matters because the pattern here, Potentially blocking calls observed between Lock and Unlock, is worth review because lifecycle mistakes around goroutines and channels often stay invisible until the service is under load.",
+      "fix": "For Blocking Call While Locked in Go, give concurrent work a clear owner, cancellation path, and close/stop protocol instead of relying on ambient behavior."
+    },
+    {
+      "id": "goroutine_derived_context_unmanaged",
+      "label": "Goroutine Derived Context Unmanaged",
+      "description": "Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Goroutine Derived Context Unmanaged matters because the pattern here, Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Goroutine Derived Context Unmanaged in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "goroutine_spawn_in_loop",
+      "label": "Goroutine Spawn in Loop",
+      "description": "Raw go statements launched from inside loops without obvious WaitGroup coordination.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Goroutine Spawn in Loop matters because the pattern here, Raw go statements launched from inside loops without obvious WaitGroup coordination, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Goroutine Spawn in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "goroutine_without_coordination",
+      "label": "Goroutine without Coordination",
+      "description": "Raw go statements without an obvious context or WaitGroup-like coordination signal.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Goroutine without Coordination matters because the pattern here, Raw go statements without an obvious context or WaitGroup-like coordination signal, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Goroutine without Coordination in Go, add an obvious context or WaitGroup-like coordination signal or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "goroutine_without_shutdown_path",
+      "label": "Goroutine without Shutdown Path",
+      "description": "Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Goroutine without Shutdown Path matters because the pattern here, Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Goroutine without Shutdown Path in Go, add an obvious ctx.Done() or done-channel shutdown path or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "mutex_in_loop",
+      "label": "Mutex in Loop",
+      "description": "Repeated Lock or RLock acquisition inside loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Mutex in Loop matters because the pattern here, Repeated Lock or RLock acquisition inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Mutex in Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rwmutex_without_clear_read_heavy_signal",
+      "label": "Rwmutex without Clear Read Heavy Signal",
+      "description": "sync.RWMutex usage without a clear read-heavy access pattern.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Rwmutex without Clear Read Heavy Signal matters because the pattern here, sync.RWMutex usage without a clear read-heavy access pattern, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rwmutex without Clear Read Heavy Signal in Go, add a clear read-heavy access pattern or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "waitgroup_fanout_without_errgroup_on_error_path",
+      "label": "Waitgroup Fanout without Errgroup on Error Path",
+      "description": "WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Waitgroup Fanout without Errgroup on Error Path matters because the pattern here, WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Waitgroup Fanout without Errgroup on Error Path in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    }
+  ]
+}

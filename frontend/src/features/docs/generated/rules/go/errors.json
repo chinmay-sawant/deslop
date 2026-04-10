@@ -1,0 +1,50 @@
+{
+  "language": "go",
+  "family": "errors",
+  "label": "Errors",
+  "summary": "Error-flow handling patterns that hide real failure behavior.",
+  "rules": [
+    {
+      "id": "dropped_error",
+      "label": "Dropped Error",
+      "description": "Blank identifier assignments that discard an err-like value.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Dropped Error matters because the pattern here, Blank identifier assignments that discard an err-like value, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Dropped Error in Go, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "error_wrapping_misuse",
+      "label": "Error Wrapping Misuse",
+      "description": "fmt.Errorf calls that reference err without %w.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Error Wrapping Misuse matters because the pattern here, fmt.Errorf calls that reference err without %w, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Error Wrapping Misuse in Go, add %w or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "panic_on_error",
+      "label": "Panic on Error",
+      "description": "err != nil branches that jump straight to panic or log.Fatal style exits.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Panic on Error matters because the pattern here, err != nil branches that jump straight to panic or log.Fatal style exits, is worth review because flattened or inconsistent error handling makes operations fail in ways that are harder to classify, retry, or explain.",
+      "fix": "For Panic on Error in Go, preserve the important error signal, map it once at the right boundary, and avoid dropping detail that callers still need."
+    }
+  ]
+}
