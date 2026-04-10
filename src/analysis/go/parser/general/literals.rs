@@ -214,37 +214,52 @@ pub(crate) fn build_test_summary(
 }
 
 fn is_assert_call(call: &CallSite) -> bool {
-    matches!(
-        (call.receiver.as_deref(), call.name.as_str()),
-        (
-            Some("t"),
+    let Some(receiver) = call.receiver.as_deref() else {
+        return false;
+    };
+
+    (is_testing_t_receiver(receiver)
+        && matches!(
+            call.name.as_str(),
             "Error" | "Errorf" | "Fatal" | "Fatalf" | "Fail" | "FailNow"
-        ) | (Some("assert" | "require"), _)
-    )
+        ))
+        || is_testify_assert_package_receiver(receiver)
+        || (looks_like_testify_suite_receiver(receiver)
+            && is_testify_assertion_method(call.name.as_str()))
 }
 
 fn is_err_assert_call(call: &CallSite) -> bool {
-    matches!(
-        (call.receiver.as_deref(), call.name.as_str()),
-        (
-            Some("assert" | "require"),
+    let Some(receiver) = call.receiver.as_deref() else {
+        return false;
+    };
+
+    (is_testify_assert_package_receiver(receiver)
+        && matches!(
+            call.name.as_str(),
             "Error" | "Errorf" | "ErrorIs" | "ErrorContains" | "Panics" | "PanicsWithValue"
-        ) | (Some("t"), "Fatal" | "Fatalf" | "Error" | "Errorf")
-    )
+        ))
+        || (is_testing_t_receiver(receiver)
+            && matches!(call.name.as_str(), "Fatal" | "Fatalf" | "Error" | "Errorf"))
+        || (looks_like_testify_suite_receiver(receiver)
+            && matches!(
+                call.name.as_str(),
+                "Error" | "Errorf" | "ErrorIs" | "ErrorContains" | "Panics" | "PanicsWithValue"
+            ))
 }
 
 fn is_skip_call(call: &CallSite) -> bool {
-    matches!(
-        (call.receiver.as_deref(), call.name.as_str()),
-        (Some("t"), "Skip" | "SkipNow" | "Skipf")
-    )
+    call.receiver.as_deref().is_some_and(is_testing_t_receiver)
+        && matches!(call.name.as_str(), "Skip" | "SkipNow" | "Skipf")
 }
 
 fn is_test_infra_call(call: &CallSite) -> bool {
-    matches!(
-        (call.receiver.as_deref(), call.name.as_str()),
-        (
-            Some("t"),
+    let Some(receiver) = call.receiver.as_deref() else {
+        return false;
+    };
+
+    (is_testing_t_receiver(receiver)
+        && matches!(
+            call.name.as_str(),
             "Helper"
                 | "Run"
                 | "Parallel"
@@ -256,7 +271,70 @@ fn is_test_infra_call(call: &CallSite) -> bool {
                 | "Skipf"
                 | "Log"
                 | "Logf"
-        ) | (Some("assert" | "require"), _)
+        ))
+        || is_testify_assert_package_receiver(receiver)
+        || (is_testify_suite_package_receiver(receiver) && call.name == "Run")
+}
+
+fn is_testing_t_receiver(receiver: &str) -> bool {
+    let compact = receiver.split_whitespace().collect::<String>();
+    compact == "t" || compact.ends_with(".T()")
+}
+
+fn is_testify_assert_package_receiver(receiver: &str) -> bool {
+    let compact = receiver.split_whitespace().collect::<String>();
+    matches!(compact.as_str(), "assert" | "require")
+}
+
+fn is_testify_suite_package_receiver(receiver: &str) -> bool {
+    let compact = receiver.split_whitespace().collect::<String>();
+    let lower = compact.to_ascii_lowercase();
+    lower == "suite" || lower.ends_with("suite")
+}
+
+fn looks_like_testify_suite_receiver(receiver: &str) -> bool {
+    let compact = receiver.split_whitespace().collect::<String>();
+    let lower = compact.to_ascii_lowercase();
+
+    compact.ends_with(".Assert()")
+        || compact.ends_with(".Require()")
+        || lower == "s"
+        || lower == "suite"
+        || lower.ends_with("suite")
+}
+
+fn is_testify_assertion_method(name: &str) -> bool {
+    matches!(
+        name,
+        "Equal"
+            | "EqualValues"
+            | "Exactly"
+            | "NotEqual"
+            | "NotEqualValues"
+            | "Nil"
+            | "NotNil"
+            | "True"
+            | "False"
+            | "Len"
+            | "Contains"
+            | "NotContains"
+            | "Empty"
+            | "NotEmpty"
+            | "Greater"
+            | "GreaterOrEqual"
+            | "Less"
+            | "LessOrEqual"
+            | "ElementsMatch"
+            | "Subset"
+            | "NoError"
+            | "Error"
+            | "Errorf"
+            | "ErrorIs"
+            | "ErrorContains"
+            | "Panics"
+            | "PanicsWithValue"
+            | "NotPanics"
+            | "WithinDuration"
     )
 }
 

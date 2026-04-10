@@ -1,0 +1,414 @@
+{
+  "language": "go",
+  "family": "idioms",
+  "label": "Idioms",
+  "summary": "Go-specific API and language-idiom smells.",
+  "rules": [
+    {
+      "id": "ci_missing_go_test_race",
+      "label": "Ci Missing Go Test Race",
+      "description": "Repository automation that does not visibly run `go test -race` for Go code.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Ci Missing Go Test Race matters because the pattern here, Repository automation that does not visibly run `go test -race` for Go code, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Ci Missing Go Test Race in Go, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "db_pool_limits_not_configured_at_boot",
+      "label": "DB Pool Limits Not Configured at Boot",
+      "description": "Bootstrap code that opens long-lived DB clients without visible pool sizing or lifetime limits.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, DB Pool Limits Not Configured at Boot matters because the pattern here, Bootstrap code that opens long-lived DB clients without visible pool sizing or lifetime limits, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For DB Pool Limits Not Configured at Boot in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "defer_in_loop_resource_growth",
+      "label": "Defer in Loop Resource Growth",
+      "description": "defer statements inside loops that can accumulate resources until function exit.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Defer in Loop Resource Growth matters because the pattern here, defer statements inside loops that can accumulate resources until function exit, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Defer in Loop Resource Growth in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "double_close_local_channel",
+      "label": "Double Close Local Channel",
+      "description": "The same locally created channel appears to be closed more than once in one function body.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Double Close Local Channel matters because the pattern here, The same locally created channel appears to be closed more than once in one function body, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Double Close Local Channel in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "file_handle_without_close",
+      "label": "File Handle without Close",
+      "description": "File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, File Handle without Close matters because the pattern here, File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For File Handle without Close in Go, add an observed Close() path or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "http_client_allocated_per_call_without_reuse",
+      "label": "HTTP Client Allocated Per Call without Reuse",
+      "description": "http.Client literals allocated on regular call paths instead of being reused as shared client state.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, HTTP Client Allocated Per Call without Reuse matters because the pattern here, http.Client literals allocated on regular call paths instead of being reused as shared client state, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For HTTP Client Allocated Per Call without Reuse in Go, prefer being reused as shared client state when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "http_client_without_timeout",
+      "label": "HTTP Client without Timeout",
+      "description": "Local http.Client{} literals constructed without an explicit timeout.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, HTTP Client without Timeout matters because the pattern here, Local http.Client{} literals constructed without an explicit timeout, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For HTTP Client without Timeout in Go, add an explicit timeout or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "http_response_body_not_closed",
+      "label": "HTTP Response Body Not Closed",
+      "description": "HTTP responses acquired locally without an observed resp.Body.Close() call.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, HTTP Response Body Not Closed matters because the pattern here, HTTP responses acquired locally without an observed resp.Body.Close() call, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For HTTP Response Body Not Closed in Go, add an observed resp.Body.Close() call or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "http_response_body_not_drained_before_close",
+      "label": "HTTP Response Body Not Drained Before Close",
+      "description": "HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, HTTP Response Body Not Drained Before Close matters because the pattern here, HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For HTTP Response Body Not Drained Before Close in Go, add being drained or otherwise consumed when the response is ignored or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "http_server_bootstrap_without_graceful_shutdown_flow",
+      "label": "HTTP Server Bootstrap without Graceful Shutdown Flow",
+      "description": "HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, HTTP Server Bootstrap without Graceful Shutdown Flow matters because the pattern here, HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For HTTP Server Bootstrap without Graceful Shutdown Flow in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "http_server_without_timeouts",
+      "label": "HTTP Server without Timeouts",
+      "description": "Explicit http.Server{} values that omit common timeout fields.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, HTTP Server without Timeouts matters because the pattern here, Explicit http.Server{} values that omit common timeout fields, is worth review because code that fights the language is usually harder to read, maintain, and optimize than code that follows the normal Go shape.",
+      "fix": "For HTTP Server without Timeouts in Go, lean on the standard Go conventions for names, ownership, and contracts so readers do not have to decode a custom style first."
+    },
+    {
+      "id": "http_status_ignored_before_decode",
+      "label": "HTTP Status Ignored Before Decode",
+      "description": "Response decoding or body consumption that happens without an observed StatusCode check.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, HTTP Status Ignored Before Decode matters because the pattern here, Response decoding or body consumption that happens without an observed StatusCode check, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For HTTP Status Ignored Before Decode in Go, add an observed StatusCode check or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "http_writeheader_after_write",
+      "label": "HTTP Writeheader After Write",
+      "description": "Handlers that write the response body before calling WriteHeader(...).",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, HTTP Writeheader After Write matters because the pattern here, Handlers that write the response body before calling WriteHeader(...), is worth review because code that fights the language is usually harder to read, maintain, and optimize than code that follows the normal Go shape.",
+      "fix": "For HTTP Writeheader After Write in Go, lean on the standard Go conventions for names, ownership, and contracts so readers do not have to decode a custom style first."
+    },
+    {
+      "id": "init_side_effect",
+      "label": "Init Side Effect",
+      "description": "init() functions that perform network, file-system, or subprocess side effects.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Init Side Effect matters because the pattern here, init() functions that perform network, file-system, or subprocess side effects, is worth review because code that fights the language is usually harder to read, maintain, and optimize than code that follows the normal Go shape.",
+      "fix": "For Init Side Effect in Go, lean on the standard Go conventions for names, ownership, and contracts so readers do not have to decode a custom style first."
+    },
+    {
+      "id": "mutable_package_global",
+      "label": "Mutable Package Global",
+      "description": "Package-level variables that are mutated from function bodies instead of kept immutable.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Mutable Package Global matters because the pattern here, Package-level variables that are mutated from function bodies instead of kept immutable, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Mutable Package Global in Go, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "passthrough_wrapper_interface",
+      "label": "Passthrough Wrapper Interface",
+      "description": "Wrapper structs that mostly forward one-to-one through an interface field with little added policy.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Passthrough Wrapper Interface matters because the pattern here, Wrapper structs that mostly forward one-to-one through an interface field with little added policy, is worth review because code that fights the language is usually harder to read, maintain, and optimize than code that follows the normal Go shape.",
+      "fix": "For Passthrough Wrapper Interface in Go, lean on the standard Go conventions for names, ownership, and contracts so readers do not have to decode a custom style first."
+    },
+    {
+      "id": "public_bool_parameter_api",
+      "label": "Public Bool Parameter API",
+      "description": "Exported functions or methods that expose raw boolean mode switches in their signatures.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Public Bool Parameter API matters because the pattern here, Exported functions or methods that expose raw boolean mode switches in their signatures, depends on an invariant that future maintainers also have to preserve exactly.",
+      "fix": "For Public Bool Parameter API in Go, shrink the unsafe surface, document the invariant, or move the behavior behind a safe abstraction."
+    },
+    {
+      "id": "range_over_local_channel_without_close",
+      "label": "Range Over Local Channel without Close",
+      "description": "Functions that range over a locally owned channel without an observed close path.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Range Over Local Channel without Close matters because the pattern here, Functions that range over a locally owned channel without an observed close path, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Range Over Local Channel without Close in Go, add an observed close path or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "request_body_read_without_size_limit",
+      "label": "Request Body Read without Size Limit",
+      "description": "HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Request Body Read without Size Limit matters because the pattern here, HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Request Body Read without Size Limit in Go, add an observed size limit such as io.LimitReader or http.MaxBytesReader or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rows_iterated_without_rows_err_check",
+      "label": "Rows Iterated without Rows Err Check",
+      "description": "Rows iterated with Next() but without a visible final Rows.Err() check.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Rows Iterated without Rows Err Check matters because the pattern here, Rows iterated with Next() but without a visible final Rows.Err() check, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rows Iterated without Rows Err Check in Go, add a visible final Rows.Err() check or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rows_without_close",
+      "label": "Rows without Close",
+      "description": "Query result handles that appear locally owned but have no observed rows.Close() call.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Rows without Close matters because the pattern here, Query result handles that appear locally owned but have no observed rows.Close() call, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Rows without Close in Go, switch to parameterized access, validated input, or a reviewed helper so the data boundary stays explicit and safe."
+    },
+    {
+      "id": "send_after_local_close_risk",
+      "label": "Send After Local Close Risk",
+      "description": "A locally owned channel is closed and later used in a send expression.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Send After Local Close Risk matters because the pattern here, A locally owned channel is closed and later used in a send expression, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Send After Local Close Risk in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "single_impl_interface",
+      "label": "Single Impl Interface",
+      "description": "Repository-local interfaces with one obvious implementation and a very small consumer surface.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Single Impl Interface matters because the pattern here, Repository-local interfaces with one obvious implementation and a very small consumer surface, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Single Impl Interface in Go, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "slow_work_inside_transaction_scope",
+      "label": "Slow Work Inside Transaction Scope",
+      "description": "Loop-heavy or slow work performed while a transaction appears open.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Slow Work Inside Transaction Scope matters because the pattern here, Loop-heavy or slow work performed while a transaction appears open, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Slow Work Inside Transaction Scope in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "stmt_without_close",
+      "label": "Stmt without Close",
+      "description": "Prepared statements or similar DB handles without an observed Close() call.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Stmt without Close matters because the pattern here, Prepared statements or similar DB handles without an observed Close() call, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Stmt without Close in Go, add an observed Close() call or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "ticker_without_stop",
+      "label": "Ticker without Stop",
+      "description": "time.NewTicker(...) is created without an observed Stop() call.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Ticker without Stop matters because the pattern here, time.NewTicker(...) is created without an observed Stop() call, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Ticker without Stop in Go, add an observed Stop() call or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "time_after_in_loop",
+      "label": "Time After in Loop",
+      "description": "time.After(...) is allocated inside loops instead of reusing a timer or deadline.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Time After in Loop matters because the pattern here, time.After(...) is allocated inside loops instead of reusing a timer or deadline, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Time After in Loop in Go, prefer reusing a timer or deadline when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "timeoutless_http_default_client_or_helper_call",
+      "label": "Timeoutless HTTP Default Client or Helper Call",
+      "description": "net/http helper calls or http.DefaultClient usage that carry no explicit application timeout.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Timeoutless HTTP Default Client or Helper Call matters because the pattern here, net/http helper calls or http.DefaultClient usage that carry no explicit application timeout, is worth review because code that fights the language is usually harder to read, maintain, and optimize than code that follows the normal Go shape.",
+      "fix": "For Timeoutless HTTP Default Client or Helper Call in Go, lean on the standard Go conventions for names, ownership, and contracts so readers do not have to decode a custom style first."
+    },
+    {
+      "id": "tx_without_rollback_guard",
+      "label": "TX without Rollback Guard",
+      "description": "Transactions begun and later committed with no observed rollback guard.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, TX without Rollback Guard matters because the pattern here, Transactions begun and later committed with no observed rollback guard, stretches the write boundary and makes failure ownership harder to reason about.",
+      "fix": "For TX without Rollback Guard in Go, keep the transaction focused on the minimum database work and move unrelated orchestration outside the open transaction."
+    }
+  ]
+}

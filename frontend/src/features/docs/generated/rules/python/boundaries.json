@@ -1,0 +1,904 @@
+{
+  "language": "python",
+  "family": "boundaries",
+  "label": "Boundaries",
+  "summary": "Boundary hygiene for network, files, config, resources, and security edges.",
+  "rules": [
+    {
+      "id": "application_config_values_validated_lazily_on_first_use",
+      "label": "Application Config Values Validated Lazily on First Use",
+      "description": "Config values validated inside request handlers rather than at startup, deferring misconfiguration errors.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Application Config Values Validated Lazily on First Use matters because the pattern here, Config values validated inside request handlers rather than at startup, deferring misconfiguration errors, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Application Config Values Validated Lazily on First Use in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "arbitrary_file_write_via_user_controlled_path",
+      "label": "Arbitrary File Write Via User Controlled Path",
+      "description": "File write operation uses a path derived from user input without containment check.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Arbitrary File Write Via User Controlled Path matters because the pattern here, File write operation uses a path derived from user input without containment check, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Arbitrary File Write Via User Controlled Path in Python, add containment check or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "async_api_returns_plain_iterator_with_blocking_iteration",
+      "label": "Async API Returns Plain Iterator with Blocking Iteration",
+      "description": "Flag async-facing APIs that return plain iterators whose consumption can still block.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Async API Returns Plain Iterator with Blocking Iteration matters because the pattern here, Flag async-facing APIs that return plain iterators whose consumption can still block, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Async API Returns Plain Iterator with Blocking Iteration in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "closure_captures_large_object_after_producing_function_returns",
+      "label": "Closure Captures Large Object After Producing Function Returns",
+      "description": "Inner function or lambda captures a large local variable after the producer returns, preventing GC.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Closure Captures Large Object After Producing Function Returns matters because the pattern here, Inner function or lambda captures a large local variable after the producer returns, preventing GC, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Closure Captures Large Object After Producing Function Returns in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "closure_captures_loop_variable_without_binding",
+      "label": "Closure Captures Loop Variable without Binding",
+      "description": "Flag closures created in loops that capture the loop variable without binding the current value.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Closure Captures Loop Variable without Binding matters because the pattern here, Flag closures created in loops that capture the loop variable without binding the current value, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Closure Captures Loop Variable without Binding in Python, add binding the current value or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "context_manager_yields_global_mutable_resource",
+      "label": "Context Manager Yields Global Mutable Resource",
+      "description": "Flag context managers that expose a shared global mutable resource while implying call-local ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Context Manager Yields Global Mutable Resource matters because the pattern here, Flag context managers that expose a shared global mutable resource while implying call-local ownership, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Context Manager Yields Global Mutable Resource in Python, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "cors_allow_all_origins_set_without_production_environment_check",
+      "label": "Cors Allow All Origins Set without Production Environment Check",
+      "description": "CORS configuration allows all origins (*) without a conditional check for the production environment.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Cors Allow All Origins Set without Production Environment Check matters because the pattern here, CORS configuration allows all origins (*) without a conditional check for the production environment, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Cors Allow All Origins Set without Production Environment Check in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "cryptographic_secret_hardcoded_in_test_fixture_or_seed",
+      "label": "Cryptographic Secret Hardcoded in Test Fixture or Seed",
+      "description": "Real-looking cryptographic secret, token, or private key hardcoded in a test fixture or seed file.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Cryptographic Secret Hardcoded in Test Fixture or Seed matters because the pattern here, Real-looking cryptographic secret, token, or private key hardcoded in a test fixture or seed file, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Cryptographic Secret Hardcoded in Test Fixture or Seed in Python, pull the sensitive value from env, config, or a secret manager instead of embedding it directly in source."
+    },
+    {
+      "id": "dataclass_mutable_default_without_default_factory",
+      "label": "Dataclass Mutable Default without Default Factory",
+      "description": "Flag dataclass fields that use mutable defaults without default_factory.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Dataclass Mutable Default without Default Factory matters because the pattern here, Flag dataclass fields that use mutable defaults without default_factory, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Dataclass Mutable Default without Default Factory in Python, add default_factory or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "datetime_boundary_mixes_naive_and_aware_values",
+      "label": "Datetime Boundary Mixes Naive and Aware Values",
+      "description": "Flag APIs that accept or combine timezone-aware and timezone-naive datetimes without normalization.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Datetime Boundary Mixes Naive and Aware Values matters because the pattern here, Flag APIs that accept or combine timezone-aware and timezone-naive datetimes without normalization, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Datetime Boundary Mixes Naive and Aware Values in Python, add normalization or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "db_connection_pool_size_exceeds_server_max_connections",
+      "label": "DB Connection Pool Size Exceeds Server Max Connections",
+      "description": "Database connection pool max_overflow or pool_size configured above the database server's max_connections.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, DB Connection Pool Size Exceeds Server Max Connections matters because the pattern here, Database connection pool max_overflow or pool_size configured above the database server's max_connections, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For DB Connection Pool Size Exceeds Server Max Connections in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "debug_or_admin_endpoint_registered_without_environment_guard",
+      "label": "Debug or Admin Endpoint Registered without Environment Guard",
+      "description": "Debug, admin, or diagnostics route registered without an environment variable guard.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Debug or Admin Endpoint Registered without Environment Guard matters because the pattern here, Debug, admin, or diagnostics route registered without an environment variable guard, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Debug or Admin Endpoint Registered without Environment Guard in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "deserialization_from_external_or_user_controlled_source_with_pickle",
+      "label": "Deserialization From External or User Controlled Source with Pickle",
+      "description": "pickle.loads or pickle.load called on data from an external or user-controlled source.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Deserialization From External or User Controlled Source with Pickle matters because the pattern here, pickle.loads or pickle.load called on data from an external or user-controlled source, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Deserialization From External or User Controlled Source with Pickle in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "dotenv_load_dotenv_called_from_multiple_modules",
+      "label": "Dotenv Load Dotenv Called From Multiple Modules",
+      "description": "dotenv.load_dotenv() called from more than one module, risking silent config override.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Dotenv Load Dotenv Called From Multiple Modules matters because the pattern here, dotenv.load_dotenv() called from more than one module, risking silent config override, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Dotenv Load Dotenv Called From Multiple Modules in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "feature_flag_checked_via_inline_env_lookup_across_handlers",
+      "label": "Feature Flag Checked Via Inline Env Lookup Across Handlers",
+      "description": "Feature flag checked via repeated inline os.getenv in multiple handlers instead of a single flag service.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Feature Flag Checked Via Inline Env Lookup Across Handlers matters because the pattern here, Feature flag checked via repeated inline os.getenv in multiple handlers instead of a single flag service, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Feature Flag Checked Via Inline Env Lookup Across Handlers in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "file_object_returned_or_stored_without_clear_close_path",
+      "label": "File Object Returned or Stored without Clear Close Path",
+      "description": "File object returned from a function or stored in an attribute without a guaranteed close path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, File Object Returned or Stored without Clear Close Path matters because the pattern here, File object returned from a function or stored in an attribute without a guaranteed close path, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For File Object Returned or Stored without Clear Close Path in Python, add a guaranteed close path or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "file_path_from_user_input_without_normalization_or_anchor_check",
+      "label": "File Path From User Input without Normalization or Anchor Check",
+      "description": "File path derived from user input without Path.resolve() or anchor containment check.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, File Path From User Input without Normalization or Anchor Check matters because the pattern here, File path derived from user input without Path.resolve() or anchor containment check, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For File Path From User Input without Normalization or Anchor Check in Python, add Path.resolve() or anchor containment check or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "function_accepts_mapping_protocol_but_mutates_input",
+      "label": "Function Accepts Mapping Protocol But Mutates Input",
+      "description": "Flag functions that advertise broad mapping or sequence inputs and then mutate the received object in place.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Function Accepts Mapping Protocol But Mutates Input matters because the pattern here, Flag functions that advertise broad mapping or sequence inputs and then mutate the received object in place, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Function Accepts Mapping Protocol But Mutates Input in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "functools_lru_cache_applied_to_instance_method",
+      "label": "Functools Lru Cache Applied to Instance Method",
+      "description": "@functools.lru_cache applied to an instance method, holding a reference to self and preventing GC.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Functools Lru Cache Applied to Instance Method matters because the pattern here, @functools.lru_cache applied to an instance method, holding a reference to self and preventing GC, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Functools Lru Cache Applied to Instance Method in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "generator_consumed_twice_without_recreation",
+      "label": "Generator Consumed Twice without Recreation",
+      "description": "Same generator object iterated a second time after it has already been exhausted.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Generator Consumed Twice without Recreation matters because the pattern here, Same generator object iterated a second time after it has already been exhausted, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Generator Consumed Twice without Recreation in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "helper_requires_caller_to_know_hidden_ordering_constraints",
+      "label": "Helper Requires Caller to Know Hidden Ordering Constraints",
+      "description": "Flag helpers whose correctness depends on the caller invoking them in a specific undocumented order.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Helper Requires Caller to Know Hidden Ordering Constraints matters because the pattern here, Flag helpers whose correctness depends on the caller invoking them in a specific undocumented order, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Helper Requires Caller to Know Hidden Ordering Constraints in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "helper_returns_live_internal_collection_reference",
+      "label": "Helper Returns Live Internal Collection Reference",
+      "description": "Flag helpers that hand out direct references to mutable internal lists, dicts, or sets instead of copies or read-only views.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Helper Returns Live Internal Collection Reference matters because the pattern here, Flag helpers that hand out direct references to mutable internal lists, dicts, or sets instead of copies or read-only views, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Helper Returns Live Internal Collection Reference in Python, prefer copies or read-only views when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "http_client_url_built_from_user_input_without_allowlist",
+      "label": "HTTP Client URL Built From User Input without Allowlist",
+      "description": "HTTP client URL constructed from user-controlled input without an allowlist or URL validation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, HTTP Client URL Built From User Input without Allowlist matters because the pattern here, HTTP client URL constructed from user-controlled input without an allowlist or URL validation, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For HTTP Client URL Built From User Input without Allowlist in Python, add an allowlist or URL validation or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "insecure_hash_algorithm_used_for_security_sensitive_purpose",
+      "label": "Insecure Hash Algorithm Used for Security Sensitive Purpose",
+      "description": "MD5 or SHA-1 used for password hashing, token generation, or a security-sensitive digest.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Insecure Hash Algorithm Used for Security Sensitive Purpose matters because the pattern here, MD5 or SHA-1 used for password hashing, token generation, or a security-sensitive digest, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Insecure Hash Algorithm Used for Security Sensitive Purpose in Python, pull the sensitive value from env, config, or a secret manager instead of embedding it directly in source."
+    },
+    {
+      "id": "iterator_argument_consumed_then_reused_later",
+      "label": "Iterator Argument Consumed Then Reused Later",
+      "description": "Flag functions that exhaust an iterator and later treat it as if it were reusable data.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Iterator Argument Consumed Then Reused Later matters because the pattern here, Flag functions that exhaust an iterator and later treat it as if it were reusable data, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Iterator Argument Consumed Then Reused Later in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "jinja2_environment_created_with_autoescape_disabled",
+      "label": "Jinja2 Environment Created with Autoescape Disabled",
+      "description": "Jinja2 Environment created without autoescape=True or with autoescape=False, enabling XSS.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Jinja2 Environment Created with Autoescape Disabled matters because the pattern here, Jinja2 Environment created without autoescape=True or with autoescape=False, enabling XSS, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Jinja2 Environment Created with Autoescape Disabled in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "jwt_decode_allows_none_algorithm_or_no_algorithm_restriction",
+      "label": "Jwt Decode Allows None Algorithm or No Algorithm Restriction",
+      "description": "JWT decoded without restricting the allowed algorithm list, permitting the none algorithm bypass.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Jwt Decode Allows None Algorithm or No Algorithm Restriction matters because the pattern here, JWT decoded without restricting the allowed algorithm list, permitting the none algorithm bypass, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Jwt Decode Allows None Algorithm or No Algorithm Restriction in Python, add restricting the allowed algorithm list, permitting the none algorithm bypass or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "ldap_search_filter_built_from_user_input_without_escaping",
+      "label": "Ldap Search Filter Built From User Input without Escaping",
+      "description": "LDAP search filter string built from user-controlled input without ldap3 or python-ldap escaping.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Ldap Search Filter Built From User Input without Escaping matters because the pattern here, LDAP search filter string built from user-controlled input without ldap3 or python-ldap escaping, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Ldap Search Filter Built From User Input without Escaping in Python, add ldap3 or python-ldap escaping or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "lock_acquire_and_release_owned_by_different_callers",
+      "label": "Lock Acquire and Release Owned by Different Callers",
+      "description": "Flag APIs that require one caller to acquire a lock and another caller to release it.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Lock Acquire and Release Owned by Different Callers matters because the pattern here, Flag APIs that require one caller to acquire a lock and another caller to release it, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Lock Acquire and Release Owned by Different Callers in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "module_cache_exposed_without_invalidation_boundary",
+      "label": "Module Cache Exposed without Invalidation Boundary",
+      "description": "Flag modules that expose cache internals directly with no clear invalidation or ownership boundary.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Module Cache Exposed without Invalidation Boundary matters because the pattern here, Flag modules that expose cache internals directly with no clear invalidation or ownership boundary, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Module Cache Exposed without Invalidation Boundary in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "module_constant_rebound_after_public_import",
+      "label": "Module Constant Rebound After Public Import",
+      "description": "Flag modules that expose apparent constants and later rebind them during normal runtime flow.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Module Constant Rebound After Public Import matters because the pattern here, Flag modules that expose apparent constants and later rebind them during normal runtime flow, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Module Constant Rebound After Public Import in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "multiple_config_sources_merged_without_documented_precedence_order",
+      "label": "Multiple Config Sources Merged without Documented Precedence Order",
+      "description": "Application merges environment variables, config files, and defaults without explicit precedence documentation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Multiple Config Sources Merged without Documented Precedence Order matters because the pattern here, Application merges environment variables, config files, and defaults without explicit precedence documentation, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Multiple Config Sources Merged without Documented Precedence Order in Python, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "mutable_default_argument_leaks_state_across_calls",
+      "label": "Mutable Default Argument Leaks State Across Calls",
+      "description": "Flag function signatures that use mutable defaults such as [], {}, or set() and allow state sharing between calls.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Mutable Default Argument Leaks State Across Calls matters because the pattern here, Flag function signatures that use mutable defaults such as [], {}, or set() and allow state sharing between calls, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Mutable Default Argument Leaks State Across Calls in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "object_allocated_in_tight_loop_expected_to_be_pooled",
+      "label": "Object Allocated in Tight Loop Expected to Be Pooled",
+      "description": "Heavyweight object such as HTTPSession or DB connection allocated fresh on every loop iteration.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Object Allocated in Tight Loop Expected to Be Pooled matters because the pattern here, Heavyweight object such as HTTPSession or DB connection allocated fresh on every loop iteration, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Object Allocated in Tight Loop Expected to Be Pooled in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "open_redirect_via_user_supplied_url_without_allowlist",
+      "label": "Open Redirect Via User Supplied URL without Allowlist",
+      "description": "HTTP redirect target constructed from user-supplied URL without allowlist validation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Open Redirect Via User Supplied URL without Allowlist matters because the pattern here, HTTP redirect target constructed from user-supplied URL without allowlist validation, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Open Redirect Via User Supplied URL without Allowlist in Python, add allowlist validation or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "path_boundary_accepts_unexpanded_or_relative_input_without_normalization",
+      "label": "Path Boundary Accepts Unexpanded or Relative Input without Normalization",
+      "description": "Flag filesystem-facing APIs that accept relative paths or ~ forms without normalizing them before downstream use.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Path Boundary Accepts Unexpanded or Relative Input without Normalization matters because the pattern here, Flag filesystem-facing APIs that accept relative paths or ~ forms without normalizing them before downstream use, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Path Boundary Accepts Unexpanded or Relative Input without Normalization in Python, add normalizing them before downstream use or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "property_returns_live_internal_cache_object",
+      "label": "Property Returns Live Internal Cache Object",
+      "description": "Flag properties that expose live mutable cache objects directly to callers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Property Returns Live Internal Cache Object matters because the pattern here, Flag properties that expose live mutable cache objects directly to callers, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Property Returns Live Internal Cache Object in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "public_api_forwards_library_specific_exception_shape",
+      "label": "Public API Forwards Library Specific Exception Shape",
+      "description": "Flag public interfaces that require callers to understand raw exceptions from underlying libraries.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Public API Forwards Library Specific Exception Shape matters because the pattern here, Flag public interfaces that require callers to understand raw exceptions from underlying libraries, depends on an invariant that future maintainers also have to preserve exactly.",
+      "fix": "For Public API Forwards Library Specific Exception Shape in Python, shrink the unsafe surface, document the invariant, or move the behavior behind a safe abstraction."
+    },
+    {
+      "id": "public_api_mutates_argument_in_place_without_signal",
+      "label": "Public API Mutates Argument in Place without Signal",
+      "description": "Flag public APIs that rewrite caller-owned containers or objects without naming or documentation that makes the mutation obvious.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Public API Mutates Argument in Place without Signal matters because the pattern here, Flag public APIs that rewrite caller-owned containers or objects without naming or documentation that makes the mutation obvious, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Public API Mutates Argument in Place without Signal in Python, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "pydantic_settings_model_allows_post_init_mutation",
+      "label": "Pydantic Settings Model Allows Post Init Mutation",
+      "description": "Pydantic Settings model does not set frozen=True, allowing accidental mutation of config values.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pydantic Settings Model Allows Post Init Mutation matters because the pattern here, Pydantic Settings model does not set frozen=True, allowing accidental mutation of config values, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Pydantic Settings Model Allows Post Init Mutation in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "pydantic_settings_model_does_not_forbid_extra_fields",
+      "label": "Pydantic Settings Model Does Not Forbid Extra Fields",
+      "description": "Pydantic Settings model does not set model_config = ConfigDict(extra='forbid'), allowing silent typos.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pydantic Settings Model Does Not Forbid Extra Fields matters because the pattern here, Pydantic Settings model does not set model_config = ConfigDict(extra='forbid'), allowing silent typos, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Pydantic Settings Model Does Not Forbid Extra Fields in Python, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "pydantic_settings_model_missing_env_prefix_isolation",
+      "label": "Pydantic Settings Model Missing Env Prefix Isolation",
+      "description": "Pydantic BaseSettings model does not define env_prefix, mixing its env vars with system environment.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pydantic Settings Model Missing Env Prefix Isolation matters because the pattern here, Pydantic BaseSettings model does not define env_prefix, mixing its env vars with system environment, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Pydantic Settings Model Missing Env Prefix Isolation in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "redis_commands_issued_individually_in_loop_without_pipeline",
+      "label": "Redis Commands Issued Individually in Loop without Pipeline",
+      "description": "Redis SETEX/HSET/GET commands issued one per loop iteration without using a pipeline.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Redis Commands Issued Individually in Loop without Pipeline matters because the pattern here, Redis SETEX/HSET/GET commands issued one per loop iteration without using a pipeline, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Redis Commands Issued Individually in Loop without Pipeline in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "regex_pattern_with_catastrophic_backtracking_applied_to_unbounded_input",
+      "label": "Regex Pattern with Catastrophic Backtracking Applied to Unbounded Input",
+      "description": "Regular expression containing nested quantifiers applied to user-supplied unbounded input.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Regex Pattern with Catastrophic Backtracking Applied to Unbounded Input matters because the pattern here, Regular expression containing nested quantifiers applied to user-supplied unbounded input, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Regex Pattern with Catastrophic Backtracking Applied to Unbounded Input in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "repeated_deepcopy_in_loop_on_same_source_object",
+      "label": "Repeated Deepcopy in Loop on Same Source Object",
+      "description": "copy.deepcopy called on the same large object on every iteration of a loop.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Repeated Deepcopy in Loop on Same Source Object matters because the pattern here, copy.deepcopy called on the same large object on every iteration of a loop, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Repeated Deepcopy in Loop on Same Source Object in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "secrets_manager_client_created_per_function_call",
+      "label": "Secrets Manager Client Created Per Function Call",
+      "description": "AWS Secrets Manager or Vault client instantiated on every function call instead of being cached.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Secrets Manager Client Created Per Function Call matters because the pattern here, AWS Secrets Manager or Vault client instantiated on every function call instead of being cached, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Secrets Manager Client Created Per Function Call in Python, prefer being cached when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "sensitive_config_key_included_in_debug_level_log_dict_dump",
+      "label": "Sensitive Config Key Included in Debug Level Log Dict Dump",
+      "description": "Debug log statement dumps the full config dict including keys that may hold secrets.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Sensitive Config Key Included in Debug Level Log Dict Dump matters because the pattern here, Debug log statement dumps the full config dict including keys that may hold secrets, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Sensitive Config Key Included in Debug Level Log Dict Dump in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "sentinel_default_value_overlaps_valid_business_value",
+      "label": "Sentinel Default Value Overlaps Valid Business Value",
+      "description": "Flag APIs whose sentinel or fallback value can also be a valid domain value.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Sentinel Default Value Overlaps Valid Business Value matters because the pattern here, Flag APIs whose sentinel or fallback value can also be a valid domain value, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Sentinel Default Value Overlaps Valid Business Value in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "server_side_template_injection_via_user_input_in_template_source",
+      "label": "Server Side Template Injection Via User Input in Template Source",
+      "description": "User-supplied data used as the template source string for Jinja2 or Mako, enabling SSTI.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Server Side Template Injection Via User Input in Template Source matters because the pattern here, User-supplied data used as the template source string for Jinja2 or Mako, enabling SSTI, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Server Side Template Injection Via User Input in Template Source in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "socket_opened_without_context_manager_or_guaranteed_close",
+      "label": "Socket Opened without Context Manager or Guaranteed Close",
+      "description": "socket.socket opened without a context manager or explicit .close() in a finally block.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Socket Opened without Context Manager or Guaranteed Close matters because the pattern here, socket.socket opened without a context manager or explicit .close() in a finally block, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Socket Opened without Context Manager or Guaranteed Close in Python, add a context manager or explicit .close() in a finally block or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "sql_query_built_with_string_formatting_instead_of_parameters",
+      "label": "SQL Query Built with String Formatting Instead of Parameters",
+      "description": "SQL query string built via f-string or % formatting instead of parameterised query binding.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, SQL Query Built with String Formatting Instead of Parameters matters because the pattern here, SQL query string built via f-string or % formatting instead of parameterised query binding, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For SQL Query Built with String Formatting Instead of Parameters in Python, prefer parameterised query binding when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "startup_log_statement_includes_raw_secret_value",
+      "label": "Startup Log Statement Includes Raw Secret Value",
+      "description": "Startup or health-check log statement interpolates a raw secret, key, or password value.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Startup Log Statement Includes Raw Secret Value matters because the pattern here, Startup or health-check log statement interpolates a raw secret, key, or password value, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Startup Log Statement Includes Raw Secret Value in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "state_changing_endpoint_missing_csrf_protection",
+      "label": "State Changing Endpoint Missing Csrf Protection",
+      "description": "State-changing POST/PUT/DELETE endpoint lacks CSRF token validation or SameSite enforcement.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, State Changing Endpoint Missing Csrf Protection matters because the pattern here, State-changing POST/PUT/DELETE endpoint lacks CSRF token validation or SameSite enforcement, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For State Changing Endpoint Missing Csrf Protection in Python, pull the sensitive value from env, config, or a secret manager instead of embedding it directly in source."
+    },
+    {
+      "id": "subprocess_invoked_with_shell_true_and_user_derived_input",
+      "label": "Subprocess Invoked with Shell True and User Derived Input",
+      "description": "subprocess called with shell=True and a command string that includes user-controlled data.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Subprocess Invoked with Shell True and User Derived Input matters because the pattern here, subprocess called with shell=True and a command string that includes user-controlled data, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Subprocess Invoked with Shell True and User Derived Input in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "subprocess_pipe_without_communicate_for_large_output",
+      "label": "Subprocess Pipe without Communicate for Large Output",
+      "description": "subprocess.Popen with PIPE but .communicate() not called, risking deadlock on large output.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Subprocess Pipe without Communicate for Large Output matters because the pattern here, subprocess.Popen with PIPE but .communicate() not called, risking deadlock on large output, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Subprocess Pipe without Communicate for Large Output in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "sync_api_accepts_coroutine_object_as_regular_value",
+      "label": "Sync API Accepts Coroutine Object as Regular Value",
+      "description": "Flag synchronous interfaces that can accidentally receive coroutine objects and treat them as plain values.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Sync API Accepts Coroutine Object as Regular Value matters because the pattern here, Flag synchronous interfaces that can accidentally receive coroutine objects and treat them as plain values, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Sync API Accepts Coroutine Object as Regular Value in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "text_bytes_boundary_relies_on_implicit_default_encoding",
+      "label": "Text Bytes Boundary Relies on Implicit Default Encoding",
+      "description": "Flag code that crosses text and bytes boundaries without an explicit encoding contract.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Text Bytes Boundary Relies on Implicit Default Encoding matters because the pattern here, Flag code that crosses text and bytes boundaries without an explicit encoding contract, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Text Bytes Boundary Relies on Implicit Default Encoding in Python, add an explicit encoding contract or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "toml_or_ini_config_file_parsed_on_request_path",
+      "label": "Toml or Ini Config File Parsed on Request Path",
+      "description": "TOML, INI, or YAML config file parsed inside a request handler on every request.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Toml or Ini Config File Parsed on Request Path matters because the pattern here, TOML, INI, or YAML config file parsed inside a request handler on every request, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Toml or Ini Config File Parsed on Request Path in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "unbounded_list_accumulation_inside_long_running_function",
+      "label": "Unbounded List Accumulation Inside Long Running Function",
+      "description": "List grows unboundedly inside a long-running function or loop without a cap or periodic flush.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Unbounded List Accumulation Inside Long Running Function matters because the pattern here, List grows unboundedly inside a long-running function or loop without a cap or periodic flush, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Unbounded List Accumulation Inside Long Running Function in Python, add a cap or periodic flush or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "unclosed_tempfile_or_tmp_directory_from_tempfile_module",
+      "label": "Unclosed Tempfile or Tmp Directory From Tempfile Module",
+      "description": "tempfile.NamedTemporaryFile or TemporaryDirectory created without delete=False or a context manager.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Unclosed Tempfile or Tmp Directory From Tempfile Module matters because the pattern here, tempfile.NamedTemporaryFile or TemporaryDirectory created without delete=False or a context manager, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Unclosed Tempfile or Tmp Directory From Tempfile Module in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "weak_random_function_used_for_security_token_generation",
+      "label": "Weak Random Function Used for Security Token Generation",
+      "description": "random.random or random.choice used to generate a security token, CSRF value, or password reset token.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Weak Random Function Used for Security Token Generation matters because the pattern here, random.random or random.choice used to generate a security token, CSRF value, or password reset token, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Weak Random Function Used for Security Token Generation in Python, pull the sensitive value from env, config, or a secret manager instead of embedding it directly in source."
+    },
+    {
+      "id": "weakref_dereferenced_without_live_check",
+      "label": "Weakref Dereferenced without Live Check",
+      "description": "weakref.ref() called and result used without checking for None, potential AttributeError.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Weakref Dereferenced without Live Check matters because the pattern here, weakref.ref() called and result used without checking for None, potential AttributeError, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Weakref Dereferenced without Live Check in Python, add checking for None, potential AttributeError or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "xml_parsing_with_external_dtd_or_entity_processing_enabled",
+      "label": "Xml Parsing with External Dtd or Entity Processing Enabled",
+      "description": "XML parsed with a parser that processes external DTDs or entities, enabling XXE attacks.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Xml Parsing with External Dtd or Entity Processing Enabled matters because the pattern here, XML parsed with a parser that processes external DTDs or entities, enabling XXE attacks, is worth review because the sharp edges of a system usually live where code touches files, the network, config, or external resources.",
+      "fix": "For Xml Parsing with External Dtd or Entity Processing Enabled in Python, normalize inputs at the boundary, centralize sensitive resource handling, and keep external effects behind deliberate interfaces."
+    },
+    {
+      "id": "yaml_config_loaded_without_safe_loader",
+      "label": "Yaml Config Loaded without Safe Loader",
+      "description": "YAML configuration file loaded with yaml.load instead of yaml.safe_load or yaml.load + Loader=SafeLoader.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Yaml Config Loaded without Safe Loader matters because the pattern here, YAML configuration file loaded with yaml.load instead of yaml.safe_load or yaml.load + Loader=SafeLoader, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Yaml Config Loaded without Safe Loader in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    }
+  ]
+}

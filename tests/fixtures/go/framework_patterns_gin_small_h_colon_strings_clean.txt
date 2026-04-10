@@ -1,0 +1,17 @@
+package sample
+
+import "github.com/gin-gonic/gin"
+
+func SmallErrorPayloadsWithColonStrings(c *gin.Context) {
+	if err := c.ShouldBindJSON(&struct{}{}); err != nil {
+		c.JSON(400, gin.H{"error": "failed to parse payload: " + err.Error()})
+		return
+	}
+
+	if _, err := c.FormFile("font"); err != nil {
+		c.JSON(400, gin.H{"error": "failed to open file: " + err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"ok": true})
+}

@@ -6,3 +6,5 @@ pub(super) mod hotpath_ext;
 pub(super) mod mlops;
 pub(super) mod packaging;
 pub(super) mod phase5_rules;
+pub(super) mod project_agnostic_rules;
+pub(super) mod v03_rules;

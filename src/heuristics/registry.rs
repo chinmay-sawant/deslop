@@ -11,9 +11,9 @@ use super::go::{
     go_architecture_file_findings, go_architecture_repo_findings, go_file_findings,
     go_framework_patterns_file_findings, go_library_misuse_file_findings, go_repo_findings,
     import_grouping_findings, json_findings, load_findings, mutex_findings, n_squared_findings,
-    package_name_consistency, propagate_findings, receiver_findings,
-    request_context_background_findings, reflect_findings, rwmutex_file_findings,
-    shutdown_findings, sleep_findings, tag_findings, waitgroup_errgroup_findings,
+    package_name_consistency, propagate_findings, receiver_findings, reflect_findings,
+    request_context_background_findings, rwmutex_file_findings, shutdown_findings, sleep_findings,
+    tag_findings, waitgroup_errgroup_findings,
 };
 use super::hallucination::hallucination_findings;
 use super::naming::{generic_finding, overlong_finding, weak_finding};

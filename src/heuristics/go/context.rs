@@ -171,8 +171,14 @@ pub(crate) fn ctx_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<
         .collect()
 }
 
-pub(crate) fn context_parameter_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
-    if file.is_test_file || function.is_test_function || !function.go_evidence().has_context_parameter {
+pub(crate) fn context_parameter_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if file.is_test_file
+        || function.is_test_function
+        || !function.go_evidence().has_context_parameter
+    {
         return Vec::new();
     }
 
@@ -263,7 +269,10 @@ pub(crate) fn request_context_background_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if file.is_test_file || function.is_test_function || !function_has_available_context(file, function) {
+    if file.is_test_file
+        || function.is_test_function
+        || !function_has_available_context(file, function)
+    {
         return Vec::new();
     }
 
@@ -313,7 +322,10 @@ pub(crate) fn request_context_background_findings(
     }]
 }
 
-pub(crate) fn context_withvalue_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
+pub(crate) fn context_withvalue_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
     if file.is_test_file || function.is_test_function {
         return Vec::new();
     }
@@ -347,21 +359,21 @@ pub(crate) fn context_withvalue_findings(file: &ParsedFile, function: &ParsedFun
 
         if context_key_looks_builtin(key_arg) || context_key_looks_plain_identifier(key_arg) {
             findings.push(Finding {
-                    rule_id: "context_key_uses_exported_or_builtin_type".to_string(),
-                    severity: Severity::Warning,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: line_no,
-                    end_line: line_no,
-                    message: format!(
-                        "function {} uses a built-in or string-like context key in context.WithValue",
-                        function.fingerprint.name
-                    ),
-                    evidence: vec![
-                        format!("context.WithValue(...) observed at line {}", line_no),
-                        format!("key argument: {key_arg}"),
-                        "prefer an unexported package-local key type to avoid collisions".to_string(),
-                    ],
+                rule_id: "context_key_uses_exported_or_builtin_type".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: line_no,
+                end_line: line_no,
+                message: format!(
+                    "function {} uses a built-in or string-like context key in context.WithValue",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("context.WithValue(...) observed at line {}", line_no),
+                    format!("key argument: {key_arg}"),
+                    "prefer an unexported package-local key type to avoid collisions".to_string(),
+                ],
             });
         }
 
@@ -374,21 +386,22 @@ pub(crate) fn context_withvalue_findings(file: &ParsedFile, function: &ParsedFun
 
         if suspicious_value && !looks_metadata {
             findings.push(Finding {
-                    rule_id: "context_withvalue_used_for_dependencies_or_large_payloads".to_string(),
-                    severity: Severity::Warning,
-                    path: file.path.clone(),
-                    function_name: Some(function.fingerprint.name.clone()),
-                    start_line: line_no,
-                    end_line: line_no,
-                    message: format!(
-                        "function {} uses context.WithValue for dependency-like or payload-like data",
-                        function.fingerprint.name
-                    ),
-                    evidence: vec![
-                        format!("context.WithValue(...) observed at line {}", line_no),
-                        format!("key argument: {key_arg}"),
-                        format!("value argument: {value_arg}"),
-                        "context values are better reserved for lightweight request metadata".to_string(),
+                rule_id: "context_withvalue_used_for_dependencies_or_large_payloads".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: line_no,
+                end_line: line_no,
+                message: format!(
+                    "function {} uses context.WithValue for dependency-like or payload-like data",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("context.WithValue(...) observed at line {}", line_no),
+                    format!("key argument: {key_arg}"),
+                    format!("value argument: {value_arg}"),
+                    "context values are better reserved for lightweight request metadata"
+                        .to_string(),
                 ],
             });
         }
@@ -705,10 +718,11 @@ fn context_key_file_findings(file: &ParsedFile) -> Vec<Finding> {
             continue;
         }
 
-        let type_signal = package_var
-            .type_text
-            .as_deref()
-            .is_some_and(|ty| CONTEXT_DECLARATION_BUILTINS.iter().any(|builtin| ty.contains(builtin)));
+        let type_signal = package_var.type_text.as_deref().is_some_and(|ty| {
+            CONTEXT_DECLARATION_BUILTINS
+                .iter()
+                .any(|builtin| ty.contains(builtin))
+        });
         let value_signal = package_var
             .value_text
             .as_deref()
@@ -766,7 +780,11 @@ fn context_key_file_findings(file: &ParsedFile) -> Vec<Finding> {
             continue;
         };
 
-        if !type_name.chars().next().is_some_and(|ch| ch.is_ascii_uppercase()) {
+        if !type_name
+            .chars()
+            .next()
+            .is_some_and(|ch| ch.is_ascii_uppercase())
+        {
             continue;
         }
         if !CONTEXT_DECLARATION_BUILTINS.contains(&underlying) {
@@ -896,7 +914,7 @@ fn has_documented_context_decoupling(function: &ParsedFunction) -> bool {
         "survive request cancellation",
     ]
     .iter()
-        .any(|marker| combined.contains(marker))
+    .any(|marker| combined.contains(marker))
 }
 
 fn body_lines(function: &ParsedFunction) -> Vec<(usize, String)> {
@@ -1047,15 +1065,20 @@ fn context_key_looks_plain_identifier(text: &str) -> bool {
     !trimmed.contains('.')
         && !trimmed.contains('{')
         && !trimmed.contains('(')
-        && trimmed.chars().next().is_some_and(|ch| ch.is_ascii_lowercase())
+        && trimmed
+            .chars()
+            .next()
+            .is_some_and(|ch| ch.is_ascii_lowercase())
         && trimmed.to_ascii_lowercase().ends_with("key")
 }
 
 fn has_waitgroup_or_errgroup(function: &ParsedFunction) -> bool {
     function.calls.iter().any(|call| {
         call.receiver.as_ref().is_some_and(|receiver| {
-            matches!(receiver.as_str(), "wg" | "group" | "g" | "errGroup" | "errgroup")
-                && matches!(call.name.as_str(), "Add" | "Wait" | "Go")
+            matches!(
+                receiver.as_str(),
+                "wg" | "group" | "g" | "errGroup" | "errgroup"
+            ) && matches!(call.name.as_str(), "Add" | "Wait" | "Go")
         })
     })
 }

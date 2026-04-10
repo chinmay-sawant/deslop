@@ -1,0 +1,50 @@
+{
+  "language": "common",
+  "family": "naming",
+  "label": "Naming",
+  "summary": "Weak naming and type-shape signals that hide intent.",
+  "rules": [
+    {
+      "id": "generic_name",
+      "label": "Generic Name",
+      "description": "Function names that are overly generic without stronger contextual signals.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Common, Generic Name matters because the pattern here, Function names that are overly generic without stronger contextual signals, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Generic Name in Common, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "overlong_name",
+      "label": "Overlong Name",
+      "description": "Very long identifiers with too many descriptive tokens.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Common, Overlong Name matters because the pattern here, Very long identifiers with too many descriptive tokens, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Overlong Name in Common, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "weak_typing",
+      "label": "Weak Typing",
+      "description": "Signatures that rely on any or empty interface types.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Common, Weak Typing matters because the pattern here, Signatures that rely on any or empty interface types, weakens the contract at the exact place callers need the shape or boundary to be explicit.",
+      "fix": "For Weak Typing in Common, tighten the type, annotation, schema, or response contract so callers can see the expected shape at the boundary."
+    }
+  ]
+}

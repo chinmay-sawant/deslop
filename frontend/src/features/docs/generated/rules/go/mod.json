@@ -1,0 +1,64 @@
+{
+  "language": "go",
+  "family": "mod",
+  "label": "Module Layout",
+  "summary": "Package and module structure checks for repository organization.",
+  "rules": [
+    {
+      "id": "json_unmarshal_same_payload_multiple_times",
+      "label": "JSON Unmarshal Same Payload Multiple Times",
+      "description": "The same local JSON payload binding is unmarshaled into multiple targets in one function.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, JSON Unmarshal Same Payload Multiple Times matters because the pattern here, The same local JSON payload binding is unmarshaled into multiple targets in one function, is worth review because entrypoints and package boundaries are part of the public maintenance story of the repository.",
+      "fix": "For JSON Unmarshal Same Payload Multiple Times in Go, keep package roles obvious, and place startup or entrypoint code where maintainers expect to find it."
+    },
+    {
+      "id": "proto_unmarshal_same_payload_multiple_times",
+      "label": "Proto Unmarshal Same Payload Multiple Times",
+      "description": "The same local protobuf payload binding is unmarshaled into multiple targets in one function.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Proto Unmarshal Same Payload Multiple Times matters because the pattern here, The same local protobuf payload binding is unmarshaled into multiple targets in one function, is worth review because entrypoints and package boundaries are part of the public maintenance story of the repository.",
+      "fix": "For Proto Unmarshal Same Payload Multiple Times in Go, keep package roles obvious, and place startup or entrypoint code where maintainers expect to find it."
+    },
+    {
+      "id": "xml_unmarshal_same_payload_multiple_times",
+      "label": "Xml Unmarshal Same Payload Multiple Times",
+      "description": "The same local XML payload binding is unmarshaled into multiple targets in one function.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Xml Unmarshal Same Payload Multiple Times matters because the pattern here, The same local XML payload binding is unmarshaled into multiple targets in one function, is worth review because entrypoints and package boundaries are part of the public maintenance story of the repository.",
+      "fix": "For Xml Unmarshal Same Payload Multiple Times in Go, keep package roles obvious, and place startup or entrypoint code where maintainers expect to find it."
+    },
+    {
+      "id": "yaml_unmarshal_same_payload_multiple_times",
+      "label": "Yaml Unmarshal Same Payload Multiple Times",
+      "description": "The same local YAML payload binding is unmarshaled into multiple targets in one function.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Yaml Unmarshal Same Payload Multiple Times matters because the pattern here, The same local YAML payload binding is unmarshaled into multiple targets in one function, is worth review because entrypoints and package boundaries are part of the public maintenance story of the repository.",
+      "fix": "For Yaml Unmarshal Same Payload Multiple Times in Go, keep package roles obvious, and place startup or entrypoint code where maintainers expect to find it."
+    }
+  ]
+}

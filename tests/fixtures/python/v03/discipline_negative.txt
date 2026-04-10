@@ -1,0 +1,36 @@
+import json
+
+
+# Clean exception chaining
+def parse_config(text: str) -> dict:
+    try:
+        return json.loads(text)
+    except ValueError as exc:
+        raise ConfigError("invalid config format") from exc
+
+
+# Clean specific exception
+def run_step(step):
+    try:
+        step()
+    except RuntimeError:
+        pass
+
+
+# Proper runtime validation using Pydantic / explicit check
+def create_user(email: str) -> dict:
+    if "@" not in email:
+        raise ValueError(f"Invalid email address: {email!r}")
+    return {"email": email}
+
+
+# Clean lookup - no exception for flow control
+def lookup_item(items: dict, key: str) -> object | None:
+    return items.get(key)
+
+
+# Clean test with targeted patch
+@patch("app.service.repo")
+def test_create_order(mock_repo):
+    result = create_order(user_id=1)
+    assert result["status"] == "ok"

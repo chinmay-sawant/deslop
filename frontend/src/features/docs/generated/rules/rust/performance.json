@@ -1,0 +1,179 @@
+{
+  "language": "rust",
+  "family": "performance",
+  "label": "Performance",
+  "summary": "Repeated work, allocation churn, and avoidable hot-path waste.",
+  "rules": [
+    {
+      "id": "rust_aos_hot_path",
+      "label": "Rust Aos Hot Path",
+      "description": "Repeated struct-field dereferences inside a loop that may indicate an array-of-structs hot path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Aos Hot Path matters because the pattern here, Repeated struct-field dereferences inside a loop that may indicate an array-of-structs hot path, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Aos Hot Path in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_blocking_drop",
+      "label": "Rust Blocking Drop",
+      "description": "A Drop implementation performs blocking work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Blocking Drop matters because the pattern here, A Drop implementation performs blocking work, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Blocking Drop in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_blocking_io_in_async",
+      "label": "Rust Blocking I/O in Async",
+      "description": "Blocking I/O or blocking work observed in async Rust code.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Blocking I/O in Async matters because the pattern here, Blocking I/O or blocking work observed in async Rust code, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Blocking I/O in Async in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_hashmap_default_hasher",
+      "label": "Rust Hashmap Default Hasher",
+      "description": "HashMap default-hasher construction in a likely hot path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Hashmap Default Hasher matters because the pattern here, HashMap default-hasher construction in a likely hot path, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Hashmap Default Hasher in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_large_future_stack",
+      "label": "Rust Large Future Stack",
+      "description": "Large allocations may be captured across await points and bloat future size.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Large Future Stack matters because the pattern here, Large allocations may be captured across await points and bloat future size, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Large Future Stack in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_lines_allocate_per_line",
+      "label": "Rust Lines Allocate Per Line",
+      "description": ".lines() iteration used in a loop where per-item allocation may matter.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Lines Allocate Per Line matters because the pattern here, .lines() iteration used in a loop where per-item allocation may matter, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Lines Allocate Per Line in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_lock_across_await",
+      "label": "Rust Lock Across Await",
+      "description": "A lock appears to be held across an .await boundary.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Lock Across Await matters because the pattern here, A lock appears to be held across an .await boundary, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Lock Across Await in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_path_join_absolute",
+      "label": "Rust Path Join Absolute",
+      "description": "Path::join used with an absolute segment that discards the existing base path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Path Join Absolute matters because the pattern here, Path::join used with an absolute segment that discards the existing base path, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Path Join Absolute in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_pointer_chasing_vec_box",
+      "label": "Rust Pointer Chasing Vec Box",
+      "description": "Pointer-heavy boxed vector-style storage that may hurt cache locality.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Pointer Chasing Vec Box matters because the pattern here, Pointer-heavy boxed vector-style storage that may hurt cache locality, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Pointer Chasing Vec Box in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    },
+    {
+      "id": "rust_tokio_mutex_unnecessary",
+      "label": "Rust Tokio Mutex Unnecessary",
+      "description": "tokio::sync::Mutex used in a fully synchronous critical path with no await.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Tokio Mutex Unnecessary matters because the pattern here, tokio::sync::Mutex used in a fully synchronous critical path with no await, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Tokio Mutex Unnecessary in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_unbuffered_file_writes",
+      "label": "Rust Unbuffered File Writes",
+      "description": "File-like writes performed inside a loop without buffering or batching.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Unbuffered File Writes matters because the pattern here, File-like writes performed inside a loop without buffering or batching, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Unbuffered File Writes in Rust, add buffering or batching or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_utf8_validate_hot_path",
+      "label": "Rust Utf8 Validate Hot Path",
+      "description": "UTF-8 validation appears in a likely hot path and may deserve profiling.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Utf8 Validate Hot Path matters because the pattern here, UTF-8 validation appears in a likely hot path and may deserve profiling, is worth review because efficient code is often the result of avoiding small repeated costs before they become default structure.",
+      "fix": "For Rust Utf8 Validate Hot Path in Rust, reuse allocations, hoist invariant work, and keep the hot path doing only the work that truly belongs there."
+    }
+  ]
+}

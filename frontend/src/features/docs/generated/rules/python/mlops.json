@@ -1,0 +1,638 @@
+{
+  "language": "python",
+  "family": "mlops",
+  "label": "MLOps",
+  "summary": "Pipeline, dataset, prompt, and inference workflow smells.",
+  "rules": [
+    {
+      "id": "data_pipeline_no_error_handling",
+      "label": "Data Pipeline No Error Handling",
+      "description": "Pipeline-style functions with no visible error handling or recovery path.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Data Pipeline No Error Handling matters because the pattern here, Pipeline-style functions with no visible error handling or recovery path, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Data Pipeline No Error Handling in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "dataset_not_using_dataloader",
+      "label": "Dataset Not Using Dataloader",
+      "description": "Manual dataset batching loops that bypass torch.utils.data.DataLoader.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Dataset Not Using Dataloader matters because the pattern here, Manual dataset batching loops that bypass torch.utils.data.DataLoader, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Dataset Not Using Dataloader in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "embedding_computed_per_request",
+      "label": "Embedding Computed Per Request",
+      "description": "Embeddings recomputed on request paths instead of cached or precomputed for stable inputs.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Embedding Computed Per Request matters because the pattern here, Embeddings recomputed on request paths instead of cached or precomputed for stable inputs, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Embedding Computed Per Request in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "embedding_dimension_mismatch_silent",
+      "label": "Embedding Dimension Mismatch Silent",
+      "description": "Embeddings are compared without visible dimension validation before similarity math.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Embedding Dimension Mismatch Silent matters because the pattern here, Embeddings are compared without visible dimension validation before similarity math, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Embedding Dimension Mismatch Silent in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "entire_dataframe_copied_for_transform",
+      "label": "Entire Dataframe Copied for Transform",
+      "description": "Whole DataFrames are copied for transforms that could target a smaller subset or reuse views.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Entire Dataframe Copied for Transform matters because the pattern here, Whole DataFrames are copied for transforms that could target a smaller subset or reuse views, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Entire Dataframe Copied for Transform in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "global_state_in_data_pipeline",
+      "label": "Global State in Data Pipeline",
+      "description": "Pipeline-style functions mutate global state, making concurrency and reproducibility brittle.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Global State in Data Pipeline matters because the pattern here, Pipeline-style functions mutate global state, making concurrency and reproducibility brittle, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Global State in Data Pipeline in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "gpu_memory_not_cleared_between_experiments",
+      "label": "Gpu Memory Not Cleared Between Experiments",
+      "description": "GPU-backed experiment flows show no visible memory or session cleanup between runs.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Gpu Memory Not Cleared Between Experiments matters because the pattern here, GPU-backed experiment flows show no visible memory or session cleanup between runs, is worth review because data pipelines and model-serving paths amplify waste, leakage, and reproducibility problems quickly.",
+      "fix": "For Gpu Memory Not Cleared Between Experiments in Python, make pipeline ownership explicit, keep expensive data work deliberate, and favor stable prompt or model contracts over ad hoc assembly."
+    },
+    {
+      "id": "hardcoded_api_key_in_source",
+      "label": "Hardcoded API Key in Source",
+      "description": "Hardcoded model-provider API keys or secret-like tokens appear in source.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Hardcoded API Key in Source matters because the pattern here, Hardcoded model-provider API keys or secret-like tokens appear in source, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Hardcoded API Key in Source in Python, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "intermediate_dataframe_not_freed",
+      "label": "Intermediate Dataframe Not Freed",
+      "description": "Multiple intermediate DataFrames accumulate with no visible cleanup in one pipeline.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Intermediate Dataframe Not Freed matters because the pattern here, Multiple intermediate DataFrames accumulate with no visible cleanup in one pipeline, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Intermediate Dataframe Not Freed in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "langchain_chain_built_per_request",
+      "label": "Langchain Chain Built Per Request",
+      "description": "LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Langchain Chain Built Per Request matters because the pattern here, LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path, is worth review because data pipelines and model-serving paths amplify waste, leakage, and reproducibility problems quickly.",
+      "fix": "For Langchain Chain Built Per Request in Python, make pipeline ownership explicit, keep expensive data work deliberate, and favor stable prompt or model contracts over ad hoc assembly."
+    },
+    {
+      "id": "llm_api_call_in_loop_without_batching",
+      "label": "LLM API Call in Loop without Batching",
+      "description": "LLM API calls are made inside loops without batching or aggregation.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, LLM API Call in Loop without Batching matters because the pattern here, LLM API calls are made inside loops without batching or aggregation, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For LLM API Call in Loop without Batching in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "llm_full_response_loaded_into_memory",
+      "label": "LLM Full Response Loaded Into Memory",
+      "description": "Large LLM responses are loaded fully into memory instead of streamed or incrementally consumed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, LLM Full Response Loaded Into Memory matters because the pattern here, Large LLM responses are loaded fully into memory instead of streamed or incrementally consumed, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For LLM Full Response Loaded Into Memory in Python, prefer streamed or incrementally consumed when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "llm_response_not_cached_same_input",
+      "label": "LLM Response Not Cached Same Input",
+      "description": "Repeated LLM calls show no visible caching even when prompt inputs appear likely to repeat.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, LLM Response Not Cached Same Input matters because the pattern here, Repeated LLM calls show no visible caching even when prompt inputs appear likely to repeat, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For LLM Response Not Cached Same Input in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "model_eval_mode_missing",
+      "label": "Model Eval Mode Missing",
+      "description": "Torch-style inference paths run model(...) without obvious eval() or inference mode setup.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Model Eval Mode Missing matters because the pattern here, Torch-style inference paths run model(...) without obvious eval() or inference mode setup, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Model Eval Mode Missing in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "model_loaded_per_request",
+      "label": "Model Loaded Per Request",
+      "description": "Models are loaded on request paths instead of once during application startup.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Model Loaded Per Request matters because the pattern here, Models are loaded on request paths instead of once during application startup, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Model Loaded Per Request in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "model_to_device_in_loop",
+      "label": "Model to Device in Loop",
+      "description": "Models or tensors are moved to a device repeatedly inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Model to Device in Loop matters because the pattern here, Models or tensors are moved to a device repeatedly inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Model to Device in Loop in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "no_schema_validation_on_external_data",
+      "label": "No Schema Validation on External Data",
+      "description": "External JSON or tabular data is parsed without visible schema validation.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, No Schema Validation on External Data matters because the pattern here, External JSON or tabular data is parsed without visible schema validation, weakens the contract at the exact place callers need the shape or boundary to be explicit.",
+      "fix": "For No Schema Validation on External Data in Python, tighten the type, annotation, schema, or response contract so callers can see the expected shape at the boundary."
+    },
+    {
+      "id": "numpy_append_in_loop",
+      "label": "Numpy Append in Loop",
+      "description": "np.append(...) is used inside loops, forcing repeated reallocations.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Numpy Append in Loop matters because the pattern here, np.append(...) is used inside loops, forcing repeated reallocations, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Numpy Append in Loop in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "numpy_dtype_mismatch_implicit_cast",
+      "label": "Numpy Dtype Mismatch Implicit Cast",
+      "description": "Arrays are constructed and immediately cast, implying a missing upfront dtype choice.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Numpy Dtype Mismatch Implicit Cast matters because the pattern here, Arrays are constructed and immediately cast, implying a missing upfront dtype choice, is worth review because data pipelines and model-serving paths amplify waste, leakage, and reproducibility problems quickly.",
+      "fix": "For Numpy Dtype Mismatch Implicit Cast in Python, make pipeline ownership explicit, keep expensive data work deliberate, and favor stable prompt or model contracts over ad hoc assembly."
+    },
+    {
+      "id": "numpy_python_loop_over_array",
+      "label": "Numpy Python Loop Over Array",
+      "description": "Python loops iterate directly over arrays where vectorized NumPy operations would be clearer and faster.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Numpy Python Loop Over Array matters because the pattern here, Python loops iterate directly over arrays where vectorized NumPy operations would be clearer and faster, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Numpy Python Loop Over Array in Python, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "numpy_tolist_in_hot_path",
+      "label": "Numpy Tolist in Hot Path",
+      "description": "NumPy arrays are converted to Python lists in hot paths, increasing object overhead.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Numpy Tolist in Hot Path matters because the pattern here, NumPy arrays are converted to Python lists in hot paths, increasing object overhead, is worth review because data pipelines and model-serving paths amplify waste, leakage, and reproducibility problems quickly.",
+      "fix": "For Numpy Tolist in Hot Path in Python, make pipeline ownership explicit, keep expensive data work deliberate, and favor stable prompt or model contracts over ad hoc assembly."
+    },
+    {
+      "id": "numpy_vstack_hstack_in_loop",
+      "label": "Numpy Vstack Hstack in Loop",
+      "description": "Arrays are repeatedly stacked inside loops instead of collected and stacked once.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Numpy Vstack Hstack in Loop matters because the pattern here, Arrays are repeatedly stacked inside loops instead of collected and stacked once, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Numpy Vstack Hstack in Loop in Python, prefer collected and stacked once when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "pandas_apply_with_simple_vectorizable_op",
+      "label": "Pandas Apply with Simple Vectorizable Op",
+      "description": "Simple DataFrame transforms are routed through apply(lambda) instead of vectorized operations.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Apply with Simple Vectorizable Op matters because the pattern here, Simple DataFrame transforms are routed through apply(lambda) instead of vectorized operations, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Pandas Apply with Simple Vectorizable Op in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "pandas_chain_assignment_warning",
+      "label": "Pandas Chain Assignment Warning",
+      "description": "Chained DataFrame assignment patterns risk SettingWithCopy-style behavior.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Chain Assignment Warning matters because the pattern here, Chained DataFrame assignment patterns risk SettingWithCopy-style behavior, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Pandas Chain Assignment Warning in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "pandas_concat_in_loop",
+      "label": "Pandas Concat in Loop",
+      "description": "DataFrames are concatenated inside loops instead of collected and concatenated once.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Concat in Loop matters because the pattern here, DataFrames are concatenated inside loops instead of collected and concatenated once, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Pandas Concat in Loop in Python, prefer collected and concatenated once when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "pandas_copy_in_loop",
+      "label": "Pandas Copy in Loop",
+      "description": "DataFrames are copied inside loops, amplifying memory churn.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Copy in Loop matters because the pattern here, DataFrames are copied inside loops, amplifying memory churn, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Pandas Copy in Loop in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "pandas_eval_string_manipulation",
+      "label": "Pandas Eval String Manipulation",
+      "description": "Dynamic string building is fed into pandas eval/query calls, increasing injection and correctness risk.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Eval String Manipulation matters because the pattern here, Dynamic string building is fed into pandas eval/query calls, increasing injection and correctness risk, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Pandas Eval String Manipulation in Python, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "pandas_full_dataframe_print_in_production",
+      "label": "Pandas Full Dataframe Print in Production",
+      "description": "Full DataFrames are printed or displayed in production-oriented code paths.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Full Dataframe Print in Production matters because the pattern here, Full DataFrames are printed or displayed in production-oriented code paths, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Pandas Full Dataframe Print in Production in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "pandas_inplace_false_reassignment_missing",
+      "label": "Pandas Inplace False Reassignment Missing",
+      "description": "DataFrame-transform methods are called without reassignment or inplace=True, silently discarding results.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Inplace False Reassignment Missing matters because the pattern here, DataFrame-transform methods are called without reassignment or inplace=True, silently discarding results, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Pandas Inplace False Reassignment Missing in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "pandas_iterrows_in_loop",
+      "label": "Pandas Iterrows in Loop",
+      "description": "iterrows() is used on DataFrames instead of vectorized operations or itertuples().",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Iterrows in Loop matters because the pattern here, iterrows() is used on DataFrames instead of vectorized operations or itertuples(), shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Pandas Iterrows in Loop in Python, prefer vectorized operations or itertuples() when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "pandas_merge_without_validation",
+      "label": "Pandas Merge without Validation",
+      "description": "DataFrame merges omit validate= safeguards against multiplicative joins.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Merge without Validation matters because the pattern here, DataFrame merges omit validate= safeguards against multiplicative joins, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Pandas Merge without Validation in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "pandas_read_csv_without_dtypes",
+      "label": "Pandas Read Csv without Dtypes",
+      "description": "pd.read_csv(...) calls omit dtype hints, forcing extra inference work.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Read Csv without Dtypes matters because the pattern here, pd.read_csv(...) calls omit dtype hints, forcing extra inference work, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Pandas Read Csv without Dtypes in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "pandas_read_without_chunksize_large_file",
+      "label": "Pandas Read without Chunksize Large File",
+      "description": "Data-loading functions read large tabular files without chunksize or nrows limits.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas Read without Chunksize Large File matters because the pattern here, Data-loading functions read large tabular files without chunksize or nrows limits, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Pandas Read without Chunksize Large File in Python, add chunksize or nrows limits or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "pandas_to_dict_records_in_loop",
+      "label": "Pandas to Dict Records in Loop",
+      "description": "DataFrame to_dict conversions are repeated inside loops.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pandas to Dict Records in Loop matters because the pattern here, DataFrame to_dict conversions are repeated inside loops, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Pandas to Dict Records in Loop in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "print_metrics_instead_of_logging",
+      "label": "Print Metrics Instead of Logging",
+      "description": "Training or evaluation code prints metrics directly instead of using logging or experiment tracking.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Print Metrics Instead of Logging matters because the pattern here, Training or evaluation code prints metrics directly instead of using logging or experiment tracking, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Print Metrics Instead of Logging in Python, prefer using logging or experiment tracking when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "prompt_template_string_concat_in_loop",
+      "label": "Prompt Template String Concat in Loop",
+      "description": "Prompt strings are built incrementally inside loops instead of composing a stable template once.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Prompt Template String Concat in Loop matters because the pattern here, Prompt strings are built incrementally inside loops instead of composing a stable template once, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Prompt Template String Concat in Loop in Python, prefer composing a stable template once when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "random_seed_not_set",
+      "label": "Random Seed Not Set",
+      "description": "Training or evaluation entrypoints use randomness without an obvious seed.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Random Seed Not Set matters because the pattern here, Training or evaluation entrypoints use randomness without an obvious seed, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Random Seed Not Set in Python, add an obvious seed or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "retry_on_rate_limit_without_backoff",
+      "label": "Retry on Rate Limit without Backoff",
+      "description": "Rate-limit retries appear without visible backoff or Retry-After handling.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Retry on Rate Limit without Backoff matters because the pattern here, Rate-limit retries appear without visible backoff or Retry-After handling, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Retry on Rate Limit without Backoff in Python, add visible backoff or Retry-After handling or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "token_count_not_checked_before_api_call",
+      "label": "Token Count Not Checked Before API Call",
+      "description": "LLM requests are sent without visible token counting or context-window checks.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Token Count Not Checked Before API Call matters because the pattern here, LLM requests are sent without visible token counting or context-window checks, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Token Count Not Checked Before API Call in Python, add visible token counting or context-window checks or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "tokenizer_encode_in_loop_without_cache",
+      "label": "Tokenizer Encode in Loop without Cache",
+      "description": "Tokenizer encode calls repeated inside loops without caching or batching signals.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Tokenizer Encode in Loop without Cache matters because the pattern here, Tokenizer encode calls repeated inside loops without caching or batching signals, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Tokenizer Encode in Loop without Cache in Python, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "tokenizer_loaded_per_request",
+      "label": "Tokenizer Loaded Per Request",
+      "description": "Tokenizers are loaded on request paths instead of once during application startup.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Tokenizer Loaded Per Request matters because the pattern here, Tokenizers are loaded on request paths instead of once during application startup, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Tokenizer Loaded Per Request in Python, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "torch_no_grad_missing_in_inference",
+      "label": "Torch No Grad Missing in Inference",
+      "description": "Torch inference paths show no visible no_grad() or inference_mode() guard.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Torch No Grad Missing in Inference matters because the pattern here, Torch inference paths show no visible no_grad() or inference_mode() guard, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Torch No Grad Missing in Inference in Python, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "training_loop_without_zero_grad",
+      "label": "Training Loop without Zero Grad",
+      "description": "optimizer.step() appears without an obvious zero_grad() reset.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Training Loop without Zero Grad matters because the pattern here, optimizer.step() appears without an obvious zero_grad() reset, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Training Loop without Zero Grad in Python, add an obvious zero_grad() reset or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "vector_store_client_created_per_request",
+      "label": "Vector Store Client Created Per Request",
+      "description": "Vector-store clients created on request paths instead of reused application state.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Vector Store Client Created Per Request matters because the pattern here, Vector-store clients created on request paths instead of reused application state, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Vector Store Client Created Per Request in Python, prefer reused application state when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "wandb_mlflow_log_in_tight_loop",
+      "label": "Wandb Mlflow Log in Tight Loop",
+      "description": "wandb or mlflow metrics are logged in inner loops instead of batched or reported at coarser boundaries.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Wandb Mlflow Log in Tight Loop matters because the pattern here, wandb or mlflow metrics are logged in inner loops instead of batched or reported at coarser boundaries, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Wandb Mlflow Log in Tight Loop in Python, prefer batched or reported at coarser boundaries when the semantics match, and keep the expected or cheaper API choice as the default."
+    }
+  ]
+}

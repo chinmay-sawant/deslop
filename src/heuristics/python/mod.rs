@@ -1,10 +1,14 @@
 mod ai_smells;
+mod architecture;
+mod boundaries;
+mod discipline;
 mod duplication;
 mod framework;
 mod hotpath;
 mod hotpath_ext;
 mod maintainability;
 mod mlops;
+mod observability;
 mod packaging;
 mod performance;
 mod quality;
@@ -12,6 +16,10 @@ mod specs;
 mod structure;
 
 pub(crate) const AI_SMELLS_BINDING_LOCATION: &str = ai_smells::BINDING_LOCATION;
+pub(crate) const ARCHITECTURE_BINDING_LOCATION: &str = architecture::BINDING_LOCATION;
+pub(crate) const BOUNDARIES_BINDING_LOCATION: &str = boundaries::BINDING_LOCATION;
+pub(crate) const DISCIPLINE_BINDING_LOCATION: &str = discipline::BINDING_LOCATION;
+pub(crate) const OBSERVABILITY_BINDING_LOCATION: &str = observability::BINDING_LOCATION;
 pub(crate) const DUPLICATION_BINDING_LOCATION: &str = duplication::BINDING_LOCATION;
 pub(crate) const FRAMEWORK_BINDING_LOCATION: &str = framework::BINDING_LOCATION;
 pub(crate) const HOTPATH_BINDING_LOCATION: &str = hotpath::BINDING_LOCATION;

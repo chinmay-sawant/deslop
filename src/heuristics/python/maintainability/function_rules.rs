@@ -166,6 +166,9 @@ pub(crate) fn redundant_return_none_findings(
     if function.is_test_function {
         return Vec::new();
     }
+    if function.fingerprint.name.starts_with("_safe_") {
+        return Vec::new();
+    }
 
     function
         .python_evidence()
@@ -581,6 +584,23 @@ pub(crate) fn missing_context_manager_findings(
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     if function.is_test_function {
+        return Vec::new();
+    }
+
+    let signature = function.signature_text.to_ascii_lowercase();
+    let body = function.body_text.to_ascii_lowercase();
+    if signature.contains("@contextmanager")
+        || signature.contains("@asynccontextmanager")
+        || body.contains("yield ")
+        || (body.contains("finally:")
+            && (body.contains(".close()")
+                || body.contains(".terminate()")
+                || body.contains(".stop_stream()")
+                || body.contains(".rmdir()")
+                || body.contains(".unlink(")
+                || body.contains(".cleanup()")
+                || body.contains("shutil.rmtree")))
+    {
         return Vec::new();
     }
 

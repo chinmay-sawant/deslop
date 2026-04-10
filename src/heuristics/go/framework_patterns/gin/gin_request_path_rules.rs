@@ -615,24 +615,12 @@ fn large_map_response_findings(
         .iter()
         .any(|alias| function.body_text.contains(&format!("{alias}.Marshal(")));
 
-    let mut map_key_count = 0usize;
-    let mut counting = false;
-    for body_line in lines {
-        if map_literal_lines.iter().any(|ml| ml.line == body_line.line) {
-            counting = true;
-            map_key_count = 0;
-        }
-        if counting {
-            if body_line.text.contains(":") && !body_line.text.starts_with("//") {
-                map_key_count += 1;
-            }
-            if body_line.text.contains("}") {
-                counting = false;
-            }
-        }
-    }
-
-    let large_map = map_key_count >= 5 || map_literal_lines.len() >= 3;
+    let map_key_counts = map_literal_lines
+        .iter()
+        .map(|map_start| count_map_literal_keys(lines, map_start.line))
+        .collect::<Vec<_>>();
+    let max_map_key_count = map_key_counts.iter().copied().max().unwrap_or(0);
+    let large_map = max_map_key_count >= 5;
 
     if large_map {
         if let Some(json_call) = json_render_call {
@@ -679,6 +667,71 @@ fn large_map_response_findings(
     }
 
     findings
+}
+
+fn count_map_literal_keys(lines: &[BodyLine], start_line: usize) -> usize {
+    let mut key_count = 0usize;
+    let mut brace_balance = 0isize;
+    let mut started = false;
+
+    for body_line in lines.iter().filter(|line| line.line >= start_line) {
+        let text = strip_line_comment(&body_line.text).trim();
+        if text.is_empty() {
+            continue;
+        }
+
+        if !started {
+            if !text.contains('{') {
+                continue;
+            }
+            started = true;
+        }
+
+        key_count += count_unquoted_colons(text);
+        brace_balance += text.chars().filter(|ch| *ch == '{').count() as isize;
+        brace_balance -= text.chars().filter(|ch| *ch == '}').count() as isize;
+
+        if started && brace_balance <= 0 {
+            break;
+        }
+    }
+
+    key_count
+}
+
+fn count_unquoted_colons(text: &str) -> usize {
+    let mut count = 0usize;
+    let mut in_double = false;
+    let mut in_backtick = false;
+    let mut escaped = false;
+
+    for ch in text.chars() {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+
+        if ch == '\\' && in_double {
+            escaped = true;
+            continue;
+        }
+
+        if ch == '"' && !in_backtick {
+            in_double = !in_double;
+            continue;
+        }
+
+        if ch == '`' && !in_double {
+            in_backtick = !in_backtick;
+            continue;
+        }
+
+        if ch == ':' && !in_double && !in_backtick {
+            count += 1;
+        }
+    }
+
+    count
 }
 
 fn response_write_line(function: &ParsedFunction, lines: &[BodyLine]) -> Option<usize> {

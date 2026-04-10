@@ -282,6 +282,9 @@ pub(super) fn http_boundary_calls(file: &ParsedFile, function: &ParsedFunction) 
         .iter()
         .map(|import| (import.alias.as_str(), import.path.as_str()))
         .collect::<std::collections::BTreeMap<_, _>>();
+    const HTTP_METHODS: &[&str] = &[
+        "get", "post", "put", "patch", "delete", "request", "head", "options", "send",
+    ];
 
     function
         .calls
@@ -289,17 +292,15 @@ pub(super) fn http_boundary_calls(file: &ParsedFile, function: &ParsedFunction) 
         .filter_map(|call| {
             let receiver = call.receiver.as_deref().unwrap_or(call.name.as_str());
             let import_path = alias_lookup.get(receiver).copied().unwrap_or(receiver);
-            let direct_http_call = call.receiver.is_none()
-                && matches!(
-                    call.name.as_str(),
-                    "get" | "post" | "put" | "patch" | "delete" | "request"
-                );
+            let direct_http_call =
+                call.receiver.is_none() && HTTP_METHODS.contains(&call.name.as_str());
             let imported_http_call = import_path.starts_with("requests")
                 || import_path.starts_with("httpx")
                 || import_path.starts_with("urllib")
                 || import_path.starts_with("aiohttp");
 
-            (direct_http_call || imported_http_call).then(|| call.name.clone())
+            ((direct_http_call || imported_http_call) && HTTP_METHODS.contains(&call.name.as_str()))
+                .then(|| call.name.clone())
         })
         .collect()
 }

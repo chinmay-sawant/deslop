@@ -1,0 +1,36 @@
+{
+  "language": "common",
+  "family": "hallucination",
+  "label": "Hallucination",
+  "summary": "Calls that look plausible but do not resolve against repository-local symbols.",
+  "rules": [
+    {
+      "id": "hallucinated_import_call",
+      "label": "Hallucinated Import Call",
+      "description": "Package-qualified calls that do not match locally indexed symbols for the imported package.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Common, Hallucinated Import Call matters because the pattern here, Package-qualified calls that do not match locally indexed symbols for the imported package, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Hallucinated Import Call in Common, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "hallucinated_local_call",
+      "label": "Hallucinated Local Call",
+      "description": "Same-package calls to symbols not present in the scanned local package context.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Common, Hallucinated Local Call matters because the pattern here, Same-package calls to symbols not present in the scanned local package context, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Hallucinated Local Call in Common, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    }
+  ]
+}

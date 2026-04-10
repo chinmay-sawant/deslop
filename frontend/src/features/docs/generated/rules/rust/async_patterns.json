@@ -1,0 +1,143 @@
+{
+  "language": "rust",
+  "family": "async_patterns",
+  "label": "Async Patterns",
+  "summary": "Async/runtime usage patterns that create hidden hazards.",
+  "rules": [
+    {
+      "id": "rust_async_blocking_drop",
+      "label": "Rust Async Blocking Drop",
+      "description": "A Drop implementation does blocking work that can surface in async contexts.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Async Blocking Drop matters because the pattern here, A Drop implementation does blocking work that can surface in async contexts, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Async Blocking Drop in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_async_hold_permit_across_await",
+      "label": "Rust Async Hold Permit Across Await",
+      "description": "A permit or pooled resource may be held across an .await.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Async Hold Permit Across Await matters because the pattern here, A permit or pooled resource may be held across an .await, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Async Hold Permit Across Await in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_async_invariant_broken_at_await",
+      "label": "Rust Async Invariant Broken at Await",
+      "description": "Related state mutations appear split around an await boundary.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Async Invariant Broken at Await matters because the pattern here, Related state mutations appear split around an await boundary, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Async Invariant Broken at Await in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_async_lock_order_cycle",
+      "label": "Rust Async Lock Order Cycle",
+      "description": "Conflicting lock acquisition order suggests a lock-order cycle.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Async Lock Order Cycle matters because the pattern here, Conflicting lock acquisition order suggests a lock-order cycle, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Async Lock Order Cycle in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_async_missing_fuse_pin",
+      "label": "Rust Async Missing Fuse Pin",
+      "description": "select! reuse lacks pinning or fusing markers for repeated polling.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Async Missing Fuse Pin matters because the pattern here, select! reuse lacks pinning or fusing markers for repeated polling, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Async Missing Fuse Pin in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_async_monopolize_executor",
+      "label": "Rust Async Monopolize Executor",
+      "description": "An async function may monopolize the executor with blocking work and no await.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Async Monopolize Executor matters because the pattern here, An async function may monopolize the executor with blocking work and no await, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Async Monopolize Executor in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_async_recreate_future_in_select",
+      "label": "Rust Async Recreate Future in Select",
+      "description": "A select! loop may recreate futures instead of reusing long-lived ones.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Async Recreate Future in Select matters because the pattern here, A select! loop may recreate futures instead of reusing long-lived ones, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Async Recreate Future in Select in Rust, prefer reusing long-lived ones when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_async_spawn_cancel_at_await",
+      "label": "Rust Async Spawn Cancel at Await",
+      "description": "Async work is spawned without an obvious cancellation path.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Async Spawn Cancel at Await matters because the pattern here, Async work is spawned without an obvious cancellation path, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Async Spawn Cancel at Await in Rust, add an obvious cancellation path or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_async_std_mutex_await",
+      "label": "Rust Async Std Mutex Await",
+      "description": "std::sync::Mutex appears to be held across .await in async code.",
+      "defaultSeverity": "contextual",
+      "status": "experimental",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override",
+        "rust_async_experimental"
+      ],
+      "explanation": "In Rust, Rust Async Std Mutex Await matters because the pattern here, std::sync::Mutex appears to be held across .await in async code, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Async Std Mutex Await in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    }
+  ]
+}

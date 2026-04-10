@@ -387,3 +387,294 @@ fn import_alias_lookup(imports: &[ImportSpec]) -> BTreeMap<String, String> {
         .map(|import| (import.alias.clone(), import.path.clone()))
         .collect()
 }
+
+fn contains_any(text: &str, needles: &[&str]) -> bool {
+    needles.iter().any(|needle| text.contains(needle))
+}
+
+pub(super) fn project_agnostic_performance_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let body = &function.body_text;
+    let lower_body = body.to_ascii_lowercase();
+    let line = function.fingerprint.start_line;
+
+    let push = |rule_id: &str, severity: Severity, message: String| Finding {
+        rule_id: rule_id.to_string(),
+        severity,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: line,
+        end_line: line,
+        message,
+        evidence: vec![format!("function={}", function.fingerprint.name)],
+    };
+
+    if lower_body.matches("open(").count() >= 2 {
+        findings.push(push(
+            "repeated_file_open_for_same_resource_within_single_operation",
+            Severity::Info,
+            format!(
+                "function {} reopens files repeatedly within one operation",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        body,
+        &["read()", "read_text()", "read_bytes()", "readlines()"],
+    ) && !contains_any(body, &["for line in", "iter(", "yield"])
+    {
+        findings.push(push(
+            "eager_full_file_or_stream_read_when_incremental_iteration_suffices",
+            Severity::Info,
+            format!(
+                "function {} eagerly reads full file or stream payloads where incremental iteration may suffice",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &[".decode()", ".encode()"])
+        && !contains_any(body, &["replace(", "strip(", "split("])
+    {
+        findings.push(push(
+            "bytes_text_bytes_roundtrip_without_transformation",
+            Severity::Info,
+            format!(
+                "function {} round-trips bytes to text and back without clear transformation",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if body.contains("+=")
+        && contains_any(body, &["\"", "'"])
+        && (body.contains("for ") || body.contains("while "))
+    {
+        findings.push(push(
+            "quadratic_string_building_via_plus_equals",
+            Severity::Warning,
+            format!(
+                "function {} grows strings incrementally with += inside a loop",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("re.").count() >= 2 || lower_body.matches("regex").count() >= 2 {
+        findings.push(push(
+            "multiple_regex_passes_over_same_text_without_precompiled_plan",
+            Severity::Info,
+            format!(
+                "function {} performs multiple regex passes over the same text",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["json.dumps(", "csv.writer(", "bytesio("])
+        && !contains_any(&lower_body, &["yield", "stream"])
+    {
+        findings.push(push(
+            "full_response_or_export_buffered_before_incremental_consumer_use",
+            Severity::Info,
+            format!(
+                "function {} buffers full output before handing it to a downstream consumer",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["tempfile.", "namedtemporaryfile", "mkdtemp"])
+        && !contains_any(&lower_body, &["external", "subprocess"])
+    {
+        findings.push(push(
+            "temporary_file_used_for_pure_in_memory_transformation",
+            Severity::Info,
+            format!(
+                "function {} uses temporary files for a transform that may be in-memory",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &["threadpoolexecutor(", "processpoolexecutor("],
+    ) {
+        findings.push(push(
+            "thread_pool_or_process_pool_created_and_destroyed_per_call",
+            Severity::Info,
+            format!(
+                "function {} creates an executor per call instead of reusing one",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["deepcopy(", ".copy("])
+        && !contains_any(&lower_body, &["mutate", "update", "append", "pop"])
+    {
+        findings.push(push(
+            "large_object_cloned_before_read_only_operation",
+            Severity::Info,
+            format!(
+                "function {} clones data before a read-only flow",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        &lower_body,
+        &["os.stat(", ".exists()", "is_file(", "is_dir("],
+    ) && lower_body.matches("open(").count() >= 1
+    {
+        findings.push(push(
+            "repeated_stat_or_exists_calls_before_single_followup_operation",
+            Severity::Info,
+            format!(
+                "function {} performs repeated stat/exists checks before one follow-up action",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["write(", "save(", "insert(", "append("])
+        && (lower_body.matches("for ").count() >= 1 || lower_body.matches("while ").count() >= 1)
+    {
+        findings.push(push(
+            "batchable_writes_executed_one_at_a_time",
+            Severity::Info,
+            format!(
+                "function {} executes writes one at a time on an iteration path",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("for ").count() >= 2
+        && contains_any(&lower_body, &["normalize", "strip", "lower", "parse"])
+    {
+        findings.push(push(
+            "same_dataset_normalized_in_multiple_full_passes",
+            Severity::Info,
+            format!(
+                "function {} appears to normalize the same dataset in multiple passes",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &["list(", "tuple("])
+        && contains_any(&lower_body, &["len(", "if values", "if items"])
+    {
+        findings.push(push(
+            "generator_materialized_to_tuple_or_list_only_for_len_or_truthiness",
+            Severity::Info,
+            format!(
+                "function {} materializes generator output only to inspect size or truthiness",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("sorted(").count() >= 1
+        && contains_any(&lower_body, &["[:", "min(", "max(", "next("])
+    {
+        findings.push(push(
+            "full_collection_sorted_when_partial_order_or_selection_suffices",
+            Severity::Info,
+            format!(
+                "function {} sorts whole collections where partial selection may suffice",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["compress(", "hashlib.", ".encode("])
+        && contains_any(&lower_body, &["if not", "if value is none", "return"])
+    {
+        findings.push(push(
+            "compression_hashing_or_encoding_performed_before_cheap_reject_checks",
+            Severity::Info,
+            format!(
+                "function {} performs expensive transforms before cheap reject checks",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if function.python_evidence().is_async
+        && contains_any(&lower_body, &["json.dumps(", "hashlib.", "sorted(", "sum("])
+    {
+        findings.push(push(
+            "event_loop_path_executes_cpu_bound_transformation_synchronously",
+            Severity::Warning,
+            format!(
+                "async function {} performs CPU-heavy transformation work inline",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["write(", "send("]) && lower_body.matches("for ").count() >= 1 {
+        findings.push(push(
+            "repeated_small_writes_without_buffering_or_join",
+            Severity::Info,
+            format!(
+                "function {} performs repeated small writes without visible buffering",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["dict(", ".copy("])
+        && !contains_any(&lower_body, &["update(", "pop(", "setdefault("])
+    {
+        findings.push(push(
+            "copy_of_mapping_created_only_to_read_values",
+            Severity::Info,
+            format!(
+                "function {} copies mappings only to read them",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["json.dumps(", "pickle.dumps("])
+        && contains_any(&lower_body, &["==", "hash(", "cache_key"])
+    {
+        findings.push(push(
+            "serialization_cost_paid_only_to_compare_or_hash_intermediate_state",
+            Severity::Info,
+            format!(
+                "function {} serializes data only to compare or hash intermediate state",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["list(", "dict(", "set("])
+        && lower_body.matches("append(").count() >= 3
+    {
+        findings.push(push(
+            "large_in_memory_intermediate_created_where_streaming_pipeline_would_do",
+            Severity::Info,
+            format!(
+                "function {} builds large in-memory intermediates where streaming may suffice",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    findings
+}

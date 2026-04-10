@@ -4,10 +4,13 @@ use crate::model::Finding;
 
 use super::super::{ai_smells, duplication, structure};
 use super::catalog::{
-    AI_SMELLS_FILE_EVALUATORS, DUPLICATION_FILE_EVALUATORS, DUPLICATION_REPO_EVALUATORS,
-    FRAMEWORK_EVALUATORS, HOTPATH_EVALUATORS, HOTPATH_EXT_EVALUATORS, MAINTAINABILITY_EVALUATORS,
-    MAINTAINABILITY_FILE_EVALUATORS, MLOPS_EVALUATORS, PERFORMANCE_EVALUATORS,
-    STRUCTURE_FILE_EVALUATORS, STRUCTURE_FUNCTION_EVALUATORS, STRUCTURE_REPO_EVALUATORS,
+    AI_SMELLS_FILE_EVALUATORS, ARCHITECTURE_EVALUATORS, ARCHITECTURE_FILE_EVALUATORS,
+    BOUNDARIES_EVALUATORS, BOUNDARIES_FILE_EVALUATORS, DISCIPLINE_EVALUATORS,
+    DUPLICATION_FILE_EVALUATORS, DUPLICATION_REPO_EVALUATORS, FRAMEWORK_EVALUATORS,
+    HOTPATH_EVALUATORS, HOTPATH_EXT_EVALUATORS, MAINTAINABILITY_EVALUATORS,
+    MAINTAINABILITY_FILE_EVALUATORS, MLOPS_EVALUATORS, OBSERVABILITY_EVALUATORS,
+    OBSERVABILITY_FILE_EVALUATORS, PERFORMANCE_EVALUATORS, STRUCTURE_FILE_EVALUATORS,
+    STRUCTURE_FUNCTION_EVALUATORS, STRUCTURE_REPO_EVALUATORS,
 };
 use super::types::{
     FileEvaluator, FunctionEvaluator, PythonFileRuleSpec, PythonFunctionRuleSpec,
@@ -207,4 +210,44 @@ pub(crate) fn duplicate_transformation_pipeline_repo_findings(
     _index: &RepositoryIndex,
 ) -> Vec<Finding> {
     duplication::duplicate_transformation_pipeline_findings(files)
+}
+
+pub(crate) fn architecture_function_family_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    evaluate_function_group(ARCHITECTURE_EVALUATORS, file, function)
+}
+
+pub(crate) fn architecture_file_family_findings(file: &ParsedFile) -> Vec<Finding> {
+    evaluate_file_group(ARCHITECTURE_FILE_EVALUATORS, file)
+}
+
+pub(crate) fn discipline_function_family_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    evaluate_function_group(DISCIPLINE_EVALUATORS, file, function)
+}
+
+pub(crate) fn boundaries_function_family_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    evaluate_function_group(BOUNDARIES_EVALUATORS, file, function)
+}
+
+pub(crate) fn boundaries_file_family_findings(file: &ParsedFile) -> Vec<Finding> {
+    evaluate_file_group(BOUNDARIES_FILE_EVALUATORS, file)
+}
+
+pub(crate) fn observability_function_family_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    evaluate_function_group(OBSERVABILITY_EVALUATORS, file, function)
+}
+
+pub(crate) fn observability_file_family_findings(file: &ParsedFile) -> Vec<Finding> {
+    evaluate_file_group(OBSERVABILITY_FILE_EVALUATORS, file)
 }

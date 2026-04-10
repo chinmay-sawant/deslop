@@ -1,0 +1,50 @@
+{
+  "language": "go",
+  "family": "consistency",
+  "label": "Consistency",
+  "summary": "Project-wide naming and structural consistency checks.",
+  "rules": [
+    {
+      "id": "duplicate_struct_tag_key",
+      "label": "Duplicate Struct Tag Key",
+      "description": "Struct field tags that repeat the same key more than once.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Duplicate Struct Tag Key matters because the pattern here, Struct field tags that repeat the same key more than once, is worth review because repeated shape drift across a codebase makes the same concept look different in every file.",
+      "fix": "For Duplicate Struct Tag Key in Go, centralize the shared pattern once, then reuse the same structure and naming everywhere that concept appears."
+    },
+    {
+      "id": "malformed_struct_tag",
+      "label": "Malformed Struct Tag",
+      "description": "Struct field tags that do not parse as valid Go tag key/value pairs.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Malformed Struct Tag matters because the pattern here, Struct field tags that do not parse as valid Go tag key/value pairs, is worth review because repeated shape drift across a codebase makes the same concept look different in every file.",
+      "fix": "For Malformed Struct Tag in Go, centralize the shared pattern once, then reuse the same structure and naming everywhere that concept appears."
+    },
+    {
+      "id": "mixed_receiver_kinds",
+      "label": "Mixed Receiver Kinds",
+      "description": "Methods on the same receiver type mix pointer and value receivers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Mixed Receiver Kinds matters because the pattern here, Methods on the same receiver type mix pointer and value receivers, is worth review because repeated shape drift across a codebase makes the same concept look different in every file.",
+      "fix": "For Mixed Receiver Kinds in Go, centralize the shared pattern once, then reuse the same structure and naming everywhere that concept appears."
+    }
+  ]
+}

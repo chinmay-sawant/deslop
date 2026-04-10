@@ -752,3 +752,273 @@ pub(super) fn tuple_unpacking_in_tight_loop_findings(
     }
     findings
 }
+
+fn contains_any(text: &str, needles: &[&str]) -> bool {
+    needles.iter().any(|needle| text.contains(needle))
+}
+
+pub(super) fn project_agnostic_hotpath_ext_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let body = &function.body_text;
+    let lower_body = body.to_ascii_lowercase();
+    let line = function.fingerprint.start_line;
+
+    let push = |rule_id: &str, message: String| Finding {
+        rule_id: rule_id.to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: line,
+        end_line: line,
+        message,
+        evidence: vec![format!("function={}", function.fingerprint.name)],
+    };
+
+    if contains_any(
+        body,
+        &["requests.get(", "httpx.get(", "open(", "subprocess.run("],
+    ) && lower_body.matches("for ").count() >= 1
+    {
+        findings.push(push(
+            "blocking_io_call_executed_per_item_without_batching",
+            format!(
+                "function {} performs blocking I/O per item without an obvious batching strategy",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("os.listdir(").count() + lower_body.matches("glob(").count() >= 2
+        && lower_body.matches("for ").count() >= 2
+    {
+        findings.push(push(
+            "repeated_directory_scan_inside_nested_loop",
+            format!(
+                "function {} rescans directories inside nested iteration",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("for ").count() >= 2
+        && contains_any(&lower_body, &["len(", "sorted(", ".lower()", "path("])
+    {
+        findings.push(push(
+            "invariant_computation_not_hoisted_out_of_nested_loop",
+            format!(
+                "function {} appears to recompute invariant work inside nested loops",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &["any([", "all(["]) {
+        findings.push(push(
+            "any_or_all_wraps_list_comprehension_instead_of_generator",
+            format!(
+                "function {} materializes a list before any/all instead of using a generator",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &["sum([", "max([", "min(["]) {
+        findings.push(push(
+            "sum_max_min_wrap_list_comprehension_instead_of_generator",
+            format!(
+                "function {} materializes a list before a reduction that accepts generators",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["copy.copy(", "copy.deepcopy(", ".copy("])
+        && lower_body.matches("for ").count() >= 1
+    {
+        findings.push(push(
+            "per_item_copy_of_large_config_or_context_object",
+            format!(
+                "function {} copies context-like objects per item on an iteration path",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("for ").count() >= 2
+        && lower_body.matches("sum(").count()
+            + lower_body.matches("max(").count()
+            + lower_body.matches("min(").count()
+            >= 2
+    {
+        findings.push(push(
+            "same_sequence_scanned_multiple_times_for_related_aggregates",
+            format!(
+                "function {} scans the same sequence multiple times for related aggregates",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("list(").count() >= 2
+        && contains_any(&lower_body, &["map(", "filter(", "sorted("])
+    {
+        findings.push(push(
+            "generator_pipeline_materialized_between_each_transformation_stage",
+            format!(
+                "function {} repeatedly materializes intermediate pipeline stages",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("for ").count() >= 2
+        && contains_any(&lower_body, &["index(", "find(", "lookup("])
+    {
+        findings.push(push(
+            "linear_search_helper_called_from_nested_loops",
+            format!(
+                "function {} calls linear-search helpers from nested loops",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &["os.path.exists(", ".exists()"])
+        && contains_any(body, &["open(", "replace(", "unlink(", "write_text("])
+    {
+        findings.push(push(
+            "repeated_path_exists_check_before_open_or_replace_in_loop",
+            format!(
+                "function {} checks path existence before repeated file operations",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(
+        body,
+        &["json.dumps(", "json.loads(", ".encode()", ".decode()"],
+    ) && lower_body.matches("helper").count() >= 1
+    {
+        findings.push(push(
+            "serialization_then_deserialization_between_adjacent_helpers",
+            format!(
+                "function {} bounces data through serialization between adjacent helpers",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("[i:i+").count() >= 1 || lower_body.matches("window = data[").count() >= 1
+    {
+        findings.push(push(
+            "large_slice_copy_created_each_iteration_for_sliding_window",
+            format!(
+                "function {} creates slice copies on each sliding-window step",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("append(").count() >= 1
+        && contains_any(
+            &lower_body,
+            &[" not in seen_list", " not in items", " not in values"],
+        )
+    {
+        findings.push(push(
+            "per_item_deduplication_uses_list_instead_of_hash_index",
+            format!(
+                "function {} performs per-item deduplication with linear membership checks",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("sorted(").count() >= 1
+        && contains_any(&lower_body, &["key=lambda", "key = lambda", "expensive"])
+    {
+        findings.push(push(
+            "expensive_sort_key_recomputed_without_preprojection",
+            format!(
+                "function {} computes expensive sort keys inline instead of preprojecting once",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches(".lower(").count() + lower_body.matches(".casefold(").count() >= 2 {
+        findings.push(push(
+            "repeated_casefold_or_lower_calls_before_multiple_comparisons",
+            format!(
+                "function {} repeatedly lowercases or casefolds before comparisons",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(&lower_body, &["logger.", "logging."])
+        && lower_body.matches("for ").count() >= 1
+    {
+        findings.push(push(
+            "formatted_log_or_debug_payload_built_for_each_item_without_guard",
+            format!(
+                "function {} constructs per-item log payloads on a loop path without a visible guard",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("open(").count() >= 2
+        && contains_any(&lower_body, &["read(", "read_text(", "read_bytes("])
+    {
+        findings.push(push(
+            "repeated_open_read_close_of_same_small_file_in_single_workflow",
+            format!(
+                "function {} reopens and rereads files repeatedly within one workflow",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &["sleep(0.01", "sleep(0.001", "sleep(0.1"])
+        && contains_any(body, &["while ", "for "])
+    {
+        findings.push(push(
+            "polling_loop_uses_tiny_sleep_instead_of_blocking_primitive",
+            format!(
+                "function {} uses a tiny-sleep polling loop instead of a blocking primitive",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if lower_body.matches("format(").count() >= 2 || lower_body.matches("f\"").count() >= 2 {
+        findings.push(push(
+            "invariant_template_or_prefix_string_reformatted_inside_loop",
+            format!(
+                "function {} repeatedly reformats template-like strings inside a loop",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    if contains_any(body, &["{\"", "{'", "dict("]) && lower_body.matches("for ").count() >= 1 {
+        findings.push(push(
+            "lookup_table_derived_from_constants_rebuilt_per_invocation",
+            format!(
+                "function {} rebuilds lookup tables from constants per invocation",
+                function.fingerprint.name
+            ),
+        ));
+    }
+
+    findings
+}

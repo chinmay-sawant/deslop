@@ -765,3 +765,461 @@ fn has_mutating_sql_keyword(lower_line: &str) -> bool {
     .iter()
     .any(|keyword| lower_line.contains(keyword))
 }
+
+fn contains_any(text: &str, needles: &[&str]) -> bool {
+    needles.iter().any(|needle| text.contains(needle))
+}
+
+pub(super) fn project_agnostic_structure_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if function.is_test_function {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let body = &function.body_text;
+    let lower_body = body.to_ascii_lowercase();
+    let lower_name = function.fingerprint.name.to_ascii_lowercase();
+
+    if lower_name.contains("transform")
+        && contains_any(&lower_body, &["parse", "validate", "render"])
+        && function.fingerprint.call_count >= 6
+    {
+        findings.push(Finding {
+            rule_id: "same_feature_path_crosses_many_layers_for_simple_data_transform".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: function.fingerprint.start_line,
+            end_line: function.fingerprint.end_line,
+            message: format!(
+                "function {} routes a simple transform through several layers of work",
+                function.fingerprint.name
+            ),
+            evidence: vec![format!("call_count={}", function.fingerprint.call_count)],
+        });
+    }
+
+    if contains_any(&lower_body, &["retry", "normalize", "auth", "permission"])
+        && !contains_any(
+            &file.path.to_string_lossy().to_ascii_lowercase(),
+            &["policy", "boundary", "middleware"],
+        )
+    {
+        findings.push(Finding {
+            rule_id: "cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary"
+                .to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: Some(function.fingerprint.name.clone()),
+            start_line: function.fingerprint.start_line,
+            end_line: function.fingerprint.start_line,
+            message: format!(
+                "function {} embeds cross-cutting policy in a leaf module",
+                function.fingerprint.name
+            ),
+            evidence: vec!["pattern=leaf_embedded_policy".to_string()],
+        });
+    }
+
+    findings
+}
+
+pub(super) fn project_agnostic_structure_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    if file.is_test_file {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    let path = file.path.to_string_lossy().to_ascii_lowercase();
+
+    let parsing = file.functions.iter().any(|function| {
+        contains_any(
+            &function.fingerprint.name.to_ascii_lowercase(),
+            &["parse", "decode"],
+        )
+    });
+    let validating = file.functions.iter().any(|function| {
+        contains_any(
+            &function.fingerprint.name.to_ascii_lowercase(),
+            &["validate", "check"],
+        )
+    });
+    let executing = file.functions.iter().any(|function| {
+        contains_any(
+            &function.fingerprint.name.to_ascii_lowercase(),
+            &["run", "execute", "process"],
+        )
+    });
+    let rendering = file.functions.iter().any(|function| {
+        contains_any(
+            &function.fingerprint.name.to_ascii_lowercase(),
+            &["render", "format", "serialize"],
+        )
+    });
+    if parsing && validating && executing && rendering {
+        findings.push(Finding {
+            rule_id: "monolithic_module_owns_parsing_validation_execution_and_rendering".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: None,
+            start_line: 1,
+            end_line: 1,
+            message: "module owns parsing, validation, execution, and rendering responsibilities together".to_string(),
+            evidence: vec!["pattern=multi_phase_monolithic_module".to_string()],
+        });
+    }
+
+    let mut methods_by_class = BTreeMap::<String, Vec<&ParsedFunction>>::new();
+    for function in &file.functions {
+        if let Some(receiver) = &function.fingerprint.receiver_type {
+            methods_by_class
+                .entry(receiver.clone())
+                .or_default()
+                .push(function);
+        }
+    }
+
+    for summary in file.class_summaries() {
+        let methods = methods_by_class
+            .get(&summary.name)
+            .cloned()
+            .unwrap_or_default();
+        let method_names = methods
+            .iter()
+            .map(|method| method.fingerprint.name.to_ascii_lowercase())
+            .collect::<Vec<_>>();
+
+        let has_factory = method_names
+            .iter()
+            .any(|name| name.contains("build") || name.contains("create"));
+        let has_parsing = method_names
+            .iter()
+            .any(|name| name.contains("parse") || name.contains("decode"));
+        let has_persistence = method_names.iter().any(|name| {
+            name.contains("save")
+                || name.contains("load")
+                || name.contains("update")
+                || name.contains("delete")
+        });
+        let has_presentation = method_names.iter().any(|name| {
+            name.contains("render") || name.contains("format") || name.contains("serialize")
+        });
+        if has_factory && has_parsing && has_persistence && has_presentation {
+            findings.push(Finding {
+                rule_id: "class_mixes_factory_parsing_persistence_and_presentation_roles"
+                    .to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: summary.line,
+                end_line: summary.end_line,
+                message: format!(
+                    "class {} mixes factory, parsing, persistence, and presentation roles",
+                    summary.name
+                ),
+                evidence: vec![format!("method_count={}", summary.method_count)],
+            });
+        }
+
+        if summary
+            .base_classes
+            .iter()
+            .any(|base| base.contains("Protocol") || base.starts_with("Base"))
+            && summary.method_count >= 4
+            && file.class_summaries().len() >= 2
+        {
+            findings.push(Finding {
+                rule_id: "abstract_contracts_and_heavy_concrete_implementations_live_in_same_file"
+                    .to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: summary.line,
+                end_line: summary.line,
+                message: format!(
+                    "file mixes abstract contracts with heavier concrete implementations around {}",
+                    summary.name
+                ),
+                evidence: vec![format!("class_count={}", file.class_summaries().len())],
+            });
+        }
+
+        if contains_any(
+            &summary.name.to_ascii_lowercase(),
+            &["manager", "processor"],
+        ) && summary.method_count >= 6
+        {
+            findings.push(Finding {
+                rule_id: "generic_manager_or_processor_class_controls_many_unrelated_modes"
+                    .to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: summary.line,
+                end_line: summary.end_line,
+                message: format!(
+                    "class {} looks like a generic manager/processor abstraction with many modes",
+                    summary.name
+                ),
+                evidence: vec![format!("method_count={}", summary.method_count)],
+            });
+        }
+
+        if !summary.base_classes.is_empty()
+            && summary.base_classes.iter().any(|base| {
+                contains_any(
+                    &base.to_ascii_lowercase(),
+                    &["optional", "with", "enable", "feature"],
+                )
+            })
+        {
+            findings.push(Finding {
+                rule_id: "composition_candidate_for_optional_behavior_implemented_as_inheritance"
+                    .to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: summary.line,
+                end_line: summary.line,
+                message: format!(
+                    "class {} uses inheritance for optional behavior that may want composition",
+                    summary.name
+                ),
+                evidence: vec![format!("bases={}", summary.base_classes.join(","))],
+            });
+        }
+
+        if summary.name.starts_with("Base")
+            && summary.method_count <= 1
+            && summary.instance_attribute_count >= 2
+        {
+            findings.push(Finding {
+                rule_id: "base_class_exists_only_to_share_data_fields_not_behavior".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: summary.line,
+                end_line: summary.line,
+                message: format!(
+                    "base class {} mostly shares fields instead of behavior",
+                    summary.name
+                ),
+                evidence: vec![format!(
+                    "instance_attribute_count={}",
+                    summary.instance_attribute_count
+                )],
+            });
+        }
+
+        if methods.iter().any(|method| {
+            method.fingerprint.name == "__init__" && method.fingerprint.call_count >= 3
+        }) {
+            findings.push(Finding {
+                rule_id: "constructor_performs_real_work_beyond_state_initialization".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: summary.line,
+                end_line: summary.line,
+                message: format!(
+                    "class {} performs substantial work in its constructor",
+                    summary.name
+                ),
+                evidence: vec![format!(
+                    "constructor_collaborator_count={}",
+                    summary.constructor_collaborator_count
+                )],
+            });
+        }
+
+        if contains_any(
+            &summary.name.to_ascii_lowercase(),
+            &["collection", "registry", "list"],
+        ) && method_names
+            .iter()
+            .any(|name| name == "start" || name == "stop" || name == "run")
+        {
+            findings.push(Finding {
+                rule_id: "helper_collection_object_also_owns_process_lifecycle".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: summary.line,
+                end_line: summary.line,
+                message: format!(
+                    "class {} mixes collection-like responsibilities with lifecycle control",
+                    summary.name
+                ),
+                evidence: vec![format!("method_count={}", summary.method_count)],
+            });
+        }
+    }
+
+    if file.top_level_bindings.iter().any(|binding| {
+        contains_any(
+            &binding.name.to_ascii_lowercase(),
+            &["registry", "plugins", "handlers"],
+        )
+    }) && file
+        .module_scope_calls
+        .iter()
+        .any(|call| call.text.contains("register("))
+    {
+        findings.push(Finding {
+            rule_id: "module_global_registry_mutated_from_import_time_registration".to_string(),
+            severity: Severity::Warning,
+            path: file.path.clone(),
+            function_name: None,
+            start_line: 1,
+            end_line: 1,
+            message: "module mutates a registry-like global via import-time registration"
+                .to_string(),
+            evidence: vec!["pattern=import_time_registration".to_string()],
+        });
+    }
+
+    let has_get = file
+        .functions
+        .iter()
+        .any(|function| function.fingerprint.name.starts_with("get_"));
+    let has_write = file.functions.iter().any(|function| {
+        contains_any(
+            &function.fingerprint.name.to_ascii_lowercase(),
+            &["save", "update", "delete", "write"],
+        )
+    });
+    if has_get
+        && has_write
+        && file
+            .top_level_bindings
+            .iter()
+            .any(|binding| contains_any(&binding.name.to_ascii_lowercase(), &["cache", "memo"]))
+    {
+        findings.push(Finding {
+            rule_id: "read_and_write_paths_share_mutable_internal_cache_without_boundary"
+                .to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: None,
+            start_line: 1,
+            end_line: 1,
+            message: "read and write paths appear to share one mutable internal cache".to_string(),
+            evidence: vec!["pattern=shared_cache_between_read_write_paths".to_string()],
+        });
+    }
+
+    let async_count = file
+        .functions
+        .iter()
+        .filter(|function| function.fingerprint.kind.starts_with("async"))
+        .count();
+    let sync_count = file.functions.len().saturating_sub(async_count);
+    if async_count > 0 && sync_count > 0 && file.class_summaries().len() > 0 {
+        findings.push(Finding {
+            rule_id: "sync_and_async_contracts_mixed_on_same_interface_family".to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: None,
+            start_line: 1,
+            end_line: 1,
+            message: "file mixes sync and async contracts on the same interface surface"
+                .to_string(),
+            evidence: vec![
+                format!("sync_functions={sync_count}"),
+                format!("async_functions={async_count}"),
+            ],
+        });
+    }
+
+    if contains_any(&path, &["utils", "helpers", "common", "manager"]) {
+        findings.push(Finding {
+            rule_id: "abstractions_named_utils_helpers_common_or_manager_hide_true_ownership"
+                .to_string(),
+            severity: Severity::Info,
+            path: file.path.clone(),
+            function_name: None,
+            start_line: 1,
+            end_line: 1,
+            message: "file name uses a vague abstraction label that hides concrete ownership"
+                .to_string(),
+            evidence: vec![format!("path={path}")],
+        });
+    }
+
+    findings
+}
+
+pub(super) fn project_agnostic_structure_repo_findings(
+    files: &[&ParsedFile],
+    _index: &RepositoryIndex,
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for file in files {
+        let current_module = file
+            .path
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .unwrap_or_default()
+            .to_string();
+        for import in &file.imports {
+            let imported_module = import.path.rsplit('.').next().unwrap_or_default();
+            if imported_module == current_module {
+                continue;
+            }
+            if files.iter().any(|other| {
+                other
+                    .path
+                    .file_stem()
+                    .and_then(|stem| stem.to_str())
+                    .is_some_and(|stem| stem == imported_module)
+                    && other.imports.iter().any(|other_import| {
+                        other_import.path.ends_with(&current_module)
+                            || other_import.path.contains(&format!(".{current_module}."))
+                    })
+            }) {
+                findings.push(Finding {
+                    rule_id: "bidirectional_import_between_feature_modules".to_string(),
+                    severity: Severity::Warning,
+                    path: file.path.clone(),
+                    function_name: None,
+                    start_line: import.line,
+                    end_line: import.line,
+                    message: format!(
+                        "module participates in a bidirectional import relationship around {}",
+                        import.path
+                    ),
+                    evidence: vec![format!("module={current_module}")],
+                });
+                break;
+            }
+        }
+    }
+
+    for file in files {
+        for import in &file.imports {
+            if import.path.contains("._") || import.path.contains(".private") {
+                findings.push(Finding {
+                    rule_id: "sibling_modules_depend_on_private_helpers_from_each_other"
+                        .to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: None,
+                    start_line: import.line,
+                    end_line: import.line,
+                    message: format!(
+                        "module imports private helpers from sibling module {}",
+                        import.path
+                    ),
+                    evidence: vec![format!("import={}", import.path)],
+                });
+                break;
+            }
+        }
+    }
+
+    findings
+}

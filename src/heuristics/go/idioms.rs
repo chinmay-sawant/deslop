@@ -278,8 +278,18 @@ fn http_boundary_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<F
         }
     }
 
-    findings.extend(timeoutless_http_helper_findings(file, function, &lines, &http_aliases));
-    findings.extend(graceful_shutdown_findings(file, function, &lines, &http_aliases));
+    findings.extend(timeoutless_http_helper_findings(
+        file,
+        function,
+        &lines,
+        &http_aliases,
+    ));
+    findings.extend(graceful_shutdown_findings(
+        file,
+        function,
+        &lines,
+        &http_aliases,
+    ));
     findings.extend(request_body_limit_findings(file, function, &lines));
 
     for alias in &http_aliases {
@@ -446,7 +456,10 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
                     function.fingerprint.name, name
                 ),
                 evidence: vec![
-                    format!("rows binding {name} created from {target} at line {}", body_line.line),
+                    format!(
+                        "rows binding {name} created from {target} at line {}",
+                        body_line.line
+                    ),
                     format!("{name}.Next() was observed"),
                     format!("no {}.Err() call was observed after iteration", name),
                 ],
@@ -517,8 +530,11 @@ fn resource_hygiene_findings(file: &ParsedFile, function: &ParsedFunction) -> Ve
                 ),
                 evidence: vec![
                     format!("transaction {name} begins from {target} at line {line}"),
-                    format!("loop or slow work was observed before commit/rollback at line {slow_line}"),
-                    "long transaction spans can block pool capacity and enlarge contention windows".to_string(),
+                    format!(
+                        "loop or slow work was observed before commit/rollback at line {slow_line}"
+                    ),
+                    "long transaction spans can block pool capacity and enlarge contention windows"
+                        .to_string(),
                 ],
             });
         }
@@ -598,8 +614,12 @@ fn timeoutless_http_helper_findings(
                     function.fingerprint.name
                 ),
                 evidence: vec![
-                    format!("observed HTTP helper/default-client call at line {}", body_line.line),
-                    "net/http helpers and http.DefaultClient omit explicit application timeouts".to_string(),
+                    format!(
+                        "observed HTTP helper/default-client call at line {}",
+                        body_line.line
+                    ),
+                    "net/http helpers and http.DefaultClient omit explicit application timeouts"
+                        .to_string(),
                 ],
             });
         }
@@ -618,7 +638,9 @@ fn graceful_shutdown_findings(
     let listen_line = lines.iter().find(|body_line| {
         http_aliases.iter().any(|alias| {
             body_line.text.contains(&format!("{alias}.ListenAndServe("))
-                || body_line.text.contains(&format!("{alias}.ListenAndServeTLS("))
+                || body_line
+                    .text
+                    .contains(&format!("{alias}.ListenAndServeTLS("))
                 || body_line.text.contains(".ListenAndServe(")
                 || body_line.text.contains(".ListenAndServeTLS(")
         })
@@ -702,12 +724,17 @@ fn request_body_limit_findings(
         ),
         evidence: vec![
             format!("request body read observed at line {}", risky_line.line),
-            "no io.LimitReader, http.MaxBytesReader, or multipart size bound was observed first".to_string(),
+            "no io.LimitReader, http.MaxBytesReader, or multipart size bound was observed first"
+                .to_string(),
         ],
     }]
 }
 
-fn slow_work_inside_transaction_line(lines: &[BodyLine], tx_name: &str, begin_line: usize) -> Option<usize> {
+fn slow_work_inside_transaction_line(
+    lines: &[BodyLine],
+    tx_name: &str,
+    begin_line: usize,
+) -> Option<usize> {
     let end_line = lines
         .iter()
         .find(|body_line| {
@@ -1523,7 +1550,8 @@ fn ci_missing_go_test_race_findings(files: &[&ParsedFile]) -> Vec<Finding> {
         message: "repo CI or build automation does not visibly run `go test -race`".to_string(),
         evidence: vec![
             "Go concurrency issues are often caught early by the race detector".to_string(),
-            "no `go test -race` invocation was observed in workflow or build automation files".to_string(),
+            "no `go test -race` invocation was observed in workflow or build automation files"
+                .to_string(),
         ],
     }]
 }
@@ -1544,10 +1572,7 @@ fn db_pool_limits_not_configured_at_boot_findings(files: &[&ParsedFile]) -> Vec<
         }
 
         let source = read_to_string_limited(&file.path, DEFAULT_MAX_BYTES).ok();
-        let lower_source = source
-            .as_deref()
-            .unwrap_or_default()
-            .to_ascii_lowercase();
+        let lower_source = source.as_deref().unwrap_or_default().to_ascii_lowercase();
         let open_line = file.functions.iter().find_map(|function| {
             function
                 .body_text

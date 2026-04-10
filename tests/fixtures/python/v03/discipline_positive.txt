@@ -1,0 +1,39 @@
+# Triggers: exception_raised_without_chaining_original_cause
+def parse_config(text):
+    try:
+        return json.loads(text)
+    except ValueError:
+        raise ConfigError("invalid config format")
+
+
+# Triggers: bare_except_clause_catches_system_exit
+def run_step(step):
+    try:
+        step()
+    except:
+        pass
+
+
+# Triggers: assert_used_for_runtime_input_validation_in_production
+# Detector looks for assert isinstance( or assert value is not None
+def create_user(email: str):
+    assert isinstance(email, str), "email must be str"
+    return {"email": email}
+
+
+# Triggers: exception_for_control_flow_within_same_function
+def lookup_item(items, key):
+    try:
+        return items[key]
+    except KeyError:
+        return None
+
+
+# Triggers: test_too_many_patches
+@patch("app.service.repo")
+@patch("app.service.cache")
+@patch("app.service.mailer")
+@patch("app.service.logger")
+def test_create_order(mock_logger, mock_mailer, mock_cache, mock_repo):
+    result = create_order(user_id=1)
+    assert result["status"] == "ok"

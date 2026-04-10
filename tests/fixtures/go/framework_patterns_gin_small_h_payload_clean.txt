@@ -1,0 +1,22 @@
+package sample
+
+import "github.com/gin-gonic/gin"
+
+func SmallErrorPayloads(c *gin.Context, kind string) {
+	if kind == "" {
+		c.JSON(400, gin.H{"error": "missing kind"})
+		return
+	}
+
+	if kind == "bad" {
+		c.JSON(400, gin.H{"error": "bad kind"})
+		return
+	}
+
+	if kind == "timeout" {
+		c.JSON(504, gin.H{"error": "timeout"})
+		return
+	}
+
+	c.JSON(200, gin.H{"ok": true})
+}

@@ -37,8 +37,8 @@ pub(crate) const STYLE_BINDING_LOCATION: &str = style::BINDING_LOCATION;
 
 pub(super) use architecture::{go_architecture_file_findings, go_architecture_repo_findings};
 pub(super) use concurrency::{
-    coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings, rwmutex_file_findings,
-    shutdown_findings, waitgroup_errgroup_findings,
+    coordination_findings, deeper_goroutine_lifetime_findings, mutex_findings,
+    rwmutex_file_findings, shutdown_findings, waitgroup_errgroup_findings,
 };
 pub(super) use consistency::{receiver_findings, tag_findings};
 pub(super) use context::{

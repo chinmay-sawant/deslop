@@ -1,0 +1,33 @@
+import hashlib
+import random
+import subprocess
+
+# Triggers: sql_query_built_with_string_formatting_instead_of_parameters
+def get_user(db, user_id):
+    db.execute(f"SELECT * FROM users WHERE id = {user_id}")
+    return db.fetchone()
+
+
+# Triggers: subprocess_invoked_with_shell_true_and_user_derived_input
+# Detector requires shell=True AND (request. OR args. OR input())
+def run_command(args):
+    subprocess.run(args.cmd, shell=True)
+
+
+# Triggers: insecure_hash_algorithm_used_for_security_sensitive_purpose
+def hash_password(password: str) -> str:
+    return hashlib.md5(password.encode()).hexdigest()
+
+
+# Triggers: weak_random_function_used_for_security_token_generation
+# Detector requires random.randint( AND a security keyword in body
+def generate_token() -> str:
+    token = str(random.randint(100000, 999999))
+    return token
+
+
+# Triggers: yaml_config_loaded_without_safe_loader
+# Detector requires yaml.load( AND Loader=yaml.Loader in body
+def load_config(path):
+    with open(path) as f:
+        return yaml.load(f, Loader=yaml.Loader)

@@ -1,0 +1,232 @@
+{
+  "language": "python",
+  "family": "packaging",
+  "label": "Packaging",
+  "summary": "Entrypoints, package layout, and import-surface hygiene.",
+  "rules": [
+    {
+      "id": "circular_import_hidden_by_function_local_import_on_hot_path",
+      "label": "Circular Import Hidden by Function Local Import on Hot Path",
+      "description": "Flag circular import workarounds that push imports into frequent code paths.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Circular Import Hidden by Function Local Import on Hot Path matters because the pattern here, Flag circular import workarounds that push imports into frequent code paths, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Circular Import Hidden by Function Local Import on Hot Path in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "cli_only_dependency_imported_by_library_entry_module",
+      "label": "CLI Only Dependency Imported by Library Entry Module",
+      "description": "Flag library entry modules that pull in CLI-only dependencies on import.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, CLI Only Dependency Imported by Library Entry Module matters because the pattern here, Flag library entry modules that pull in CLI-only dependencies on import, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For CLI Only Dependency Imported by Library Entry Module in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "cross_package_internal_import",
+      "label": "Cross Package Internal Import",
+      "description": "Local Python packages reaching into another package's internal or private modules.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Cross Package Internal Import matters because the pattern here, Local Python packages reaching into another package's internal or private modules, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Cross Package Internal Import in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "environment_or_config_read_during_package_import",
+      "label": "Environment or Config Read During Package Import",
+      "description": "Flag package import paths that read environment or config eagerly.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Environment or Config Read During Package Import matters because the pattern here, Flag package import paths that read environment or config eagerly, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Environment or Config Read During Package Import in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "heavy_optional_dependency_imported_by_package_root",
+      "label": "Heavy Optional Dependency Imported by Package Root",
+      "description": "Flag package roots that import heavy optional dependencies by default.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Heavy Optional Dependency Imported by Package Root matters because the pattern here, Flag package roots that import heavy optional dependencies by default, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Heavy Optional Dependency Imported by Package Root in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "monolithic_common_package_becomes_transitive_dependency_for_most_modules",
+      "label": "Monolithic Common Package Becomes Transitive Dependency for Most Modules",
+      "description": "Flag package designs where one vague common package becomes a hidden dependency hub.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Monolithic Common Package Becomes Transitive Dependency for Most Modules matters because the pattern here, Flag package designs where one vague common package becomes a hidden dependency hub, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Monolithic Common Package Becomes Transitive Dependency for Most Modules in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "package_exports_same_symbol_name_from_multiple_submodules_with_different_meanings",
+      "label": "Package Exports Same Symbol Name From Multiple Submodules with Different Meanings",
+      "description": "Flag packages that reuse one exported name for unrelated implementations.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Package Exports Same Symbol Name From Multiple Submodules with Different Meanings matters because the pattern here, Flag packages that reuse one exported name for unrelated implementations, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Package Exports Same Symbol Name From Multiple Submodules with Different Meanings in Python, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "package_init_performs_metadata_version_lookup_on_import",
+      "label": "Package Init Performs Metadata Version Lookup on Import",
+      "description": "Flag package __init__ files that do runtime metadata lookups just to expose a version.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Package Init Performs Metadata Version Lookup on Import matters because the pattern here, Flag package __init__ files that do runtime metadata lookups just to expose a version, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Package Init Performs Metadata Version Lookup on Import in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "package_root_reexports_large_dependency_tree_by_default",
+      "label": "Package Root Reexports Large Dependency Tree by Default",
+      "description": "Flag root packages that re-export many heavy submodules automatically.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Package Root Reexports Large Dependency Tree by Default matters because the pattern here, Flag root packages that re-export many heavy submodules automatically, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Package Root Reexports Large Dependency Tree by Default in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "plugin_discovery_scans_filesystem_each_invocation",
+      "label": "Plugin Discovery Scans Filesystem Each Invocation",
+      "description": "Flag plugin or extension discovery that rescans disk on every invocation.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Plugin Discovery Scans Filesystem Each Invocation matters because the pattern here, Flag plugin or extension discovery that rescans disk on every invocation, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Plugin Discovery Scans Filesystem Each Invocation in Python, switch to parameterized access, validated input, or a reviewed helper so the data boundary stays explicit and safe."
+    },
+    {
+      "id": "public_api_surface_defined_only_by_import_side_effects",
+      "label": "Public API Surface Defined Only by Import Side Effects",
+      "description": "Flag packages whose public surface is created indirectly by import order.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Public API Surface Defined Only by Import Side Effects matters because the pattern here, Flag packages whose public surface is created indirectly by import order, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Public API Surface Defined Only by Import Side Effects in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "pyproject_missing_requires_python",
+      "label": "Pyproject Missing Requires Python",
+      "description": "pyproject metadata missing an explicit Python runtime requirement.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pyproject Missing Requires Python matters because the pattern here, pyproject metadata missing an explicit Python runtime requirement, is worth review because import surfaces and entrypoints shape how predictable the repository feels to users and maintainers.",
+      "fix": "For Pyproject Missing Requires Python in Python, keep package roles obvious, avoid surprising side effects on import, and put entrypoint code where tooling and humans expect it."
+    },
+    {
+      "id": "pyproject_script_entrypoint_unresolved",
+      "label": "Pyproject Script Entrypoint Unresolved",
+      "description": "pyproject script entrypoints that do not resolve to a locally indexed module callable.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Pyproject Script Entrypoint Unresolved matters because the pattern here, pyproject script entrypoints that do not resolve to a locally indexed module callable, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Pyproject Script Entrypoint Unresolved in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "python_public_api_any_contract",
+      "label": "Python Public API Any Contract",
+      "description": "Public Python APIs that expose Any in parameter or return contracts.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Python Public API Any Contract matters because the pattern here, Public Python APIs that expose Any in parameter or return contracts, is worth review because import surfaces and entrypoints shape how predictable the repository feels to users and maintainers.",
+      "fix": "For Python Public API Any Contract in Python, keep package roles obvious, avoid surprising side effects on import, and put entrypoint code where tooling and humans expect it."
+    },
+    {
+      "id": "runtime_data_file_assumption_in_implicit_namespace_package",
+      "label": "Runtime Data File Assumption in Implicit Namespace Package",
+      "description": "Flag implicit namespace packages that assume local data-file discovery at runtime.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Runtime Data File Assumption in Implicit Namespace Package matters because the pattern here, Flag implicit namespace packages that assume local data-file discovery at runtime, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Runtime Data File Assumption in Implicit Namespace Package in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "test_helpers_shipped_inside_production_package_path",
+      "label": "Test Helpers Shipped Inside Production Package Path",
+      "description": "Flag test-only helpers living under the production import path.",
+      "defaultSeverity": "info",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Test Helpers Shipped Inside Production Package Path matters because the pattern here, Flag test-only helpers living under the production import path, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Test Helpers Shipped Inside Production Package Path in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    }
+  ]
+}

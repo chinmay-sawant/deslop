@@ -1,0 +1,386 @@
+{
+  "language": "python",
+  "family": "structure",
+  "label": "Structure",
+  "summary": "Classes, functions, state, and responsibility boundaries.",
+  "rules": [
+    {
+      "id": "abstract_contracts_and_heavy_concrete_implementations_live_in_same_file",
+      "label": "Abstract Contracts and Heavy Concrete Implementations Live in Same File",
+      "description": "Flag files that mix contracts with large concrete implementations and grow unstable dependencies.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Abstract Contracts and Heavy Concrete Implementations Live in Same File matters because the pattern here, Flag files that mix contracts with large concrete implementations and grow unstable dependencies, is worth review because oversized classes and mixed-concern functions hide the real domain seams of the codebase.",
+      "fix": "For Abstract Contracts and Heavy Concrete Implementations Live in Same File in Python, split responsibilities around the real domain boundary, and keep stateful objects narrow enough that their role is obvious."
+    },
+    {
+      "id": "abstractions_named_utils_helpers_common_or_manager_hide_true_ownership",
+      "label": "Abstractions Named Utils Helpers Common or Manager Hide True Ownership",
+      "description": "Flag vague abstractions whose names obscure actual ownership and responsibility.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Abstractions Named Utils Helpers Common or Manager Hide True Ownership matters because the pattern here, Flag vague abstractions whose names obscure actual ownership and responsibility, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Abstractions Named Utils Helpers Common or Manager Hide True Ownership in Python, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "base_class_exists_only_to_share_data_fields_not_behavior",
+      "label": "Base Class Exists Only to Share Data Fields Not Behavior",
+      "description": "Flag base classes that provide only data containers with no meaningful shared behavior.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Base Class Exists Only to Share Data Fields Not Behavior matters because the pattern here, Flag base classes that provide only data containers with no meaningful shared behavior, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Base Class Exists Only to Share Data Fields Not Behavior in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "bidirectional_import_between_feature_modules",
+      "label": "Bidirectional Import Between Feature Modules",
+      "description": "Flag feature modules that depend on each other directly.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Bidirectional Import Between Feature Modules matters because the pattern here, Flag feature modules that depend on each other directly, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Bidirectional Import Between Feature Modules in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "class_mixes_factory_parsing_persistence_and_presentation_roles",
+      "label": "Class Mixes Factory Parsing Persistence and Presentation Roles",
+      "description": "Flag classes that combine unrelated lifecycle roles.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Class Mixes Factory Parsing Persistence and Presentation Roles matters because the pattern here, Flag classes that combine unrelated lifecycle roles, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Class Mixes Factory Parsing Persistence and Presentation Roles in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "composition_candidate_for_optional_behavior_implemented_as_inheritance",
+      "label": "Composition Candidate for Optional Behavior Implemented as Inheritance",
+      "description": "Flag optional behavior modeled through inheritance when composition would isolate concerns better.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Composition Candidate for Optional Behavior Implemented as Inheritance matters because the pattern here, Flag optional behavior modeled through inheritance when composition would isolate concerns better, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Composition Candidate for Optional Behavior Implemented as Inheritance in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "constructor_performs_real_work_beyond_state_initialization",
+      "label": "Constructor Performs Real Work Beyond State Initialization",
+      "description": "Flag constructors that do heavy work instead of leaving execution to explicit methods.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Constructor Performs Real Work Beyond State Initialization matters because the pattern here, Flag constructors that do heavy work instead of leaving execution to explicit methods, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Constructor Performs Real Work Beyond State Initialization in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary",
+      "label": "Cross Cutting Policies Embedded in Leaf Modules Instead of Shared Boundary",
+      "description": "Flag retries, normalization, or policy checks embedded in leaf modules instead of one shared boundary.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Cross Cutting Policies Embedded in Leaf Modules Instead of Shared Boundary matters because the pattern here, Flag retries, normalization, or policy checks embedded in leaf modules instead of one shared boundary, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Cross Cutting Policies Embedded in Leaf Modules Instead of Shared Boundary in Python, prefer one shared boundary when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "deep_inheritance_hierarchy",
+      "label": "Deep Inheritance Hierarchy",
+      "description": "Repository-local Python class chains with unusually deep inheritance depth.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Deep Inheritance Hierarchy matters because the pattern here, Repository-local Python class chains with unusually deep inheritance depth, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Deep Inheritance Hierarchy in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "eager_constructor_collaborators",
+      "label": "Eager Constructor Collaborators",
+      "description": "Constructors that instantiate several collaborators eagerly inside __init__.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Eager Constructor Collaborators matters because the pattern here, Constructors that instantiate several collaborators eagerly inside __init__, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Eager Constructor Collaborators in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "generic_manager_or_processor_class_controls_many_unrelated_modes",
+      "label": "Generic Manager or Processor Class Controls Many Unrelated Modes",
+      "description": "Flag vague manager-style classes that centralize unrelated behaviors behind mode flags.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Generic Manager or Processor Class Controls Many Unrelated Modes matters because the pattern here, Flag vague manager-style classes that centralize unrelated behaviors behind mode flags, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Generic Manager or Processor Class Controls Many Unrelated Modes in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "god_class",
+      "label": "God Class",
+      "description": "Python classes that concentrate unusually high method count, public surface area, and mutable instance state.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, God Class matters because the pattern here, Python classes that concentrate unusually high method count, public surface area, and mutable instance state, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For God Class in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "god_function",
+      "label": "God Function",
+      "description": "Very large Python functions with high control-flow and call-surface concentration.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, God Function matters because the pattern here, Very large Python functions with high control-flow and call-surface concentration, is worth review because oversized classes and mixed-concern functions hide the real domain seams of the codebase.",
+      "fix": "For God Function in Python, split responsibilities around the real domain boundary, and keep stateful objects narrow enough that their role is obvious."
+    },
+    {
+      "id": "helper_collection_object_also_owns_process_lifecycle",
+      "label": "Helper Collection Object Also Owns Process Lifecycle",
+      "description": "Flag collection-like helper objects that also start, stop, or supervise process lifecycle work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Helper Collection Object Also Owns Process Lifecycle matters because the pattern here, Flag collection-like helper objects that also start, stop, or supervise process lifecycle work, is worth review because oversized classes and mixed-concern functions hide the real domain seams of the codebase.",
+      "fix": "For Helper Collection Object Also Owns Process Lifecycle in Python, split responsibilities around the real domain boundary, and keep stateful objects narrow enough that their role is obvious."
+    },
+    {
+      "id": "mixed_concerns_function",
+      "label": "Mixed Concerns Function",
+      "description": "Functions that mix HTTP, persistence, and filesystem-style concerns in one body.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Mixed Concerns Function matters because the pattern here, Functions that mix HTTP, persistence, and filesystem-style concerns in one body, makes the API contract harder to scan and easier to misuse.",
+      "fix": "For Mixed Concerns Function in Python, reshape the signature or call contract so the expected parameter order, ownership, or return shape is obvious at the definition site."
+    },
+    {
+      "id": "module_global_registry_mutated_from_import_time_registration",
+      "label": "Module Global Registry Mutated From Import Time Registration",
+      "description": "Flag global registries that are populated by import side effects.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Module Global Registry Mutated From Import Time Registration matters because the pattern here, Flag global registries that are populated by import side effects, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Module Global Registry Mutated From Import Time Registration in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "monolithic_init_module",
+      "label": "Monolithic Init Module",
+      "description": "__init__.py files that carry enough imports and behavior to look like monolithic modules.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Monolithic Init Module matters because the pattern here, __init__.py files that carry enough imports and behavior to look like monolithic modules, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Monolithic Init Module in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "monolithic_module",
+      "label": "Monolithic Module",
+      "description": "Non-__init__.py modules that are unusually large and combine many imports with orchestration-heavy behavior.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Monolithic Module matters because the pattern here, Non-__init__.py modules that are unusually large and combine many imports with orchestration-heavy behavior, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Monolithic Module in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "monolithic_module_owns_parsing_validation_execution_and_rendering",
+      "label": "Monolithic Module Owns Parsing Validation Execution and Rendering",
+      "description": "Flag modules that contain the whole pipeline and become hard to reason about.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Monolithic Module Owns Parsing Validation Execution and Rendering matters because the pattern here, Flag modules that contain the whole pipeline and become hard to reason about, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Monolithic Module Owns Parsing Validation Execution and Rendering in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "name_responsibility_mismatch",
+      "label": "Name Responsibility Mismatch",
+      "description": "Read-style, transformation-style, or utility-style names that still perform mutation or own multiple infrastructure concerns.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Name Responsibility Mismatch matters because the pattern here, Read-style, transformation-style, or utility-style names that still perform mutation or own multiple infrastructure concerns, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Name Responsibility Mismatch in Python, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "over_abstracted_wrapper",
+      "label": "Over Abstracted Wrapper",
+      "description": "Ceremonial wrapper-style or tiny data-container classes that add little beyond storing constructor state.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Over Abstracted Wrapper matters because the pattern here, Ceremonial wrapper-style or tiny data-container classes that add little beyond storing constructor state, concentrates too much responsibility into one shape and makes future change riskier.",
+      "fix": "For Over Abstracted Wrapper in Python, split the class or constructor work so one object owns one role and collaborators are injected or composed deliberately."
+    },
+    {
+      "id": "read_and_write_paths_share_mutable_internal_cache_without_boundary",
+      "label": "Read and Write Paths Share Mutable Internal Cache without Boundary",
+      "description": "Flag read and write paths that couple through one mutable cache object.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Read and Write Paths Share Mutable Internal Cache without Boundary matters because the pattern here, Flag read and write paths that couple through one mutable cache object, is worth review because oversized classes and mixed-concern functions hide the real domain seams of the codebase.",
+      "fix": "For Read and Write Paths Share Mutable Internal Cache without Boundary in Python, split responsibilities around the real domain boundary, and keep stateful objects narrow enough that their role is obvious."
+    },
+    {
+      "id": "same_feature_path_crosses_many_layers_for_simple_data_transform",
+      "label": "Same Feature Path Crosses Many Layers for Simple Data Transform",
+      "description": "Flag simple transformations that bounce through too many layers or wrappers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Same Feature Path Crosses Many Layers for Simple Data Transform matters because the pattern here, Flag simple transformations that bounce through too many layers or wrappers, is worth review because oversized classes and mixed-concern functions hide the real domain seams of the codebase.",
+      "fix": "For Same Feature Path Crosses Many Layers for Simple Data Transform in Python, split responsibilities around the real domain boundary, and keep stateful objects narrow enough that their role is obvious."
+    },
+    {
+      "id": "sibling_modules_depend_on_private_helpers_from_each_other",
+      "label": "Sibling Modules Depend on Private Helpers From Each Other",
+      "description": "Flag sibling modules that reach into each other's private helpers instead of using a shared boundary.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Sibling Modules Depend on Private Helpers From Each Other matters because the pattern here, Flag sibling modules that reach into each other's private helpers instead of using a shared boundary, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Sibling Modules Depend on Private Helpers From Each Other in Python, prefer using a shared boundary when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "sync_and_async_contracts_mixed_on_same_interface_family",
+      "label": "Sync and Async Contracts Mixed on Same Interface Family",
+      "description": "Flag interface families that mix sync and async methods without a clear separation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Sync and Async Contracts Mixed on Same Interface Family matters because the pattern here, Flag interface families that mix sync and async methods without a clear separation, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Sync and Async Contracts Mixed on Same Interface Family in Python, add a clear separation or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "tight_module_coupling",
+      "label": "Tight Module Coupling",
+      "description": "Modules that depend on a large number of repository-local Python modules.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Tight Module Coupling matters because the pattern here, Modules that depend on a large number of repository-local Python modules, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Tight Module Coupling in Python, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "too_many_instance_attributes",
+      "label": "Too Many Instance Attributes",
+      "description": "Classes that assign an unusually large number of instance attributes across their methods.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Python, Too Many Instance Attributes matters because the pattern here, Classes that assign an unusually large number of instance attributes across their methods, is worth review because oversized classes and mixed-concern functions hide the real domain seams of the codebase.",
+      "fix": "For Too Many Instance Attributes in Python, split responsibilities around the real domain boundary, and keep stateful objects narrow enough that their role is obvious."
+    }
+  ]
+}

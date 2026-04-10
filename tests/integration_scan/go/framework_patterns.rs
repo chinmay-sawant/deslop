@@ -307,6 +307,38 @@ fn test_go_framework_patterns_gin_request_clean() {
 }
 
 #[test]
+fn test_go_framework_patterns_small_error_maps_are_not_large_payloads() {
+    let report = scan_files(&[(
+        "gin_small_h.go",
+        go_fixture!("framework_patterns_gin_small_h_payload_clean.txt"),
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &[
+            "large_h_payload_built_only_for_json_response",
+            "repeated_large_map_literal_response_construction",
+        ],
+    );
+}
+
+#[test]
+fn test_go_framework_patterns_small_error_maps_with_colon_text_are_not_large_payloads() {
+    let report = scan_files(&[(
+        "gin_small_h_colon.go",
+        go_fixture!("framework_patterns_gin_small_h_colon_strings_clean.txt"),
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &[
+            "large_h_payload_built_only_for_json_response",
+            "repeated_large_map_literal_response_construction",
+        ],
+    );
+}
+
+#[test]
 fn test_go_framework_patterns_request_path_framework_expansion_rules() {
     let report = scan_files(&[(
         "request_paths_positive.go",
