@@ -1,0 +1,23 @@
+package sample
+
+import (
+	"errors"
+	"strings"
+	"testing"
+
+	"github.com/stretchr/testify/suite"
+)
+
+type IntegrationSuite struct {
+	suite.Suite
+}
+
+func (s *IntegrationSuite) TestScenario() {
+	trimmed := strings.TrimSpace(" ok ")
+	s.Equal("ok", trimmed)
+	s.Error(errors.New("boom"))
+}
+
+func TestIntegrationSuite(t *testing.T) {
+	suite.Run(t, new(IntegrationSuite))
+}

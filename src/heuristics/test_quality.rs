@@ -14,7 +14,10 @@ pub(super) fn test_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
 
     let mut findings = Vec::new();
 
-    if summary.assertion_like_calls == 0 && summary.skip_calls == 0 && summary.production_calls > 0
+    if summary.assertion_like_calls == 0
+        && summary.skip_calls == 0
+        && summary.production_calls > 0
+        && !is_suite_runner_wrapper_test(function)
     {
         findings.push(Finding {
             rule_id: "test_without_assertion_signal".to_string(),
@@ -85,4 +88,26 @@ pub(super) fn test_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
     }
 
     findings
+}
+
+fn is_suite_runner_wrapper_test(function: &ParsedFunction) -> bool {
+    let has_suite_run = function.calls.iter().any(|call| {
+        call.name == "Run"
+            && call
+                .receiver
+                .as_deref()
+                .is_some_and(|receiver| receiver.to_ascii_lowercase().ends_with("suite"))
+    });
+    if !has_suite_run {
+        return false;
+    }
+
+    function.calls.iter().all(|call| {
+        (call.name == "Run"
+            && call
+                .receiver
+                .as_deref()
+                .is_some_and(|receiver| receiver.to_ascii_lowercase().ends_with("suite")))
+            || call.name == "new"
+    })
 }

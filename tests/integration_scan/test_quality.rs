@@ -53,3 +53,21 @@ fn test_high_signal() {
             .any(|finding| finding.rule_id == "placeholder_test_body")
     );
 }
+
+#[test]
+fn test_testify_suite_style_assertions_are_counted() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "quality_test.go",
+        go_fixture!("test_quality_suite_clean.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "test_without_assertion_signal")
+    );
+}

@@ -1,0 +1,11 @@
+package sample
+
+import "os"
+
+func WriteSecretKey(data []byte) {
+	_ = os.WriteFile("secret.key", data, 0644)
+}
+
+func WriteWorldWritableSecret() {
+	_, _ = os.OpenFile("token.txt", os.O_CREATE, 0666)
+}

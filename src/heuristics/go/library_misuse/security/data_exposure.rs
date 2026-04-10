@@ -231,9 +231,19 @@ fn world_readable_perms(
 ) -> Vec<Finding> {
     let mut findings = Vec::new();
     for bl in lines {
-        if (bl.text.contains("os.OpenFile(") || bl.text.contains("os.WriteFile("))
-            && (bl.text.contains("0666") || bl.text.contains("0777") || bl.text.contains("0644"))
-        {
+        if !looks_like_file_creation_call(&bl.text) {
+            continue;
+        }
+
+        let looks_sensitive_path = line_mentions_sensitive_path(&bl.text);
+        for mode_literal in octal_mode_literals(&bl.text) {
+            let Some(mode) = parse_go_octal_mode(&mode_literal) else {
+                continue;
+            };
+            if !is_overly_permissive_mode(mode, looks_sensitive_path) {
+                continue;
+            }
+
             findings.push(Finding {
                 rule_id: "world_readable_file_permissions".into(),
                 severity: Severity::Warning,
@@ -246,13 +256,68 @@ fn world_readable_perms(
                     function.fingerprint.name
                 ),
                 evidence: vec![
-                    format!("permissive file mode at line {}", bl.line),
-                    "use 0600 for sensitive files".into(),
+                    format!("permissive file mode {mode_literal} at line {}", bl.line),
+                    "prefer 0600 for secret material and avoid world-writable modes".into(),
                 ],
             });
+            break;
         }
     }
     findings
+}
+
+fn looks_like_file_creation_call(line: &str) -> bool {
+    line.contains("os.OpenFile(") || line.contains("os.WriteFile(")
+}
+
+fn line_mentions_sensitive_path(line: &str) -> bool {
+    let lower = line.to_ascii_lowercase();
+    [
+        "secret",
+        "token",
+        "passwd",
+        "password",
+        "private",
+        "apikey",
+        "api_key",
+        "credential",
+        ".pem",
+        ".key",
+    ]
+    .iter()
+    .any(|marker| lower.contains(marker))
+}
+
+fn octal_mode_literals(line: &str) -> Vec<String> {
+    line.split(|ch: char| !(ch.is_ascii_alphanumeric() || ch == '_'))
+        .filter(|token| {
+            (token.starts_with('0') && token.len() >= 4 && token[1..].chars().all(is_octal_digit))
+                || (token.starts_with("0o")
+                    && token.len() >= 4
+                    && token[2..].chars().all(is_octal_digit))
+        })
+        .map(ToString::to_string)
+        .collect()
+}
+
+fn is_octal_digit(ch: char) -> bool {
+    matches!(ch, '0'..='7')
+}
+
+fn parse_go_octal_mode(literal: &str) -> Option<u32> {
+    if let Some(rest) = literal.strip_prefix("0o") {
+        return u32::from_str_radix(rest, 8).ok();
+    }
+    if literal.len() >= 2 && literal.starts_with('0') && literal[1..].chars().all(is_octal_digit) {
+        return u32::from_str_radix(&literal[1..], 8).ok();
+    }
+    None
+}
+
+fn is_overly_permissive_mode(mode: u32, sensitive_path: bool) -> bool {
+    let world_writable = mode & 0o002 != 0;
+    let world_readable = mode & 0o004 != 0;
+    world_writable || (sensitive_path && world_readable)
 }
 
 fn fmt_print_sensitive_struct(

@@ -92,3 +92,21 @@ fn test_python_repeated_json_dumps_skips_first_cache_assignment() {
         "expected the first cached json.dumps assignment to be skipped"
     );
 }
+
+#[test]
+fn test_python_repeated_json_dumps_does_not_double_count_chained_encode() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_files(&[(
+        "pkg/hotpath_code.py",
+        python_fixture!("integration/hotpath/repeated_json_dumps_chained_encode_clean.txt"),
+    )]);
+
+    let report = workspace.scan();
+    assert!(
+        !report
+            .findings
+            .iter()
+            .any(|finding| finding.rule_id == "repeated_json_dumps_same_object"),
+        "did not expect repeated_json_dumps_same_object for single json.dumps(...).encode(...)"
+    );
+}

@@ -275,24 +275,27 @@ fn visit_repeated_calls(
     }
 
     if node.kind() == "call"
-        && let Some(text) = source.get(node.byte_range())
+        && let Some(function_node) = node.child_by_field_name("function")
+        && let Some(arguments_node) = node.child_by_field_name("arguments")
+        && let Some(function_text) = source.get(function_node.byte_range())
+        && let Some(arguments_text) = source.get(arguments_node.byte_range())
     {
-        let trimmed = text.trim();
+        let callee_name = function_text.trim();
         for &callee in callees {
-            if trimmed.starts_with(&format!("{callee}(")) {
-                // Extract first argument (simplified: up to first comma or closing paren)
-                let after_open = &trimmed[callee.len() + 1..];
-                if let Some(end) = after_open.find([',', ')']) {
-                    let first_arg = after_open[..end].trim();
-                    if !first_arg.is_empty() && looks_like_binding(first_arg) {
-                        let key = format!("{callee}({first_arg})");
-                        call_map
-                            .entry(key)
-                            .or_default()
-                            .push(node.start_position().row + 1);
-                    }
-                }
+            if callee_name != callee {
+                continue;
             }
+
+            if let Some(first_arg) = first_argument_from_arguments_text(arguments_text)
+                && looks_like_binding(first_arg)
+            {
+                let key = format!("{callee}({first_arg})");
+                call_map
+                    .entry(key)
+                    .or_default()
+                    .push(node.start_position().row + 1);
+            }
+            break;
         }
     }
 
@@ -553,6 +556,67 @@ fn looks_like_binding(text: &str) -> bool {
     trimmed
         .chars()
         .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.' || c == '[' || c == ']')
+}
+
+fn first_argument_from_arguments_text(arguments_text: &str) -> Option<&str> {
+    let trimmed = arguments_text.trim();
+    if !(trimmed.starts_with('(') && trimmed.ends_with(')')) {
+        return None;
+    }
+
+    let inner = &trimmed[1..trimmed.len() - 1];
+    if inner.trim().is_empty() {
+        return None;
+    }
+
+    let mut depth_paren = 0i32;
+    let mut depth_bracket = 0i32;
+    let mut depth_brace = 0i32;
+    let mut in_single = false;
+    let mut in_double = false;
+    let mut escaped = false;
+    for (idx, ch) in inner.char_indices() {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+
+        if ch == '\\' && (in_single || in_double) {
+            escaped = true;
+            continue;
+        }
+        if ch == '\'' && !in_double {
+            in_single = !in_single;
+            continue;
+        }
+        if ch == '"' && !in_single {
+            in_double = !in_double;
+            continue;
+        }
+        if in_single || in_double {
+            continue;
+        }
+
+        match ch {
+            '(' => depth_paren += 1,
+            ')' => depth_paren -= 1,
+            '[' => depth_bracket += 1,
+            ']' => depth_bracket -= 1,
+            '{' => depth_brace += 1,
+            '}' => depth_brace -= 1,
+            ',' if depth_paren == 0 && depth_bracket == 0 && depth_brace == 0 => {
+                let arg = inner[..idx].trim();
+                if arg.is_empty() {
+                    return None;
+                }
+                return Some(arg);
+            }
+            _ => {}
+        }
+    }
+
+    let arg = inner.trim();
+    if arg.is_empty() { None } else { Some(arg) }
 }
 
 fn should_skip_nested_scope(node: Node<'_>) -> bool {

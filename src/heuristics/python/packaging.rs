@@ -476,11 +476,10 @@ fn package_init_metadata_lookup_findings(files: &[&ParsedFile]) -> Vec<Finding> 
             continue;
         }
 
-        if let Some(binding) = file
-            .top_level_bindings
-            .iter()
-            .find(|binding| binding.value_text.contains("version(") || binding.value_text.contains("get_distribution("))
-        {
+        if let Some(binding) = file.top_level_bindings.iter().find(|binding| {
+            binding.value_text.contains("version(")
+                || binding.value_text.contains("get_distribution(")
+        }) {
             findings.push(packaging_repo_finding(
                 file,
                 "package_init_performs_metadata_version_lookup_on_import",

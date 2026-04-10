@@ -1,4 +1,6 @@
 ## narrowing_as_casts
+src/heuristics/go/framework_patterns/gin/gin_request_path_rules.rs:693:        brace_balance += text.chars().filter(|ch| *ch == '{').count() as isize;
+src/heuristics/go/framework_patterns/gin/gin_request_path_rules.rs:694:        brace_balance -= text.chars().filter(|ch| *ch == '}').count() as isize;
 src/heuristics/rust/mod.rs:115:        " as u8",
 src/heuristics/rust/mod.rs:116:        " as u16",
 src/heuristics/rust/mod.rs:117:        " as u32",
@@ -108,7 +110,7 @@ src/heuristics/go/idioms.rs:1635:            || probe.join("action.yaml").exists
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/heuristics/python/hotpath_ext.rs:893:    if contains_any(body, &["os.path.exists(", ".exists()"])
 src/heuristics/python/packaging.rs:249:    candidate.exists().then_some(candidate)
-src/heuristics/python/packaging.rs:627:        if parent.join("__init__.py").exists() {
+src/heuristics/python/packaging.rs:626:        if parent.join("__init__.py").exists() {
 src/heuristics/python/performance.rs:538:        &["os.stat(", ".exists()", "is_file(", "is_dir("],
 src/heuristics/rust/boundary.rs:203:            && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])
 src/heuristics/rust/runtime_boundary.rs:173:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {

@@ -212,6 +212,36 @@ fn test_go_library_misuse_security_clean() {
     }
 }
 
+#[test]
+fn test_go_world_readable_permissions_skips_nonsensitive_0644_outputs() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "sec_world_clean.go",
+        go_fixture!("library_misuse_world_readable_nonsensitive_clean.txt"),
+    );
+
+    let report = workspace.scan();
+    assert!(
+        !has_rule(&report, "world_readable_file_permissions"),
+        "did not expect world_readable_file_permissions for non-sensitive 0644 outputs"
+    );
+}
+
+#[test]
+fn test_go_world_readable_permissions_flags_sensitive_or_world_writable_modes() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "sec_world_positive.go",
+        go_fixture!("library_misuse_world_readable_sensitive_positive.txt"),
+    );
+
+    let report = workspace.scan();
+    assert!(
+        has_rule(&report, "world_readable_file_permissions"),
+        "expected world_readable_file_permissions for sensitive/world-writable file modes"
+    );
+}
+
 // ── Library rules (plan3) ──
 
 #[test]
