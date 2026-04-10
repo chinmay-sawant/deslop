@@ -65,6 +65,7 @@ src/heuristics/go/performance_extra.rs:1250:    rest[..end].len() == 1
 src/heuristics/go/performance_extra.rs:1257:    let rest = &text[start + 1..];
 src/heuristics/go/performance_extra.rs:1261:    rest[..end].len() == 1
 src/heuristics/python/boundaries.rs:1167:            let snippet = &body[pos..pos.min(pos + 150)];
+src/heuristics/python/boundaries.rs:1371:    signature[start + 1..end]
 src/heuristics/python/discipline.rs:33:                parts.push(text[start..index].trim());
 src/heuristics/python/discipline.rs:388:            let snippet = &body[pos..pos.min(pos + 120)];
 src/heuristics/python/discipline.rs:40:    let tail = text[start..].trim();
@@ -78,8 +79,8 @@ src/heuristics/python/hotpath_ext.rs:420:            && let Some(source_start) =
 src/heuristics/python/hotpath_ext.rs:422:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
 src/heuristics/python/hotpath_ext.rs:688:            let expr = &trimmed[1..for_idx];
 src/heuristics/python/hotpath_ext.rs:726:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
-src/heuristics/python/packaging.rs:330:        [first, ..] => Some(*first),
-src/heuristics/python/quality/mod.rs:221:    split_top_level_commas(&signature_text[start + 1..end])
+src/heuristics/python/packaging.rs:329:        [first, ..] => Some(*first),
+src/heuristics/python/quality/mod.rs:225:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:85:    for (offset, character) in signature_text[start..].char_indices() {
 src/heuristics/rust/module_surface.rs:90:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
@@ -105,7 +106,10 @@ src/heuristics/go/idioms.rs:1633:            || probe.join("makefile").exists()
 src/heuristics/go/idioms.rs:1634:            || probe.join("action.yml").exists()
 src/heuristics/go/idioms.rs:1635:            || probe.join("action.yaml").exists()
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
-src/heuristics/python/packaging.rs:250:    candidate.exists().then_some(candidate)
+src/heuristics/python/hotpath_ext.rs:893:    if contains_any(body, &["os.path.exists(", ".exists()"])
+src/heuristics/python/packaging.rs:249:    candidate.exists().then_some(candidate)
+src/heuristics/python/packaging.rs:627:        if parent.join("__init__.py").exists() {
+src/heuristics/python/performance.rs:538:        &["os.stat(", ".exists()", "is_file(", "is_dir("],
 src/heuristics/rust/boundary.rs:203:            && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])
 src/heuristics/rust/runtime_boundary.rs:173:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/heuristics/rust/security_footguns.rs:209:    if !should_emit_manifest_finding(file, index.root()) || !manifest_path.exists() {
