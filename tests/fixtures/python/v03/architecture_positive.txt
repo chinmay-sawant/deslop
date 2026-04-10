@@ -1,0 +1,40 @@
+import asyncio
+
+# Triggers: service_method_accepts_http_request_object
+# File must be named *service* for role detection
+def process_order(request: Request, order_id: int):
+    data = request.json()
+    return {"status": "ok", "id": order_id}
+
+
+# Triggers: coroutine_result_discarded_without_await
+# Body must contain "async def " + "= coro(" without "await coro("
+async def start_background():
+    async def coro():
+        pass
+    result = coro()  # missing await – coroutine never runs
+    return result
+
+
+# Triggers: asyncio_sleep_zero_busy_wait_pattern
+async def poll_queue(queue):
+    while True:
+        if queue.empty():
+            await asyncio.sleep(0)
+        else:
+            return queue.get_nowait()
+
+
+# Triggers: threading_lock_acquired_blocking_inside_async_def
+# Detector looks for threading.Lock().acquire() inside async def
+async def update_counter(counter):
+    threading.Lock().acquire()  # blocks event loop
+    counter["n"] += 1
+    threading.Lock().release()
+    return counter
+
+
+# Triggers: loop_run_until_complete_inside_running_loop
+async def wrong_nesting(loop):
+    result = loop.run_until_complete(some_coroutine())
+    return result

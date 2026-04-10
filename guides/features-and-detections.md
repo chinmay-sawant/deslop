@@ -32,13 +32,13 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **976 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **1155 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
 | go | 651 | 2 | 0 | 653 |
-| python | 212 | 0 | 0 | 212 |
+| python | 391 | 0 | 0 | 391 |
 | rust | 88 | 12 | 0 | 100 |
 
 The sections below are generated from the rule registry and grouped by language and family.
@@ -750,7 +750,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `inconsistent_package_name`: Directories that mix base Go package names after ignoring the _test suffix.
 - `misgrouped_imports`: Import blocks that place stdlib imports after third-party imports.
 
-### Python rules (212)
+### Python rules (391)
 
 #### Ai Smells (5)
 - `enthusiastic_commentary`: Unusually enthusiastic or emoji-heavy production comments.
@@ -758,6 +758,142 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `obvious_commentary`: Comments that narrate obvious implementation steps instead of explaining intent.
 - `textbook_docstring_small_helper`: Very small helper functions that have unusually long, textbook-style docstrings.
 - `unrelated_heavy_import`: Heavy ecosystem imports with little local evidence of real need.
+
+#### Architecture (34)
+- `asyncio_gather_without_return_exceptions_on_partial_failure_path`: asyncio.gather called without return_exceptions=True on a code path where partial failure should be recoverable.
+- `asyncio_get_event_loop_at_module_scope`: asyncio.get_event_loop() or get_running_loop() called at module import scope outside any function.
+- `asyncio_queue_created_without_maxsize_in_producer_path`: asyncio.Queue created without maxsize on a producer code path, allowing unbounded memory growth.
+- `asyncio_sleep_zero_busy_wait_pattern`: asyncio.sleep(0) used in a tight loop as a busy-wait yield pattern instead of a proper event-driven wait.
+- `auth_extraction_duplicated_across_views`: Multiple view functions repeat identical auth or principal-extraction logic instead of sharing via middleware or dependency.
+- `background_job_depends_on_request_context_object`: Celery, RQ, or background task function holds a reference to an HTTP request context object across the task boundary.
+- `business_logic_inside_middleware`: Middleware component encodes domain decision logic beyond cross-cutting concerns such as auth and logging.
+- `celery_or_rq_task_imports_web_framework_app`: Celery or RQ task module imports the Flask app object or FastAPI application at the top level.
+- `concurrent_futures_executor_not_shut_down`: ThreadPoolExecutor or ProcessPoolExecutor created without shutdown() or a context manager, leaking threads.
+- `coroutine_result_discarded_without_await`: Coroutine object assigned or returned without await, so the coroutine body never executes.
+- `dependency_injection_bypassed_via_global_singleton`: Function bypasses the DI container and retrieves a collaborator via a global variable or module-level singleton.
+- `domain_model_class_imports_http_library`: Domain model or entity file imports an HTTP framework module such as Flask, Django, or FastAPI.
+- `handler_or_view_builds_raw_sql`: Route handler or view constructs a raw SQL string instead of delegating to a repository layer.
+- `handler_or_view_owns_transaction_lifecycle`: Route handler or view manually manages database transaction boundaries (begin/commit/rollback).
+- `loop_run_until_complete_inside_running_loop`: loop.run_until_complete called from within a running event loop, which raises RuntimeError.
+- `multiprocessing_pool_created_without_context_manager_or_terminate`: multiprocessing.Pool created without a context manager or explicit .terminate() call, leaking worker processes.
+- `orm_model_mixes_domain_logic_and_persistence_mapping`: ORM model class contains domain business logic methods alongside column mapping, coupling persistence and domain concerns.
+- `persistent_model_field_encodes_transport_concern`: SQLAlchemy or Django ORM model carries a field that encodes HTTP or transport metadata such as status codes.
+- `repository_method_accepts_pydantic_request_schema`: Repository method parameter type is a Pydantic request schema that belongs to the presentation layer.
+- `repository_returns_unexecuted_orm_query`: Repository method returns a raw ORM query object instead of executing it and returning domain values.
+- `semaphore_acquired_without_async_with_context_manager`: asyncio.Semaphore acquired via .acquire() without async with, risking a missed release on exception.
+- `service_method_accepts_http_request_object`: Service-layer method parameter list includes an HTTP request type from Flask, Django, or FastAPI.
+- `service_method_returns_http_response_object`: Service-layer method returns an HTTP response object that belongs to the transport layer.
+- `service_raises_or_catches_http_exception_type`: Service-layer function raises or catches HTTP exception types that belong to the transport layer.
+- `service_reads_settings_inline_instead_of_injected`: Service reads configuration from os.getenv or settings module inline rather than receiving it via injection.
+- `shared_mutable_collection_mutated_across_threads_without_lock`: Shared mutable collection such as a list or dict is mutated from multiple threads without a lock.
+- `sync_function_called_from_async_without_executor`: Blocking I/O or CPU-bound function called directly inside async def without loop.run_in_executor.
+- `thread_local_storage_read_from_async_function`: Async function reads from threading.local() storage, which is per-thread not per-coroutine.
+- `threading_lock_acquired_blocking_inside_async_def`: threading.Lock.acquire() called with blocking=True inside an async function, blocking the event loop thread.
+- `threading_thread_without_daemon_true_in_server_code`: threading.Thread created in server-side code without daemon=True, which can block graceful shutdown.
+- `untracked_create_task_result_may_hide_exception`: asyncio.create_task result discarded without storing a reference; exceptions raised in the task are silenced.
+- `validation_rules_duplicated_at_dto_and_domain_layer`: Identical validation constraint is applied at both the DTO/schema layer and the domain entity layer.
+- `view_or_handler_constructs_orm_query_directly`: View or route handler builds an ORM query rather than delegating to a repository or service.
+- `view_or_handler_performs_direct_file_system_io`: Route handler or view calls open(), os.path, or pathlib directly on the request path.
+
+#### Boundaries (44)
+- `application_config_values_validated_lazily_on_first_use`: Config values validated inside request handlers rather than at startup, deferring misconfiguration errors.
+- `arbitrary_file_write_via_user_controlled_path`: File write operation uses a path derived from user input without containment check.
+- `closure_captures_large_object_after_producing_function_returns`: Inner function or lambda captures a large local variable after the producer returns, preventing GC.
+- `cors_allow_all_origins_set_without_production_environment_check`: CORS configuration allows all origins (*) without a conditional check for the production environment.
+- `cryptographic_secret_hardcoded_in_test_fixture_or_seed`: Real-looking cryptographic secret, token, or private key hardcoded in a test fixture or seed file.
+- `db_connection_pool_size_exceeds_server_max_connections`: Database connection pool max_overflow or pool_size configured above the database server's max_connections.
+- `debug_or_admin_endpoint_registered_without_environment_guard`: Debug, admin, or diagnostics route registered without an environment variable guard.
+- `deserialization_from_external_or_user_controlled_source_with_pickle`: pickle.loads or pickle.load called on data from an external or user-controlled source.
+- `dotenv_load_dotenv_called_from_multiple_modules`: dotenv.load_dotenv() called from more than one module, risking silent config override.
+- `feature_flag_checked_via_inline_env_lookup_across_handlers`: Feature flag checked via repeated inline os.getenv in multiple handlers instead of a single flag service.
+- `file_object_returned_or_stored_without_clear_close_path`: File object returned from a function or stored in an attribute without a guaranteed close path.
+- `file_path_from_user_input_without_normalization_or_anchor_check`: File path derived from user input without Path.resolve() or anchor containment check.
+- `functools_lru_cache_applied_to_instance_method`: @functools.lru_cache applied to an instance method, holding a reference to self and preventing GC.
+- `generator_consumed_twice_without_recreation`: Same generator object iterated a second time after it has already been exhausted.
+- `http_client_url_built_from_user_input_without_allowlist`: HTTP client URL constructed from user-controlled input without an allowlist or URL validation.
+- `insecure_hash_algorithm_used_for_security_sensitive_purpose`: MD5 or SHA-1 used for password hashing, token generation, or a security-sensitive digest.
+- `jinja2_environment_created_with_autoescape_disabled`: Jinja2 Environment created without autoescape=True or with autoescape=False, enabling XSS.
+- `jwt_decode_allows_none_algorithm_or_no_algorithm_restriction`: JWT decoded without restricting the allowed algorithm list, permitting the none algorithm bypass.
+- `ldap_search_filter_built_from_user_input_without_escaping`: LDAP search filter string built from user-controlled input without ldap3 or python-ldap escaping.
+- `multiple_config_sources_merged_without_documented_precedence_order`: Application merges environment variables, config files, and defaults without explicit precedence documentation.
+- `object_allocated_in_tight_loop_expected_to_be_pooled`: Heavyweight object such as HTTPSession or DB connection allocated fresh on every loop iteration.
+- `open_redirect_via_user_supplied_url_without_allowlist`: HTTP redirect target constructed from user-supplied URL without allowlist validation.
+- `pydantic_settings_model_allows_post_init_mutation`: Pydantic Settings model does not set frozen=True, allowing accidental mutation of config values.
+- `pydantic_settings_model_does_not_forbid_extra_fields`: Pydantic Settings model does not set model_config = ConfigDict(extra='forbid'), allowing silent typos.
+- `pydantic_settings_model_missing_env_prefix_isolation`: Pydantic BaseSettings model does not define env_prefix, mixing its env vars with system environment.
+- `redis_commands_issued_individually_in_loop_without_pipeline`: Redis SETEX/HSET/GET commands issued one per loop iteration without using a pipeline.
+- `regex_pattern_with_catastrophic_backtracking_applied_to_unbounded_input`: Regular expression containing nested quantifiers applied to user-supplied unbounded input.
+- `repeated_deepcopy_in_loop_on_same_source_object`: copy.deepcopy called on the same large object on every iteration of a loop.
+- `secrets_manager_client_created_per_function_call`: AWS Secrets Manager or Vault client instantiated on every function call instead of being cached.
+- `sensitive_config_key_included_in_debug_level_log_dict_dump`: Debug log statement dumps the full config dict including keys that may hold secrets.
+- `server_side_template_injection_via_user_input_in_template_source`: User-supplied data used as the template source string for Jinja2 or Mako, enabling SSTI.
+- `socket_opened_without_context_manager_or_guaranteed_close`: socket.socket opened without a context manager or explicit .close() in a finally block.
+- `sql_query_built_with_string_formatting_instead_of_parameters`: SQL query string built via f-string or % formatting instead of parameterised query binding.
+- `startup_log_statement_includes_raw_secret_value`: Startup or health-check log statement interpolates a raw secret, key, or password value.
+- `state_changing_endpoint_missing_csrf_protection`: State-changing POST/PUT/DELETE endpoint lacks CSRF token validation or SameSite enforcement.
+- `subprocess_invoked_with_shell_true_and_user_derived_input`: subprocess called with shell=True and a command string that includes user-controlled data.
+- `subprocess_pipe_without_communicate_for_large_output`: subprocess.Popen with PIPE but .communicate() not called, risking deadlock on large output.
+- `toml_or_ini_config_file_parsed_on_request_path`: TOML, INI, or YAML config file parsed inside a request handler on every request.
+- `unbounded_list_accumulation_inside_long_running_function`: List grows unboundedly inside a long-running function or loop without a cap or periodic flush.
+- `unclosed_tempfile_or_tmp_directory_from_tempfile_module`: tempfile.NamedTemporaryFile or TemporaryDirectory created without delete=False or a context manager.
+- `weak_random_function_used_for_security_token_generation`: random.random or random.choice used to generate a security token, CSRF value, or password reset token.
+- `weakref_dereferenced_without_live_check`: weakref.ref() called and result used without checking for None, potential AttributeError.
+- `xml_parsing_with_external_dtd_or_entity_processing_enabled`: XML parsed with a parser that processes external DTDs or entities, enabling XXE attacks.
+- `yaml_config_loaded_without_safe_loader`: YAML configuration file loaded with yaml.load instead of yaml.safe_load or yaml.load + Loader=SafeLoader.
+
+#### Discipline (52)
+- `assert_used_for_runtime_input_validation_in_production`: assert statement used to validate user-provided input or production logic, which is stripped by -O.
+- `bare_except_clause_catches_system_exit`: Bare `except:` or `except BaseException` catches SystemExit and KeyboardInterrupt unintentionally.
+- `callable_annotation_without_parameter_types`: Callable annotation used without explicit parameter types, losing type information downstream.
+- `cast_applied_without_preceding_type_narrowing_guard`: typing.cast applied to a value without a preceding isinstance or type narrowing check.
+- `contextlib_suppress_applied_with_exception_base_class`: contextlib.suppress used with Exception or BaseException, silently swallowing unexpected errors.
+- `custom_exception_encodes_identity_as_string_code_attribute`: Custom exception stores its error identity as a plain string code attribute instead of sub-classing.
+- `deeply_nested_try_except_beyond_two_levels`: try/except blocks nested more than two levels deep, obscuring error propagation.
+- `error_message_embeds_sensitive_data`: Exception message or error response string interpolated with credentials, keys, or PII.
+- `exception_handler_branches_on_error_message_string`: Exception handler inspects str(e) or e.message in a condition instead of matching on exception type.
+- `exception_handler_returns_default_without_any_logging`: Broad except block returns a default value without logging the caught exception.
+- `exception_logged_and_then_re_raised_redundantly`: Exception logged at ERROR level and then re-raised, producing duplicate error log entries.
+- `exception_raised_and_caught_for_control_flow_within_same_function`: Exception raised and immediately caught within the same function as an alternative to a conditional return.
+- `exception_raised_without_chaining_original_cause`: New exception raised inside except block without `from e`, discarding the original cause.
+- `exception_silenced_in_cleanup_or_finally_block`: Exception or return statement inside a finally block silences an in-flight exception from the try body.
+- `generator_close_exception_not_handled_when_cleanup_required`: Generator or context manager performs resource acquisition in a finally block without a try/finally guard.
+- `generic_class_used_without_type_parameter_application`: Generic class subclassed or instantiated without supplying the required type parameters.
+- `integration_test_writes_state_without_cleanup`: Integration test creates database rows or files without a teardown or transactional rollback.
+- `mock_return_value_is_incompatible_type_with_real_signature`: Mock return value set to a type that is incompatible with the real object's declared return type.
+- `namedtuple_used_where_dataclass_better_fits`: collections.namedtuple used for a record that needs default values, mutation, or methods.
+- `optional_parameter_used_without_none_guard`: Optional[T] parameter accessed via attribute or subscript without a preceding None guard.
+- `oserror_caught_without_errno_inspection`: OSError caught as a broad class without inspecting errno to distinguish ENOENT, EACCES, and others.
+- `overloaded_dispatch_without_typing_overload_decorator`: Function branches on isinstance to dispatch overloads but does not use @typing.overload decorators.
+- `project_exception_class_not_inheriting_shared_base`: Custom exception class defined without inheriting from the project-wide base exception class.
+- `protocol_method_lacks_type_annotations`: Method in a Protocol class body lacks parameter or return type annotations.
+- `protocol_used_in_isinstance_without_runtime_checkable`: typing.Protocol used in isinstance() call without @runtime_checkable decorator.
+- `public_function_return_type_annotated_as_union_of_many_unrelated_types`: Public function return annotation is Union of four or more unrelated types, indicating mixed concerns.
+- `pytest_parametrize_with_single_test_case`: @pytest.mark.parametrize applied with only one parameter set; use a plain test function instead.
+- `pytest_raises_without_match_parameter_on_broad_exception`: pytest.raises used with a broad exception type without a match= pattern to verify the message.
+- `retry_loop_catches_broad_base_exception`: Retry loop catches Exception or BaseException instead of the specific transient errors that warrant a retry.
+- `string_forward_reference_in_annotation_not_under_type_checking_guard`: String forward reference annotation not placed under `if TYPE_CHECKING:`, causing import at runtime.
+- `test_asserts_private_attribute_value_instead_of_behavior`: Test asserts the value of a private attribute (_name) instead of observable public behavior.
+- `test_calls_time_sleep_for_coordination`: Test calls time.sleep to coordinate with async or threaded code instead of events or monkeypatching.
+- `test_compares_float_with_equality_operator`: Test uses == to compare floating-point values instead of pytest.approx or math.isclose.
+- `test_depends_on_sibling_test_side_effects`: Test function depends on state left behind by a sibling test in the same module.
+- `test_fixture_calls_datetime_now_without_freezing`: Test fixture or test body calls datetime.now() or datetime.today() without freezegun or similar.
+- `test_function_covers_multiple_unrelated_scenarios`: Integration or unit test body covers multiple unrelated scenarios without parameterization.
+- `test_function_stacks_too_many_mock_patch_decorators`: Test function has five or more @mock.patch decorators, indicating over-specified mocking.
+- `test_imports_private_production_module`: Test file imports a private production module (._module) instead of going through the public API.
+- `test_loads_real_application_config_or_secrets`: Test reads real application config files or environment secrets rather than injecting test doubles.
+- `test_makes_real_outbound_http_call_without_mock_or_vcr`: Test makes a real outbound HTTP request without mocking or a VCR cassette.
+- `test_mutates_module_global_without_restore`: Test mutates a module-level global variable without restoring it in teardown, leaking state.
+- `test_re_implements_production_validation_logic`: Test contains a hard-coded reimplementation of production validation logic instead of invoking it.
+- `test_skipped_with_no_reason_string`: @pytest.mark.skip used without a reason= string explaining why the test is disabled.
+- `test_wraps_sut_in_try_except_hiding_exception_detail`: Test wraps the system-under-test call in try/except, hiding the raised exception from pytest output.
+- `transaction_block_missing_rollback_on_exception`: Database transaction started manually without a corresponding rollback in an except or finally clause.
+- `type_alias_shadows_builtin_name`: Type alias variable assigned a name that shadows a Python builtin such as list, dict, or type.
+- `typed_dict_key_access_without_get_or_guard`: TypedDict with total=False has a key accessed via direct subscript without .get() or a guard.
+- `typed_dict_total_false_without_docstring_noting_optional_keys`: TypedDict(total=False) class has no docstring indicating which keys are optional.
+- `typevar_defined_without_bound_or_constraints_for_narrow_use`: TypeVar defined without a bound or constraints for a generic that is only used with one or two concrete types.
+- `unittest_test_class_duplicates_setup_without_base_class`: Multiple unittest.TestCase subclasses in the same file duplicate setUp logic without extracting a base class.
+- `validation_or_parse_error_mapped_to_500_status`: ValueError or ValidationError caught and mapped to HTTP 500 instead of a 4xx client-error status.
+- `warning_issued_instead_of_exception_for_invalid_state`: warnings.warn() issued for an invalid state that should raise an exception instead.
 
 #### Duplication (8)
 - `cross_file_copy_paste_function`: Highly similar non-test function bodies repeated across multiple Python files.
@@ -932,6 +1068,57 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `training_loop_without_zero_grad`: optimizer.step() appears without an obvious zero_grad() reset.
 - `vector_store_client_created_per_request`: Vector-store clients created on request paths instead of reused application state.
 - `wandb_mlflow_log_in_tight_loop`: wandb or mlflow metrics are logged in inner loops instead of batched or reported at coarser boundaries.
+
+#### Observability (49)
+- `alert_or_slo_threshold_hardcoded_inside_application_logic`: SLO error rate or latency threshold hardcoded in application code instead of external configuration.
+- `api_endpoint_returns_json_without_documented_response_schema`: API endpoint returns JSON without a Pydantic response_model or documented response schema.
+- `api_versioning_in_url_without_matching_router_group`: URL path contains a version segment (/v1/) without a corresponding versioned router or blueprint.
+- `binary_or_multipart_response_missing_explicit_content_type`: Binary or streaming response returned without an explicit Content-Type header.
+- `bulk_endpoint_partial_failure_contract_ambiguous`: Bulk endpoint processes items in a loop without a documented all-or-nothing or partial-failure contract.
+- `chain_of_boolean_or_conditions_over_same_value_not_using_in_operator`: Three or more `x == 'a' or x == 'b' or ...` conditions chained; use `x in {'a', 'b', ...}`.
+- `counter_most_common_all_items_retrieved_for_top_one`: Counter.most_common() called without an argument and subscripted with [0]; pass n=1 or use max().
+- `cursor_based_pagination_missing_stable_sort_tiebreaker`: Cursor-based pagination implemented without a stable unique sort key tiebreaker.
+- `defaultdict_created_with_lambda_instead_of_builtin_factory`: defaultdict(lambda: []) or similar lambda factory; use defaultdict(list) or defaultdict(int).
+- `distributed_trace_span_created_without_parent_context_propagation`: OpenTelemetry or custom trace span created without extracting the parent context from the incoming request.
+- `dynamic_plugin_loaded_from_config_without_registry_allowlist`: Plugin loaded via importlib.import_module from config without validating against an allowlist.
+- `exception_swallowed_before_sentry_or_error_tracker_capture`: Exception re-wrapped before capture_exception, causing Sentry or similar to lose the original traceback.
+- `f_string_evaluated_eagerly_inside_logging_call`: f-string passed directly to logger.debug/info/warning, eagerly evaluating even when the level is disabled.
+- `filter_and_map_results_materialized_to_list_at_each_step`: list(filter(...)) followed by list(map(...)), materializing intermediate collections; use a generator pipeline.
+- `frozenset_not_used_for_constant_membership_set_rebuilt_per_call`: Constant set literal rebuilt on every function call; hoist as frozenset at module scope.
+- `health_check_handler_queries_slow_database_table`: Health-check endpoint executes a full ORM query instead of a lightweight SELECT 1 probe.
+- `high_frequency_code_path_logs_without_sampling_or_rate_limit`: logger.info or logger.debug called inside a loop without a sampling guard, risking log flood.
+- `importlib_import_module_called_inside_request_handler`: importlib.import_module called inside a request handler instead of at application startup.
+- `importlib_metadata_version_queried_inside_request_loop`: importlib.metadata.version() called inside a request handler; cache the result at startup.
+- `init_file_re_exports_private_module_symbols`: __init__.py re-exports a symbol with a leading underscore, leaking private implementation details.
+- `large_response_body_fully_buffered_in_memory_before_send`: Large response body buffered completely in memory before writing; use StreamingResponse.
+- `linear_membership_test_in_loop_over_large_static_list`: Membership test `in list` used inside a loop; convert to a set for O(1) lookup.
+- `list_pop_zero_used_as_queue_operation`: list.pop(0) or list.insert(0, ...) used as a FIFO queue; use collections.deque.popleft().
+- `logger_error_inside_except_without_exc_info`: logger.error or logger.critical called inside an except block without exc_info=True, discarding the stack trace.
+- `logging_basic_config_called_from_library_package`: Library module calls logging.basicConfig or addHandler at import time, overriding application log config.
+- `logging_call_inside_signal_handler_function`: logging call inside a signal handler; logging uses locks and is not async-signal-safe.
+- `logging_set_level_hardcoded_at_module_scope`: logger.setLevel(logging.DEBUG) or similar hardcoded at module scope instead of via application config.
+- `manual_dict_increment_instead_of_counter_or_defaultdict`: Frequency counter maintained with manual if-key-in-dict increment; use collections.Counter.
+- `module_level_side_effect_outside_main_guard`: Module-level side effect such as signal.signal or threading.Thread outside an if __name__ guard.
+- `namedtuple_fields_accessed_by_integer_index`: namedtuple fields accessed by integer index instead of by named attribute.
+- `observability_metric_names_use_inconsistent_separators`: Metric names in the same codebase mix dot and underscore separators.
+- `opentelemetry_span_attribute_attaches_pii_fields`: OpenTelemetry span attribute set to a key that likely carries PII such as email, phone, or IP address.
+- `optional_library_import_checked_on_hot_code_path`: Optional-dependency import guarded by try/except ImportError checked on every request.
+- `ordered_dict_used_in_python_37_plus_where_dict_suffices`: OrderedDict used in Python 3.7+ code where a plain dict preserves insertion order.
+- `pkg_resources_used_for_runtime_version_lookup`: pkg_resources.get_distribution used at runtime; use importlib.metadata.version() instead.
+- `prometheus_or_statsd_metric_emitted_inside_db_result_loop`: Prometheus counter or statsd metric emitted on every DB row in a result loop instead of once after.
+- `public_package_missing_all_list`: Non-trivial package __init__.py defines public symbols without an __all__ list.
+- `pydantic_validation_error_detail_forwarded_with_internal_field_aliases`: Raw Pydantic .errors() detail forwarded to the API client, potentially exposing internal field aliases.
+- `rate_limit_429_response_missing_retry_after_header_or_stable_body`: HTTP 429 response returned without a Retry-After header or stable body field.
+- `relative_import_crossing_sibling_package_boundary`: Relative import uses three or more dots, crossing into a sibling package boundary.
+- `repeated_key_hash_via_dict_lookup_in_tight_loop`: Same dict key looked up repeatedly inside a loop; cache the value in a local variable.
+- `response_envelope_shape_inconsistent_across_siblings_in_same_router`: Response envelope shape inconsistent across sibling endpoints in the same router file.
+- `sorted_full_collection_to_extract_top_n_elements`: sorted() called on a full collection just to slice the first N elements; use heapq.nsmallest/nlargest.
+- `sorted_list_maintained_with_insert_instead_of_bisect_insort`: Sorted list maintained by appending then calling .sort(); use bisect.insort() instead.
+- `star_import_used_in_non_init_production_module`: Star import (from x import *) used in a production module other than __init__.py.
+- `state_changing_endpoint_returns_200_with_empty_body`: State-changing POST/PUT endpoint returns HTTP 200 with an empty body; prefer 201/202/204.
+- `structured_log_record_missing_trace_or_correlation_id`: Structured log record in a request handler lacks trace_id or request_id for distributed tracing.
+- `test_support_helpers_located_inside_production_package`: Test helper or factory file with _test_helpers.py or _factories.py suffix is inside the production package.
+- `zip_range_len_used_instead_of_enumerate`: zip(range(len(x)), x) pattern used; replace with enumerate(x).
 
 #### Packaging (4)
 - `cross_package_internal_import`: Local Python packages reaching into another package's internal or private modules.

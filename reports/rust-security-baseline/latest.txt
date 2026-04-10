@@ -62,6 +62,8 @@ src/heuristics/go/performance_extra.rs:1246:    let rest = &text[start + 1..];
 src/heuristics/go/performance_extra.rs:1250:    rest[..end].len() == 1
 src/heuristics/go/performance_extra.rs:1257:    let rest = &text[start + 1..];
 src/heuristics/go/performance_extra.rs:1261:    rest[..end].len() == 1
+src/heuristics/python/boundaries.rs:976:            let snippet = &body[pos..pos.min(pos + 150)];
+src/heuristics/python/discipline.rs:265:            let snippet = &body[pos..pos.min(pos + 120)];
 src/heuristics/python/framework/django.rs:224:            let rhs = &trimmed[eq_idx + 3..];
 src/heuristics/python/framework/django.rs:226:                let var = trimmed[..eq_idx].trim().to_string();
 src/heuristics/python/hotpath_ext.rs:418:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
@@ -116,6 +118,7 @@ src/heuristics/rust/boundary.rs:209: check-then-open candidate after line 203:  
 
 ## secret_comparisons
 src/analysis/rust/parser/tests.rs:90:            .any(|name| name == "password")
+src/heuristics/python/boundaries.rs:495:        if SECRET_NAMES.iter().any(|k| name_lower == *k) {
 src/heuristics/rust/mod.rs:265:        .any(|token| normalized == *token || normalized.contains(token))
 src/rules/catalog/go/security.rs:631:        description: "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
 tests/integration_scan/security.rs:29:            .any(|finding| finding.rule_id == "hardcoded_secret")

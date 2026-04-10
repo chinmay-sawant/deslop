@@ -1,0 +1,36 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Triggers: f_string_evaluated_eagerly_inside_logging_call
+def process_batch(items):
+    logger.debug(f"Processing {len(items)} items")
+    for item in items:
+        pass
+
+
+# Triggers: logger_error_inside_except_without_exc_info
+def fetch_data(url):
+    try:
+        return requests.get(url).json()
+    except Exception as e:
+        logger.error("Failed to fetch: %s", e)
+        return {}
+
+
+# Triggers: sorted_full_collection_to_extract_top_n_elements
+def get_best_item(scores):
+    ranked = sorted(scores, reverse=True)
+    return ranked[0]
+
+
+# Triggers: linear_membership_test_in_loop_over_large_static_list
+def filter_blocked(users, blocked_ids):
+    return [u for u in users if u.id not in blocked_ids]
+
+
+# Triggers: zip_range_len_used_instead_of_enumerate
+# Detector looks for zip(range(len(
+def print_items(items):
+    for i, x in zip(range(len(items)), items):
+        print(i, x)

@@ -1,0 +1,34 @@
+import asyncio
+from typing import Optional
+
+
+# Clean service function — uses domain types, not HTTP objects
+def process_order(order_id: int, user_id: int, item_ids: list[int]) -> dict:
+    return {"status": "accepted", "order_id": order_id}
+
+
+# Clean async — awaits the coroutine explicitly
+async def start_background() -> None:
+    task = asyncio.create_task(fetch_data())
+    await task
+
+
+# Clean poll — uses asyncio.sleep with real interval, not 0
+async def poll_queue(queue: asyncio.Queue) -> object:
+    while True:
+        if not queue.empty():
+            return await queue.get()
+        await asyncio.sleep(0.05)
+
+
+# Clean lock usage — uses asyncio.Lock, not threading.Lock
+async def update_counter(lock: asyncio.Lock, counter: dict) -> dict:
+    async with lock:
+        counter["n"] += 1
+    return counter
+
+
+# Clean nesting — awaits coroutine normally
+async def clean_await() -> object:
+    result = await some_coroutine()
+    return result
