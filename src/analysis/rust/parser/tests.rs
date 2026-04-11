@@ -154,6 +154,24 @@ fn test_collects_advanceplan2_rust_summaries() {
     assert!(parsed.rust_statics()[0].type_text.contains("OnceLock"));
 }
 
+#[test]
+fn test_collects_include_declarations() {
+    let source = load_fixture("rust/parser/include_declarations.txt");
+
+    let parsed = parse_file(Path::new("src/architecture.rs"), &source)
+        .expect("rust source should parse successfully");
+
+    let include_paths = parsed
+        .rust_include_declarations()
+        .iter()
+        .map(|declaration| declaration.path.as_str())
+        .collect::<Vec<_>>();
+    assert_eq!(
+        include_paths,
+        vec!["architecture/file_rules.rs", "architecture/helpers.rs"]
+    );
+}
+
 proptest! {
     #[test]
     fn parses_valid_function_names(name in "[a-z][a-z0-9_]{0,12}") {

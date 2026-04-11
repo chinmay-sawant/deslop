@@ -1,5 +1,6 @@
 mod attributes;
 mod enums;
+mod includes;
 mod modules;
 mod pkg_strings;
 mod statics;
@@ -30,6 +31,13 @@ pub(super) fn collect_module_declarations(
     source: &str,
 ) -> Vec<crate::analysis::RustModuleDeclaration> {
     modules::collect_module_declarations(root, source)
+}
+
+pub(super) fn collect_include_declarations(
+    root: Node<'_>,
+    source: &str,
+) -> Vec<crate::analysis::RustIncludeDeclaration> {
+    includes::collect_include_declarations(root, source)
 }
 
 pub(super) fn collect_pkg_strings(

@@ -37,8 +37,8 @@ pub(crate) use types::{
 // Rust-specific evidence types
 pub(crate) use types::{
     FieldSummary, MacroCall, RuntimeCall, RustAttributeSummary, RustEnumSummary, RustFileData,
-    RustFunctionEvidence, RustModuleDeclaration, RustStaticSummary, StructSummary, UnsafePattern,
-    UnsafePatternKind,
+    RustFunctionEvidence, RustIncludeDeclaration, RustModuleDeclaration, RustStaticSummary,
+    StructSummary, UnsafePattern, UnsafePatternKind,
 };
 
 pub(crate) fn parse_source_file(path: &Path, source: &str) -> crate::Result<ParsedFile> {

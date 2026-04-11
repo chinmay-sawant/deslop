@@ -98,6 +98,12 @@ pub(crate) struct RustModuleDeclaration {
 }
 
 #[derive(Debug, Clone)]
+pub(crate) struct RustIncludeDeclaration {
+    pub line: usize,
+    pub path: String,
+}
+
+#[derive(Debug, Clone)]
 pub(crate) struct RustEnumSummary {
     pub line: usize,
     pub name: String,

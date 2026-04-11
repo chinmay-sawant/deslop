@@ -36,6 +36,13 @@ pub(crate) fn package_for_rust_file<'a>(
     package_for_file(index, Language::Rust, file_path, package_name)
 }
 
+pub(crate) fn rust_file_uses_textual_includes(index: &RepositoryIndex, file_path: &Path) -> bool {
+    index
+        .rust_include_neighbors
+        .get(file_path)
+        .is_some_and(|linked_files| !linked_files.is_empty())
+}
+
 pub(crate) fn resolve_import_path<'a>(
     index: &'a RepositoryIndex,
     language: Language,

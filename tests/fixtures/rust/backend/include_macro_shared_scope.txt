@@ -1,0 +1,22 @@
+-- path: /repo/src/lib.rs
+mod framework;
+mod architecture;
+-- path: /repo/src/framework.rs
+pub fn has_import_path() {}
+-- path: /repo/src/architecture.rs
+use crate::framework::has_import_path;
+
+include!("architecture/helpers.rs");
+include!("architecture/rules.rs");
+
+pub fn run() {
+    shared_helper();
+    has_import_path();
+}
+-- path: /repo/src/architecture/helpers.rs
+fn shared_helper() {}
+-- path: /repo/src/architecture/rules.rs
+pub fn evaluate() {
+    shared_helper();
+    has_import_path();
+}
