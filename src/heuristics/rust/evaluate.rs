@@ -18,7 +18,7 @@ use super::{
     module_surface_file_findings, performance_file_findings, performance_function_findings,
     runtime_file_findings, runtime_function_findings, runtime_ownership_function_findings,
     security_footguns_file_findings, security_footguns_function_findings,
-    unsafe_soundness_findings,
+    unsafe_soundness_findings, v03_bad_practices,
 };
 
 pub(crate) const BINDING_LOCATION: &str = file!();
@@ -187,6 +187,24 @@ pub(crate) fn rust_unsafe_soundness_findings(
     function: &ParsedFunction,
 ) -> Vec<Finding> {
     unsafe_soundness_findings(file, function)
+}
+
+pub(crate) fn rust_v03_bad_practices_file_findings(file: &ParsedFile) -> Vec<Finding> {
+    v03_bad_practices::v03_bad_practices_file_findings(file)
+}
+
+pub(crate) fn rust_v03_bad_practices_function_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    v03_bad_practices::v03_bad_practices_function_findings(file, function)
+}
+
+pub(crate) fn rust_v03_bad_practices_indexed_file_findings(
+    file: &ParsedFile,
+    index: &RepositoryIndex,
+) -> Vec<Finding> {
+    v03_bad_practices::v03_bad_practices_indexed_file_findings(file, index)
 }
 
 pub(crate) fn rust_import_resolution_findings(

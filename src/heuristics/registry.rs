@@ -26,6 +26,8 @@ use super::rust::{
     rust_performance_file_findings, rust_performance_function_findings, rust_runtime_file_findings,
     rust_runtime_function_findings, rust_runtime_ownership_function_findings,
     rust_security_file_findings, rust_security_function_findings, rust_unsafe_soundness_findings,
+    rust_v03_bad_practices_file_findings, rust_v03_bad_practices_function_findings,
+    rust_v03_bad_practices_indexed_file_findings,
 };
 use super::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};
 use super::test_quality::test_findings;
@@ -439,6 +441,19 @@ const RUST_RULE_SPECS: &[RuleExecutionSpec] = &[
         indexed_file_rules: &[rust_security_file_findings],
         optional_function_rules: &[],
         function_rules: &[rust_security_function_findings],
+        file_function_rules: &[],
+        indexed_function_rules: &[],
+        configurable_function_rules: &[],
+        repo_rules: &[],
+        indexed_repo_rules: &[],
+        configurable_enabled: always_disabled,
+    },
+    RuleExecutionSpec {
+        family: "v0_3_bad_practices",
+        file_rules: &[rust_v03_bad_practices_file_findings],
+        indexed_file_rules: &[rust_v03_bad_practices_indexed_file_findings],
+        optional_function_rules: &[],
+        function_rules: &[rust_v03_bad_practices_function_findings],
         file_function_rules: &[],
         indexed_function_rules: &[],
         configurable_function_rules: &[],

@@ -1,0 +1,9 @@
+pub fn summarize(values: &[i32]) -> i32 {
+    values.iter().copied().sum()
+}
+
+pub fn normalize(name: &str) -> String {
+    let mut output = String::with_capacity(name.len());
+    output.push_str(name.trim());
+    output
+}
