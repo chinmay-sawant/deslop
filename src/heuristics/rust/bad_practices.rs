@@ -14,7 +14,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_parser_created_per_file_without_reuse",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -23,12 +23,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `tree_sitter::Parser::new()` construction inside per-file or per-function loops where a language-specific parser could be reused per worker.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_set_language_repeated_inside_hot_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -37,12 +37,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated `parser.set_language(...)` calls inside loops that parse the same language repeatedly.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_language_conversion_inside_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -51,12 +51,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated `tree_sitter_rust::LANGUAGE.into()` or equivalent grammar conversion in inner loops instead of caching the converted language.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_query_compiled_per_call",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -65,12 +65,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `tree_sitter::Query::new(...)` inside functions called per file or per node, where query compilation should be cached.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_parse_result_unwrapped",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -79,12 +79,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `parser.parse(...).unwrap ()` or `expect (...)` at parser boundaries where parse cancellation or invalid parser state should become a typed finding/error.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_error_tree_ignored",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -93,12 +93,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag parser pipelines that use the root node without checking `tree.root_node().has_error()` or equivalent syntax-error evidence.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_recursive_walk_without_depth_guard",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -107,12 +107,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag recursive AST walkers over repository input without an explicit depth guard, iterative cursor, or stack budget.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_node_text_redecoded_in_nested_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -121,12 +121,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated `node.utf8_text(source)` or source slicing for the same node inside nested traversal loops.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_child_lookup_by_field_name_in_hot_walk",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -135,12 +135,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated `child_by_field_name(\"...\")` string lookups in hot recursive walkers where field ids, cursors, or one-pass extraction would avoid repeated lookup work.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_descendant_for_point_range_in_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -149,12 +149,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated descendant/range queries inside loops over sibling nodes, which can turn a tree walk into avoidable quadratic traversal.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_collects_all_captures_before_filtering",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -163,12 +163,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag query capture pipelines that collect every capture into `Vec` and then filter locally instead of filtering as captures are visited.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_byte_offset_used_as_char_index",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -177,12 +177,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag byte offsets from `start_byte` or `end_byte` used as character counts, `chars().nth(...)`, or display-column positions without conversion.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_old_tree_discarded_in_reparse_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -191,12 +191,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated parse loops over the same buffer that always pass `None` instead of reusing an old tree for incremental parsing.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tree_sitter_parser_shared_global_with_lock",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -205,12 +205,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag global `Mutex<Parser>` or `RwLock<Parser>` shared across threads where per-thread parser ownership would avoid lock contention and parser state coupling.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_nested_parallel_iterators",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -219,12 +219,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag nested `par_iter`, `into_par_iter`, or `par_bridge` calls that can oversubscribe worker threads or fragment work.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_mutex_push_in_parallel_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -233,12 +233,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `Mutex<Vec<_>>`, `RwLock<Vec<_>>`, or shared collection mutation inside `for_each` where `map/filter_map/collect/reduce` would avoid lock contention.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_collect_all_then_filter_sequentially",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -247,12 +247,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `par_iter().map(...).collect::<Vec<_>>()` immediately followed by sequential filtering or flattening that could stay in the parallel pipeline.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_sequential_collect_then_par_iter",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -261,12 +261,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag collecting an intermediate `Vec` only to immediately call `par_iter` or `into_par_iter` when the producer could feed the parallel stage directly.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_par_bridge_on_small_or_indexed_iterator",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -275,12 +275,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `par_bridge()` over known indexed collections or tiny iterators where normal `par_iter` or sequential iteration is likely cheaper.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_blocking_io_in_cpu_parallel_pool",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -289,12 +289,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag filesystem, network, or process I/O inside Rayon CPU-bound closures unless the project documents that Rayon owns the I/O concurrency budget.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_heavy_clone_per_item",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -303,12 +303,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated `.clone()` of config, source text, rule catalogs, AST summaries, or large state inside parallel closures.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_large_move_capture",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -317,12 +317,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `move` closures in parallel iterators that capture large owned values rather than borrowing or sharing cheap handles.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_ordering_mutex_for_result_stability",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -331,12 +331,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag parallel closures that serialize through `Mutex<BTreeMap<_>>`, `Mutex<Vec<_>>`, or sequence counters just to regain output order.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_global_pool_built_by_library_code",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -345,12 +345,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `ThreadPoolBuilder::build_global()` outside a binary entry point, test harness, or explicit process bootstrap.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_custom_pool_created_per_call",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -359,12 +359,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `ThreadPoolBuilder::build()` inside frequently-called functions instead of process-level or subsystem-level pool ownership.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_unhandled_panic_in_parallel_scan",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -373,12 +373,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `unwrap`, `expect`, or panicking conversions inside parallel scan/evaluation closures where one bad file can abort the whole batch.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_flat_map_allocates_nested_vectors",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -387,12 +387,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag parallel map stages that return `Vec<Vec<T>>` and later flatten, where `flat_map_iter`, `reduce`, or direct collection can reduce allocation churn.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rayon_parallelism_for_trivial_per_item_work",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -401,12 +401,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag parallel iteration over simple string predicates or metadata checks when there is no expensive per-item work and the input is below a conservative threshold.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_walker_disables_standard_filters_without_policy",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -415,12 +415,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `.ignore(false)`, `.git_ignore(false)`, `.git_exclude(false)`, `.hidden(false)`, or `.parents(false)` unless paired with a named user option or security review note.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_follow_links_without_cycle_or_root_policy",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -429,12 +429,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `.follow_links(true)` without visible cycle, root containment, or same-filesystem policy.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_walk_error_silently_discarded",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -443,12 +443,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag walk result handling that uses `filter_map(Result::ok)` or `ok()?` without recording ignored traversal errors.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_direntry_unwrapped",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -457,12 +457,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `entry.unwrap ()` or `expect (...)` on walker entries in production scan code.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_reads_file_before_file_type_check",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -471,12 +471,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag read/open operations on walker paths before checking `file_type().is_file()` or equivalent.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_walker_rebuilt_inside_directory_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -485,12 +485,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `WalkBuilder::new(...)` construction inside recursive or per-directory loops.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_override_pattern_unwraps_user_input",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -499,12 +499,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `OverrideBuilder::add(...)` or glob override construction from user input followed by `unwrap` or `expect`.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_parallel_walker_unbounded_accumulation",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -513,12 +513,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag parallel walker callbacks that push every path into an unbounded `Vec` or channel before processing.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_filter_entry_allocates_path_string_per_node",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -527,12 +527,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `filter_entry` closures that allocate `String` or call `to_string_lossy()` for every node when path component checks would work.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ignore_sort_by_path_after_full_walk",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -541,12 +541,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag full repository path collection followed by sort before processing where deterministic output could be produced after finding collection instead.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_json_value_internal_hot_path",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -555,12 +555,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `serde_json::Value` used as an internal data model in non-boundary modules where typed structs would reduce dynamic lookups and runtime errors.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_json_indexing_without_type_guard",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -569,12 +569,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `value[\"key\"]`, `value[index]`, or chained indexing without typed deserialization, `.get(...)`, or null/type checks.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_json_to_string_pretty_in_machine_path",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -583,12 +583,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `serde_json::to_string_pretty` in non-human-output hot paths, APIs, or report generation loops.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_json_clone_value_in_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -597,12 +597,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `serde_json::Value::clone()` or cloned JSON maps inside loops.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_json_from_str_after_unbounded_read",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -611,12 +611,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `serde_json::from_str` or `from_slice` fed by unbounded file/network reads rather than size-limited input.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_json_roundtrip_conversion",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -625,12 +625,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `to_value` followed by `from_value`, or `to_string` followed by `from_str`, when a direct conversion or typed boundary is available.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_json_whole_array_loaded_for_streaming_input",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -639,12 +639,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag deserializing large JSON arrays into `Vec<T>` in reader-like code where streaming deserialization could reduce peak memory.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_custom_deserialize_panics",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -653,12 +653,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag custom `Deserialize` impls or visitors that call `unwrap`, `expect`, `panic`, or unchecked indexing.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_borrow_missing_for_large_readonly_payload",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -667,12 +667,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag large readonly payload structs that deserialize owned `String` or `Vec<u8>` in hot paths where `Cow<'de, str>` or borrowed fields could avoid copies.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_skip_serializing_secret_without_deserialize_guard",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -681,12 +681,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag secret-like fields skipped during serialization but still accepted during deserialization without validation/redaction policy.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_wire_enum_missing_stable_rename_policy",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -695,12 +695,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag public wire-facing enums that derive `Serialize` or `Deserialize` without `rename_all` or explicit renames.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_toml_value_config_boundary",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -709,12 +709,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag application config parsed into `toml::Value` and queried dynamically instead of deserializing into a typed config struct.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_toml_parse_in_hot_path",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -723,12 +723,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `toml::from_str`, `toml::from_slice`, or `str::parse::<toml::Value>()` inside request paths, scan loops, or repeated functions.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_toml_config_without_unknown_field_rejection",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -737,12 +737,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag TOML-facing config structs that derive `Deserialize` without `#[serde(deny_unknown_fields)]` when they appear to represent project configuration.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_toml_manifest_parse_without_size_limit",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -751,12 +751,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag manifest/config parsing helpers that read and parse TOML without a byte limit.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_serde_default_masks_parse_error",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -765,12 +765,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag broad `unwrap_or_default`, `Default::default`, or `#[serde(default)]` use around configuration fields that look required for correctness.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_anyhow_context_missing_on_boundary_io",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -779,12 +779,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `?` on filesystem, environment, process, parser, config, or network calls in CLI/boundary code without `.context(...)` or `.with_context(...)`.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_anyhow_eager_format_context",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -793,12 +793,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `.context(format!(...))` where `.with_context(|| format!(...))` would avoid allocation on the success path.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_anyhow_error_string_matching",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -807,12 +807,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag branching on `err.to_string()`, `format!(\"{err}\")`, or message substrings instead of typed errors or downcasts.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_anyhow_downcast_without_fallback_context",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -821,12 +821,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `downcast_ref`/`downcast` handling that drops the original context or returns a generic fallback.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_anyhow_bail_in_low_level_library_module",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -835,12 +835,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `anyhow::bail!` in domain, parser, storage, or library modules that should usually expose typed error variants.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_thiserror_variant_wraps_source_without_source_attr",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -849,12 +849,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag error variants with source-like fields that lack `#[source]`, `#[from]`, or transparent wrapping.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_thiserror_display_leaks_secret_field",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -863,12 +863,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_thiserror_stringly_typed_variant",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -877,12 +877,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag error enum variants whose only payload is `String` or `&'static str` and whose name does not encode a specific error kind.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_thiserror_transparent_on_contextual_variant",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -891,12 +891,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `#[error(transparent)]` variants that also carry context-like fields or lose higher-level operation details.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_error_logged_and_returned",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -905,12 +905,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag functions that log an error and then return the same error upward, causing duplicate logging at callers.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_result_ignored_with_let_underscore",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -919,12 +919,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `let _ = fallible_call()` outside cleanup, telemetry, or best-effort contexts.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_question_mark_after_partial_side_effect_without_cleanup",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -933,12 +933,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `?` after partially mutating files, shared state, transactions, or output buffers without rollback or cleanup.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_closed_set_manual_string_match",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -947,12 +947,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag CLI string arguments that are manually matched against a fixed set instead of using `ValueEnum` or `value_parser`.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_path_arg_used_without_validation",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -961,12 +961,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `PathBuf` or path-like CLI values used for reads/writes without root containment, canonicalization strategy, or symlink policy.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_default_value_manual_parse",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -975,12 +975,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `default_value` strings that are parsed manually later instead of typed `value_parser` or typed fields.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_unbounded_vec_arg_on_scan_path",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -989,12 +989,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `Vec<String>` or variadic CLI arguments that feed scan/filter work without a limit, deduplication, or validation.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_secret_arg_derive_debug",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1003,12 +1003,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag CLI structs deriving `Debug` while containing token, password, secret, key, cookie, or auth fields.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_opposing_flags_without_conflicts",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1017,12 +1017,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag pairs such as `--json/--text`, `--include/--exclude`, or `--enable/--disable` without `conflicts_with`, `overrides_with`, or explicit precedence.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_rule_id_arg_without_catalog_validation",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1031,12 +1031,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag rule-id-like CLI arguments accepted as strings without checking against the known rule registry.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_subcommand_reloads_config_in_each_branch",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1045,12 +1045,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated config loading inside every subcommand branch instead of a shared pre-dispatch normalization step.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_parse_called_below_main",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1059,12 +1059,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `Cli::parse()` or `try_parse()` called from library code or tests without dependency injection, making the code hard to reuse and test.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clap_env_var_without_redaction_policy",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1073,12 +1073,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libc_call_without_platform_cfg",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1087,12 +1087,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libc_return_value_not_checked",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1101,12 +1101,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag libc calls whose integer or pointer return value is ignored or not checked for `-1`, null, or documented failure sentinels.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libc_errno_read_after_intervening_call",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1115,12 +1115,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag errno access after another call that could overwrite the original failure cause.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libc_raw_fd_lifetime_escape",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1129,12 +1129,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `as_raw_fd()` results stored, returned, or moved into long-lived structs while the owning file/socket may drop.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libc_into_raw_fd_without_reclaim",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1143,12 +1143,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `into_raw_fd()` without a visible `from_raw_fd`, `OwnedFd`, or close handoff.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libc_cstring_unwrap_on_external_input",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1157,12 +1157,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `CString::new(user_input).unwrap ()` or `expect (...)` where embedded NUL bytes should become a recoverable error.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libc_open_without_cloexec",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1171,12 +1171,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag direct `libc::open` or equivalent without `O_CLOEXEC` in programs that may spawn child processes.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libc_no_follow_without_eloop_handling",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1185,12 +1185,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `O_NOFOLLOW` usage without explicit symlink-loop or unsupported-platform error handling.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ffi_extern_block_without_abi_comment",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1199,12 +1199,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag FFI declarations without a nearby note about ABI, ownership, nullability, or lifetime expectations.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_ffi_slice_from_raw_parts_without_length_guard",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1213,12 +1213,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag safe wrappers around raw pointer and length pairs that do not validate null pointers, maximum length, or alignment before slice construction.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tempfile_named_path_used_after_drop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1227,12 +1227,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `NamedTempFile::path()` stored or returned while the temporary file owner may drop before the path is used.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tempfile_persist_without_cleanup_assertion",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1241,12 +1241,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `persist`, `keep`, or `into_temp_path().keep()` in tests without cleanup or an assertion that the file must survive.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tempfile_predictable_name_in_shared_tmp",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1255,12 +1255,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag tests that combine `std::env::temp_dir()` with predictable filenames instead of `tempfile`.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_tempfile_builder_prefix_from_test_name_only",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1269,12 +1269,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag temporary directories/files that use only a fixed prefix and shared parent for parallel tests without unique isolation.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_proptest_unbounded_string_or_vec_strategy",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1283,12 +1283,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `\".*\"`, `any::<String>()`, or unbounded `vec(...)` strategies in parser/scanner tests without a size cap.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_proptest_assume_filters_most_cases",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1297,12 +1297,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag multiple `prop_assume!` calls or assume-heavy strategies that likely discard most generated cases.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_proptest_strategy_recreates_expensive_fixture",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1311,12 +1311,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag strategies that rebuild repositories, parsers, or large fixtures for each case rather than sharing setup safely.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_proptest_no_regression_case_for_parser_crash",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1325,12 +1325,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag parser property tests without a regression fixture or seed-capture path for minimized failures.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libfuzzer_target_unwraps_parse_or_utf8",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1339,12 +1339,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag fuzz targets that call `unwrap`/`expect` on parser, UTF-8, TOML, JSON, or path conversion results.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_libfuzzer_target_allocates_unbounded_string",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1353,12 +1353,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag fuzz targets that convert arbitrary byte slices to owned strings without a size cap or lossy/borrowed strategy.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_collect_then_single_iteration",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1367,12 +1367,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `.collect::<Vec<_>>()` immediately followed by one `for` loop, `.iter().any`, `.iter().find`, or `.len()` where streaming would avoid allocation.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_vec_push_without_capacity_from_known_bound",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1381,12 +1381,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `Vec::new()` followed by pushes inside a loop over a known bounded iterator without `with_capacity`.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_string_push_without_capacity_from_known_bound",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1395,12 +1395,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `String::new()` plus repeated `push_str`, `push`, or `write!` with a known bound and no capacity reservation.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_format_macro_inside_append_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1409,12 +1409,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `format!` in loops when appending to an existing `String` would avoid temporary allocation.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_to_string_on_str_in_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1423,12 +1423,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `.to_string()` or `String::from(...)` on borrowed strings inside loops where borrowing would satisfy the callee.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_clone_to_satisfy_borrow_in_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1437,12 +1437,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `.clone()` in loops immediately passed by reference or consumed only for read-only access.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_regex_compiled_in_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1451,12 +1451,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `Regex::new(...)` inside loops or hot functions when the `regex` crate is imported.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_sort_then_first_or_last",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1465,12 +1465,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag sorting an entire collection only to take min/max-like first or last values.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_vec_remove_zero_in_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1479,12 +1479,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated `Vec::remove(0)` in loops where `VecDeque` or index traversal would avoid shifting.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_hashmap_contains_then_insert",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1493,12 +1493,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `contains_key` followed by `insert` or `get_mut` where `entry` would avoid duplicate hashing.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_iterator_nth_inside_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1507,12 +1507,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `.nth(i)` or repeated indexed traversal over non-indexed iterators inside loops.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_drain_collect_then_drop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1521,12 +1521,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `drain(..).collect::<Vec<_>>()` followed by drop or one-pass processing that can operate directly on the drain iterator.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_bytes_to_vec_for_readonly_use",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1535,12 +1535,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `.to_vec()` on byte slices that are only read afterward.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_cow_to_owned_without_mutation",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1549,12 +1549,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `Cow::to_mut`, `to_owned`, or `into_owned` where the owned value is never mutated or stored past the borrow lifetime.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_option_clone_then_unwrap_or",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1563,12 +1563,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag cloning `Option<T>` or `Result<T, E>` only to unwrap/default instead of borrowing with `as_ref`, `as_deref`, or `map`.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_large_enum_variant_without_boxing",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1577,12 +1577,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag enums with one much larger variant causing every enum value to carry the largest layout.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_boxed_trait_object_in_inner_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1591,12 +1591,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated `Box<dyn Trait>` allocation inside loops where generics, enum dispatch, or object reuse may be better.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_iterator_chain_allocates_intermediate_strings",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1605,12 +1605,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag iterator chains that map every item through `format!`, `to_string`, or JSON conversion before a simple predicate or grouping.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_read_to_string_for_line_scan",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1619,12 +1619,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag whole-file `read_to_string` or `fs::read_to_string` followed only by line scanning or predicate checks.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_file_open_in_loop_without_buffered_reader",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1633,12 +1633,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag opening and reading files inside loops without `BufReader`, batching, or reuse.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_flush_inside_write_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1647,12 +1647,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `flush()` inside per-item write loops unless the code is interactive terminal output.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_create_dir_all_per_file",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1661,12 +1661,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `create_dir_all` inside loops for the same parent directory.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_metadata_called_repeatedly_same_path",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1675,12 +1675,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated `metadata`, `symlink_metadata`, `exists`, or `is_file` checks for the same path in one function.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_path_to_string_lossy_in_hot_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1689,12 +1689,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `to_string_lossy`, `display().to_string`, or path formatting inside repository/file traversal loops.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_stdout_println_in_library_or_hot_path",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1703,12 +1703,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `println`, `eprintln`, or direct stdout/stderr writes inside library code, scan loops, or reusable components.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_read_dir_collect_sort_before_filter",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1717,12 +1717,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `read_dir` entries collected and sorted before filtering by type/extension.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_file_handle_returned_without_close_owner_contract",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1731,12 +1731,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag functions that return raw file handles, descriptors, or paths tied to temporary resources without documenting ownership.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_blocking_process_output_read_unbounded",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1745,12 +1745,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `Command::output()` or piped process reads where stdout/stderr may be large and no size bound exists.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_path_canonicalize_in_scan_inner_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1759,12 +1759,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated canonicalization for every path in a hot repository traversal when relative normalized paths would be enough.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_os_string_lossy_conversion_before_filter",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1773,12 +1773,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag lossy path/string conversions before simple extension, file-name, or component filters.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_mutex_guard_lives_through_cpu_heavy_work",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1787,12 +1787,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag lock guards that remain live across sorting, parsing, serialization, filesystem I/O, or large loops.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_rwlock_write_guard_for_readonly_access",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1801,12 +1801,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag write locks where the guarded value is only read.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_mutex_lock_unwrap_panics_on_poison",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1815,12 +1815,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `lock().unwrap ()` or `write().unwrap ()` in production code where poison recovery or contextual error reporting would be safer.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_atomic_seqcst_without_comment",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1829,12 +1829,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `Ordering::SeqCst` in non-trivial code without a nearby comment explaining the synchronization requirement.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_unbounded_channel_in_producer_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1843,12 +1843,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag unbounded channel sends inside loops or request paths without backpressure or shutdown policy.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_thread_spawn_in_loop_without_join_limit",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1857,12 +1857,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_arc_clone_inside_inner_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1871,12 +1871,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag repeated `Arc::clone` in inner loops when a borrowed reference or cloned handle outside the loop would work.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_mpsc_receiver_iter_without_shutdown_signal",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1885,12 +1885,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag blocking receiver iteration without timeout, close path, cancellation, or sentinel.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_condvar_wait_without_predicate_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1899,12 +1899,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `Condvar::wait` not wrapped in a predicate loop.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_sleep_polling_loop",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1913,12 +1913,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `thread::sleep` or runtime sleep in polling loops without backoff, notification, or timeout ownership.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_join_handle_dropped_after_spawn",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1927,12 +1927,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag spawned threads whose join handles are immediately dropped outside explicit detached-worker patterns.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_once_lock_initializes_fallible_resource_with_unwrap",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Warning,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1941,12 +1941,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `OnceLock`, `LazyLock`, or lazy initialization that unwraps fallible setup instead of returning initialization errors at bootstrap.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_manifest_wildcard_dependency_version",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1955,12 +1955,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `*` dependency versions or unconstrained git/path dependencies outside local workspace development.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_manifest_dependency_default_features_unreviewed",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1969,12 +1969,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag heavy dependencies with default features enabled when only a narrow feature set appears to be used.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_manifest_duplicate_direct_dependency_versions",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1983,12 +1983,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag the same crate required at multiple direct versions across workspace members.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_manifest_dev_dependency_used_in_src",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -1997,12 +1997,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag dev-only crates such as `tempfile`, `proptest`, or fuzz helpers imported from production `src` code.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_manifest_build_dependency_used_at_runtime",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -2011,12 +2011,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag build-dependencies imported from runtime code or runtime dependencies used only by `build.rs`.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_manifest_workspace_dependency_not_centralized",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -2025,12 +2025,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag multi-crate workspaces that repeat dependency versions instead of using `[workspace.dependencies]`.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_manifest_release_lto_missing_for_cli_binary",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -2039,12 +2039,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag CLI/binary crates with release profiles that omit any LTO setting when binary size or startup matters.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_manifest_bench_or_fuzz_target_in_default_members",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -2053,12 +2053,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag fuzz/bench crates included in default workspace members without an explicit opt-in.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_build_script_missing_rerun_if_changed",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -2067,12 +2067,12 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag `build.rs` files that read files, env vars, or external commands without `cargo:rerun-if-changed` or `cargo:rerun-if-env-changed`.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
     crate::rules::catalog::RuleDefinition {
         id: "rust_build_script_network_or_git_call",
         language: crate::rules::catalog::RuleLanguage::Rust,
-        family: "v0_3_bad_practices",
+        family: "bad_practices",
         default_severity: crate::rules::catalog::RuleDefaultSeverity::Contextual,
         status: crate::rules::catalog::RuleStatus::Stable,
         configurability: &[
@@ -2081,7 +2081,7 @@ pub(crate) const RULE_DEFINITIONS: &[crate::rules::catalog::RuleDefinition] = &[
             crate::rules::catalog::RuleConfigurability::SeverityOverride,
         ],
         description: "flag build scripts that invoke network, git, curl, package managers, or shell commands that make builds non-hermetic.",
-        binding_location: crate::rules::catalog::bindings::RUST_V03_BAD_PRACTICES,
+        binding_location: crate::rules::catalog::bindings::RUST_BAD_PRACTICES,
     },
 ];
 
@@ -4730,7 +4730,7 @@ struct BodyLine {
     in_loop: bool,
 }
 
-pub(crate) fn v03_bad_practices_function_findings(
+pub(crate) fn bad_practices_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
@@ -4778,7 +4778,7 @@ pub(crate) fn v03_bad_practices_function_findings(
     findings
 }
 
-pub(crate) fn v03_bad_practices_file_findings(file: &ParsedFile) -> Vec<Finding> {
+pub(crate) fn bad_practices_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let mut findings = Vec::new();
 
     // File-structure checks that do not require function-body evidence.
@@ -4791,7 +4791,7 @@ pub(crate) fn v03_bad_practices_file_findings(file: &ParsedFile) -> Vec<Finding>
     findings
 }
 
-pub(crate) fn v03_bad_practices_indexed_file_findings(
+pub(crate) fn bad_practices_indexed_file_findings(
     file: &ParsedFile,
     index: &RepositoryIndex,
 ) -> Vec<Finding> {

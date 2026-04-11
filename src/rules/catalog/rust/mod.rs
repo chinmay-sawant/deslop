@@ -13,7 +13,7 @@ pub(crate) mod runtime_boundary;
 pub(crate) mod runtime_ownership;
 pub(crate) mod security_footguns;
 pub(crate) mod unsafe_soundness;
-pub(crate) mod v03_bad_practices;
+pub(crate) mod bad_practices;
 
 pub(crate) const FAMILY_RULES: &[&[RuleDefinition]] = &[
     api_design::RULE_DEFINITIONS,
@@ -27,5 +27,5 @@ pub(crate) const FAMILY_RULES: &[&[RuleDefinition]] = &[
     runtime_ownership::RULE_DEFINITIONS,
     security_footguns::RULE_DEFINITIONS,
     unsafe_soundness::RULE_DEFINITIONS,
-    v03_bad_practices::RULE_DEFINITIONS,
+    bad_practices::RULE_DEFINITIONS,
 ];

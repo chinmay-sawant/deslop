@@ -2,19 +2,19 @@ use super::{FixtureWorkspace, assert_rules_absent, assert_rules_present};
 
 const MANIFEST_BAD: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/tests/fixtures/rust/v0_3_bad_practices/manifest_bad.toml"
+    "/tests/fixtures/rust/bad_practices/manifest_bad.toml"
 ));
 const MANIFEST_CLEAN: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/tests/fixtures/rust/v0_3_bad_practices/manifest_clean.toml"
+    "/tests/fixtures/rust/bad_practices/manifest_clean.toml"
 ));
 
 #[test]
-fn v03_bad_practices_positive_fixture_reports_representative_rules() {
+fn bad_practices_positive_fixture_reports_representative_rules() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(
         "src/lib.rs",
-        rust_fixture!("v0_3_bad_practices/positive.txt"),
+        rust_fixture!("bad_practices/positive.txt"),
     );
 
     let report = workspace.scan();
@@ -35,9 +35,9 @@ fn v03_bad_practices_positive_fixture_reports_representative_rules() {
 }
 
 #[test]
-fn v03_bad_practices_clean_fixture_stays_clean_for_representative_rules() {
+fn bad_practices_clean_fixture_stays_clean_for_representative_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file("src/lib.rs", rust_fixture!("v0_3_bad_practices/clean.txt"));
+    workspace.write_file("src/lib.rs", rust_fixture!("bad_practices/clean.txt"));
 
     let report = workspace.scan();
 
@@ -57,11 +57,11 @@ fn v03_bad_practices_clean_fixture_stays_clean_for_representative_rules() {
 }
 
 #[test]
-fn v03_bad_practices_honors_rule_ignore_directives() {
+fn bad_practices_honors_rule_ignore_directives() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(
         "src/lib.rs",
-        rust_fixture!("v0_3_bad_practices/suppression.txt"),
+        rust_fixture!("bad_practices/suppression.txt"),
     );
 
     let report = workspace.scan();
@@ -71,7 +71,7 @@ fn v03_bad_practices_honors_rule_ignore_directives() {
 }
 
 #[test]
-fn v03_bad_practices_manifest_rules_fire_on_bad_manifest_and_build_script() {
+fn bad_practices_manifest_rules_fire_on_bad_manifest_and_build_script() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("Cargo.toml", MANIFEST_BAD);
     workspace.write_file("src/main.rs", "fn main() {}");
@@ -106,7 +106,7 @@ fn v03_bad_practices_manifest_rules_fire_on_bad_manifest_and_build_script() {
 }
 
 #[test]
-fn v03_bad_practices_manifest_rules_stay_clean_with_reviewed_config() {
+fn bad_practices_manifest_rules_stay_clean_with_reviewed_config() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("Cargo.toml", MANIFEST_CLEAN);
     workspace.write_file("src/main.rs", "fn main() {}");

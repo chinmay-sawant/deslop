@@ -6,4 +6,4 @@ pub(super) mod advanced;
 pub(super) mod api_design_ext;
 pub(super) mod core;
 pub(super) mod module_surface;
-pub(super) mod v0_3_bad_practices;
+pub(super) mod bad_practices;

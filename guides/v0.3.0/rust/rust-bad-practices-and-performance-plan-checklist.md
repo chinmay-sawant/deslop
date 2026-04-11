@@ -274,7 +274,7 @@ Use these for test and fuzz code only.
 
 ## Fixture And Test Plan
 
-- [x] Add positive and clean fixtures under `tests/fixtures/rust/v0_3_bad_practices`.
+- [x] Add positive and clean fixtures under `tests/fixtures/rust/bad_practices`.
 - [x] Keep direct-crate fixtures small and self-contained so they do not require compiling external crates.
 - [x] Add integration coverage under `tests/integration_scan/rust` grouped by dependency family.
 - [x] Add manifest fixtures that exercise Cargo-only rules without requiring Rust source files.
