@@ -1498,7 +1498,7 @@ pub(super) fn project_agnostic_architecture_findings(
     }
 
     if public_function
-        && contains_any(
+        && (contains_any(
             &sig,
             &[
                 "requests.",
@@ -1507,19 +1507,17 @@ pub(super) fn project_agnostic_architecture_findings(
                 "ValidationError",
                 "RedisError",
             ],
-        )
-        || (public_function
-            && contains_any(
-                body,
-                &[
-                    "except requests.",
-                    "except httpx.",
-                    "except sqlalchemy.",
-                    "raise requests.",
-                    "raise httpx.",
-                    "raise ValidationError",
-                ],
-            ))
+        ) || contains_any(
+            body,
+            &[
+                "except requests.",
+                "except httpx.",
+                "except sqlalchemy.",
+                "raise requests.",
+                "raise httpx.",
+                "raise ValidationError",
+            ],
+        ))
     {
         findings.push(make_finding(
             "third_party_exception_type_leaks_across_architecture_boundary",

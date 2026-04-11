@@ -901,19 +901,19 @@ pub(super) fn manual_dict_increment_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    if body.contains("if key in d:") || (body.contains("if ") && body.contains("in counts:")) {
-        if body.contains("d[key] += 1") || body.contains("counts[") && body.contains("+= 1") {
-            let line = find_line(body, "+= 1", function.fingerprint.start_line)
-                .unwrap_or(function.fingerprint.start_line);
-            return vec![make_finding(
-                "manual_dict_increment_instead_of_counter_or_defaultdict",
-                Severity::Info,
-                file,
-                function,
-                line,
-                "maintains frequency count manually; use collections.Counter or defaultdict(int)",
-            )];
-        }
+    if (body.contains("if key in d:") || (body.contains("if ") && body.contains("in counts:")))
+        && (body.contains("d[key] += 1") || body.contains("counts[") && body.contains("+= 1"))
+    {
+        let line = find_line(body, "+= 1", function.fingerprint.start_line)
+            .unwrap_or(function.fingerprint.start_line);
+        return vec![make_finding(
+            "manual_dict_increment_instead_of_counter_or_defaultdict",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "maintains frequency count manually; use collections.Counter or defaultdict(int)",
+        )];
     }
     Vec::new()
 }

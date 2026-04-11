@@ -658,17 +658,18 @@ pub(super) fn generator_consumed_twice_findings(
     // Simple heuristic: variable used in for and then in list() / next()
     for (i, line) in body.lines().enumerate() {
         let trimmed = line.trim();
-        if trimmed.starts_with("for ") && trimmed.contains(" in gen_") {
-            if body.contains("list(gen_") || body.contains("next(gen_") {
-                return vec![make_finding(
-                    "generator_consumed_twice_without_recreation",
-                    Severity::Warning,
-                    file,
-                    function,
-                    function.fingerprint.start_line + i,
-                    "generator consumed in for loop and then again via list()/next(); second pass yields nothing",
-                )];
-            }
+        if trimmed.starts_with("for ")
+            && trimmed.contains(" in gen_")
+            && (body.contains("list(gen_") || body.contains("next(gen_"))
+        {
+            return vec![make_finding(
+                "generator_consumed_twice_without_recreation",
+                Severity::Warning,
+                file,
+                function,
+                function.fingerprint.start_line + i,
+                "generator consumed in for loop and then again via list()/next(); second pass yields nothing",
+            )];
         }
     }
     Vec::new()
@@ -934,23 +935,22 @@ pub(super) fn closure_captures_large_object_findings(
     }
     let body = &function.body_text;
     // Large object (DataFrame/model) captured in nested function
-    if (body.contains("df") || body.contains("model") || body.contains("weights"))
-        && body.contains("def _callback")
-        || body.contains("lambda:")
+    if (((body.contains("df") || body.contains("model") || body.contains("weights"))
+        && body.contains("def _callback"))
+        || body.contains("lambda:"))
+        && (body.contains("pd.DataFrame") || body.contains("torch.") || body.contains("np.array"))
     {
-        if body.contains("pd.DataFrame") || body.contains("torch.") || body.contains("np.array") {
-            let line = find_line(body, "def _callback", function.fingerprint.start_line)
-                .or_else(|| find_line(body, "lambda:", function.fingerprint.start_line))
-                .unwrap_or(function.fingerprint.start_line);
-            return vec![make_finding(
-                "closure_captures_large_object_after_producing_function_returns",
-                Severity::Info,
-                file,
-                function,
-                line,
-                "closure captures a large object (DataFrame/model); release before construction completes",
-            )];
-        }
+        let line = find_line(body, "def _callback", function.fingerprint.start_line)
+            .or_else(|| find_line(body, "lambda:", function.fingerprint.start_line))
+            .unwrap_or(function.fingerprint.start_line);
+        return vec![make_finding(
+            "closure_captures_large_object_after_producing_function_returns",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "closure captures a large object (DataFrame/model); release before construction completes",
+        )];
     }
     Vec::new()
 }

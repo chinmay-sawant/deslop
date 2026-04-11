@@ -532,7 +532,7 @@ pub(super) fn project_agnostic_hotpath_findings(
         });
     }
 
-    if python.list_membership_loop_lines.len() > 0
+    if !python.list_membership_loop_lines.is_empty()
         || contains_any(body, &[" in [", " in ("])
             && (body.contains("for ") || body.contains("while "))
     {

@@ -452,7 +452,7 @@ fn project_agnostic_quality_function_findings(
         ));
     }
 
-    if function.python_evidence().recursive_call_lines.len() > 0
+    if !function.python_evidence().recursive_call_lines.is_empty()
         && !contains_any(&lower_body, &["max_depth", "depth >", "level >"])
     {
         findings.push(push(

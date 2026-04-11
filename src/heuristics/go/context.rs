@@ -1021,7 +1021,7 @@ fn compact_signature(signature: &str) -> String {
     signature.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
-fn call_arguments<'a>(line: &'a str, call_name: &str) -> Option<Vec<String>> {
+fn call_arguments(line: &str, call_name: &str) -> Option<Vec<String>> {
     let marker = format!("{call_name}(");
     let start = line.find(&marker)? + marker.len();
     let mut depth = 1usize;

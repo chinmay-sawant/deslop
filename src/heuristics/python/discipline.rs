@@ -823,14 +823,14 @@ pub(super) fn optional_without_none_guard_findings(
         return Vec::new();
     }
 
-    return vec![make_finding(
+    vec![make_finding(
         "optional_parameter_used_without_none_guard",
         Severity::Info,
         file,
         function,
         function.fingerprint.start_line,
         "has Optional parameter but dereferences it without a None guard",
-    )];
+    )]
 }
 
 pub(super) fn callable_without_param_types_findings(

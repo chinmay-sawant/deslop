@@ -218,7 +218,7 @@ pub(super) fn project_agnostic_maintainability_findings(
     }
 
     if lower_body.matches("if ").count() + lower_body.matches("elif ").count() >= 4
-        && !function.doc_comment.is_some()
+        && function.doc_comment.is_none()
     {
         findings.push(maintainability_finding(
             file,
