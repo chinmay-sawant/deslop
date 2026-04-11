@@ -14,11 +14,11 @@ use crate::analysis::rust::findings::{
 
 use super::{
     api_design_file_findings, api_design_function_findings, async_file_findings,
-    async_function_findings, boundary_file_findings, boundary_function_findings, domain_findings,
-    module_surface_file_findings, performance_file_findings, performance_function_findings,
-    runtime_file_findings, runtime_function_findings, runtime_ownership_function_findings,
-    security_footguns_file_findings, security_footguns_function_findings,
-    unsafe_soundness_findings, bad_practices,
+    async_function_findings, bad_practices, boundary_file_findings, boundary_function_findings,
+    domain_findings, module_surface_file_findings, performance_file_findings,
+    performance_function_findings, runtime_file_findings, runtime_function_findings,
+    runtime_ownership_function_findings, security_footguns_file_findings,
+    security_footguns_function_findings, unsafe_soundness_findings,
 };
 
 pub(crate) const BINDING_LOCATION: &str = file!();

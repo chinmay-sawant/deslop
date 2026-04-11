@@ -21,13 +21,13 @@ use super::python::{python_file_findings, python_findings, python_repo_findings}
 use super::rust::{
     evaluate_rust_file_hygiene_findings, rust_api_design_file_findings,
     rust_api_design_function_findings, rust_async_file_findings, rust_async_function_findings,
-    rust_boundary_file_findings, rust_boundary_function_findings, rust_domain_file_findings,
-    rust_import_resolution_findings, rust_local_call_findings, rust_module_surface_file_findings,
-    rust_performance_file_findings, rust_performance_function_findings, rust_runtime_file_findings,
-    rust_runtime_function_findings, rust_runtime_ownership_function_findings,
-    rust_security_file_findings, rust_security_function_findings, rust_unsafe_soundness_findings,
     rust_bad_practices_file_findings, rust_bad_practices_function_findings,
-    rust_bad_practices_indexed_file_findings,
+    rust_bad_practices_indexed_file_findings, rust_boundary_file_findings,
+    rust_boundary_function_findings, rust_domain_file_findings, rust_import_resolution_findings,
+    rust_local_call_findings, rust_module_surface_file_findings, rust_performance_file_findings,
+    rust_performance_function_findings, rust_runtime_file_findings, rust_runtime_function_findings,
+    rust_runtime_ownership_function_findings, rust_security_file_findings,
+    rust_security_function_findings, rust_unsafe_soundness_findings,
 };
 use super::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};
 use super::test_quality::test_findings;

@@ -12,10 +12,7 @@ const MANIFEST_CLEAN: &str = include_str!(concat!(
 #[test]
 fn bad_practices_positive_fixture_reports_representative_rules() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(
-        "src/lib.rs",
-        rust_fixture!("bad_practices/positive.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("bad_practices/positive.txt"));
 
     let report = workspace.scan();
 
@@ -59,10 +56,7 @@ fn bad_practices_clean_fixture_stays_clean_for_representative_rules() {
 #[test]
 fn bad_practices_honors_rule_ignore_directives() {
     let workspace = FixtureWorkspace::new();
-    workspace.write_file(
-        "src/lib.rs",
-        rust_fixture!("bad_practices/suppression.txt"),
-    );
+    workspace.write_file("src/lib.rs", rust_fixture!("bad_practices/suppression.txt"));
 
     let report = workspace.scan();
 

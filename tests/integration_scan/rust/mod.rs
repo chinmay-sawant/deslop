@@ -4,6 +4,6 @@ pub(super) use super::support::{
 
 pub(super) mod advanced;
 pub(super) mod api_design_ext;
+pub(super) mod bad_practices;
 pub(super) mod core;
 pub(super) mod module_surface;
-pub(super) mod bad_practices;

@@ -7818,7 +7818,7 @@
       ]
     },
     "rust": {
-      "ruleCount": 100,
+      "ruleCount": 248,
       "families": [
         {
           "id": "api_design",
@@ -8013,6 +8013,902 @@
               "label": "Rust Async Std Mutex Await",
               "defaultSeverity": "contextual",
               "status": "experimental"
+            }
+          ]
+        },
+        {
+          "id": "bad_practices",
+          "label": "Bad Practices",
+          "summary": "Bad Practices rules for the rust catalog.",
+          "ruleCount": 148,
+          "rules": [
+            {
+              "id": "rust_anyhow_bail_in_low_level_library_module",
+              "label": "Rust Anyhow Bail in Low Level Library Module",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_anyhow_context_missing_on_boundary_io",
+              "label": "Rust Anyhow Context Missing on Boundary I/O",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_anyhow_downcast_without_fallback_context",
+              "label": "Rust Anyhow Downcast without Fallback Context",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_anyhow_eager_format_context",
+              "label": "Rust Anyhow Eager Format Context",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_anyhow_error_string_matching",
+              "label": "Rust Anyhow Error String Matching",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_arc_clone_inside_inner_loop",
+              "label": "Rust Arc Clone Inside Inner Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_atomic_seqcst_without_comment",
+              "label": "Rust Atomic Seqcst without Comment",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_blocking_process_output_read_unbounded",
+              "label": "Rust Blocking Process Output Read Unbounded",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_boxed_trait_object_in_inner_loop",
+              "label": "Rust Boxed Trait Object in Inner Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_build_script_missing_rerun_if_changed",
+              "label": "Rust Build Script Missing Rerun If Changed",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_build_script_network_or_git_call",
+              "label": "Rust Build Script Network or Git Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_bytes_to_vec_for_readonly_use",
+              "label": "Rust Bytes to Vec for Readonly Use",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_closed_set_manual_string_match",
+              "label": "Rust Clap Closed Set Manual String Match",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_default_value_manual_parse",
+              "label": "Rust Clap Default Value Manual Parse",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_env_var_without_redaction_policy",
+              "label": "Rust Clap Env Var without Redaction Policy",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_opposing_flags_without_conflicts",
+              "label": "Rust Clap Opposing Flags without Conflicts",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_parse_called_below_main",
+              "label": "Rust Clap Parse Called Below Main",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_path_arg_used_without_validation",
+              "label": "Rust Clap Path Arg Used without Validation",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_rule_id_arg_without_catalog_validation",
+              "label": "Rust Clap Rule ID Arg without Catalog Validation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_secret_arg_derive_debug",
+              "label": "Rust Clap Secret Arg Derive Debug",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_subcommand_reloads_config_in_each_branch",
+              "label": "Rust Clap Subcommand Reloads Config in Each Branch",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clap_unbounded_vec_arg_on_scan_path",
+              "label": "Rust Clap Unbounded Vec Arg on Scan Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_clone_to_satisfy_borrow_in_loop",
+              "label": "Rust Clone to Satisfy Borrow in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_collect_then_single_iteration",
+              "label": "Rust Collect Then Single Iteration",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_condvar_wait_without_predicate_loop",
+              "label": "Rust Condvar Wait without Predicate Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_cow_to_owned_without_mutation",
+              "label": "Rust Cow to Owned without Mutation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_create_dir_all_per_file",
+              "label": "Rust Create Dir All Per File",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_drain_collect_then_drop",
+              "label": "Rust Drain Collect Then Drop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_error_logged_and_returned",
+              "label": "Rust Error Logged and Returned",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ffi_extern_block_without_abi_comment",
+              "label": "Rust FFI Extern Block without Abi Comment",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ffi_slice_from_raw_parts_without_length_guard",
+              "label": "Rust FFI Slice From Raw Parts without Length Guard",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_file_handle_returned_without_close_owner_contract",
+              "label": "Rust File Handle Returned without Close Owner Contract",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_file_open_in_loop_without_buffered_reader",
+              "label": "Rust File Open in Loop without Buffered Reader",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_flush_inside_write_loop",
+              "label": "Rust Flush Inside Write Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_format_macro_inside_append_loop",
+              "label": "Rust Format Macro Inside Append Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_hashmap_contains_then_insert",
+              "label": "Rust Hashmap Contains Then Insert",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_direntry_unwrapped",
+              "label": "Rust Ignore Direntry Unwrapped",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_filter_entry_allocates_path_string_per_node",
+              "label": "Rust Ignore Filter Entry Allocates Path String Per Node",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_follow_links_without_cycle_or_root_policy",
+              "label": "Rust Ignore Follow Links without Cycle or Root Policy",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_override_pattern_unwraps_user_input",
+              "label": "Rust Ignore Override Pattern Unwraps User Input",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_parallel_walker_unbounded_accumulation",
+              "label": "Rust Ignore Parallel Walker Unbounded Accumulation",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_reads_file_before_file_type_check",
+              "label": "Rust Ignore Reads File Before File Type Check",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_sort_by_path_after_full_walk",
+              "label": "Rust Ignore Sort by Path After Full Walk",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_walk_error_silently_discarded",
+              "label": "Rust Ignore Walk Error Silently Discarded",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_walker_disables_standard_filters_without_policy",
+              "label": "Rust Ignore Walker Disables Standard Filters without Policy",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_ignore_walker_rebuilt_inside_directory_loop",
+              "label": "Rust Ignore Walker Rebuilt Inside Directory Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_iterator_chain_allocates_intermediate_strings",
+              "label": "Rust Iterator Chain Allocates Intermediate Strings",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_iterator_nth_inside_loop",
+              "label": "Rust Iterator Nth Inside Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_join_handle_dropped_after_spawn",
+              "label": "Rust Join Handle Dropped After Spawn",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_large_enum_variant_without_boxing",
+              "label": "Rust Large Enum Variant without Boxing",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libc_call_without_platform_cfg",
+              "label": "Rust Libc Call without Platform Cfg",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libc_cstring_unwrap_on_external_input",
+              "label": "Rust Libc Cstring Unwrap on External Input",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libc_errno_read_after_intervening_call",
+              "label": "Rust Libc Errno Read After Intervening Call",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libc_into_raw_fd_without_reclaim",
+              "label": "Rust Libc Into Raw Fd without Reclaim",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libc_no_follow_without_eloop_handling",
+              "label": "Rust Libc No Follow without Eloop Handling",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libc_open_without_cloexec",
+              "label": "Rust Libc Open without Cloexec",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libc_raw_fd_lifetime_escape",
+              "label": "Rust Libc Raw Fd Lifetime Escape",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libc_return_value_not_checked",
+              "label": "Rust Libc Return Value Not Checked",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libfuzzer_target_allocates_unbounded_string",
+              "label": "Rust Libfuzzer Target Allocates Unbounded String",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_libfuzzer_target_unwraps_parse_or_utf8",
+              "label": "Rust Libfuzzer Target Unwraps Parse or Utf8",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_manifest_bench_or_fuzz_target_in_default_members",
+              "label": "Rust Manifest Bench or Fuzz Target in Default Members",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_manifest_build_dependency_used_at_runtime",
+              "label": "Rust Manifest Build Dependency Used at Runtime",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_manifest_dependency_default_features_unreviewed",
+              "label": "Rust Manifest Dependency Default Features Unreviewed",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_manifest_dev_dependency_used_in_src",
+              "label": "Rust Manifest Dev Dependency Used in Src",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_manifest_duplicate_direct_dependency_versions",
+              "label": "Rust Manifest Duplicate Direct Dependency Versions",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_manifest_release_lto_missing_for_cli_binary",
+              "label": "Rust Manifest Release Lto Missing for CLI Binary",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_manifest_wildcard_dependency_version",
+              "label": "Rust Manifest Wildcard Dependency Version",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_manifest_workspace_dependency_not_centralized",
+              "label": "Rust Manifest Workspace Dependency Not Centralized",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_metadata_called_repeatedly_same_path",
+              "label": "Rust Metadata Called Repeatedly Same Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_mpsc_receiver_iter_without_shutdown_signal",
+              "label": "Rust Mpsc Receiver Iter without Shutdown Signal",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_mutex_guard_lives_through_cpu_heavy_work",
+              "label": "Rust Mutex Guard Lives Through CPU Heavy Work",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_mutex_lock_unwrap_panics_on_poison",
+              "label": "Rust Mutex Lock Unwrap Panics on Poison",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_once_lock_initializes_fallible_resource_with_unwrap",
+              "label": "Rust Once Lock Initializes Fallible Resource with Unwrap",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_option_clone_then_unwrap_or",
+              "label": "Rust Option Clone Then Unwrap or",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_os_string_lossy_conversion_before_filter",
+              "label": "Rust OS String Lossy Conversion Before Filter",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_path_canonicalize_in_scan_inner_loop",
+              "label": "Rust Path Canonicalize in Scan Inner Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_path_to_string_lossy_in_hot_loop",
+              "label": "Rust Path to String Lossy in Hot Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_proptest_assume_filters_most_cases",
+              "label": "Rust Proptest Assume Filters Most Cases",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_proptest_no_regression_case_for_parser_crash",
+              "label": "Rust Proptest No Regression Case for Parser Crash",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_proptest_strategy_recreates_expensive_fixture",
+              "label": "Rust Proptest Strategy Recreates Expensive Fixture",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_proptest_unbounded_string_or_vec_strategy",
+              "label": "Rust Proptest Unbounded String or Vec Strategy",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_question_mark_after_partial_side_effect_without_cleanup",
+              "label": "Rust Question Mark After Partial Side Effect without Cleanup",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_blocking_io_in_cpu_parallel_pool",
+              "label": "Rust Rayon Blocking I/O in CPU Parallel Pool",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_collect_all_then_filter_sequentially",
+              "label": "Rust Rayon Collect All Then Filter Sequentially",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_custom_pool_created_per_call",
+              "label": "Rust Rayon Custom Pool Created Per Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_flat_map_allocates_nested_vectors",
+              "label": "Rust Rayon Flat Map Allocates Nested Vectors",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_global_pool_built_by_library_code",
+              "label": "Rust Rayon Global Pool Built by Library Code",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_heavy_clone_per_item",
+              "label": "Rust Rayon Heavy Clone Per Item",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_large_move_capture",
+              "label": "Rust Rayon Large Move Capture",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_mutex_push_in_parallel_loop",
+              "label": "Rust Rayon Mutex Push in Parallel Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_nested_parallel_iterators",
+              "label": "Rust Rayon Nested Parallel Iterators",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_ordering_mutex_for_result_stability",
+              "label": "Rust Rayon Ordering Mutex for Result Stability",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_par_bridge_on_small_or_indexed_iterator",
+              "label": "Rust Rayon Par Bridge on Small or Indexed Iterator",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_parallelism_for_trivial_per_item_work",
+              "label": "Rust Rayon Parallelism for Trivial Per Item Work",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_sequential_collect_then_par_iter",
+              "label": "Rust Rayon Sequential Collect Then Par Iter",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rayon_unhandled_panic_in_parallel_scan",
+              "label": "Rust Rayon Unhandled Panic in Parallel Scan",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_read_dir_collect_sort_before_filter",
+              "label": "Rust Read Dir Collect Sort Before Filter",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_read_to_string_for_line_scan",
+              "label": "Rust Read to String for Line Scan",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_regex_compiled_in_loop",
+              "label": "Rust Regex Compiled in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_result_ignored_with_let_underscore",
+              "label": "Rust Result Ignored with Let Underscore",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_rwlock_write_guard_for_readonly_access",
+              "label": "Rust Rwlock Write Guard for Readonly Access",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_borrow_missing_for_large_readonly_payload",
+              "label": "Rust Serde Borrow Missing for Large Readonly Payload",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_custom_deserialize_panics",
+              "label": "Rust Serde Custom Deserialize Panics",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_default_masks_parse_error",
+              "label": "Rust Serde Default Masks Parse Error",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_json_clone_value_in_loop",
+              "label": "Rust Serde JSON Clone Value in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_json_from_str_after_unbounded_read",
+              "label": "Rust Serde JSON From Str After Unbounded Read",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_json_indexing_without_type_guard",
+              "label": "Rust Serde JSON Indexing without Type Guard",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_json_roundtrip_conversion",
+              "label": "Rust Serde JSON Roundtrip Conversion",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_json_to_string_pretty_in_machine_path",
+              "label": "Rust Serde JSON to String Pretty in Machine Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_json_value_internal_hot_path",
+              "label": "Rust Serde JSON Value Internal Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_json_whole_array_loaded_for_streaming_input",
+              "label": "Rust Serde JSON Whole Array Loaded for Streaming Input",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_skip_serializing_secret_without_deserialize_guard",
+              "label": "Rust Serde Skip Serializing Secret without Deserialize Guard",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_serde_wire_enum_missing_stable_rename_policy",
+              "label": "Rust Serde Wire Enum Missing Stable Rename Policy",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_sleep_polling_loop",
+              "label": "Rust Sleep Polling Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_sort_then_first_or_last",
+              "label": "Rust Sort Then First or Last",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_stdout_println_in_library_or_hot_path",
+              "label": "Rust Stdout Println in Library or Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_string_push_without_capacity_from_known_bound",
+              "label": "Rust String Push without Capacity From Known Bound",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tempfile_builder_prefix_from_test_name_only",
+              "label": "Rust Tempfile Builder Prefix From Test Name Only",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tempfile_named_path_used_after_drop",
+              "label": "Rust Tempfile Named Path Used After Drop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tempfile_persist_without_cleanup_assertion",
+              "label": "Rust Tempfile Persist without Cleanup Assertion",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tempfile_predictable_name_in_shared_tmp",
+              "label": "Rust Tempfile Predictable Name in Shared Tmp",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_thiserror_display_leaks_secret_field",
+              "label": "Rust Thiserror Display Leaks Secret Field",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_thiserror_stringly_typed_variant",
+              "label": "Rust Thiserror Stringly Typed Variant",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_thiserror_transparent_on_contextual_variant",
+              "label": "Rust Thiserror Transparent on Contextual Variant",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_thiserror_variant_wraps_source_without_source_attr",
+              "label": "Rust Thiserror Variant Wraps Source without Source Attr",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_thread_spawn_in_loop_without_join_limit",
+              "label": "Rust Thread Spawn in Loop without Join Limit",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_to_string_on_str_in_loop",
+              "label": "Rust to String on Str in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_toml_config_without_unknown_field_rejection",
+              "label": "Rust Toml Config without Unknown Field Rejection",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_toml_manifest_parse_without_size_limit",
+              "label": "Rust Toml Manifest Parse without Size Limit",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_toml_parse_in_hot_path",
+              "label": "Rust Toml Parse in Hot Path",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_toml_value_config_boundary",
+              "label": "Rust Toml Value Config Boundary",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_byte_offset_used_as_char_index",
+              "label": "Rust Tree Sitter Byte Offset Used as Char Index",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_child_lookup_by_field_name_in_hot_walk",
+              "label": "Rust Tree Sitter Child Lookup by Field Name in Hot Walk",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_collects_all_captures_before_filtering",
+              "label": "Rust Tree Sitter Collects All Captures Before Filtering",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_descendant_for_point_range_in_loop",
+              "label": "Rust Tree Sitter Descendant for Point Range in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_error_tree_ignored",
+              "label": "Rust Tree Sitter Error Tree Ignored",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_language_conversion_inside_loop",
+              "label": "Rust Tree Sitter Language Conversion Inside Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_node_text_redecoded_in_nested_loop",
+              "label": "Rust Tree Sitter Node Text Redecoded in Nested Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_old_tree_discarded_in_reparse_loop",
+              "label": "Rust Tree Sitter Old Tree Discarded in Reparse Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_parse_result_unwrapped",
+              "label": "Rust Tree Sitter Parse Result Unwrapped",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_parser_created_per_file_without_reuse",
+              "label": "Rust Tree Sitter Parser Created Per File without Reuse",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_parser_shared_global_with_lock",
+              "label": "Rust Tree Sitter Parser Shared Global with Lock",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_query_compiled_per_call",
+              "label": "Rust Tree Sitter Query Compiled Per Call",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_recursive_walk_without_depth_guard",
+              "label": "Rust Tree Sitter Recursive Walk without Depth Guard",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_tree_sitter_set_language_repeated_inside_hot_loop",
+              "label": "Rust Tree Sitter Set Language Repeated Inside Hot Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_unbounded_channel_in_producer_loop",
+              "label": "Rust Unbounded Channel in Producer Loop",
+              "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_vec_push_without_capacity_from_known_bound",
+              "label": "Rust Vec Push without Capacity From Known Bound",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_vec_remove_zero_in_loop",
+              "label": "Rust Vec Remove Zero in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
             }
           ]
         },

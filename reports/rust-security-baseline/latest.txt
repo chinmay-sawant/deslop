@@ -85,19 +85,19 @@ src/heuristics/python/packaging.rs:329:        [first, ..] => Some(*first),
 src/heuristics/python/quality/mod.rs:225:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:85:    for (offset, character) in signature_text[start..].char_indices() {
+src/heuristics/rust/bad_practices.rs:1075:        description: "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
+src/heuristics/rust/bad_practices.rs:1089:        description: "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
+src/heuristics/rust/bad_practices.rs:3241:        description: "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
+src/heuristics/rust/bad_practices.rs:3512:        description: "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
+src/heuristics/rust/bad_practices.rs:3531:        description: "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
+src/heuristics/rust/bad_practices.rs:4989:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/rust/bad_practices.rs:5324:                "consider #[serde(rename_all = ...)] for stable wire contracts".to_string(),
+src/heuristics/rust/bad_practices.rs:865:        description: "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
 src/heuristics/rust/module_surface.rs:90:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
 src/heuristics/rust/performance.rs:354:    text[vec_start + 4..].contains("Box<")
 src/heuristics/rust/performance.rs:361:    line[start + marker.len()..].starts_with('/')
 src/heuristics/rust/performance.rs:442:                let receiver = &line[start..index];
 src/heuristics/rust/runtime_boundary.rs:271:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/rust/v03_bad_practices.rs:1075:        description: "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
-src/heuristics/rust/v03_bad_practices.rs:1089:        description: "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
-src/heuristics/rust/v03_bad_practices.rs:3241:        description: "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
-src/heuristics/rust/v03_bad_practices.rs:3512:        description: "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
-src/heuristics/rust/v03_bad_practices.rs:3531:        description: "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
-src/heuristics/rust/v03_bad_practices.rs:4989:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/rust/v03_bad_practices.rs:5324:                "consider #[serde(rename_all = ...)] for stable wire contracts".to_string(),
-src/heuristics/rust/v03_bad_practices.rs:865:        description: "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
 src/rules.rs:509:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
 src/rules.rs:511:            let Some(end_offset) = source[start..].find('\"') else {
 src/rules.rs:515:            ids.insert(source[start..start + end_offset].to_string());
@@ -120,10 +120,10 @@ src/heuristics/python/hotpath_ext.rs:893:    if contains_any(body, &["os.path.ex
 src/heuristics/python/packaging.rs:249:    candidate.exists().then_some(candidate)
 src/heuristics/python/packaging.rs:626:        if parent.join("__init__.py").exists() {
 src/heuristics/python/performance.rs:538:        &["os.stat(", ".exists()", "is_file(", "is_dir("],
+src/heuristics/rust/bad_practices.rs:5114:    if !root.join("src/main.rs").exists() {
 src/heuristics/rust/boundary.rs:203:            && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])
 src/heuristics/rust/runtime_boundary.rs:173:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/heuristics/rust/security_footguns.rs:209:    if !should_emit_manifest_finding(file, index.root()) || !manifest_path.exists() {
-src/heuristics/rust/v03_bad_practices.rs:5114:    if !root.join("src/main.rs").exists() {
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
 src/rules.rs:169:    fn finds_known_rule_metadata() {
@@ -164,12 +164,12 @@ src/analysis/types/core.rs:62:#[derive(Debug, Clone, Default)]
 src/analysis/types/core.rs:69:#[derive(Debug, Clone, Default)]
 
 ## thread_spawn_async
+src/heuristics/rust/bad_practices.rs:1859:        description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
+src/heuristics/rust/bad_practices.rs:4453:        description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
+src/heuristics/rust/bad_practices.rs:4454:        markers: &["std::thread::spawn", "JoinHandle", "spawn", "join", "limit"],
 src/heuristics/rust/security_footguns.rs:346:        &["thread::spawn(", "std::thread::spawn("],
 src/heuristics/rust/security_footguns.rs:370:        &["thread::spawn(", "std::thread::spawn("],
 src/heuristics/rust/security_footguns.rs:55:        description: "Raw std::thread::spawn blocks that call async work without an explicit runtime handoff.",
-src/heuristics/rust/v03_bad_practices.rs:1859:        description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
-src/heuristics/rust/v03_bad_practices.rs:4453:        description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
-src/heuristics/rust/v03_bad_practices.rs:4454:        markers: &["std::thread::spawn", "JoinHandle", "spawn", "join", "limit"],
 
 ## path_join_absolute
 

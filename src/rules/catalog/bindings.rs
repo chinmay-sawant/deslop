@@ -65,5 +65,4 @@ pub(crate) const RUST_RUNTIME_BOUNDARY: &str =
     crate::heuristics::rust::RUNTIME_BOUNDARY_BINDING_LOCATION;
 pub(crate) const RUST_UNSAFE_SOUNDNESS: &str =
     crate::heuristics::rust::UNSAFE_SOUNDNESS_BINDING_LOCATION;
-pub(crate) const RUST_BAD_PRACTICES: &str =
-    crate::heuristics::rust::BAD_PRACTICES_BINDING_LOCATION;
+pub(crate) const RUST_BAD_PRACTICES: &str = crate::heuristics::rust::BAD_PRACTICES_BINDING_LOCATION;
