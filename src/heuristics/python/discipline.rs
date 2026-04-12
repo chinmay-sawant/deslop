@@ -1729,10 +1729,19 @@ pub(super) fn project_agnostic_discipline_findings(
     }
 
     if body.contains("self.")
-        && contains_any(&lower_body, &["self.", " = "])
+        && (lower_body.contains("self._") || lower_body.matches("self.").count() >= 4)
+        && {
+            let has_mutation = body.lines().any(|line| {
+                let trimmed = line.trim();
+                trimmed.starts_with("self.")
+                    && trimmed.contains(" = ")
+                    && !trimmed.contains(" == ")
+            });
+            has_mutation
+        }
         && contains_any(
             &lower_body,
-            &["return {", "return json", "return str(", "f\""],
+            &["return {", "return json", "return str("],
         )
     {
         findings.push(make_finding(
@@ -1842,7 +1851,7 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if lower_body.matches("if not ").count() >= 2
+    if lower_body.matches("if not ").count() >= 3
         || lower_body.matches("if value is None").count() >= 2
     {
         findings.push(make_finding(
@@ -1868,8 +1877,8 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if file.top_level_bindings.len() >= 4
-        && file.functions.len() >= 4
+    if file.top_level_bindings.len() >= 8
+        && file.functions.len() >= 8
         && contains_any(&lower_body, &["class ", "def ", "return "])
     {
         findings.push(make_finding(

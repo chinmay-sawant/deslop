@@ -1251,7 +1251,7 @@ pub(super) fn project_agnostic_architecture_findings(
         )
         && contains_any(
             &lower_body,
-            &["policy", "discount", "tier", "eligib", "price", "status"],
+            &["policy", "discount", "tier", "eligib", "price"],
         )
     {
         findings.push(make_finding(
@@ -1267,8 +1267,6 @@ pub(super) fn project_agnostic_architecture_findings(
     if contains_any(
         body,
         &[
-            "\"status\":",
-            "'status':",
             "\"headers\":",
             "'headers':",
             "status_code=",
@@ -1276,9 +1274,13 @@ pub(super) fn project_agnostic_architecture_findings(
             "return data, status",
         ],
     ) && contains_any(body, &["return {", "return data", "return payload"])
+        || (contains_any(body, &["\"status\":", "'status':"])
+            && contains_any(body, &["200", "201", "400", "404", "500"])
+            && contains_any(body, &["return {", "return data", "return payload"]))
     {
-        let line = find_line(body, "\"status\":", function.fingerprint.start_line)
-            .or_else(|| find_line(body, "status_code=", function.fingerprint.start_line))
+        let line = find_line(body, "status_code=", function.fingerprint.start_line)
+            .or_else(|| find_line(body, "\"headers\":", function.fingerprint.start_line))
+            .or_else(|| find_line(body, "\"status\":", function.fingerprint.start_line))
             .or_else(|| {
                 find_line(
                     body,

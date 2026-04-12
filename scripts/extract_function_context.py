@@ -34,6 +34,7 @@ RUST_FN_RE = re.compile(
 )
 GO_FN_RE = re.compile(r"^\s*func(?:\s*\([^)]*\))?\s+[A-Za-z_][A-Za-z0-9_]*\b")
 PY_FN_RE = re.compile(r"^\s*(?:async\s+def|def)\s+[A-Za-z_][A-Za-z0-9_]*\s*\(")
+PY_DEF_HEADER_END_RE = re.compile(r":\s*(?:#.*)?$")
 GENERIC_BRACE_FN_RE = re.compile(
     r"^\s*[A-Za-z_][\w:\<\>\[\]\*&\s,]*\s+[A-Za-z_][A-Za-z0-9_]*\s*\([^;]*\)\s*(?:->\s*[^\{]+)?\s*\{?\s*$"
 )
@@ -461,14 +462,25 @@ def _extract_brace_function(lines: list[str], target_idx: int, suffix: str) -> t
 
 
 def _extract_python_function(lines: list[str], target_idx: int) -> tuple[int, int] | None:
+    def _find_python_signature_end(start_idx: int, *, max_lookahead: int = 120) -> int | None:
+        stop_idx = min(len(lines), start_idx + max_lookahead)
+        for line_idx in range(start_idx, stop_idx):
+            if PY_DEF_HEADER_END_RE.search(lines[line_idx].strip()):
+                return line_idx
+        return None
+
     for start_idx in range(min(target_idx, len(lines) - 1), -1, -1):
         if not PY_FN_RE.match(lines[start_idx]):
+            continue
+
+        signature_end_idx = _find_python_signature_end(start_idx)
+        if signature_end_idx is None:
             continue
 
         base_indent = _leading_spaces(lines[start_idx])
         end_idx = len(lines) - 1
 
-        for line_idx in range(start_idx + 1, len(lines)):
+        for line_idx in range(signature_end_idx + 1, len(lines)):
             stripped = lines[line_idx].strip()
             if not stripped:
                 continue

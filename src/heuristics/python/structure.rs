@@ -802,11 +802,13 @@ pub(super) fn project_agnostic_structure_function_findings(
         });
     }
 
-    if contains_any(&lower_body, &["retry", "normalize", "auth", "permission"])
+    if contains_any(&lower_body, &["retry", "auth", "permission"])
+        && !contains_any(&lower_body, &["normalize"])
         && !contains_any(
             &file.path.to_string_lossy().to_ascii_lowercase(),
-            &["policy", "boundary", "middleware"],
+            &["policy", "boundary", "middleware", "main.py", "app.py", "api/", "routes", "views"],
         )
+        && function.fingerprint.line_count >= 8
     {
         findings.push(Finding {
             rule_id: "cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary"

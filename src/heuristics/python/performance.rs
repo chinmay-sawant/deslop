@@ -431,6 +431,7 @@ pub(super) fn project_agnostic_performance_findings(
         body,
         &["read()", "read_text()", "read_bytes()", "readlines()"],
     ) && !contains_any(body, &["for line in", "iter(", "yield"])
+        && !contains_any(&lower_body, &["subprocess", "popen", "command"])
     {
         findings.push(push(
             "eager_full_file_or_stream_read_when_incremental_iteration_suffices",
@@ -494,7 +495,10 @@ pub(super) fn project_agnostic_performance_findings(
     }
 
     if contains_any(&lower_body, &["tempfile.", "namedtemporaryfile", "mkdtemp"])
-        && !contains_any(&lower_body, &["external", "subprocess"])
+        && !contains_any(
+            &lower_body,
+            &["external", "subprocess", "popen", "run(", "command", "whisper", "ffmpeg"],
+        )
     {
         findings.push(push(
             "temporary_file_used_for_pure_in_memory_transformation",
@@ -533,10 +537,12 @@ pub(super) fn project_agnostic_performance_findings(
         ));
     }
 
-    if contains_any(
-        &lower_body,
-        &["os.stat(", ".exists()", "is_file(", "is_dir("],
-    ) && lower_body.matches("open(").count() >= 1
+    if (lower_body.matches("os.stat(").count()
+        + lower_body.matches(".exists()").count()
+        + lower_body.matches("is_file(").count()
+        + lower_body.matches("is_dir(").count()
+        >= 2)
+        && lower_body.matches("open(").count() >= 1
     {
         findings.push(push(
             "repeated_stat_or_exists_calls_before_single_followup_operation",
@@ -548,8 +554,13 @@ pub(super) fn project_agnostic_performance_findings(
         ));
     }
 
-    if contains_any(&lower_body, &["write(", "save(", "insert(", "append("])
+    if contains_any(&lower_body, &["write(", "save(", "insert("])
+        && !contains_any(&lower_body, &[".extend(", "extend(", "bulk_", "batch_", "executemany"])
         && (lower_body.matches("for ").count() >= 1 || lower_body.matches("while ").count() >= 1)
+        && (lower_body.matches("write(").count()
+            + lower_body.matches("save(").count()
+            + lower_body.matches("insert(").count()
+            >= 2)
     {
         findings.push(push(
             "batchable_writes_executed_one_at_a_time",
@@ -626,7 +637,11 @@ pub(super) fn project_agnostic_performance_findings(
         ));
     }
 
-    if contains_any(&lower_body, &["write(", "send("]) && lower_body.matches("for ").count() >= 1 {
+    if contains_any(&lower_body, &["write(", "send("])
+        && lower_body.matches("for ").count() >= 1
+        && !contains_any(&lower_body, &[".extend(", "buffer", "chunk", "flush"])
+        && function.fingerprint.line_count >= 10
+    {
         findings.push(push(
             "repeated_small_writes_without_buffering_or_join",
             Severity::Info,
@@ -638,7 +653,7 @@ pub(super) fn project_agnostic_performance_findings(
     }
 
     if contains_any(&lower_body, &["dict(", ".copy("])
-        && !contains_any(&lower_body, &["update(", "pop(", "setdefault("])
+        && !contains_any(&lower_body, &["update(", "pop(", "setdefault(", "[", "del ", "hydrat"])
     {
         findings.push(push(
             "copy_of_mapping_created_only_to_read_values",

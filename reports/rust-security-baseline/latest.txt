@@ -119,7 +119,7 @@ src/heuristics/python/framework/django.rs:26:                "function {} uses .
 src/heuristics/python/hotpath_ext.rs:893:    if contains_any(body, &["os.path.exists(", ".exists()"])
 src/heuristics/python/packaging.rs:249:    candidate.exists().then_some(candidate)
 src/heuristics/python/packaging.rs:626:        if parent.join("__init__.py").exists() {
-src/heuristics/python/performance.rs:538:        &["os.stat(", ".exists()", "is_file(", "is_dir("],
+src/heuristics/python/performance.rs:541:        + lower_body.matches(".exists()").count()
 src/heuristics/rust/bad_practices.rs:5195:            let call_count = body_lower.matches("metadata(").count()
 src/heuristics/rust/bad_practices.rs:5196:                + body_lower.matches("symlink_metadata(").count()
 src/heuristics/rust/bad_practices.rs:5197:                + body_lower.matches("exists(").count()

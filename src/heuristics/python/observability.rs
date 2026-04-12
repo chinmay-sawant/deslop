@@ -1597,17 +1597,27 @@ pub(super) fn project_agnostic_observability_findings(
         ));
     }
 
-    if contains_any(&lower_body, &["logger.", "counter.", "start_span("])
-        && !contains_any(&lower_body, &["operation=", "op_name", "name="])
     {
-        findings.push(push(
-            "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
-            Severity::Info,
-            format!(
-                "function {} does not show a single stable operation name across observability surfaces",
-                function.fingerprint.name
-            ),
-        ));
+        let surfaces = [
+            contains_any(&lower_body, &["logger.", "logging."]),
+            contains_any(&lower_body, &["counter.", "histogram.", "statsd.", "meter."]),
+            contains_any(&lower_body, &["start_span(", "tracer."]),
+        ]
+        .iter()
+        .filter(|&&x| x)
+        .count();
+        if surfaces >= 2
+            && !contains_any(&lower_body, &["operation=", "op_name", "name="])
+        {
+            findings.push(push(
+                "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+                Severity::Info,
+                format!(
+                    "function {} does not show a single stable operation name across observability surfaces",
+                    function.fingerprint.name
+                ),
+            ));
+        }
     }
 
     if contains_any(&lower_body, &["retry", "attempt"])

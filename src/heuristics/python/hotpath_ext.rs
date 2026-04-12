@@ -1000,7 +1000,9 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if lower_body.matches("format(").count() >= 2 || lower_body.matches("f\"").count() >= 2 {
+    if (lower_body.matches("format(").count() >= 4 || lower_body.matches("f\"").count() >= 4)
+        && (lower_body.contains("for ") || lower_body.contains("while "))
+    {
         findings.push(push(
             "invariant_template_or_prefix_string_reformatted_inside_loop",
             format!(
@@ -1010,7 +1012,10 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if contains_any(body, &["{\"", "{'", "dict("]) && lower_body.matches("for ").count() >= 1 {
+    if contains_any(body, &["{\"", "{'"])
+        && lower_body.matches("for ").count() >= 1
+        && (lower_body.matches("{\"").count() + lower_body.matches("dict(").count() >= 3)
+    {
         findings.push(push(
             "lookup_table_derived_from_constants_rebuilt_per_invocation",
             format!(

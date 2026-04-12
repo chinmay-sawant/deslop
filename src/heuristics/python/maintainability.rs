@@ -171,7 +171,7 @@ pub(super) fn project_agnostic_maintainability_findings(
         ));
     }
 
-    if body.matches("return {").count() >= 1 && body.matches(':').count() >= 3 {
+    if body.matches("return {").count() >= 2 && body.matches(':').count() >= 6 {
         findings.push(maintainability_finding(
             file,
             function,
@@ -193,8 +193,9 @@ pub(super) fn project_agnostic_maintainability_findings(
 
     if contains_any(
         &lower_body,
-        &["import ", "register(", "bootstrap", "initialize"],
-    ) && file.imports.len() > 6
+        &["register(", "bootstrap", "initialize"],
+    ) && file.imports.len() > 12
+        && contains_any(&lower_body, &["__import__", "importlib", "sys.modules"])
     {
         findings.push(maintainability_finding(
             file,
@@ -265,7 +266,13 @@ pub(super) fn project_agnostic_maintainability_findings(
         ));
     }
 
-    if file.imports.len() >= 10 && file.functions.len() >= 6 {
+    if file.imports.len() >= 20
+        && file.functions.len() >= 12
+        && contains_any(
+            &lower_body,
+            &["policy", "config", "settings", "permission", "auth", "retry", "validate"],
+        )
+    {
         findings.push(maintainability_finding(
             file,
             function,

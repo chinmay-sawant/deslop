@@ -1441,6 +1441,19 @@ pub(super) fn project_agnostic_boundaries_findings(
                 "return self.data",
             ],
         )
+        && !contains_any(
+            body,
+            &[
+                "return list(",
+                "return dict(",
+                "return set(",
+                ".copy()",
+                "[:]",
+                "return self._generate",
+                "return self._build",
+                "return self._create",
+            ],
+        )
     {
         let line = find_line(body, "return self.", function.fingerprint.start_line)
             .unwrap_or(function.fingerprint.start_line);
