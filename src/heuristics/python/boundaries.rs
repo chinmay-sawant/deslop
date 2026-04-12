@@ -577,16 +577,6 @@ pub(super) fn state_changing_endpoint_missing_csrf_findings(
     Vec::new()
 }
 
-#[allow(dead_code)]
-pub(super) fn hardcoded_secret_in_test_fixture_findings(
-    file: &ParsedFile,
-    _function: &ParsedFunction,
-) -> Vec<Finding> {
-    // Delegated to file-level
-    let _ = file;
-    Vec::new()
-}
-
 /// File-level: hardcoded secrets in test fixtures or seeds
 pub(super) fn hardcoded_secret_in_fixture_file_findings(file: &ParsedFile) -> Vec<Finding> {
     if !file.is_test_file {

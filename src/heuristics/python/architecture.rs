@@ -916,16 +916,6 @@ pub(super) fn executor_not_shut_down_findings(
     Vec::new()
 }
 
-#[allow(dead_code)]
-pub(super) fn get_event_loop_at_module_scope_findings(
-    file: &ParsedFile,
-    _function: &ParsedFunction,
-) -> Vec<Finding> {
-    // File-level check: module scope usage
-    let _ = file;
-    Vec::new() // handled at file level
-}
-
 pub(super) fn blocking_lock_in_async_findings(
     file: &ParsedFile,
     function: &ParsedFunction,

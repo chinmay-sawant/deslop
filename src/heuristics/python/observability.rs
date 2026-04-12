@@ -137,15 +137,6 @@ pub(super) fn logger_error_without_exc_info_findings(
     Vec::new()
 }
 
-#[allow(dead_code)]
-pub(super) fn logging_level_hardcoded_module_scope_findings(
-    file: &ParsedFile,
-    _function: &ParsedFunction,
-) -> Vec<Finding> {
-    let _ = file;
-    Vec::new() // file-level below
-}
-
 pub(super) fn logging_level_hardcoded_file_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file {
         return Vec::new();

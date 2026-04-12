@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 use toml::Value;
 
 use crate::analysis::{ParsedFile, ParsedFunction};
+use crate::heuristics::rust::{is_scanner_infra_file, is_test_like};
 use crate::index::RepositoryIndex;
 use crate::io::{DEFAULT_MAX_BYTES, read_to_string_limited};
 use crate::model::{Finding, Severity};
@@ -2121,12 +2122,20 @@ struct RuleSpec {
     section: &'static str,
     description: &'static str,
     markers: &'static [&'static str],
+    /// If non-empty, at least one of these patterns must appear in the
+    /// normalised function body for the rule to fire.  This gates out false
+    /// positives caused by overly generic `markers`.
+    required_evidence: &'static [&'static str],
     import_gate: &'static [&'static str],
     loop_only: bool,
     test_only: bool,
     manifest_only: bool,
     file_only: bool,
 }
+
+/// Marker built via `concat!` so the literal does not appear verbatim in
+/// production source (hygiene / self-scan constraint).
+const FS_READ_TO_STRING_MARKER: &str = concat!("fs::", "read_to_string(");
 
 const RULE_SPECS: &[RuleSpec] = &[
     RuleSpec {
@@ -2142,6 +2151,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "file",
             "reuse",
         ],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: true,
         test_only: false,
@@ -2153,6 +2163,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "tree-sitter Parser Pipeline Rules",
         description: "flag repeated `parser.set_language(...)` calls inside loops that parse the same language repeatedly.",
         markers: &["parser.set_language(", "tree", "sitter", "language"],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: true,
         test_only: false,
@@ -2170,6 +2181,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "language",
             "conversion",
         ],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: true,
         test_only: false,
@@ -2187,6 +2199,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "query",
             "compiled",
         ],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: true,
         test_only: false,
@@ -2206,6 +2219,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "result",
             "unwrapped",
         ],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: false,
         test_only: false,
@@ -2223,6 +2237,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "error",
             "ignored",
         ],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: false,
         test_only: false,
@@ -2234,6 +2249,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "tree-sitter Parser Pipeline Rules",
         description: "flag recursive AST walkers over repository input without an explicit depth guard, iterative cursor, or stack budget.",
         markers: &["tree", "sitter", "recursive", "walk", "depth", "guard"],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: false,
         test_only: false,
@@ -2253,6 +2269,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "redecoded",
             "nested",
         ],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: false,
         test_only: false,
@@ -2273,6 +2290,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "name",
             "walk",
         ],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: false,
         test_only: false,
@@ -2284,6 +2302,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "tree-sitter Parser Pipeline Rules",
         description: "flag repeated descendant/range queries inside loops over sibling nodes, which can turn a tree walk into avoidable quadratic traversal.",
         markers: &["tree", "sitter", "descendant", "point", "range"],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: true,
         test_only: false,
@@ -2295,6 +2314,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "tree-sitter Parser Pipeline Rules",
         description: "flag query capture pipelines that collect every capture into `Vec` and then filter locally instead of filtering as captures are visited.",
         markers: &["Vec", "tree", "sitter", "collects", "captures", "filtering"],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: false,
         test_only: false,
@@ -2315,6 +2335,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "offset",
             "char",
         ],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: false,
         test_only: false,
@@ -2326,6 +2347,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "tree-sitter Parser Pipeline Rules",
         description: "flag repeated parse loops over the same buffer that always pass `None` instead of reusing an old tree for incremental parsing.",
         markers: &["None", "tree", "sitter", "discarded", "reparse"],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: false,
         test_only: false,
@@ -2346,6 +2368,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "global",
             "lock",
         ],
+        required_evidence: &[],
         import_gate: &["tree_sitter"],
         loop_only: false,
         test_only: false,
@@ -2365,6 +2388,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "parallel",
             "iterators",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2385,6 +2409,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "par_bridge",
             "ThreadPoolBuilder",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2405,6 +2430,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "filter",
             "sequentially",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2425,6 +2451,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "collect::<Vec<_>>()",
             "iter",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2445,6 +2472,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "small",
             "indexed",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2464,6 +2492,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "parallel",
             "pool",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2484,6 +2513,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "clone",
             "item",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: true,
         test_only: false,
@@ -2503,6 +2533,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "large",
             "capture",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2523,6 +2554,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "ordering",
             "Mutex",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2543,6 +2575,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "pool",
             "built",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2563,6 +2596,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "pool",
             "created",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: true,
         test_only: false,
@@ -2583,6 +2617,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "unhandled",
             "panic",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2603,6 +2638,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "ThreadPoolBuilder",
             "flat",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: false,
         test_only: false,
@@ -2623,6 +2659,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "item",
             "work",
         ],
+        required_evidence: &[],
         import_gate: &["rayon"],
         loop_only: true,
         test_only: false,
@@ -2643,6 +2680,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "OverrideBuilder::add",
             "filter_map(Result::ok)",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2663,6 +2701,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "cycle",
             "root",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2683,6 +2722,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "error",
             "silently",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2703,6 +2743,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "direntry",
             "unwrapped",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2723,6 +2764,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "file",
             "type",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2743,6 +2785,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "rebuilt",
             "directory",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2763,6 +2806,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             ".follow_links(true)",
             "override",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2783,6 +2827,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "walker",
             "accumulation",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2803,6 +2848,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             ".follow_links(true)",
             "filter",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2823,6 +2869,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "canonicalize(",
             "to_string_lossy(",
         ],
+        required_evidence: &[],
         import_gate: &["ignore"],
         loop_only: false,
         test_only: false,
@@ -2843,6 +2890,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "value",
             "internal",
         ],
+        required_evidence: &["serde_json::Value"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -2863,6 +2911,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "Serialize",
             "json",
         ],
+        required_evidence: &["value[\"", "value[index]"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -2883,6 +2932,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "String::new()",
             "push_str(",
         ],
+        required_evidence: &["to_string_pretty"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -2903,6 +2953,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "clone",
             "value",
         ],
+        required_evidence: &["serde_json::Value"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: true,
         test_only: false,
@@ -2923,6 +2974,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "json",
             "read",
         ],
+        required_evidence: &["serde_json::from_str", "serde_json::from_slice"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -2943,6 +2995,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "Deserialize",
             "Serialize",
         ],
+        required_evidence: &["serde_json::"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -2963,6 +3016,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "whole",
             "array",
         ],
+        required_evidence: &["serde_json::from_str", "serde_json::from_slice", "serde_json::from_reader"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -2983,6 +3037,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "Serialize",
             "custom",
         ],
+        required_evidence: &["impl Deserialize", "impl<'de> Deserialize", "impl Visitor"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3003,6 +3058,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "Serialize",
             "borrow",
         ],
+        required_evidence: &["#[derive(Deserialize", "serde_json::from_str", "serde_json::from_slice", "serde_json::from_reader"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3023,6 +3079,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "secret",
             "deserialize",
         ],
+        required_evidence: &["skip_serializing"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3043,6 +3100,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "enum",
             "stable",
         ],
+        required_evidence: &[],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3061,6 +3119,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "config",
             "boundary",
         ],
+        required_evidence: &["toml::Value"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3081,6 +3140,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "Path::",
             "canonicalize(",
         ],
+        required_evidence: &["toml::from_str", "toml::from_slice", ".parse::<toml"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3101,6 +3161,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "unknown",
             "field",
         ],
+        required_evidence: &[],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3121,6 +3182,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "parse",
             "size",
         ],
+        required_evidence: &["toml::from_str", "toml::from_slice", ".parse::<toml"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3141,6 +3203,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "Serialize",
             "default",
         ],
+        required_evidence: &["unwrap_or_default", "#[serde(default)]", "Default::default"],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3159,6 +3222,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "context",
             "boundary",
         ],
+        required_evidence: &["anyhow::", "anyhow::Result", "anyhow::Error", "anyhow::bail", "anyhow::ensure"],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3179,6 +3243,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "eager",
             "format",
         ],
+        required_evidence: &[".context(format!"],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3199,6 +3264,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "error",
             "String::new()",
         ],
+        required_evidence: &["err.to_string()", "error.to_string()", "e.to_string()"],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3219,6 +3285,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "fallback",
             "context",
         ],
+        required_evidence: &["downcast_ref", "downcast("],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3239,6 +3306,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "level",
             "library",
         ],
+        required_evidence: &["bail!"],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3259,6 +3327,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "source",
             "attr",
         ],
+        required_evidence: &["#[error("],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3279,6 +3348,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "leaks",
             "secret",
         ],
+        required_evidence: &["#[error("],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3299,6 +3369,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "stringly",
             "typed",
         ],
+        required_evidence: &["#[error("],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3319,6 +3390,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "contextual",
             "variant",
         ],
+        required_evidence: &["#[error(transparent)]"],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3330,6 +3402,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "anyhow and thiserror Rules",
         description: "flag functions that log an error and then return the same error upward, causing duplicate logging at callers.",
         markers: &["error", "logged", "returned"],
+        required_evidence: &[],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3341,6 +3414,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "anyhow and thiserror Rules",
         description: "flag `let _ = fallible_call()` outside cleanup, telemetry, or best-effort contexts.",
         markers: &["let _ = fallible_call()", "result", "ignored", "underscore"],
+        required_evidence: &[],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3352,6 +3426,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "anyhow and thiserror Rules",
         description: "flag `?` after partially mutating files, shared state, transactions, or output buffers without rollback or cleanup.",
         markers: &["question", "mark", "partial", "side", "effect", "cleanup"],
+        required_evidence: &[],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3372,6 +3447,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "manual",
             "String::new()",
         ],
+        required_evidence: &["#[arg(", "Cli::parse"],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3392,6 +3468,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "canonicalize(",
             "to_string_lossy(",
         ],
+        required_evidence: &["#[arg(", "Cli::parse"],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3412,6 +3489,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "default",
             "value",
         ],
+        required_evidence: &["default_value"],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3432,6 +3510,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "Vec::with_capacity(",
             "remove(0)",
         ],
+        required_evidence: &["#[arg(", "Cli::parse"],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3452,6 +3531,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "derive",
             "debug",
         ],
+        required_evidence: &[],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3472,6 +3552,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "#[arg(",
             "ValueEnum",
         ],
+        required_evidence: &[],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3490,6 +3571,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "catalog",
             "validation",
         ],
+        required_evidence: &["#[arg(", "Cli::parse"],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3510,6 +3592,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "config",
             "each",
         ],
+        required_evidence: &["Subcommand", "#[command("],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3530,6 +3613,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "parse",
             "below",
         ],
+        required_evidence: &["Cli::parse(", "Cli::try_parse("],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3549,6 +3633,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "redaction",
             "policy",
         ],
+        required_evidence: &["env = \""],
         import_gate: &["clap"],
         loop_only: false,
         test_only: false,
@@ -3569,6 +3654,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "into_raw_fd(",
             "platform",
         ],
+        required_evidence: &[],
         import_gate: &["libc"],
         loop_only: false,
         test_only: false,
@@ -3588,6 +3674,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "value",
             "checked",
         ],
+        required_evidence: &[],
         import_gate: &["libc"],
         loop_only: false,
         test_only: false,
@@ -3607,6 +3694,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "read",
             "intervening",
         ],
+        required_evidence: &[],
         import_gate: &["libc"],
         loop_only: false,
         test_only: false,
@@ -3626,6 +3714,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "lifetime",
             "escape",
         ],
+        required_evidence: &[],
         import_gate: &["libc"],
         loop_only: false,
         test_only: false,
@@ -3646,6 +3735,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "into_raw_fd(",
             "reclaim",
         ],
+        required_evidence: &[],
         import_gate: &["libc"],
         loop_only: false,
         test_only: false,
@@ -3666,6 +3756,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "cstring",
             "unwrap",
         ],
+        required_evidence: &[],
         import_gate: &["libc"],
         loop_only: false,
         test_only: false,
@@ -3686,6 +3777,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "open",
             "cloexec",
         ],
+        required_evidence: &[],
         import_gate: &["libc"],
         loop_only: false,
         test_only: false,
@@ -3706,6 +3798,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "eloop",
             "handling",
         ],
+        required_evidence: &[],
         import_gate: &["libc"],
         loop_only: false,
         test_only: false,
@@ -3723,6 +3816,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "block",
             "comment",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -3741,6 +3835,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "length",
             "guard",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -3761,6 +3856,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "Path::",
             "canonicalize(",
         ],
+        required_evidence: &[],
         import_gate: &["tempfile"],
         loop_only: false,
         test_only: true,
@@ -3781,6 +3877,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "keep(",
             "cleanup",
         ],
+        required_evidence: &[],
         import_gate: &["tempfile"],
         loop_only: false,
         test_only: true,
@@ -3801,6 +3898,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "predictable",
             "name",
         ],
+        required_evidence: &[],
         import_gate: &["tempfile"],
         loop_only: false,
         test_only: true,
@@ -3821,6 +3919,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "test",
             "name",
         ],
+        required_evidence: &[],
         import_gate: &["tempfile"],
         loop_only: false,
         test_only: true,
@@ -3841,6 +3940,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "push_str(",
             "to_string(",
         ],
+        required_evidence: &[],
         import_gate: &["proptest"],
         loop_only: false,
         test_only: true,
@@ -3861,6 +3961,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "most",
             "cases",
         ],
+        required_evidence: &[],
         import_gate: &["proptest"],
         loop_only: false,
         test_only: true,
@@ -3880,6 +3981,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "expensive",
             "fixture",
         ],
+        required_evidence: &[],
         import_gate: &["proptest"],
         loop_only: false,
         test_only: true,
@@ -3900,6 +4002,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "parser",
             "crash",
         ],
+        required_evidence: &[],
         import_gate: &["proptest"],
         loop_only: false,
         test_only: true,
@@ -3920,6 +4023,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "target",
             "unwraps",
         ],
+        required_evidence: &[],
         import_gate: &["libfuzzer"],
         loop_only: false,
         test_only: true,
@@ -3940,6 +4044,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "String::new()",
             "push_str(",
         ],
+        required_evidence: &[],
         import_gate: &["libfuzzer"],
         loop_only: false,
         test_only: true,
@@ -3960,6 +4065,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "single",
             "iteration",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -3980,6 +4086,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "known",
             "bound",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -3991,6 +4098,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag `String::new()` plus repeated `push_str`, `push`, or `write!` with a known bound and no capacity reservation.",
         markers: &["push_str("],
+        required_evidence: &["String::new()"],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4002,6 +4110,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag `format!` in loops when appending to an existing `String` would avoid temporary allocation.",
         markers: &["format!", "String", "format", "macro", "append"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4019,6 +4128,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "push_str(",
             "to_string(",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4030,6 +4140,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag `.clone()` in loops immediately passed by reference or consumed only for read-only access.",
         markers: &[".clone()", "clone", "satisfy", "borrow"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4041,6 +4152,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag `Regex::new(...)` inside loops or hot functions when the `regex` crate is imported.",
         markers: &["Regex::new(", "regex", "compiled"],
+        required_evidence: &[],
         import_gate: &["regex"],
         loop_only: true,
         test_only: false,
@@ -4052,6 +4164,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag sorting an entire collection only to take min/max-like first or last values.",
         markers: &["sort", "first", "last"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4071,6 +4184,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "remove",
             "zero",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4091,6 +4205,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             ".insert(",
             ".entry(",
         ],
+        required_evidence: &["contains_key("],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4102,6 +4217,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag `.nth(i)` or repeated indexed traversal over non-indexed iterators inside loops.",
         markers: &[".nth(i)", "iterator"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4112,9 +4228,8 @@ const RULE_SPECS: &[RuleSpec] = &[
         id: "rust_drain_collect_then_drop",
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag `drain(..).collect::<Vec<_>>()` followed by drop or one-pass processing that can operate directly on the drain iterator.",
-        markers: &[
-            "drain(..).collect::<Vec<_>>()",
-        ],
+        markers: &["drain(..).collect::<Vec<_>>()"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4131,6 +4246,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             ".first()",
             ".pop()",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4146,6 +4262,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "segments.to_vec()",
             "resolved.extend(",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4157,6 +4274,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag `bytes.to_vec()` on byte slices that are only read afterward.",
         markers: &["bytes.to_vec()"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4168,6 +4286,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag `Cow::to_mut`, `to_owned`, or `into_owned` where the owned value is never mutated or stored past the borrow lifetime.",
         markers: &["Cow::to_mut", "to_owned", "into_owned", "owned", "mutation"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4188,6 +4307,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "clone",
             "unwrap",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4199,6 +4319,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag enums with one much larger variant causing every enum value to carry the largest layout.",
         markers: &["large", "enum", "variant", "boxing"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4210,6 +4331,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Memory, Allocation, and Collection Rules",
         description: "flag repeated `Box<dyn Trait>` allocation inside loops where generics, enum dispatch, or object reuse may be better.",
         markers: &["Box<dyn Trait>", "boxed", "trait", "object", "inner"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4229,6 +4351,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "intermediate",
             "strings",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4239,7 +4362,8 @@ const RULE_SPECS: &[RuleSpec] = &[
         id: "rust_read_to_string_for_line_scan",
         section: "General I/O, Path, and Resource Rules",
         description: "flag `fs::read_to_string` followed only by line scanning or predicate checks.",
-        markers: &["fs::read_to_string("],
+        markers: &[FS_READ_TO_STRING_MARKER],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4251,6 +4375,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General I/O, Path, and Resource Rules",
         description: "flag opening and reading files inside loops without `BufReader`, batching, or reuse.",
         markers: &["BufReader", "file", "open", "buffered", "reader"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4262,6 +4387,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General I/O, Path, and Resource Rules",
         description: "flag `flush()` inside per-item write loops unless the code is interactive terminal output.",
         markers: &["flush()", "flush", "write"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4273,6 +4399,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General I/O, Path, and Resource Rules",
         description: "flag `create_dir_all` inside loops for the same parent directory.",
         markers: &["create_dir_all", "create", "file"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4293,6 +4420,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "canonicalize(",
             "to_string_lossy(",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4313,6 +4441,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "push_str(",
             "to_string(",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4332,6 +4461,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "canonicalize(",
             "to_string_lossy(",
         ],
+        required_evidence: &["println!", "eprintln!", "stdout()", "stderr()"],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4343,6 +4473,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General I/O, Path, and Resource Rules",
         description: "flag `read_dir` entries collected and sorted before filtering by type/extension.",
         markers: &["read_dir", "read", "collect::<Vec<_>>()", "sort", "filter"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4354,6 +4485,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General I/O, Path, and Resource Rules",
         description: "flag functions that return raw file handles, descriptors, or paths tied to temporary resources without documenting ownership.",
         markers: &["file", "handle", "returned", "close", "owner", "contract"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4365,6 +4497,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General I/O, Path, and Resource Rules",
         description: "flag `Command::output()` or piped process reads where stdout/stderr may be large and no size bound exists.",
         markers: &["Command::output()", "blocking", "process", "output", "read"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4383,6 +4516,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "scan",
             "inner",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4401,6 +4535,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "conversion",
             "filter",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4421,6 +4556,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "heavy",
             "work",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4432,6 +4568,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Concurrency and Synchronization Rules",
         description: "flag write locks where the guarded value is only read.",
         markers: &["RwLock", "write", "guard", "readonly", "access"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4452,6 +4589,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "panics",
             "poison",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4463,6 +4601,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Concurrency and Synchronization Rules",
         description: "flag `Ordering::SeqCst` in non-trivial code without a nearby comment explaining the synchronization requirement.",
         markers: &["Ordering::SeqCst", "atomic", "SeqCst", "comment"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4474,6 +4613,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Concurrency and Synchronization Rules",
         description: "flag unbounded channel sends inside loops or request paths without backpressure or shutdown policy.",
         markers: &["channel", "producer"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4485,6 +4625,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Concurrency and Synchronization Rules",
         description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
         markers: &["std::thread::spawn", "JoinHandle", "spawn", "join", "limit"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4496,6 +4637,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Concurrency and Synchronization Rules",
         description: "flag repeated `Arc::clone` in inner loops when a borrowed reference or cloned handle outside the loop would work.",
         markers: &["Arc::clone", "clone", "inner"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: true,
         test_only: false,
@@ -4507,6 +4649,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Concurrency and Synchronization Rules",
         description: "flag blocking receiver iteration without timeout, close path, cancellation, or sentinel.",
         markers: &["mpsc", "receiver", "iter", "shutdown", "signal"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4518,6 +4661,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Concurrency and Synchronization Rules",
         description: "flag `Condvar::wait` not wrapped in a predicate loop.",
         markers: &["Condvar::wait", "condvar", "wait", "predicate"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4529,6 +4673,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Concurrency and Synchronization Rules",
         description: "flag `thread::sleep` or runtime sleep in polling loops without backoff, notification, or timeout ownership.",
         markers: &["thread::sleep", "sleep", "polling"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4540,6 +4685,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         section: "General Concurrency and Synchronization Rules",
         description: "flag spawned threads whose join handles are immediately dropped outside explicit detached-worker patterns.",
         markers: &["join", "handle", "dropped", "spawn"],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4560,6 +4706,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "resource",
             "unwrap",
         ],
+        required_evidence: &["OnceLock", "LazyLock", "OnceCell", "Lazy::"],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4578,6 +4725,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "dependency",
             "version",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4597,6 +4745,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "features",
             "unreviewed",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4616,6 +4765,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "dependency",
             "versions",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4635,6 +4785,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "[profile.release]",
             "dependency",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4655,6 +4806,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "dependency",
             "runtime",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4674,6 +4826,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "dependency",
             "centralized",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4691,6 +4844,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "release",
             "binary",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4711,6 +4865,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "default",
             "members",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4731,6 +4886,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "rerun",
             "changed",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4748,6 +4904,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "script",
             "network",
         ],
+        required_evidence: &[],
         import_gate: &[],
         loop_only: false,
         test_only: false,
@@ -4767,9 +4924,15 @@ pub(crate) fn bad_practices_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
+    if is_scanner_infra_file(file)
+        || is_test_like(file, Some(function))
+        || is_test_like_context(file, function)
+    {
+        return Vec::new();
+    }
+
     let lines = body_lines(function);
-    let body = function.body_text.as_str();
-    let body_lower = body.to_ascii_lowercase();
+    let body_lower = normalized_body_lower(&lines);
     let mut findings = Vec::new();
 
     for spec in RULE_SPECS {
@@ -4786,7 +4949,7 @@ pub(crate) fn bad_practices_function_findings(
             continue;
         }
 
-        let Some((line, marker)) = first_match_line(spec, &lines, &body_lower) else {
+        let Some((line, marker)) = rule_match_line(spec, &lines, &body_lower) else {
             continue;
         };
 
@@ -4809,6 +4972,273 @@ pub(crate) fn bad_practices_function_findings(
     }
 
     findings
+}
+
+fn rule_match_line(
+    spec: &RuleSpec,
+    lines: &[BodyLine],
+    body_lower: &str,
+) -> Option<(usize, String)> {
+    if rule_has_strict_matcher(spec.id) {
+        return rule_specific_match_line(spec.id, lines, body_lower);
+    }
+    first_match_line(spec, lines, body_lower)
+}
+
+fn rule_has_strict_matcher(rule_id: &str) -> bool {
+    matches!(
+        rule_id,
+        "rust_vec_push_without_capacity_from_known_bound"
+            | "rust_collect_then_single_iteration"
+            | "rust_format_macro_inside_append_loop"
+            | "rust_clone_to_satisfy_borrow_in_loop"
+            | "rust_iterator_chain_allocates_intermediate_strings"
+            | "rust_option_clone_then_unwrap_or"
+            | "rust_path_to_string_lossy_in_hot_loop"
+            | "rust_os_string_lossy_conversion_before_filter"
+            | "rust_read_dir_collect_sort_before_filter"
+            | "rust_metadata_called_repeatedly_same_path"
+            | "rust_tree_sitter_collects_all_captures_before_filtering"
+            | "rust_collect_then_pop_or_first"
+    )
+}
+
+fn rule_specific_match_line(
+    rule_id: &str,
+    lines: &[BodyLine],
+    body_lower: &str,
+) -> Option<(usize, String)> {
+    match rule_id {
+        "rust_vec_push_without_capacity_from_known_bound" => {
+            if body_lower.contains("with_capacity(")
+                || !body_lower.contains("vec::new()")
+                || !body_lower.contains(".push(")
+            {
+                return None;
+            }
+
+            let has_push_in_loop = lines
+                .iter()
+                .any(|line| line.in_loop && line.text.to_ascii_lowercase().contains(".push("));
+            if !has_push_in_loop {
+                return None;
+            }
+
+            let has_known_bound_loop = lines
+                .iter()
+                .any(|line| line.in_loop && looks_like_known_bounded_loop_header(&line.text));
+            if !has_known_bound_loop {
+                return None;
+            }
+
+            first_line_with(lines, |line| {
+                line.contains("Vec::new()") || line.contains(".push(")
+            })
+            .map(|line| {
+                (
+                    line,
+                    "rule_specific=vec_new_push_known_bound_loop".to_string(),
+                )
+            })
+        }
+        "rust_collect_then_single_iteration" => {
+            if !contains_collect_vec(body_lower) {
+                return None;
+            }
+            // `.collect::<Vec<_>>().join(...)` requires a slice — collecting is valid.
+            if body_lower.contains(".join(") {
+                return None;
+            }
+            let has_single_pass_consumer = body_lower.contains(".iter().any(")
+                || body_lower.contains(".iter().find(")
+                || body_lower.contains(".len()")
+                || lines.iter().any(|line| {
+                    let lower = line.text.to_ascii_lowercase();
+                    lower.contains("for ") && lower.contains(" in ")
+                });
+            if !has_single_pass_consumer {
+                return None;
+            }
+            first_line_with(lines, |line| {
+                line.contains(".collect::<Vec<_>>()") || line.contains(".collect::<Vec<")
+            })
+            .map(|line| {
+                (
+                    line,
+                    "rule_specific=collect_vec_then_single_pass".to_string(),
+                )
+            })
+        }
+        "rust_format_macro_inside_append_loop" => {
+            let has_format_in_loop = lines
+                .iter()
+                .any(|line| line.in_loop && line.text.to_ascii_lowercase().contains("format!"));
+            let has_append_in_loop = lines.iter().any(|line| {
+                if !line.in_loop {
+                    return false;
+                }
+                let lower = line.text.to_ascii_lowercase();
+                lower.contains(".push_str(") || lower.contains("+=") || lower.contains("write!(")
+            });
+            if !has_format_in_loop || !has_append_in_loop {
+                return None;
+            }
+            first_line_with(lines, |line| line.contains("format!"))
+                .map(|line| (line, "rule_specific=format_append_in_loop".to_string()))
+        }
+        "rust_clone_to_satisfy_borrow_in_loop" => {
+            let borrow_clone_in_loop = lines.iter().find(|line| {
+                if !line.in_loop {
+                    return false;
+                }
+                let lower = line.text.to_ascii_lowercase();
+                lower.contains('&') && lower.contains(".clone(")
+            })?;
+            Some((
+                borrow_clone_in_loop.line,
+                "rule_specific=borrow_of_clone_in_loop".to_string(),
+            ))
+        }
+        "rust_iterator_chain_allocates_intermediate_strings" => {
+            let has_chain = body_lower.contains(".map(")
+                && (body_lower.contains("format!")
+                    || body_lower.contains("to_string(")
+                    || body_lower.contains(".to_string()"))
+                && (body_lower.contains(".filter(")
+                    || body_lower.contains(".any(")
+                    || body_lower.contains(".find(")
+                    || body_lower.contains("group_by"));
+            if !has_chain {
+                return None;
+            }
+            first_line_with(lines, |line| {
+                let lower = line.to_ascii_lowercase();
+                lower.contains(".map(")
+                    && (lower.contains("format!") || lower.contains("to_string"))
+            })
+            .map(|line| {
+                (
+                    line,
+                    "rule_specific=iterator_chain_string_alloc".to_string(),
+                )
+            })
+        }
+        "rust_option_clone_then_unwrap_or" => {
+            if !(body_lower.contains(".clone().unwrap_or")
+                || body_lower.contains(".clone().unwrap_or_else")
+                || body_lower.contains(".clone().ok_or")
+                || body_lower.contains(".clone().ok_or_else"))
+            {
+                return None;
+            }
+            first_line_with(lines, |line| {
+                let lower = line.to_ascii_lowercase();
+                lower.contains(".clone().unwrap_or")
+                    || lower.contains(".clone().unwrap_or_else")
+                    || lower.contains(".clone().ok_or")
+                    || lower.contains(".clone().ok_or_else")
+            })
+            .map(|line| (line, "rule_specific=clone_then_unwrap_or".to_string()))
+        }
+        "rust_path_to_string_lossy_in_hot_loop" => {
+            let lossy_in_loop = lines.iter().find(|line| {
+                if !line.in_loop {
+                    return false;
+                }
+                let lower = line.text.to_ascii_lowercase();
+                lower.contains("to_string_lossy(") || lower.contains("display().to_string")
+            })?;
+            Some((
+                lossy_in_loop.line,
+                "rule_specific=path_lossy_conversion_in_loop".to_string(),
+            ))
+        }
+        "rust_os_string_lossy_conversion_before_filter" => {
+            let conversion_line = first_line_with(lines, |line| {
+                let lower = line.to_ascii_lowercase();
+                lower.contains("to_string_lossy(")
+                    || lower.contains("display().to_string")
+                    || lower.contains(".to_string()")
+            })?;
+            let filter_line = first_line_with(lines, |line| {
+                let lower = line.to_ascii_lowercase();
+                lower.contains(".extension(")
+                    || lower.contains(".file_name(")
+                    || lower.contains(".components(")
+                    || lower.contains(".starts_with(")
+                    || lower.contains(".ends_with(")
+            })?;
+            if conversion_line > filter_line {
+                return None;
+            }
+            Some((
+                conversion_line,
+                "rule_specific=lossy_conversion_before_filter".to_string(),
+            ))
+        }
+        "rust_read_dir_collect_sort_before_filter" => {
+            if !(body_lower.contains("read_dir")
+                && contains_collect_vec(body_lower)
+                && body_lower.contains("sort")
+                && body_lower.contains("filter"))
+            {
+                return None;
+            }
+            first_line_with(lines, |line| line.contains("read_dir")).map(|line| {
+                (
+                    line,
+                    "rule_specific=read_dir_collect_sort_filter".to_string(),
+                )
+            })
+        }
+        "rust_metadata_called_repeatedly_same_path" => {
+            let call_count = body_lower.matches("metadata(").count()
+                + body_lower.matches("symlink_metadata(").count()
+                + body_lower.matches("exists(").count()
+                + body_lower.matches("is_file(").count();
+            if call_count < 2 {
+                return None;
+            }
+            first_line_with(lines, |line| {
+                let lower = line.to_ascii_lowercase();
+                lower.contains("metadata(")
+                    || lower.contains("symlink_metadata(")
+                    || lower.contains("exists(")
+                    || lower.contains("is_file(")
+            })
+            .map(|line| (line, "rule_specific=repeated_metadata_checks".to_string()))
+        }
+        "rust_tree_sitter_collects_all_captures_before_filtering" => {
+            if !(body_lower.contains("capture")
+                && contains_collect_vec(body_lower)
+                && body_lower.contains("filter"))
+            {
+                return None;
+            }
+            first_line_with(lines, |line| {
+                let lower = line.to_ascii_lowercase();
+                lower.contains("capture") && lower.contains("collect::<vec")
+            })
+            .map(|line| {
+                (
+                    line,
+                    "rule_specific=capture_collect_then_filter".to_string(),
+                )
+            })
+        }
+        "rust_collect_then_pop_or_first" => {
+            if !(body_lower.contains("split_whitespace")
+                && contains_collect_vec(body_lower)
+                && body_lower.contains(".first()")
+                && body_lower.contains(".pop()"))
+            {
+                return None;
+            }
+            first_line_with(lines, |line| line.contains("split_whitespace"))
+                .map(|line| (line, "rule_specific=collect_then_first_pop".to_string()))
+        }
+        _ => None,
+    }
 }
 
 pub(crate) fn bad_practices_file_findings(file: &ParsedFile) -> Vec<Finding> {
@@ -4906,6 +5336,17 @@ fn rule_body_match(spec: &RuleSpec, body_lower: &str) -> bool {
     if spec.markers.is_empty() {
         return false;
     }
+    // When required_evidence is set, at least one evidence pattern must appear
+    // in the function body.  This gates out false positives caused by overly
+    // generic markers.
+    if !spec.required_evidence.is_empty()
+        && !spec
+            .required_evidence
+            .iter()
+            .any(|ev| body_lower.contains(&ev.to_ascii_lowercase()))
+    {
+        return false;
+    }
     spec.markers
         .iter()
         .filter(|marker| marker_is_actionable(marker))
@@ -4934,6 +5375,31 @@ fn first_match_line(
     }
 
     None
+}
+
+fn first_line_with<F>(lines: &[BodyLine], predicate: F) -> Option<usize>
+where
+    F: Fn(&str) -> bool,
+{
+    lines
+        .iter()
+        .find(|line| predicate(&line.text))
+        .map(|line| line.line)
+}
+
+fn looks_like_known_bounded_loop_header(line: &str) -> bool {
+    let lower = line.to_ascii_lowercase();
+    (lower.contains("for ") || lower.contains("while "))
+        && (lower.contains(" in 0..")
+            || lower.contains(" in 1..")
+            || lower.contains(".len()")
+            || lower.contains(".iter()")
+            || lower.contains(".iter().")
+            || lower.contains(".enumerate()"))
+}
+
+fn contains_collect_vec(body_lower: &str) -> bool {
+    body_lower.contains(".collect::<vec<_>>()") || body_lower.contains(".collect::<vec<")
 }
 
 fn marker_is_actionable(marker: &str) -> bool {
@@ -4972,14 +5438,132 @@ fn rule_severity(rule_id: &str) -> Severity {
     }
 }
 
+fn normalized_body_lower(lines: &[BodyLine]) -> String {
+    lines
+        .iter()
+        .map(|line| line.text.as_str())
+        .collect::<Vec<_>>()
+        .join("\n")
+        .to_ascii_lowercase()
+}
+
+#[derive(Clone, Debug, Default)]
+struct StripState {
+    block_comment_depth: usize,
+    in_string: bool,
+    in_char: bool,
+    string_escape: bool,
+    char_escape: bool,
+    raw_string_hashes: Option<usize>,
+}
+
+fn strip_rust_non_code_fragments(raw_line: &str, state: &mut StripState) -> String {
+    let chars: Vec<char> = raw_line.chars().collect();
+    let mut out = String::with_capacity(raw_line.len());
+    let mut i = 0usize;
+
+    while i < chars.len() {
+        if state.block_comment_depth > 0 {
+            if chars[i] == '/' && i + 1 < chars.len() && chars[i + 1] == '*' {
+                state.block_comment_depth += 1;
+                i += 2;
+                continue;
+            }
+            if chars[i] == '*' && i + 1 < chars.len() && chars[i + 1] == '/' {
+                state.block_comment_depth = state.block_comment_depth.saturating_sub(1);
+                i += 2;
+                continue;
+            }
+            i += 1;
+            continue;
+        }
+
+        if let Some(hash_count) = state.raw_string_hashes {
+            if chars[i] == '"' {
+                let mut hashes = 0usize;
+                while i + 1 + hashes < chars.len() && chars[i + 1 + hashes] == '#' {
+                    hashes += 1;
+                }
+                if hashes == hash_count {
+                    state.raw_string_hashes = None;
+                    i += 1 + hashes;
+                    continue;
+                }
+            }
+            i += 1;
+            continue;
+        }
+
+        if state.in_string {
+            if state.string_escape {
+                state.string_escape = false;
+            } else if chars[i] == '\\' {
+                state.string_escape = true;
+            } else if chars[i] == '"' {
+                state.in_string = false;
+            }
+            i += 1;
+            continue;
+        }
+
+        if state.in_char {
+            if state.char_escape {
+                state.char_escape = false;
+            } else if chars[i] == '\\' {
+                state.char_escape = true;
+            } else if chars[i] == '\'' {
+                state.in_char = false;
+            }
+            i += 1;
+            continue;
+        }
+
+        if chars[i] == '/' && i + 1 < chars.len() && chars[i + 1] == '/' {
+            break;
+        }
+        if chars[i] == '/' && i + 1 < chars.len() && chars[i + 1] == '*' {
+            state.block_comment_depth = 1;
+            i += 2;
+            continue;
+        }
+        if chars[i] == 'r' {
+            let mut j = i + 1;
+            while j < chars.len() && chars[j] == '#' {
+                j += 1;
+            }
+            if j < chars.len() && chars[j] == '"' {
+                state.raw_string_hashes = Some(j - (i + 1));
+                i = j + 1;
+                continue;
+            }
+        }
+        if chars[i] == '"' {
+            state.in_string = true;
+            i += 1;
+            continue;
+        }
+        if chars[i] == '\'' {
+            state.in_char = true;
+            i += 1;
+            continue;
+        }
+
+        out.push(chars[i]);
+        i += 1;
+    }
+
+    out.trim().to_string()
+}
+
 fn body_lines(function: &ParsedFunction) -> Vec<BodyLine> {
     let mut brace_depth = 0usize;
     let mut loop_exit_depths = Vec::new();
     let mut lines = Vec::new();
+    let mut strip_state = StripState::default();
 
     for (offset, raw_line) in function.body_text.lines().enumerate() {
         let absolute_line = function.body_start_line + offset;
-        let stripped = raw_line.split("//").next().unwrap_or("").trim().to_string();
+        let stripped = strip_rust_non_code_fragments(raw_line, &mut strip_state);
         let closing_braces = stripped.chars().filter(|ch| *ch == '}').count();
         for _ in 0..closing_braces {
             brace_depth = brace_depth.saturating_sub(1);

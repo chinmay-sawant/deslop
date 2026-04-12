@@ -1,30 +1,26 @@
 deslop scan root: /home/chinmay/ChinmayPersonalProjects/deslop
-Source files discovered: 301
-Source files analyzed: 300
-Functions fingerprinted: 2543
-Findings: 27
-Index summary: packages=300 symbols=3053 imports=2272
+Source files discovered: 305
+Source files analyzed: 304
+Functions fingerprinted: 2613
+Findings: 30
+Index summary: packages=304 symbols=3132 imports=2306
 Parse failures: 0
-Timings: discover=44ms parse=1267ms index=24ms heuristics=378ms total=1730ms
+Timings: discover=18ms parse=862ms index=19ms heuristics=411ms total=1313ms
 
 Findings:
-  - /home/chinmay/ChinmayPersonalProjects/deslop/.github/workflows/ci.yml:1 repo CI or build automation does not visibly run `go test -race` [ci_missing_go_test_race]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/go/parser/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/go/parser/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/go/parser/mod.rs:37 function parse_file uses a generic name without strong domain-specific signals [generic_name]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/python/parser/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/python/parser/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/python/parser/mod.rs:27 function parse_file uses a generic name without strong domain-specific signals [generic_name]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/rust/findings/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/rust/findings/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/rust/parser/items/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/rust/parser/items/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/rust/parser/items/mod.rs:1 module file /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/rust/parser/items/mod.rs is large enough to justify a closer ownership split [rust_oversized_module_file]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/analysis/rust/parser/mod.rs:26 function parse_file uses a generic name without strong domain-specific signals [generic_name]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/benchmark/mod.rs:33 flag `Vec::new()` followed by pushes inside a loop over a known bounded iterator without `with_capacity`. in function benchmark_repository_with_go_semantic [rust_vec_push_without_capacity_from_known_bound]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/report.rs:54 flag `to_string_lossy`, `display().to_string`, or path formatting inside repository/file traversal loops. in function format_scan_report [rust_path_to_string_lossy_in_hot_loop]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/report.rs:54 flag `.to_string()` or `String::from(...)` on borrowed strings inside loops where borrowing would satisfy the callee. in function format_scan_report [rust_to_string_on_str_in_loop]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/report.rs:126 flag `to_value` followed by `from_value`, or `to_string` followed by `from_str`, when a direct conversion or typed boundary is available. in function format_scan_report_json [rust_serde_json_roundtrip_conversion]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/cli/report.rs:126 flag `serde_json::to_string_pretty` in non-human-output hot paths, APIs, or report generation loops. in function format_scan_report_json [rust_serde_json_to_string_pretty_in_machine_path]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/config.rs:63 flag manifest/config parsing helpers that read and parse TOML without a byte limit. in function load_repository_config [rust_toml_manifest_parse_without_size_limit]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/config.rs:63 flag `toml::from_str`, `toml::from_slice`, or `str::parse::<toml::Value>()` inside request paths, scan loops, or repeated functions. in function load_repository_config [rust_toml_parse_in_hot_path]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/framework_patterns/data_access.rs:113 direct call to prepare_like_call_lines resolves to local Rust import path super::gin::prepare_like_call_lines, but no matching callable symbol was indexed [hallucinated_import_call]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/framework_patterns/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/framework_patterns/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/framework_patterns/mod.rs:1 module file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/framework_patterns/mod.rs is large enough to justify a closer ownership split [rust_oversized_module_file]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/architecture.rs:919 file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/architecture.rs suppresses dead_code broadly [rust_broad_allow_dead_code]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/boundaries.rs:580 file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/boundaries.rs suppresses dead_code broadly [rust_broad_allow_dead_code]
-  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/go/framework_patterns/mod.rs:17 runtime source imports crates that are commonly build-only dependencies [rust_manifest_build_dependency_used_at_runtime]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/boundaries.rs:986 file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/boundaries.rs suppresses dead_code broadly [rust_broad_allow_dead_code]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/mod.rs:1 module file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/mod.rs is large enough to justify a closer ownership split [rust_oversized_module_file]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/observability.rs:40 file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/observability.rs suppresses dead_code broadly [rust_broad_allow_dead_code]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/python/quality/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
@@ -33,5 +29,12 @@ Findings:
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/rust/mod.rs:1 module file /home/chinmay/ChinmayPersonalProjects/deslop/src/heuristics/rust/mod.rs is large enough to justify a closer ownership split [rust_oversized_module_file]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/index/mod.rs:1 mod.rs file /home/chinmay/ChinmayPersonalProjects/deslop/src/index/mod.rs is acting as a catch-all module [rust_mod_rs_catchall]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/index/mod.rs:1 module file /home/chinmay/ChinmayPersonalProjects/deslop/src/index/mod.rs is large enough to justify a closer ownership split [rust_oversized_module_file]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/io.rs:67 flag repeated `metadata`, `symlink_metadata`, `exists`, or `is_file` checks for the same path in one function. in function reject_symlink [rust_metadata_called_repeatedly_same_path]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/lib.rs:26 file /home/chinmay/ChinmayPersonalProjects/deslop/src/lib.rs exposes many public re-exports from the root surface [rust_root_reexport_wall]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/main.rs:64 flag CLI string arguments that are manually matched against a fixed set instead of using `ValueEnum` or `value_parser`. in function main [rust_clap_closed_set_manual_string_match]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/main.rs:64 flag `Cli::parse()` or `try_parse()` called from library code or tests without dependency injection, making the code hard to reuse and test. in function main [rust_clap_parse_called_below_main]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/main.rs:64 flag `PathBuf` or path-like CLI values used for reads/writes without root containment, canonicalization strategy, or symlink policy. in function main [rust_clap_path_arg_used_without_validation]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/main.rs:64 flag rule-id-like CLI arguments accepted as strings without checking against the known rule registry. in function main [rust_clap_rule_id_arg_without_catalog_validation]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/main.rs:64 flag `Vec<String>` or variadic CLI arguments that feed scan/filter work without a limit, deduplication, or validation. in function main [rust_clap_unbounded_vec_arg_on_scan_path]
   - /home/chinmay/ChinmayPersonalProjects/deslop/src/model/scan.rs:48 struct FunctionFingerprint models enum-like boundary field kind as String [rust_stringly_typed_enum_boundary]
+  - /home/chinmay/ChinmayPersonalProjects/deslop/src/rules.rs:56 flag `OnceLock`, `LazyLock`, or lazy initialization that unwraps fallible setup instead of returning initialization errors at bootstrap. in function rule_registry [rust_once_lock_initializes_fallible_resource_with_unwrap]

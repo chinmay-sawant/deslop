@@ -44,6 +44,7 @@ scan:
 scan-info:
 	$(CARGO) run -- scan $(PATH_TO_SCAN) --no-fail > results.txt
 	python3 scripts/extract_finding_context.py results.txt
+	python3 scripts/extract_function_context.py results.txt
 
 scan-gopdfsuit:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_GOPDFSUIT) > temp_gopdfsuit.txt
