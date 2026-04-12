@@ -7818,7 +7818,7 @@
       ]
     },
     "rust": {
-      "ruleCount": 249,
+      "ruleCount": 250,
       "families": [
         {
           "id": "api_design",
@@ -8020,7 +8020,7 @@
           "id": "bad_practices",
           "label": "Bad Practices",
           "summary": "Bad Practices rules for the rust catalog.",
-          "ruleCount": 149,
+          "ruleCount": 150,
           "rules": [
             {
               "id": "rust_anyhow_bail_in_low_level_library_module",
@@ -8157,6 +8157,12 @@
             {
               "id": "rust_clone_to_satisfy_borrow_in_loop",
               "label": "Rust Clone to Satisfy Borrow in Loop",
+              "defaultSeverity": "contextual",
+              "status": "stable"
+            },
+            {
+              "id": "rust_collect_then_pop_or_first",
+              "label": "Rust Collect Then Pop or First",
               "defaultSeverity": "contextual",
               "status": "stable"
             },

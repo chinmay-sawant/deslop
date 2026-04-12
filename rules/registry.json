@@ -17015,6 +17015,19 @@
     "description": "flag `.clone()` in loops immediately passed by reference or consumed only for read-only access."
   },
   {
+    "id": "rust_collect_then_pop_or_first",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag collecting a split iterator into `Vec` just to read the first and last entries with `first()` and `pop()`."
+  },
+  {
     "id": "rust_collect_then_single_iteration",
     "language": "rust",
     "family": "bad_practices",

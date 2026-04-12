@@ -327,6 +327,20 @@
       "fix": "For Rust Clone to Satisfy Borrow in Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
     },
     {
+      "id": "rust_collect_then_pop_or_first",
+      "label": "Rust Collect Then Pop or First",
+      "description": "flag collecting a split iterator into `Vec` just to read the first and last entries with `first()` and `pop()`.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Collect Then Pop or First matters because the pattern here, flag collecting a split iterator into `Vec` just to read the first and last entries with `first()` and `pop()`, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Collect Then Pop or First in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
       "id": "rust_collect_then_single_iteration",
       "label": "Rust Collect Then Single Iteration",
       "description": "flag `.collect::<Vec<_>>()` immediately followed by one `for` loop, `.iter().any`, `.iter().find`, or `.len()` where streaming would avoid allocation.",

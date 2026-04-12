@@ -28,6 +28,8 @@ fn bad_practices_positive_fixture_reports_representative_rules() {
             "rust_libc_cstring_unwrap_on_external_input",
             "rust_mutex_lock_unwrap_panics_on_poison",
             "rust_bytes_to_vec_for_readonly_use",
+            "rust_collect_then_pop_or_first",
+            "rust_read_to_string_for_line_scan",
             "rust_vec_extend_from_intermediate_allocation",
         ],
     );
@@ -52,6 +54,8 @@ fn bad_practices_clean_fixture_stays_clean_for_representative_rules() {
             "rust_libc_cstring_unwrap_on_external_input",
             "rust_mutex_lock_unwrap_panics_on_poison",
             "rust_bytes_to_vec_for_readonly_use",
+            "rust_collect_then_pop_or_first",
+            "rust_read_to_string_for_line_scan",
             "rust_vec_extend_from_intermediate_allocation",
         ],
     );
@@ -66,6 +70,29 @@ fn bad_practices_honors_rule_ignore_directives() {
 
     assert_rules_absent(&report, &["rust_collect_then_single_iteration"]);
     assert_rules_present(&report, &["rust_vec_remove_zero_in_loop"]);
+}
+
+#[test]
+fn bad_practices_real_sources_do_not_misclassify_bounded_reads_or_single_allocations() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "src/io.rs",
+        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/io.rs")),
+    );
+    workspace.write_file(
+        "src/rules.rs",
+        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/rules.rs")),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_absent(
+        &report,
+        &[
+            "rust_read_to_string_for_line_scan",
+            "rust_string_push_without_capacity_from_known_bound",
+        ],
+    );
 }
 
 #[test]

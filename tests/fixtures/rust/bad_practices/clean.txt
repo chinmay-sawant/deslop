@@ -7,3 +7,7 @@ pub fn normalize(name: &str) -> String {
     output.push_str(name.trim());
     output
 }
+
+pub fn parse_import_path(path_literal: &str) -> String {
+    path_literal.trim_matches('"').to_string()
+}

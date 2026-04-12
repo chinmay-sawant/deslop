@@ -32,14 +32,14 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **1504 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **1505 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
 | go | 651 | 2 | 0 | 653 |
 | python | 591 | 0 | 0 | 591 |
-| rust | 237 | 12 | 0 | 249 |
+| rust | 238 | 12 | 0 | 250 |
 
 The sections below are generated from the rule registry and grouped by language and family.
 When the same rule ID is implemented in more than one backend, it appears once in each relevant language section.
@@ -1373,7 +1373,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `tight_module_coupling`: Modules that depend on a large number of repository-local Python modules.
 - `too_many_instance_attributes`: Classes that assign an unusually large number of instance attributes across their methods.
 
-### Rust rules (249)
+### Rust rules (250)
 
 #### Api Design (21)
 - `rust_arc_mutex_option_state`: Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers.
@@ -1409,7 +1409,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_async_spawn_cancel_at_await`: Async work is spawned without an obvious cancellation path. *(status: experimental)*
 - `rust_async_std_mutex_await`: std::sync::Mutex appears to be held across .await in async code. *(status: experimental)*
 
-#### Bad Practices (149)
+#### Bad Practices (150)
 - `rust_anyhow_bail_in_low_level_library_module`: flag `anyhow::bail!` in domain, parser, storage, or library modules that should usually expose typed error variants.
 - `rust_anyhow_context_missing_on_boundary_io`: flag `?` on filesystem, environment, process, parser, config, or network calls in CLI/boundary code without `.context(...)` or `.with_context(...)`.
 - `rust_anyhow_downcast_without_fallback_context`: flag `downcast_ref`/`downcast` handling that drops the original context or returns a generic fallback.
@@ -1433,6 +1433,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_clap_subcommand_reloads_config_in_each_branch`: flag repeated config loading inside every subcommand branch instead of a shared pre-dispatch normalization step.
 - `rust_clap_unbounded_vec_arg_on_scan_path`: flag `Vec<String>` or variadic CLI arguments that feed scan/filter work without a limit, deduplication, or validation.
 - `rust_clone_to_satisfy_borrow_in_loop`: flag `.clone()` in loops immediately passed by reference or consumed only for read-only access.
+- `rust_collect_then_pop_or_first`: flag collecting a split iterator into `Vec` just to read the first and last entries with `first()` and `pop()`.
 - `rust_collect_then_single_iteration`: flag `.collect::<Vec<_>>()` immediately followed by one `for` loop, `.iter().any`, `.iter().find`, or `.len()` where streaming would avoid allocation.
 - `rust_condvar_wait_without_predicate_loop`: flag `Condvar::wait` not wrapped in a predicate loop.
 - `rust_cow_to_owned_without_mutation`: flag `Cow::to_mut`, `to_owned`, or `into_owned` where the owned value is never mutated or stored past the borrow lifetime.

@@ -155,3 +155,16 @@ fn normalize_rust_path(
         _ => None,
     }
 }
+
+fn parse_import_spec(node: &str, source: &str) -> Option<(String, String)> {
+    let text = source.get(..node.len())?.trim();
+    let mut parts = text.split_whitespace().collect::<Vec<_>>();
+    let path_literal = parts.pop()?;
+    let path = path_literal.trim_matches('"').to_string();
+    let alias = parts
+        .first()
+        .map(|alias| alias.to_string())
+        .unwrap_or_else(|| path.clone());
+
+    Some((alias, path))
+}
