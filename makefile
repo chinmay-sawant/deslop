@@ -40,6 +40,7 @@ fmt:
 scan:
 	$(CARGO) run -- scan $(PATH_TO_SCAN) > results.txt
 	python3 scripts/extract_finding_context.py results.txt
+	python3 scripts/extract_function_context.py results.txt
 
 scan-info:
 	$(CARGO) run -- scan $(PATH_TO_SCAN) --no-fail > results.txt
@@ -48,24 +49,30 @@ scan-info:
 
 scan-gopdfsuit:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_GOPDFSUIT) > temp_gopdfsuit.txt
+	python3 scripts/extract_function_context.py temp_gopdfsuit.txt
 
 scan-gopdfsuit-info:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_GOPDFSUIT) --no-fail > temp_gopdfsuit.txt
 	python3 scripts/extract_finding_context.py temp_gopdfsuit.txt
+	python3 scripts/extract_function_context.py temp_gopdfsuit.txt
 
 scan-snapback:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_SNAPBACK) > temp_snapback.txt
+	python3 scripts/extract_function_context.py temp_snapback.txt
 
 scan-snapback-info:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_SNAPBACK) --no-fail > temp_snapback.txt
 	python3 scripts/extract_finding_context.py temp_snapback.txt
+	python3 scripts/extract_function_context.py temp_snapback.txt
 
 scan-claw:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_CLAW) --ignore hallucinated_import_call > temp_claw.txt
+	python3 scripts/extract_function_context.py temp_claw.txt
 
 scan-claw-info:
 	$(CARGO) run -- scan $(PATH_TO_SCAN_CLAW) --ignore hallucinated_import_call --no-fail > temp_claw.txt
 	python3 scripts/extract_finding_context.py temp_claw.txt
+	python3 scripts/extract_function_context.py temp_claw.txt
 
 # Clean build artifacts and temporary files
 clean:
@@ -75,6 +82,7 @@ clean:
 temp:
 	cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/GO_FHIR_DEMO --no-fail > temp.txt
 	python3 scripts/extract_finding_context.py temp.txt
+	python3 scripts/extract_function_context.py temp.txt
 
 # Display help for make targets
 help:
