@@ -75,6 +75,230 @@ def main(customer, repo, cache, client):
 }
 
 #[test]
+fn test_project_agnostic_architecture_rule_skips_http_exception_status_code() {
+    let report = scan(&[(
+        "app/api.py",
+        r#"
+from fastapi import HTTPException
+
+def ingest_chunk(payload):
+    chunk = {"id": 1}
+    if not payload:
+        raise HTTPException(status_code=404, detail="missing")
+    return {"chunk": chunk}
+"#,
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &["function_returns_domain_value_and_transport_metadata"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_boundaries_rule_skips_path_and_fstring_constants() {
+    let report = scan(&[(
+        "app/config.py",
+        r#"
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+SAMPLE_RATE = 16000
+WS_URL = f"wss://example.invalid/ws?sample_rate={SAMPLE_RATE}"
+"#,
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &["module_constant_rebound_after_public_import"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_boundaries_rule_still_flags_mutable_constants() {
+    let report = scan(&[(
+        "app/detector.py",
+        r#"
+ALERT_PHRASES = [
+    "important",
+    "remember this",
+]
+"#,
+    )]);
+
+    assert_rules_present(
+        &report,
+        &["module_constant_rebound_after_public_import"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_quality_rule_skips_passthrough_any_wrapper() {
+    let report = scan(&[(
+        "app/contracts.py",
+        r#"
+from typing import Any
+
+def passthrough(value: Any) -> Any:
+    return value
+"#,
+    )]);
+
+    assert_rules_absent(&report, &["public_any_type_leak"]);
+}
+
+#[test]
+fn test_project_agnostic_boundaries_rule_requires_mutation_evidence() {
+    let report = scan(&[(
+        "app/cache.py",
+        r#"
+class Catalog:
+    def __init__(self, items):
+        self._items = tuple(items)
+
+    def items(self):
+        return self._items
+"#,
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &["helper_returns_live_internal_collection_reference"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_boundaries_rule_flags_mutated_live_collection() {
+    let report = scan(&[(
+        "app/cache.py",
+        r#"
+class Catalog:
+    def __init__(self):
+        self._items = []
+
+    def add(self, value):
+        self._items.append(value)
+
+    def items(self):
+        return self._items
+"#,
+    )]);
+
+    assert_rules_present(
+        &report,
+        &["helper_returns_live_internal_collection_reference"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_performance_rule_requires_same_dataset() {
+    let report = scan(&[(
+        "app/perf.py",
+        r#"
+def normalize(items, others):
+    left = []
+    right = []
+    for item in items:
+        left.append(item.strip())
+    for other in others:
+        right.append(other.lower())
+    return left, right
+"#,
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &["same_dataset_normalized_in_multiple_full_passes"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_discipline_rule_requires_loop_local_recovery_logging() {
+    let report = scan(&[(
+        "app/worker.py",
+        r#"
+import logging
+
+def run(items):
+    logger = logging.getLogger(__name__)
+    for item in items:
+        process(item)
+    logger.error("failed run")
+"#,
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &["loop_interleaves_core_work_logging_and_recovery_logic"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_discipline_rule_flags_loop_local_recovery_logging() {
+    let report = scan(&[(
+        "app/worker.py",
+        r#"
+import logging
+
+def run(items):
+    logger = logging.getLogger(__name__)
+    for item in items:
+        try:
+            process(item)
+        except Exception:
+            logger.exception("failed item")
+            continue
+"#,
+    )]);
+
+    assert_rules_present(
+        &report,
+        &["loop_interleaves_core_work_logging_and_recovery_logic"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_hotpath_rule_skips_tuple_iteration_false_match() {
+    let report = scan(&[(
+        "app/io.py",
+        r#"
+def cleanup(paths):
+    for path in ("a.txt", "b.txt"):
+        remove(path)
+"#,
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &["membership_test_against_list_or_tuple_literal_inside_loop"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_hotpath_ext_rule_skips_data_dependent_fstrings() {
+    let report = scan(&[(
+        "app/export.py",
+        r#"
+def render(rows):
+    output = []
+    for row in rows:
+        output.append(f"row:{row}")
+        output.append(f"row2:{row}")
+        output.append(f"row3:{row}")
+        output.append(f"row4:{row}")
+        output.append(f"row5:{row}")
+        output.append(f"row6:{row}")
+    return output
+"#,
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &["invariant_template_or_prefix_string_reformatted_inside_loop"],
+    );
+}
+
+#[test]
 fn test_project_agnostic_boundary_and_discipline_rules_positive() {
     let report = scan(&[(
         "app/api.py",

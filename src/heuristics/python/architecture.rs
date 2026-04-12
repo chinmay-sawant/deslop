@@ -1264,31 +1264,7 @@ pub(super) fn project_agnostic_architecture_findings(
         ));
     }
 
-    if contains_any(
-        body,
-        &[
-            "\"headers\":",
-            "'headers':",
-            "status_code=",
-            "return payload, status",
-            "return data, status",
-        ],
-    ) && contains_any(body, &["return {", "return data", "return payload"])
-        || (contains_any(body, &["\"status\":", "'status':"])
-            && contains_any(body, &["200", "201", "400", "404", "500"])
-            && contains_any(body, &["return {", "return data", "return payload"]))
-    {
-        let line = find_line(body, "status_code=", function.fingerprint.start_line)
-            .or_else(|| find_line(body, "\"headers\":", function.fingerprint.start_line))
-            .or_else(|| find_line(body, "\"status\":", function.fingerprint.start_line))
-            .or_else(|| {
-                find_line(
-                    body,
-                    "return payload, status",
-                    function.fingerprint.start_line,
-                )
-            })
-            .unwrap_or(function.fingerprint.start_line);
+    if let Some(line) = mixed_domain_transport_return_line(body, function.fingerprint.start_line) {
         findings.push(make_finding(
             "function_returns_domain_value_and_transport_metadata",
             Severity::Info,
@@ -1559,6 +1535,71 @@ pub(super) fn project_agnostic_architecture_findings(
     }
 
     findings
+}
+
+fn mixed_domain_transport_return_line(body: &str, start_line: usize) -> Option<usize> {
+    let lines: Vec<&str> = body.lines().collect();
+
+    for (index, line) in lines.iter().enumerate() {
+        let trimmed = line.trim();
+        if !(trimmed.starts_with("return ") || trimmed == "return{") {
+            continue;
+        }
+
+        if trimmed.contains("return payload, status") || trimmed.contains("return data, status") {
+            return Some(start_line + index);
+        }
+
+        if !trimmed.starts_with("return {") {
+            continue;
+        }
+
+        let indent = line.chars().take_while(|ch| ch.is_ascii_whitespace()).count();
+        let mut block = String::new();
+        block.push_str(trimmed);
+
+        for next_line in lines.iter().skip(index + 1) {
+            let next_trimmed = next_line.trim();
+            if next_trimmed.is_empty() {
+                continue;
+            }
+            let next_indent = next_line
+                .chars()
+                .take_while(|ch| ch.is_ascii_whitespace())
+                .count();
+            block.push('\n');
+            block.push_str(next_trimmed);
+            if next_trimmed.starts_with('}') || next_indent <= indent {
+                break;
+            }
+        }
+
+        let lower = block.to_ascii_lowercase();
+        let has_transport = contains_any(&lower, &["\"status\":", "'status':", "\"headers\":", "'headers':"]);
+        let has_domain = contains_any(
+            &lower,
+            &[
+                "\"data\":",
+                "'data':",
+                "\"payload\":",
+                "'payload':",
+                "\"result\":",
+                "'result':",
+                "\"customer\":",
+                "'customer':",
+                "\"order\":",
+                "'order':",
+                "\"session\":",
+                "'session':",
+            ],
+        );
+
+        if has_transport && has_domain {
+            return Some(start_line + index);
+        }
+    }
+
+    None
 }
 
 pub(super) fn project_agnostic_architecture_file_findings(file: &ParsedFile) -> Vec<Finding> {

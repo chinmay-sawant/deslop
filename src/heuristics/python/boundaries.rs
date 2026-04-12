@@ -1432,15 +1432,6 @@ pub(super) fn project_agnostic_boundaries_findings(
     }
 
     if public_api
-        && contains_any(
-            body,
-            &[
-                "return self._",
-                "return self.cache",
-                "return self.items",
-                "return self.data",
-            ],
-        )
         && !contains_any(
             body,
             &[
@@ -1455,8 +1446,13 @@ pub(super) fn project_agnostic_boundaries_findings(
             ],
         )
     {
-        let line = find_line(body, "return self.", function.fingerprint.start_line)
-            .unwrap_or(function.fingerprint.start_line);
+        let returned_attr = returned_self_collection_attr(body);
+        if let Some(attr) = returned_attr
+            && file_has_mutation_evidence_for_attr(file, function, &attr)
+        {
+            let line = find_line(body, &format!("return self.{attr}"), function.fingerprint.start_line)
+                .or_else(|| find_line(body, "return self.", function.fingerprint.start_line))
+                .unwrap_or(function.fingerprint.start_line);
         findings.push(make_finding(
             "helper_returns_live_internal_collection_reference",
             Severity::Info,
@@ -1465,6 +1461,7 @@ pub(super) fn project_agnostic_boundaries_findings(
             line,
             "returns a live internal mutable collection reference",
         ));
+        }
     }
 
     if (body.contains("for ") || body.contains("while "))
@@ -1767,6 +1764,75 @@ pub(super) fn project_agnostic_boundaries_findings(
     findings
 }
 
+fn returned_self_collection_attr(body: &str) -> Option<String> {
+    body.lines().find_map(|line| {
+        let trimmed = line.trim();
+        let suffix = trimmed.strip_prefix("return self.")?;
+        let attr = suffix
+            .chars()
+            .take_while(|character| character.is_ascii_alphanumeric() || *character == '_')
+            .collect::<String>();
+
+        if attr.is_empty() {
+            return None;
+        }
+
+        let lower = attr.to_ascii_lowercase();
+        (attr.starts_with('_')
+            || contains_any(
+                &lower,
+                &["cache", "item", "data", "record", "result", "state"],
+            ))
+        .then_some(attr)
+    })
+}
+
+fn file_has_mutation_evidence_for_attr(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    attr: &str,
+) -> bool {
+    let receiver_type = function.fingerprint.receiver_type.as_deref();
+    let attr_expr = format!("self.{attr}");
+
+    file.functions
+        .iter()
+        .filter(|candidate| {
+            receiver_type.is_none()
+                || candidate.fingerprint.receiver_type.as_deref() == receiver_type
+        })
+        .any(|candidate| function_mutates_attr(candidate.body_text.as_str(), &attr_expr))
+}
+
+fn function_mutates_attr(body: &str, attr_expr: &str) -> bool {
+    let mutation_markers = [
+        ".append(",
+        ".extend(",
+        ".update(",
+        ".pop(",
+        ".clear(",
+        ".sort(",
+        ".remove(",
+        ".insert(",
+        ".add(",
+        ".discard(",
+    ];
+
+    if mutation_markers
+        .iter()
+        .any(|marker| body.contains(&format!("{attr_expr}{marker}")))
+    {
+        return true;
+    }
+
+    body.lines().any(|line| {
+        let trimmed = line.trim();
+        trimmed.contains(&format!("{attr_expr}["))
+            && trimmed.contains(" = ")
+            && !trimmed.contains(" == ")
+    })
+}
+
 pub(super) fn project_agnostic_boundaries_file_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file {
         return Vec::new();
@@ -1823,7 +1889,7 @@ pub(super) fn project_agnostic_boundaries_file_findings(file: &ParsedFile) -> Ve
             .name
             .chars()
             .all(|ch| ch.is_ascii_uppercase() || ch == '_')
-            && contains_any(&binding.value_text, &["[", "{", "set("])
+            && looks_like_mutable_constant_literal(&binding.value_text)
         {
             findings.push(boundaries_file_finding(
                 file,
@@ -1837,4 +1903,13 @@ pub(super) fn project_agnostic_boundaries_file_findings(file: &ParsedFile) -> Ve
     }
 
     findings
+}
+
+fn looks_like_mutable_constant_literal(value_text: &str) -> bool {
+    let trimmed = value_text.trim_start();
+    trimmed.starts_with('[')
+        || trimmed.starts_with('{')
+        || trimmed.starts_with("set(")
+        || trimmed.starts_with("list(")
+        || trimmed.starts_with("dict(")
 }

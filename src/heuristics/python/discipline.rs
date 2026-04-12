@@ -1754,16 +1754,13 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if (body.contains("for ") || body.contains("while "))
-        && contains_any(&lower_body, &["logger.", "logging."])
-        && contains_any(&lower_body, &["except ", "retry", "continue"])
-    {
+    if let Some(loop_line) = loop_with_recovery_logging_line(body, function.fingerprint.start_line) {
         findings.push(make_finding(
             "loop_interleaves_core_work_logging_and_recovery_logic",
             Severity::Info,
             file,
             function,
-            line,
+            loop_line,
             "interleaves core work, logging, and recovery logic in the same loop body",
         ));
     }
@@ -1911,4 +1908,44 @@ pub(super) fn project_agnostic_discipline_findings(
     }
 
     findings
+}
+
+fn loop_with_recovery_logging_line(body: &str, start_line: usize) -> Option<usize> {
+    let lines: Vec<&str> = body.lines().collect();
+
+    for (index, line) in lines.iter().enumerate() {
+        let trimmed = line.trim();
+        if !(trimmed.starts_with("for ") || trimmed.starts_with("while ")) {
+            continue;
+        }
+
+        let loop_indent = indent_level(line);
+        let mut block_lines = Vec::new();
+        for block_line in lines.iter().skip(index + 1) {
+            let block_trimmed = block_line.trim();
+            if block_trimmed.is_empty() {
+                continue;
+            }
+            if indent_level(block_line) <= loop_indent {
+                break;
+            }
+            block_lines.push(*block_line);
+        }
+
+        let block_text = block_lines.join("\n").to_ascii_lowercase();
+        if contains_any(
+            &block_text,
+            &[
+                "logger.exception(",
+                "logger.error(",
+                "logging.exception(",
+                "logging.error(",
+            ],
+        ) && contains_any(&block_text, &["except ", "retry", "continue"])
+        {
+            return Some(start_line + index);
+        }
+    }
+
+    None
 }

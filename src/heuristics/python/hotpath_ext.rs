@@ -517,6 +517,17 @@ pub(super) fn repeated_format_findings(
     let body = &function.body_text;
     let mut findings = Vec::new();
     let mut loop_indent: Option<usize> = None;
+    let template_bindings = body
+        .lines()
+        .filter_map(|line| {
+            let trimmed = line.trim();
+            let (name, value) = trimmed.split_once('=')?;
+            let value = value.trim();
+            ((value.starts_with('"') || value.starts_with('\''))
+                && value.contains("{}"))
+            .then(|| name.trim().to_string())
+        })
+        .collect::<std::collections::BTreeSet<_>>();
     for (i, line) in body.lines().enumerate() {
         let trimmed = line.trim();
         if trimmed.starts_with("for ") && trimmed.ends_with(':') {
@@ -525,7 +536,10 @@ pub(super) fn repeated_format_findings(
         }
         if loop_indent.is_some()
             && !trimmed.is_empty()
-            && (trimmed.contains(".format(") || trimmed.contains("f\"") || trimmed.contains("f'"))
+            && trimmed.contains(".format(")
+            && template_bindings
+                .iter()
+                .any(|name| trimmed.contains(&format!("{name}.format(")))
         {
             findings.push(Finding {
                 rule_id: "repeated_string_format_invariant_template".to_string(),
@@ -1050,8 +1064,7 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if (lower_body.matches("format(").count() >= 6 || lower_body.matches("f\"").count() >= 6)
-        && (lower_body.contains("for ") || lower_body.contains("while "))
+    if has_invariant_template_reformatting(body)
         && function.fingerprint.line_count >= 12
     {
         findings.push(push(
@@ -1100,6 +1113,59 @@ fn has_expensive_per_item_logging(body: &str) -> bool {
         }
 
         if !loop_stack.is_empty() && is_expensive_log_line(trimmed) {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn has_invariant_template_reformatting(body: &str) -> bool {
+    let template_bindings = body
+        .lines()
+        .filter_map(|line| {
+            let trimmed = line.trim();
+            let (name, value) = trimmed.split_once('=')?;
+            let value = value.trim();
+            ((value.starts_with('"') || value.starts_with('\''))
+                && (value.contains("{}") || value.len() >= 12))
+            .then(|| name.trim().to_string())
+        })
+        .collect::<std::collections::BTreeSet<_>>();
+
+    let lines: Vec<&str> = body.lines().collect();
+    let mut loop_stack: Vec<usize> = Vec::new();
+
+    for line in lines {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        let indent = indent_level(line);
+        while loop_stack.last().is_some_and(|depth| indent <= *depth) {
+            loop_stack.pop();
+        }
+
+        if trimmed.starts_with("for ") || trimmed.starts_with("while ") {
+            loop_stack.push(indent);
+            continue;
+        }
+
+        if loop_stack.is_empty() {
+            continue;
+        }
+
+        if template_bindings
+            .iter()
+            .any(|name| trimmed.contains(&format!("{name}.format(")))
+        {
+            return true;
+        }
+
+        if template_bindings.iter().any(|name| {
+            trimmed.contains(&format!("{name} +")) || trimmed.contains(&format!("+ {name}"))
+        }) {
             return true;
         }
     }

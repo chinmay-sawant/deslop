@@ -572,9 +572,7 @@ pub(super) fn project_agnostic_performance_findings(
         ));
     }
 
-    if lower_body.matches("for ").count() >= 2
-        && contains_any(&lower_body, &["normalize", "strip", "lower", "parse"])
-    {
+    if repeated_normalization_on_same_dataset(body) {
         findings.push(push(
             "same_dataset_normalized_in_multiple_full_passes",
             Severity::Info,
@@ -693,4 +691,86 @@ pub(super) fn project_agnostic_performance_findings(
     }
 
     findings
+}
+
+fn repeated_normalization_on_same_dataset(body: &str) -> bool {
+    let loops = extract_normalizing_loops(body);
+    let mut normalized_iters = std::collections::BTreeMap::<String, usize>::new();
+
+    for (iterable, normalizes_item) in loops {
+        if !normalizes_item {
+            continue;
+        }
+        let count = normalized_iters.entry(iterable).or_default();
+        *count += 1;
+        if *count >= 2 {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn extract_normalizing_loops(body: &str) -> Vec<(String, bool)> {
+    let lines: Vec<&str> = body.lines().collect();
+    let mut loops = Vec::new();
+
+    for (index, line) in lines.iter().enumerate() {
+        let trimmed = line.trim();
+        if !(trimmed.starts_with("for ") && trimmed.ends_with(':') && trimmed.contains(" in ")) {
+            continue;
+        }
+
+        let header = trimmed.trim_start_matches("for ").trim_end_matches(':');
+        let Some((loop_var, iterable)) = header.split_once(" in ") else {
+            continue;
+        };
+        let loop_var = loop_var.trim();
+        if !is_simple_identifier(loop_var) {
+            continue;
+        }
+
+        let block = indented_loop_block(&lines, index, line);
+        let normalizes_item = block.iter().any(|block_line| {
+            let lowered = block_line.trim().to_ascii_lowercase();
+            lowered.contains(&format!("{loop_var}.strip("))
+                || lowered.contains(&format!("{loop_var}.lower("))
+                || lowered.contains(&format!("{loop_var}.casefold("))
+                || lowered.contains(&format!("normalize({loop_var}"))
+                || lowered.contains(&format!("parse({loop_var}"))
+        });
+
+        loops.push((iterable.trim().to_string(), normalizes_item));
+    }
+
+    loops
+}
+
+fn indented_loop_block<'a>(lines: &'a [&'a str], index: usize, header_line: &'a str) -> Vec<&'a str> {
+    let base_indent = line_indent(header_line);
+    let mut block = Vec::new();
+
+    for line in lines.iter().skip(index + 1) {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        if line_indent(line) <= base_indent {
+            break;
+        }
+        block.push(*line);
+    }
+
+    block
+}
+
+fn line_indent(line: &str) -> usize {
+    line.len() - line.trim_start().len()
+}
+
+fn is_simple_identifier(text: &str) -> bool {
+    !text.is_empty()
+        && text
+            .chars()
+            .all(|character| character.is_ascii_alphanumeric() || character == '_')
 }

@@ -119,6 +119,12 @@ def cheap_logging_ok(records):
         logger.debug("payload %s", record)
 
 
+def loop_fstring_output_ok(rows):
+    """Clean: per-item f-strings are expected output formatting, not invariant template churn."""
+    for row in rows:
+        print(f"row:{row}")
+
+
 def encode_items(items):
     """Clean: reuses single encoder."""
     encoder = json.JSONEncoder()

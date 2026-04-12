@@ -532,10 +532,7 @@ pub(super) fn project_agnostic_hotpath_findings(
         });
     }
 
-    if !python.list_membership_loop_lines.is_empty()
-        || contains_any(body, &[" in [", " in ("])
-            && (body.contains("for ") || body.contains("while "))
-    {
+    if !python.list_membership_loop_lines.is_empty() {
         findings.push(Finding {
             rule_id: "membership_test_against_list_or_tuple_literal_inside_loop".to_string(),
             severity: Severity::Info,
