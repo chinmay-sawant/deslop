@@ -161,7 +161,7 @@
     {
       "id": "rust_bytes_to_vec_for_readonly_use",
       "label": "Rust Bytes to Vec for Readonly Use",
-      "description": "flag `.to_vec()` on byte slices that are only read afterward.",
+      "description": "flag `bytes.to_vec()` on byte slices that are only read afterward.",
       "defaultSeverity": "contextual",
       "status": "stable",
       "configurability": [
@@ -169,7 +169,7 @@
         "ignore",
         "severity_override"
       ],
-      "explanation": "In Rust, Rust Bytes to Vec for Readonly Use matters because the pattern here, flag `.to_vec()` on byte slices that are only read afterward, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "explanation": "In Rust, Rust Bytes to Vec for Readonly Use matters because the pattern here, flag `bytes.to_vec()` on byte slices that are only read afterward, is worth review because they highlight review-worthy patterns before they spread across the repository.",
       "fix": "For Rust Bytes to Vec for Readonly Use in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
     },
     {
@@ -2047,6 +2047,20 @@
       ],
       "explanation": "In Rust, Rust Unbounded Channel in Producer Loop matters because the pattern here, flag unbounded channel sends inside loops or request paths without backpressure or shutdown policy, pushes avoidable work into a repeated path where the cost compounds quickly.",
       "fix": "For Rust Unbounded Channel in Producer Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_vec_extend_from_intermediate_allocation",
+      "label": "Rust Vec Extend From Intermediate Allocation",
+      "description": "flag copying a slice into a temporary Vec and immediately extending another Vec from it.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Vec Extend From Intermediate Allocation matters because the pattern here, flag copying a slice into a temporary Vec and immediately extending another Vec from it, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Vec Extend From Intermediate Allocation in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
     },
     {
       "id": "rust_vec_push_without_capacity_from_known_bound",

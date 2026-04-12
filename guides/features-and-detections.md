@@ -32,14 +32,14 @@ Repository-local scan behavior can also be tuned with `.deslop.toml`, including 
 
 ## What deslop detects today
 
-The shipped registry currently tracks **1503 language-scoped rule entries** in deslop `0.2.0`.
+The shipped registry currently tracks **1504 language-scoped rule entries** in deslop `0.2.0`.
 
 | Language | Stable | Experimental | Research | Total |
 | --- | ---: | ---: | ---: | ---: |
 | common | 11 | 0 | 0 | 11 |
 | go | 651 | 2 | 0 | 653 |
 | python | 591 | 0 | 0 | 591 |
-| rust | 236 | 12 | 0 | 248 |
+| rust | 237 | 12 | 0 | 249 |
 
 The sections below are generated from the rule registry and grouped by language and family.
 When the same rule ID is implemented in more than one backend, it appears once in each relevant language section.
@@ -1373,7 +1373,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `tight_module_coupling`: Modules that depend on a large number of repository-local Python modules.
 - `too_many_instance_attributes`: Classes that assign an unusually large number of instance attributes across their methods.
 
-### Rust rules (248)
+### Rust rules (249)
 
 #### Api Design (21)
 - `rust_arc_mutex_option_state`: Arc<Mutex<Option<T>>>-style state bags that hide lifecycle state behind nested mutation layers.
@@ -1409,7 +1409,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_async_spawn_cancel_at_await`: Async work is spawned without an obvious cancellation path. *(status: experimental)*
 - `rust_async_std_mutex_await`: std::sync::Mutex appears to be held across .await in async code. *(status: experimental)*
 
-#### Bad Practices (148)
+#### Bad Practices (149)
 - `rust_anyhow_bail_in_low_level_library_module`: flag `anyhow::bail!` in domain, parser, storage, or library modules that should usually expose typed error variants.
 - `rust_anyhow_context_missing_on_boundary_io`: flag `?` on filesystem, environment, process, parser, config, or network calls in CLI/boundary code without `.context(...)` or `.with_context(...)`.
 - `rust_anyhow_downcast_without_fallback_context`: flag `downcast_ref`/`downcast` handling that drops the original context or returns a generic fallback.
@@ -1421,7 +1421,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_boxed_trait_object_in_inner_loop`: flag repeated `Box<dyn Trait>` allocation inside loops where generics, enum dispatch, or object reuse may be better.
 - `rust_build_script_missing_rerun_if_changed`: flag `build.rs` files that read files, env vars, or external commands without `cargo:rerun-if-changed` or `cargo:rerun-if-env-changed`.
 - `rust_build_script_network_or_git_call`: flag build scripts that invoke network, git, curl, package managers, or shell commands that make builds non-hermetic.
-- `rust_bytes_to_vec_for_readonly_use`: flag `.to_vec()` on byte slices that are only read afterward.
+- `rust_bytes_to_vec_for_readonly_use`: flag `bytes.to_vec()` on byte slices that are only read afterward.
 - `rust_clap_closed_set_manual_string_match`: flag CLI string arguments that are manually matched against a fixed set instead of using `ValueEnum` or `value_parser`.
 - `rust_clap_default_value_manual_parse`: flag `default_value` strings that are parsed manually later instead of typed `value_parser` or typed fields.
 - `rust_clap_env_var_without_redaction_policy`: flag `#[arg(env = "...")]` on secret-like fields without redacted display/report behavior.
@@ -1556,6 +1556,7 @@ When the same rule ID is implemented in more than one backend, it appears once i
 - `rust_tree_sitter_recursive_walk_without_depth_guard`: flag recursive AST walkers over repository input without an explicit depth guard, iterative cursor, or stack budget.
 - `rust_tree_sitter_set_language_repeated_inside_hot_loop`: flag repeated `parser.set_language(...)` calls inside loops that parse the same language repeatedly.
 - `rust_unbounded_channel_in_producer_loop`: flag unbounded channel sends inside loops or request paths without backpressure or shutdown policy.
+- `rust_vec_extend_from_intermediate_allocation`: flag copying a slice into a temporary Vec and immediately extending another Vec from it.
 - `rust_vec_push_without_capacity_from_known_bound`: flag `Vec::new()` followed by pushes inside a loop over a known bounded iterator without `with_capacity`.
 - `rust_vec_remove_zero_in_loop`: flag repeated `Vec::remove(0)` in loops where `VecDeque` or index traversal would avoid shifting.
 

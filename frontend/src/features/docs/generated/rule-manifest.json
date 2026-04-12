@@ -7818,7 +7818,7 @@
       ]
     },
     "rust": {
-      "ruleCount": 248,
+      "ruleCount": 249,
       "families": [
         {
           "id": "api_design",
@@ -8020,7 +8020,7 @@
           "id": "bad_practices",
           "label": "Bad Practices",
           "summary": "Bad Practices rules for the rust catalog.",
-          "ruleCount": 148,
+          "ruleCount": 149,
           "rules": [
             {
               "id": "rust_anyhow_bail_in_low_level_library_module",
@@ -8896,6 +8896,12 @@
               "id": "rust_unbounded_channel_in_producer_loop",
               "label": "Rust Unbounded Channel in Producer Loop",
               "defaultSeverity": "warning",
+              "status": "stable"
+            },
+            {
+              "id": "rust_vec_extend_from_intermediate_allocation",
+              "label": "Rust Vec Extend From Intermediate Allocation",
+              "defaultSeverity": "contextual",
               "status": "stable"
             },
             {

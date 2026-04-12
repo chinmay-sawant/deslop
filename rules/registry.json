@@ -16869,7 +16869,7 @@
       "ignore",
       "severity_override"
     ],
-    "description": "flag `.to_vec()` on byte slices that are only read afterward."
+    "description": "flag `bytes.to_vec()` on byte slices that are only read afterward."
   },
   {
     "id": "rust_clap_closed_set_manual_string_match",
@@ -18612,6 +18612,19 @@
       "severity_override"
     ],
     "description": "flag unbounded channel sends inside loops or request paths without backpressure or shutdown policy."
+  },
+  {
+    "id": "rust_vec_extend_from_intermediate_allocation",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag copying a slice into a temporary Vec and immediately extending another Vec from it."
   },
   {
     "id": "rust_vec_push_without_capacity_from_known_bound",

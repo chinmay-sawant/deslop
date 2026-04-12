@@ -110,3 +110,48 @@ pub fn run(paths: Vec<String>) -> Result<()> {
     Err(anyhow::anyhow!("failed")).context(format!("{}", paths.len()))?;
     Ok(())
 }
+
+pub fn checksum_bytes(bytes: &[u8]) -> usize {
+    let owned = bytes.to_vec();
+    owned.iter().map(|byte| *byte as usize).sum()
+}
+
+fn normalize_rust_path(
+    import_path: &str,
+    current_module_segments: &[String],
+) -> Option<Vec<String>> {
+    let segments = import_path
+        .split("::")
+        .filter(|segment| !segment.is_empty())
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+    let head = segments.first()?.as_str();
+
+    match head {
+        "crate" => Some(segments.into_iter().skip(1).collect()),
+        "self" => Some(
+            current_module_segments
+                .iter()
+                .cloned()
+                .chain(segments.into_iter().skip(1))
+                .collect(),
+        ),
+        "super" => {
+            let super_count = segments
+                .iter()
+                .take_while(|segment| segment == &&"super".to_string())
+                .count();
+            if super_count > current_module_segments.len() {
+                return None;
+            }
+
+            let mut resolved = current_module_segments
+                .get(..current_module_segments.len() - super_count)
+                .map(|segments| segments.to_vec())
+                .unwrap_or_default();
+            resolved.extend(segments.into_iter().skip(super_count));
+            Some(resolved)
+        }
+        _ => None,
+    }
+}

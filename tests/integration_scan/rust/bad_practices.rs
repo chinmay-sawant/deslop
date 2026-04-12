@@ -27,6 +27,8 @@ fn bad_practices_positive_fixture_reports_representative_rules() {
             "rust_clap_secret_arg_derive_debug",
             "rust_libc_cstring_unwrap_on_external_input",
             "rust_mutex_lock_unwrap_panics_on_poison",
+            "rust_bytes_to_vec_for_readonly_use",
+            "rust_vec_extend_from_intermediate_allocation",
         ],
     );
 }
@@ -49,6 +51,8 @@ fn bad_practices_clean_fixture_stays_clean_for_representative_rules() {
             "rust_clap_secret_arg_derive_debug",
             "rust_libc_cstring_unwrap_on_external_input",
             "rust_mutex_lock_unwrap_panics_on_poison",
+            "rust_bytes_to_vec_for_readonly_use",
+            "rust_vec_extend_from_intermediate_allocation",
         ],
     );
 }
