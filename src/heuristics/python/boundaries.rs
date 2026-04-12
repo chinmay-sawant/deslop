@@ -1635,6 +1635,15 @@ pub(super) fn project_agnostic_boundaries_findings(
                 ".decode('",
             ],
         )
+        && !contains_any(
+            body,
+            &[
+                "\"wb\"", "\"rb\"", "\"ab\"", "'wb'", "'rb'", "'ab'",
+                "\"w+b\"", "\"r+b\"", "'w+b'", "'r+b'",
+                "iter_content", "wave.", "audio", "pcm",
+                "StreamingResponse", "BytesIO",
+            ],
+        )
     {
         findings.push(make_finding(
             "text_bytes_boundary_relies_on_implicit_default_encoding",

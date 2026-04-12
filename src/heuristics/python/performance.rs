@@ -654,6 +654,7 @@ pub(super) fn project_agnostic_performance_findings(
 
     if contains_any(&lower_body, &["dict(", ".copy("])
         && !contains_any(&lower_body, &["update(", "pop(", "setdefault(", "[", "del ", "hydrat"])
+        && !contains_any(&lower_body, &["dict(row", "dict(r)", "sqlite", "cursor", "fetchone", "fetchall", "row_factory"])
     {
         findings.push(push(
             "copy_of_mapping_created_only_to_read_values",

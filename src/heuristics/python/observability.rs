@@ -1124,12 +1124,20 @@ pub(super) fn repeated_key_hash_in_loop_findings(
         return Vec::new();
     }
     let python = function.python_evidence();
-    if !python.repeated_subscript_lines.is_empty() {
-        return python.repeated_subscript_lines.iter().map(|&line| make_finding(
-            "repeated_key_hash_via_dict_lookup_in_tight_loop",
-            Severity::Info, file, function, line,
-            "accesses the same dict key repeatedly in a loop; cache the value in a local variable",
-        )).collect();
+    let body = &function.body_text;
+    // Only fire for functions with actual loops (not just comprehensions) and
+    // enough substance to warrant the flag. Emit at most one finding.
+    if !python.repeated_subscript_lines.is_empty()
+        && function.fingerprint.line_count >= 15
+        && (body.contains("for ") || body.contains("while "))
+    {
+        if let Some(&first_line) = python.repeated_subscript_lines.first() {
+            return vec![make_finding(
+                "repeated_key_hash_via_dict_lookup_in_tight_loop",
+                Severity::Info, file, function, first_line,
+                "accesses the same dict key repeatedly in a loop; cache the value in a local variable",
+            )];
+        }
     }
     Vec::new()
 }

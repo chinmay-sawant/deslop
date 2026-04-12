@@ -116,7 +116,7 @@ src/heuristics/go/idioms.rs:1633:            || probe.join("makefile").exists()
 src/heuristics/go/idioms.rs:1634:            || probe.join("action.yml").exists()
 src/heuristics/go/idioms.rs:1635:            || probe.join("action.yaml").exists()
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
-src/heuristics/python/hotpath_ext.rs:893:    if contains_any(body, &["os.path.exists(", ".exists()"])
+src/heuristics/python/hotpath_ext.rs:894:    if contains_any(body, &["os.path.exists(", ".exists()"])
 src/heuristics/python/packaging.rs:249:    candidate.exists().then_some(candidate)
 src/heuristics/python/packaging.rs:626:        if parent.join("__init__.py").exists() {
 src/heuristics/python/performance.rs:541:        + lower_body.matches(".exists()").count()

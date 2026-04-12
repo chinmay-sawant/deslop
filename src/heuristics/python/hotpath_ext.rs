@@ -287,23 +287,23 @@ pub(super) fn repeated_subscript_findings(
         return Vec::new();
     }
     let python = function.python_evidence();
-    python
-        .repeated_subscript_lines
-        .iter()
-        .map(|line| Finding {
+    // Emit at most one finding per function to avoid noisy per-line duplication.
+    if let Some(&first_line) = python.repeated_subscript_lines.first() {
+        return vec![Finding {
             rule_id: "repeated_dict_get_same_key_no_cache".to_string(),
             severity: Severity::Info,
             path: file.path.clone(),
             function_name: Some(function.fingerprint.name.clone()),
-            start_line: *line,
-            end_line: *line,
+            start_line: first_line,
+            end_line: first_line,
             message: format!(
                 "function {} calls .get() with the same key multiple times; assign to a local variable",
                 function.fingerprint.name
             ),
             evidence: vec!["pattern=repeated_dict_get_same_key".to_string()],
-        })
-        .collect()
+        }];
+    }
+    Vec::new()
 }
 
 // ── Body-text based rules ────────────────────────────────────────────────────
@@ -807,8 +807,9 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if lower_body.matches("for ").count() >= 2
+    if lower_body.matches("for ").count() >= 3
         && contains_any(&lower_body, &["len(", "sorted(", ".lower()", "path("])
+        && function.fingerprint.line_count >= 15
     {
         findings.push(push(
             "invariant_computation_not_hoisted_out_of_nested_loop",
@@ -1000,8 +1001,9 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if (lower_body.matches("format(").count() >= 4 || lower_body.matches("f\"").count() >= 4)
+    if (lower_body.matches("format(").count() >= 6 || lower_body.matches("f\"").count() >= 6)
         && (lower_body.contains("for ") || lower_body.contains("while "))
+        && function.fingerprint.line_count >= 12
     {
         findings.push(push(
             "invariant_template_or_prefix_string_reformatted_inside_loop",

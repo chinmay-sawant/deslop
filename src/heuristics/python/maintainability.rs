@@ -268,18 +268,19 @@ pub(super) fn project_agnostic_maintainability_findings(
 
     if file.imports.len() >= 20
         && file.functions.len() >= 12
-        && contains_any(
-            &lower_body,
-            &["policy", "config", "settings", "permission", "auth", "retry", "validate"],
-        )
+        && !lower_body.contains("self.")
     {
-        findings.push(maintainability_finding(
-            file,
-            function,
-            "single_feature_requires_edits_in_many_unrelated_modules_due_to_scattered_policy",
-            Severity::Info,
-            "appears in a file layout where policy is scattered across many unrelated modules",
-        ));
+        let policy_keywords = ["policy", "config", "settings", "permission", "auth", "retry", "validate"];
+        let matching_keywords = policy_keywords.iter().filter(|kw| lower_body.contains(**kw)).count();
+        if matching_keywords >= 3 {
+            findings.push(maintainability_finding(
+                file,
+                function,
+                "single_feature_requires_edits_in_many_unrelated_modules_due_to_scattered_policy",
+                Severity::Info,
+                "appears in a file layout where policy is scattered across many unrelated modules",
+            ));
+        }
     }
 
     findings
