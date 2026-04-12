@@ -1528,10 +1528,7 @@ pub(super) fn project_agnostic_observability_findings(
         ));
     }
 
-    if contains_any(
-        body,
-        &["logger.debug(f\"", "logger.info(f\"", "logger.warning(f\""],
-    ) && !contains_any(body, &["isEnabledFor", "if logger.isEnabledFor"])
+    if contains_expensive_unguarded_log(body)
     {
         findings.push(push(
             "expensive_log_argument_built_without_is_enabled_guard",
@@ -1782,6 +1779,29 @@ pub(super) fn project_agnostic_observability_findings(
     }
 
     findings
+}
+
+fn contains_expensive_unguarded_log(body: &str) -> bool {
+    if contains_any(body, &["isEnabledFor", "if logger.isEnabledFor"]) {
+        return false;
+    }
+
+    body.lines().any(|line| {
+        let trimmed = line.trim();
+        (trimmed.contains("logger.") || trimmed.contains("logging."))
+            && contains_any(
+                &trimmed.to_ascii_lowercase(),
+                &[
+                    "json.dumps(",
+                    ".format(",
+                    "join(",
+                    "pformat(",
+                    "traceback.",
+                    "serialize(",
+                    "to_dict(",
+                ],
+            )
+    })
 }
 
 pub(super) fn project_agnostic_observability_file_findings(file: &ParsedFile) -> Vec<Finding> {

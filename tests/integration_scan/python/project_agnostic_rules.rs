@@ -191,7 +191,7 @@ def build_report(mode: str, first: str, second: str, third: int, fourth: bool, f
     for record in [1, 2, 3]:
         ids.append(record)
         names.append(str(record))
-        logger.debug(f"payload {record}")
+        logger.debug(",".join([str(record), mode]))
     try:
         return None
     except Exception:
@@ -250,6 +250,45 @@ class DataProcessor(BaseRecord):
             "class_mixes_factory_parsing_persistence_and_presentation_roles",
             "sync_and_async_contracts_mixed_on_same_interface_family",
         ],
+    );
+}
+
+#[test]
+fn test_project_agnostic_quality_rule_skips_reraise_handlers() {
+    let report = scan(&[(
+        "app/api.py",
+        r#"
+def ingest_audio(payload):
+    try:
+        return decode(payload)
+    except Exception as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+"#,
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &["fallback_branch_swallows_invariant_violation_and_returns_plausible_default"],
+    );
+}
+
+#[test]
+fn test_project_agnostic_observability_rule_skips_cheap_fstring_logging() {
+    let report = scan(&[(
+        "app/logging_example.py",
+        r#"
+import logging
+
+def process(records):
+    logger = logging.getLogger(__name__)
+    for record in records:
+        logger.debug(f"payload {record}")
+"#,
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &["expensive_log_argument_built_without_is_enabled_guard"],
     );
 }
 

@@ -319,45 +319,96 @@ pub(super) fn nested_list_search_findings(
     // Detect nested for loops with `if ... in ...` or `if ... == ...` inner lookup
     let mut findings = Vec::new();
     let lines: Vec<&str> = body.lines().collect();
-    let mut outer_for_line = None;
-    let mut inner_for_depth = 0;
-    for (i, line) in lines.iter().enumerate() {
+    let mut loop_stack: Vec<usize> = Vec::new();
+
+    for (index, line) in lines.iter().enumerate() {
         let trimmed = line.trim();
-        if trimmed.starts_with("for ") && trimmed.ends_with(':') {
-            if outer_for_line.is_some() {
-                inner_for_depth += 1;
-                if inner_for_depth == 1 && i + 1 < lines.len() {
-                    let next = lines[i + 1].trim();
-                    if next.starts_with("if ") && (next.contains(" in ") || next.contains(" == ")) {
-                        findings.push(Finding {
-                            rule_id: "nested_list_search_map_candidate".to_string(),
-                            severity: Severity::Info,
-                            path: file.path.clone(),
-                            function_name: Some(function.fingerprint.name.clone()),
-                            start_line: function.fingerprint.start_line + i,
-                            end_line: function.fingerprint.start_line + i,
-                            message: format!(
-                                "function {} uses nested loops for lookup; consider a dict/set for O(1) access",
-                                function.fingerprint.name
-                            ),
-                            evidence: vec!["pattern=nested_loop_lookup_join".to_string()],
-                        });
-                    }
-                }
-            } else {
-                outer_for_line = Some(i);
-            }
+        if trimmed.is_empty() {
+            continue;
         }
-        if trimmed.is_empty()
-            && !trimmed.starts_with("for ")
-            && !trimmed.starts_with(' ')
-            && !trimmed.starts_with('\t')
-        {
-            outer_for_line = None;
-            inner_for_depth = 0;
+
+        let indent = indent_level(line);
+        while loop_stack.last().is_some_and(|depth| indent <= *depth) {
+            loop_stack.pop();
+        }
+
+        if trimmed.starts_with("for ") && trimmed.ends_with(':') {
+            if !loop_stack.is_empty()
+                && nested_lookup_condition_after(&lines, index, indent)
+            {
+                findings.push(Finding {
+                    rule_id: "nested_list_search_map_candidate".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: function.fingerprint.start_line + index,
+                    end_line: function.fingerprint.start_line + index,
+                    message: format!(
+                        "function {} uses nested loops for lookup; consider a dict/set for O(1) access",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec!["pattern=nested_loop_lookup_join".to_string()],
+                });
+                break;
+            }
+            loop_stack.push(indent);
         }
     }
+
     findings
+}
+
+fn nested_lookup_condition_after(lines: &[&str], index: usize, loop_indent: usize) -> bool {
+    for next_line in lines.iter().skip(index + 1) {
+        let trimmed = next_line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        let indent = indent_level(next_line);
+        if indent <= loop_indent {
+            break;
+        }
+
+        if trimmed.starts_with("if ") {
+            return nested_lookup_condition(trimmed);
+        }
+
+        if !trimmed.starts_with('#') {
+            break;
+        }
+    }
+
+    false
+}
+
+fn nested_lookup_condition(trimmed_if: &str) -> bool {
+    let condition = trimmed_if
+        .trim_start_matches("if ")
+        .trim_end_matches(':')
+        .trim();
+
+    if condition.contains(" == ") {
+        return true;
+    }
+
+    let Some((_, rhs)) = condition.split_once(" in ") else {
+        return false;
+    };
+
+    !looks_string_like_membership_target(rhs)
+}
+
+fn looks_string_like_membership_target(expression: &str) -> bool {
+    let lower = expression.trim().to_ascii_lowercase();
+    lower.contains(".lower(")
+        || lower.contains(".casefold(")
+        || lower.contains(".strip(")
+        || lower.contains("text")
+        || lower.contains("string")
+        || lower.contains("message")
+        || lower.contains("content")
+        || lower.ends_with("_str")
 }
 
 pub(super) fn sort_then_first_findings(
@@ -965,9 +1016,7 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if contains_any(&lower_body, &["logger.", "logging."])
-        && lower_body.matches("for ").count() >= 1
-    {
+    if has_expensive_per_item_logging(body) {
         findings.push(push(
             "formatted_log_or_debug_payload_built_for_each_item_without_guard",
             format!(
@@ -1028,4 +1077,51 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
     }
 
     findings
+}
+
+fn has_expensive_per_item_logging(body: &str) -> bool {
+    let lines: Vec<&str> = body.lines().collect();
+    let mut loop_stack: Vec<usize> = Vec::new();
+
+    for line in lines {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        let indent = indent_level(line);
+        while loop_stack.last().is_some_and(|depth| indent <= *depth) {
+            loop_stack.pop();
+        }
+
+        if trimmed.starts_with("for ") || trimmed.starts_with("while ") {
+            loop_stack.push(indent);
+            continue;
+        }
+
+        if !loop_stack.is_empty() && is_expensive_log_line(trimmed) {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn is_expensive_log_line(line: &str) -> bool {
+    if !(line.contains("logger.") || line.contains("logging.")) {
+        return false;
+    }
+
+    contains_any(
+        &line.to_ascii_lowercase(),
+        &[
+            "json.dumps(",
+            ".format(",
+            "join(",
+            "pformat(",
+            "traceback.",
+            "serialize(",
+            "to_dict(",
+        ],
+    )
 }

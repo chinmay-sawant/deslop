@@ -381,10 +381,7 @@ fn project_agnostic_quality_function_findings(
         ));
     }
 
-    if contains_any(
-        &lower_body,
-        &["except ", "return default", "return {}", "return []"],
-    ) {
+    if except_block_returns_plausible_default(body) {
         findings.push(push(
             "fallback_branch_swallows_invariant_violation_and_returns_plausible_default",
             crate::model::Severity::Warning,
@@ -610,6 +607,52 @@ fn project_agnostic_quality_function_findings(
     }
 
     findings
+}
+
+fn except_block_returns_plausible_default(body: &str) -> bool {
+    let lines: Vec<&str> = body.lines().collect();
+
+    for (index, line) in lines.iter().enumerate() {
+        let trimmed = line.trim_start();
+        if !(trimmed.starts_with("except:") || trimmed.starts_with("except ")) {
+            continue;
+        }
+
+        let except_indent = indentation(line);
+        let mut has_default_return = false;
+        let mut has_raise = false;
+
+        for block_line in lines.iter().skip(index + 1) {
+            let block_trimmed = block_line.trim();
+            if block_trimmed.is_empty() {
+                continue;
+            }
+
+            if indentation(block_line) <= except_indent {
+                break;
+            }
+
+            let normalized = block_trimmed.to_ascii_lowercase();
+            if normalized == "raise" || normalized.starts_with("raise ") {
+                has_raise = true;
+            }
+
+            if normalized == "return default"
+                || normalized == "return {}"
+                || normalized == "return []"
+                || normalized.starts_with("return {")
+                || normalized.starts_with("return [")
+            {
+                has_default_return = true;
+            }
+        }
+
+        if has_default_return && !has_raise {
+            return true;
+        }
+    }
+
+    false
 }
 
 fn project_agnostic_quality_file_findings(file: &ParsedFile) -> Vec<Finding> {
