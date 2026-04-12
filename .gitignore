@@ -53,3 +53,4 @@ logs/
 .venv
 .codex
 *temp.txt*
+/scripts/findings
