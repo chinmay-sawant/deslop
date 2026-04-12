@@ -3,6 +3,7 @@ use super::common::BlockFingerprint;
 // ── Owned evidence storage ────────────────────────────────────────────────────
 
 #[derive(Debug, Clone)]
+#[allow(clippy::struct_excessive_bools)]
 pub(crate) struct PythonFunctionEvidence {
     pub exception_handlers: Vec<ExceptionHandler>,
     pub validation_signature: Option<BlockFingerprint>,

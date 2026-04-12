@@ -1,2 +1,2 @@
-suppressed_paths = ["scripts", "tests"]
+suppressed_paths = ["scripts", "tests",".github"]
 disabled_rules = ["overlong_name"]

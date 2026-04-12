@@ -175,21 +175,20 @@ impl ParsedFunction {
     pub(crate) fn go_evidence(&self) -> GoFunctionEvidenceView<'_> {
         self.go
             .as_ref()
-            .map(|ev| ev.as_view())
-            .unwrap_or_else(GoFunctionEvidenceView::empty)
+            .map_or_else(GoFunctionEvidenceView::empty, GoFunctionEvidence::as_view)
     }
 
     pub(crate) fn python_evidence(&self) -> PythonFunctionEvidenceView<'_> {
-        self.python
-            .as_ref()
-            .map(|ev| ev.as_view())
-            .unwrap_or_else(PythonFunctionEvidenceView::empty)
+        self.python.as_ref().map_or_else(
+            PythonFunctionEvidenceView::empty,
+            PythonFunctionEvidence::as_view,
+        )
     }
 
     pub(crate) fn rust_evidence(&self) -> RustFunctionEvidenceView<'_> {
-        self.rust
-            .as_ref()
-            .map(|ev| ev.as_view())
-            .unwrap_or_else(RustFunctionEvidenceView::empty)
+        self.rust.as_ref().map_or_else(
+            RustFunctionEvidenceView::empty,
+            RustFunctionEvidence::as_view,
+        )
     }
 }

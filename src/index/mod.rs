@@ -93,8 +93,7 @@ impl RepositoryIndex {
     pub(crate) fn rust_imports_for_file(&self, file_path: &Path) -> &[ImportSpec] {
         self.rust_imports_by_file
             .get(file_path)
-            .map(Vec::as_slice)
-            .unwrap_or(&[])
+            .map_or(&[], Vec::as_slice)
     }
 
     pub(crate) fn rust_file_uses_textual_includes(&self, file_path: &Path) -> bool {

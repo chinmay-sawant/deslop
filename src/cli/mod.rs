@@ -11,6 +11,7 @@ use deslop::{
 };
 use std::path::PathBuf;
 
+#[allow(clippy::fn_params_excessive_bools, clippy::needless_pass_by_value)]
 pub(crate) fn execute_scan(
     path: PathBuf,
     json: bool,
@@ -88,7 +89,7 @@ pub(crate) fn execute_rules(
     language: Option<RuleLanguage>,
     status: Option<RuleStatus>,
 ) -> Result<()> {
-    let rules = filtered_rules(language.clone(), status.clone());
+    let rules = filtered_rules(language, status);
 
     if json {
         println!("{}", format_rules_report_json(&rules)?);

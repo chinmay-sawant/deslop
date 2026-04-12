@@ -40,14 +40,8 @@ pub(crate) fn format_rules_report(
         let _ = writeln!(
             &mut output,
             "filters: language={} status={}",
-            language
-                .as_ref()
-                .map(language_label)
-                .unwrap_or("<all-languages>"),
-            status
-                .as_ref()
-                .map(status_label)
-                .unwrap_or("<all-statuses>")
+            language.as_ref().map_or("<all-languages>", language_label),
+            status.as_ref().map_or("<all-statuses>", status_label)
         );
     }
 

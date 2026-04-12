@@ -1,3 +1,5 @@
+#![allow(clippy::too_many_lines)]
+
 use std::collections::BTreeMap;
 
 use crate::analysis::ParsedFile;

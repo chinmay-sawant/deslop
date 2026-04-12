@@ -97,8 +97,7 @@ pub(super) fn package_directory(root: &Path, file_path: &Path) -> PathBuf {
 
     parent
         .strip_prefix(root)
-        .map(Path::to_path_buf)
-        .unwrap_or_else(|_| parent.to_path_buf())
+        .map_or_else(|_| parent.to_path_buf(), Path::to_path_buf)
 }
 
 fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {

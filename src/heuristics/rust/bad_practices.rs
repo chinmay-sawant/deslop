@@ -1,3 +1,5 @@
+#![allow(clippy::too_many_lines, clippy::uninlined_format_args)]
+
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
@@ -5007,8 +5009,7 @@ fn first_manifest_line(source: &str, marker: &str) -> usize {
         .lines()
         .enumerate()
         .find(|(_, line)| line.contains(marker))
-        .map(|(offset, _)| offset + 1)
-        .unwrap_or(1)
+        .map_or(1, |(offset, _)| offset + 1)
 }
 
 fn manifest_wildcard_dependency_findings(manifest_path: &Path, manifest: &Value) -> Vec<Finding> {
@@ -5089,8 +5090,7 @@ fn manifest_workspace_dependency_centralization_findings(
     let member_count = workspace
         .get("members")
         .and_then(Value::as_array)
-        .map(|members| members.len())
-        .unwrap_or(0);
+        .map_or(0, Vec::len);
     if member_count > 1 && workspace.get("dependencies").is_none() {
         return vec![Finding {
             rule_id: "rust_manifest_workspace_dependency_not_centralized".to_string(),

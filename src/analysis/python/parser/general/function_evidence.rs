@@ -72,7 +72,7 @@ pub(crate) fn build_test_summary(
                 assertion_like_calls += 1;
                 error_assertion_calls += 1;
             }
-            (_, "skip") | (_, "skipTest") => {
+            (_, "skip" | "skipTest") => {
                 skip_calls += 1;
             }
             (_, name) if !matches!(name, "print" | "assert") => {
@@ -97,11 +97,7 @@ pub(crate) fn build_test_summary(
 }
 
 fn count_assert_statements(node: Node<'_>) -> usize {
-    let mut count = if node.kind() == "assert_statement" {
-        1
-    } else {
-        0
-    };
+    let mut count = usize::from(node.kind() == "assert_statement");
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
         count += count_assert_statements(child);
