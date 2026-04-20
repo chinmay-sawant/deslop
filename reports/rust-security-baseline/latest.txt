@@ -76,11 +76,11 @@ src/heuristics/python/discipline.rs:55:    for (offset, ch) in signature[open_in
 src/heuristics/python/discipline.rs:58:            ')' if depth == 0 => return Some(&signature[open_index + 1..open_index + 1 + offset]),
 src/heuristics/python/framework/django.rs:224:            let rhs = &trimmed[eq_idx + 3..];
 src/heuristics/python/framework/django.rs:226:                let var = trimmed[..eq_idx].trim().to_string();
-src/heuristics/python/hotpath_ext.rs:418:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
-src/heuristics/python/hotpath_ext.rs:420:            && let Some(source_start) = trimmed[in_idx + 5..].find(" in ")
-src/heuristics/python/hotpath_ext.rs:422:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
-src/heuristics/python/hotpath_ext.rs:688:            let expr = &trimmed[1..for_idx];
-src/heuristics/python/hotpath_ext.rs:726:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
+src/heuristics/python/hotpath_ext.rs:469:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
+src/heuristics/python/hotpath_ext.rs:471:            && let Some(source_start) = trimmed[in_idx + 5..].find(" in ")
+src/heuristics/python/hotpath_ext.rs:473:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
+src/heuristics/python/hotpath_ext.rs:753:            let expr = &trimmed[1..for_idx];
+src/heuristics/python/hotpath_ext.rs:791:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
 src/heuristics/python/packaging.rs:329:        [first, ..] => Some(*first),
 src/heuristics/python/quality/mod.rs:225:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
@@ -116,7 +116,7 @@ src/heuristics/go/idioms.rs:1633:            || probe.join("makefile").exists()
 src/heuristics/go/idioms.rs:1634:            || probe.join("action.yml").exists()
 src/heuristics/go/idioms.rs:1635:            || probe.join("action.yaml").exists()
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
-src/heuristics/python/hotpath_ext.rs:894:    if contains_any(body, &["os.path.exists(", ".exists()"])
+src/heuristics/python/hotpath_ext.rs:959:    if contains_any(body, &["os.path.exists(", ".exists()"])
 src/heuristics/python/packaging.rs:249:    candidate.exists().then_some(candidate)
 src/heuristics/python/packaging.rs:626:        if parent.join("__init__.py").exists() {
 src/heuristics/python/performance.rs:541:        + lower_body.matches(".exists()").count()
@@ -147,6 +147,7 @@ src/heuristics/rust/boundary.rs:209: check-then-open candidate after line 203:  
 ## secret_comparisons
 src/analysis/rust/parser/tests.rs:90:            .any(|name| name == "password")
 src/heuristics/python/boundaries.rs:588:        if SECRET_NAMES.iter().any(|k| name_lower == *k) {
+src/heuristics/python/quality/mod.rs:726:        .any(|part| part == token || part.ends_with(&format!(".{token}")))
 src/heuristics/rust/mod.rs:269:        .any(|token| normalized == *token || normalized.contains(token))
 src/rules/catalog/go/security.rs:631:        description: "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
 tests/integration_scan/security.rs:29:            .any(|finding| finding.rule_id == "hardcoded_secret")
