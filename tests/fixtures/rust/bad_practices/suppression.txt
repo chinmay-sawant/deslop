@@ -1,0 +1,13 @@
+pub fn run() {
+    let collected = [1, 2, 3]
+        .iter()
+        .collect::<Vec<_>>(); // deslop-ignore:rust_collect_then_single_iteration
+    for value in collected {
+        let _ = value;
+    }
+
+    let mut queue = vec![1, 2, 3];
+    for _ in 0..1 {
+        queue.remove(0);
+    }
+}

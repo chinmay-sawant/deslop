@@ -1,1 +1,2 @@
-suppressed_paths = ["scripts/compare_findings.py"]
+suppressed_paths = ["scripts", "tests",".github","Cargo.toml"]
+disabled_rules = ["overlong_name"]

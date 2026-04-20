@@ -219,21 +219,23 @@ fn mod_rs_findings(file: &ParsedFile) -> Vec<Finding> {
         return Vec::new();
     }
 
-    let top_level_count = file
+    let function_count = file
         .functions
         .iter()
         .filter(|function| !function.is_test_function)
-        .count()
-        + file
-            .rust_data()
-            .map(|data| {
-                data.structs.len()
-                    + data.rust_enums.len()
-                    + data.rust_statics.len()
-                    + data.module_declarations.len()
-            })
-            .unwrap_or(0);
-    if top_level_count < 10 || file.line_count < 40 {
+        .count();
+    let type_count = file
+        .rust_data()
+        .map(|data| data.structs.len() + data.rust_enums.len() + data.rust_statics.len())
+        .unwrap_or(0);
+    // Module declarations (`mod foo;`) are standard organisation, not catch-all
+    // signals.  Only count actual code items (functions, structs, enums, statics).
+    let code_item_count = function_count + type_count;
+    // Require a meaningful mix: many code items AND both functions and types
+    // present, or a very high total.
+    let is_catchall = (code_item_count >= 15)
+        || (code_item_count >= 10 && function_count >= 3 && type_count >= 3);
+    if !is_catchall || file.line_count < 80 {
         return Vec::new();
     }
 
@@ -248,7 +250,7 @@ fn mod_rs_findings(file: &ParsedFile) -> Vec<Finding> {
             "mod.rs file {} is acting as a catch-all module",
             file.path.display()
         ),
-        evidence: vec![format!("top_level_items={top_level_count}")],
+        evidence: vec![format!("code_items={code_item_count}")],
     }]
 }
 

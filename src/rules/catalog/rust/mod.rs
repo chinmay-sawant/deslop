@@ -4,6 +4,7 @@ pub(super) use super::{
 
 pub(crate) mod api_design;
 pub(crate) mod async_patterns;
+pub(crate) mod bad_practices;
 pub(crate) mod boundary;
 pub(crate) mod domain_modeling;
 pub(crate) mod hygiene;
@@ -26,4 +27,5 @@ pub(crate) const FAMILY_RULES: &[&[RuleDefinition]] = &[
     runtime_ownership::RULE_DEFINITIONS,
     security_footguns::RULE_DEFINITIONS,
     unsafe_soundness::RULE_DEFINITIONS,
+    bad_practices::RULE_DEFINITIONS,
 ];

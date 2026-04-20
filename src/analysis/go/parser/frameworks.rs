@@ -274,7 +274,7 @@ fn parse_gin_call(
     let import_path = receiver
         .as_deref()
         .and_then(|receiver_name| resolve_import_path(receiver_name, imports));
-    if matches!(import_path, Some("io") | Some("io/ioutil"))
+    if matches!(import_path, Some("io" | "io/ioutil"))
         && name == "ReadAll"
         && argument_texts
             .first()

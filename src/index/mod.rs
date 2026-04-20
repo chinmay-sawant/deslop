@@ -42,6 +42,7 @@ pub(crate) struct RepositoryIndex {
     packages: BTreeMap<PackageKey, PackageIndex>,
     rust_package_names_by_file: BTreeMap<PathBuf, String>,
     rust_imports_by_file: BTreeMap<PathBuf, Vec<ImportSpec>>,
+    rust_include_neighbors: BTreeMap<PathBuf, Vec<PathBuf>>,
     rust_child_modules: BTreeMap<PathBuf, BTreeMap<String, Vec<PathBuf>>>,
     rust_parent_modules: BTreeMap<PathBuf, Vec<PathBuf>>,
     rust_crate_roots: BTreeMap<PathBuf, Vec<PathBuf>>,
@@ -92,8 +93,11 @@ impl RepositoryIndex {
     pub(crate) fn rust_imports_for_file(&self, file_path: &Path) -> &[ImportSpec] {
         self.rust_imports_by_file
             .get(file_path)
-            .map(Vec::as_slice)
-            .unwrap_or(&[])
+            .map_or(&[], Vec::as_slice)
+    }
+
+    pub(crate) fn rust_file_uses_textual_includes(&self, file_path: &Path) -> bool {
+        resolve::rust_file_uses_textual_includes(self, file_path)
     }
 
     pub fn summary(&self) -> IndexSummary {

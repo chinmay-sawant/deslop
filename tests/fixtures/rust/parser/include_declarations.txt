@@ -1,0 +1,7 @@
+include!("architecture/file_rules.rs");
+include!(r"architecture/helpers.rs");
+include_str!("architecture/file_rules.rs");
+
+fn render() {
+    include!("inside_function.rs");
+}

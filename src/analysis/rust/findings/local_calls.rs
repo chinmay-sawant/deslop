@@ -26,6 +26,7 @@ pub(super) fn rust_call_findings(
     else {
         return Vec::new();
     };
+    let skip_local_symbol_fallback = index.rust_file_uses_textual_includes(&file.path);
 
     let mut findings = Vec::new();
 
@@ -96,6 +97,9 @@ pub(super) fn rust_call_findings(
         }
 
         if is_rust_local_sym(&call.name) {
+            if skip_local_symbol_fallback {
+                continue;
+            }
             findings.push(Finding {
                 rule_id: "hallucinated_local_call".to_string(),
                 severity: Severity::Info,

@@ -287,23 +287,23 @@ pub(super) fn repeated_subscript_findings(
         return Vec::new();
     }
     let python = function.python_evidence();
-    python
-        .repeated_subscript_lines
-        .iter()
-        .map(|line| Finding {
+    // Emit at most one finding per function to avoid noisy per-line duplication.
+    if let Some(&first_line) = python.repeated_subscript_lines.first() {
+        return vec![Finding {
             rule_id: "repeated_dict_get_same_key_no_cache".to_string(),
             severity: Severity::Info,
             path: file.path.clone(),
             function_name: Some(function.fingerprint.name.clone()),
-            start_line: *line,
-            end_line: *line,
+            start_line: first_line,
+            end_line: first_line,
             message: format!(
                 "function {} calls .get() with the same key multiple times; assign to a local variable",
                 function.fingerprint.name
             ),
             evidence: vec!["pattern=repeated_dict_get_same_key".to_string()],
-        })
-        .collect()
+        }];
+    }
+    Vec::new()
 }
 
 // ── Body-text based rules ────────────────────────────────────────────────────
@@ -319,45 +319,96 @@ pub(super) fn nested_list_search_findings(
     // Detect nested for loops with `if ... in ...` or `if ... == ...` inner lookup
     let mut findings = Vec::new();
     let lines: Vec<&str> = body.lines().collect();
-    let mut outer_for_line = None;
-    let mut inner_for_depth = 0;
-    for (i, line) in lines.iter().enumerate() {
+    let mut loop_stack: Vec<usize> = Vec::new();
+
+    for (index, line) in lines.iter().enumerate() {
         let trimmed = line.trim();
-        if trimmed.starts_with("for ") && trimmed.ends_with(':') {
-            if outer_for_line.is_some() {
-                inner_for_depth += 1;
-                if inner_for_depth == 1 && i + 1 < lines.len() {
-                    let next = lines[i + 1].trim();
-                    if next.starts_with("if ") && (next.contains(" in ") || next.contains(" == ")) {
-                        findings.push(Finding {
-                            rule_id: "nested_list_search_map_candidate".to_string(),
-                            severity: Severity::Info,
-                            path: file.path.clone(),
-                            function_name: Some(function.fingerprint.name.clone()),
-                            start_line: function.fingerprint.start_line + i,
-                            end_line: function.fingerprint.start_line + i,
-                            message: format!(
-                                "function {} uses nested loops for lookup; consider a dict/set for O(1) access",
-                                function.fingerprint.name
-                            ),
-                            evidence: vec!["pattern=nested_loop_lookup_join".to_string()],
-                        });
-                    }
-                }
-            } else {
-                outer_for_line = Some(i);
-            }
+        if trimmed.is_empty() {
+            continue;
         }
-        if trimmed.is_empty()
-            && !trimmed.starts_with("for ")
-            && !trimmed.starts_with(' ')
-            && !trimmed.starts_with('\t')
-        {
-            outer_for_line = None;
-            inner_for_depth = 0;
+
+        let indent = indent_level(line);
+        while loop_stack.last().is_some_and(|depth| indent <= *depth) {
+            loop_stack.pop();
+        }
+
+        if trimmed.starts_with("for ") && trimmed.ends_with(':') {
+            if !loop_stack.is_empty()
+                && nested_lookup_condition_after(&lines, index, indent)
+            {
+                findings.push(Finding {
+                    rule_id: "nested_list_search_map_candidate".to_string(),
+                    severity: Severity::Info,
+                    path: file.path.clone(),
+                    function_name: Some(function.fingerprint.name.clone()),
+                    start_line: function.fingerprint.start_line + index,
+                    end_line: function.fingerprint.start_line + index,
+                    message: format!(
+                        "function {} uses nested loops for lookup; consider a dict/set for O(1) access",
+                        function.fingerprint.name
+                    ),
+                    evidence: vec!["pattern=nested_loop_lookup_join".to_string()],
+                });
+                break;
+            }
+            loop_stack.push(indent);
         }
     }
+
     findings
+}
+
+fn nested_lookup_condition_after(lines: &[&str], index: usize, loop_indent: usize) -> bool {
+    for next_line in lines.iter().skip(index + 1) {
+        let trimmed = next_line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        let indent = indent_level(next_line);
+        if indent <= loop_indent {
+            break;
+        }
+
+        if trimmed.starts_with("if ") {
+            return nested_lookup_condition(trimmed);
+        }
+
+        if !trimmed.starts_with('#') {
+            break;
+        }
+    }
+
+    false
+}
+
+fn nested_lookup_condition(trimmed_if: &str) -> bool {
+    let condition = trimmed_if
+        .trim_start_matches("if ")
+        .trim_end_matches(':')
+        .trim();
+
+    if condition.contains(" == ") {
+        return true;
+    }
+
+    let Some((_, rhs)) = condition.split_once(" in ") else {
+        return false;
+    };
+
+    !looks_string_like_membership_target(rhs)
+}
+
+fn looks_string_like_membership_target(expression: &str) -> bool {
+    let lower = expression.trim().to_ascii_lowercase();
+    lower.contains(".lower(")
+        || lower.contains(".casefold(")
+        || lower.contains(".strip(")
+        || lower.contains("text")
+        || lower.contains("string")
+        || lower.contains("message")
+        || lower.contains("content")
+        || lower.ends_with("_str")
 }
 
 pub(super) fn sort_then_first_findings(
@@ -466,6 +517,17 @@ pub(super) fn repeated_format_findings(
     let body = &function.body_text;
     let mut findings = Vec::new();
     let mut loop_indent: Option<usize> = None;
+    let template_bindings = body
+        .lines()
+        .filter_map(|line| {
+            let trimmed = line.trim();
+            let (name, value) = trimmed.split_once('=')?;
+            let value = value.trim();
+            ((value.starts_with('"') || value.starts_with('\''))
+                && value.contains("{}"))
+            .then(|| name.trim().to_string())
+        })
+        .collect::<std::collections::BTreeSet<_>>();
     for (i, line) in body.lines().enumerate() {
         let trimmed = line.trim();
         if trimmed.starts_with("for ") && trimmed.ends_with(':') {
@@ -474,7 +536,10 @@ pub(super) fn repeated_format_findings(
         }
         if loop_indent.is_some()
             && !trimmed.is_empty()
-            && (trimmed.contains(".format(") || trimmed.contains("f\"") || trimmed.contains("f'"))
+            && trimmed.contains(".format(")
+            && template_bindings
+                .iter()
+                .any(|name| trimmed.contains(&format!("{name}.format(")))
         {
             findings.push(Finding {
                 rule_id: "repeated_string_format_invariant_template".to_string(),
@@ -807,8 +872,9 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if lower_body.matches("for ").count() >= 2
+    if lower_body.matches("for ").count() >= 3
         && contains_any(&lower_body, &["len(", "sorted(", ".lower()", "path("])
+        && function.fingerprint.line_count >= 15
     {
         findings.push(push(
             "invariant_computation_not_hoisted_out_of_nested_loop",
@@ -964,9 +1030,7 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if contains_any(&lower_body, &["logger.", "logging."])
-        && lower_body.matches("for ").count() >= 1
-    {
+    if has_expensive_per_item_logging(body) {
         findings.push(push(
             "formatted_log_or_debug_payload_built_for_each_item_without_guard",
             format!(
@@ -1000,7 +1064,9 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if lower_body.matches("format(").count() >= 2 || lower_body.matches("f\"").count() >= 2 {
+    if has_invariant_template_reformatting(body)
+        && function.fingerprint.line_count >= 12
+    {
         findings.push(push(
             "invariant_template_or_prefix_string_reformatted_inside_loop",
             format!(
@@ -1010,7 +1076,10 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
         ));
     }
 
-    if contains_any(body, &["{\"", "{'", "dict("]) && lower_body.matches("for ").count() >= 1 {
+    if contains_any(body, &["{\"", "{'"])
+        && lower_body.matches("for ").count() >= 1
+        && (lower_body.matches("{\"").count() + lower_body.matches("dict(").count() >= 3)
+    {
         findings.push(push(
             "lookup_table_derived_from_constants_rebuilt_per_invocation",
             format!(
@@ -1021,4 +1090,104 @@ pub(super) fn project_agnostic_hotpath_ext_findings(
     }
 
     findings
+}
+
+fn has_expensive_per_item_logging(body: &str) -> bool {
+    let lines: Vec<&str> = body.lines().collect();
+    let mut loop_stack: Vec<usize> = Vec::new();
+
+    for line in lines {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        let indent = indent_level(line);
+        while loop_stack.last().is_some_and(|depth| indent <= *depth) {
+            loop_stack.pop();
+        }
+
+        if trimmed.starts_with("for ") || trimmed.starts_with("while ") {
+            loop_stack.push(indent);
+            continue;
+        }
+
+        if !loop_stack.is_empty() && is_expensive_log_line(trimmed) {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn has_invariant_template_reformatting(body: &str) -> bool {
+    let template_bindings = body
+        .lines()
+        .filter_map(|line| {
+            let trimmed = line.trim();
+            let (name, value) = trimmed.split_once('=')?;
+            let value = value.trim();
+            ((value.starts_with('"') || value.starts_with('\''))
+                && (value.contains("{}") || value.len() >= 12))
+            .then(|| name.trim().to_string())
+        })
+        .collect::<std::collections::BTreeSet<_>>();
+
+    let lines: Vec<&str> = body.lines().collect();
+    let mut loop_stack: Vec<usize> = Vec::new();
+
+    for line in lines {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        let indent = indent_level(line);
+        while loop_stack.last().is_some_and(|depth| indent <= *depth) {
+            loop_stack.pop();
+        }
+
+        if trimmed.starts_with("for ") || trimmed.starts_with("while ") {
+            loop_stack.push(indent);
+            continue;
+        }
+
+        if loop_stack.is_empty() {
+            continue;
+        }
+
+        if template_bindings
+            .iter()
+            .any(|name| trimmed.contains(&format!("{name}.format(")))
+        {
+            return true;
+        }
+
+        if template_bindings.iter().any(|name| {
+            trimmed.contains(&format!("{name} +")) || trimmed.contains(&format!("+ {name}"))
+        }) {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn is_expensive_log_line(line: &str) -> bool {
+    if !(line.contains("logger.") || line.contains("logging.")) {
+        return false;
+    }
+
+    contains_any(
+        &line.to_ascii_lowercase(),
+        &[
+            "json.dumps(",
+            ".format(",
+            "join(",
+            "pformat(",
+            "traceback.",
+            "serialize(",
+            "to_dict(",
+        ],
+    )
 }

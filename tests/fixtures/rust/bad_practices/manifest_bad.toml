@@ -1,0 +1,10 @@
+[workspace]
+members = ["app", "fuzz"]
+default-members = ["fuzz"]
+
+[dependencies]
+serde_json = "*"
+clap = "4.0"
+
+[profile.release]
+opt-level = 3

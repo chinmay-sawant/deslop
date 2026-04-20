@@ -1,0 +1,2108 @@
+{
+  "language": "rust",
+  "family": "bad_practices",
+  "label": "Bad Practices",
+  "summary": "Bad Practices rules for the rust catalog.",
+  "rules": [
+    {
+      "id": "rust_anyhow_bail_in_low_level_library_module",
+      "label": "Rust Anyhow Bail in Low Level Library Module",
+      "description": "flag `anyhow::bail!` in domain, parser, storage, or library modules that should usually expose typed error variants.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Anyhow Bail in Low Level Library Module matters because the pattern here, flag `anyhow::bail!` in domain, parser, storage, or library modules that should usually expose typed error variants, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Rust Anyhow Bail in Low Level Library Module in Rust, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "rust_anyhow_context_missing_on_boundary_io",
+      "label": "Rust Anyhow Context Missing on Boundary I/O",
+      "description": "flag `?` on filesystem, environment, process, parser, config, or network calls in CLI/boundary code without `.context(...)` or `.with_context(...)`.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Anyhow Context Missing on Boundary I/O matters because the pattern here, flag `?` on filesystem, environment, process, parser, config, or network calls in CLI/boundary code without `.context(...)` or `.with_context(...)`, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Anyhow Context Missing on Boundary I/O in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_anyhow_downcast_without_fallback_context",
+      "label": "Rust Anyhow Downcast without Fallback Context",
+      "description": "flag `downcast_ref`/`downcast` handling that drops the original context or returns a generic fallback.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Anyhow Downcast without Fallback Context matters because the pattern here, flag `downcast_ref`/`downcast` handling that drops the original context or returns a generic fallback, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Anyhow Downcast without Fallback Context in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_anyhow_eager_format_context",
+      "label": "Rust Anyhow Eager Format Context",
+      "description": "flag `.context(format!(...))` where `.with_context(|| format!(...))` would avoid allocation on the success path.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Anyhow Eager Format Context matters because the pattern here, flag `.context(format!(...))` where `.with_context(|| format!(...))` would avoid allocation on the success path, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Anyhow Eager Format Context in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_anyhow_error_string_matching",
+      "label": "Rust Anyhow Error String Matching",
+      "description": "flag branching on `err.to_string()`, `format!(\"{err}\")`, or message substrings instead of typed errors or downcasts.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Anyhow Error String Matching matters because the pattern here, flag branching on `err.to_string()`, `format!(\"{err}\")`, or message substrings instead of typed errors or downcasts, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Anyhow Error String Matching in Rust, prefer typed errors or downcasts when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_arc_clone_inside_inner_loop",
+      "label": "Rust Arc Clone Inside Inner Loop",
+      "description": "flag repeated `Arc::clone` in inner loops when a borrowed reference or cloned handle outside the loop would work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Arc Clone Inside Inner Loop matters because the pattern here, flag repeated `Arc::clone` in inner loops when a borrowed reference or cloned handle outside the loop would work, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Arc Clone Inside Inner Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_atomic_seqcst_without_comment",
+      "label": "Rust Atomic Seqcst without Comment",
+      "description": "flag `Ordering::SeqCst` in non-trivial code without a nearby comment explaining the synchronization requirement.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Atomic Seqcst without Comment matters because the pattern here, flag `Ordering::SeqCst` in non-trivial code without a nearby comment explaining the synchronization requirement, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Rust Atomic Seqcst without Comment in Rust, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "rust_blocking_process_output_read_unbounded",
+      "label": "Rust Blocking Process Output Read Unbounded",
+      "description": "flag `Command::output()` or piped process reads where stdout/stderr may be large and no size bound exists.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Blocking Process Output Read Unbounded matters because the pattern here, flag `Command::output()` or piped process reads where stdout/stderr may be large and no size bound exists, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Blocking Process Output Read Unbounded in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_boxed_trait_object_in_inner_loop",
+      "label": "Rust Boxed Trait Object in Inner Loop",
+      "description": "flag repeated `Box<dyn Trait>` allocation inside loops where generics, enum dispatch, or object reuse may be better.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Boxed Trait Object in Inner Loop matters because the pattern here, flag repeated `Box<dyn Trait>` allocation inside loops where generics, enum dispatch, or object reuse may be better, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Boxed Trait Object in Inner Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_build_script_missing_rerun_if_changed",
+      "label": "Rust Build Script Missing Rerun If Changed",
+      "description": "flag `build.rs` files that read files, env vars, or external commands without `cargo:rerun-if-changed` or `cargo:rerun-if-env-changed`.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Build Script Missing Rerun If Changed matters because the pattern here, flag `build.rs` files that read files, env vars, or external commands without `cargo:rerun-if-changed` or `cargo:rerun-if-env-changed`, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Build Script Missing Rerun If Changed in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_build_script_network_or_git_call",
+      "label": "Rust Build Script Network or Git Call",
+      "description": "flag build scripts that invoke network, git, curl, package managers, or shell commands that make builds non-hermetic.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Build Script Network or Git Call matters because the pattern here, flag build scripts that invoke network, git, curl, package managers, or shell commands that make builds non-hermetic, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Rust Build Script Network or Git Call in Rust, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "rust_bytes_to_vec_for_readonly_use",
+      "label": "Rust Bytes to Vec for Readonly Use",
+      "description": "flag `bytes.to_vec()` on byte slices that are only read afterward.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Bytes to Vec for Readonly Use matters because the pattern here, flag `bytes.to_vec()` on byte slices that are only read afterward, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Bytes to Vec for Readonly Use in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_clap_closed_set_manual_string_match",
+      "label": "Rust Clap Closed Set Manual String Match",
+      "description": "flag CLI string arguments that are manually matched against a fixed set instead of using `ValueEnum` or `value_parser`.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Closed Set Manual String Match matters because the pattern here, flag CLI string arguments that are manually matched against a fixed set instead of using `ValueEnum` or `value_parser`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Clap Closed Set Manual String Match in Rust, prefer using `ValueEnum` or `value_parser` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_clap_default_value_manual_parse",
+      "label": "Rust Clap Default Value Manual Parse",
+      "description": "flag `default_value` strings that are parsed manually later instead of typed `value_parser` or typed fields.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Default Value Manual Parse matters because the pattern here, flag `default_value` strings that are parsed manually later instead of typed `value_parser` or typed fields, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Clap Default Value Manual Parse in Rust, prefer typed `value_parser` or typed fields when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_clap_env_var_without_redaction_policy",
+      "label": "Rust Clap Env Var without Redaction Policy",
+      "description": "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Env Var without Redaction Policy matters because the pattern here, flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Clap Env Var without Redaction Policy in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_clap_opposing_flags_without_conflicts",
+      "label": "Rust Clap Opposing Flags without Conflicts",
+      "description": "flag pairs such as `--json/--text`, `--include/--exclude`, or `--enable/--disable` without `conflicts_with`, `overrides_with`, or explicit precedence.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Opposing Flags without Conflicts matters because the pattern here, flag pairs such as `--json/--text`, `--include/--exclude`, or `--enable/--disable` without `conflicts_with`, `overrides_with`, or explicit precedence, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Clap Opposing Flags without Conflicts in Rust, add `conflicts_with`, `overrides_with`, or explicit precedence or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_clap_parse_called_below_main",
+      "label": "Rust Clap Parse Called Below Main",
+      "description": "flag `Cli::parse()` or `try_parse()` called from library code or tests without dependency injection, making the code hard to reuse and test.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Parse Called Below Main matters because the pattern here, flag `Cli::parse()` or `try_parse()` called from library code or tests without dependency injection, making the code hard to reuse and test, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Clap Parse Called Below Main in Rust, add dependency injection, making the code hard to reuse and test or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_clap_path_arg_used_without_validation",
+      "label": "Rust Clap Path Arg Used without Validation",
+      "description": "flag `PathBuf` or path-like CLI values used for reads/writes without root containment, canonicalization strategy, or symlink policy.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Path Arg Used without Validation matters because the pattern here, flag `PathBuf` or path-like CLI values used for reads/writes without root containment, canonicalization strategy, or symlink policy, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Clap Path Arg Used without Validation in Rust, add root containment, canonicalization strategy, or symlink policy or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_clap_rule_id_arg_without_catalog_validation",
+      "label": "Rust Clap Rule ID Arg without Catalog Validation",
+      "description": "flag rule-id-like CLI arguments accepted as strings without checking against the known rule registry.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Rule ID Arg without Catalog Validation matters because the pattern here, flag rule-id-like CLI arguments accepted as strings without checking against the known rule registry, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Clap Rule ID Arg without Catalog Validation in Rust, add checking against the known rule registry or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_clap_secret_arg_derive_debug",
+      "label": "Rust Clap Secret Arg Derive Debug",
+      "description": "flag CLI structs deriving `Debug` while containing token, password, secret, key, cookie, or auth fields.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Secret Arg Derive Debug matters because the pattern here, flag CLI structs deriving `Debug` while containing token, password, secret, key, cookie, or auth fields, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Rust Clap Secret Arg Derive Debug in Rust, pull the sensitive value from env, config, or a secret manager instead of embedding it directly in source."
+    },
+    {
+      "id": "rust_clap_subcommand_reloads_config_in_each_branch",
+      "label": "Rust Clap Subcommand Reloads Config in Each Branch",
+      "description": "flag repeated config loading inside every subcommand branch instead of a shared pre-dispatch normalization step.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Subcommand Reloads Config in Each Branch matters because the pattern here, flag repeated config loading inside every subcommand branch instead of a shared pre-dispatch normalization step, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Clap Subcommand Reloads Config in Each Branch in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_clap_unbounded_vec_arg_on_scan_path",
+      "label": "Rust Clap Unbounded Vec Arg on Scan Path",
+      "description": "flag `Vec<String>` or variadic CLI arguments that feed scan/filter work without a limit, deduplication, or validation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clap Unbounded Vec Arg on Scan Path matters because the pattern here, flag `Vec<String>` or variadic CLI arguments that feed scan/filter work without a limit, deduplication, or validation, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Clap Unbounded Vec Arg on Scan Path in Rust, add a limit, deduplication, or validation or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_clone_to_satisfy_borrow_in_loop",
+      "label": "Rust Clone to Satisfy Borrow in Loop",
+      "description": "flag `.clone()` in loops immediately passed by reference or consumed only for read-only access.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Clone to Satisfy Borrow in Loop matters because the pattern here, flag `.clone()` in loops immediately passed by reference or consumed only for read-only access, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Clone to Satisfy Borrow in Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_collect_then_pop_or_first",
+      "label": "Rust Collect Then Pop or First",
+      "description": "flag collecting a split iterator into `Vec` just to read the first and last entries with `first()` and `pop()`.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Collect Then Pop or First matters because the pattern here, flag collecting a split iterator into `Vec` just to read the first and last entries with `first()` and `pop()`, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Collect Then Pop or First in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_collect_then_single_iteration",
+      "label": "Rust Collect Then Single Iteration",
+      "description": "flag `.collect::<Vec<_>>()` immediately followed by one `for` loop, `.iter().any`, `.iter().find`, or `.len()` where streaming would avoid allocation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Collect Then Single Iteration matters because the pattern here, flag `.collect::<Vec<_>>()` immediately followed by one `for` loop, `.iter().any`, `.iter().find`, or `.len()` where streaming would avoid allocation, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Collect Then Single Iteration in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_condvar_wait_without_predicate_loop",
+      "label": "Rust Condvar Wait without Predicate Loop",
+      "description": "flag `Condvar::wait` not wrapped in a predicate loop.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Condvar Wait without Predicate Loop matters because the pattern here, flag `Condvar::wait` not wrapped in a predicate loop, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Condvar Wait without Predicate Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_cow_to_owned_without_mutation",
+      "label": "Rust Cow to Owned without Mutation",
+      "description": "flag `Cow::to_mut`, `to_owned`, or `into_owned` where the owned value is never mutated or stored past the borrow lifetime.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Cow to Owned without Mutation matters because the pattern here, flag `Cow::to_mut`, `to_owned`, or `into_owned` where the owned value is never mutated or stored past the borrow lifetime, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Cow to Owned without Mutation in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_create_dir_all_per_file",
+      "label": "Rust Create Dir All Per File",
+      "description": "flag `create_dir_all` inside loops for the same parent directory.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Create Dir All Per File matters because the pattern here, flag `create_dir_all` inside loops for the same parent directory, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Create Dir All Per File in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_drain_collect_then_drop",
+      "label": "Rust Drain Collect Then Drop",
+      "description": "flag `drain(..).collect::<Vec<_>>()` followed by drop or one-pass processing that can operate directly on the drain iterator.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Drain Collect Then Drop matters because the pattern here, flag `drain(..).collect::<Vec<_>>()` followed by drop or one-pass processing that can operate directly on the drain iterator, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Drain Collect Then Drop in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_error_logged_and_returned",
+      "label": "Rust Error Logged and Returned",
+      "description": "flag functions that log an error and then return the same error upward, causing duplicate logging at callers.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Error Logged and Returned matters because the pattern here, flag functions that log an error and then return the same error upward, causing duplicate logging at callers, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Error Logged and Returned in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_ffi_extern_block_without_abi_comment",
+      "label": "Rust FFI Extern Block without Abi Comment",
+      "description": "flag FFI declarations without a nearby note about ABI, ownership, nullability, or lifetime expectations.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust FFI Extern Block without Abi Comment matters because the pattern here, flag FFI declarations without a nearby note about ABI, ownership, nullability, or lifetime expectations, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Rust FFI Extern Block without Abi Comment in Rust, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "rust_ffi_slice_from_raw_parts_without_length_guard",
+      "label": "Rust FFI Slice From Raw Parts without Length Guard",
+      "description": "flag safe wrappers around raw pointer and length pairs that do not validate null pointers, maximum length, or alignment before slice construction.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust FFI Slice From Raw Parts without Length Guard matters because the pattern here, flag safe wrappers around raw pointer and length pairs that do not validate null pointers, maximum length, or alignment before slice construction, depends on an invariant that future maintainers also have to preserve exactly.",
+      "fix": "For Rust FFI Slice From Raw Parts without Length Guard in Rust, shrink the unsafe surface, document the invariant, or move the behavior behind a safe abstraction."
+    },
+    {
+      "id": "rust_file_handle_returned_without_close_owner_contract",
+      "label": "Rust File Handle Returned without Close Owner Contract",
+      "description": "flag functions that return raw file handles, descriptors, or paths tied to temporary resources without documenting ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust File Handle Returned without Close Owner Contract matters because the pattern here, flag functions that return raw file handles, descriptors, or paths tied to temporary resources without documenting ownership, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust File Handle Returned without Close Owner Contract in Rust, add documenting ownership or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_file_open_in_loop_without_buffered_reader",
+      "label": "Rust File Open in Loop without Buffered Reader",
+      "description": "flag opening and reading files inside loops without `BufReader`, batching, or reuse.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust File Open in Loop without Buffered Reader matters because the pattern here, flag opening and reading files inside loops without `BufReader`, batching, or reuse, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust File Open in Loop without Buffered Reader in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_flush_inside_write_loop",
+      "label": "Rust Flush Inside Write Loop",
+      "description": "flag `flush()` inside per-item write loops unless the code is interactive terminal output.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Flush Inside Write Loop matters because the pattern here, flag `flush()` inside per-item write loops unless the code is interactive terminal output, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Flush Inside Write Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_format_macro_inside_append_loop",
+      "label": "Rust Format Macro Inside Append Loop",
+      "description": "flag `format!` in loops when appending to an existing `String` would avoid temporary allocation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Format Macro Inside Append Loop matters because the pattern here, flag `format!` in loops when appending to an existing `String` would avoid temporary allocation, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Format Macro Inside Append Loop in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_hashmap_contains_then_insert",
+      "label": "Rust Hashmap Contains Then Insert",
+      "description": "flag `contains_key` followed by `insert` or `get_mut` where `entry` would avoid duplicate hashing.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Hashmap Contains Then Insert matters because the pattern here, flag `contains_key` followed by `insert` or `get_mut` where `entry` would avoid duplicate hashing, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Hashmap Contains Then Insert in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_ignore_direntry_unwrapped",
+      "label": "Rust Ignore Direntry Unwrapped",
+      "description": "flag `entry.unwrap ()` or `expect (...)` on walker entries in production scan code.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Direntry Unwrapped matters because the pattern here, flag `entry.unwrap ()` or `expect (...)` on walker entries in production scan code, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Ignore Direntry Unwrapped in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_ignore_filter_entry_allocates_path_string_per_node",
+      "label": "Rust Ignore Filter Entry Allocates Path String Per Node",
+      "description": "flag `filter_entry` closures that allocate `String` or call `to_string_lossy()` for every node when path component checks would work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Filter Entry Allocates Path String Per Node matters because the pattern here, flag `filter_entry` closures that allocate `String` or call `to_string_lossy()` for every node when path component checks would work, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Ignore Filter Entry Allocates Path String Per Node in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_ignore_follow_links_without_cycle_or_root_policy",
+      "label": "Rust Ignore Follow Links without Cycle or Root Policy",
+      "description": "flag `.follow_links(true)` without visible cycle, root containment, or same-filesystem policy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Follow Links without Cycle or Root Policy matters because the pattern here, flag `.follow_links(true)` without visible cycle, root containment, or same-filesystem policy, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Ignore Follow Links without Cycle or Root Policy in Rust, add visible cycle, root containment, or same-filesystem policy or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_ignore_override_pattern_unwraps_user_input",
+      "label": "Rust Ignore Override Pattern Unwraps User Input",
+      "description": "flag `OverrideBuilder::add(...)` or glob override construction from user input followed by `unwrap` or `expect`.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Override Pattern Unwraps User Input matters because the pattern here, flag `OverrideBuilder::add(...)` or glob override construction from user input followed by `unwrap` or `expect`, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Ignore Override Pattern Unwraps User Input in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_ignore_parallel_walker_unbounded_accumulation",
+      "label": "Rust Ignore Parallel Walker Unbounded Accumulation",
+      "description": "flag parallel walker callbacks that push every path into an unbounded `Vec` or channel before processing.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Parallel Walker Unbounded Accumulation matters because the pattern here, flag parallel walker callbacks that push every path into an unbounded `Vec` or channel before processing, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Ignore Parallel Walker Unbounded Accumulation in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_ignore_reads_file_before_file_type_check",
+      "label": "Rust Ignore Reads File Before File Type Check",
+      "description": "flag read/open operations on walker paths before checking `file_type().is_file()` or equivalent.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Reads File Before File Type Check matters because the pattern here, flag read/open operations on walker paths before checking `file_type().is_file()` or equivalent, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Ignore Reads File Before File Type Check in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_ignore_sort_by_path_after_full_walk",
+      "label": "Rust Ignore Sort by Path After Full Walk",
+      "description": "flag full repository path collection followed by sort before processing where deterministic output could be produced after finding collection instead.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Sort by Path After Full Walk matters because the pattern here, flag full repository path collection followed by sort before processing where deterministic output could be produced after finding collection instead, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Rust Ignore Sort by Path After Full Walk in Rust, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "rust_ignore_walk_error_silently_discarded",
+      "label": "Rust Ignore Walk Error Silently Discarded",
+      "description": "flag walk result handling that uses `filter_map(Result::ok)` or `ok()?` without recording ignored traversal errors.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Walk Error Silently Discarded matters because the pattern here, flag walk result handling that uses `filter_map(Result::ok)` or `ok()?` without recording ignored traversal errors, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Ignore Walk Error Silently Discarded in Rust, add recording ignored traversal errors or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_ignore_walker_disables_standard_filters_without_policy",
+      "label": "Rust Ignore Walker Disables Standard Filters without Policy",
+      "description": "flag `.ignore(false)`, `.git_ignore(false)`, `.git_exclude(false)`, `.hidden(false)`, or `.parents(false)` unless paired with a named user option or security review note.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Walker Disables Standard Filters without Policy matters because the pattern here, flag `.ignore(false)`, `.git_ignore(false)`, `.git_exclude(false)`, `.hidden(false)`, or `.parents(false)` unless paired with a named user option or security review note, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Ignore Walker Disables Standard Filters without Policy in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_ignore_walker_rebuilt_inside_directory_loop",
+      "label": "Rust Ignore Walker Rebuilt Inside Directory Loop",
+      "description": "flag `WalkBuilder::new(...)` construction inside recursive or per-directory loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Ignore Walker Rebuilt Inside Directory Loop matters because the pattern here, flag `WalkBuilder::new(...)` construction inside recursive or per-directory loops, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Ignore Walker Rebuilt Inside Directory Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_iterator_chain_allocates_intermediate_strings",
+      "label": "Rust Iterator Chain Allocates Intermediate Strings",
+      "description": "flag iterator chains that map every item through `format!`, `to_string`, or JSON conversion before a simple predicate or grouping.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Iterator Chain Allocates Intermediate Strings matters because the pattern here, flag iterator chains that map every item through `format!`, `to_string`, or JSON conversion before a simple predicate or grouping, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Iterator Chain Allocates Intermediate Strings in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_iterator_nth_inside_loop",
+      "label": "Rust Iterator Nth Inside Loop",
+      "description": "flag `.nth(i)` or repeated indexed traversal over non-indexed iterators inside loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Iterator Nth Inside Loop matters because the pattern here, flag `.nth(i)` or repeated indexed traversal over non-indexed iterators inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Iterator Nth Inside Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_join_handle_dropped_after_spawn",
+      "label": "Rust Join Handle Dropped After Spawn",
+      "description": "flag spawned threads whose join handles are immediately dropped outside explicit detached-worker patterns.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Join Handle Dropped After Spawn matters because the pattern here, flag spawned threads whose join handles are immediately dropped outside explicit detached-worker patterns, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Join Handle Dropped After Spawn in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_large_enum_variant_without_boxing",
+      "label": "Rust Large Enum Variant without Boxing",
+      "description": "flag enums with one much larger variant causing every enum value to carry the largest layout.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Large Enum Variant without Boxing matters because the pattern here, flag enums with one much larger variant causing every enum value to carry the largest layout, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Large Enum Variant without Boxing in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_libc_call_without_platform_cfg",
+      "label": "Rust Libc Call without Platform Cfg",
+      "description": "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libc Call without Platform Cfg matters because the pattern here, flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Libc Call without Platform Cfg in Rust, add `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_libc_cstring_unwrap_on_external_input",
+      "label": "Rust Libc Cstring Unwrap on External Input",
+      "description": "flag `CString::new(user_input).unwrap ()` or `expect (...)` where embedded NUL bytes should become a recoverable error.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libc Cstring Unwrap on External Input matters because the pattern here, flag `CString::new(user_input).unwrap ()` or `expect (...)` where embedded NUL bytes should become a recoverable error, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Libc Cstring Unwrap on External Input in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_libc_errno_read_after_intervening_call",
+      "label": "Rust Libc Errno Read After Intervening Call",
+      "description": "flag errno access after another call that could overwrite the original failure cause.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libc Errno Read After Intervening Call matters because the pattern here, flag errno access after another call that could overwrite the original failure cause, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Libc Errno Read After Intervening Call in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_libc_into_raw_fd_without_reclaim",
+      "label": "Rust Libc Into Raw Fd without Reclaim",
+      "description": "flag `into_raw_fd()` without a visible `from_raw_fd`, `OwnedFd`, or close handoff.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libc Into Raw Fd without Reclaim matters because the pattern here, flag `into_raw_fd()` without a visible `from_raw_fd`, `OwnedFd`, or close handoff, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Libc Into Raw Fd without Reclaim in Rust, add a visible `from_raw_fd`, `OwnedFd`, or close handoff or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_libc_no_follow_without_eloop_handling",
+      "label": "Rust Libc No Follow without Eloop Handling",
+      "description": "flag `O_NOFOLLOW` usage without explicit symlink-loop or unsupported-platform error handling.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libc No Follow without Eloop Handling matters because the pattern here, flag `O_NOFOLLOW` usage without explicit symlink-loop or unsupported-platform error handling, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Libc No Follow without Eloop Handling in Rust, add explicit symlink-loop or unsupported-platform error handling or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_libc_open_without_cloexec",
+      "label": "Rust Libc Open without Cloexec",
+      "description": "flag direct `libc::open` or equivalent without `O_CLOEXEC` in programs that may spawn child processes.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libc Open without Cloexec matters because the pattern here, flag direct `libc::open` or equivalent without `O_CLOEXEC` in programs that may spawn child processes, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Libc Open without Cloexec in Rust, add `O_CLOEXEC` in programs that may spawn child processes or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_libc_raw_fd_lifetime_escape",
+      "label": "Rust Libc Raw Fd Lifetime Escape",
+      "description": "flag `as_raw_fd()` results stored, returned, or moved into long-lived structs while the owning file/socket may drop.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libc Raw Fd Lifetime Escape matters because the pattern here, flag `as_raw_fd()` results stored, returned, or moved into long-lived structs while the owning file/socket may drop, depends on an invariant that future maintainers also have to preserve exactly.",
+      "fix": "For Rust Libc Raw Fd Lifetime Escape in Rust, shrink the unsafe surface, document the invariant, or move the behavior behind a safe abstraction."
+    },
+    {
+      "id": "rust_libc_return_value_not_checked",
+      "label": "Rust Libc Return Value Not Checked",
+      "description": "flag libc calls whose integer or pointer return value is ignored or not checked for `-1`, null, or documented failure sentinels.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libc Return Value Not Checked matters because the pattern here, flag libc calls whose integer or pointer return value is ignored or not checked for `-1`, null, or documented failure sentinels, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Libc Return Value Not Checked in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_libfuzzer_target_allocates_unbounded_string",
+      "label": "Rust Libfuzzer Target Allocates Unbounded String",
+      "description": "flag fuzz targets that convert arbitrary byte slices to owned strings without a size cap or lossy/borrowed strategy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libfuzzer Target Allocates Unbounded String matters because the pattern here, flag fuzz targets that convert arbitrary byte slices to owned strings without a size cap or lossy/borrowed strategy, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Libfuzzer Target Allocates Unbounded String in Rust, add a size cap or lossy/borrowed strategy or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_libfuzzer_target_unwraps_parse_or_utf8",
+      "label": "Rust Libfuzzer Target Unwraps Parse or Utf8",
+      "description": "flag fuzz targets that call `unwrap`/`expect` on parser, UTF-8, TOML, JSON, or path conversion results.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Libfuzzer Target Unwraps Parse or Utf8 matters because the pattern here, flag fuzz targets that call `unwrap`/`expect` on parser, UTF-8, TOML, JSON, or path conversion results, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Libfuzzer Target Unwraps Parse or Utf8 in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_manifest_bench_or_fuzz_target_in_default_members",
+      "label": "Rust Manifest Bench or Fuzz Target in Default Members",
+      "description": "flag fuzz/bench crates included in default workspace members without an explicit opt-in.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Manifest Bench or Fuzz Target in Default Members matters because the pattern here, flag fuzz/bench crates included in default workspace members without an explicit opt-in, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Manifest Bench or Fuzz Target in Default Members in Rust, add an explicit opt-in or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_manifest_build_dependency_used_at_runtime",
+      "label": "Rust Manifest Build Dependency Used at Runtime",
+      "description": "flag build-dependencies imported from runtime code or runtime dependencies used only by `build.rs`.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Manifest Build Dependency Used at Runtime matters because the pattern here, flag build-dependencies imported from runtime code or runtime dependencies used only by `build.rs`, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Manifest Build Dependency Used at Runtime in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_manifest_dependency_default_features_unreviewed",
+      "label": "Rust Manifest Dependency Default Features Unreviewed",
+      "description": "flag heavy dependencies with default features enabled when only a narrow feature set appears to be used.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Manifest Dependency Default Features Unreviewed matters because the pattern here, flag heavy dependencies with default features enabled when only a narrow feature set appears to be used, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Manifest Dependency Default Features Unreviewed in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_manifest_dev_dependency_used_in_src",
+      "label": "Rust Manifest Dev Dependency Used in Src",
+      "description": "flag dev-only crates such as `tempfile`, `proptest`, or fuzz helpers imported from production `src` code.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Manifest Dev Dependency Used in Src matters because the pattern here, flag dev-only crates such as `tempfile`, `proptest`, or fuzz helpers imported from production `src` code, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Manifest Dev Dependency Used in Src in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_manifest_duplicate_direct_dependency_versions",
+      "label": "Rust Manifest Duplicate Direct Dependency Versions",
+      "description": "flag the same crate required at multiple direct versions across workspace members.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Manifest Duplicate Direct Dependency Versions matters because the pattern here, flag the same crate required at multiple direct versions across workspace members, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Manifest Duplicate Direct Dependency Versions in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_manifest_release_lto_missing_for_cli_binary",
+      "label": "Rust Manifest Release Lto Missing for CLI Binary",
+      "description": "flag CLI/binary crates with release profiles that omit any LTO setting when binary size or startup matters.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Manifest Release Lto Missing for CLI Binary matters because the pattern here, flag CLI/binary crates with release profiles that omit any LTO setting when binary size or startup matters, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Manifest Release Lto Missing for CLI Binary in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_manifest_wildcard_dependency_version",
+      "label": "Rust Manifest Wildcard Dependency Version",
+      "description": "flag `*` dependency versions or unconstrained git/path dependencies outside local workspace development.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Manifest Wildcard Dependency Version matters because the pattern here, flag `*` dependency versions or unconstrained git/path dependencies outside local workspace development, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Manifest Wildcard Dependency Version in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_manifest_workspace_dependency_not_centralized",
+      "label": "Rust Manifest Workspace Dependency Not Centralized",
+      "description": "flag multi-crate workspaces that repeat dependency versions instead of using `[workspace.dependencies]`.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Manifest Workspace Dependency Not Centralized matters because the pattern here, flag multi-crate workspaces that repeat dependency versions instead of using `[workspace.dependencies]`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Manifest Workspace Dependency Not Centralized in Rust, prefer using `[workspace.dependencies]` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_metadata_called_repeatedly_same_path",
+      "label": "Rust Metadata Called Repeatedly Same Path",
+      "description": "flag repeated `metadata`, `symlink_metadata`, `exists`, or `is_file` checks for the same path in one function.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Metadata Called Repeatedly Same Path matters because the pattern here, flag repeated `metadata`, `symlink_metadata`, `exists`, or `is_file` checks for the same path in one function, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Metadata Called Repeatedly Same Path in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_mpsc_receiver_iter_without_shutdown_signal",
+      "label": "Rust Mpsc Receiver Iter without Shutdown Signal",
+      "description": "flag blocking receiver iteration without timeout, close path, cancellation, or sentinel.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Mpsc Receiver Iter without Shutdown Signal matters because the pattern here, flag blocking receiver iteration without timeout, close path, cancellation, or sentinel, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Mpsc Receiver Iter without Shutdown Signal in Rust, add timeout, close path, cancellation, or sentinel or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_mutex_guard_lives_through_cpu_heavy_work",
+      "label": "Rust Mutex Guard Lives Through CPU Heavy Work",
+      "description": "flag lock guards that remain live across sorting, parsing, serialization, filesystem I/O, or large loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Mutex Guard Lives Through CPU Heavy Work matters because the pattern here, flag lock guards that remain live across sorting, parsing, serialization, filesystem I/O, or large loops, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Mutex Guard Lives Through CPU Heavy Work in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_mutex_lock_unwrap_panics_on_poison",
+      "label": "Rust Mutex Lock Unwrap Panics on Poison",
+      "description": "flag `lock().unwrap ()` or `write().unwrap ()` in production code where poison recovery or contextual error reporting would be safer.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Mutex Lock Unwrap Panics on Poison matters because the pattern here, flag `lock().unwrap ()` or `write().unwrap ()` in production code where poison recovery or contextual error reporting would be safer, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Mutex Lock Unwrap Panics on Poison in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_once_lock_initializes_fallible_resource_with_unwrap",
+      "label": "Rust Once Lock Initializes Fallible Resource with Unwrap",
+      "description": "flag `OnceLock`, `LazyLock`, or lazy initialization that unwraps fallible setup instead of returning initialization errors at bootstrap.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Once Lock Initializes Fallible Resource with Unwrap matters because the pattern here, flag `OnceLock`, `LazyLock`, or lazy initialization that unwraps fallible setup instead of returning initialization errors at bootstrap, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Once Lock Initializes Fallible Resource with Unwrap in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_option_clone_then_unwrap_or",
+      "label": "Rust Option Clone Then Unwrap or",
+      "description": "flag cloning `Option<T>` or `Result<T, E>` only to unwrap/default instead of borrowing with `as_ref`, `as_deref`, or `map`.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Option Clone Then Unwrap or matters because the pattern here, flag cloning `Option<T>` or `Result<T, E>` only to unwrap/default instead of borrowing with `as_ref`, `as_deref`, or `map`, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Option Clone Then Unwrap or in Rust, prefer borrowing with `as_ref`, `as_deref`, or `map` when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_os_string_lossy_conversion_before_filter",
+      "label": "Rust OS String Lossy Conversion Before Filter",
+      "description": "flag lossy path/string conversions before simple extension, file-name, or component filters.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust OS String Lossy Conversion Before Filter matters because the pattern here, flag lossy path/string conversions before simple extension, file-name, or component filters, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Rust OS String Lossy Conversion Before Filter in Rust, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "rust_path_canonicalize_in_scan_inner_loop",
+      "label": "Rust Path Canonicalize in Scan Inner Loop",
+      "description": "flag repeated canonicalization for every path in a hot repository traversal when relative normalized paths would be enough.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Path Canonicalize in Scan Inner Loop matters because the pattern here, flag repeated canonicalization for every path in a hot repository traversal when relative normalized paths would be enough, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Path Canonicalize in Scan Inner Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_path_to_string_lossy_in_hot_loop",
+      "label": "Rust Path to String Lossy in Hot Loop",
+      "description": "flag `to_string_lossy`, `display().to_string`, or path formatting inside repository/file traversal loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Path to String Lossy in Hot Loop matters because the pattern here, flag `to_string_lossy`, `display().to_string`, or path formatting inside repository/file traversal loops, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Path to String Lossy in Hot Loop in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_proptest_assume_filters_most_cases",
+      "label": "Rust Proptest Assume Filters Most Cases",
+      "description": "flag multiple `prop_assume!` calls or assume-heavy strategies that likely discard most generated cases.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Proptest Assume Filters Most Cases matters because the pattern here, flag multiple `prop_assume!` calls or assume-heavy strategies that likely discard most generated cases, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Proptest Assume Filters Most Cases in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_proptest_no_regression_case_for_parser_crash",
+      "label": "Rust Proptest No Regression Case for Parser Crash",
+      "description": "flag parser property tests without a regression fixture or seed-capture path for minimized failures.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Proptest No Regression Case for Parser Crash matters because the pattern here, flag parser property tests without a regression fixture or seed-capture path for minimized failures, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Proptest No Regression Case for Parser Crash in Rust, add a regression fixture or seed-capture path for minimized failures or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_proptest_strategy_recreates_expensive_fixture",
+      "label": "Rust Proptest Strategy Recreates Expensive Fixture",
+      "description": "flag strategies that rebuild repositories, parsers, or large fixtures for each case rather than sharing setup safely.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Proptest Strategy Recreates Expensive Fixture matters because the pattern here, flag strategies that rebuild repositories, parsers, or large fixtures for each case rather than sharing setup safely, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Proptest Strategy Recreates Expensive Fixture in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_proptest_unbounded_string_or_vec_strategy",
+      "label": "Rust Proptest Unbounded String or Vec Strategy",
+      "description": "flag `\".*\"`, `any::<String>()`, or unbounded `vec(...)` strategies in parser/scanner tests without a size cap.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Proptest Unbounded String or Vec Strategy matters because the pattern here, flag `\".*\"`, `any::<String>()`, or unbounded `vec(...)` strategies in parser/scanner tests without a size cap, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Proptest Unbounded String or Vec Strategy in Rust, add a size cap or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_question_mark_after_partial_side_effect_without_cleanup",
+      "label": "Rust Question Mark After Partial Side Effect without Cleanup",
+      "description": "flag `?` after partially mutating files, shared state, transactions, or output buffers without rollback or cleanup.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Question Mark After Partial Side Effect without Cleanup matters because the pattern here, flag `?` after partially mutating files, shared state, transactions, or output buffers without rollback or cleanup, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Question Mark After Partial Side Effect without Cleanup in Rust, add rollback or cleanup or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_rayon_blocking_io_in_cpu_parallel_pool",
+      "label": "Rust Rayon Blocking I/O in CPU Parallel Pool",
+      "description": "flag filesystem, network, or process I/O inside Rayon CPU-bound closures unless the project documents that Rayon owns the I/O concurrency budget.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Blocking I/O in CPU Parallel Pool matters because the pattern here, flag filesystem, network, or process I/O inside Rayon CPU-bound closures unless the project documents that Rayon owns the I/O concurrency budget, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Rayon Blocking I/O in CPU Parallel Pool in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_rayon_collect_all_then_filter_sequentially",
+      "label": "Rust Rayon Collect All Then Filter Sequentially",
+      "description": "flag `par_iter().map(...).collect::<Vec<_>>()` immediately followed by sequential filtering or flattening that could stay in the parallel pipeline.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Collect All Then Filter Sequentially matters because the pattern here, flag `par_iter().map(...).collect::<Vec<_>>()` immediately followed by sequential filtering or flattening that could stay in the parallel pipeline, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Rust Rayon Collect All Then Filter Sequentially in Rust, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "rust_rayon_custom_pool_created_per_call",
+      "label": "Rust Rayon Custom Pool Created Per Call",
+      "description": "flag `ThreadPoolBuilder::build()` inside frequently-called functions instead of process-level or subsystem-level pool ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Custom Pool Created Per Call matters because the pattern here, flag `ThreadPoolBuilder::build()` inside frequently-called functions instead of process-level or subsystem-level pool ownership, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Rayon Custom Pool Created Per Call in Rust, prefer process-level or subsystem-level pool ownership when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_rayon_flat_map_allocates_nested_vectors",
+      "label": "Rust Rayon Flat Map Allocates Nested Vectors",
+      "description": "flag parallel map stages that return `Vec<Vec<T>>` and later flatten, where `flat_map_iter`, `reduce`, or direct collection can reduce allocation churn.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Flat Map Allocates Nested Vectors matters because the pattern here, flag parallel map stages that return `Vec<Vec<T>>` and later flatten, where `flat_map_iter`, `reduce`, or direct collection can reduce allocation churn, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Rayon Flat Map Allocates Nested Vectors in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_rayon_global_pool_built_by_library_code",
+      "label": "Rust Rayon Global Pool Built by Library Code",
+      "description": "flag `ThreadPoolBuilder::build_global()` outside a binary entry point, test harness, or explicit process bootstrap.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Global Pool Built by Library Code matters because the pattern here, flag `ThreadPoolBuilder::build_global()` outside a binary entry point, test harness, or explicit process bootstrap, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Rayon Global Pool Built by Library Code in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_rayon_heavy_clone_per_item",
+      "label": "Rust Rayon Heavy Clone Per Item",
+      "description": "flag repeated `.clone()` of config, source text, rule catalogs, AST summaries, or large state inside parallel closures.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Heavy Clone Per Item matters because the pattern here, flag repeated `.clone()` of config, source text, rule catalogs, AST summaries, or large state inside parallel closures, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Rayon Heavy Clone Per Item in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_rayon_large_move_capture",
+      "label": "Rust Rayon Large Move Capture",
+      "description": "flag `move` closures in parallel iterators that capture large owned values rather than borrowing or sharing cheap handles.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Large Move Capture matters because the pattern here, flag `move` closures in parallel iterators that capture large owned values rather than borrowing or sharing cheap handles, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Rayon Large Move Capture in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_rayon_mutex_push_in_parallel_loop",
+      "label": "Rust Rayon Mutex Push in Parallel Loop",
+      "description": "flag `Mutex<Vec<_>>`, `RwLock<Vec<_>>`, or shared collection mutation inside `for_each` where `map/filter_map/collect/reduce` would avoid lock contention.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Mutex Push in Parallel Loop matters because the pattern here, flag `Mutex<Vec<_>>`, `RwLock<Vec<_>>`, or shared collection mutation inside `for_each` where `map/filter_map/collect/reduce` would avoid lock contention, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Rayon Mutex Push in Parallel Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_rayon_nested_parallel_iterators",
+      "label": "Rust Rayon Nested Parallel Iterators",
+      "description": "flag nested `par_iter`, `into_par_iter`, or `par_bridge` calls that can oversubscribe worker threads or fragment work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Nested Parallel Iterators matters because the pattern here, flag nested `par_iter`, `into_par_iter`, or `par_bridge` calls that can oversubscribe worker threads or fragment work, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Rayon Nested Parallel Iterators in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_rayon_ordering_mutex_for_result_stability",
+      "label": "Rust Rayon Ordering Mutex for Result Stability",
+      "description": "flag parallel closures that serialize through `Mutex<BTreeMap<_>>`, `Mutex<Vec<_>>`, or sequence counters just to regain output order.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Ordering Mutex for Result Stability matters because the pattern here, flag parallel closures that serialize through `Mutex<BTreeMap<_>>`, `Mutex<Vec<_>>`, or sequence counters just to regain output order, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Rayon Ordering Mutex for Result Stability in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_rayon_par_bridge_on_small_or_indexed_iterator",
+      "label": "Rust Rayon Par Bridge on Small or Indexed Iterator",
+      "description": "flag `par_bridge()` over known indexed collections or tiny iterators where normal `par_iter` or sequential iteration is likely cheaper.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Par Bridge on Small or Indexed Iterator matters because the pattern here, flag `par_bridge()` over known indexed collections or tiny iterators where normal `par_iter` or sequential iteration is likely cheaper, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Rayon Par Bridge on Small or Indexed Iterator in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_rayon_parallelism_for_trivial_per_item_work",
+      "label": "Rust Rayon Parallelism for Trivial Per Item Work",
+      "description": "flag parallel iteration over simple string predicates or metadata checks when there is no expensive per-item work and the input is below a conservative threshold.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Parallelism for Trivial Per Item Work matters because the pattern here, flag parallel iteration over simple string predicates or metadata checks when there is no expensive per-item work and the input is below a conservative threshold, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Rayon Parallelism for Trivial Per Item Work in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_rayon_sequential_collect_then_par_iter",
+      "label": "Rust Rayon Sequential Collect Then Par Iter",
+      "description": "flag collecting an intermediate `Vec` only to immediately call `par_iter` or `into_par_iter` when the producer could feed the parallel stage directly.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Sequential Collect Then Par Iter matters because the pattern here, flag collecting an intermediate `Vec` only to immediately call `par_iter` or `into_par_iter` when the producer could feed the parallel stage directly, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Rayon Sequential Collect Then Par Iter in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_rayon_unhandled_panic_in_parallel_scan",
+      "label": "Rust Rayon Unhandled Panic in Parallel Scan",
+      "description": "flag `unwrap`, `expect`, or panicking conversions inside parallel scan/evaluation closures where one bad file can abort the whole batch.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rayon Unhandled Panic in Parallel Scan matters because the pattern here, flag `unwrap`, `expect`, or panicking conversions inside parallel scan/evaluation closures where one bad file can abort the whole batch, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Rayon Unhandled Panic in Parallel Scan in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_read_dir_collect_sort_before_filter",
+      "label": "Rust Read Dir Collect Sort Before Filter",
+      "description": "flag `read_dir` entries collected and sorted before filtering by type/extension.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Read Dir Collect Sort Before Filter matters because the pattern here, flag `read_dir` entries collected and sorted before filtering by type/extension, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Read Dir Collect Sort Before Filter in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_read_to_string_for_line_scan",
+      "label": "Rust Read to String for Line Scan",
+      "description": "flag whole-file `read_to_string` or `fs::read_to_string` followed only by line scanning or predicate checks.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Read to String for Line Scan matters because the pattern here, flag whole-file `read_to_string` or `fs::read_to_string` followed only by line scanning or predicate checks, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Read to String for Line Scan in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_regex_compiled_in_loop",
+      "label": "Rust Regex Compiled in Loop",
+      "description": "flag `Regex::new(...)` inside loops or hot functions when the `regex` crate is imported.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Regex Compiled in Loop matters because the pattern here, flag `Regex::new(...)` inside loops or hot functions when the `regex` crate is imported, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Regex Compiled in Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_result_ignored_with_let_underscore",
+      "label": "Rust Result Ignored with Let Underscore",
+      "description": "flag `let _ = fallible_call()` outside cleanup, telemetry, or best-effort contexts.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Result Ignored with Let Underscore matters because the pattern here, flag `let _ = fallible_call()` outside cleanup, telemetry, or best-effort contexts, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Result Ignored with Let Underscore in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_rwlock_write_guard_for_readonly_access",
+      "label": "Rust Rwlock Write Guard for Readonly Access",
+      "description": "flag write locks where the guarded value is only read.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Rwlock Write Guard for Readonly Access matters because the pattern here, flag write locks where the guarded value is only read, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Rwlock Write Guard for Readonly Access in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_serde_borrow_missing_for_large_readonly_payload",
+      "label": "Rust Serde Borrow Missing for Large Readonly Payload",
+      "description": "flag large readonly payload structs that deserialize owned `String` or `Vec<u8>` in hot paths where `Cow<'de, str>` or borrowed fields could avoid copies.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Borrow Missing for Large Readonly Payload matters because the pattern here, flag large readonly payload structs that deserialize owned `String` or `Vec<u8>` in hot paths where `Cow<'de, str>` or borrowed fields could avoid copies, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Serde Borrow Missing for Large Readonly Payload in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_serde_custom_deserialize_panics",
+      "label": "Rust Serde Custom Deserialize Panics",
+      "description": "flag custom `Deserialize` impls or visitors that call `unwrap`, `expect`, `panic`, or unchecked indexing.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Custom Deserialize Panics matters because the pattern here, flag custom `Deserialize` impls or visitors that call `unwrap`, `expect`, `panic`, or unchecked indexing, depends on an invariant that future maintainers also have to preserve exactly.",
+      "fix": "For Rust Serde Custom Deserialize Panics in Rust, shrink the unsafe surface, document the invariant, or move the behavior behind a safe abstraction."
+    },
+    {
+      "id": "rust_serde_default_masks_parse_error",
+      "label": "Rust Serde Default Masks Parse Error",
+      "description": "flag broad `unwrap_or_default`, `Default::default`, or `#[serde(default)]` use around configuration fields that look required for correctness.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Default Masks Parse Error matters because the pattern here, flag broad `unwrap_or_default`, `Default::default`, or `#[serde(default)]` use around configuration fields that look required for correctness, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Serde Default Masks Parse Error in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_serde_json_clone_value_in_loop",
+      "label": "Rust Serde JSON Clone Value in Loop",
+      "description": "flag `serde_json::Value::clone()` or cloned JSON maps inside loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde JSON Clone Value in Loop matters because the pattern here, flag `serde_json::Value::clone()` or cloned JSON maps inside loops, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Serde JSON Clone Value in Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_serde_json_from_str_after_unbounded_read",
+      "label": "Rust Serde JSON From Str After Unbounded Read",
+      "description": "flag `serde_json::from_str` or `from_slice` fed by unbounded file/network reads rather than size-limited input.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde JSON From Str After Unbounded Read matters because the pattern here, flag `serde_json::from_str` or `from_slice` fed by unbounded file/network reads rather than size-limited input, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Serde JSON From Str After Unbounded Read in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_serde_json_indexing_without_type_guard",
+      "label": "Rust Serde JSON Indexing without Type Guard",
+      "description": "flag `value[\"key\"]`, `value[index]`, or chained indexing without typed deserialization, `.get(...)`, or null/type checks.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde JSON Indexing without Type Guard matters because the pattern here, flag `value[\"key\"]`, `value[index]`, or chained indexing without typed deserialization, `.get(...)`, or null/type checks, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Serde JSON Indexing without Type Guard in Rust, add typed deserialization, `.get(...)`, or null/type checks or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_serde_json_roundtrip_conversion",
+      "label": "Rust Serde JSON Roundtrip Conversion",
+      "description": "flag `to_value` followed by `from_value`, or `to_string` followed by `from_str`, when a direct conversion or typed boundary is available.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde JSON Roundtrip Conversion matters because the pattern here, flag `to_value` followed by `from_value`, or `to_string` followed by `from_str`, when a direct conversion or typed boundary is available, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Serde JSON Roundtrip Conversion in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_serde_json_to_string_pretty_in_machine_path",
+      "label": "Rust Serde JSON to String Pretty in Machine Path",
+      "description": "flag `serde_json::to_string_pretty` in non-human-output hot paths, APIs, or report generation loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde JSON to String Pretty in Machine Path matters because the pattern here, flag `serde_json::to_string_pretty` in non-human-output hot paths, APIs, or report generation loops, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Serde JSON to String Pretty in Machine Path in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_serde_json_value_internal_hot_path",
+      "label": "Rust Serde JSON Value Internal Hot Path",
+      "description": "flag `serde_json::Value` used as an internal data model in non-boundary modules where typed structs would reduce dynamic lookups and runtime errors.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde JSON Value Internal Hot Path matters because the pattern here, flag `serde_json::Value` used as an internal data model in non-boundary modules where typed structs would reduce dynamic lookups and runtime errors, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Rust Serde JSON Value Internal Hot Path in Rust, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "rust_serde_json_whole_array_loaded_for_streaming_input",
+      "label": "Rust Serde JSON Whole Array Loaded for Streaming Input",
+      "description": "flag deserializing large JSON arrays into `Vec<T>` in reader-like code where streaming deserialization could reduce peak memory.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde JSON Whole Array Loaded for Streaming Input matters because the pattern here, flag deserializing large JSON arrays into `Vec<T>` in reader-like code where streaming deserialization could reduce peak memory, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Serde JSON Whole Array Loaded for Streaming Input in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_serde_skip_serializing_secret_without_deserialize_guard",
+      "label": "Rust Serde Skip Serializing Secret without Deserialize Guard",
+      "description": "flag secret-like fields skipped during serialization but still accepted during deserialization without validation/redaction policy.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Skip Serializing Secret without Deserialize Guard matters because the pattern here, flag secret-like fields skipped during serialization but still accepted during deserialization without validation/redaction policy, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Serde Skip Serializing Secret without Deserialize Guard in Rust, add validation/redaction policy or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_serde_wire_enum_missing_stable_rename_policy",
+      "label": "Rust Serde Wire Enum Missing Stable Rename Policy",
+      "description": "flag public wire-facing enums that derive `Serialize` or `Deserialize` without `rename_all` or explicit renames.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Serde Wire Enum Missing Stable Rename Policy matters because the pattern here, flag public wire-facing enums that derive `Serialize` or `Deserialize` without `rename_all` or explicit renames, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Serde Wire Enum Missing Stable Rename Policy in Rust, add `rename_all` or explicit renames or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_sleep_polling_loop",
+      "label": "Rust Sleep Polling Loop",
+      "description": "flag `thread::sleep` or runtime sleep in polling loops without backoff, notification, or timeout ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Sleep Polling Loop matters because the pattern here, flag `thread::sleep` or runtime sleep in polling loops without backoff, notification, or timeout ownership, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Sleep Polling Loop in Rust, add backoff, notification, or timeout ownership or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_sort_then_first_or_last",
+      "label": "Rust Sort Then First or Last",
+      "description": "flag sorting an entire collection only to take min/max-like first or last values.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Sort Then First or Last matters because the pattern here, flag sorting an entire collection only to take min/max-like first or last values, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Sort Then First or Last in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_stdout_println_in_library_or_hot_path",
+      "label": "Rust Stdout Println in Library or Hot Path",
+      "description": "flag `println`, `eprintln`, or direct stdout/stderr writes inside library code, scan loops, or reusable components.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Stdout Println in Library or Hot Path matters because the pattern here, flag `println`, `eprintln`, or direct stdout/stderr writes inside library code, scan loops, or reusable components, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Stdout Println in Library or Hot Path in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_string_push_without_capacity_from_known_bound",
+      "label": "Rust String Push without Capacity From Known Bound",
+      "description": "flag `String::new()` plus repeated `push_str`, `push`, or `write!` with a known bound and no capacity reservation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust String Push without Capacity From Known Bound matters because the pattern here, flag `String::new()` plus repeated `push_str`, `push`, or `write!` with a known bound and no capacity reservation, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust String Push without Capacity From Known Bound in Rust, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "rust_tempfile_builder_prefix_from_test_name_only",
+      "label": "Rust Tempfile Builder Prefix From Test Name Only",
+      "description": "flag temporary directories/files that use only a fixed prefix and shared parent for parallel tests without unique isolation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tempfile Builder Prefix From Test Name Only matters because the pattern here, flag temporary directories/files that use only a fixed prefix and shared parent for parallel tests without unique isolation, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Rust Tempfile Builder Prefix From Test Name Only in Rust, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "rust_tempfile_named_path_used_after_drop",
+      "label": "Rust Tempfile Named Path Used After Drop",
+      "description": "flag `NamedTempFile::path()` stored or returned while the temporary file owner may drop before the path is used.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tempfile Named Path Used After Drop matters because the pattern here, flag `NamedTempFile::path()` stored or returned while the temporary file owner may drop before the path is used, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Tempfile Named Path Used After Drop in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_tempfile_persist_without_cleanup_assertion",
+      "label": "Rust Tempfile Persist without Cleanup Assertion",
+      "description": "flag `persist`, `keep`, or `into_temp_path().keep()` in tests without cleanup or an assertion that the file must survive.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tempfile Persist without Cleanup Assertion matters because the pattern here, flag `persist`, `keep`, or `into_temp_path().keep()` in tests without cleanup or an assertion that the file must survive, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Tempfile Persist without Cleanup Assertion in Rust, add cleanup or an assertion that the file must survive or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_tempfile_predictable_name_in_shared_tmp",
+      "label": "Rust Tempfile Predictable Name in Shared Tmp",
+      "description": "flag tests that combine `std::env::temp_dir()` with predictable filenames instead of `tempfile`.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tempfile Predictable Name in Shared Tmp matters because the pattern here, flag tests that combine `std::env::temp_dir()` with predictable filenames instead of `tempfile`, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Rust Tempfile Predictable Name in Shared Tmp in Rust, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "rust_thiserror_display_leaks_secret_field",
+      "label": "Rust Thiserror Display Leaks Secret Field",
+      "description": "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Thiserror Display Leaks Secret Field matters because the pattern here, flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Rust Thiserror Display Leaks Secret Field in Rust, pull the sensitive value from env, config, or a secret manager instead of embedding it directly in source."
+    },
+    {
+      "id": "rust_thiserror_stringly_typed_variant",
+      "label": "Rust Thiserror Stringly Typed Variant",
+      "description": "flag error enum variants whose only payload is `String` or `&'static str` and whose name does not encode a specific error kind.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Thiserror Stringly Typed Variant matters because the pattern here, flag error enum variants whose only payload is `String` or `&'static str` and whose name does not encode a specific error kind, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Rust Thiserror Stringly Typed Variant in Rust, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "rust_thiserror_transparent_on_contextual_variant",
+      "label": "Rust Thiserror Transparent on Contextual Variant",
+      "description": "flag `#[error(transparent)]` variants that also carry context-like fields or lose higher-level operation details.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Thiserror Transparent on Contextual Variant matters because the pattern here, flag `#[error(transparent)]` variants that also carry context-like fields or lose higher-level operation details, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Rust Thiserror Transparent on Contextual Variant in Rust, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "rust_thiserror_variant_wraps_source_without_source_attr",
+      "label": "Rust Thiserror Variant Wraps Source without Source Attr",
+      "description": "flag error variants with source-like fields that lack `#[source]`, `#[from]`, or transparent wrapping.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Thiserror Variant Wraps Source without Source Attr matters because the pattern here, flag error variants with source-like fields that lack `#[source]`, `#[from]`, or transparent wrapping, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Thiserror Variant Wraps Source without Source Attr in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_thread_spawn_in_loop_without_join_limit",
+      "label": "Rust Thread Spawn in Loop without Join Limit",
+      "description": "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Thread Spawn in Loop without Join Limit matters because the pattern here, flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Thread Spawn in Loop without Join Limit in Rust, add a join handle collection limit, pool, or semaphore or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_to_string_on_str_in_loop",
+      "label": "Rust to String on Str in Loop",
+      "description": "flag `.to_string()` or `String::from(...)` on borrowed strings inside loops where borrowing would satisfy the callee.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust to String on Str in Loop matters because the pattern here, flag `.to_string()` or `String::from(...)` on borrowed strings inside loops where borrowing would satisfy the callee, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust to String on Str in Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_toml_config_without_unknown_field_rejection",
+      "label": "Rust Toml Config without Unknown Field Rejection",
+      "description": "flag TOML-facing config structs that derive `Deserialize` without `#[serde(deny_unknown_fields)]` when they appear to represent project configuration.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Toml Config without Unknown Field Rejection matters because the pattern here, flag TOML-facing config structs that derive `Deserialize` without `#[serde(deny_unknown_fields)]` when they appear to represent project configuration, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Toml Config without Unknown Field Rejection in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_toml_manifest_parse_without_size_limit",
+      "label": "Rust Toml Manifest Parse without Size Limit",
+      "description": "flag manifest/config parsing helpers that read and parse TOML without a byte limit.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Toml Manifest Parse without Size Limit matters because the pattern here, flag manifest/config parsing helpers that read and parse TOML without a byte limit, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Toml Manifest Parse without Size Limit in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_toml_parse_in_hot_path",
+      "label": "Rust Toml Parse in Hot Path",
+      "description": "flag `toml::from_str`, `toml::from_slice`, or `str::parse::<toml::Value>()` inside request paths, scan loops, or repeated functions.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Toml Parse in Hot Path matters because the pattern here, flag `toml::from_str`, `toml::from_slice`, or `str::parse::<toml::Value>()` inside request paths, scan loops, or repeated functions, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Toml Parse in Hot Path in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_toml_value_config_boundary",
+      "label": "Rust Toml Value Config Boundary",
+      "description": "flag application config parsed into `toml::Value` and queried dynamically instead of deserializing into a typed config struct.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Toml Value Config Boundary matters because the pattern here, flag application config parsed into `toml::Value` and queried dynamically instead of deserializing into a typed config struct, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Rust Toml Value Config Boundary in Rust, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "rust_tree_sitter_byte_offset_used_as_char_index",
+      "label": "Rust Tree Sitter Byte Offset Used as Char Index",
+      "description": "flag byte offsets from `start_byte` or `end_byte` used as character counts, `chars().nth(...)`, or display-column positions without conversion.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Byte Offset Used as Char Index matters because the pattern here, flag byte offsets from `start_byte` or `end_byte` used as character counts, `chars().nth(...)`, or display-column positions without conversion, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Tree Sitter Byte Offset Used as Char Index in Rust, add conversion or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_tree_sitter_child_lookup_by_field_name_in_hot_walk",
+      "label": "Rust Tree Sitter Child Lookup by Field Name in Hot Walk",
+      "description": "flag repeated `child_by_field_name(\"...\")` string lookups in hot recursive walkers where field ids, cursors, or one-pass extraction would avoid repeated lookup work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Child Lookup by Field Name in Hot Walk matters because the pattern here, flag repeated `child_by_field_name(\"...\")` string lookups in hot recursive walkers where field ids, cursors, or one-pass extraction would avoid repeated lookup work, hides the real job of the symbol behind wording that is harder to scan during review.",
+      "fix": "For Rust Tree Sitter Child Lookup by Field Name in Hot Walk in Rust, rename the symbol so its domain job is obvious without reading the whole body."
+    },
+    {
+      "id": "rust_tree_sitter_collects_all_captures_before_filtering",
+      "label": "Rust Tree Sitter Collects All Captures Before Filtering",
+      "description": "flag query capture pipelines that collect every capture into `Vec` and then filter locally instead of filtering as captures are visited.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Collects All Captures Before Filtering matters because the pattern here, flag query capture pipelines that collect every capture into `Vec` and then filter locally instead of filtering as captures are visited, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Tree Sitter Collects All Captures Before Filtering in Rust, prefer filtering as captures are visited when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_tree_sitter_descendant_for_point_range_in_loop",
+      "label": "Rust Tree Sitter Descendant for Point Range in Loop",
+      "description": "flag repeated descendant/range queries inside loops over sibling nodes, which can turn a tree walk into avoidable quadratic traversal.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Descendant for Point Range in Loop matters because the pattern here, flag repeated descendant/range queries inside loops over sibling nodes, which can turn a tree walk into avoidable quadratic traversal, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Tree Sitter Descendant for Point Range in Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_tree_sitter_error_tree_ignored",
+      "label": "Rust Tree Sitter Error Tree Ignored",
+      "description": "flag parser pipelines that use the root node without checking `tree.root_node().has_error()` or equivalent syntax-error evidence.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Error Tree Ignored matters because the pattern here, flag parser pipelines that use the root node without checking `tree.root_node().has_error()` or equivalent syntax-error evidence, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Tree Sitter Error Tree Ignored in Rust, add checking `tree.root_node().has_error()` or equivalent syntax-error evidence or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_tree_sitter_language_conversion_inside_loop",
+      "label": "Rust Tree Sitter Language Conversion Inside Loop",
+      "description": "flag repeated `tree_sitter_rust::LANGUAGE.into()` or equivalent grammar conversion in inner loops instead of caching the converted language.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Language Conversion Inside Loop matters because the pattern here, flag repeated `tree_sitter_rust::LANGUAGE.into()` or equivalent grammar conversion in inner loops instead of caching the converted language, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Tree Sitter Language Conversion Inside Loop in Rust, prefer caching the converted language when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_tree_sitter_node_text_redecoded_in_nested_loop",
+      "label": "Rust Tree Sitter Node Text Redecoded in Nested Loop",
+      "description": "flag repeated `node.utf8_text(source)` or source slicing for the same node inside nested traversal loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Node Text Redecoded in Nested Loop matters because the pattern here, flag repeated `node.utf8_text(source)` or source slicing for the same node inside nested traversal loops, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Tree Sitter Node Text Redecoded in Nested Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_tree_sitter_old_tree_discarded_in_reparse_loop",
+      "label": "Rust Tree Sitter Old Tree Discarded in Reparse Loop",
+      "description": "flag repeated parse loops over the same buffer that always pass `None` instead of reusing an old tree for incremental parsing.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Old Tree Discarded in Reparse Loop matters because the pattern here, flag repeated parse loops over the same buffer that always pass `None` instead of reusing an old tree for incremental parsing, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Rust Tree Sitter Old Tree Discarded in Reparse Loop in Rust, prefer reusing an old tree for incremental parsing when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "rust_tree_sitter_parse_result_unwrapped",
+      "label": "Rust Tree Sitter Parse Result Unwrapped",
+      "description": "flag `parser.parse(...).unwrap ()` or `expect (...)` at parser boundaries where parse cancellation or invalid parser state should become a typed finding/error.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Parse Result Unwrapped matters because the pattern here, flag `parser.parse(...).unwrap ()` or `expect (...)` at parser boundaries where parse cancellation or invalid parser state should become a typed finding/error, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Tree Sitter Parse Result Unwrapped in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_tree_sitter_parser_created_per_file_without_reuse",
+      "label": "Rust Tree Sitter Parser Created Per File without Reuse",
+      "description": "flag `tree_sitter::Parser::new()` construction inside per-file or per-function loops where a language-specific parser could be reused per worker.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Parser Created Per File without Reuse matters because the pattern here, flag `tree_sitter::Parser::new()` construction inside per-file or per-function loops where a language-specific parser could be reused per worker, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Tree Sitter Parser Created Per File without Reuse in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "rust_tree_sitter_parser_shared_global_with_lock",
+      "label": "Rust Tree Sitter Parser Shared Global with Lock",
+      "description": "flag global `Mutex<Parser>` or `RwLock<Parser>` shared across threads where per-thread parser ownership would avoid lock contention and parser state coupling.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Parser Shared Global with Lock matters because the pattern here, flag global `Mutex<Parser>` or `RwLock<Parser>` shared across threads where per-thread parser ownership would avoid lock contention and parser state coupling, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Tree Sitter Parser Shared Global with Lock in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_tree_sitter_query_compiled_per_call",
+      "label": "Rust Tree Sitter Query Compiled Per Call",
+      "description": "flag `tree_sitter::Query::new(...)` inside functions called per file or per node, where query compilation should be cached.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Query Compiled Per Call matters because the pattern here, flag `tree_sitter::Query::new(...)` inside functions called per file or per node, where query compilation should be cached, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Rust Tree Sitter Query Compiled Per Call in Rust, switch to parameterized access, validated input, or a reviewed helper so the data boundary stays explicit and safe."
+    },
+    {
+      "id": "rust_tree_sitter_recursive_walk_without_depth_guard",
+      "label": "Rust Tree Sitter Recursive Walk without Depth Guard",
+      "description": "flag recursive AST walkers over repository input without an explicit depth guard, iterative cursor, or stack budget.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Recursive Walk without Depth Guard matters because the pattern here, flag recursive AST walkers over repository input without an explicit depth guard, iterative cursor, or stack budget, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Tree Sitter Recursive Walk without Depth Guard in Rust, add an explicit depth guard, iterative cursor, or stack budget or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_tree_sitter_set_language_repeated_inside_hot_loop",
+      "label": "Rust Tree Sitter Set Language Repeated Inside Hot Loop",
+      "description": "flag repeated `parser.set_language(...)` calls inside loops that parse the same language repeatedly.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Tree Sitter Set Language Repeated Inside Hot Loop matters because the pattern here, flag repeated `parser.set_language(...)` calls inside loops that parse the same language repeatedly, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Tree Sitter Set Language Repeated Inside Hot Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_unbounded_channel_in_producer_loop",
+      "label": "Rust Unbounded Channel in Producer Loop",
+      "description": "flag unbounded channel sends inside loops or request paths without backpressure or shutdown policy.",
+      "defaultSeverity": "warning",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Unbounded Channel in Producer Loop matters because the pattern here, flag unbounded channel sends inside loops or request paths without backpressure or shutdown policy, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Rust Unbounded Channel in Producer Loop in Rust, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "rust_vec_extend_from_intermediate_allocation",
+      "label": "Rust Vec Extend From Intermediate Allocation",
+      "description": "flag copying a slice into a temporary Vec and immediately extending another Vec from it.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Vec Extend From Intermediate Allocation matters because the pattern here, flag copying a slice into a temporary Vec and immediately extending another Vec from it, is worth review because they highlight review-worthy patterns before they spread across the repository.",
+      "fix": "For Rust Vec Extend From Intermediate Allocation in Rust, keep the bad practices boundary intentional and prefer one clear owner for the pattern this rule is pointing at."
+    },
+    {
+      "id": "rust_vec_push_without_capacity_from_known_bound",
+      "label": "Rust Vec Push without Capacity From Known Bound",
+      "description": "flag `Vec::new()` followed by pushes inside a loop over a known bounded iterator without `with_capacity`.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Vec Push without Capacity From Known Bound matters because the pattern here, flag `Vec::new()` followed by pushes inside a loop over a known bounded iterator without `with_capacity`, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Rust Vec Push without Capacity From Known Bound in Rust, add `with_capacity` or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "rust_vec_remove_zero_in_loop",
+      "label": "Rust Vec Remove Zero in Loop",
+      "description": "flag repeated `Vec::remove(0)` in loops where `VecDeque` or index traversal would avoid shifting.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Rust, Rust Vec Remove Zero in Loop matters because the pattern here, flag repeated `Vec::remove(0)` in loops where `VecDeque` or index traversal would avoid shifting, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Rust Vec Remove Zero in Loop in Rust, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    }
+  ]
+}

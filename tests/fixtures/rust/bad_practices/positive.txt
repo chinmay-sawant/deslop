@@ -1,0 +1,170 @@
+use anyhow::{bail, Context, Result};
+use clap::Parser as ClapParser;
+use ignore::{overrides::OverrideBuilder, WalkBuilder};
+use libc;
+use rayon::prelude::*;
+use serde_json::Value;
+use std::collections::HashMap;
+use std::sync::{mpsc, Arc, Condvar, Mutex, OnceLock, RwLock};
+use std::thread;
+use std::time::Duration;
+use tree_sitter::{Parser, Query};
+
+#[derive(clap::Parser, Debug)]
+struct CliArgs {
+    api_token: String,
+}
+
+#[derive(serde::Deserialize)]
+struct AppConfig {
+    host: String,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+pub enum WireState {
+    Up,
+    Down,
+    Custom(String),
+}
+
+pub fn run(paths: Vec<String>) -> Result<()> {
+    let mut parser = Parser::new();
+    let _ = WalkBuilder::new(".").follow_links(true);
+    let mut _override = OverrideBuilder::new(".");
+    let _ = _override.add("*.rs").unwrap();
+
+    for path in &paths {
+        parser
+            .set_language(&tree_sitter_rust::LANGUAGE.into())
+            .unwrap();
+        let tree = parser.parse("fn x(){}", None).unwrap();
+        let _query = Query::new(&tree_sitter_rust::LANGUAGE.into(), "(identifier) @id").unwrap();
+        let _root = tree.root_node();
+
+        let raw = std::fs::read_to_string(path).unwrap();
+        let _line_count = raw.lines().count();
+
+        let mut mapped = paths.iter().map(|v| v.to_string()).collect::<Vec<_>>();
+        let mut buckets = HashMap::new();
+        if !buckets.contains_key(path) {
+            buckets.insert(path.clone(), 1usize);
+        }
+
+        mapped.sort();
+        let _maybe_first = mapped.first();
+
+        let mut queue = vec![1, 2, 3];
+        queue.remove(0);
+
+        let mut out = String::new();
+        out.push_str(&format!("{}", path));
+
+        let _json = serde_json::to_string_pretty(&serde_json::json!({ "k": path })).unwrap();
+        let payload: Value = serde_json::from_str("{\"name\":\"x\"}").unwrap();
+        let _indexed = payload["name"].clone();
+
+        let _toml = toml::from_str::<toml::Value>("name='demo'").unwrap_or_default();
+
+        println!("{}", path);
+        std::fs::create_dir_all("tmp/out").unwrap();
+        let _ = std::fs::metadata("Cargo.toml");
+        let _ = std::fs::metadata("Cargo.toml");
+
+        let _ = std::process::Command::new("echo").arg(path).output();
+
+        let lock = Mutex::new(vec![1usize]);
+        lock.lock().unwrap().push(2);
+
+        let rw = RwLock::new(1usize);
+        let _guard = rw.write().unwrap();
+
+        let (tx, rx) = mpsc::channel::<u8>();
+        tx.send(1).ok();
+        let _ = rx.iter();
+
+        let shared = Arc::new(5usize);
+        let _copy = Arc::clone(&shared);
+
+        thread::sleep(Duration::from_millis(1));
+        let _join = thread::spawn(|| 1usize);
+
+        let cond = Condvar::new();
+        let started = Mutex::new(false);
+        let guard = started.lock().unwrap();
+        let _ = cond.wait(guard).unwrap();
+
+        let _once: OnceLock<String> = OnceLock::new();
+
+        let c_path = std::ffi::CString::new(path.as_str()).unwrap();
+        let _ = unsafe { libc::open(c_path.as_ptr(), 0) };
+
+        let _ = rayon::iter::IntoParallelRefIterator::par_iter(&paths)
+            .map(|v| v.clone())
+            .collect::<Vec<_>>();
+    }
+
+    if std::env::var("MISSING").is_err() {
+        bail!("missing config");
+    }
+
+    Err(anyhow::anyhow!("failed")).context(format!("{}", paths.len()))?;
+    Ok(())
+}
+
+pub fn checksum_bytes(bytes: &[u8]) -> usize {
+    let owned = bytes.to_vec();
+    owned.iter().map(|byte| *byte as usize).sum()
+}
+
+fn normalize_rust_path(
+    import_path: &str,
+    current_module_segments: &[String],
+) -> Option<Vec<String>> {
+    let segments = import_path
+        .split("::")
+        .filter(|segment| !segment.is_empty())
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+    let head = segments.first()?.as_str();
+
+    match head {
+        "crate" => Some(segments.into_iter().skip(1).collect()),
+        "self" => Some(
+            current_module_segments
+                .iter()
+                .cloned()
+                .chain(segments.into_iter().skip(1))
+                .collect(),
+        ),
+        "super" => {
+            let super_count = segments
+                .iter()
+                .take_while(|segment| segment == &&"super".to_string())
+                .count();
+            if super_count > current_module_segments.len() {
+                return None;
+            }
+
+            let mut resolved = current_module_segments
+                .get(..current_module_segments.len() - super_count)
+                .map(|segments| segments.to_vec())
+                .unwrap_or_default();
+            resolved.extend(segments.into_iter().skip(super_count));
+            Some(resolved)
+        }
+        _ => None,
+    }
+}
+
+fn parse_import_spec(node: &str, source: &str) -> Option<(String, String)> {
+    let text = source.get(..node.len())?.trim();
+    let mut parts = text.split_whitespace().collect::<Vec<_>>();
+    let path_literal = parts.pop()?;
+    let path = path_literal.trim_matches('"').to_string();
+    let alias = parts
+        .first()
+        .map(|alias| alias.to_string())
+        .unwrap_or_else(|| path.clone());
+
+    Some((alias, path))
+}

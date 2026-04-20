@@ -802,11 +802,13 @@ pub(super) fn project_agnostic_structure_function_findings(
         });
     }
 
-    if contains_any(&lower_body, &["retry", "normalize", "auth", "permission"])
+    if contains_any(&lower_body, &["retry", "auth", "permission"])
+        && !contains_any(&lower_body, &["normalize"])
         && !contains_any(
             &file.path.to_string_lossy().to_ascii_lowercase(),
-            &["policy", "boundary", "middleware"],
+            &["policy", "boundary", "middleware", "main.py", "app.py", "api/", "routes", "views"],
         )
+        && function.fingerprint.line_count >= 8
     {
         findings.push(Finding {
             rule_id: "cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary"
@@ -1117,7 +1119,7 @@ pub(super) fn project_agnostic_structure_file_findings(file: &ParsedFile) -> Vec
         .filter(|function| function.fingerprint.kind.starts_with("async"))
         .count();
     let sync_count = file.functions.len().saturating_sub(async_count);
-    if async_count > 0 && sync_count > 0 && file.class_summaries().len() > 0 {
+    if async_count > 0 && sync_count > 0 && !file.class_summaries().is_empty() {
         findings.push(Finding {
             rule_id: "sync_and_async_contracts_mixed_on_same_interface_family".to_string(),
             severity: Severity::Info,

@@ -1,3 +1,5 @@
+#![allow(clippy::too_many_lines)]
+
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 

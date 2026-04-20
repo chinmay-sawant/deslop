@@ -91,8 +91,9 @@ def repeated_subscript_bad(config):
 def nested_search_bad(items, target):
     """Triggers nested_list_search_map_candidate."""
     for item in items:
-        if item == target:
-            return item
+        for candidate in items:
+            if candidate == target:
+                return candidate
     return None
 
 
@@ -159,6 +160,16 @@ def isinstance_chain_bad(value):
 def concat_in_comp_bad(items):
     """Triggers concatenation_in_comprehension_body."""
     [print(item + " done") for item in items]
+
+
+def expensive_logging_bad(records):
+    """Triggers formatted_log_or_debug_payload_built_for_each_item_without_guard."""
+    import json
+    import logging
+
+    logger = logging.getLogger(__name__)
+    for record in records:
+        logger.debug(json.dumps({"payload": record, "items": [str(record)]}))
 
 
 def tuple_unpack_bad(records):

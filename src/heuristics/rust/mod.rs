@@ -1,5 +1,6 @@
 mod api_design;
 mod async_patterns;
+pub(crate) mod bad_practices;
 pub(crate) mod boundary;
 mod domain_modeling;
 mod evaluate;
@@ -21,6 +22,7 @@ pub(crate) const RUNTIME_OWNERSHIP_BINDING_LOCATION: &str = runtime_ownership::B
 pub(crate) const SECURITY_FOOTGUNS_BINDING_LOCATION: &str = security_footguns::BINDING_LOCATION;
 pub(crate) const RUNTIME_BOUNDARY_BINDING_LOCATION: &str = runtime_boundary::BINDING_LOCATION;
 pub(crate) const UNSAFE_SOUNDNESS_BINDING_LOCATION: &str = unsafe_soundness::BINDING_LOCATION;
+pub(crate) const BAD_PRACTICES_BINDING_LOCATION: &str = bad_practices::BINDING_LOCATION;
 
 use crate::analysis::{FieldSummary, ParsedFile, ParsedFunction, StructSummary};
 use crate::model::{Finding, Severity};
@@ -34,11 +36,13 @@ pub(crate) use evaluate::{alias_lookup, call_matches_import, import_matches_item
 pub(crate) use evaluate::{
     evaluate_rust_file_hygiene_findings, rust_api_design_file_findings,
     rust_api_design_function_findings, rust_async_file_findings, rust_async_function_findings,
-    rust_boundary_file_findings, rust_boundary_function_findings, rust_domain_file_findings,
-    rust_import_resolution_findings, rust_local_call_findings, rust_module_surface_file_findings,
-    rust_performance_file_findings, rust_performance_function_findings, rust_runtime_file_findings,
-    rust_runtime_function_findings, rust_runtime_ownership_function_findings,
-    rust_security_file_findings, rust_security_function_findings, rust_unsafe_soundness_findings,
+    rust_bad_practices_file_findings, rust_bad_practices_function_findings,
+    rust_bad_practices_indexed_file_findings, rust_boundary_file_findings,
+    rust_boundary_function_findings, rust_domain_file_findings, rust_import_resolution_findings,
+    rust_local_call_findings, rust_module_surface_file_findings, rust_performance_file_findings,
+    rust_performance_function_findings, rust_runtime_file_findings, rust_runtime_function_findings,
+    rust_runtime_ownership_function_findings, rust_security_file_findings,
+    rust_security_function_findings, rust_unsafe_soundness_findings,
 };
 pub(crate) use module_surface::module_surface_file_findings;
 pub(crate) use performance::{performance_file_findings, performance_function_findings};

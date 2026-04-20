@@ -16716,6 +16716,1956 @@
     "description": "std::sync::Mutex appears to be held across .await in async code."
   },
   {
+    "id": "rust_anyhow_bail_in_low_level_library_module",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `anyhow::bail!` in domain, parser, storage, or library modules that should usually expose typed error variants."
+  },
+  {
+    "id": "rust_anyhow_context_missing_on_boundary_io",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `?` on filesystem, environment, process, parser, config, or network calls in CLI/boundary code without `.context(...)` or `.with_context(...)`."
+  },
+  {
+    "id": "rust_anyhow_downcast_without_fallback_context",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `downcast_ref`/`downcast` handling that drops the original context or returns a generic fallback."
+  },
+  {
+    "id": "rust_anyhow_eager_format_context",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `.context(format!(...))` where `.with_context(|| format!(...))` would avoid allocation on the success path."
+  },
+  {
+    "id": "rust_anyhow_error_string_matching",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag branching on `err.to_string()`, `format!(\"{err}\")`, or message substrings instead of typed errors or downcasts."
+  },
+  {
+    "id": "rust_arc_clone_inside_inner_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated `Arc::clone` in inner loops when a borrowed reference or cloned handle outside the loop would work."
+  },
+  {
+    "id": "rust_atomic_seqcst_without_comment",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `Ordering::SeqCst` in non-trivial code without a nearby comment explaining the synchronization requirement."
+  },
+  {
+    "id": "rust_blocking_process_output_read_unbounded",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `Command::output()` or piped process reads where stdout/stderr may be large and no size bound exists."
+  },
+  {
+    "id": "rust_boxed_trait_object_in_inner_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated `Box<dyn Trait>` allocation inside loops where generics, enum dispatch, or object reuse may be better."
+  },
+  {
+    "id": "rust_build_script_missing_rerun_if_changed",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `build.rs` files that read files, env vars, or external commands without `cargo:rerun-if-changed` or `cargo:rerun-if-env-changed`."
+  },
+  {
+    "id": "rust_build_script_network_or_git_call",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag build scripts that invoke network, git, curl, package managers, or shell commands that make builds non-hermetic."
+  },
+  {
+    "id": "rust_bytes_to_vec_for_readonly_use",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `bytes.to_vec()` on byte slices that are only read afterward."
+  },
+  {
+    "id": "rust_clap_closed_set_manual_string_match",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag CLI string arguments that are manually matched against a fixed set instead of using `ValueEnum` or `value_parser`."
+  },
+  {
+    "id": "rust_clap_default_value_manual_parse",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `default_value` strings that are parsed manually later instead of typed `value_parser` or typed fields."
+  },
+  {
+    "id": "rust_clap_env_var_without_redaction_policy",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior."
+  },
+  {
+    "id": "rust_clap_opposing_flags_without_conflicts",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag pairs such as `--json/--text`, `--include/--exclude`, or `--enable/--disable` without `conflicts_with`, `overrides_with`, or explicit precedence."
+  },
+  {
+    "id": "rust_clap_parse_called_below_main",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `Cli::parse()` or `try_parse()` called from library code or tests without dependency injection, making the code hard to reuse and test."
+  },
+  {
+    "id": "rust_clap_path_arg_used_without_validation",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `PathBuf` or path-like CLI values used for reads/writes without root containment, canonicalization strategy, or symlink policy."
+  },
+  {
+    "id": "rust_clap_rule_id_arg_without_catalog_validation",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag rule-id-like CLI arguments accepted as strings without checking against the known rule registry."
+  },
+  {
+    "id": "rust_clap_secret_arg_derive_debug",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag CLI structs deriving `Debug` while containing token, password, secret, key, cookie, or auth fields."
+  },
+  {
+    "id": "rust_clap_subcommand_reloads_config_in_each_branch",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated config loading inside every subcommand branch instead of a shared pre-dispatch normalization step."
+  },
+  {
+    "id": "rust_clap_unbounded_vec_arg_on_scan_path",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `Vec<String>` or variadic CLI arguments that feed scan/filter work without a limit, deduplication, or validation."
+  },
+  {
+    "id": "rust_clone_to_satisfy_borrow_in_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `.clone()` in loops immediately passed by reference or consumed only for read-only access."
+  },
+  {
+    "id": "rust_collect_then_pop_or_first",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag collecting a split iterator into `Vec` just to read the first and last entries with `first()` and `pop()`."
+  },
+  {
+    "id": "rust_collect_then_single_iteration",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `.collect::<Vec<_>>()` immediately followed by one `for` loop, `.iter().any`, `.iter().find`, or `.len()` where streaming would avoid allocation."
+  },
+  {
+    "id": "rust_condvar_wait_without_predicate_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `Condvar::wait` not wrapped in a predicate loop."
+  },
+  {
+    "id": "rust_cow_to_owned_without_mutation",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `Cow::to_mut`, `to_owned`, or `into_owned` where the owned value is never mutated or stored past the borrow lifetime."
+  },
+  {
+    "id": "rust_create_dir_all_per_file",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `create_dir_all` inside loops for the same parent directory."
+  },
+  {
+    "id": "rust_drain_collect_then_drop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `drain(..).collect::<Vec<_>>()` followed by drop or one-pass processing that can operate directly on the drain iterator."
+  },
+  {
+    "id": "rust_error_logged_and_returned",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag functions that log an error and then return the same error upward, causing duplicate logging at callers."
+  },
+  {
+    "id": "rust_ffi_extern_block_without_abi_comment",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag FFI declarations without a nearby note about ABI, ownership, nullability, or lifetime expectations."
+  },
+  {
+    "id": "rust_ffi_slice_from_raw_parts_without_length_guard",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag safe wrappers around raw pointer and length pairs that do not validate null pointers, maximum length, or alignment before slice construction."
+  },
+  {
+    "id": "rust_file_handle_returned_without_close_owner_contract",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag functions that return raw file handles, descriptors, or paths tied to temporary resources without documenting ownership."
+  },
+  {
+    "id": "rust_file_open_in_loop_without_buffered_reader",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag opening and reading files inside loops without `BufReader`, batching, or reuse."
+  },
+  {
+    "id": "rust_flush_inside_write_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `flush()` inside per-item write loops unless the code is interactive terminal output."
+  },
+  {
+    "id": "rust_format_macro_inside_append_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `format!` in loops when appending to an existing `String` would avoid temporary allocation."
+  },
+  {
+    "id": "rust_hashmap_contains_then_insert",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `contains_key` followed by `insert` or `get_mut` where `entry` would avoid duplicate hashing."
+  },
+  {
+    "id": "rust_ignore_direntry_unwrapped",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `entry.unwrap ()` or `expect (...)` on walker entries in production scan code."
+  },
+  {
+    "id": "rust_ignore_filter_entry_allocates_path_string_per_node",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `filter_entry` closures that allocate `String` or call `to_string_lossy()` for every node when path component checks would work."
+  },
+  {
+    "id": "rust_ignore_follow_links_without_cycle_or_root_policy",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `.follow_links(true)` without visible cycle, root containment, or same-filesystem policy."
+  },
+  {
+    "id": "rust_ignore_override_pattern_unwraps_user_input",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `OverrideBuilder::add(...)` or glob override construction from user input followed by `unwrap` or `expect`."
+  },
+  {
+    "id": "rust_ignore_parallel_walker_unbounded_accumulation",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag parallel walker callbacks that push every path into an unbounded `Vec` or channel before processing."
+  },
+  {
+    "id": "rust_ignore_reads_file_before_file_type_check",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag read/open operations on walker paths before checking `file_type().is_file()` or equivalent."
+  },
+  {
+    "id": "rust_ignore_sort_by_path_after_full_walk",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag full repository path collection followed by sort before processing where deterministic output could be produced after finding collection instead."
+  },
+  {
+    "id": "rust_ignore_walk_error_silently_discarded",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag walk result handling that uses `filter_map(Result::ok)` or `ok()?` without recording ignored traversal errors."
+  },
+  {
+    "id": "rust_ignore_walker_disables_standard_filters_without_policy",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `.ignore(false)`, `.git_ignore(false)`, `.git_exclude(false)`, `.hidden(false)`, or `.parents(false)` unless paired with a named user option or security review note."
+  },
+  {
+    "id": "rust_ignore_walker_rebuilt_inside_directory_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `WalkBuilder::new(...)` construction inside recursive or per-directory loops."
+  },
+  {
+    "id": "rust_iterator_chain_allocates_intermediate_strings",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag iterator chains that map every item through `format!`, `to_string`, or JSON conversion before a simple predicate or grouping."
+  },
+  {
+    "id": "rust_iterator_nth_inside_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `.nth(i)` or repeated indexed traversal over non-indexed iterators inside loops."
+  },
+  {
+    "id": "rust_join_handle_dropped_after_spawn",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag spawned threads whose join handles are immediately dropped outside explicit detached-worker patterns."
+  },
+  {
+    "id": "rust_large_enum_variant_without_boxing",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag enums with one much larger variant causing every enum value to carry the largest layout."
+  },
+  {
+    "id": "rust_libc_call_without_platform_cfg",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction."
+  },
+  {
+    "id": "rust_libc_cstring_unwrap_on_external_input",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `CString::new(user_input).unwrap ()` or `expect (...)` where embedded NUL bytes should become a recoverable error."
+  },
+  {
+    "id": "rust_libc_errno_read_after_intervening_call",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag errno access after another call that could overwrite the original failure cause."
+  },
+  {
+    "id": "rust_libc_into_raw_fd_without_reclaim",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `into_raw_fd()` without a visible `from_raw_fd`, `OwnedFd`, or close handoff."
+  },
+  {
+    "id": "rust_libc_no_follow_without_eloop_handling",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `O_NOFOLLOW` usage without explicit symlink-loop or unsupported-platform error handling."
+  },
+  {
+    "id": "rust_libc_open_without_cloexec",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag direct `libc::open` or equivalent without `O_CLOEXEC` in programs that may spawn child processes."
+  },
+  {
+    "id": "rust_libc_raw_fd_lifetime_escape",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `as_raw_fd()` results stored, returned, or moved into long-lived structs while the owning file/socket may drop."
+  },
+  {
+    "id": "rust_libc_return_value_not_checked",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag libc calls whose integer or pointer return value is ignored or not checked for `-1`, null, or documented failure sentinels."
+  },
+  {
+    "id": "rust_libfuzzer_target_allocates_unbounded_string",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag fuzz targets that convert arbitrary byte slices to owned strings without a size cap or lossy/borrowed strategy."
+  },
+  {
+    "id": "rust_libfuzzer_target_unwraps_parse_or_utf8",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag fuzz targets that call `unwrap`/`expect` on parser, UTF-8, TOML, JSON, or path conversion results."
+  },
+  {
+    "id": "rust_manifest_bench_or_fuzz_target_in_default_members",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag fuzz/bench crates included in default workspace members without an explicit opt-in."
+  },
+  {
+    "id": "rust_manifest_build_dependency_used_at_runtime",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag build-dependencies imported from runtime code or runtime dependencies used only by `build.rs`."
+  },
+  {
+    "id": "rust_manifest_dependency_default_features_unreviewed",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag heavy dependencies with default features enabled when only a narrow feature set appears to be used."
+  },
+  {
+    "id": "rust_manifest_dev_dependency_used_in_src",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag dev-only crates such as `tempfile`, `proptest`, or fuzz helpers imported from production `src` code."
+  },
+  {
+    "id": "rust_manifest_duplicate_direct_dependency_versions",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag the same crate required at multiple direct versions across workspace members."
+  },
+  {
+    "id": "rust_manifest_release_lto_missing_for_cli_binary",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag CLI/binary crates with release profiles that omit any LTO setting when binary size or startup matters."
+  },
+  {
+    "id": "rust_manifest_wildcard_dependency_version",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `*` dependency versions or unconstrained git/path dependencies outside local workspace development."
+  },
+  {
+    "id": "rust_manifest_workspace_dependency_not_centralized",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag multi-crate workspaces that repeat dependency versions instead of using `[workspace.dependencies]`."
+  },
+  {
+    "id": "rust_metadata_called_repeatedly_same_path",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated `metadata`, `symlink_metadata`, `exists`, or `is_file` checks for the same path in one function."
+  },
+  {
+    "id": "rust_mpsc_receiver_iter_without_shutdown_signal",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag blocking receiver iteration without timeout, close path, cancellation, or sentinel."
+  },
+  {
+    "id": "rust_mutex_guard_lives_through_cpu_heavy_work",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag lock guards that remain live across sorting, parsing, serialization, filesystem I/O, or large loops."
+  },
+  {
+    "id": "rust_mutex_lock_unwrap_panics_on_poison",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `lock().unwrap ()` or `write().unwrap ()` in production code where poison recovery or contextual error reporting would be safer."
+  },
+  {
+    "id": "rust_once_lock_initializes_fallible_resource_with_unwrap",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `OnceLock`, `LazyLock`, or lazy initialization that unwraps fallible setup instead of returning initialization errors at bootstrap."
+  },
+  {
+    "id": "rust_option_clone_then_unwrap_or",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag cloning `Option<T>` or `Result<T, E>` only to unwrap/default instead of borrowing with `as_ref`, `as_deref`, or `map`."
+  },
+  {
+    "id": "rust_os_string_lossy_conversion_before_filter",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag lossy path/string conversions before simple extension, file-name, or component filters."
+  },
+  {
+    "id": "rust_path_canonicalize_in_scan_inner_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated canonicalization for every path in a hot repository traversal when relative normalized paths would be enough."
+  },
+  {
+    "id": "rust_path_to_string_lossy_in_hot_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `to_string_lossy`, `display().to_string`, or path formatting inside repository/file traversal loops."
+  },
+  {
+    "id": "rust_proptest_assume_filters_most_cases",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag multiple `prop_assume!` calls or assume-heavy strategies that likely discard most generated cases."
+  },
+  {
+    "id": "rust_proptest_no_regression_case_for_parser_crash",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag parser property tests without a regression fixture or seed-capture path for minimized failures."
+  },
+  {
+    "id": "rust_proptest_strategy_recreates_expensive_fixture",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag strategies that rebuild repositories, parsers, or large fixtures for each case rather than sharing setup safely."
+  },
+  {
+    "id": "rust_proptest_unbounded_string_or_vec_strategy",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `\".*\"`, `any::<String>()`, or unbounded `vec(...)` strategies in parser/scanner tests without a size cap."
+  },
+  {
+    "id": "rust_question_mark_after_partial_side_effect_without_cleanup",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `?` after partially mutating files, shared state, transactions, or output buffers without rollback or cleanup."
+  },
+  {
+    "id": "rust_rayon_blocking_io_in_cpu_parallel_pool",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag filesystem, network, or process I/O inside Rayon CPU-bound closures unless the project documents that Rayon owns the I/O concurrency budget."
+  },
+  {
+    "id": "rust_rayon_collect_all_then_filter_sequentially",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `par_iter().map(...).collect::<Vec<_>>()` immediately followed by sequential filtering or flattening that could stay in the parallel pipeline."
+  },
+  {
+    "id": "rust_rayon_custom_pool_created_per_call",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `ThreadPoolBuilder::build()` inside frequently-called functions instead of process-level or subsystem-level pool ownership."
+  },
+  {
+    "id": "rust_rayon_flat_map_allocates_nested_vectors",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag parallel map stages that return `Vec<Vec<T>>` and later flatten, where `flat_map_iter`, `reduce`, or direct collection can reduce allocation churn."
+  },
+  {
+    "id": "rust_rayon_global_pool_built_by_library_code",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `ThreadPoolBuilder::build_global()` outside a binary entry point, test harness, or explicit process bootstrap."
+  },
+  {
+    "id": "rust_rayon_heavy_clone_per_item",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated `.clone()` of config, source text, rule catalogs, AST summaries, or large state inside parallel closures."
+  },
+  {
+    "id": "rust_rayon_large_move_capture",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `move` closures in parallel iterators that capture large owned values rather than borrowing or sharing cheap handles."
+  },
+  {
+    "id": "rust_rayon_mutex_push_in_parallel_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `Mutex<Vec<_>>`, `RwLock<Vec<_>>`, or shared collection mutation inside `for_each` where `map/filter_map/collect/reduce` would avoid lock contention."
+  },
+  {
+    "id": "rust_rayon_nested_parallel_iterators",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag nested `par_iter`, `into_par_iter`, or `par_bridge` calls that can oversubscribe worker threads or fragment work."
+  },
+  {
+    "id": "rust_rayon_ordering_mutex_for_result_stability",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag parallel closures that serialize through `Mutex<BTreeMap<_>>`, `Mutex<Vec<_>>`, or sequence counters just to regain output order."
+  },
+  {
+    "id": "rust_rayon_par_bridge_on_small_or_indexed_iterator",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `par_bridge()` over known indexed collections or tiny iterators where normal `par_iter` or sequential iteration is likely cheaper."
+  },
+  {
+    "id": "rust_rayon_parallelism_for_trivial_per_item_work",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag parallel iteration over simple string predicates or metadata checks when there is no expensive per-item work and the input is below a conservative threshold."
+  },
+  {
+    "id": "rust_rayon_sequential_collect_then_par_iter",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag collecting an intermediate `Vec` only to immediately call `par_iter` or `into_par_iter` when the producer could feed the parallel stage directly."
+  },
+  {
+    "id": "rust_rayon_unhandled_panic_in_parallel_scan",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `unwrap`, `expect`, or panicking conversions inside parallel scan/evaluation closures where one bad file can abort the whole batch."
+  },
+  {
+    "id": "rust_read_dir_collect_sort_before_filter",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `read_dir` entries collected and sorted before filtering by type/extension."
+  },
+  {
+    "id": "rust_read_to_string_for_line_scan",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag whole-file `read_to_string` or `fs::read_to_string` followed only by line scanning or predicate checks."
+  },
+  {
+    "id": "rust_regex_compiled_in_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `Regex::new(...)` inside loops or hot functions when the `regex` crate is imported."
+  },
+  {
+    "id": "rust_result_ignored_with_let_underscore",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `let _ = fallible_call()` outside cleanup, telemetry, or best-effort contexts."
+  },
+  {
+    "id": "rust_rwlock_write_guard_for_readonly_access",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag write locks where the guarded value is only read."
+  },
+  {
+    "id": "rust_serde_borrow_missing_for_large_readonly_payload",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag large readonly payload structs that deserialize owned `String` or `Vec<u8>` in hot paths where `Cow<'de, str>` or borrowed fields could avoid copies."
+  },
+  {
+    "id": "rust_serde_custom_deserialize_panics",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag custom `Deserialize` impls or visitors that call `unwrap`, `expect`, `panic`, or unchecked indexing."
+  },
+  {
+    "id": "rust_serde_default_masks_parse_error",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag broad `unwrap_or_default`, `Default::default`, or `#[serde(default)]` use around configuration fields that look required for correctness."
+  },
+  {
+    "id": "rust_serde_json_clone_value_in_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `serde_json::Value::clone()` or cloned JSON maps inside loops."
+  },
+  {
+    "id": "rust_serde_json_from_str_after_unbounded_read",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `serde_json::from_str` or `from_slice` fed by unbounded file/network reads rather than size-limited input."
+  },
+  {
+    "id": "rust_serde_json_indexing_without_type_guard",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `value[\"key\"]`, `value[index]`, or chained indexing without typed deserialization, `.get(...)`, or null/type checks."
+  },
+  {
+    "id": "rust_serde_json_roundtrip_conversion",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `to_value` followed by `from_value`, or `to_string` followed by `from_str`, when a direct conversion or typed boundary is available."
+  },
+  {
+    "id": "rust_serde_json_to_string_pretty_in_machine_path",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `serde_json::to_string_pretty` in non-human-output hot paths, APIs, or report generation loops."
+  },
+  {
+    "id": "rust_serde_json_value_internal_hot_path",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `serde_json::Value` used as an internal data model in non-boundary modules where typed structs would reduce dynamic lookups and runtime errors."
+  },
+  {
+    "id": "rust_serde_json_whole_array_loaded_for_streaming_input",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag deserializing large JSON arrays into `Vec<T>` in reader-like code where streaming deserialization could reduce peak memory."
+  },
+  {
+    "id": "rust_serde_skip_serializing_secret_without_deserialize_guard",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag secret-like fields skipped during serialization but still accepted during deserialization without validation/redaction policy."
+  },
+  {
+    "id": "rust_serde_wire_enum_missing_stable_rename_policy",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag public wire-facing enums that derive `Serialize` or `Deserialize` without `rename_all` or explicit renames."
+  },
+  {
+    "id": "rust_sleep_polling_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `thread::sleep` or runtime sleep in polling loops without backoff, notification, or timeout ownership."
+  },
+  {
+    "id": "rust_sort_then_first_or_last",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag sorting an entire collection only to take min/max-like first or last values."
+  },
+  {
+    "id": "rust_stdout_println_in_library_or_hot_path",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `println`, `eprintln`, or direct stdout/stderr writes inside library code, scan loops, or reusable components."
+  },
+  {
+    "id": "rust_string_push_without_capacity_from_known_bound",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `String::new()` plus repeated `push_str`, `push`, or `write!` with a known bound and no capacity reservation."
+  },
+  {
+    "id": "rust_tempfile_builder_prefix_from_test_name_only",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag temporary directories/files that use only a fixed prefix and shared parent for parallel tests without unique isolation."
+  },
+  {
+    "id": "rust_tempfile_named_path_used_after_drop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `NamedTempFile::path()` stored or returned while the temporary file owner may drop before the path is used."
+  },
+  {
+    "id": "rust_tempfile_persist_without_cleanup_assertion",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `persist`, `keep`, or `into_temp_path().keep()` in tests without cleanup or an assertion that the file must survive."
+  },
+  {
+    "id": "rust_tempfile_predictable_name_in_shared_tmp",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag tests that combine `std::env::temp_dir()` with predictable filenames instead of `tempfile`."
+  },
+  {
+    "id": "rust_thiserror_display_leaks_secret_field",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields."
+  },
+  {
+    "id": "rust_thiserror_stringly_typed_variant",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag error enum variants whose only payload is `String` or `&'static str` and whose name does not encode a specific error kind."
+  },
+  {
+    "id": "rust_thiserror_transparent_on_contextual_variant",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `#[error(transparent)]` variants that also carry context-like fields or lose higher-level operation details."
+  },
+  {
+    "id": "rust_thiserror_variant_wraps_source_without_source_attr",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag error variants with source-like fields that lack `#[source]`, `#[from]`, or transparent wrapping."
+  },
+  {
+    "id": "rust_thread_spawn_in_loop_without_join_limit",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore."
+  },
+  {
+    "id": "rust_to_string_on_str_in_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `.to_string()` or `String::from(...)` on borrowed strings inside loops where borrowing would satisfy the callee."
+  },
+  {
+    "id": "rust_toml_config_without_unknown_field_rejection",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag TOML-facing config structs that derive `Deserialize` without `#[serde(deny_unknown_fields)]` when they appear to represent project configuration."
+  },
+  {
+    "id": "rust_toml_manifest_parse_without_size_limit",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag manifest/config parsing helpers that read and parse TOML without a byte limit."
+  },
+  {
+    "id": "rust_toml_parse_in_hot_path",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `toml::from_str`, `toml::from_slice`, or `str::parse::<toml::Value>()` inside request paths, scan loops, or repeated functions."
+  },
+  {
+    "id": "rust_toml_value_config_boundary",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag application config parsed into `toml::Value` and queried dynamically instead of deserializing into a typed config struct."
+  },
+  {
+    "id": "rust_tree_sitter_byte_offset_used_as_char_index",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag byte offsets from `start_byte` or `end_byte` used as character counts, `chars().nth(...)`, or display-column positions without conversion."
+  },
+  {
+    "id": "rust_tree_sitter_child_lookup_by_field_name_in_hot_walk",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated `child_by_field_name(\"...\")` string lookups in hot recursive walkers where field ids, cursors, or one-pass extraction would avoid repeated lookup work."
+  },
+  {
+    "id": "rust_tree_sitter_collects_all_captures_before_filtering",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag query capture pipelines that collect every capture into `Vec` and then filter locally instead of filtering as captures are visited."
+  },
+  {
+    "id": "rust_tree_sitter_descendant_for_point_range_in_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated descendant/range queries inside loops over sibling nodes, which can turn a tree walk into avoidable quadratic traversal."
+  },
+  {
+    "id": "rust_tree_sitter_error_tree_ignored",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag parser pipelines that use the root node without checking `tree.root_node().has_error()` or equivalent syntax-error evidence."
+  },
+  {
+    "id": "rust_tree_sitter_language_conversion_inside_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated `tree_sitter_rust::LANGUAGE.into()` or equivalent grammar conversion in inner loops instead of caching the converted language."
+  },
+  {
+    "id": "rust_tree_sitter_node_text_redecoded_in_nested_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated `node.utf8_text(source)` or source slicing for the same node inside nested traversal loops."
+  },
+  {
+    "id": "rust_tree_sitter_old_tree_discarded_in_reparse_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated parse loops over the same buffer that always pass `None` instead of reusing an old tree for incremental parsing."
+  },
+  {
+    "id": "rust_tree_sitter_parse_result_unwrapped",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `parser.parse(...).unwrap ()` or `expect (...)` at parser boundaries where parse cancellation or invalid parser state should become a typed finding/error."
+  },
+  {
+    "id": "rust_tree_sitter_parser_created_per_file_without_reuse",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `tree_sitter::Parser::new()` construction inside per-file or per-function loops where a language-specific parser could be reused per worker."
+  },
+  {
+    "id": "rust_tree_sitter_parser_shared_global_with_lock",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag global `Mutex<Parser>` or `RwLock<Parser>` shared across threads where per-thread parser ownership would avoid lock contention and parser state coupling."
+  },
+  {
+    "id": "rust_tree_sitter_query_compiled_per_call",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `tree_sitter::Query::new(...)` inside functions called per file or per node, where query compilation should be cached."
+  },
+  {
+    "id": "rust_tree_sitter_recursive_walk_without_depth_guard",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag recursive AST walkers over repository input without an explicit depth guard, iterative cursor, or stack budget."
+  },
+  {
+    "id": "rust_tree_sitter_set_language_repeated_inside_hot_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated `parser.set_language(...)` calls inside loops that parse the same language repeatedly."
+  },
+  {
+    "id": "rust_unbounded_channel_in_producer_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "warning",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag unbounded channel sends inside loops or request paths without backpressure or shutdown policy."
+  },
+  {
+    "id": "rust_vec_extend_from_intermediate_allocation",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag copying a slice into a temporary Vec and immediately extending another Vec from it."
+  },
+  {
+    "id": "rust_vec_push_without_capacity_from_known_bound",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag `Vec::new()` followed by pushes inside a loop over a known bounded iterator without `with_capacity`."
+  },
+  {
+    "id": "rust_vec_remove_zero_in_loop",
+    "language": "rust",
+    "family": "bad_practices",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "flag repeated `Vec::remove(0)` in loops where `VecDeque` or index traversal would avoid shifting."
+  },
+  {
     "id": "rust_check_then_open_path",
     "language": "rust",
     "family": "boundary",

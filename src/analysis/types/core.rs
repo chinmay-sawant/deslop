@@ -16,7 +16,7 @@ use super::python::{
 };
 use super::rust::{
     RustAttributeSummary, RustEnumSummary, RustFunctionEvidence, RustFunctionEvidenceView,
-    RustModuleDeclaration, RustStaticSummary, StructSummary,
+    RustIncludeDeclaration, RustModuleDeclaration, RustStaticSummary, StructSummary,
 };
 
 /// Common file-level data shared across all languages.
@@ -73,6 +73,7 @@ pub(crate) struct RustFileData {
     pub structs: Vec<StructSummary>,
     pub attributes: Vec<RustAttributeSummary>,
     pub module_declarations: Vec<RustModuleDeclaration>,
+    pub include_declarations: Vec<RustIncludeDeclaration>,
 }
 
 impl ParsedFile {
@@ -146,6 +147,10 @@ impl ParsedFile {
     pub(crate) fn rust_module_declarations(&self) -> &[RustModuleDeclaration] {
         self.rust_data().map_or(&[], |d| &d.module_declarations)
     }
+
+    pub(crate) fn rust_include_declarations(&self) -> &[RustIncludeDeclaration] {
+        self.rust_data().map_or(&[], |d| &d.include_declarations)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -170,21 +175,20 @@ impl ParsedFunction {
     pub(crate) fn go_evidence(&self) -> GoFunctionEvidenceView<'_> {
         self.go
             .as_ref()
-            .map(|ev| ev.as_view())
-            .unwrap_or_else(GoFunctionEvidenceView::empty)
+            .map_or_else(GoFunctionEvidenceView::empty, GoFunctionEvidence::as_view)
     }
 
     pub(crate) fn python_evidence(&self) -> PythonFunctionEvidenceView<'_> {
-        self.python
-            .as_ref()
-            .map(|ev| ev.as_view())
-            .unwrap_or_else(PythonFunctionEvidenceView::empty)
+        self.python.as_ref().map_or_else(
+            PythonFunctionEvidenceView::empty,
+            PythonFunctionEvidence::as_view,
+        )
     }
 
     pub(crate) fn rust_evidence(&self) -> RustFunctionEvidenceView<'_> {
-        self.rust
-            .as_ref()
-            .map(|ev| ev.as_view())
-            .unwrap_or_else(RustFunctionEvidenceView::empty)
+        self.rust.as_ref().map_or_else(
+            RustFunctionEvidenceView::empty,
+            RustFunctionEvidence::as_view,
+        )
     }
 }

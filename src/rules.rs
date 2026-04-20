@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 pub(crate) mod catalog;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum RuleLanguage {
     Common,
@@ -13,7 +13,7 @@ pub enum RuleLanguage {
     Rust,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum RuleStatus {
     Stable,
@@ -21,7 +21,7 @@ pub enum RuleStatus {
     Research,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum RuleDefaultSeverity {
     Info,
@@ -30,7 +30,7 @@ pub enum RuleDefaultSeverity {
     Contextual,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum RuleConfigurability {
     Disable,
@@ -65,12 +65,14 @@ pub fn rule_registry() -> &'static [RuleMetadata] {
         .as_slice()
 }
 
+#[must_use]
 pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
     rule_registry()
         .iter()
         .find(|metadata| metadata.id == rule_id && metadata.language == language)
 }
 
+#[must_use]
 pub fn rule_metadata_variants(rule_id: &str) -> Vec<&'static RuleMetadata> {
     rule_registry()
         .iter()
@@ -78,6 +80,7 @@ pub fn rule_metadata_variants(rule_id: &str) -> Vec<&'static RuleMetadata> {
         .collect()
 }
 
+#[must_use]
 pub fn rule_binding_location(rule_id: &str, language: RuleLanguage) -> Option<&'static str> {
     catalog::rule_catalog()
         .iter()
@@ -85,6 +88,7 @@ pub fn rule_binding_location(rule_id: &str, language: RuleLanguage) -> Option<&'
         .map(|definition| definition.binding_location)
 }
 
+#[must_use]
 pub fn is_detail_only_rule(rule_id: &str) -> bool {
     rule_metadata_variants(rule_id).iter().any(|metadata| {
         metadata
@@ -93,6 +97,7 @@ pub fn is_detail_only_rule(rule_id: &str) -> bool {
     })
 }
 
+#[must_use]
 pub fn is_async_rollout_rule(rule_id: &str) -> bool {
     rule_metadata_variants(rule_id).iter().any(|metadata| {
         metadata
@@ -104,10 +109,10 @@ pub fn is_async_rollout_rule(rule_id: &str) -> bool {
 fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMetadata {
     RuleMetadata {
         id: definition.id,
-        language: definition.language.clone(),
+        language: definition.language,
         family: definition.family,
-        default_severity: definition.default_severity.clone(),
-        status: definition.status.clone(),
+        default_severity: definition.default_severity,
+        status: definition.status,
         configurability: definition.configurability,
         description: definition.description,
     }
@@ -129,12 +134,12 @@ mod tests {
 
     // Intentional maintenance guard. If this changes, review the source rule-id diff and
     // update [guides/inventory-regression-guards.md] in the same change.
-    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 528;
+    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 541;
     const EXPECTED_RULE_COUNTS_BY_LANGUAGE: &[(RuleLanguage, usize)] = &[
         (RuleLanguage::Common, 11),
         (RuleLanguage::Go, 653),
         (RuleLanguage::Python, 591),
-        (RuleLanguage::Rust, 100),
+        (RuleLanguage::Rust, 250),
     ];
 
     #[test]
@@ -241,7 +246,7 @@ mod tests {
         let experimental_rules = registry
             .iter()
             .filter(|metadata| metadata.status == RuleStatus::Experimental)
-            .map(|metadata| (metadata.language.clone(), metadata.id))
+            .map(|metadata| (metadata.language, metadata.id))
             .collect::<BTreeSet<_>>();
 
         let expected = BTreeSet::from([
@@ -264,7 +269,7 @@ mod tests {
         assert_eq!(experimental_rules, expected);
 
         for metadata in registry {
-            match (metadata.language.clone(), metadata.id) {
+            match (metadata.language, metadata.id) {
                 (RuleLanguage::Go, "likely_n_squared_allocation")
                 | (RuleLanguage::Go, "likely_n_squared_string_concat") => {
                     assert_eq!(metadata.status, RuleStatus::Experimental);
@@ -336,7 +341,7 @@ mod tests {
         let mut counts = BTreeMap::<RuleLanguage, usize>::new();
 
         for metadata in rule_registry() {
-            *counts.entry(metadata.language.clone()).or_insert(0) += 1;
+            *counts.entry(metadata.language).or_insert(0) += 1;
         }
 
         assert_eq!(

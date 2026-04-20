@@ -137,15 +137,6 @@ pub(super) fn logger_error_without_exc_info_findings(
     Vec::new()
 }
 
-#[allow(dead_code)]
-pub(super) fn logging_level_hardcoded_module_scope_findings(
-    file: &ParsedFile,
-    _function: &ParsedFunction,
-) -> Vec<Finding> {
-    let _ = file;
-    Vec::new() // file-level below
-}
-
 pub(super) fn logging_level_hardcoded_file_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file {
         return Vec::new();
@@ -901,19 +892,19 @@ pub(super) fn manual_dict_increment_findings(
         return Vec::new();
     }
     let body = &function.body_text;
-    if body.contains("if key in d:") || (body.contains("if ") && body.contains("in counts:")) {
-        if body.contains("d[key] += 1") || body.contains("counts[") && body.contains("+= 1") {
-            let line = find_line(body, "+= 1", function.fingerprint.start_line)
-                .unwrap_or(function.fingerprint.start_line);
-            return vec![make_finding(
-                "manual_dict_increment_instead_of_counter_or_defaultdict",
-                Severity::Info,
-                file,
-                function,
-                line,
-                "maintains frequency count manually; use collections.Counter or defaultdict(int)",
-            )];
-        }
+    if (body.contains("if key in d:") || (body.contains("if ") && body.contains("in counts:")))
+        && (body.contains("d[key] += 1") || body.contains("counts[") && body.contains("+= 1"))
+    {
+        let line = find_line(body, "+= 1", function.fingerprint.start_line)
+            .unwrap_or(function.fingerprint.start_line);
+        return vec![make_finding(
+            "manual_dict_increment_instead_of_counter_or_defaultdict",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "maintains frequency count manually; use collections.Counter or defaultdict(int)",
+        )];
     }
     Vec::new()
 }
@@ -1133,12 +1124,20 @@ pub(super) fn repeated_key_hash_in_loop_findings(
         return Vec::new();
     }
     let python = function.python_evidence();
-    if !python.repeated_subscript_lines.is_empty() {
-        return python.repeated_subscript_lines.iter().map(|&line| make_finding(
-            "repeated_key_hash_via_dict_lookup_in_tight_loop",
-            Severity::Info, file, function, line,
-            "accesses the same dict key repeatedly in a loop; cache the value in a local variable",
-        )).collect();
+    let body = &function.body_text;
+    // Only fire for functions with actual loops (not just comprehensions) and
+    // enough substance to warrant the flag. Emit at most one finding.
+    if !python.repeated_subscript_lines.is_empty()
+        && function.fingerprint.line_count >= 15
+        && (body.contains("for ") || body.contains("while "))
+    {
+        if let Some(&first_line) = python.repeated_subscript_lines.first() {
+            return vec![make_finding(
+                "repeated_key_hash_via_dict_lookup_in_tight_loop",
+                Severity::Info, file, function, first_line,
+                "accesses the same dict key repeatedly in a loop; cache the value in a local variable",
+            )];
+        }
     }
     Vec::new()
 }
@@ -1529,10 +1528,7 @@ pub(super) fn project_agnostic_observability_findings(
         ));
     }
 
-    if contains_any(
-        body,
-        &["logger.debug(f\"", "logger.info(f\"", "logger.warning(f\""],
-    ) && !contains_any(body, &["isEnabledFor", "if logger.isEnabledFor"])
+    if contains_expensive_unguarded_log(body)
     {
         findings.push(push(
             "expensive_log_argument_built_without_is_enabled_guard",
@@ -1606,17 +1602,27 @@ pub(super) fn project_agnostic_observability_findings(
         ));
     }
 
-    if contains_any(&lower_body, &["logger.", "counter.", "start_span("])
-        && !contains_any(&lower_body, &["operation=", "op_name", "name="])
     {
-        findings.push(push(
-            "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
-            Severity::Info,
-            format!(
-                "function {} does not show a single stable operation name across observability surfaces",
-                function.fingerprint.name
-            ),
-        ));
+        let surfaces = [
+            contains_any(&lower_body, &["logger.", "logging."]),
+            contains_any(&lower_body, &["counter.", "histogram.", "statsd.", "meter."]),
+            contains_any(&lower_body, &["start_span(", "tracer."]),
+        ]
+        .iter()
+        .filter(|&&x| x)
+        .count();
+        if surfaces >= 2
+            && !contains_any(&lower_body, &["operation=", "op_name", "name="])
+        {
+            findings.push(push(
+                "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+                Severity::Info,
+                format!(
+                    "function {} does not show a single stable operation name across observability surfaces",
+                    function.fingerprint.name
+                ),
+            ));
+        }
     }
 
     if contains_any(&lower_body, &["retry", "attempt"])
@@ -1773,6 +1779,29 @@ pub(super) fn project_agnostic_observability_findings(
     }
 
     findings
+}
+
+fn contains_expensive_unguarded_log(body: &str) -> bool {
+    if contains_any(body, &["isEnabledFor", "if logger.isEnabledFor"]) {
+        return false;
+    }
+
+    body.lines().any(|line| {
+        let trimmed = line.trim();
+        (trimmed.contains("logger.") || trimmed.contains("logging."))
+            && contains_any(
+                &trimmed.to_ascii_lowercase(),
+                &[
+                    "json.dumps(",
+                    ".format(",
+                    "join(",
+                    "pformat(",
+                    "traceback.",
+                    "serialize(",
+                    "to_dict(",
+                ],
+            )
+    })
 }
 
 pub(super) fn project_agnostic_observability_file_findings(file: &ParsedFile) -> Vec<Finding> {

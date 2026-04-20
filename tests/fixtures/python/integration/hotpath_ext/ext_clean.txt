@@ -84,6 +84,16 @@ def find_item(items, target):
     return lookup.get(target)
 
 
+def scan_phrase_matches(chunks, alert_phrases):
+    """Clean: nested substring checks should not be treated as list lookup candidates."""
+    for chunk in chunks:
+        text_lower = chunk.lower()
+        for phrase in alert_phrases:
+            if phrase in text_lower:
+                return phrase
+    return None
+
+
 def get_minimum(items):
     """Clean: uses min() instead of sort+first."""
     return min(items)
@@ -98,6 +108,21 @@ def format_records(records):
     """Clean: uses str.join with pre-built list."""
     msgs = [str(r) for r in records]
     print("\n".join(msgs))
+
+
+def cheap_logging_ok(records):
+    """Clean: cheap per-item logging should not trigger expensive logging rules."""
+    import logging
+
+    logger = logging.getLogger(__name__)
+    for record in records:
+        logger.debug("payload %s", record)
+
+
+def loop_fstring_output_ok(rows):
+    """Clean: per-item f-strings are expected output formatting, not invariant template churn."""
+    for row in rows:
+        print(f"row:{row}")
 
 
 def encode_items(items):

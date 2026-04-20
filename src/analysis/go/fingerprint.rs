@@ -2,6 +2,7 @@ use tree_sitter::Node;
 
 use crate::model::FunctionFingerprint;
 
+#[allow(clippy::cast_precision_loss)]
 pub(super) fn build_function_fingerprint(
     node: Node<'_>,
     source: &str,
@@ -82,6 +83,7 @@ fn is_control_node(kind: &str) -> bool {
     )
 }
 
+#[allow(clippy::cast_precision_loss)]
 fn compute_symmetry_score(body_node: Node<'_>) -> f64 {
     let mut cursor = body_node.walk();
     let mut statement_kinds = Vec::new();
@@ -159,10 +161,7 @@ fn count_code_lines(text: &str) -> usize {
         if in_block_comment {
             if trimmed.contains("*/") {
                 in_block_comment = false;
-                let suffix = trimmed
-                    .split_once("*/")
-                    .map(|(_, rest)| rest.trim())
-                    .unwrap_or("");
+                let suffix = trimmed.split_once("*/").map_or("", |(_, rest)| rest.trim());
                 if !suffix.is_empty() {
                     count += 1;
                 }
@@ -176,10 +175,7 @@ fn count_code_lines(text: &str) -> usize {
 
         if trimmed.starts_with("/*") {
             if trimmed.contains("*/") {
-                let suffix = trimmed
-                    .split_once("*/")
-                    .map(|(_, rest)| rest.trim())
-                    .unwrap_or("");
+                let suffix = trimmed.split_once("*/").map_or("", |(_, rest)| rest.trim());
                 if !suffix.is_empty() {
                     count += 1;
                 }

@@ -11,6 +11,7 @@ use super::{PackageIndex, PackageKey, RepositoryIndex};
 type RustChildModules = BTreeMap<PathBuf, BTreeMap<String, Vec<PathBuf>>>;
 type RustParentModules = BTreeMap<PathBuf, Vec<PathBuf>>;
 type RustCrateRoots = BTreeMap<PathBuf, Vec<PathBuf>>;
+type RustIncludeNeighbors = BTreeMap<PathBuf, Vec<PathBuf>>;
 
 pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> RepositoryIndex {
     let mut packages = BTreeMap::new();
@@ -69,6 +70,7 @@ pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> Repos
         }
     }
 
+    let rust_include_neighbors = build_rust_include_graph(files);
     let (rust_child_modules, rust_parent_modules, rust_crate_roots) =
         build_rust_module_graph(files);
 
@@ -77,6 +79,7 @@ pub(crate) fn build_repository_index(root: &Path, files: &[ParsedFile]) -> Repos
         packages,
         rust_package_names_by_file,
         rust_imports_by_file,
+        rust_include_neighbors,
         rust_child_modules,
         rust_parent_modules,
         rust_crate_roots,
@@ -94,8 +97,7 @@ pub(super) fn package_directory(root: &Path, file_path: &Path) -> PathBuf {
 
     parent
         .strip_prefix(root)
-        .map(Path::to_path_buf)
-        .unwrap_or_else(|_| parent.to_path_buf())
+        .map_or_else(|_| parent.to_path_buf(), Path::to_path_buf)
 }
 
 fn insert_symbol(package_entry: &mut PackageIndex, symbol: &DeclaredSymbol) {
@@ -181,6 +183,40 @@ fn build_rust_module_graph(
     (child_modules, parent_modules, crate_roots)
 }
 
+fn build_rust_include_graph(files: &[ParsedFile]) -> RustIncludeNeighbors {
+    let rust_files = files
+        .iter()
+        .filter(|file| file.language == Language::Rust)
+        .map(|file| file.path.clone())
+        .collect::<BTreeSet<_>>();
+    let mut neighbors = RustIncludeNeighbors::new();
+
+    for file in files.iter().filter(|file| file.language == Language::Rust) {
+        for declaration in file.rust_include_declarations() {
+            let resolved_path = resolve_include_declaration_path(&file.path, &declaration.path);
+            if !rust_files.contains(&resolved_path) {
+                continue;
+            }
+
+            neighbors
+                .entry(file.path.clone())
+                .or_default()
+                .push(resolved_path.clone());
+            neighbors
+                .entry(resolved_path)
+                .or_default()
+                .push(file.path.clone());
+        }
+    }
+
+    for linked_files in neighbors.values_mut() {
+        linked_files.sort();
+        linked_files.dedup();
+    }
+
+    neighbors
+}
+
 fn assign_crate_root(
     root: &Path,
     current: &Path,
@@ -240,6 +276,14 @@ fn resolve_module_declaration_paths(
         &module_dir.join(&declaration.name).join("mod.rs"),
     ));
     candidates
+}
+
+fn resolve_include_declaration_path(parent_file_path: &Path, include_path: &str) -> PathBuf {
+    let Some(parent_dir) = parent_file_path.parent() else {
+        return PathBuf::from(include_path);
+    };
+
+    normalize_path(&parent_dir.join(include_path))
 }
 
 fn is_directory_root_module(path: &Path) -> bool {

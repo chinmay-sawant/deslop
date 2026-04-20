@@ -288,3 +288,30 @@ fn test_functions_skip_hallucinated_call_checks() {
     assert_no_rule(current, &index, "hallucinated_import_call", None);
     assert_no_rule(current, &index, "hallucinated_local_call", None);
 }
+
+#[test]
+fn include_macro_scope_does_not_trigger_local_hallucinated_calls() {
+    let files = parse_bundle("rust/backend/include_macro_shared_scope.txt");
+    let architecture = find_parsed_file(&files, "/repo/src/architecture.rs");
+    let rules = find_parsed_file(&files, "/repo/src/architecture/rules.rs");
+    let index = build_repository_index(Path::new("/repo"), &files);
+
+    assert_no_rule(
+        architecture,
+        &index,
+        "hallucinated_local_call",
+        Some("shared_helper"),
+    );
+    assert_no_rule(
+        rules,
+        &index,
+        "hallucinated_local_call",
+        Some("shared_helper"),
+    );
+    assert_no_rule(
+        rules,
+        &index,
+        "hallucinated_local_call",
+        Some("has_import_path"),
+    );
+}

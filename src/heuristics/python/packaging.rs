@@ -705,17 +705,16 @@ fn package_root_reexports_large_dependency_tree_by_default_findings(
     files
         .iter()
         .filter(|file| file.path.file_name().and_then(|name| name.to_str()) == Some("__init__.py"))
-        .filter_map(|file| {
-            (file.imports.len() >= 6).then(|| {
-                packaging_repo_finding(
-                    file,
-                    "package_root_reexports_large_dependency_tree_by_default",
-                    1,
-                    Severity::Info,
-                    "package root re-exports a large dependency tree by default".to_string(),
-                    format!("import_count={}", file.imports.len()),
-                )
-            })
+        .filter(|file| file.imports.len() >= 6)
+        .map(|file| {
+            packaging_repo_finding(
+                file,
+                "package_root_reexports_large_dependency_tree_by_default",
+                1,
+                Severity::Info,
+                "package root re-exports a large dependency tree by default".to_string(),
+                format!("import_count={}", file.imports.len()),
+            )
         })
         .collect()
 }

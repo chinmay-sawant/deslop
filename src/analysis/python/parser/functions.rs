@@ -1,3 +1,5 @@
+#![allow(clippy::too_many_lines)]
+
 use tree_sitter::Node;
 
 use crate::analysis::{ParsedFunction, PythonFunctionEvidence};
@@ -258,6 +260,7 @@ fn collect_function_shape(
     })
 }
 
+#[allow(clippy::too_many_lines)]
 fn collect_function_evidence(
     node: Node<'_>,
     source: &str,

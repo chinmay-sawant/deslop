@@ -13,7 +13,7 @@ fn test_architecture_rules_positive() {
     // File named "service.py" to satisfy SERVICE_ROLES path check
     let report = scan(&[(
         "app/service.py",
-        python_fixture!("v03/architecture_positive.txt"),
+        python_fixture!("project_agnostic_smoke/architecture_positive.txt"),
     )]);
     assert_rules_present(
         &report,
@@ -31,7 +31,7 @@ fn test_architecture_rules_positive() {
 fn test_architecture_rules_negative() {
     let report = scan(&[(
         "app/service.py",
-        python_fixture!("v03/architecture_negative.txt"),
+        python_fixture!("project_agnostic_smoke/architecture_negative.txt"),
     )]);
     assert_rules_absent(
         &report,
@@ -51,7 +51,7 @@ fn test_architecture_rules_negative() {
 fn test_discipline_rules_positive() {
     let report = scan(&[(
         "app/logic.py",
-        python_fixture!("v03/discipline_positive.txt"),
+        python_fixture!("project_agnostic_smoke/discipline_positive.txt"),
     )]);
     assert_rules_present(
         &report,
@@ -67,7 +67,7 @@ fn test_discipline_rules_positive() {
 fn test_discipline_rules_negative() {
     let report = scan(&[(
         "app/logic.py",
-        python_fixture!("v03/discipline_negative.txt"),
+        python_fixture!("project_agnostic_smoke/discipline_negative.txt"),
     )]);
     assert_rules_absent(
         &report,
@@ -85,7 +85,7 @@ fn test_discipline_rules_negative() {
 fn test_boundaries_rules_positive() {
     let report = scan(&[(
         "app/data_access.py",
-        python_fixture!("v03/boundaries_positive.txt"),
+        python_fixture!("project_agnostic_smoke/boundaries_positive.txt"),
     )]);
     assert_rules_present(
         &report,
@@ -103,7 +103,7 @@ fn test_boundaries_rules_positive() {
 fn test_boundaries_rules_negative() {
     let report = scan(&[(
         "app/data_access.py",
-        python_fixture!("v03/boundaries_negative.txt"),
+        python_fixture!("project_agnostic_smoke/boundaries_negative.txt"),
     )]);
     assert_rules_absent(
         &report,
@@ -123,7 +123,7 @@ fn test_boundaries_rules_negative() {
 fn test_observability_rules_positive() {
     let report = scan(&[(
         "app/processor.py",
-        python_fixture!("v03/observability_positive.txt"),
+        python_fixture!("project_agnostic_smoke/observability_positive.txt"),
     )]);
     assert_rules_present(
         &report,
@@ -140,7 +140,7 @@ fn test_observability_rules_positive() {
 fn test_observability_rules_negative() {
     let report = scan(&[(
         "app/processor.py",
-        python_fixture!("v03/observability_negative.txt"),
+        python_fixture!("project_agnostic_smoke/observability_negative.txt"),
     )]);
     assert_rules_absent(
         &report,

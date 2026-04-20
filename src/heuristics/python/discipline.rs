@@ -823,14 +823,14 @@ pub(super) fn optional_without_none_guard_findings(
         return Vec::new();
     }
 
-    return vec![make_finding(
+    vec![make_finding(
         "optional_parameter_used_without_none_guard",
         Severity::Info,
         file,
         function,
         function.fingerprint.start_line,
         "has Optional parameter but dereferences it without a None guard",
-    )];
+    )]
 }
 
 pub(super) fn callable_without_param_types_findings(
@@ -1729,10 +1729,19 @@ pub(super) fn project_agnostic_discipline_findings(
     }
 
     if body.contains("self.")
-        && contains_any(&lower_body, &["self.", " = "])
+        && (lower_body.contains("self._") || lower_body.matches("self.").count() >= 4)
+        && {
+            let has_mutation = body.lines().any(|line| {
+                let trimmed = line.trim();
+                trimmed.starts_with("self.")
+                    && trimmed.contains(" = ")
+                    && !trimmed.contains(" == ")
+            });
+            has_mutation
+        }
         && contains_any(
             &lower_body,
-            &["return {", "return json", "return str(", "f\""],
+            &["return {", "return json", "return str("],
         )
     {
         findings.push(make_finding(
@@ -1745,16 +1754,13 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if (body.contains("for ") || body.contains("while "))
-        && contains_any(&lower_body, &["logger.", "logging."])
-        && contains_any(&lower_body, &["except ", "retry", "continue"])
-    {
+    if let Some(loop_line) = loop_with_recovery_logging_line(body, function.fingerprint.start_line) {
         findings.push(make_finding(
             "loop_interleaves_core_work_logging_and_recovery_logic",
             Severity::Info,
             file,
             function,
-            line,
+            loop_line,
             "interleaves core work, logging, and recovery logic in the same loop body",
         ));
     }
@@ -1842,7 +1848,7 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if lower_body.matches("if not ").count() >= 2
+    if lower_body.matches("if not ").count() >= 3
         || lower_body.matches("if value is None").count() >= 2
     {
         findings.push(make_finding(
@@ -1868,8 +1874,8 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if file.top_level_bindings.len() >= 4
-        && file.functions.len() >= 4
+    if file.top_level_bindings.len() >= 8
+        && file.functions.len() >= 8
         && contains_any(&lower_body, &["class ", "def ", "return "])
     {
         findings.push(make_finding(
@@ -1902,4 +1908,44 @@ pub(super) fn project_agnostic_discipline_findings(
     }
 
     findings
+}
+
+fn loop_with_recovery_logging_line(body: &str, start_line: usize) -> Option<usize> {
+    let lines: Vec<&str> = body.lines().collect();
+
+    for (index, line) in lines.iter().enumerate() {
+        let trimmed = line.trim();
+        if !(trimmed.starts_with("for ") || trimmed.starts_with("while ")) {
+            continue;
+        }
+
+        let loop_indent = indent_level(line);
+        let mut block_lines = Vec::new();
+        for block_line in lines.iter().skip(index + 1) {
+            let block_trimmed = block_line.trim();
+            if block_trimmed.is_empty() {
+                continue;
+            }
+            if indent_level(block_line) <= loop_indent {
+                break;
+            }
+            block_lines.push(*block_line);
+        }
+
+        let block_text = block_lines.join("\n").to_ascii_lowercase();
+        if contains_any(
+            &block_text,
+            &[
+                "logger.exception(",
+                "logger.error(",
+                "logging.exception(",
+                "logging.error(",
+            ],
+        ) && contains_any(&block_text, &["except ", "retry", "continue"])
+        {
+            return Some(start_line + index);
+        }
+    }
+
+    None
 }

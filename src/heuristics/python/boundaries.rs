@@ -577,16 +577,6 @@ pub(super) fn state_changing_endpoint_missing_csrf_findings(
     Vec::new()
 }
 
-#[allow(dead_code)]
-pub(super) fn hardcoded_secret_in_test_fixture_findings(
-    file: &ParsedFile,
-    _function: &ParsedFunction,
-) -> Vec<Finding> {
-    // Delegated to file-level
-    let _ = file;
-    Vec::new()
-}
-
 /// File-level: hardcoded secrets in test fixtures or seeds
 pub(super) fn hardcoded_secret_in_fixture_file_findings(file: &ParsedFile) -> Vec<Finding> {
     if !file.is_test_file {
@@ -658,17 +648,18 @@ pub(super) fn generator_consumed_twice_findings(
     // Simple heuristic: variable used in for and then in list() / next()
     for (i, line) in body.lines().enumerate() {
         let trimmed = line.trim();
-        if trimmed.starts_with("for ") && trimmed.contains(" in gen_") {
-            if body.contains("list(gen_") || body.contains("next(gen_") {
-                return vec![make_finding(
-                    "generator_consumed_twice_without_recreation",
-                    Severity::Warning,
-                    file,
-                    function,
-                    function.fingerprint.start_line + i,
-                    "generator consumed in for loop and then again via list()/next(); second pass yields nothing",
-                )];
-            }
+        if trimmed.starts_with("for ")
+            && trimmed.contains(" in gen_")
+            && (body.contains("list(gen_") || body.contains("next(gen_"))
+        {
+            return vec![make_finding(
+                "generator_consumed_twice_without_recreation",
+                Severity::Warning,
+                file,
+                function,
+                function.fingerprint.start_line + i,
+                "generator consumed in for loop and then again via list()/next(); second pass yields nothing",
+            )];
         }
     }
     Vec::new()
@@ -934,23 +925,22 @@ pub(super) fn closure_captures_large_object_findings(
     }
     let body = &function.body_text;
     // Large object (DataFrame/model) captured in nested function
-    if (body.contains("df") || body.contains("model") || body.contains("weights"))
-        && body.contains("def _callback")
-        || body.contains("lambda:")
+    if (((body.contains("df") || body.contains("model") || body.contains("weights"))
+        && body.contains("def _callback"))
+        || body.contains("lambda:"))
+        && (body.contains("pd.DataFrame") || body.contains("torch.") || body.contains("np.array"))
     {
-        if body.contains("pd.DataFrame") || body.contains("torch.") || body.contains("np.array") {
-            let line = find_line(body, "def _callback", function.fingerprint.start_line)
-                .or_else(|| find_line(body, "lambda:", function.fingerprint.start_line))
-                .unwrap_or(function.fingerprint.start_line);
-            return vec![make_finding(
-                "closure_captures_large_object_after_producing_function_returns",
-                Severity::Info,
-                file,
-                function,
-                line,
-                "closure captures a large object (DataFrame/model); release before construction completes",
-            )];
-        }
+        let line = find_line(body, "def _callback", function.fingerprint.start_line)
+            .or_else(|| find_line(body, "lambda:", function.fingerprint.start_line))
+            .unwrap_or(function.fingerprint.start_line);
+        return vec![make_finding(
+            "closure_captures_large_object_after_producing_function_returns",
+            Severity::Info,
+            file,
+            function,
+            line,
+            "closure captures a large object (DataFrame/model); release before construction completes",
+        )];
     }
     Vec::new()
 }
@@ -1442,18 +1432,27 @@ pub(super) fn project_agnostic_boundaries_findings(
     }
 
     if public_api
-        && contains_any(
+        && !contains_any(
             body,
             &[
-                "return self._",
-                "return self.cache",
-                "return self.items",
-                "return self.data",
+                "return list(",
+                "return dict(",
+                "return set(",
+                ".copy()",
+                "[:]",
+                "return self._generate",
+                "return self._build",
+                "return self._create",
             ],
         )
     {
-        let line = find_line(body, "return self.", function.fingerprint.start_line)
-            .unwrap_or(function.fingerprint.start_line);
+        let returned_attr = returned_self_collection_attr(body);
+        if let Some(attr) = returned_attr
+            && file_has_mutation_evidence_for_attr(file, function, &attr)
+        {
+            let line = find_line(body, &format!("return self.{attr}"), function.fingerprint.start_line)
+                .or_else(|| find_line(body, "return self.", function.fingerprint.start_line))
+                .unwrap_or(function.fingerprint.start_line);
         findings.push(make_finding(
             "helper_returns_live_internal_collection_reference",
             Severity::Info,
@@ -1462,6 +1461,7 @@ pub(super) fn project_agnostic_boundaries_findings(
             line,
             "returns a live internal mutable collection reference",
         ));
+        }
     }
 
     if (body.contains("for ") || body.contains("while "))
@@ -1632,6 +1632,15 @@ pub(super) fn project_agnostic_boundaries_findings(
                 ".decode('",
             ],
         )
+        && !contains_any(
+            body,
+            &[
+                "\"wb\"", "\"rb\"", "\"ab\"", "'wb'", "'rb'", "'ab'",
+                "\"w+b\"", "\"r+b\"", "'w+b'", "'r+b'",
+                "iter_content", "wave.", "audio", "pcm",
+                "StreamingResponse", "BytesIO",
+            ],
+        )
     {
         findings.push(make_finding(
             "text_bytes_boundary_relies_on_implicit_default_encoding",
@@ -1755,6 +1764,75 @@ pub(super) fn project_agnostic_boundaries_findings(
     findings
 }
 
+fn returned_self_collection_attr(body: &str) -> Option<String> {
+    body.lines().find_map(|line| {
+        let trimmed = line.trim();
+        let suffix = trimmed.strip_prefix("return self.")?;
+        let attr = suffix
+            .chars()
+            .take_while(|character| character.is_ascii_alphanumeric() || *character == '_')
+            .collect::<String>();
+
+        if attr.is_empty() {
+            return None;
+        }
+
+        let lower = attr.to_ascii_lowercase();
+        (attr.starts_with('_')
+            || contains_any(
+                &lower,
+                &["cache", "item", "data", "record", "result", "state"],
+            ))
+        .then_some(attr)
+    })
+}
+
+fn file_has_mutation_evidence_for_attr(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    attr: &str,
+) -> bool {
+    let receiver_type = function.fingerprint.receiver_type.as_deref();
+    let attr_expr = format!("self.{attr}");
+
+    file.functions
+        .iter()
+        .filter(|candidate| {
+            receiver_type.is_none()
+                || candidate.fingerprint.receiver_type.as_deref() == receiver_type
+        })
+        .any(|candidate| function_mutates_attr(candidate.body_text.as_str(), &attr_expr))
+}
+
+fn function_mutates_attr(body: &str, attr_expr: &str) -> bool {
+    let mutation_markers = [
+        ".append(",
+        ".extend(",
+        ".update(",
+        ".pop(",
+        ".clear(",
+        ".sort(",
+        ".remove(",
+        ".insert(",
+        ".add(",
+        ".discard(",
+    ];
+
+    if mutation_markers
+        .iter()
+        .any(|marker| body.contains(&format!("{attr_expr}{marker}")))
+    {
+        return true;
+    }
+
+    body.lines().any(|line| {
+        let trimmed = line.trim();
+        trimmed.contains(&format!("{attr_expr}["))
+            && trimmed.contains(" = ")
+            && !trimmed.contains(" == ")
+    })
+}
+
 pub(super) fn project_agnostic_boundaries_file_findings(file: &ParsedFile) -> Vec<Finding> {
     if file.is_test_file {
         return Vec::new();
@@ -1811,7 +1889,7 @@ pub(super) fn project_agnostic_boundaries_file_findings(file: &ParsedFile) -> Ve
             .name
             .chars()
             .all(|ch| ch.is_ascii_uppercase() || ch == '_')
-            && contains_any(&binding.value_text, &["[", "{", "set("])
+            && looks_like_mutable_constant_literal(&binding.value_text)
         {
             findings.push(boundaries_file_finding(
                 file,
@@ -1825,4 +1903,13 @@ pub(super) fn project_agnostic_boundaries_file_findings(file: &ParsedFile) -> Ve
     }
 
     findings
+}
+
+fn looks_like_mutable_constant_literal(value_text: &str) -> bool {
+    let trimmed = value_text.trim_start();
+    trimmed.starts_with('[')
+        || trimmed.starts_with('{')
+        || trimmed.starts_with("set(")
+        || trimmed.starts_with("list(")
+        || trimmed.starts_with("dict(")
 }

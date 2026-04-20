@@ -97,6 +97,7 @@ pub(super) fn collect_symbols(
     symbols
 }
 
+#[allow(clippy::cast_precision_loss)]
 pub(super) fn build_function_fingerprint(
     node: Node<'_>,
     body_node: Node<'_>,
@@ -116,9 +117,7 @@ pub(super) fn build_function_fingerprint(
         .lines()
         .filter(|line| line.trim_start().starts_with('#'))
         .count();
-    let doc_comment_lines = doc_comment
-        .map(|comment| comment.lines().count())
-        .unwrap_or(0);
+    let doc_comment_lines = doc_comment.map_or(0, |comment| comment.lines().count());
     let comment_lines = hash_comment_lines + doc_comment_lines;
     let code_lines = line_count.saturating_sub(comment_lines);
     let comment_to_code_ratio = if code_lines == 0 {

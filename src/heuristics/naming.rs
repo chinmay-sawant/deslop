@@ -1,5 +1,6 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
+use std::path::Path;
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
@@ -43,6 +44,12 @@ pub(super) fn generic_finding(file: &ParsedFile, function: &ParsedFunction) -> O
     }
 
     if !is_generic_name(&function.fingerprint.name) {
+        return None;
+    }
+
+    // Skip when the function name is contextualised by its parent module.
+    // e.g. `parse_file` inside a `parser/` module is descriptive, not generic.
+    if function_name_matches_module_context(&file.path, &function.fingerprint.name) {
         return None;
     }
 
@@ -134,4 +141,56 @@ pub(super) fn weak_finding(file: &ParsedFile, function: &ParsedFunction) -> Opti
         ),
         evidence,
     })
+}
+
+/// Returns `true` when any token in `function_name` also appears (possibly as
+/// a stem) in the parent directory or file stem of `path`.  For example,
+/// `parse_file` in `src/parser/mod.rs` shares the "parse" stem with "parser".
+fn function_name_matches_module_context(path: &Path, function_name: &str) -> bool {
+    let fn_tokens: Vec<String> = super::common::identifier_tokens(function_name)
+        .into_iter()
+        .map(|t| t.to_ascii_lowercase())
+        .collect();
+    if fn_tokens.is_empty() {
+        return false;
+    }
+
+    // Collect context tokens from the parent directory name and the file stem.
+    let mut context_tokens: Vec<String> = Vec::new();
+    if let Some(parent) = path.parent().and_then(|p| p.file_name()) {
+        context_tokens.extend(
+            super::common::identifier_tokens(&parent.to_string_lossy())
+                .into_iter()
+                .map(|t| t.to_ascii_lowercase()),
+        );
+    }
+    if let Some(stem) = path.file_stem() {
+        let stem_str = stem.to_string_lossy();
+        if stem_str != "mod" && stem_str != "lib" && stem_str != "main" {
+            context_tokens.extend(
+                super::common::identifier_tokens(&stem_str)
+                    .into_iter()
+                    .map(|t| t.to_ascii_lowercase()),
+            );
+        }
+    }
+
+    if context_tokens.is_empty() {
+        return false;
+    }
+
+    // If any function-name token shares a common stem with a context token,
+    // the name is contextualised by its module.
+    fn stem_matches(a: &str, b: &str) -> bool {
+        let short = a.len().min(b.len());
+        if short < 3 {
+            return a == b;
+        }
+        // Allow stem-level matching: "parse" matches "parser", "scan" matches "scanner"
+        a.starts_with(b) || b.starts_with(a)
+    }
+
+    fn_tokens
+        .iter()
+        .any(|ft| context_tokens.iter().any(|ct| stem_matches(ft, ct)))
 }

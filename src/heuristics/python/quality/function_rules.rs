@@ -341,6 +341,7 @@ fn public_any_type_leak_function_findings(
     if function.is_test_function
         || function.fingerprint.name.starts_with('_')
         || is_to_dict_wrapper(function)
+        || is_trivial_wide_contract_wrapper(function)
     {
         return Vec::new();
     }
@@ -366,6 +367,54 @@ fn public_any_type_leak_function_findings(
             .map(|marker| format!("wide_type_marker={marker}"))
             .collect(),
     }]
+}
+
+fn is_trivial_wide_contract_wrapper(function: &ParsedFunction) -> bool {
+    let body_lines = function
+        .body_text
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty() && !line.starts_with('#'))
+        .collect::<Vec<_>>();
+
+    if body_lines.len() != 1 {
+        return false;
+    }
+
+    let Some(returned) = body_lines[0].strip_prefix("return ") else {
+        return false;
+    };
+    let returned = returned.trim();
+
+    if ["json.dumps(", ".dict()", ".model_dump(", ".to_dict(", "serialize("]
+        .iter()
+        .any(|marker| returned.contains(marker))
+    {
+        return true;
+    }
+
+    let parameter_names = parameter_entries(&function.signature_text)
+        .into_iter()
+        .filter_map(|entry| {
+            let without_default = entry
+                .split_once('=')
+                .map(|(left, _)| left)
+                .unwrap_or(entry.as_str())
+                .trim();
+            let name = without_default
+                .split_once(':')
+                .map(|(left, _)| left)
+                .unwrap_or(without_default)
+                .trim();
+            if name.is_empty() || matches!(name, "self" | "cls" | "/" | "*" | "**") {
+                None
+            } else {
+                Some(name.to_string())
+            }
+        })
+        .collect::<Vec<_>>();
+
+    parameter_names.iter().any(|name| returned == name)
 }
 
 fn typeddict_unchecked_access_findings(

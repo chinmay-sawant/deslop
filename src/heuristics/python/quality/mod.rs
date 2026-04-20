@@ -381,10 +381,7 @@ fn project_agnostic_quality_function_findings(
         ));
     }
 
-    if contains_any(
-        &lower_body,
-        &["except ", "return default", "return {}", "return []"],
-    ) {
+    if except_block_returns_plausible_default(body) {
         findings.push(push(
             "fallback_branch_swallows_invariant_violation_and_returns_plausible_default",
             crate::model::Severity::Warning,
@@ -452,7 +449,7 @@ fn project_agnostic_quality_function_findings(
         ));
     }
 
-    if function.python_evidence().recursive_call_lines.len() > 0
+    if !function.python_evidence().recursive_call_lines.is_empty()
         && !contains_any(&lower_body, &["max_depth", "depth >", "level >"])
     {
         findings.push(push(
@@ -612,26 +609,121 @@ fn project_agnostic_quality_function_findings(
     findings
 }
 
+fn except_block_returns_plausible_default(body: &str) -> bool {
+    let lines: Vec<&str> = body.lines().collect();
+
+    for (index, line) in lines.iter().enumerate() {
+        let trimmed = line.trim_start();
+        if !(trimmed.starts_with("except:") || trimmed.starts_with("except ")) {
+            continue;
+        }
+
+        let except_indent = indentation(line);
+        let mut has_default_return = false;
+        let mut has_raise = false;
+
+        for block_line in lines.iter().skip(index + 1) {
+            let block_trimmed = block_line.trim();
+            if block_trimmed.is_empty() {
+                continue;
+            }
+
+            if indentation(block_line) <= except_indent {
+                break;
+            }
+
+            let normalized = block_trimmed.to_ascii_lowercase();
+            if normalized == "raise" || normalized.starts_with("raise ") {
+                has_raise = true;
+            }
+
+            if normalized == "return default"
+                || normalized == "return {}"
+                || normalized == "return []"
+                || normalized.starts_with("return {")
+                || normalized.starts_with("return [")
+            {
+                has_default_return = true;
+            }
+        }
+
+        if has_default_return && !has_raise {
+            return true;
+        }
+    }
+
+    false
+}
+
 fn project_agnostic_quality_file_findings(file: &ParsedFile) -> Vec<Finding> {
     let _ = file;
     Vec::new()
 }
 
 pub(super) fn wide_contract_markers(text: &str) -> Vec<String> {
-    let lower = text.to_ascii_lowercase();
     let mut markers = Vec::new();
-    if lower.contains("any") {
-        markers.push("Any".to_string());
+
+    for annotation in explicit_annotation_segments(text) {
+        let lower = annotation.to_ascii_lowercase();
+        if annotation_contains_wide_token(&lower, "any") {
+            markers.push("Any".to_string());
+        }
+        if annotation_contains_wide_token(&lower, "object") {
+            markers.push("object".to_string());
+        }
+        if lower.contains("dict[str, any]") || lower.contains("dict[str, typing.any]") {
+            markers.push("dict[str, Any]".to_string());
+        }
     }
-    if lower.contains(": object") || lower.contains("-> object") {
-        markers.push("object".to_string());
-    }
-    if lower.contains("dict[str, any]") || lower.contains("dict[str, typing.any]") {
-        markers.push("dict[str, Any]".to_string());
-    }
+
     markers.sort();
     markers.dedup();
     markers
+}
+
+fn explicit_annotation_segments(text: &str) -> Vec<String> {
+    if text.contains('(') && text.contains(')') {
+        let mut segments = parameter_entries(text)
+            .into_iter()
+            .filter_map(|entry| parameter_annotation_segment(&entry).map(str::to_string))
+            .collect::<Vec<_>>();
+
+        if let Some((_, return_part)) = text.rsplit_once("->") {
+            let return_annotation = return_part.trim().trim_end_matches(':').trim();
+            if !return_annotation.is_empty() {
+                segments.push(return_annotation.to_string());
+            }
+        }
+
+        if !segments.is_empty() {
+            return segments;
+        }
+    }
+
+    vec![text.trim().trim_end_matches(':').to_string()]
+}
+
+fn parameter_annotation_segment(entry: &str) -> Option<&str> {
+    let without_default = entry.split_once('=').map(|(left, _)| left).unwrap_or(entry);
+    let (_, annotation) = without_default.split_once(':')?;
+    Some(annotation.trim())
+}
+
+fn annotation_contains_wide_token(annotation_lower: &str, token: &str) -> bool {
+    let normalized = annotation_lower
+        .chars()
+        .map(|character| {
+            if character.is_ascii_alphanumeric() || matches!(character, '_' | '.') {
+                character
+            } else {
+                ' '
+            }
+        })
+        .collect::<String>();
+
+    normalized
+        .split_whitespace()
+        .any(|part| part == token || part.ends_with(&format!(".{token}")))
 }
 
 pub(super) fn should_skip_wide_contract_rule(file: &ParsedFile) -> bool {
