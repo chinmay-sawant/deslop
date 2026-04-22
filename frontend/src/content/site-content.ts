@@ -118,6 +118,7 @@ export const siteMetadata: SiteMetadata = {
 
 export const navigation: NavItem[] = [
   { label: 'Install and run', href: '#install-run' },
+  { label: 'Findings', href: '/findings' },
   { label: 'Documentation', href: '/docs' },
 ]
 

@@ -80,9 +80,12 @@ clean:
 	rm -f results.txt temp_gopdfsuit.txt temp_snapback.txt temp_claw.txt
 
 temp:
-	cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/GO_FHIR_DEMO --no-fail > temp.txt
+	cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/swarms --no-fail > temp.txt
 	python3 scripts/extract_finding_context.py temp.txt
 	python3 scripts/extract_function_context.py temp.txt
+	python3 scripts/extract_function_context_json.py temp.txt \
+	--output-dir frontend/public/findings \
+	--include-function-text
 
 # Display help for make targets
 help:

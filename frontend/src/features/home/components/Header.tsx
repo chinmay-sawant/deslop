@@ -66,6 +66,10 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
   const { stars, isLoading } = useGithubStars(siteMetadata.github.owner, siteMetadata.github.repo)
   const location = useLocation()
   const navigate = useNavigate()
+  const hideFindingsNav = typeof window !== 'undefined' && window.location.hostname === 'chinmay-sawant.github.io'
+  const visibleNavigation = hideFindingsNav
+    ? navigation.filter((item) => item.href !== '/findings')
+    : navigation
 
   const handleInstallClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
@@ -102,7 +106,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
             </div>
 
             <nav className="hidden items-center gap-1 md:flex">
-              {navigation.map((item) => (
+              {visibleNavigation.map((item) => (
                 item.href.includes('#') ? (
                   <a key={item.href} href={sitePath(item.href)} className={navLinkClassName} onClick={handleInstallClick}>
                     {item.label}
@@ -152,7 +156,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
                   className="mb-3 w-full justify-center"
                 />
                 <div className="flex flex-col gap-1">
-                  {navigation.map((item) => (
+                  {visibleNavigation.map((item) => (
                     item.href.includes('#') ? (
                       <a key={item.href} href={sitePath(item.href)} className={cn(navLinkClassName, 'px-4 py-3')} onClick={handleInstallClick}>
                         {item.label}

@@ -223,7 +223,24 @@ Expand a saved findings report into review-ready code context:
 python3 scripts/extract_finding_context.py temp_gopdfsuit.txt
 ```
 
-That command reads the `path:line` entries from `temp_gopdfsuit.txt`, extracts the requested code context, and rewrites `scripts/temp.txt` with one consolidated block per finding. By default each block only includes:
+### Generate the findings visualizer dataset here with:
+```bash
+cargo run -- scan /home/chinmay/ChinmayPersonalProjects/deslop/real-repos/swarms --no-fail > temp.txt
+python3 scripts/extract_finding_context.py temp.txt
+python3 scripts/extract_function_context.py temp.txt
+python3 scripts/extract_function_context_json.py temp.txt \
+  --output-dir frontend/public/findings \
+  --include-function-text
+```
+
+If you run the temp workflow above, make sure you start the frontend server from the `frontend` folder:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Those commands read the `path:line` entries from `temp.txt`, extract the requested code context, and rewrite the generated findings data under `frontend/public/findings`. By default each block only includes:
 
 - `Source`
 - `Rule description`
