@@ -54,3 +54,5 @@ logs/
 .codex
 *temp.txt*
 /scripts/findings
+/frontend/public/findings
+/docs/findings
