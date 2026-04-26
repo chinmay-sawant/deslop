@@ -455,7 +455,7 @@ mod tests {
     use super::{
         contains_default_hashmap_ctor, should_skip_in_memory_write, strip_double_quoted_strings,
     };
-    use crate::analysis::ParsedFunction;
+    use crate::analysis::{LanguageFunctionData, ParsedFunction, RustFunctionEvidence};
     use crate::model::FunctionFingerprint;
 
     fn sample_function(
@@ -491,9 +491,7 @@ mod tests {
             body_text: body_text.to_string(),
             local_strings: Vec::new(),
             test_summary: None,
-            go: None,
-            python: None,
-            rust: None,
+            lang: LanguageFunctionData::Rust(RustFunctionEvidence::default()),
         }
     }
 

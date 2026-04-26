@@ -3,6 +3,7 @@ mod items;
 #[cfg(test)]
 mod tests;
 
+use std::cell::RefCell;
 use std::path::Path;
 
 use tree_sitter::Parser;
@@ -23,15 +24,16 @@ mod functions;
 use self::functions::{collect_functions, is_test_file, module_name_for_path};
 pub(crate) use functions::{is_inside_function, leading_attributes, string_literal_value};
 
-pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
-    let mut parser = Parser::new();
-    parser
-        .set_language(&tree_sitter_rust::LANGUAGE.into())
-        .map_err(|error| Error::parser_configuration("Rust", error.to_string()))?;
+thread_local! {
+    static RUST_PARSER: RefCell<Option<Parser>> = const { RefCell::new(None) };
+}
 
-    let tree = parser
-        .parse(source, None)
-        .ok_or_else(|| Error::missing_parse_tree("Rust"))?;
+pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile> {
+    let tree = with_rust_parser(|parser| {
+        parser
+            .parse(source, None)
+            .ok_or_else(|| Error::missing_parse_tree("Rust"))
+    })?;
 
     let root = tree.root_node();
     let is_test_file = is_test_file(path);
@@ -70,5 +72,27 @@ pub(super) fn parse_file(path: &Path, source: &str) -> AnalysisResult<ParsedFile
             module_declarations,
             include_declarations,
         }),
+    })
+}
+
+fn with_rust_parser<T>(action: impl FnOnce(&mut Parser) -> AnalysisResult<T>) -> AnalysisResult<T> {
+    RUST_PARSER.with(|parser_cell| {
+        let mut parser_slot = parser_cell.borrow_mut();
+        if parser_slot.is_none() {
+            let mut parser = Parser::new();
+            parser
+                .set_language(&tree_sitter_rust::LANGUAGE.into())
+                .map_err(|error| Error::parser_configuration("Rust", error.to_string()))?;
+            *parser_slot = Some(parser);
+        }
+
+        let Some(parser) = parser_slot.as_mut() else {
+            return Err(Error::parser_configuration(
+                "Rust",
+                "thread-local parser cache was not initialized",
+            ));
+        };
+
+        action(parser)
     })
 }

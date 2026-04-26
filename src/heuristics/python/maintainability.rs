@@ -191,10 +191,8 @@ pub(super) fn project_agnostic_maintainability_findings(
         ));
     }
 
-    if contains_any(
-        &lower_body,
-        &["register(", "bootstrap", "initialize"],
-    ) && file.imports.len() > 12
+    if contains_any(&lower_body, &["register(", "bootstrap", "initialize"])
+        && file.imports.len() > 12
         && contains_any(&lower_body, &["__import__", "importlib", "sys.modules"])
     {
         findings.push(maintainability_finding(
@@ -266,12 +264,20 @@ pub(super) fn project_agnostic_maintainability_findings(
         ));
     }
 
-    if file.imports.len() >= 20
-        && file.functions.len() >= 12
-        && !lower_body.contains("self.")
-    {
-        let policy_keywords = ["policy", "config", "settings", "permission", "auth", "retry", "validate"];
-        let matching_keywords = policy_keywords.iter().filter(|kw| lower_body.contains(**kw)).count();
+    if file.imports.len() >= 20 && file.functions.len() >= 12 && !lower_body.contains("self.") {
+        let policy_keywords = [
+            "policy",
+            "config",
+            "settings",
+            "permission",
+            "auth",
+            "retry",
+            "validate",
+        ];
+        let matching_keywords = policy_keywords
+            .iter()
+            .filter(|kw| lower_body.contains(**kw))
+            .count();
         if matching_keywords >= 3 {
             findings.push(maintainability_finding(
                 file,

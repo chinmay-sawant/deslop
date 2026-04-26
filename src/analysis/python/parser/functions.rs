@@ -2,7 +2,7 @@
 
 use tree_sitter::Node;
 
-use crate::analysis::{ParsedFunction, PythonFunctionEvidence};
+use crate::analysis::{LanguageFunctionData, ParsedFunction, PythonFunctionEvidence};
 
 use super::comments::extract_docstring;
 use super::general::{
@@ -142,8 +142,7 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
         body_text: shape.body_text,
         local_strings: evidence.local_strings,
         test_summary: shape.test_summary,
-        go: None,
-        python: Some(PythonFunctionEvidence {
+        lang: LanguageFunctionData::Python(PythonFunctionEvidence {
             exception_handlers: shape.exception_handlers,
             validation_signature: shape.validation_signature,
             exception_block_signatures: shape.exception_block_signatures,
@@ -185,7 +184,6 @@ fn parse_function_node(node: Node<'_>, source: &str, is_test_file: bool) -> Opti
             join_list_comp_lines: evidence.join_list_comp_lines,
             repeated_subscript_lines: evidence.repeated_subscript_lines,
         }),
-        rust: None,
     })
 }
 

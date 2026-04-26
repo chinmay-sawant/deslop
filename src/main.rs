@@ -31,6 +31,9 @@ enum Command {
         no_ignore: bool,
         #[arg(long)]
         enable_semantic: bool,
+        /// Enable all experimental rule packs for this scan.
+        #[arg(long)]
+        experimental: bool,
         #[arg(long, value_delimiter = ',')]
         ignore: Vec<String>,
         /// Exit 0 even when findings are present (useful for informational runs).
@@ -49,6 +52,9 @@ enum Command {
         no_ignore: bool,
         #[arg(long)]
         enable_semantic: bool,
+        /// Enable all experimental rule packs for this benchmark.
+        #[arg(long)]
+        experimental: bool,
     },
     Rules {
         #[arg(long)]
@@ -70,6 +76,7 @@ fn main() -> Result<()> {
             details,
             no_ignore,
             enable_semantic,
+            experimental,
             ignore,
             no_fail,
         } => execute_scan(
@@ -78,6 +85,7 @@ fn main() -> Result<()> {
             details,
             no_ignore,
             enable_semantic,
+            experimental,
             ignore,
             no_fail,
         ),
@@ -88,7 +96,16 @@ fn main() -> Result<()> {
             json,
             no_ignore,
             enable_semantic,
-        } => execute_bench(path, repeats, warmups, json, no_ignore, enable_semantic),
+            experimental,
+        } => execute_bench(
+            path,
+            repeats,
+            warmups,
+            json,
+            no_ignore,
+            enable_semantic,
+            experimental,
+        ),
         Command::Rules {
             json,
             language,

@@ -6,8 +6,9 @@ pub(crate) use rules::{filtered_rules, format_rules_report, format_rules_report_
 
 use anyhow::{Context, Result};
 use deslop::{
-    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions, benchmark_repository_with_go_semantic,
-    is_detail_only_rule, rule_metadata_variants, scan_repository_with_go_semantic,
+    BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions,
+    benchmark_repository_with_experimentals, is_detail_only_rule, rule_metadata_variants,
+    scan_repository_with_experimentals,
 };
 use std::path::PathBuf;
 
@@ -18,16 +19,18 @@ pub(crate) fn execute_scan(
     details: bool,
     no_ignore: bool,
     enable_semantic: bool,
+    experimental: bool,
     ignore: Vec<String>,
     no_fail: bool,
 ) -> Result<()> {
     let scan_root = path.clone();
-    let mut report = scan_repository_with_go_semantic(
+    let mut report = scan_repository_with_experimentals(
         &ScanOptions {
             root: path,
             respect_ignore: !no_ignore,
         },
-        enable_semantic,
+        enable_semantic || experimental,
+        experimental,
     )
     .with_context(|| format!("scan failed for {}", scan_root.display()))?;
 
@@ -89,16 +92,18 @@ pub(crate) fn execute_bench(
     json: bool,
     no_ignore: bool,
     enable_semantic: bool,
+    experimental: bool,
 ) -> Result<()> {
     let bench_root = path.clone();
-    let report = benchmark_repository_with_go_semantic(
+    let report = benchmark_repository_with_experimentals(
         &BenchmarkOptions {
             root: path,
             repeats,
             warmups,
             respect_ignore: !no_ignore,
         },
-        enable_semantic,
+        enable_semantic || experimental,
+        experimental,
     )
     .with_context(|| format!("benchmark failed for {}", bench_root.display()))?;
 

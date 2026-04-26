@@ -108,10 +108,7 @@ WS_URL = f"wss://example.invalid/ws?sample_rate={SAMPLE_RATE}"
 "#,
     )]);
 
-    assert_rules_absent(
-        &report,
-        &["module_constant_rebound_after_public_import"],
-    );
+    assert_rules_absent(&report, &["module_constant_rebound_after_public_import"]);
 }
 
 #[test]
@@ -126,10 +123,7 @@ ALERT_PHRASES = [
 "#,
     )]);
 
-    assert_rules_present(
-        &report,
-        &["module_constant_rebound_after_public_import"],
-    );
+    assert_rules_present(&report, &["module_constant_rebound_after_public_import"]);
 }
 
 #[test]

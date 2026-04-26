@@ -6,7 +6,7 @@ mod support;
 use support::FixtureWorkspace;
 
 #[test]
-fn semantic_flag_defaults_to_true_without_config() {
+fn semantic_flag_defaults_to_false_without_config() {
     let workspace = FixtureWorkspace::new();
     let fixture = support::load_fixture("go/n_squared_alloc_slop.txt");
     workspace.write_file("main.go", &fixture);
@@ -15,7 +15,7 @@ fn semantic_flag_defaults_to_true_without_config() {
 
     assert!(report.files_analyzed >= 1);
     assert!(
-        report
+        !report
             .findings
             .iter()
             .any(|f| f.rule_id == "likely_n_squared_allocation")

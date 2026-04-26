@@ -7,7 +7,9 @@ use crate::heuristics::{evaluate_file, evaluate_repo};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
-use crate::{RuleLanguage, is_async_rollout_rule, rule_metadata_variants};
+use crate::{
+    RuleLanguage, default_finding_severity, is_async_rollout_rule, rule_metadata_variants,
+};
 use rayon::prelude::*;
 
 use super::suppression::{SuppressionDirective, is_suppressed};
@@ -39,6 +41,7 @@ pub(super) fn evaluate_findings(
     }
 
     findings.retain(|finding| !is_suppressed(finding, suppressions));
+    apply_registry_defaults(&mut findings, files);
     apply_repository_config(&mut findings, files, repo_config, root);
 
     findings.sort_by(|left, right| {
@@ -54,6 +57,17 @@ pub(super) fn evaluate_findings(
         a.path == b.path && a.start_line == b.start_line && a.rule_id == b.rule_id
     });
     findings
+}
+
+fn apply_registry_defaults(findings: &mut [Finding], files: &[ParsedFile]) {
+    for finding in findings {
+        let Some(language) = finding_language(files, finding) else {
+            continue;
+        };
+        if let Some(severity) = default_finding_severity(&finding.rule_id, language) {
+            finding.severity = severity;
+        }
+    }
 }
 
 pub(super) fn apply_repository_config(
