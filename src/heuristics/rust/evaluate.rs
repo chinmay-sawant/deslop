@@ -200,11 +200,11 @@ pub(crate) fn rust_bad_practices_function_findings(
     bad_practices::bad_practices_function_findings(file, function)
 }
 
-pub(crate) fn rust_bad_practices_indexed_file_findings(
-    file: &ParsedFile,
+pub(crate) fn rust_bad_practices_indexed_repo_findings(
+    files: &[&ParsedFile],
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
-    bad_practices::bad_practices_indexed_file_findings(file, index)
+    bad_practices::bad_practices_indexed_repo_findings(files, index)
 }
 
 pub(crate) fn rust_import_resolution_findings(

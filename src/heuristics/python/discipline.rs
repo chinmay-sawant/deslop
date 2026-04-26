@@ -1730,19 +1730,11 @@ pub(super) fn project_agnostic_discipline_findings(
 
     if body.contains("self.")
         && (lower_body.contains("self._") || lower_body.matches("self.").count() >= 4)
-        && {
-            let has_mutation = body.lines().any(|line| {
-                let trimmed = line.trim();
-                trimmed.starts_with("self.")
-                    && trimmed.contains(" = ")
-                    && !trimmed.contains(" == ")
-            });
-            has_mutation
-        }
-        && contains_any(
-            &lower_body,
-            &["return {", "return json", "return str("],
-        )
+        && body.lines().any(|line| {
+            let trimmed = line.trim();
+            trimmed.starts_with("self.") && trimmed.contains(" = ") && !trimmed.contains(" == ")
+        })
+        && contains_any(&lower_body, &["return {", "return json", "return str("])
     {
         findings.push(make_finding(
             "method_mutates_state_and_emits_user_facing_representation",
@@ -1754,7 +1746,8 @@ pub(super) fn project_agnostic_discipline_findings(
         ));
     }
 
-    if let Some(loop_line) = loop_with_recovery_logging_line(body, function.fingerprint.start_line) {
+    if let Some(loop_line) = loop_with_recovery_logging_line(body, function.fingerprint.start_line)
+    {
         findings.push(make_finding(
             "loop_interleaves_core_work_logging_and_recovery_logic",
             Severity::Info,

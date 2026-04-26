@@ -73,6 +73,86 @@ fn bad_practices_honors_rule_ignore_directives() {
 }
 
 #[test]
+fn bad_practices_test_only_specs_run_in_test_contexts() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("bad_practices/test_only_named_path_used_after_drop.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_present(&report, &["rust_tempfile_named_path_used_after_drop"]);
+}
+
+#[test]
+fn bad_practices_temp_dir_predictable_name_does_not_require_tempfile_import() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("bad_practices/temp_dir_predictable_name.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_present(&report, &["rust_tempfile_predictable_name_in_shared_tmp"]);
+}
+
+#[test]
+fn bad_practices_import_gates_accept_fully_qualified_crate_paths() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("bad_practices/serde_json_fully_qualified.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_present(
+        &report,
+        &["rust_serde_json_to_string_pretty_in_machine_path"],
+    );
+}
+
+#[test]
+fn bad_practices_manifest_rules_run_without_rust_source_sentinel() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file("Cargo.toml", MANIFEST_BAD);
+    workspace.write_file(
+        "app/Cargo.toml",
+        "[package]\nname=\"app\"\nversion=\"0.1.0\"\nedition=\"2021\"\n[dependencies]\nclap=\"3.2\"\n",
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_present(
+        &report,
+        &[
+            "rust_manifest_wildcard_dependency_version",
+            "rust_manifest_dependency_default_features_unreviewed",
+            "rust_manifest_workspace_dependency_not_centralized",
+        ],
+    );
+}
+
+#[test]
+fn bad_practices_reports_dev_dependency_imported_from_src() {
+    let workspace = FixtureWorkspace::new();
+    workspace.write_file(
+        "Cargo.toml",
+        "[package]\nname=\"devdep\"\nversion=\"0.1.0\"\nedition=\"2021\"\n[dev-dependencies]\ntempfile=\"3\"\n",
+    );
+    workspace.write_file(
+        "src/lib.rs",
+        rust_fixture!("bad_practices/dev_dependency_used_from_src.txt"),
+    );
+
+    let report = workspace.scan();
+
+    assert_rules_present(&report, &["rust_manifest_dev_dependency_used_in_src"]);
+}
+
+#[test]
 fn bad_practices_real_sources_do_not_misclassify_bounded_reads_or_single_allocations() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file(

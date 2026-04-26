@@ -3016,7 +3016,11 @@ const RULE_SPECS: &[RuleSpec] = &[
             "whole",
             "array",
         ],
-        required_evidence: &["serde_json::from_str", "serde_json::from_slice", "serde_json::from_reader"],
+        required_evidence: &[
+            "serde_json::from_str",
+            "serde_json::from_slice",
+            "serde_json::from_reader",
+        ],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3058,7 +3062,12 @@ const RULE_SPECS: &[RuleSpec] = &[
             "Serialize",
             "borrow",
         ],
-        required_evidence: &["#[derive(Deserialize", "serde_json::from_str", "serde_json::from_slice", "serde_json::from_reader"],
+        required_evidence: &[
+            "#[derive(Deserialize",
+            "serde_json::from_str",
+            "serde_json::from_slice",
+            "serde_json::from_reader",
+        ],
         import_gate: &["serde", "serde_json", "toml"],
         loop_only: false,
         test_only: false,
@@ -3222,7 +3231,13 @@ const RULE_SPECS: &[RuleSpec] = &[
             "context",
             "boundary",
         ],
-        required_evidence: &["anyhow::", "anyhow::Result", "anyhow::Error", "anyhow::bail", "anyhow::ensure"],
+        required_evidence: &[
+            "anyhow::",
+            "anyhow::Result",
+            "anyhow::Error",
+            "anyhow::bail",
+            "anyhow::ensure",
+        ],
         import_gate: &["anyhow", "thiserror"],
         loop_only: false,
         test_only: false,
@@ -3817,7 +3832,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "comment",
         ],
         required_evidence: &[],
-        import_gate: &[],
+        import_gate: &["tempfile"],
         loop_only: false,
         test_only: false,
         manifest_only: false,
@@ -3890,6 +3905,7 @@ const RULE_SPECS: &[RuleSpec] = &[
         description: "flag tests that combine `std::env::temp_dir()` with predictable filenames instead of `tempfile`.",
         markers: &[
             "std::env::temp_dir()",
+            "temp_dir(",
             "tempfile",
             "NamedTempFile",
             "tempfile::",
@@ -3899,7 +3915,7 @@ const RULE_SPECS: &[RuleSpec] = &[
             "name",
         ],
         required_evidence: &[],
-        import_gate: &["tempfile"],
+        import_gate: &[],
         loop_only: false,
         test_only: true,
         manifest_only: false,
@@ -4924,25 +4940,30 @@ pub(crate) fn bad_practices_function_findings(
     file: &ParsedFile,
     function: &ParsedFunction,
 ) -> Vec<Finding> {
-    if is_scanner_infra_file(file)
-        || is_test_like(file, Some(function))
-        || is_test_like_context(file, function)
-    {
+    if is_scanner_infra_file(file) {
         return Vec::new();
     }
 
+    let test_context = is_test_like(file, Some(function)) || is_test_like_context(file, function);
     let lines = body_lines(function);
     let body_lower = normalized_body_lower(&lines);
     let mut findings = Vec::new();
+    if test_context {
+        findings.extend(predictable_tempdir_findings(file, function, &lines));
+    }
 
     for spec in RULE_SPECS {
         if spec.manifest_only || spec.file_only {
             continue;
         }
-        if spec.test_only && !is_test_like_context(file, function) {
+        if spec.id == "rust_tempfile_predictable_name_in_shared_tmp" {
             continue;
         }
-        if !spec.import_gate.is_empty() && !has_any_import_gate(file, spec.import_gate) {
+        if spec.test_only != test_context {
+            continue;
+        }
+        if !spec.import_gate.is_empty() && !has_any_import_gate(file, spec.import_gate, &body_lower)
+        {
             continue;
         }
         if !rule_body_match(spec, &body_lower) {
@@ -4974,6 +4995,38 @@ pub(crate) fn bad_practices_function_findings(
     findings
 }
 
+fn predictable_tempdir_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+    lines: &[BodyLine],
+) -> Vec<Finding> {
+    let Some(line) = lines.iter().find(|line| {
+        let lower = line.text.to_ascii_lowercase();
+        lower.contains("std::env::temp_dir(")
+            || lower.contains("std::env::temp_dir()")
+            || lower.contains("temp_dir(")
+    }) else {
+        return Vec::new();
+    };
+
+    vec![Finding {
+        rule_id: "rust_tempfile_predictable_name_in_shared_tmp".to_string(),
+        severity: Severity::Info,
+        path: file.path.clone(),
+        function_name: Some(function.fingerprint.name.clone()),
+        start_line: line.line,
+        end_line: line.line,
+        message: format!(
+            "test function {} builds a path under the shared temp directory",
+            function.fingerprint.name
+        ),
+        evidence: vec![
+            line.text.trim().to_string(),
+            "prefer tempfile or unique per-test directories for parallel-safe tests".to_string(),
+        ],
+    }]
+}
+
 fn rule_match_line(
     spec: &RuleSpec,
     lines: &[BodyLine],
@@ -5000,6 +5053,7 @@ fn rule_has_strict_matcher(rule_id: &str) -> bool {
             | "rust_metadata_called_repeatedly_same_path"
             | "rust_tree_sitter_collects_all_captures_before_filtering"
             | "rust_collect_then_pop_or_first"
+            | "rust_tempfile_predictable_name_in_shared_tmp"
     )
 }
 
@@ -5237,6 +5291,18 @@ fn rule_specific_match_line(
             first_line_with(lines, |line| line.contains("split_whitespace"))
                 .map(|line| (line, "rule_specific=collect_then_first_pop".to_string()))
         }
+        "rust_tempfile_predictable_name_in_shared_tmp" => {
+            let temp_dir_line = first_line_with(lines, |line| {
+                let lower = line.to_ascii_lowercase();
+                lower.contains("std::env::temp_dir(")
+                    || lower.contains("std::env::temp_dir()")
+                    || lower.contains("temp_dir(")
+            })?;
+            Some((
+                temp_dir_line,
+                "rule_specific=predictable_shared_temp_dir".to_string(),
+            ))
+        }
         _ => None,
     }
 }
@@ -5254,14 +5320,10 @@ pub(crate) fn bad_practices_file_findings(file: &ParsedFile) -> Vec<Finding> {
     findings
 }
 
-pub(crate) fn bad_practices_indexed_file_findings(
-    file: &ParsedFile,
+pub(crate) fn bad_practices_indexed_repo_findings(
+    files: &[&ParsedFile],
     index: &RepositoryIndex,
 ) -> Vec<Finding> {
-    if !should_emit_manifest_findings(file, index.root()) {
-        return Vec::new();
-    }
-
     let root_manifest = index.root().join("Cargo.toml");
     let Ok(root_source) = read_to_string_limited(&root_manifest, DEFAULT_MAX_BYTES) else {
         return Vec::new();
@@ -5297,20 +5359,15 @@ pub(crate) fn bad_practices_indexed_file_findings(
         &root_manifest,
         &root_toml,
     ));
+    findings.extend(manifest_dev_dependency_runtime_usage_findings(
+        files,
+        &root_manifest,
+        &root_toml,
+    ));
     findings.extend(build_script_rerun_findings(index.root()));
     findings.extend(build_script_network_findings(index.root()));
 
     findings
-}
-
-fn should_emit_manifest_findings(file: &ParsedFile, root: &Path) -> bool {
-    let candidates = [
-        root.join("src/lib.rs"),
-        root.join("src/main.rs"),
-        root.join("lib.rs"),
-        root.join("main.rs"),
-    ];
-    candidates.iter().any(|candidate| candidate == &file.path)
 }
 
 fn is_test_like_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
@@ -5321,7 +5378,7 @@ fn is_test_like_context(file: &ParsedFile, function: &ParsedFunction) -> bool {
     path.contains("/tests/") || path.contains("/fuzz/") || path.ends_with("_test.rs")
 }
 
-fn has_any_import_gate(file: &ParsedFile, gates: &[&str]) -> bool {
+fn has_any_import_gate(file: &ParsedFile, gates: &[&str], body_lower: &str) -> bool {
     file.imports.iter().any(|import| {
         let path = import.path.to_ascii_lowercase();
         let alias = import.alias.to_ascii_lowercase();
@@ -5329,6 +5386,9 @@ fn has_any_import_gate(file: &ParsedFile, gates: &[&str]) -> bool {
             let gate = gate.to_ascii_lowercase();
             path.contains(&gate) || alias.contains(&gate)
         })
+    }) || gates.iter().any(|gate| {
+        let crate_path = format!("{}::", gate.to_ascii_lowercase());
+        body_lower.contains(&crate_path)
     })
 }
 
@@ -5850,6 +5910,64 @@ fn manifest_duplicate_version_findings(
     }
 
     Vec::new()
+}
+
+fn manifest_dev_dependency_runtime_usage_findings(
+    files: &[&ParsedFile],
+    manifest_path: &Path,
+    manifest: &Value,
+) -> Vec<Finding> {
+    let dev_dependencies = collect_dev_dependencies(manifest);
+    if dev_dependencies.is_empty() {
+        return Vec::new();
+    }
+
+    let mut findings = Vec::new();
+    for file in files {
+        let path_lower = file.path.to_string_lossy().to_ascii_lowercase();
+        if !path_lower.contains("/src/") || is_test_like(file, None) {
+            continue;
+        }
+
+        for import in &file.imports {
+            let import_path = import.path.to_ascii_lowercase().replace('-', "_");
+            let import_alias = import.alias.to_ascii_lowercase().replace('-', "_");
+            let Some(dep) = dev_dependencies.iter().find(|dep| {
+                import_path
+                    .split("::")
+                    .any(|segment| segment == dep.as_str())
+                    || import_alias == dep.as_str()
+            }) else {
+                continue;
+            };
+
+            findings.push(Finding {
+                rule_id: "rust_manifest_dev_dependency_used_in_src".to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: None,
+                start_line: import.line,
+                end_line: import.line,
+                message: format!("production source imports dev-dependency {}", dep),
+                evidence: vec![
+                    format!("manifest={}", manifest_path.display()),
+                    format!("import_path={}", import.path),
+                ],
+            });
+        }
+    }
+
+    findings
+}
+
+fn collect_dev_dependencies(manifest: &Value) -> BTreeSet<String> {
+    let Some(deps) = manifest.get("dev-dependencies").and_then(Value::as_table) else {
+        return BTreeSet::new();
+    };
+
+    deps.keys()
+        .map(|name| name.to_ascii_lowercase().replace('-', "_"))
+        .collect()
 }
 
 fn build_script_rerun_findings(root: &Path) -> Vec<Finding> {

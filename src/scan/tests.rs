@@ -107,7 +107,7 @@ fn applies_disabled_rules_and_severity_overrides() {
         .severity_overrides
         .insert("unwrap_in_non_test_code".to_string(), Severity::Error);
 
-    apply_repository_config(&mut findings, &repo_config, std::path::Path::new("."));
+    apply_repository_config(&mut findings, &[], &repo_config, std::path::Path::new("."));
 
     assert_eq!(findings.len(), 1);
     assert_eq!(findings[0].rule_id, "unwrap_in_non_test_code");
@@ -126,7 +126,7 @@ fn disables_async_rollout_rules_when_flag_is_off() {
         ..RepoConfig::default()
     };
 
-    apply_repository_config(&mut findings, &repo_config, std::path::Path::new("."));
+    apply_repository_config(&mut findings, &[], &repo_config, std::path::Path::new("."));
 
     assert_eq!(findings.len(), 1);
     assert_eq!(findings[0].rule_id, "unwrap_in_non_test_code");
@@ -150,7 +150,7 @@ fn suppresses_findings_under_configured_paths() {
         ..RepoConfig::default()
     };
 
-    apply_repository_config(&mut findings, &repo_config, root.path());
+    apply_repository_config(&mut findings, &[], &repo_config, root.path());
 
     assert_eq!(findings.len(), 1);
     assert_eq!(findings[0].path, root.path().join("src/lib.rs"));

@@ -9,7 +9,7 @@ The source rule-id guard lives in `src/rules.rs` as `EXPECTED_SOURCE_RULE_ID_COU
 
 Current intentional source rule-id count:
 
-- `541`
+- `543`
 
 When it fails:
 1. Review the diff under `src/` and confirm that rule-id additions or removals are intentional.
@@ -25,7 +25,7 @@ Current intentional grouped counts:
 - `common`: 11
 - `go`: 653
 - `python`: 591
-- `rust`: 248
+- `rust`: 250
 
 When it fails:
 1. Review the added or removed rule definitions and confirm the language delta is intentional.

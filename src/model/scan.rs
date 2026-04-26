@@ -3,6 +3,8 @@ use std::path::PathBuf;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::rules::RuleLanguage;
+
 #[derive(Debug, Clone)]
 pub struct ScanOptions {
     pub root: PathBuf,
@@ -83,6 +85,7 @@ pub struct IndexSummary {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct FileReport {
+    pub language: RuleLanguage,
     pub path: PathBuf,
     pub package_name: Option<String>,
     pub syntax_error: bool,
