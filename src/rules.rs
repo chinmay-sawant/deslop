@@ -50,6 +50,7 @@ pub struct RuleMetadata {
     pub status: RuleStatus,
     pub configurability: &'static [RuleConfigurability],
     pub description: &'static str,
+    pub binding_location: &'static str,
 }
 
 pub fn rule_registry() -> &'static [RuleMetadata] {
@@ -89,8 +90,8 @@ pub fn rule_binding_location(rule_id: &str, language: RuleLanguage) -> Option<&'
 }
 
 #[must_use]
-pub fn is_detail_only_rule(rule_id: &str) -> bool {
-    rule_metadata_variants(rule_id).iter().any(|metadata| {
+pub fn is_detail_only_rule(rule_id: &str, language: RuleLanguage) -> bool {
+    rule_metadata(rule_id, language).is_some_and(|metadata| {
         metadata
             .configurability
             .contains(&RuleConfigurability::DetailsOnly)
@@ -98,8 +99,8 @@ pub fn is_detail_only_rule(rule_id: &str) -> bool {
 }
 
 #[must_use]
-pub fn is_async_rollout_rule(rule_id: &str) -> bool {
-    rule_metadata_variants(rule_id).iter().any(|metadata| {
+pub fn is_async_rollout_rule(rule_id: &str, language: RuleLanguage) -> bool {
+    rule_metadata(rule_id, language).is_some_and(|metadata| {
         metadata
             .configurability
             .contains(&RuleConfigurability::RustAsyncExperimental)
@@ -115,6 +116,7 @@ fn rule_metadata_from_definition(definition: &catalog::RuleDefinition) -> RuleMe
         status: definition.status,
         configurability: definition.configurability,
         description: definition.description,
+        binding_location: definition.binding_location,
     }
 }
 
@@ -125,8 +127,9 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     use super::{
-        RuleConfigurability, RuleLanguage, RuleStatus, catalog, is_detail_only_rule,
-        rule_binding_location, rule_metadata, rule_metadata_variants, rule_registry,
+        RuleConfigurability, RuleLanguage, RuleStatus, catalog, is_async_rollout_rule,
+        is_detail_only_rule, rule_binding_location, rule_metadata, rule_metadata_variants,
+        rule_registry,
     };
     use crate::analysis::Language;
     use crate::heuristics::registry::{language_rule_specs, shared_rule_specs};
@@ -134,7 +137,7 @@ mod tests {
 
     // Intentional maintenance guard. If this changes, review the source rule-id diff and
     // update [guides/inventory-regression-guards.md] in the same change.
-    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 541;
+    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 543;
     const EXPECTED_RULE_COUNTS_BY_LANGUAGE: &[(RuleLanguage, usize)] = &[
         (RuleLanguage::Common, 11),
         (RuleLanguage::Go, 653),
@@ -231,13 +234,30 @@ mod tests {
     #[test]
     fn detail_only_predicate_matches_rule_metadata_variants() {
         assert_eq!(
-            is_detail_only_rule("placeholder_test_body"),
+            is_detail_only_rule("placeholder_test_body", RuleLanguage::Common),
             rule_metadata_variants("placeholder_test_body")
                 .iter()
+                .filter(|metadata| metadata.language == RuleLanguage::Common)
                 .any(|metadata| metadata
                     .configurability
                     .contains(&RuleConfigurability::DetailsOnly))
         );
+    }
+
+    #[test]
+    fn rollout_predicates_are_language_scoped() {
+        assert!(is_async_rollout_rule(
+            "rust_lock_across_await",
+            RuleLanguage::Rust
+        ));
+        assert!(!is_async_rollout_rule(
+            "rust_lock_across_await",
+            RuleLanguage::Go
+        ));
+        assert!(!is_detail_only_rule(
+            "placeholder_test_body",
+            RuleLanguage::Rust
+        ));
     }
 
     #[test]
@@ -351,6 +371,30 @@ mod tests {
                 .cloned()
                 .collect::<BTreeMap<_, _>>(),
             "registry language breakdown changed; if intentional, update the grouped counts and guides/inventory-regression-guards.md"
+        );
+    }
+
+    #[test]
+    fn checked_in_json_registry_matches_generated_registry() {
+        let repo_root = Path::new(env!("CARGO_MANIFEST_DIR"));
+        let registry_path = repo_root.join("rules/registry.json");
+        let checked_in =
+            read_to_string_limited(&registry_path, DEFAULT_MAX_BYTES).unwrap_or_else(|error| {
+                unreachable!(
+                    "failed to read checked-in registry {}: {error}",
+                    registry_path.display()
+                )
+            });
+        let generated = format!(
+            "{}\n",
+            serde_json::to_string_pretty(rule_registry()).unwrap_or_else(|error| {
+                unreachable!("rule registry should serialize to JSON: {error}")
+            })
+        );
+
+        assert_eq!(
+            checked_in, generated,
+            "rules/registry.json is stale; regenerate it with `cargo run -- rules --json > rules/registry.json`"
         );
     }
 

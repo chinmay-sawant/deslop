@@ -1,0 +1,5 @@
+use tempfile::NamedTempFile;
+
+pub fn demo() {
+    let _ = NamedTempFile::new();
+}

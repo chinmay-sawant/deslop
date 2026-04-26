@@ -7,7 +7,7 @@ pub(crate) use rules::{filtered_rules, format_rules_report, format_rules_report_
 use anyhow::{Context, Result};
 use deslop::{
     BenchmarkOptions, RuleLanguage, RuleStatus, ScanOptions, benchmark_repository_with_go_semantic,
-    is_detail_only_rule, scan_repository_with_go_semantic,
+    is_detail_only_rule, rule_metadata_variants, scan_repository_with_go_semantic,
 };
 use std::path::PathBuf;
 
@@ -47,13 +47,39 @@ pub(crate) fn execute_scan(
         let finding_count = report
             .findings
             .iter()
-            .filter(|f| details || !is_detail_only_rule(f.rule_id.as_str()))
+            .filter(|finding| {
+                details
+                    || finding_language(&report, finding).is_none_or(|language| {
+                        !is_detail_only_rule(finding.rule_id.as_str(), language)
+                    })
+            })
             .count();
         if finding_count > 0 {
             std::process::exit(1);
         }
     }
     Ok(())
+}
+
+fn finding_language(
+    report: &deslop::ScanReport,
+    finding: &deslop::Finding,
+) -> Option<RuleLanguage> {
+    report
+        .files
+        .iter()
+        .find(|file| file.path == finding.path)
+        .map(|file| file.language)
+        .or_else(|| unique_rule_language(finding.rule_id.as_str()))
+}
+
+fn unique_rule_language(rule_id: &str) -> Option<RuleLanguage> {
+    let variants = rule_metadata_variants(rule_id);
+    let first = variants.first()?;
+    variants
+        .iter()
+        .all(|variant| variant.language == first.language)
+        .then_some(first.language)
 }
 
 pub(crate) fn execute_bench(

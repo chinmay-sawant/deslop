@@ -2,7 +2,7 @@ use std::fmt::Write as _;
 use std::path::PathBuf;
 
 use anyhow::Result;
-use deslop::is_detail_only_rule;
+use deslop::{RuleLanguage, is_detail_only_rule, rule_metadata_variants};
 use serde::Serialize;
 
 pub(crate) fn format_scan_report(report: &deslop::ScanReport, details: bool) -> String {
@@ -135,8 +135,33 @@ fn visible_findings(report: &deslop::ScanReport, details: bool) -> Vec<&deslop::
     report
         .findings
         .iter()
-        .filter(|finding| details || !is_detail_only_rule(finding.rule_id.as_str()))
+        .filter(|finding| {
+            details
+                || finding_language(report, finding)
+                    .is_none_or(|language| !is_detail_only_rule(finding.rule_id.as_str(), language))
+        })
         .collect()
+}
+
+fn finding_language(
+    report: &deslop::ScanReport,
+    finding: &deslop::Finding,
+) -> Option<RuleLanguage> {
+    report
+        .files
+        .iter()
+        .find(|file| file.path == finding.path)
+        .map(|file| file.language)
+        .or_else(|| unique_rule_language(finding.rule_id.as_str()))
+}
+
+fn unique_rule_language(rule_id: &str) -> Option<RuleLanguage> {
+    let variants = rule_metadata_variants(rule_id);
+    let first = variants.first()?;
+    variants
+        .iter()
+        .all(|variant| variant.language == first.language)
+        .then_some(first.language)
 }
 
 pub(crate) fn print_benchmark_report(report: &deslop::BenchmarkReport) {
@@ -201,6 +226,7 @@ impl<'a> From<&'a deslop::ScanReport> for ScanReportSummary<'a> {
 
 #[derive(Debug, Serialize)]
 struct FileReportSummary<'a> {
+    language: RuleLanguage,
     path: &'a PathBuf,
     package_name: Option<&'a str>,
     syntax_error: bool,
@@ -211,6 +237,7 @@ struct FileReportSummary<'a> {
 impl<'a> From<&'a deslop::FileReport> for FileReportSummary<'a> {
     fn from(file: &'a deslop::FileReport) -> Self {
         Self {
+            language: file.language,
             path: &file.path,
             package_name: file.package_name.as_deref(),
             syntax_error: file.syntax_error,
@@ -246,6 +273,7 @@ mod tests {
     use std::path::PathBuf;
 
     use super::{format_scan_report, format_scan_report_json};
+    use deslop::RuleLanguage;
 
     fn sample_report() -> deslop::ScanReport {
         deslop::ScanReport {
@@ -254,6 +282,7 @@ mod tests {
             files_analyzed: 1,
             functions_found: 1,
             files: vec![deslop::FileReport {
+                language: RuleLanguage::Go,
                 path: PathBuf::from("/tmp/sample/main.go"),
                 package_name: Some("main".to_string()),
                 syntax_error: false,

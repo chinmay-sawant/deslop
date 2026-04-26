@@ -1,0 +1,12 @@
+#[cfg(test)]
+mod tests {
+    use tempfile::NamedTempFile;
+
+    #[test]
+    fn keeps_temp_path_after_owner_drop() {
+        let file = NamedTempFile::new().unwrap();
+        let path = file.path();
+        drop(file);
+        assert!(path.exists());
+    }
+}

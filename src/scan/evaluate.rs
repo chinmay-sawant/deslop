@@ -7,7 +7,7 @@ use crate::heuristics::{evaluate_file, evaluate_repo};
 use crate::index::RepositoryIndex;
 use crate::model::Finding;
 
-use crate::is_async_rollout_rule;
+use crate::{RuleLanguage, is_async_rollout_rule, rule_metadata_variants};
 use rayon::prelude::*;
 
 use super::suppression::{SuppressionDirective, is_suppressed};
@@ -39,7 +39,7 @@ pub(super) fn evaluate_findings(
     }
 
     findings.retain(|finding| !is_suppressed(finding, suppressions));
-    apply_repository_config(&mut findings, repo_config, root);
+    apply_repository_config(&mut findings, files, repo_config, root);
 
     findings.sort_by(|left, right| {
         left.path
@@ -58,6 +58,7 @@ pub(super) fn evaluate_findings(
 
 pub(super) fn apply_repository_config(
     findings: &mut Vec<Finding>,
+    files: &[ParsedFile],
     repo_config: &RepoConfig,
     root: &Path,
 ) {
@@ -66,7 +67,9 @@ pub(super) fn apply_repository_config(
             .disabled_rules
             .iter()
             .any(|rule_id| rule_id == &finding.rule_id)
-            && (repo_config.rust_async_experimental || !is_async_rollout_rule(&finding.rule_id))
+            && (repo_config.rust_async_experimental
+                || finding_language(files, finding)
+                    .is_none_or(|language| !is_async_rollout_rule(&finding.rule_id, language)))
             && !path_is_suppressed(&finding.path, root, &repo_config.suppressed_paths)
     });
 
@@ -75,6 +78,31 @@ pub(super) fn apply_repository_config(
             finding.severity = severity.clone();
         }
     }
+}
+
+fn finding_language(files: &[ParsedFile], finding: &Finding) -> Option<RuleLanguage> {
+    files
+        .iter()
+        .find(|file| file.path == finding.path)
+        .map(|file| rule_language(file.language))
+        .or_else(|| unique_rule_language(finding.rule_id.as_str()))
+}
+
+const fn rule_language(language: crate::analysis::Language) -> RuleLanguage {
+    match language {
+        crate::analysis::Language::Go => RuleLanguage::Go,
+        crate::analysis::Language::Python => RuleLanguage::Python,
+        crate::analysis::Language::Rust => RuleLanguage::Rust,
+    }
+}
+
+fn unique_rule_language(rule_id: &str) -> Option<RuleLanguage> {
+    let variants = rule_metadata_variants(rule_id);
+    let first = variants.first()?;
+    variants
+        .iter()
+        .all(|variant| variant.language == first.language)
+        .then_some(first.language)
 }
 
 fn path_is_suppressed(path: &Path, root: &Path, suppressed_paths: &[PathBuf]) -> bool {

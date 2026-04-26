@@ -1,0 +1,3 @@
+pub fn render_report() -> String {
+    serde_json::to_string_pretty(&serde_json::json!({ "ok": true })).unwrap()
+}

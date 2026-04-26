@@ -1130,14 +1130,16 @@ pub(super) fn repeated_key_hash_in_loop_findings(
     if !python.repeated_subscript_lines.is_empty()
         && function.fingerprint.line_count >= 15
         && (body.contains("for ") || body.contains("while "))
+        && let Some(&first_line) = python.repeated_subscript_lines.first()
     {
-        if let Some(&first_line) = python.repeated_subscript_lines.first() {
-            return vec![make_finding(
-                "repeated_key_hash_via_dict_lookup_in_tight_loop",
-                Severity::Info, file, function, first_line,
-                "accesses the same dict key repeatedly in a loop; cache the value in a local variable",
-            )];
-        }
+        return vec![make_finding(
+            "repeated_key_hash_via_dict_lookup_in_tight_loop",
+            Severity::Info,
+            file,
+            function,
+            first_line,
+            "accesses the same dict key repeatedly in a loop; cache the value in a local variable",
+        )];
     }
     Vec::new()
 }
@@ -1528,8 +1530,7 @@ pub(super) fn project_agnostic_observability_findings(
         ));
     }
 
-    if contains_expensive_unguarded_log(body)
-    {
+    if contains_expensive_unguarded_log(body) {
         findings.push(push(
             "expensive_log_argument_built_without_is_enabled_guard",
             Severity::Info,
@@ -1605,15 +1606,16 @@ pub(super) fn project_agnostic_observability_findings(
     {
         let surfaces = [
             contains_any(&lower_body, &["logger.", "logging."]),
-            contains_any(&lower_body, &["counter.", "histogram.", "statsd.", "meter."]),
+            contains_any(
+                &lower_body,
+                &["counter.", "histogram.", "statsd.", "meter."],
+            ),
             contains_any(&lower_body, &["start_span(", "tracer."]),
         ]
         .iter()
         .filter(|&&x| x)
         .count();
-        if surfaces >= 2
-            && !contains_any(&lower_body, &["operation=", "op_name", "name="])
-        {
+        if surfaces >= 2 && !contains_any(&lower_body, &["operation=", "op_name", "name="]) {
             findings.push(push(
                 "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
                 Severity::Info,
