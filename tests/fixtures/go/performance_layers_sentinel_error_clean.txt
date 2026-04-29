@@ -1,0 +1,12 @@
+package perflayers
+
+import "errors"
+
+var errRequestFailed = errors.New("request failed")
+
+func ProcessRequestClean(valid bool) error {
+    if !valid {
+        return errRequestFailed
+    }
+    return nil
+}

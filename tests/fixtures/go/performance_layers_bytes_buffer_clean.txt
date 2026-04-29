@@ -1,0 +1,14 @@
+package perflayers
+
+import "strings"
+
+func BytesBufferPerRecordClean(records []string) int {
+    total := 0
+    var builder strings.Builder
+    for _, record := range records {
+        builder.Reset()
+        builder.WriteString(record)
+        total += builder.Len()
+    }
+    return total
+}

@@ -3,6 +3,8 @@ use std::collections::BTreeMap;
 use crate::analysis::{CallSite, ImportSpec, ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
+use super::super::performance_layers::{PerfLayerLanguage, performance_layer_findings};
+
 pub(crate) const BINDING_LOCATION: &str = file!();
 
 const REQUEST_METHODS: &[&str] = &[
@@ -716,6 +718,13 @@ pub(super) fn project_agnostic_performance_findings(
     }
 
     findings
+}
+
+pub(super) fn performance_layer_rule_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    performance_layer_findings(PerfLayerLanguage::Python, file, function)
 }
 
 fn repeated_normalization_on_same_dataset(body: &str) -> bool {

@@ -5,6 +5,7 @@ use crate::model::{Finding, Severity};
 
 pub(crate) const BINDING_LOCATION: &str = file!();
 
+use super::super::performance_layers::{PerfLayerLanguage, performance_layer_findings};
 use super::{
     file_finding, first_await_after, function_finding, is_scanner_infra_file, is_tokio_mutex,
 };
@@ -269,6 +270,17 @@ pub(crate) fn performance_function_findings(
     }
 
     findings
+}
+
+pub(crate) fn rust_performance_layer_rule_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    if is_scanner_infra_file(file) {
+        return Vec::new();
+    }
+
+    performance_layer_findings(PerfLayerLanguage::Rust, file, function)
 }
 
 pub(crate) fn performance_file_findings(file: &ParsedFile) -> Vec<Finding> {

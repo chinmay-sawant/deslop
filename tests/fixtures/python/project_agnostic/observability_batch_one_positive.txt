@@ -1,0 +1,25 @@
+def build_metric_name(user_id, path):
+    metric_name = f"requests_{user_id}_{path}"
+    counter(metric_name)
+    return metric_name
+
+
+def annotate_span(user_id, path):
+    tracer.set_attribute("user_id", user_id)
+    tracer.set_attribute("path", path)
+
+
+def emit_metrics(items):
+    for item in items:
+        counter.inc()
+
+
+def health_ready():
+    return requests.get("https://status.internal/ready")
+
+
+def sync_records(order_id):
+    logger.info("processing order")
+    counter.inc()
+    tracer.start_span("sync-records")
+    return order_id

@@ -1,0 +1,29 @@
+def build_metric_name(customer, bucket):
+    metric_name = "requests_total"
+    counter(metric_name)
+    return metric_name
+
+
+def annotate_span(account, route_name):
+    tracer.set_attribute("bucket", "success")
+    tracer.set_attribute("route_group", route_name)
+
+
+def process_items(items):
+    for item in items:
+        process(item)
+
+
+def emit_metrics(total):
+    counter.inc()
+
+
+def health_ready():
+    return {"status": "ok"}
+
+
+def sync_records(order_id):
+    logger.info("processing order", operation="sync_records")
+    counter.inc(operation="sync_records")
+    tracer.start_span(operation="sync_records")
+    return order_id

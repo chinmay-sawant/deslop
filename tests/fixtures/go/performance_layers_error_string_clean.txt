@@ -1,0 +1,10 @@
+package perflayers
+
+import "fmt"
+
+func ErrorStringClean(err error, fail bool) error {
+    if fail {
+        return fmt.Errorf("error: %v", err)
+    }
+    return nil
+}

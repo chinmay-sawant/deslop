@@ -1,0 +1,5 @@
+package perflayers
+
+func JsonDeepEqualClean(left int, right int) bool {
+    return left == right
+}

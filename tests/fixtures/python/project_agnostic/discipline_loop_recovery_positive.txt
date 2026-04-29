@@ -1,0 +1,11 @@
+import logging
+
+
+def run(items):
+    logger = logging.getLogger(__name__)
+    for item in items:
+        try:
+            process(item)
+        except Exception:
+            logger.exception("failed item")
+            continue

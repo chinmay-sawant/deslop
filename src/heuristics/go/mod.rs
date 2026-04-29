@@ -53,7 +53,7 @@ pub(super) use idioms::{go_file_findings, go_repo_findings};
 pub(super) use library_misuse::go_library_misuse_file_findings;
 pub(super) use performance::{
     alloc_findings, concat_findings, db_findings, fmt_findings, json_findings, load_findings,
-    n_squared_findings, reflect_findings,
+    n_squared_findings, performance_layer_rule_findings, reflect_findings,
 };
 pub(super) use performance_extra::extra_performance_findings;
 pub(super) use style::{import_grouping_findings, package_name_consistency};

@@ -1,0 +1,9 @@
+package perflayers
+
+func MapFirstPositive(values map[string]int) int {
+    // deterministic first value from map
+    for _, value := range values {
+        return value
+    }
+    return 0
+}

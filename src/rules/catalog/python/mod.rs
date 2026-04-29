@@ -16,6 +16,7 @@ pub(crate) mod mlops;
 pub(crate) mod observability;
 pub(crate) mod packaging;
 pub(crate) mod performance;
+pub(crate) mod performance_layers;
 pub(crate) mod quality;
 pub(crate) mod structure;
 
@@ -34,6 +35,7 @@ pub(crate) const FAMILY_RULES: &[&[RuleDefinition]] = &[
     observability::RULE_DEFINITIONS,
     packaging::RULE_DEFINITIONS,
     performance::RULE_DEFINITIONS,
+    performance_layers::RULE_DEFINITIONS,
     quality::RULE_DEFINITIONS,
     structure::RULE_DEFINITIONS,
 ];

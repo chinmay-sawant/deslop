@@ -1,16 +1,16 @@
 ## narrowing_as_casts
 src/heuristics/go/framework_patterns/gin/gin_request_path_rules.rs:691:        brace_balance += text.chars().filter(|ch| *ch == '{').count() as isize;
 src/heuristics/go/framework_patterns/gin/gin_request_path_rules.rs:692:        brace_balance -= text.chars().filter(|ch| *ch == '}').count() as isize;
-src/heuristics/rust/mod.rs:119:        " as u8",
-src/heuristics/rust/mod.rs:120:        " as u16",
-src/heuristics/rust/mod.rs:121:        " as u32",
-src/heuristics/rust/mod.rs:122:        " as u64",
-src/heuristics/rust/mod.rs:123:        " as usize",
-src/heuristics/rust/mod.rs:124:        " as i8",
-src/heuristics/rust/mod.rs:125:        " as i16",
-src/heuristics/rust/mod.rs:126:        " as i32",
-src/heuristics/rust/mod.rs:127:        " as i64",
-src/heuristics/rust/mod.rs:128:        " as isize",
+src/heuristics/rust/mod.rs:121:        " as u8",
+src/heuristics/rust/mod.rs:122:        " as u16",
+src/heuristics/rust/mod.rs:123:        " as u32",
+src/heuristics/rust/mod.rs:124:        " as u64",
+src/heuristics/rust/mod.rs:125:        " as usize",
+src/heuristics/rust/mod.rs:126:        " as i8",
+src/heuristics/rust/mod.rs:127:        " as i16",
+src/heuristics/rust/mod.rs:128:        " as i32",
+src/heuristics/rust/mod.rs:129:        " as i64",
+src/heuristics/rust/mod.rs:130:        " as isize",
 
 ## split_at_and_indexing
 src/analysis/python/parser/general/imports.rs:140:                return &line[..index];
@@ -56,16 +56,16 @@ src/heuristics/go/framework_patterns/gin/gin_helpers.rs:342:            ',' if d
 src/heuristics/go/framework_patterns/hot_path/repeated_work/repeated_work_secondary.rs:494:                    return Some(suffix[..index].trim().to_string());
 src/heuristics/go/framework_patterns/hot_path/repeated_work/repeated_work_secondary.rs:498:            ',' if depth == 0 => return Some(suffix[..index].trim().to_string()),
 src/heuristics/go/framework_patterns/mod.rs:319:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/go/idioms.rs:1423:    let parameters = &signature_text[parameters_start + 1..parameters_end];
-src/heuristics/go/idioms.rs:1469:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/go/idioms.rs:1441:    let parameters = &signature_text[parameters_start + 1..parameters_end];
+src/heuristics/go/idioms.rs:1487:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/go/library_misuse/performance/collections.rs:179:        let Some(end) = bl.text[start..].find(']') else {
 src/heuristics/go/library_misuse/performance/collections.rs:183:        let key_expr = bl.text[start + 1..end].trim();
 src/heuristics/go/library_misuse/performance/collections.rs:184:        let map_expr = bl.text[..start]
-src/heuristics/go/performance.rs:340:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/heuristics/go/performance_extra.rs:1246:    let rest = &text[start + 1..];
-src/heuristics/go/performance_extra.rs:1250:    rest[..end].len() == 1
-src/heuristics/go/performance_extra.rs:1257:    let rest = &text[start + 1..];
-src/heuristics/go/performance_extra.rs:1261:    rest[..end].len() == 1
+src/heuristics/go/performance.rs:376:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
+src/heuristics/go/performance_extra.rs:1254:    let rest = &text[start + 1..];
+src/heuristics/go/performance_extra.rs:1258:    rest[..end].len() == 1
+src/heuristics/go/performance_extra.rs:1265:    let rest = &text[start + 1..];
+src/heuristics/go/performance_extra.rs:1269:    rest[..end].len() == 1
 src/heuristics/python/boundaries.rs:1157:            let snippet = &body[pos..pos.min(pos + 150)];
 src/heuristics/python/boundaries.rs:1361:    signature[start + 1..end]
 src/heuristics/python/discipline.rs:33:                parts.push(text[start..index].trim());
@@ -76,69 +76,77 @@ src/heuristics/python/discipline.rs:55:    for (offset, ch) in signature[open_in
 src/heuristics/python/discipline.rs:58:            ')' if depth == 0 => return Some(&signature[open_index + 1..open_index + 1 + offset]),
 src/heuristics/python/framework/django.rs:224:            let rhs = &trimmed[eq_idx + 3..];
 src/heuristics/python/framework/django.rs:226:                let var = trimmed[..eq_idx].trim().to_string();
-src/heuristics/python/hotpath_ext.rs:469:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
-src/heuristics/python/hotpath_ext.rs:471:            && let Some(source_start) = trimmed[in_idx + 5..].find(" in ")
-src/heuristics/python/hotpath_ext.rs:473:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
-src/heuristics/python/hotpath_ext.rs:753:            let expr = &trimmed[1..for_idx];
-src/heuristics/python/hotpath_ext.rs:791:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
+src/heuristics/python/hotpath_ext.rs:467:        // Match patterns like `[x for x in items if ...]` or `filter(lambda x: ..., items)`
+src/heuristics/python/hotpath_ext.rs:469:            && let Some(source_start) = trimmed[in_idx + 5..].find(" in ")
+src/heuristics/python/hotpath_ext.rs:471:            let after_in = &trimmed[in_idx + 5 + source_start + 4..];
+src/heuristics/python/hotpath_ext.rs:750:            let expr = &trimmed[1..for_idx];
+src/heuristics/python/hotpath_ext.rs:788:                let next_lines = &lines[i + 1..std::cmp::min(i + 10, lines.len())];
 src/heuristics/python/packaging.rs:329:        [first, ..] => Some(*first),
 src/heuristics/python/quality/mod.rs:225:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:101:    split_top_level_commas(&signature_text[start + 1..end])
 src/heuristics/rust/api_design.rs:85:    for (offset, character) in signature_text[start..].char_indices() {
-src/heuristics/rust/bad_practices.rs:1078:        description: "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
-src/heuristics/rust/bad_practices.rs:1092:        description: "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
-src/heuristics/rust/bad_practices.rs:3355:        description: "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
-src/heuristics/rust/bad_practices.rs:3641:        description: "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
-src/heuristics/rust/bad_practices.rs:3661:        description: "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
+src/heuristics/rust/bad_practices.rs:1081:        description: "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
+src/heuristics/rust/bad_practices.rs:1095:        description: "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
+src/heuristics/rust/bad_practices.rs:3358:        description: "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
+src/heuristics/rust/bad_practices.rs:3644:        description: "flag `#[arg(env = \"...\")]` on secret-like fields without redacted display/report behavior.",
+src/heuristics/rust/bad_practices.rs:3664:        description: "flag direct `libc::*` calls without `#[cfg(unix)]`, `#[cfg(target_os = \"...\")]`, or a platform abstraction.",
 src/heuristics/rust/bad_practices.rs:5666:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/heuristics/rust/bad_practices.rs:6057:                "consider #[serde(rename_all = ...)] for stable wire contracts".to_string(),
-src/heuristics/rust/bad_practices.rs:868:        description: "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
+src/heuristics/rust/bad_practices.rs:871:        description: "flag `#[error(...)]` format strings that interpolate token, password, secret, key, auth, cookie, or credential fields.",
 src/heuristics/rust/module_surface.rs:90:        description: "Same-directory #[path = \"...\"] module attributes that standard resolution could replace.",
-src/heuristics/rust/performance.rs:356:    text[vec_start + 4..].contains("Box<")
-src/heuristics/rust/performance.rs:363:    line[start + marker.len()..].starts_with('/')
-src/heuristics/rust/performance.rs:444:                let receiver = &line[start..index];
+src/heuristics/rust/performance.rs:368:    text[vec_start + 4..].contains("Box<")
+src/heuristics/rust/performance.rs:375:    line[start + marker.len()..].starts_with('/')
+src/heuristics/rust/performance.rs:456:                let receiver = &line[start..index];
 src/heuristics/rust/runtime_boundary.rs:273:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
-src/rules.rs:558:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
-src/rules.rs:560:            let Some(end_offset) = source[start..].find('\"') else {
-src/rules.rs:564:            ids.insert(source[start..start + end_offset].to_string());
+src/index/resolve.rs:144:                        &segments[super_count..],
+src/index/resolve.rs:189:                    &segments[start_index..],
+src/rules.rs:637:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
+src/rules.rs:639:            let Some(end_offset) = source[start..].find('\"') else {
+src/rules.rs:643:            ids.insert(source[start..start + end_offset].to_string());
 tests/integration_scan/mod.rs:33:#[path = "../support/mod.rs"]
 
 ## toctou_fs_checks
+src/cli/report.rs:260:            .and_then(|language| rule_metadata(finding.rule_id.as_str(), language))
+src/cli/report.rs:93:                .and_then(|language| rule_metadata(finding.rule_id.as_str(), language));
 src/cli/rules.rs:195:    fn json_rules_report_renders_metadata() {
 src/heuristics/go/architecture/repo_rules.rs:346:    if !readme_path.exists() {
 src/heuristics/go/architecture/repo_rules.rs:390:    if !readme_path.exists() {
 src/heuristics/go/architecture/repo_rules.rs:539:        .any(|path| path.exists())
 src/heuristics/go/architecture/repo_rules.rs:729:    if migration_dirs.iter().any(|path| path.exists()) {
-src/heuristics/go/idioms.rs:1524:        } else if candidate.exists() {
-src/heuristics/go/idioms.rs:1631:        if probe.join(".github").exists()
-src/heuristics/go/idioms.rs:1632:            || probe.join("Makefile").exists()
-src/heuristics/go/idioms.rs:1633:            || probe.join("makefile").exists()
-src/heuristics/go/idioms.rs:1634:            || probe.join("action.yml").exists()
-src/heuristics/go/idioms.rs:1635:            || probe.join("action.yaml").exists()
+src/heuristics/go/idioms.rs:1542:        } else if candidate.exists() {
+src/heuristics/go/idioms.rs:1649:        if probe.join(".github").exists()
+src/heuristics/go/idioms.rs:1650:            || probe.join("Makefile").exists()
+src/heuristics/go/idioms.rs:1651:            || probe.join("makefile").exists()
+src/heuristics/go/idioms.rs:1652:            || probe.join("action.yml").exists()
+src/heuristics/go/idioms.rs:1653:            || probe.join("action.yaml").exists()
+src/heuristics/performance_layers.rs:719:        "metadata" => Some(&["metadata", "stat(", "headers", "metadata()"]),
+src/heuristics/performance_layers.rs:847:        "metadata" => Some(&["fs::metadata", ".metadata("]),
+src/heuristics/performance_layers.rs:858:        "tonic" => Some(&["tonic", "metadata()"]),
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
-src/heuristics/python/hotpath_ext.rs:959:    if contains_any(body, &["os.path.exists(", ".exists()"])
+src/heuristics/python/hotpath_ext.rs:956:    if contains_any(body, &["os.path.exists(", ".exists()"])
 src/heuristics/python/packaging.rs:249:    candidate.exists().then_some(candidate)
 src/heuristics/python/packaging.rs:626:        if parent.join("__init__.py").exists() {
-src/heuristics/python/performance.rs:541:        + lower_body.matches(".exists()").count()
-src/heuristics/rust/bad_practices.rs:5249:            let call_count = body_lower.matches("metadata(").count()
-src/heuristics/rust/bad_practices.rs:5250:                + body_lower.matches("symlink_metadata(").count()
-src/heuristics/rust/bad_practices.rs:5251:                + body_lower.matches("exists(").count()
-src/heuristics/rust/bad_practices.rs:5258:                lower.contains("metadata(")
-src/heuristics/rust/bad_practices.rs:5259:                    || lower.contains("symlink_metadata(")
-src/heuristics/rust/bad_practices.rs:5260:                    || lower.contains("exists(")
+src/heuristics/python/performance.rs:551:        + lower_body.matches(".exists()").count()
+src/heuristics/rust/bad_practices.rs:5252:            let call_count = body_lower.matches("metadata(").count()
+src/heuristics/rust/bad_practices.rs:5253:                + body_lower.matches("symlink_metadata(").count()
+src/heuristics/rust/bad_practices.rs:5254:                + body_lower.matches("exists(").count()
+src/heuristics/rust/bad_practices.rs:5261:                lower.contains("metadata(")
+src/heuristics/rust/bad_practices.rs:5262:                    || lower.contains("symlink_metadata(")
+src/heuristics/rust/bad_practices.rs:5263:                    || lower.contains("exists(")
 src/heuristics/rust/bad_practices.rs:5789:    if !root.join("src/main.rs").exists() {
 src/heuristics/rust/boundary.rs:203:            && contains_any(line, &["exists(", "symlink_metadata(", "read_link("])
 src/heuristics/rust/runtime_boundary.rs:175:    if !should_emit_workspace_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/heuristics/rust/security_footguns.rs:209:    if !should_emit_manifest_finding(file, index.root()) || !manifest_path.exists() {
 src/io.rs:16:        .metadata()
 src/io.rs:67:    let metadata = symlink_metadata(path).map_err(|error| Error::io(path, error))?;
-src/rules.rs:103:    rule_metadata(rule_id, language).is_some_and(|metadata| {
-src/rules.rs:177:    fn finds_known_rule_metadata() {
-src/rules.rs:178:        let metadata = rule_metadata("dropped_error", RuleLanguage::Go)
-src/rules.rs:211:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
-src/rules.rs:220:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
-src/rules.rs:70:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
-src/rules.rs:94:    rule_metadata(rule_id, language).is_some_and(|metadata| {
+src/rules.rs:110:    rule_metadata(rule_id, language).is_some_and(|metadata| {
+src/rules.rs:119:    rule_metadata(rule_id, language).is_some_and(|metadata| {
+src/rules.rs:193:    fn finds_known_rule_metadata() {
+src/rules.rs:194:        let metadata = rule_metadata("dropped_error", RuleLanguage::Go)
+src/rules.rs:227:        let async_rule = rule_metadata("rust_async_lock_order_cycle", RuleLanguage::Rust)
+src/rules.rs:236:        let go_experimental = rule_metadata("likely_n_squared_allocation", RuleLanguage::Go)
+src/rules.rs:72:pub fn rule_metadata(rule_id: &str, language: RuleLanguage) -> Option<&'static RuleMetadata> {
+src/rules.rs:96:    rule_metadata(rule_id, language).and_then(|metadata| {
 src/rules/catalog/python/framework.rs:169:        description: "Django querysets use count() for existence checks instead of exists().",
 tests/benchmark_guard.rs:36:        repo_root.exists(),
 
@@ -148,14 +156,18 @@ src/heuristics/rust/boundary.rs:209: check-then-open candidate after line 203:  
 
 ## secret_comparisons
 src/analysis/rust/parser/tests.rs:90:            .any(|name| name == "password")
+src/heuristics/performance_layers.rs:248:        if !groups.iter().any(|group: &MarkerGroup| group.token == token) {
 src/heuristics/python/boundaries.rs:588:        if SECRET_NAMES.iter().any(|k| name_lower == *k) {
 src/heuristics/python/quality/mod.rs:726:        .any(|part| part == token || part.ends_with(&format!(".{token}")))
-src/heuristics/rust/mod.rs:269:        .any(|token| normalized == *token || normalized.contains(token))
+src/heuristics/rust/mod.rs:271:        .any(|token| normalized == *token || normalized.contains(token))
 src/rules/catalog/go/security.rs:631:        description: "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values",
 tests/integration_scan/security.rs:29:            .any(|finding| finding.rule_id == "hardcoded_secret")
 tests/integration_scan/security.rs:44:            .any(|finding| finding.rule_id == "hardcoded_secret")
 
 ## shared_mutability
+src/analysis/go/parser/mod.rs:39:    static GO_PARSER: RefCell<Option<Parser>> = const { RefCell::new(None) };
+src/analysis/python/parser/mod.rs:29:    static PYTHON_PARSER: RefCell<Option<Parser>> = const { RefCell::new(None) };
+src/analysis/rust/parser/mod.rs:28:    static RUST_PARSER: RefCell<Option<Parser>> = const { RefCell::new(None) };
 src/heuristics/rust/api_design.rs:244:        "RefCell<",
 src/heuristics/rust/api_design.rs:274:    type_text.contains("Rc<RefCell<") || type_text.contains("Rc<std::cell::RefCell<")
 src/heuristics/rust/api_design_state.rs:80:                        "struct {} uses Rc<RefCell<_>> in a domain-style type",
@@ -171,12 +183,15 @@ src/analysis/config.rs:1:#[derive(Debug, Clone, Copy, Default)]
 src/analysis/types/core.rs:53:#[derive(Debug, Clone, Default)]
 src/analysis/types/core.rs:62:#[derive(Debug, Clone, Default)]
 src/analysis/types/core.rs:69:#[derive(Debug, Clone, Default)]
+src/analysis/types/go.rs:5:#[derive(Debug, Clone, Default)]
+src/analysis/types/python.rs:5:#[derive(Debug, Clone, Default)]
+src/analysis/types/rust.rs:3:#[derive(Debug, Clone, Default)]
 src/heuristics/rust/bad_practices.rs:5510:#[derive(Clone, Debug, Default)]
 
 ## thread_spawn_async
-src/heuristics/rust/bad_practices.rs:1890:        description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
-src/heuristics/rust/bad_practices.rs:4642:        description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
-src/heuristics/rust/bad_practices.rs:4643:        markers: &["std::thread::spawn", "JoinHandle", "spawn", "join", "limit"],
+src/heuristics/rust/bad_practices.rs:1893:        description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
+src/heuristics/rust/bad_practices.rs:4645:        description: "flag `std::thread::spawn` in loops without a join handle collection limit, pool, or semaphore.",
+src/heuristics/rust/bad_practices.rs:4646:        markers: &["std::thread::spawn", "JoinHandle", "spawn", "join", "limit"],
 src/heuristics/rust/security_footguns.rs:346:        &["thread::spawn(", "std::thread::spawn("],
 src/heuristics/rust/security_footguns.rs:370:        &["thread::spawn(", "std::thread::spawn("],
 src/heuristics/rust/security_footguns.rs:55:        description: "Raw std::thread::spawn blocks that call async work without an explicit runtime handoff.",

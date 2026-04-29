@@ -45,7 +45,9 @@ pub(crate) use evaluate::{
     rust_security_function_findings, rust_unsafe_soundness_findings,
 };
 pub(crate) use module_surface::module_surface_file_findings;
-pub(crate) use performance::{performance_file_findings, performance_function_findings};
+pub(crate) use performance::{
+    performance_file_findings, performance_function_findings, rust_performance_layer_rule_findings,
+};
 pub(crate) use runtime_boundary::{runtime_file_findings, runtime_function_findings};
 pub(crate) use runtime_ownership::runtime_ownership_function_findings;
 pub(crate) use security_footguns::{

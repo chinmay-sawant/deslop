@@ -43,12 +43,18 @@ fn test_db_slop() {
             .iter()
             .any(|finding| finding.rule_id == "n_plus_one_query")
     );
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "go_perf_layer_database_access_query_inside_loop_without_batching"
+    }));
     assert!(
         report
             .findings
             .iter()
             .any(|finding| finding.rule_id == "wide_select_query")
     );
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "go_perf_layer_database_access_select_star_on_hot_query"
+    }));
     assert!(
         report
             .findings
@@ -70,12 +76,18 @@ fn test_db_clean() {
             .iter()
             .any(|finding| finding.rule_id == "n_plus_one_query")
     );
+    assert!(!report.findings.iter().any(|finding| {
+        finding.rule_id == "go_perf_layer_database_access_query_inside_loop_without_batching"
+    }));
     assert!(
         !report
             .findings
             .iter()
             .any(|finding| finding.rule_id == "wide_select_query")
     );
+    assert!(!report.findings.iter().any(|finding| {
+        finding.rule_id == "go_perf_layer_database_access_select_star_on_hot_query"
+    }));
     assert!(
         !report
             .findings
