@@ -1,0 +1,8 @@
+def positive_logging_set_level_hardcoded_at_module_scope():
+    rule_id = "logging_set_level_hardcoded_at_module_scope"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "logger.setLevel(logging.DEBUG) or similar hardcoded at module scope instead of via application config."
+    return rule_id, family, severity, status, intent, description

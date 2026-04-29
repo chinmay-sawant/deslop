@@ -1,0 +1,8 @@
+def negative_python_perf_layer_collection_iteration_pandas_iterrows_for_numeric_transform():
+    rule_id = "python_perf_layer_collection_iteration_pandas_iterrows_for_numeric_transform"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Collection iteration. Flag pandas iterrows loops for numeric transformations that can be vectorized or applied in batches."
+    return rule_id, family, severity, status, intent, description

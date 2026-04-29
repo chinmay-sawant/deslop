@@ -1,0 +1,8 @@
+def positive_yaml_config_loaded_without_safe_loader():
+    rule_id = "yaml_config_loaded_without_safe_loader"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "YAML configuration file loaded with yaml.load instead of yaml.safe_load or yaml.load + Loader=SafeLoader."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_obvious_commentary():
+    rule_id = "obvious_commentary"
+    family = "ai_smells"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Comments that narrate obvious implementation steps instead of explaining intent."
+    return rule_id, family, severity, status, intent, description

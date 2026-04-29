@@ -1,0 +1,8 @@
+def positive_sqlalchemy_expire_on_commit_default_in_async():
+    rule_id = "sqlalchemy_expire_on_commit_default_in_async"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Async SQLAlchemy sessions rely on the default expire_on_commit behavior instead of making the async access pattern explicit."
+    return rule_id, family, severity, status, intent, description

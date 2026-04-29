@@ -1,0 +1,8 @@
+def negative_repeated_dict_get_same_key_no_cache():
+    rule_id = "repeated_dict_get_same_key_no_cache"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "The same dictionary key is fetched repeatedly instead of storing the value in a local binding."
+    return rule_id, family, severity, status, intent, description

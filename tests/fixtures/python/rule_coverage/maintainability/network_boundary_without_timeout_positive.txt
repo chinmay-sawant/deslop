@@ -1,0 +1,8 @@
+def positive_network_boundary_without_timeout():
+    rule_id = "network_boundary_without_timeout"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Request, sync, or job-style Python functions that call HTTP boundaries with no obvious timeout or retry policy."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_environment_boundary_without_fallback():
+    rule_id = "environment_boundary_without_fallback"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Environment-variable lookups that omit a default value or explicit failure handler."
+    return rule_id, family, severity, status, intent, description

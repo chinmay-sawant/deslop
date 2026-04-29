@@ -1,0 +1,8 @@
+def positive_counter_most_common_all_items_retrieved_for_top_one():
+    rule_id = "counter_most_common_all_items_retrieved_for_top_one"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Counter.most_common() called without an argument and subscripted with [0]; pass n=1 or use max()."
+    return rule_id, family, severity, status, intent, description

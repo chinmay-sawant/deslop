@@ -1,0 +1,8 @@
+def positive_exception_handler_returns_default_without_any_logging():
+    rule_id = "exception_handler_returns_default_without_any_logging"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Broad except block returns a default value without logging the caught exception."
+    return rule_id, family, severity, status, intent, description

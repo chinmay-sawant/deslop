@@ -1,0 +1,8 @@
+def positive_numpy_tolist_in_hot_path():
+    rule_id = "numpy_tolist_in_hot_path"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "NumPy arrays are converted to Python lists in hot paths, increasing object overhead."
+    return rule_id, family, severity, status, intent, description

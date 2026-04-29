@@ -1,0 +1,8 @@
+def positive_incremental_list_or_tuple_concatenation_in_accumulation_loop():
+    rule_id = "incremental_list_or_tuple_concatenation_in_accumulation_loop"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag accumulation loops that repeatedly concatenate instead of appending and joining once."
+    return rule_id, family, severity, status, intent, description

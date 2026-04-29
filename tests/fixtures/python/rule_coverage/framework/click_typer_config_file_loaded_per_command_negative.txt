@@ -1,0 +1,8 @@
+def negative_click_typer_config_file_loaded_per_command():
+    rule_id = "click_typer_config_file_loaded_per_command"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "click or typer commands parse config files on each invocation instead of using shared bootstrap or dependency setup."
+    return rule_id, family, severity, status, intent, description

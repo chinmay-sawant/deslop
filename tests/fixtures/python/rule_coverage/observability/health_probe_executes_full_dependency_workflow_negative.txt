@@ -1,0 +1,8 @@
+def negative_health_probe_executes_full_dependency_workflow():
+    rule_id = "health_probe_executes_full_dependency_workflow"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag health checks that run the full production path instead of a cheap signal."
+    return rule_id, family, severity, status, intent, description

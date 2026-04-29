@@ -1,0 +1,8 @@
+def negative_sibling_modules_depend_on_private_helpers_from_each_other():
+    rule_id = "sibling_modules_depend_on_private_helpers_from_each_other"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag sibling modules that reach into each other's private helpers instead of using a shared boundary."
+    return rule_id, family, severity, status, intent, description

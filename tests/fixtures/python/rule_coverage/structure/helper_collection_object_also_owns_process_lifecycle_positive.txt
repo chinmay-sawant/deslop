@@ -1,0 +1,8 @@
+def positive_helper_collection_object_also_owns_process_lifecycle():
+    rule_id = "helper_collection_object_also_owns_process_lifecycle"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag collection-like helper objects that also start, stop, or supervise process lifecycle work."
+    return rule_id, family, severity, status, intent, description

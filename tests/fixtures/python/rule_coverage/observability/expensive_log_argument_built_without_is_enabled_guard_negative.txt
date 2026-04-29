@@ -1,0 +1,8 @@
+def negative_expensive_log_argument_built_without_is_enabled_guard():
+    rule_id = "expensive_log_argument_built_without_is_enabled_guard"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag log calls that eagerly build costly payloads without first checking the log level."
+    return rule_id, family, severity, status, intent, description

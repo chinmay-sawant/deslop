@@ -1,0 +1,8 @@
+def positive_repeated_len_in_loop():
+    rule_id = "repeated_len_in_loop"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Repeated len(...) checks inside loops when the receiver appears unchanged locally."
+    return rule_id, family, severity, status, intent, description

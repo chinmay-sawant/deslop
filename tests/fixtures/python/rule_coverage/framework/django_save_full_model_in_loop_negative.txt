@@ -1,0 +1,8 @@
+def negative_django_save_full_model_in_loop():
+    rule_id = "django_save_full_model_in_loop"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Django code saves full model instances in loops without update_fields or bulk updates."
+    return rule_id, family, severity, status, intent, description

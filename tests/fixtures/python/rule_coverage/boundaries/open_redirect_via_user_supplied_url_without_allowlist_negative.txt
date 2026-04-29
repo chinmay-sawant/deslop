@@ -1,0 +1,8 @@
+def negative_open_redirect_via_user_supplied_url_without_allowlist():
+    rule_id = "open_redirect_via_user_supplied_url_without_allowlist"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "HTTP redirect target constructed from user-supplied URL without allowlist validation."
+    return rule_id, family, severity, status, intent, description

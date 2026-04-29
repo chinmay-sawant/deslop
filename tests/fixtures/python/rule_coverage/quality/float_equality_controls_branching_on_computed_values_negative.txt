@@ -1,0 +1,8 @@
+def negative_float_equality_controls_branching_on_computed_values():
+    rule_id = "float_equality_controls_branching_on_computed_values"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag control flow that depends on exact float equality after computation."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_asyncio_queue_created_without_maxsize_in_producer_path():
+    rule_id = "asyncio_queue_created_without_maxsize_in_producer_path"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "asyncio.Queue created without maxsize on a producer code path, allowing unbounded memory growth."
+    return rule_id, family, severity, status, intent, description

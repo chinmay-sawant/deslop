@@ -1,0 +1,8 @@
+def positive_repeated_directory_scan_inside_nested_loop():
+    rule_id = "repeated_directory_scan_inside_nested_loop"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag nested loops that rescan the same directory or file listing."
+    return rule_id, family, severity, status, intent, description

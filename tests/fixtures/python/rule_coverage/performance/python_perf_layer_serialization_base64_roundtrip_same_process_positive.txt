@@ -1,0 +1,8 @@
+def positive_python_perf_layer_serialization_base64_roundtrip_same_process():
+    rule_id = "python_perf_layer_serialization_base64_roundtrip_same_process"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside one process boundary."
+    return rule_id, family, severity, status, intent, description

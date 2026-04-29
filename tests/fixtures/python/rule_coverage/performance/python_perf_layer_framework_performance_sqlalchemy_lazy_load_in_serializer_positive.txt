@@ -1,0 +1,8 @@
+def positive_python_perf_layer_framework_performance_sqlalchemy_lazy_load_in_serializer():
+    rule_id = "python_perf_layer_framework_performance_sqlalchemy_lazy_load_in_serializer"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Framework-specific performance. Flag SQLAlchemy lazy loads triggered from serializers or response mapping loops."
+    return rule_id, family, severity, status, intent, description

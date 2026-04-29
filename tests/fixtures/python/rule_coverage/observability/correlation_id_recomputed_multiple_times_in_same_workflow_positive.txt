@@ -1,0 +1,8 @@
+def positive_correlation_id_recomputed_multiple_times_in_same_workflow():
+    rule_id = "correlation_id_recomputed_multiple_times_in_same_workflow"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag code that regenerates correlation IDs instead of propagating one value."
+    return rule_id, family, severity, status, intent, description

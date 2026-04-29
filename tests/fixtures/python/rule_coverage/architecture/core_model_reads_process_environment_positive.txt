@@ -1,0 +1,8 @@
+def positive_core_model_reads_process_environment():
+    rule_id = "core_model_reads_process_environment"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag core classes or pure helper layers that directly access os.environ, os.getenv, or global settings."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_flask_request_body_parsed_multiple_times():
+    rule_id = "flask_request_body_parsed_multiple_times"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flask request handlers parse the same request body multiple times."
+    return rule_id, family, severity, status, intent, description

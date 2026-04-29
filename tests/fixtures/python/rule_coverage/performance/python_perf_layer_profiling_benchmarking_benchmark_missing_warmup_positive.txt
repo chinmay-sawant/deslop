@@ -1,0 +1,8 @@
+def positive_python_perf_layer_profiling_benchmarking_benchmark_missing_warmup():
+    rule_id = "python_perf_layer_profiling_benchmarking_benchmark_missing_warmup"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Profiling and benchmarking. Flag benchmarks that time import/setup/warmup along with the operation under test."
+    return rule_id, family, severity, status, intent, description

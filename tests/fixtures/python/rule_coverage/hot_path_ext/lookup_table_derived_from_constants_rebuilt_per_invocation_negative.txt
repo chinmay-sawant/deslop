@@ -1,0 +1,8 @@
+def negative_lookup_table_derived_from_constants_rebuilt_per_invocation():
+    rule_id = "lookup_table_derived_from_constants_rebuilt_per_invocation"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag functions that reconstruct lookup tables from static constants every call."
+    return rule_id, family, severity, status, intent, description

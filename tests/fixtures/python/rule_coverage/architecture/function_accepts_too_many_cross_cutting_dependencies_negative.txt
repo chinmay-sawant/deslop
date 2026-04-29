@@ -1,0 +1,8 @@
+def negative_function_accepts_too_many_cross_cutting_dependencies():
+    rule_id = "function_accepts_too_many_cross_cutting_dependencies"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag functions or constructors that accept a broad mix of logging, config, cache, clock, auth, and persistence dependencies with no cohesive abstraction."
+    return rule_id, family, severity, status, intent, description

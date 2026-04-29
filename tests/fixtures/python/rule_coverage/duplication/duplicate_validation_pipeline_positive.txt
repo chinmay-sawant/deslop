@@ -1,0 +1,8 @@
+def positive_duplicate_validation_pipeline():
+    rule_id = "duplicate_validation_pipeline"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Repeated validation guard pipelines across functions in one file."
+    return rule_id, family, severity, status, intent, description

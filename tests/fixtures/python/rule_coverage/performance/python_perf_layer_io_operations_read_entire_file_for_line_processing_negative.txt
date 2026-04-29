@@ -1,0 +1,8 @@
+def negative_python_perf_layer_io_operations_read_entire_file_for_line_processing():
+    rule_id = "python_perf_layer_io_operations_read_entire_file_for_line_processing"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: I/O operations. Flag read()/readlines() on files that are processed line by line."
+    return rule_id, family, severity, status, intent, description

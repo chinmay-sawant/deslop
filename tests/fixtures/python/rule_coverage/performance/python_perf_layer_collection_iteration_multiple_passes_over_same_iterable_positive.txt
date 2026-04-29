@@ -1,0 +1,8 @@
+def positive_python_perf_layer_collection_iteration_multiple_passes_over_same_iterable():
+    rule_id = "python_perf_layer_collection_iteration_multiple_passes_over_same_iterable"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Collection iteration. Flag independent loops over the same collection where aggregation can be fused."
+    return rule_id, family, severity, status, intent, description

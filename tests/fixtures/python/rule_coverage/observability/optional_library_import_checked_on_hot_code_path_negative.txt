@@ -1,0 +1,8 @@
+def negative_optional_library_import_checked_on_hot_code_path():
+    rule_id = "optional_library_import_checked_on_hot_code_path"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Optional-dependency import guarded by try/except ImportError checked on every request."
+    return rule_id, family, severity, status, intent, description

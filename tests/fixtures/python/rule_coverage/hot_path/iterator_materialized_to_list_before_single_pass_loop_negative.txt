@@ -1,0 +1,8 @@
+def negative_iterator_materialized_to_list_before_single_pass_loop():
+    rule_id = "iterator_materialized_to_list_before_single_pass_loop"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag iterators converted to lists in hot paths when only one pass is needed."
+    return rule_id, family, severity, status, intent, description

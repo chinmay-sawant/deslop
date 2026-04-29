@@ -1,0 +1,8 @@
+def positive_tempfile_without_cleanup():
+    rule_id = "tempfile_without_cleanup"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Temporary files or directories created without a visible cleanup or context-manager ownership path."
+    return rule_id, family, severity, status, intent, description

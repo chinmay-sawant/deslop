@@ -1,0 +1,8 @@
+def positive_function_returns_multiple_unlabeled_shape_variants():
+    rule_id = "function_returns_multiple_unlabeled_shape_variants"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag functions that return unrelated tuple or dict shapes depending on the path taken."
+    return rule_id, family, severity, status, intent, description

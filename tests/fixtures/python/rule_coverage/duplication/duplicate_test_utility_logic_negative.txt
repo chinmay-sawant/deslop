@@ -1,0 +1,8 @@
+def negative_duplicate_test_utility_logic():
+    rule_id = "duplicate_test_utility_logic"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Highly similar utility logic shared between test and production code."
+    return rule_id, family, severity, status, intent, description

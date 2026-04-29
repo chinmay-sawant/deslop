@@ -1,0 +1,8 @@
+def negative_blocking_io_call_executed_per_item_without_batching():
+    rule_id = "blocking_io_call_executed_per_item_without_batching"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag per-item blocking I/O where batching or grouping is possible."
+    return rule_id, family, severity, status, intent, description

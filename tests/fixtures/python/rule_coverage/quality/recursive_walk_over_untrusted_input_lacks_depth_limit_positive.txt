@@ -1,0 +1,8 @@
+def positive_recursive_walk_over_untrusted_input_lacks_depth_limit():
+    rule_id = "recursive_walk_over_untrusted_input_lacks_depth_limit"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag recursion over caller-provided structures with no depth guard."
+    return rule_id, family, severity, status, intent, description

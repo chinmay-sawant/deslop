@@ -1,0 +1,8 @@
+def positive_python_perf_layer_database_access_dataframe_to_sql_row_loop():
+    rule_id = "python_perf_layer_database_access_dataframe_to_sql_row_loop"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Database access. Flag DataFrame writes to SQL through row loops instead of chunked to_sql or bulk copy."
+    return rule_id, family, severity, status, intent, description

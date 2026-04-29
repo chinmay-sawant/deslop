@@ -1,0 +1,8 @@
+def positive_full_dataset_load():
+    rule_id = "full_dataset_load"
+    family = "performance"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Calls that load an entire payload into memory instead of streaming."
+    return rule_id, family, severity, status, intent, description

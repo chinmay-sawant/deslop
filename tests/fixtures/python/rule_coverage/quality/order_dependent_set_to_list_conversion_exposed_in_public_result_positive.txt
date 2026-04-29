@@ -1,0 +1,8 @@
+def positive_order_dependent_set_to_list_conversion_exposed_in_public_result():
+    rule_id = "order_dependent_set_to_list_conversion_exposed_in_public_result"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag public outputs that rely on unstable set iteration order."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_prompt_template_string_concat_in_loop():
+    rule_id = "prompt_template_string_concat_in_loop"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Prompt strings are built incrementally inside loops instead of composing a stable template once."
+    return rule_id, family, severity, status, intent, description

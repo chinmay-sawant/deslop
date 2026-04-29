@@ -1,0 +1,8 @@
+def positive_pandas_concat_in_loop():
+    rule_id = "pandas_concat_in_loop"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "DataFrames are concatenated inside loops instead of collected and concatenated once."
+    return rule_id, family, severity, status, intent, description

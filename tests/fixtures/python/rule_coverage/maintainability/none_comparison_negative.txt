@@ -1,0 +1,8 @@
+def negative_none_comparison():
+    rule_id = "none_comparison"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "== None or != None checks instead of is None or is not None."
+    return rule_id, family, severity, status, intent, description

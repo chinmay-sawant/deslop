@@ -1,0 +1,8 @@
+def negative_flask_debug_mode_in_production_code():
+    rule_id = "flask_debug_mode_in_production_code"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flask code enables debug=True in application runtime paths."
+    return rule_id, family, severity, status, intent, description

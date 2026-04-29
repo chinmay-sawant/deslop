@@ -1,0 +1,8 @@
+def negative_flask_template_rendered_from_string_in_view():
+    rule_id = "flask_template_rendered_from_string_in_view"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flask views render templates from inline strings instead of using file-backed templates."
+    return rule_id, family, severity, status, intent, description

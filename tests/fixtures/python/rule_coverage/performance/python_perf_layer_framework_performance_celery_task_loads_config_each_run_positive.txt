@@ -1,0 +1,8 @@
+def positive_python_perf_layer_framework_performance_celery_task_loads_config_each_run():
+    rule_id = "python_perf_layer_framework_performance_celery_task_loads_config_each_run"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Framework-specific performance. Flag Celery tasks loading settings, models, or clients on every invocation without reuse."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_high_frequency_code_path_logs_without_sampling_or_rate_limit():
+    rule_id = "high_frequency_code_path_logs_without_sampling_or_rate_limit"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "logger.info or logger.debug called inside a loop without a sampling guard, risking log flood."
+    return rule_id, family, severity, status, intent, description

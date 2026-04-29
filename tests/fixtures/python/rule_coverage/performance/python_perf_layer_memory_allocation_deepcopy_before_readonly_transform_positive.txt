@@ -1,0 +1,8 @@
+def positive_python_perf_layer_memory_allocation_deepcopy_before_readonly_transform():
+    rule_id = "python_perf_layer_memory_allocation_deepcopy_before_readonly_transform"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Memory allocation. Flag copy.deepcopy of large objects before operations that only read them."
+    return rule_id, family, severity, status, intent, description

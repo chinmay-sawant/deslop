@@ -1,0 +1,8 @@
+def positive_list_copy_in_loop_same_source():
+    rule_id = "list_copy_in_loop_same_source"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "A list is copied on each loop iteration even though the source appears unchanged."
+    return rule_id, family, severity, status, intent, description

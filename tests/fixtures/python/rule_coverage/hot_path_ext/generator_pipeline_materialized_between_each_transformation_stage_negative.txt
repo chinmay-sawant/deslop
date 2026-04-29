@@ -1,0 +1,8 @@
+def negative_generator_pipeline_materialized_between_each_transformation_stage():
+    rule_id = "generator_pipeline_materialized_between_each_transformation_stage"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag pipelines that repeatedly materialize intermediate lists between stages."
+    return rule_id, family, severity, status, intent, description

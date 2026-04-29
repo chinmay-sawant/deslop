@@ -1,0 +1,8 @@
+def negative_intermediate_dataframe_not_freed():
+    rule_id = "intermediate_dataframe_not_freed"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Multiple intermediate DataFrames accumulate with no visible cleanup in one pipeline."
+    return rule_id, family, severity, status, intent, description

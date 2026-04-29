@@ -1,0 +1,8 @@
+def negative_distributed_trace_span_created_without_parent_context_propagation():
+    rule_id = "distributed_trace_span_created_without_parent_context_propagation"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "OpenTelemetry or custom trace span created without extracting the parent context from the incoming request."
+    return rule_id, family, severity, status, intent, description

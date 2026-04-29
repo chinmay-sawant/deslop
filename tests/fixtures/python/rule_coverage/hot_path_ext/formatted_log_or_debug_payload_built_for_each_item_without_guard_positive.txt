@@ -1,0 +1,8 @@
+def positive_formatted_log_or_debug_payload_built_for_each_item_without_guard():
+    rule_id = "formatted_log_or_debug_payload_built_for_each_item_without_guard"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag per-item log payload construction without checking whether the level is enabled."
+    return rule_id, family, severity, status, intent, description

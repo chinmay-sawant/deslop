@@ -1,0 +1,8 @@
+def positive_python_perf_layer_runtime_configuration_pythonpath_mutated_per_call():
+    rule_id = "python_perf_layer_runtime_configuration_pythonpath_mutated_per_call"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Build and runtime configuration. Flag sys.path or import path mutation inside functions instead of startup configuration."
+    return rule_id, family, severity, status, intent, description

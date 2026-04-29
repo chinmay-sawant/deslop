@@ -1,0 +1,8 @@
+def negative_monolithic_common_package_becomes_transitive_dependency_for_most_modules():
+    rule_id = "monolithic_common_package_becomes_transitive_dependency_for_most_modules"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag package designs where one vague common package becomes a hidden dependency hub."
+    return rule_id, family, severity, status, intent, description

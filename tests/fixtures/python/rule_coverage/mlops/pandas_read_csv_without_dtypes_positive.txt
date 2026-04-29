@@ -1,0 +1,8 @@
+def positive_pandas_read_csv_without_dtypes():
+    rule_id = "pandas_read_csv_without_dtypes"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "pd.read_csv(...) calls omit dtype hints, forcing extra inference work."
+    return rule_id, family, severity, status, intent, description

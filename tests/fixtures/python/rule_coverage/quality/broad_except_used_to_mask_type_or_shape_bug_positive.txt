@@ -1,0 +1,8 @@
+def positive_broad_except_used_to_mask_type_or_shape_bug():
+    rule_id = "broad_except_used_to_mask_type_or_shape_bug"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag broad exception handling that conceals structural bugs in the input or code."
+    return rule_id, family, severity, status, intent, description

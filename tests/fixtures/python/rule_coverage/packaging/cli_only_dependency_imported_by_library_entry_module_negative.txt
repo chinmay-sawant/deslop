@@ -1,0 +1,8 @@
+def negative_cli_only_dependency_imported_by_library_entry_module():
+    rule_id = "cli_only_dependency_imported_by_library_entry_module"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag library entry modules that pull in CLI-only dependencies on import."
+    return rule_id, family, severity, status, intent, description

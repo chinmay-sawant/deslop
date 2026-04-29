@@ -1,0 +1,8 @@
+def negative_numpy_vstack_hstack_in_loop():
+    rule_id = "numpy_vstack_hstack_in_loop"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Arrays are repeatedly stacked inside loops instead of collected and stacked once."
+    return rule_id, family, severity, status, intent, description

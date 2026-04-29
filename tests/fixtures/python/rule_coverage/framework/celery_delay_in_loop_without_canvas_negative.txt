@@ -1,0 +1,8 @@
+def negative_celery_delay_in_loop_without_canvas():
+    rule_id = "celery_delay_in_loop_without_canvas"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Celery tasks dispatch .delay(...) or .apply_async(...) inside loops without an obvious canvas primitive such as group() or chord()."
+    return rule_id, family, severity, status, intent, description

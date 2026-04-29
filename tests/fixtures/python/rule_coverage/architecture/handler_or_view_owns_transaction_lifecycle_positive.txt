@@ -1,0 +1,8 @@
+def positive_handler_or_view_owns_transaction_lifecycle():
+    rule_id = "handler_or_view_owns_transaction_lifecycle"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Route handler or view manually manages database transaction boundaries (begin/commit/rollback)."
+    return rule_id, family, severity, status, intent, description

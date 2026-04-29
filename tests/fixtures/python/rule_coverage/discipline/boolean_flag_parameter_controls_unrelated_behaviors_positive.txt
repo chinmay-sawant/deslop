@@ -1,0 +1,8 @@
+def positive_boolean_flag_parameter_controls_unrelated_behaviors():
+    rule_id = "boolean_flag_parameter_controls_unrelated_behaviors"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag parameters whose boolean value switches between materially different behaviors instead of selecting clear separate entrypoints."
+    return rule_id, family, severity, status, intent, description

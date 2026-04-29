@@ -1,0 +1,8 @@
+def negative_python_public_api_any_contract():
+    rule_id = "python_public_api_any_contract"
+    family = "packaging"
+    severity = "warning"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Public Python APIs that expose Any in parameter or return contracts."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_generic_class_used_without_type_parameter_application():
+    rule_id = "generic_class_used_without_type_parameter_application"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Generic class subclassed or instantiated without supplying the required type parameters."
+    return rule_id, family, severity, status, intent, description

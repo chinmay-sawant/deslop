@@ -1,0 +1,8 @@
+def negative_threading_thread_without_daemon_true_in_server_code():
+    rule_id = "threading_thread_without_daemon_true_in_server_code"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "threading.Thread created in server-side code without daemon=True, which can block graceful shutdown."
+    return rule_id, family, severity, status, intent, description

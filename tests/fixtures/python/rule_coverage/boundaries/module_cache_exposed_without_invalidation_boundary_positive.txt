@@ -1,0 +1,8 @@
+def positive_module_cache_exposed_without_invalidation_boundary():
+    rule_id = "module_cache_exposed_without_invalidation_boundary"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag modules that expose cache internals directly with no clear invalidation or ownership boundary."
+    return rule_id, family, severity, status, intent, description

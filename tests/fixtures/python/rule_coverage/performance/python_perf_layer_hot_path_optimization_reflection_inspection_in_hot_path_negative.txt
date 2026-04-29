@@ -1,0 +1,8 @@
+def negative_python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path():
+    rule_id = "python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Hot path optimization. Flag inspect/signature/reflection work in hot paths."
+    return rule_id, family, severity, status, intent, description

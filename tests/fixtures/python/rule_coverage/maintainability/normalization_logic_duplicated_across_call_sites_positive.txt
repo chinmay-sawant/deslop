@@ -1,0 +1,8 @@
+def positive_normalization_logic_duplicated_across_call_sites():
+    rule_id = "normalization_logic_duplicated_across_call_sites"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag the same value-cleaning or canonicalization logic repeated in several places."
+    return rule_id, family, severity, status, intent, description

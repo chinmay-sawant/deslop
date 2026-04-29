@@ -1,0 +1,8 @@
+def negative_over_abstracted_wrapper():
+    rule_id = "over_abstracted_wrapper"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Ceremonial wrapper-style or tiny data-container classes that add little beyond storing constructor state."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_package_init_performs_metadata_version_lookup_on_import():
+    rule_id = "package_init_performs_metadata_version_lookup_on_import"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag package __init__ files that do runtime metadata lookups just to expose a version."
+    return rule_id, family, severity, status, intent, description

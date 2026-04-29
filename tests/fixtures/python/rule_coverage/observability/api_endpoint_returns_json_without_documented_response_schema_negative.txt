@@ -1,0 +1,8 @@
+def negative_api_endpoint_returns_json_without_documented_response_schema():
+    rule_id = "api_endpoint_returns_json_without_documented_response_schema"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "API endpoint returns JSON without a Pydantic response_model or documented response schema."
+    return rule_id, family, severity, status, intent, description

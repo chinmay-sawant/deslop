@@ -1,0 +1,8 @@
+def negative_per_item_deduplication_uses_list_instead_of_hash_index():
+    rule_id = "per_item_deduplication_uses_list_instead_of_hash_index"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag high-cardinality deduplication done with linear container membership checks."
+    return rule_id, family, severity, status, intent, description

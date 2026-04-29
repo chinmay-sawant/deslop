@@ -1,0 +1,8 @@
+def negative_django_queryset_order_by_random():
+    rule_id = "django_queryset_order_by_random"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Django querysets use order_by(\\\"?\\\") or equivalent random ordering on request paths."
+    return rule_id, family, severity, status, intent, description

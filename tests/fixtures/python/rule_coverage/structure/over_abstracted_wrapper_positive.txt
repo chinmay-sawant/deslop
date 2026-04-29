@@ -1,0 +1,8 @@
+def positive_over_abstracted_wrapper():
+    rule_id = "over_abstracted_wrapper"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Ceremonial wrapper-style or tiny data-container classes that add little beyond storing constructor state."
+    return rule_id, family, severity, status, intent, description

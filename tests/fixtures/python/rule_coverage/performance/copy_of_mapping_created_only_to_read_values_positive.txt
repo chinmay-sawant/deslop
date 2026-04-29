@@ -1,0 +1,8 @@
+def positive_copy_of_mapping_created_only_to_read_values():
+    rule_id = "copy_of_mapping_created_only_to_read_values"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag mappings copied defensively even though the next code only reads."
+    return rule_id, family, severity, status, intent, description

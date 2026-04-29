@@ -1,0 +1,8 @@
+def negative_tight_module_coupling():
+    rule_id = "tight_module_coupling"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Modules that depend on a large number of repository-local Python modules."
+    return rule_id, family, severity, status, intent, description

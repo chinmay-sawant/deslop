@@ -1,0 +1,8 @@
+def positive_data_mapper_contains_business_decision_tree():
+    rule_id = "data_mapper_contains_business_decision_tree"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag mappers or adapters that choose policy outcomes while converting data."
+    return rule_id, family, severity, status, intent, description

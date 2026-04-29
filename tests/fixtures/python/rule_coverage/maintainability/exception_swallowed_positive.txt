@@ -1,0 +1,8 @@
+def positive_exception_swallowed():
+    rule_id = "exception_swallowed"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Broad exception handlers like except: or except Exception: that immediately suppress the error with pass, continue, break, or return."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_datetime_boundary_mixes_naive_and_aware_values():
+    rule_id = "datetime_boundary_mixes_naive_and_aware_values"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag APIs that accept or combine timezone-aware and timezone-naive datetimes without normalization."
+    return rule_id, family, severity, status, intent, description

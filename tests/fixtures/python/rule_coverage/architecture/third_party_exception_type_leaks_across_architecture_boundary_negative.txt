@@ -1,0 +1,8 @@
+def negative_third_party_exception_type_leaks_across_architecture_boundary():
+    rule_id = "third_party_exception_type_leaks_across_architecture_boundary"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag public or upper-layer APIs that expose low-level library exception types instead of stable local contracts."
+    return rule_id, family, severity, status, intent, description

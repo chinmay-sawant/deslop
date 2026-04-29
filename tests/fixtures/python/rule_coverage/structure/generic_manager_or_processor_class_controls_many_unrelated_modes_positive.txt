@@ -1,0 +1,8 @@
+def positive_generic_manager_or_processor_class_controls_many_unrelated_modes():
+    rule_id = "generic_manager_or_processor_class_controls_many_unrelated_modes"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag vague manager-style classes that centralize unrelated behaviors behind mode flags."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_repeated_deepcopy_in_loop_on_same_source_object():
+    rule_id = "repeated_deepcopy_in_loop_on_same_source_object"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "copy.deepcopy called on the same large object on every iteration of a loop."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_typed_dict_total_false_without_docstring_noting_optional_keys():
+    rule_id = "typed_dict_total_false_without_docstring_noting_optional_keys"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "TypedDict(total=False) class has no docstring indicating which keys are optional."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_unsafe_yaml_loader():
+    rule_id = "unsafe_yaml_loader"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "yaml.load(...) or full_load(...) style loaders used where safe loading is more appropriate."
+    return rule_id, family, severity, status, intent, description

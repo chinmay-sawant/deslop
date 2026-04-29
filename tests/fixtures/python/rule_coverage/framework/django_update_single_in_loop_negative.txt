@@ -1,0 +1,8 @@
+def negative_django_update_single_in_loop():
+    rule_id = "django_update_single_in_loop"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Django code updates one row at a time inside loops instead of using bulk or set-based updates."
+    return rule_id, family, severity, status, intent, description

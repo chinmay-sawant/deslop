@@ -1,0 +1,8 @@
+def positive_middleware_creates_http_client_per_request():
+    rule_id = "middleware_creates_http_client_per_request"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Middleware creates HTTP clients per request instead of reusing app-scoped clients."
+    return rule_id, family, severity, status, intent, description

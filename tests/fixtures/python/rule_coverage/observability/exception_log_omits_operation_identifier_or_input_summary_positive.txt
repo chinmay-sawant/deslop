@@ -1,0 +1,8 @@
+def positive_exception_log_omits_operation_identifier_or_input_summary():
+    rule_id = "exception_log_omits_operation_identifier_or_input_summary"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag exception logs that lose the operation context needed to diagnose failures."
+    return rule_id, family, severity, status, intent, description

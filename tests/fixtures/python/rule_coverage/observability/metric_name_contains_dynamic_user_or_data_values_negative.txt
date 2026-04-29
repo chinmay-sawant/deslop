@@ -1,0 +1,8 @@
+def negative_metric_name_contains_dynamic_user_or_data_values():
+    rule_id = "metric_name_contains_dynamic_user_or_data_values"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag dynamic metric names that explode the series count."
+    return rule_id, family, severity, status, intent, description

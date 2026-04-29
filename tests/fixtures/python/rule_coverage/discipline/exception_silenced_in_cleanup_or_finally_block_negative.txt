@@ -1,0 +1,8 @@
+def negative_exception_silenced_in_cleanup_or_finally_block():
+    rule_id = "exception_silenced_in_cleanup_or_finally_block"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Exception or return statement inside a finally block silences an in-flight exception from the try body."
+    return rule_id, family, severity, status, intent, description

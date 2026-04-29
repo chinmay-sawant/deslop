@@ -1,0 +1,8 @@
+def negative_python_perf_layer_algorithmic_complexity_full_sort_for_top_n():
+    rule_id = "python_perf_layer_algorithmic_complexity_full_sort_for_top_n"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Algorithmic complexity. Flag sorted(...)[0:n] or DataFrame sort_values().head() where nlargest/nsmallest or heap selection would bound work."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_monolithic_module():
+    rule_id = "monolithic_module"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Non-__init__.py modules that are unusually large and combine many imports with orchestration-heavy behavior."
+    return rule_id, family, severity, status, intent, description

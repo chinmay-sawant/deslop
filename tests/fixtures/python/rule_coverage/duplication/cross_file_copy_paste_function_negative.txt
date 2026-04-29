@@ -1,0 +1,8 @@
+def negative_cross_file_copy_paste_function():
+    rule_id = "cross_file_copy_paste_function"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Highly similar non-test function bodies repeated across multiple Python files."
+    return rule_id, family, severity, status, intent, description

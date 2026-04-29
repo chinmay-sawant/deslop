@@ -1,0 +1,8 @@
+def positive_bidirectional_import_between_feature_modules():
+    rule_id = "bidirectional_import_between_feature_modules"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag feature modules that depend on each other directly."
+    return rule_id, family, severity, status, intent, description

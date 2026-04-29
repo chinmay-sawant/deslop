@@ -1,0 +1,8 @@
+def negative_set_created_per_iteration_same_elements():
+    rule_id = "set_created_per_iteration_same_elements"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "A set with the same elements is rebuilt on each iteration instead of being hoisted."
+    return rule_id, family, severity, status, intent, description

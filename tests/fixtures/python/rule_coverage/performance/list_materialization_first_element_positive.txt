@@ -1,0 +1,8 @@
+def positive_list_materialization_first_element():
+    rule_id = "list_materialization_first_element"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "list(...)[0] style access that materializes a whole list just to read the first element."
+    return rule_id, family, severity, status, intent, description

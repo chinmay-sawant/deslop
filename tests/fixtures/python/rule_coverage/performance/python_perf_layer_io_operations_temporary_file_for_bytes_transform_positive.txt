@@ -1,0 +1,8 @@
+def positive_python_perf_layer_io_operations_temporary_file_for_bytes_transform():
+    rule_id = "python_perf_layer_io_operations_temporary_file_for_bytes_transform"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: I/O operations. Flag temporary files used only for pure bytes transformations that can stream in memory."
+    return rule_id, family, severity, status, intent, description

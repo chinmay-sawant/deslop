@@ -1,0 +1,8 @@
+def positive_same_precondition_checked_in_multiple_sibling_branches():
+    rule_id = "same_precondition_checked_in_multiple_sibling_branches"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag functions that repeat the same guard in several branches instead of normalizing once."
+    return rule_id, family, severity, status, intent, description

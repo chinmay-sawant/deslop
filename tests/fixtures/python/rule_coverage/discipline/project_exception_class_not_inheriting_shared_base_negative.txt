@@ -1,0 +1,8 @@
+def negative_project_exception_class_not_inheriting_shared_base():
+    rule_id = "project_exception_class_not_inheriting_shared_base"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Custom exception class defined without inheriting from the project-wide base exception class."
+    return rule_id, family, severity, status, intent, description

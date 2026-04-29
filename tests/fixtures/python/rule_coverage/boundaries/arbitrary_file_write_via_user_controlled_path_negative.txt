@@ -1,0 +1,8 @@
+def negative_arbitrary_file_write_via_user_controlled_path():
+    rule_id = "arbitrary_file_write_via_user_controlled_path"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "File write operation uses a path derived from user input without containment check."
+    return rule_id, family, severity, status, intent, description

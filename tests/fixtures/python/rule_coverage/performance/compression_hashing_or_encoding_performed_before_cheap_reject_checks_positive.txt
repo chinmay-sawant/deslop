@@ -1,0 +1,8 @@
+def positive_compression_hashing_or_encoding_performed_before_cheap_reject_checks():
+    rule_id = "compression_hashing_or_encoding_performed_before_cheap_reject_checks"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag expensive transforms performed before simple guard checks that could skip the work."
+    return rule_id, family, severity, status, intent, description

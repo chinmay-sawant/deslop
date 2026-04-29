@@ -1,0 +1,8 @@
+def positive_python_perf_layer_collection_iteration_enumerate_list_materialized():
+    rule_id = "python_perf_layer_collection_iteration_enumerate_list_materialized"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Collection iteration. Flag list(enumerate(...)) materialization before immediate iteration."
+    return rule_id, family, severity, status, intent, description

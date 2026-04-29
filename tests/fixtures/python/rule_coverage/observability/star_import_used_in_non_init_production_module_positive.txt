@@ -1,0 +1,8 @@
+def positive_star_import_used_in_non_init_production_module():
+    rule_id = "star_import_used_in_non_init_production_module"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Star import (from x import *) used in a production module other than __init__.py."
+    return rule_id, family, severity, status, intent, description

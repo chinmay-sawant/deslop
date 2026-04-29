@@ -1,0 +1,8 @@
+def positive_synchronous_log_handler_or_flush_called_on_fast_path():
+    rule_id = "synchronous_log_handler_or_flush_called_on_fast_path"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag code that forces synchronous log flushing in latency-sensitive paths."
+    return rule_id, family, severity, status, intent, description

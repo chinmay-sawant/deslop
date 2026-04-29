@@ -1,0 +1,8 @@
+def positive_monolithic_init_module():
+    rule_id = "monolithic_init_module"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "__init__.py files that carry enough imports and behavior to look like monolithic modules."
+    return rule_id, family, severity, status, intent, description

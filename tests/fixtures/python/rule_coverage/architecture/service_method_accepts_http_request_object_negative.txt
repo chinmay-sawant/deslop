@@ -1,0 +1,8 @@
+def negative_service_method_accepts_http_request_object():
+    rule_id = "service_method_accepts_http_request_object"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Service-layer method parameter list includes an HTTP request type from Flask, Django, or FastAPI."
+    return rule_id, family, severity, status, intent, description

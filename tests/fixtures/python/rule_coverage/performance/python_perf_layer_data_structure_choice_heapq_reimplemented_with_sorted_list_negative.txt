@@ -1,0 +1,8 @@
+def negative_python_perf_layer_data_structure_choice_heapq_reimplemented_with_sorted_list():
+    rule_id = "python_perf_layer_data_structure_choice_heapq_reimplemented_with_sorted_list"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Data structure choice. Flag sorted-list priority queues where heapq avoids repeated full ordering."
+    return rule_id, family, severity, status, intent, description

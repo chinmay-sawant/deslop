@@ -1,0 +1,8 @@
+def positive_linear_search_helper_called_from_nested_loops():
+    rule_id = "linear_search_helper_called_from_nested_loops"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag nested loops that call helpers performing linear scans on each iteration."
+    return rule_id, family, severity, status, intent, description

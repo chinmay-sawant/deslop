@@ -1,0 +1,8 @@
+def negative_llm_response_not_cached_same_input():
+    rule_id = "llm_response_not_cached_same_input"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Repeated LLM calls show no visible caching even when prompt inputs appear likely to repeat."
+    return rule_id, family, severity, status, intent, description

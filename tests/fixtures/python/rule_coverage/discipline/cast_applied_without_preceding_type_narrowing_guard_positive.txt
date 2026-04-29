@@ -1,0 +1,8 @@
+def positive_cast_applied_without_preceding_type_narrowing_guard():
+    rule_id = "cast_applied_without_preceding_type_narrowing_guard"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "typing.cast applied to a value without a preceding isinstance or type narrowing check."
+    return rule_id, family, severity, status, intent, description

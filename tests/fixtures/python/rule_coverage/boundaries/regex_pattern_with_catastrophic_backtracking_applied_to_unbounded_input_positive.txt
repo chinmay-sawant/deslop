@@ -1,0 +1,8 @@
+def positive_regex_pattern_with_catastrophic_backtracking_applied_to_unbounded_input():
+    rule_id = "regex_pattern_with_catastrophic_backtracking_applied_to_unbounded_input"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Regular expression containing nested quantifiers applied to user-supplied unbounded input."
+    return rule_id, family, severity, status, intent, description

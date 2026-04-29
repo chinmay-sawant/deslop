@@ -1,0 +1,8 @@
+def positive_python_perf_layer_database_access_orm_query_inside_loop():
+    rule_id = "python_perf_layer_database_access_orm_query_inside_loop"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Database access. Flag ORM queries inside loops where select_related, prefetch_related, or bulk queries can collapse round trips."
+    return rule_id, family, severity, status, intent, description

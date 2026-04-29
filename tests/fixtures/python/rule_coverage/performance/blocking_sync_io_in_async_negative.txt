@@ -1,0 +1,8 @@
+def negative_blocking_sync_io_in_async():
+    rule_id = "blocking_sync_io_in_async"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Synchronous network, subprocess, sleep, or file I/O calls made from async def functions."
+    return rule_id, family, severity, status, intent, description

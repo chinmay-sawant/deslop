@@ -1,0 +1,8 @@
+def negative_enthusiastic_commentary():
+    rule_id = "enthusiastic_commentary"
+    family = "ai_smells"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Unusually enthusiastic or emoji-heavy production comments."
+    return rule_id, family, severity, status, intent, description

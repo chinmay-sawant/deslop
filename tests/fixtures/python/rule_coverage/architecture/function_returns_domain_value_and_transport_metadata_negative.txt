@@ -1,0 +1,8 @@
+def negative_function_returns_domain_value_and_transport_metadata():
+    rule_id = "function_returns_domain_value_and_transport_metadata"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag APIs that mix domain results with transport metadata such as status-like fields or side-channel details in one return shape."
+    return rule_id, family, severity, status, intent, description

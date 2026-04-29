@@ -1,0 +1,8 @@
+def negative_base_class_exists_only_to_share_data_fields_not_behavior():
+    rule_id = "base_class_exists_only_to_share_data_fields_not_behavior"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag base classes that provide only data containers with no meaningful shared behavior."
+    return rule_id, family, severity, status, intent, description

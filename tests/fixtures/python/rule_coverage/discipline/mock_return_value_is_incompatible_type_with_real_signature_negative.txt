@@ -1,0 +1,8 @@
+def negative_mock_return_value_is_incompatible_type_with_real_signature():
+    rule_id = "mock_return_value_is_incompatible_type_with_real_signature"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Mock return value set to a type that is incompatible with the real object's declared return type."
+    return rule_id, family, severity, status, intent, description

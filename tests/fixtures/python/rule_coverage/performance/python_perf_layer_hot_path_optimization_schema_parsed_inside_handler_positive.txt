@@ -1,0 +1,8 @@
+def positive_python_perf_layer_hot_path_optimization_schema_parsed_inside_handler():
+    rule_id = "python_perf_layer_hot_path_optimization_schema_parsed_inside_handler"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Hot path optimization. Flag schemas, templates, or expressions parsed per request instead of precompiled once."
+    return rule_id, family, severity, status, intent, description

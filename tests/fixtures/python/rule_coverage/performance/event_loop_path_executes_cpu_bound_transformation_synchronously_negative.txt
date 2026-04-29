@@ -1,0 +1,8 @@
+def negative_event_loop_path_executes_cpu_bound_transformation_synchronously():
+    rule_id = "event_loop_path_executes_cpu_bound_transformation_synchronously"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag async paths that perform large CPU-bound transforms inline."
+    return rule_id, family, severity, status, intent, description

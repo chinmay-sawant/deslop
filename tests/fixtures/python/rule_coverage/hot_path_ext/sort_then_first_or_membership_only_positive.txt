@@ -1,0 +1,8 @@
+def positive_sort_then_first_or_membership_only():
+    rule_id = "sort_then_first_or_membership_only"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "A collection is sorted even though only the first element or a membership-style check is needed."
+    return rule_id, family, severity, status, intent, description

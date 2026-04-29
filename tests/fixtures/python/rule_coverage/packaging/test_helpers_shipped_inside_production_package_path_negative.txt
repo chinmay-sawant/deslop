@@ -1,0 +1,8 @@
+def negative_test_helpers_shipped_inside_production_package_path():
+    rule_id = "test_helpers_shipped_inside_production_package_path"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag test-only helpers living under the production import path."
+    return rule_id, family, severity, status, intent, description

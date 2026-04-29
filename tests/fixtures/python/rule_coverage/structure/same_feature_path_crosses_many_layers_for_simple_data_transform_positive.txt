@@ -1,0 +1,8 @@
+def positive_same_feature_path_crosses_many_layers_for_simple_data_transform():
+    rule_id = "same_feature_path_crosses_many_layers_for_simple_data_transform"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag simple transformations that bounce through too many layers or wrappers."
+    return rule_id, family, severity, status, intent, description

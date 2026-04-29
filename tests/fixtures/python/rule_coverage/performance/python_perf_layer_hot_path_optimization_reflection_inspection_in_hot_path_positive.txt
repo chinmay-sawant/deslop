@@ -1,0 +1,8 @@
+def positive_python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path():
+    rule_id = "python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Hot path optimization. Flag inspect/signature/reflection work in hot paths."
+    return rule_id, family, severity, status, intent, description

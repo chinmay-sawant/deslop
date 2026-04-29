@@ -1,0 +1,8 @@
+def negative_data_pipeline_no_error_handling():
+    rule_id = "data_pipeline_no_error_handling"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Pipeline-style functions with no visible error handling or recovery path."
+    return rule_id, family, severity, status, intent, description

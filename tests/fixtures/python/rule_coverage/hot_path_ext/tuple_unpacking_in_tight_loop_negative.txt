@@ -1,0 +1,8 @@
+def negative_tuple_unpacking_in_tight_loop():
+    rule_id = "tuple_unpacking_in_tight_loop"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Tuple unpacking is repeated in tight loops where reducing per-iteration overhead may help."
+    return rule_id, family, severity, status, intent, description

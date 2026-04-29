@@ -1,0 +1,8 @@
+def negative_duplicate_query_fragment():
+    rule_id = "duplicate_query_fragment"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Repository repeats the same SQL-like query fragment across multiple files."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_sorted_list_maintained_with_insert_instead_of_bisect_insort():
+    rule_id = "sorted_list_maintained_with_insert_instead_of_bisect_insort"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Sorted list maintained by appending then calling .sort(); use bisect.insort() instead."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_textbook_docstring_small_helper():
+    rule_id = "textbook_docstring_small_helper"
+    family = "ai_smells"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Very small helper functions that have unusually long, textbook-style docstrings."
+    return rule_id, family, severity, status, intent, description

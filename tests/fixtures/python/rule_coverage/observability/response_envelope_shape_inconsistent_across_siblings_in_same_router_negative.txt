@@ -1,0 +1,8 @@
+def negative_response_envelope_shape_inconsistent_across_siblings_in_same_router():
+    rule_id = "response_envelope_shape_inconsistent_across_siblings_in_same_router"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Response envelope shape inconsistent across sibling endpoints in the same router file."
+    return rule_id, family, severity, status, intent, description

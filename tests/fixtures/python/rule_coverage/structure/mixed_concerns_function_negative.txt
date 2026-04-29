@@ -1,0 +1,8 @@
+def negative_mixed_concerns_function():
+    rule_id = "mixed_concerns_function"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Functions that mix HTTP, persistence, and filesystem-style concerns in one body."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_path_boundary_accepts_unexpanded_or_relative_input_without_normalization():
+    rule_id = "path_boundary_accepts_unexpanded_or_relative_input_without_normalization"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag filesystem-facing APIs that accept relative paths or ~ forms without normalizing them before downstream use."
+    return rule_id, family, severity, status, intent, description

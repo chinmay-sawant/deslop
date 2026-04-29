@@ -1,0 +1,8 @@
+def negative_repeated_attribute_chain_lookup_inside_tight_loop():
+    rule_id = "repeated_attribute_chain_lookup_inside_tight_loop"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag tight loops that repeatedly traverse the same attribute chain instead of binding a local reference."
+    return rule_id, family, severity, status, intent, description

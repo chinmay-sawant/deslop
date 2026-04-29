@@ -1,0 +1,8 @@
+def negative_python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact():
+    rule_id = "python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Profiling and benchmarking. Flag optimization comments or docs without profile, benchmark, or trace evidence."
+    return rule_id, family, severity, status, intent, description

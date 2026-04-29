@@ -1,0 +1,8 @@
+def negative_python_perf_layer_database_access_select_all_columns_for_serializer_subset():
+    rule_id = "python_perf_layer_database_access_select_all_columns_for_serializer_subset"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Database access. Flag ORM or SQL queries loading all columns when serializers use a small subset."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_option_bag_model():
+    rule_id = "option_bag_model"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Dataclass or TypedDict models that accumulate many optional fields and boolean switches."
+    return rule_id, family, severity, status, intent, description

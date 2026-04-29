@@ -1,0 +1,8 @@
+def negative_list_materialization_first_element():
+    rule_id = "list_materialization_first_element"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "list(...)[0] style access that materializes a whole list just to read the first element."
+    return rule_id, family, severity, status, intent, description

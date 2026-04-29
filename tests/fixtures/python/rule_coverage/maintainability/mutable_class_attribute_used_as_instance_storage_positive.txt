@@ -1,0 +1,8 @@
+def positive_mutable_class_attribute_used_as_instance_storage():
+    rule_id = "mutable_class_attribute_used_as_instance_storage"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag class attributes that accidentally store per-instance mutable state."
+    return rule_id, family, severity, status, intent, description

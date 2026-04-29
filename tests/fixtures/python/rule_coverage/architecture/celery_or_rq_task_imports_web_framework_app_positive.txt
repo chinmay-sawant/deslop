@@ -1,0 +1,8 @@
+def positive_celery_or_rq_task_imports_web_framework_app():
+    rule_id = "celery_or_rq_task_imports_web_framework_app"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Celery or RQ task module imports the Flask app object or FastAPI application at the top level."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_runtime_data_file_assumption_in_implicit_namespace_package():
+    rule_id = "runtime_data_file_assumption_in_implicit_namespace_package"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag implicit namespace packages that assume local data-file discovery at runtime."
+    return rule_id, family, severity, status, intent, description

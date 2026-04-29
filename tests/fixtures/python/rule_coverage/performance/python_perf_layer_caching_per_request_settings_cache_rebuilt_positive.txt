@@ -1,0 +1,8 @@
+def positive_python_perf_layer_caching_per_request_settings_cache_rebuilt():
+    rule_id = "python_perf_layer_caching_per_request_settings_cache_rebuilt"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Caching. Flag settings or feature-flag caches rebuilt for each request."
+    return rule_id, family, severity, status, intent, description

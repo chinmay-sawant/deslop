@@ -1,0 +1,8 @@
+def positive_click_typer_http_client_created_per_command():
+    rule_id = "click_typer_http_client_created_per_command"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "click or typer commands allocate HTTP clients inside command bodies instead of reusing a shared client factory."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_python_perf_layer_io_operations_small_file_writes_without_buffer():
+    rule_id = "python_perf_layer_io_operations_small_file_writes_without_buffer"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: I/O operations. Flag many tiny writes where writelines, join, or buffering would reduce syscalls."
+    return rule_id, family, severity, status, intent, description

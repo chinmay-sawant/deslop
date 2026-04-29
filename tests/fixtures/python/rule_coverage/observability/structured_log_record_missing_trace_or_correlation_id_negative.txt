@@ -1,0 +1,8 @@
+def negative_structured_log_record_missing_trace_or_correlation_id():
+    rule_id = "structured_log_record_missing_trace_or_correlation_id"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Structured log record in a request handler lacks trace_id or request_id for distributed tracing."
+    return rule_id, family, severity, status, intent, description

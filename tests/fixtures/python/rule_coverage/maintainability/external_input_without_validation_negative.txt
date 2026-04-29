@@ -1,0 +1,8 @@
+def negative_external_input_without_validation():
+    rule_id = "external_input_without_validation"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Request or CLI entry points that trust external input without obvious validation or guard checks."
+    return rule_id, family, severity, status, intent, description

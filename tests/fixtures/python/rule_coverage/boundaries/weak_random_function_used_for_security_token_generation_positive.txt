@@ -1,0 +1,8 @@
+def positive_weak_random_function_used_for_security_token_generation():
+    rule_id = "weak_random_function_used_for_security_token_generation"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "random.random or random.choice used to generate a security token, CSRF value, or password reset token."
+    return rule_id, family, severity, status, intent, description

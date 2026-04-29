@@ -1,0 +1,8 @@
+def negative_unbounded_list_accumulation_inside_long_running_function():
+    rule_id = "unbounded_list_accumulation_inside_long_running_function"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "List grows unboundedly inside a long-running function or loop without a cap or periodic flush."
+    return rule_id, family, severity, status, intent, description

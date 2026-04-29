@@ -1,0 +1,8 @@
+def positive_string_concat_in_loop():
+    rule_id = "string_concat_in_loop"
+    family = "performance"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Repeated string concatenation inside loops can create O(n^2) growth and extra allocations."
+    return rule_id, family, severity, status, intent, description

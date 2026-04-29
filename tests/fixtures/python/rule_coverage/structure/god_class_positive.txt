@@ -1,0 +1,8 @@
+def positive_god_class():
+    rule_id = "god_class"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Python classes that concentrate unusually high method count, public surface area, and mutable instance state."
+    return rule_id, family, severity, status, intent, description

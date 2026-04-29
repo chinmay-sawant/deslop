@@ -1,0 +1,8 @@
+def negative_test_asserts_private_attribute_value_instead_of_behavior():
+    rule_id = "test_asserts_private_attribute_value_instead_of_behavior"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Test asserts the value of a private attribute (_name) instead of observable public behavior."
+    return rule_id, family, severity, status, intent, description

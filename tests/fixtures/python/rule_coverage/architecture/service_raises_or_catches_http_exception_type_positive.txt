@@ -1,0 +1,8 @@
+def positive_service_raises_or_catches_http_exception_type():
+    rule_id = "service_raises_or_catches_http_exception_type"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Service-layer function raises or catches HTTP exception types that belong to the transport layer."
+    return rule_id, family, severity, status, intent, description

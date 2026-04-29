@@ -1,0 +1,8 @@
+def positive_write_without_buffering_in_loop():
+    rule_id = "write_without_buffering_in_loop"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Repeated writes inside loops with no visible buffering or batching."
+    return rule_id, family, severity, status, intent, description

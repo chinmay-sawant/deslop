@@ -1,0 +1,8 @@
+def positive_pydantic_settings_model_allows_post_init_mutation():
+    rule_id = "pydantic_settings_model_allows_post_init_mutation"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Pydantic Settings model does not set frozen=True, allowing accidental mutation of config values."
+    return rule_id, family, severity, status, intent, description

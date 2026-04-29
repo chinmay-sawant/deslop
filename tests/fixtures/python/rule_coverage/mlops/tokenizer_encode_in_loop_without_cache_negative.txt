@@ -1,0 +1,8 @@
+def negative_tokenizer_encode_in_loop_without_cache():
+    rule_id = "tokenizer_encode_in_loop_without_cache"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Tokenizer encode calls repeated inside loops without caching or batching signals."
+    return rule_id, family, severity, status, intent, description

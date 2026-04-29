@@ -1,0 +1,8 @@
+def negative_method_mutates_self_and_peer_object_in_same_block():
+    rule_id = "method_mutates_self_and_peer_object_in_same_block"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag methods that change both local state and a collaborator's state in the same unit of work."
+    return rule_id, family, severity, status, intent, description

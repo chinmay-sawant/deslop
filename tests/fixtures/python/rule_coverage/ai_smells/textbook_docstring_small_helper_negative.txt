@@ -1,0 +1,8 @@
+def negative_textbook_docstring_small_helper():
+    rule_id = "textbook_docstring_small_helper"
+    family = "ai_smells"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Very small helper functions that have unusually long, textbook-style docstrings."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_llm_api_call_in_loop_without_batching():
+    rule_id = "llm_api_call_in_loop_without_batching"
+    family = "mlops"
+    severity = "warning"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "LLM API calls are made inside loops without batching or aggregation."
+    return rule_id, family, severity, status, intent, description

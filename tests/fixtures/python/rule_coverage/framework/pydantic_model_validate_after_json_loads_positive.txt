@@ -1,0 +1,8 @@
+def positive_pydantic_model_validate_after_json_loads():
+    rule_id = "pydantic_model_validate_after_json_loads"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Pydantic v2 validation is preceded by json.loads(...) even though model_validate_json() could validate raw JSON directly."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_logging_basic_config_called_from_library_package():
+    rule_id = "logging_basic_config_called_from_library_package"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Library module calls logging.basicConfig or addHandler at import time, overriding application log config."
+    return rule_id, family, severity, status, intent, description

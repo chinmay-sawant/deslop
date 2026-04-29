@@ -1,0 +1,8 @@
+def negative_asyncio_get_event_loop_at_module_scope():
+    rule_id = "asyncio_get_event_loop_at_module_scope"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "asyncio.get_event_loop() or get_running_loop() called at module import scope outside any function."
+    return rule_id, family, severity, status, intent, description

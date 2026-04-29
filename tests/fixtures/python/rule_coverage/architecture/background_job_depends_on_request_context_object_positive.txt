@@ -1,0 +1,8 @@
+def positive_background_job_depends_on_request_context_object():
+    rule_id = "background_job_depends_on_request_context_object"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Celery, RQ, or background task function holds a reference to an HTTP request context object across the task boundary."
+    return rule_id, family, severity, status, intent, description

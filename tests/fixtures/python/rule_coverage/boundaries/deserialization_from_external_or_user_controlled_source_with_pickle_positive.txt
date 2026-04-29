@@ -1,0 +1,8 @@
+def positive_deserialization_from_external_or_user_controlled_source_with_pickle():
+    rule_id = "deserialization_from_external_or_user_controlled_source_with_pickle"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "pickle.loads or pickle.load called on data from an external or user-controlled source."
+    return rule_id, family, severity, status, intent, description

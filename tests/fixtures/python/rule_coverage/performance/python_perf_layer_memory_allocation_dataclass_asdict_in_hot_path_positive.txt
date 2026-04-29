@@ -1,0 +1,8 @@
+def positive_python_perf_layer_memory_allocation_dataclass_asdict_in_hot_path():
+    rule_id = "python_perf_layer_memory_allocation_dataclass_asdict_in_hot_path"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Memory allocation. Flag dataclasses.asdict calls in hot paths when shallow field access would suffice."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_pickle_deserialization_boundary():
+    rule_id = "pickle_deserialization_boundary"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "pickle.load(s) or dill.load(s) style deserialization in production code."
+    return rule_id, family, severity, status, intent, description

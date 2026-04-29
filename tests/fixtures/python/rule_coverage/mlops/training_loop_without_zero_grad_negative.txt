@@ -1,0 +1,8 @@
+def negative_training_loop_without_zero_grad():
+    rule_id = "training_loop_without_zero_grad"
+    family = "mlops"
+    severity = "warning"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "optimizer.step() appears without an obvious zero_grad() reset."
+    return rule_id, family, severity, status, intent, description

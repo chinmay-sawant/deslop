@@ -1,0 +1,8 @@
+def negative_string_mode_parameter_replaces_enum_or_literal_contract():
+    rule_id = "string_mode_parameter_replaces_enum_or_literal_contract"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag string mode parameters that should be constrained by an enum or literal contract."
+    return rule_id, family, severity, status, intent, description

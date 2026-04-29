@@ -1,0 +1,8 @@
+def positive_duplicated_cleanup_paths_instead_of_context_manager():
+    rule_id = "duplicated_cleanup_paths_instead_of_context_manager"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag repeated cleanup logic that should be centralized with a context manager or helper."
+    return rule_id, family, severity, status, intent, description

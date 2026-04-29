@@ -1,0 +1,8 @@
+def positive_dataclass_heavy_post_init():
+    rule_id = "dataclass_heavy_post_init"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Dataclass __post_init__ methods that perform I/O, subprocess, network, or heavyweight client setup."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_application_config_values_validated_lazily_on_first_use():
+    rule_id = "application_config_values_validated_lazily_on_first_use"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Config values validated inside request handlers rather than at startup, deferring misconfiguration errors."
+    return rule_id, family, severity, status, intent, description

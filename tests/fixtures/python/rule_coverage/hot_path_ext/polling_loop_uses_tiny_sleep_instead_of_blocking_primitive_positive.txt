@@ -1,0 +1,8 @@
+def positive_polling_loop_uses_tiny_sleep_instead_of_blocking_primitive():
+    rule_id = "polling_loop_uses_tiny_sleep_instead_of_blocking_primitive"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag loops that wake repeatedly on a tiny sleep interval instead of a blocking queue, event, or condition."
+    return rule_id, family, severity, status, intent, description

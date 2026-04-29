@@ -1,0 +1,8 @@
+def positive_untracked_create_task_result_may_hide_exception():
+    rule_id = "untracked_create_task_result_may_hide_exception"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "asyncio.create_task result discarded without storing a reference; exceptions raised in the task are silenced."
+    return rule_id, family, severity, status, intent, description

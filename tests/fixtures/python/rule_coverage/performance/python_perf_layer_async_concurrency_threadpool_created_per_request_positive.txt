@@ -1,0 +1,8 @@
+def positive_python_perf_layer_async_concurrency_threadpool_created_per_request():
+    rule_id = "python_perf_layer_async_concurrency_threadpool_created_per_request"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Async and concurrency. Flag ThreadPoolExecutor or ProcessPoolExecutor construction per request or call."
+    return rule_id, family, severity, status, intent, description

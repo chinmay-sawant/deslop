@@ -1,0 +1,8 @@
+def negative_function_accepts_mapping_protocol_but_mutates_input():
+    rule_id = "function_accepts_mapping_protocol_but_mutates_input"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag functions that advertise broad mapping or sequence inputs and then mutate the received object in place."
+    return rule_id, family, severity, status, intent, description

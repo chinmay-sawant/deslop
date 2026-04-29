@@ -1,0 +1,8 @@
+def negative_observability_metric_names_use_inconsistent_separators():
+    rule_id = "observability_metric_names_use_inconsistent_separators"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Metric names in the same codebase mix dot and underscore separators."
+    return rule_id, family, severity, status, intent, description

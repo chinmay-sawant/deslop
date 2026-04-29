@@ -1,0 +1,8 @@
+def negative_flask_json_encoder_per_request():
+    rule_id = "flask_json_encoder_per_request"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flask views instantiate JSON encoders per request instead of reusing app-level serialization setup."
+    return rule_id, family, severity, status, intent, description

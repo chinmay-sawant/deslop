@@ -1,0 +1,8 @@
+def negative_f_string_evaluated_eagerly_inside_logging_call():
+    rule_id = "f_string_evaluated_eagerly_inside_logging_call"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "f-string passed directly to logger.debug/info/warning, eagerly evaluating even when the level is disabled."
+    return rule_id, family, severity, status, intent, description

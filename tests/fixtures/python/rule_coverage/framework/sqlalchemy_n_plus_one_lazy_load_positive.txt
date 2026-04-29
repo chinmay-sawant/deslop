@@ -1,0 +1,8 @@
+def positive_sqlalchemy_n_plus_one_lazy_load():
+    rule_id = "sqlalchemy_n_plus_one_lazy_load"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "SQLAlchemy query shapes suggest lazy-loaded N+1 access with no visible eager loading."
+    return rule_id, family, severity, status, intent, description

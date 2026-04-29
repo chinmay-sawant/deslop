@@ -1,0 +1,8 @@
+def positive_plugin_discovery_scans_filesystem_each_invocation():
+    rule_id = "plugin_discovery_scans_filesystem_each_invocation"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag plugin or extension discovery that rescans disk on every invocation."
+    return rule_id, family, severity, status, intent, description

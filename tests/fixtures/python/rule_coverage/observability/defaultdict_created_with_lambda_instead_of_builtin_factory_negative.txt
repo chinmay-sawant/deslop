@@ -1,0 +1,8 @@
+def negative_defaultdict_created_with_lambda_instead_of_builtin_factory():
+    rule_id = "defaultdict_created_with_lambda_instead_of_builtin_factory"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "defaultdict(lambda: []) or similar lambda factory; use defaultdict(list) or defaultdict(int)."
+    return rule_id, family, severity, status, intent, description

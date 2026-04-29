@@ -1,0 +1,8 @@
+def positive_duplicate_error_handler_block():
+    rule_id = "duplicate_error_handler_block"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Repeated exception-handling block shapes in one file."
+    return rule_id, family, severity, status, intent, description

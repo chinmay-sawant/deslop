@@ -1,0 +1,8 @@
+def negative_embedding_dimension_mismatch_silent():
+    rule_id = "embedding_dimension_mismatch_silent"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Embeddings are compared without visible dimension validation before similarity math."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_feature_logic_embedded_in_process_entrypoint():
+    rule_id = "feature_logic_embedded_in_process_entrypoint"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag CLI, worker, or service entrypoints that own business branching instead of delegating to focused application services."
+    return rule_id, family, severity, status, intent, description

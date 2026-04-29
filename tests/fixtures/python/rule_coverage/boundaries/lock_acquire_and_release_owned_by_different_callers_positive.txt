@@ -1,0 +1,8 @@
+def positive_lock_acquire_and_release_owned_by_different_callers():
+    rule_id = "lock_acquire_and_release_owned_by_different_callers"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag APIs that require one caller to acquire a lock and another caller to release it."
+    return rule_id, family, severity, status, intent, description

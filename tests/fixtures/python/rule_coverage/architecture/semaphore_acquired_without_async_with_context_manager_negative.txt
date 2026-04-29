@@ -1,0 +1,8 @@
+def negative_semaphore_acquired_without_async_with_context_manager():
+    rule_id = "semaphore_acquired_without_async_with_context_manager"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "asyncio.Semaphore acquired via .acquire() without async with, risking a missed release on exception."
+    return rule_id, family, severity, status, intent, description

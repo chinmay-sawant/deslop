@@ -1,0 +1,8 @@
+def negative_mutable_module_global_state():
+    rule_id = "mutable_module_global_state"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Mutable module globals updated from multiple functions."
+    return rule_id, family, severity, status, intent, description

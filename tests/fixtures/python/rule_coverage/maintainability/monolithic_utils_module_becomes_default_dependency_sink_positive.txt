@@ -1,0 +1,8 @@
+def positive_monolithic_utils_module_becomes_default_dependency_sink():
+    rule_id = "monolithic_utils_module_becomes_default_dependency_sink"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag utility modules that attract unrelated dependencies and spread coupling."
+    return rule_id, family, severity, status, intent, description

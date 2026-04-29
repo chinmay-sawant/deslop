@@ -1,0 +1,8 @@
+def negative_environment_lookup_repeated_in_hot_path():
+    rule_id = "environment_lookup_repeated_in_hot_path"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag hot functions that repeatedly read environment variables or global config values that do not change."
+    return rule_id, family, severity, status, intent, description

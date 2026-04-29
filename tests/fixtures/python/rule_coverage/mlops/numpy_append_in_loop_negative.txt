@@ -1,0 +1,8 @@
+def negative_numpy_append_in_loop():
+    rule_id = "numpy_append_in_loop"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "np.append(...) is used inside loops, forcing repeated reallocations."
+    return rule_id, family, severity, status, intent, description

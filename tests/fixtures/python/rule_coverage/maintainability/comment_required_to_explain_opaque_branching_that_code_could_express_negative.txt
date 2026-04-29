@@ -1,0 +1,8 @@
+def negative_comment_required_to_explain_opaque_branching_that_code_could_express():
+    rule_id = "comment_required_to_explain_opaque_branching_that_code_could_express"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag code whose control flow stays unclear even with comments because the structure itself is weak."
+    return rule_id, family, severity, status, intent, description

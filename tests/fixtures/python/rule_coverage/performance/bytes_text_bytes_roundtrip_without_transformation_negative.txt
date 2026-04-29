@@ -1,0 +1,8 @@
+def negative_bytes_text_bytes_roundtrip_without_transformation():
+    rule_id = "bytes_text_bytes_roundtrip_without_transformation"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag code that decodes and re-encodes data without changing it."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_pandas_read_without_chunksize_large_file():
+    rule_id = "pandas_read_without_chunksize_large_file"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Data-loading functions read large tabular files without chunksize or nrows limits."
+    return rule_id, family, severity, status, intent, description

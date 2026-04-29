@@ -1,0 +1,8 @@
+def positive_bytes_text_bytes_roundtrip_without_transformation():
+    rule_id = "bytes_text_bytes_roundtrip_without_transformation"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag code that decodes and re-encodes data without changing it."
+    return rule_id, family, severity, status, intent, description

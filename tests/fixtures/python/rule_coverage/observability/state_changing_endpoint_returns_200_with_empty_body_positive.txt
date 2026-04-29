@@ -1,0 +1,8 @@
+def positive_state_changing_endpoint_returns_200_with_empty_body():
+    rule_id = "state_changing_endpoint_returns_200_with_empty_body"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "State-changing POST/PUT endpoint returns HTTP 200 with an empty body; prefer 201/202/204."
+    return rule_id, family, severity, status, intent, description

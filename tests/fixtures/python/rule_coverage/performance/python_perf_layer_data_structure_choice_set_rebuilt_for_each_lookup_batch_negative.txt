@@ -1,0 +1,8 @@
+def negative_python_perf_layer_data_structure_choice_set_rebuilt_for_each_lookup_batch():
+    rule_id = "python_perf_layer_data_structure_choice_set_rebuilt_for_each_lookup_batch"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Data structure choice. Flag sets rebuilt inside loops instead of once per lookup batch."
+    return rule_id, family, severity, status, intent, description

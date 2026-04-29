@@ -1,0 +1,8 @@
+def negative_repeated_hashlib_new_same_algorithm():
+    rule_id = "repeated_hashlib_new_same_algorithm"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "The same hashing algorithm is repeatedly constructed in a loop or tight path."
+    return rule_id, family, severity, status, intent, description

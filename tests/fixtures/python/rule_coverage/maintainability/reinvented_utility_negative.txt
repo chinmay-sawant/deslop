@@ -1,0 +1,8 @@
+def negative_reinvented_utility():
+    rule_id = "reinvented_utility"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Obvious locally implemented utility helpers that overlap with already-imported standard-library style helpers."
+    return rule_id, family, severity, status, intent, description

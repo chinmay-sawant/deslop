@@ -1,0 +1,8 @@
+def positive_async_lock_held_across_await():
+    rule_id = "async_lock_held_across_await"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Async lock scopes or explicit acquire/release regions that continue across unrelated await points."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_string_forward_reference_in_annotation_not_under_type_checking_guard():
+    rule_id = "string_forward_reference_in_annotation_not_under_type_checking_guard"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "String forward reference annotation not placed under `if TYPE_CHECKING:`, causing import at runtime."
+    return rule_id, family, severity, status, intent, description

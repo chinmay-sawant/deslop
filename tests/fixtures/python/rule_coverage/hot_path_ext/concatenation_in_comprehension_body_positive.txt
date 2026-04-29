@@ -1,0 +1,8 @@
+def positive_concatenation_in_comprehension_body():
+    rule_id = "concatenation_in_comprehension_body"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "String or collection concatenation happens inside a comprehension body, creating avoidable churn."
+    return rule_id, family, severity, status, intent, description

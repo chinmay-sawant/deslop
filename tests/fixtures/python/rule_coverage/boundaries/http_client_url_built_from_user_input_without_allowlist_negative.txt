@@ -1,0 +1,8 @@
+def negative_http_client_url_built_from_user_input_without_allowlist():
+    rule_id = "http_client_url_built_from_user_input_without_allowlist"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "HTTP client URL constructed from user-controlled input without an allowlist or URL validation."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_django_all_without_limit_in_view():
+    rule_id = "django_all_without_limit_in_view"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Django views call .all() without visible pagination, slicing, or limiting."
+    return rule_id, family, severity, status, intent, description

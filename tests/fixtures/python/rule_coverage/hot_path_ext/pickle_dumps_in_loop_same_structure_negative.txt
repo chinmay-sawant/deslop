@@ -1,0 +1,8 @@
+def negative_pickle_dumps_in_loop_same_structure():
+    rule_id = "pickle_dumps_in_loop_same_structure"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "pickle.dumps(...) is called repeatedly for the same structural shape in a loop."
+    return rule_id, family, severity, status, intent, description

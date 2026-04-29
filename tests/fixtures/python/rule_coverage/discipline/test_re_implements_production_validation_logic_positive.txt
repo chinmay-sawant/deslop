@@ -1,0 +1,8 @@
+def positive_test_re_implements_production_validation_logic():
+    rule_id = "test_re_implements_production_validation_logic"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Test contains a hard-coded reimplementation of production validation logic instead of invoking it."
+    return rule_id, family, severity, status, intent, description

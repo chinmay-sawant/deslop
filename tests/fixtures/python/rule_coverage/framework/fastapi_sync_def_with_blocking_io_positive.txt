@@ -1,0 +1,8 @@
+def positive_fastapi_sync_def_with_blocking_io():
+    rule_id = "fastapi_sync_def_with_blocking_io"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "FastAPI sync route handlers perform blocking I/O instead of using async routes or executor offload."
+    return rule_id, family, severity, status, intent, description

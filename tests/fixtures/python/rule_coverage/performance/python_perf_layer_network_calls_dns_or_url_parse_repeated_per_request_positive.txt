@@ -1,0 +1,8 @@
+def positive_python_perf_layer_network_calls_dns_or_url_parse_repeated_per_request():
+    rule_id = "python_perf_layer_network_calls_dns_or_url_parse_repeated_per_request"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Network calls. Flag repeated DNS, URL parsing, or endpoint normalization for stable upstreams."
+    return rule_id, family, severity, status, intent, description

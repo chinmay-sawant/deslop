@@ -1,0 +1,8 @@
+def negative_duplicate_transformation_pipeline():
+    rule_id = "duplicate_transformation_pipeline"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Repository repeats the same data transformation pipeline stages across multiple functions."
+    return rule_id, family, severity, status, intent, description

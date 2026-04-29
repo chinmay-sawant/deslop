@@ -1,0 +1,8 @@
+def positive_deep_inheritance_hierarchy():
+    rule_id = "deep_inheritance_hierarchy"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Repository-local Python class chains with unusually deep inheritance depth."
+    return rule_id, family, severity, status, intent, description

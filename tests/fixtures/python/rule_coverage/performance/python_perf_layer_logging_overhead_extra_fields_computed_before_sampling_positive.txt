@@ -1,0 +1,8 @@
+def positive_python_perf_layer_logging_overhead_extra_fields_computed_before_sampling():
+    rule_id = "python_perf_layer_logging_overhead_extra_fields_computed_before_sampling"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Logging overhead. Flag expensive log extra fields computed before sampling or level filters."
+    return rule_id, family, severity, status, intent, description

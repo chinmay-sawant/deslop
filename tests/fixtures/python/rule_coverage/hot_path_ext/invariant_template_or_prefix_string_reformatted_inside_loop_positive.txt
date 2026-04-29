@@ -1,0 +1,8 @@
+def positive_invariant_template_or_prefix_string_reformatted_inside_loop():
+    rule_id = "invariant_template_or_prefix_string_reformatted_inside_loop"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag loops that reformat constant template fragments on each iteration."
+    return rule_id, family, severity, status, intent, description

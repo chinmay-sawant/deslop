@@ -1,0 +1,8 @@
+def negative_model_loaded_per_request():
+    rule_id = "model_loaded_per_request"
+    family = "mlops"
+    severity = "warning"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Models are loaded on request paths instead of once during application startup."
+    return rule_id, family, severity, status, intent, description

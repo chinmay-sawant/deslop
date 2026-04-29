@@ -1,0 +1,8 @@
+def negative_python_perf_layer_serialization_gzip_compress_tiny_payloads():
+    rule_id = "python_perf_layer_serialization_gzip_compress_tiny_payloads"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Serialization and deserialization. Flag gzip compression of tiny payloads where CPU overhead can exceed transfer savings."
+    return rule_id, family, severity, status, intent, description

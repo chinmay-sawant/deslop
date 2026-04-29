@@ -1,0 +1,8 @@
+def negative_serialization_cost_paid_only_to_compare_or_hash_intermediate_state():
+    rule_id = "serialization_cost_paid_only_to_compare_or_hash_intermediate_state"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag serialization used only for equality, cache key, or hashing comparisons."
+    return rule_id, family, severity, status, intent, description

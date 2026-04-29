@@ -1,0 +1,8 @@
+def negative_oserror_caught_without_errno_inspection():
+    rule_id = "oserror_caught_without_errno_inspection"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "OSError caught as a broad class without inspecting errno to distinguish ENOENT, EACCES, and others."
+    return rule_id, family, severity, status, intent, description

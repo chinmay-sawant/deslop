@@ -1,0 +1,8 @@
+def positive_namedtuple_used_where_dataclass_better_fits():
+    rule_id = "namedtuple_used_where_dataclass_better_fits"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "collections.namedtuple used for a record that needs default values, mutation, or methods."
+    return rule_id, family, severity, status, intent, description

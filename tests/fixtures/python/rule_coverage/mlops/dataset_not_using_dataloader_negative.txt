@@ -1,0 +1,8 @@
+def negative_dataset_not_using_dataloader():
+    rule_id = "dataset_not_using_dataloader"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Manual dataset batching loops that bypass torch.utils.data.DataLoader."
+    return rule_id, family, severity, status, intent, description

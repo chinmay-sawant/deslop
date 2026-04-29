@@ -1,0 +1,8 @@
+def positive_rate_limit_429_response_missing_retry_after_header_or_stable_body():
+    rule_id = "rate_limit_429_response_missing_retry_after_header_or_stable_body"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "HTTP 429 response returned without a Retry-After header or stable body field."
+    return rule_id, family, severity, status, intent, description

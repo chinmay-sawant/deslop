@@ -1,0 +1,8 @@
+def positive_debug_or_admin_endpoint_registered_without_environment_guard():
+    rule_id = "debug_or_admin_endpoint_registered_without_environment_guard"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Debug, admin, or diagnostics route registered without an environment variable guard."
+    return rule_id, family, severity, status, intent, description

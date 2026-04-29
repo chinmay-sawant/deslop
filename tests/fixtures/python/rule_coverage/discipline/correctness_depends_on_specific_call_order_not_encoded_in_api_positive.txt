@@ -1,0 +1,8 @@
+def positive_correctness_depends_on_specific_call_order_not_encoded_in_api():
+    rule_id = "correctness_depends_on_specific_call_order_not_encoded_in_api"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag APIs whose safe use depends on an undocumented sequence of method calls."
+    return rule_id, family, severity, status, intent, description

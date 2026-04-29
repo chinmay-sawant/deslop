@@ -1,0 +1,8 @@
+def negative_storage_write_returns_driver_specific_object():
+    rule_id = "storage_write_returns_driver_specific_object"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag write helpers that return raw driver, session, or cursor objects instead of stable application data."
+    return rule_id, family, severity, status, intent, description

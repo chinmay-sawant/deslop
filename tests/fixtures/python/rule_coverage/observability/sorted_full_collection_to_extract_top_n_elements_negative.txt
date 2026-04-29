@@ -1,0 +1,8 @@
+def negative_sorted_full_collection_to_extract_top_n_elements():
+    rule_id = "sorted_full_collection_to_extract_top_n_elements"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "sorted() called on a full collection just to slice the first N elements; use heapq.nsmallest/nlargest."
+    return rule_id, family, severity, status, intent, description

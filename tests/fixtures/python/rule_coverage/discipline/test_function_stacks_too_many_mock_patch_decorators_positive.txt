@@ -1,0 +1,8 @@
+def positive_test_function_stacks_too_many_mock_patch_decorators():
+    rule_id = "test_function_stacks_too_many_mock_patch_decorators"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Test function has five or more @mock.patch decorators, indicating over-specified mocking."
+    return rule_id, family, severity, status, intent, description

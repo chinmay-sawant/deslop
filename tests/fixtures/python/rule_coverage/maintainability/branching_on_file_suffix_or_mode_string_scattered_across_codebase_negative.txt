@@ -1,0 +1,8 @@
+def negative_branching_on_file_suffix_or_mode_string_scattered_across_codebase():
+    rule_id = "branching_on_file_suffix_or_mode_string_scattered_across_codebase"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag suffix or mode dispatch logic duplicated across distant modules."
+    return rule_id, family, severity, status, intent, description

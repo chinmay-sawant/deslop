@@ -1,0 +1,8 @@
+def negative_coroutine_result_discarded_without_await():
+    rule_id = "coroutine_result_discarded_without_await"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Coroutine object assigned or returned without await, so the coroutine body never executes."
+    return rule_id, family, severity, status, intent, description

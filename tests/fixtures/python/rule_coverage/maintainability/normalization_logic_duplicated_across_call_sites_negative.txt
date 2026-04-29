@@ -1,0 +1,8 @@
+def negative_normalization_logic_duplicated_across_call_sites():
+    rule_id = "normalization_logic_duplicated_across_call_sites"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag the same value-cleaning or canonicalization logic repeated in several places."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_django_values_vs_full_model_in_loop():
+    rule_id = "django_values_vs_full_model_in_loop"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Django loops hydrate full model instances where values(), values_list(), or only() would likely be cheaper."
+    return rule_id, family, severity, status, intent, description

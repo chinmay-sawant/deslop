@@ -1,0 +1,8 @@
+def positive_python_perf_layer_hot_path_optimization_numpy_python_loop_over_array():
+    rule_id = "python_perf_layer_hot_path_optimization_numpy_python_loop_over_array"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Hot path optimization. Flag Python loops over large NumPy arrays where vectorized operations fit the computation."
+    return rule_id, family, severity, status, intent, description

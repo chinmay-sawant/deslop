@@ -1,0 +1,8 @@
+def positive_upstream_http_call_per_item_in_handler():
+    rule_id = "upstream_http_call_per_item_in_handler"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Request handlers make sequential upstream HTTP calls inside loops instead of batching or bounded concurrency."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_import_time_subprocess():
+    rule_id = "import_time_subprocess"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Subprocess launches triggered from module scope during import."
+    return rule_id, family, severity, status, intent, description

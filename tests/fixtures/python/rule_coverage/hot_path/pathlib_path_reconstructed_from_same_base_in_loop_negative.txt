@@ -1,0 +1,8 @@
+def negative_pathlib_path_reconstructed_from_same_base_in_loop():
+    rule_id = "pathlib_path_reconstructed_from_same_base_in_loop"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag loops that rebuild the same base Path object every iteration."
+    return rule_id, family, severity, status, intent, description

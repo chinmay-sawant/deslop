@@ -1,0 +1,8 @@
+def positive_python_perf_layer_logging_overhead_per_item_info_log_in_batch():
+    rule_id = "python_perf_layer_logging_overhead_per_item_info_log_in_batch"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Logging overhead. Flag info/debug logging per record in large batch processing loops."
+    return rule_id, family, severity, status, intent, description

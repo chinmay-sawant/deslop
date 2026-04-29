@@ -1,0 +1,8 @@
+def positive_typevar_defined_without_bound_or_constraints_for_narrow_use():
+    rule_id = "typevar_defined_without_bound_or_constraints_for_narrow_use"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "TypeVar defined without a bound or constraints for a generic that is only used with one or two concrete types."
+    return rule_id, family, severity, status, intent, description

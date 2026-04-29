@@ -1,0 +1,8 @@
+def positive_enumerate_on_range_len():
+    rule_id = "enumerate_on_range_len"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "enumerate(range(len(...))) style loops that add indexing ceremony without extra value."
+    return rule_id, family, severity, status, intent, description

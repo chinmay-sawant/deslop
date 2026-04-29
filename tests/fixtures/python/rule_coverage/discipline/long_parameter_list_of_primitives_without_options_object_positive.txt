@@ -1,0 +1,8 @@
+def positive_long_parameter_list_of_primitives_without_options_object():
+    rule_id = "long_parameter_list_of_primitives_without_options_object"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag functions whose many primitive parameters obscure meaning and encourage call-site mistakes."
+    return rule_id, family, severity, status, intent, description

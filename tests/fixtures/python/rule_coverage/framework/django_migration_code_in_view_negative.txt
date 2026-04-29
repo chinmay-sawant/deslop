@@ -1,0 +1,8 @@
+def negative_django_migration_code_in_view():
+    rule_id = "django_migration_code_in_view"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Django views or request paths reference schema or migration operations that belong in migrations."
+    return rule_id, family, severity, status, intent, description

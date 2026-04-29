@@ -1,0 +1,8 @@
+def negative_untracked_asyncio_task():
+    rule_id = "untracked_asyncio_task"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "asyncio.create_task(...) or similar task creation whose handle is discarded immediately."
+    return rule_id, family, severity, status, intent, description

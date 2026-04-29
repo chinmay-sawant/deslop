@@ -1,0 +1,8 @@
+def negative_alert_or_slo_threshold_hardcoded_inside_application_logic():
+    rule_id = "alert_or_slo_threshold_hardcoded_inside_application_logic"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "SLO error rate or latency threshold hardcoded in application code instead of external configuration."
+    return rule_id, family, severity, status, intent, description

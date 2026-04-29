@@ -1,0 +1,8 @@
+def negative_langchain_chain_built_per_request():
+    rule_id = "langchain_chain_built_per_request"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path."
+    return rule_id, family, severity, status, intent, description

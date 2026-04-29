@@ -1,0 +1,8 @@
+def positive_python_perf_layer_hot_path_optimization_attribute_lookup_in_deep_inner_loop():
+    rule_id = "python_perf_layer_hot_path_optimization_attribute_lookup_in_deep_inner_loop"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Hot path optimization. Flag repeated dynamic getattr or attribute lookup in deep loops where local binding helps."
+    return rule_id, family, severity, status, intent, description

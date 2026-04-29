@@ -1,0 +1,8 @@
+def positive_pandas_apply_with_simple_vectorizable_op():
+    rule_id = "pandas_apply_with_simple_vectorizable_op"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Simple DataFrame transforms are routed through apply(lambda) instead of vectorized operations."
+    return rule_id, family, severity, status, intent, description
