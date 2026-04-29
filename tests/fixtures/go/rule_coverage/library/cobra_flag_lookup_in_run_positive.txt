@@ -1,11 +1,33 @@
 package rulecoverage
 
-func PositiveCobraFlagLookupInRun() string {
-    ruleID := "cobra_flag_lookup_in_run"
-    family := "library"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "`cmd.Flags().GetString(\"flag\")` inside `RunE` when the flag could be bound to a variable with `StringVar`"
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "compress/gzip"
+    "encoding/json"
+    "github.com/gin-gonic/gin"
+    "io"
+    "net/http"
+    "net/http/httputil"
+    "os"
+)
+
+// Positive scenario for cobra_flag_lookup_in_run: shows the risky shape for this rule.
+// Rule intent: `cmd.Flags().GetString("flag")` inside `RunE` when the flag could be bound to a variable with `StringVar`
+func PositiveCobraFlagLookupInRun(c *gin.Context) {
+    raw, _ := c.GetRawData()
+    var body map[string]any
+    c.ShouldBindJSON(&body)
+    dump, _ := httputil.DumpRequest(c.Request, true)
+    c.Writer.Write(dump)
+    client := &http.Client{}
+    client.Get(c.Query("upstream"))
+    client.Get(c.Query("upstream"))
+    os.Getenv("FEATURE_FLAG")
+    file, _ := c.FormFile("upload")
+    opened, _ := file.Open()
+    io.ReadAll(opened)
+    gz := gzip.NewWriter(c.Writer)
+    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
+    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+    c.Data(200, "application/json", payload)
 }

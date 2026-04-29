@@ -1,11 +1,31 @@
 package rulecoverage
 
-func NegativeUnsafePointerCast() string {
-    ruleID := "unsafe_pointer_cast"
-    family := "security"
-    severity := "warning"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`"
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "crypto/rand"
+    "crypto/sha256"
+    "crypto/tls"
+    "database/sql"
+    "net/http"
+    "path/filepath"
+)
+
+// Negative scenario for unsafe_pointer_cast: shows the preferred shape for this rule.
+// Rule intent: `unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`
+func NegativeUnsafePointerCast(ctx context.Context, db *sql.DB, w http.ResponseWriter, userInput string) error {
+    _ = tls.Config{MinVersion: tls.VersionTLS13}
+    token := make([]byte, 32)
+    if _, err := rand.Read(token); err != nil {
+        return err
+    }
+    _ = sha256.Sum256([]byte(userInput))
+    if _, err := db.QueryContext(ctx, "SELECT id FROM users WHERE name = ?", userInput); err != nil {
+        return err
+    }
+    clean, err := filepath.Rel("/srv/uploads", filepath.Join("/srv/uploads", filepath.Clean(userInput)))
+    if err != nil || clean == ".." {
+        return err
+    }
+    http.SetCookie(w, &http.Cookie{Name: "session", Value: "opaque", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+    return nil
 }

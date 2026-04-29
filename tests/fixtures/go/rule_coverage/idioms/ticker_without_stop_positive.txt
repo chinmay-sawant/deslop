@@ -1,11 +1,30 @@
 package rulecoverage
 
-func PositiveTickerWithoutStop() string {
-    ruleID := "ticker_without_stop"
-    family := "idioms"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "time.NewTicker(...) is created without an observed Stop() call."
-    return ruleID + family + severity + status + intent + description
+import (
+    "database/sql"
+    "io"
+    "net/http"
+    "os"
+    "time"
+)
+
+// Positive scenario for ticker_without_stop: shows the risky shape for this rule.
+// Rule intent: time.NewTicker(...) is created without an observed Stop() call.
+var mutableConfig = map[string]string{}
+
+func PositiveTickerWithoutStop(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
+    client := http.Client{}
+    resp, _ := client.Get("https://example.test")
+    _ = resp
+    rows, _ := db.Query("SELECT id FROM users")
+    for rows.Next() {}
+    for _, path := range paths {
+        f, _ := os.Open(path)
+        defer f.Close()
+        time.After(time.Second)
+    }
+    io.ReadAll(r.Body)
+    w.Write([]byte("ok"))
+    w.WriteHeader(http.StatusAccepted)
+    mutableConfig["last"] = r.URL.Path
 }

@@ -1,11 +1,49 @@
-package rulecoverage
+package repository
 
-func NegativeTableDrivenTestsMixMultipleDomainsInOneCasesSlice() string {
-    ruleID := "table_driven_tests_mix_multiple_domains_in_one_cases_slice"
-    family := "architecture"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Oversized case tables that mix unrelated behaviors into one monolithic test."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+    "net/http"
+)
+
+// Negative scenario for table_driven_tests_mix_multiple_domains_in_one_cases_slice: shows the preferred shape for this rule.
+// Rule intent: Oversized case tables that mix unrelated behaviors into one monolithic test.
+type User struct {
+    ID string
+    Status string
+}
+
+type UserRequest struct {
+    Status *string `json:"status"`
+}
+
+type UserResponse struct {
+    ID string `json:"id"`
+    Status string `json:"status"`
+}
+
+type UserRepository interface {
+    FindByID(ctx context.Context, id string) (User, error)
+}
+
+type UserService struct { repo UserRepository }
+
+func (s UserService) NegativeTableDrivenTestsMixMultipleDomainsInOneCasesSlice(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
+    user, err := s.repo.FindByID(ctx, id)
+    if err != nil {
+        return UserResponse{}, err
+    }
+    if req.Status != nil {
+        user.Status = *req.Status
+    }
+    return UserResponse{ID: user.ID, Status: user.Status}, nil
+}
+
+func writeUser(w http.ResponseWriter, response UserResponse) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+}
+
+func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
+    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
 }

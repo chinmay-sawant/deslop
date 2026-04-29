@@ -1,11 +1,31 @@
 package rulecoverage
 
-func NegativeSliceGrowWithoutCapHint() string {
-    ruleID := "slice_grow_without_cap_hint"
-    family := "performance"
-    severity := "warning"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source"
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "io"
+    "sort"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for slice_grow_without_cap_hint: shows the preferred shape for this rule.
+// Rule intent: `var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source
+type record struct { ID int; Name string; Payload []byte }
+
+func NegativeSliceGrowWithoutCapHint(items []record, needle string, w io.Writer) string {
+    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+    var b strings.Builder
+    b.Grow(len(items) * 8)
+    scratch := bytes.NewBuffer(make([]byte, 0, 64))
+    for i, item := range items {
+        if strings.Contains(item.Name, needle) {
+            b.WriteString(item.Name)
+            b.WriteByte('/')
+            b.WriteString(strconv.Itoa(i))
+        }
+        scratch.Reset()
+        scratch.Write(item.Payload)
+    }
+    _, _ = io.WriteString(w, b.String())
+    return b.String()
 }

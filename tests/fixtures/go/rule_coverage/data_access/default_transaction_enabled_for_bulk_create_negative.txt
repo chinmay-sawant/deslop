@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeDefaultTransactionEnabledForBulkCreate() string {
-    ruleID := "default_transaction_enabled_for_bulk_create"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Bulk creates performed with GORM default transaction enabled \u2014 SkipDefaultTransaction improves throughput."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for default_transaction_enabled_for_bulk_create: shows the preferred shape for this rule.
+// Rule intent: Bulk creates performed with GORM default transaction enabled — SkipDefaultTransaction improves throughput.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeDefaultTransactionEnabledForBulkCreate(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

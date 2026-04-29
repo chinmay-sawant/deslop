@@ -1,11 +1,31 @@
 package rulecoverage
 
-func NegativeStringConcatenationForPathJoin() string {
-    ruleID := "string_concatenation_for_path_join"
-    family := "performance"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`dir + \"/\" + file` or manual path assembly via `+` concatenation"
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "io"
+    "sort"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for string_concatenation_for_path_join: shows the preferred shape for this rule.
+// Rule intent: `dir + "/" + file` or manual path assembly via `+` concatenation
+type record struct { ID int; Name string; Payload []byte }
+
+func NegativeStringConcatenationForPathJoin(items []record, needle string, w io.Writer) string {
+    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+    var b strings.Builder
+    b.Grow(len(items) * 8)
+    scratch := bytes.NewBuffer(make([]byte, 0, 64))
+    for i, item := range items {
+        if strings.Contains(item.Name, needle) {
+            b.WriteString(item.Name)
+            b.WriteByte('/')
+            b.WriteString(strconv.Itoa(i))
+        }
+        scratch.Reset()
+        scratch.Write(item.Payload)
+    }
+    _, _ = io.WriteString(w, b.String())
+    return b.String()
 }

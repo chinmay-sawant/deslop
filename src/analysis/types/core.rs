@@ -174,7 +174,7 @@ pub(crate) struct ParsedFunction {
 #[derive(Debug, Clone)]
 pub(crate) enum LanguageFunctionData {
     Go(GoFunctionEvidence),
-    Python(PythonFunctionEvidence),
+    Python(Box<PythonFunctionEvidence>),
     Rust(RustFunctionEvidence),
 }
 

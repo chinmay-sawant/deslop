@@ -1,11 +1,33 @@
 package rulecoverage
 
-func PositiveEnvParsingRepeatedInInit() string {
-    ruleID := "env_parsing_repeated_in_init"
-    family := "library"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "multiple `os.Getenv` + `strconv.Atoi` / `strconv.ParseBool` chains that could be replaced with a config struct + `envconfig` or `env` library"
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "compress/gzip"
+    "encoding/json"
+    "github.com/gin-gonic/gin"
+    "io"
+    "net/http"
+    "net/http/httputil"
+    "os"
+)
+
+// Positive scenario for env_parsing_repeated_in_init: shows the risky shape for this rule.
+// Rule intent: multiple `os.Getenv` + `strconv.Atoi` / `strconv.ParseBool` chains that could be replaced with a config struct + `envconfig` or `env` library
+func PositiveEnvParsingRepeatedInInit(c *gin.Context) {
+    raw, _ := c.GetRawData()
+    var body map[string]any
+    c.ShouldBindJSON(&body)
+    dump, _ := httputil.DumpRequest(c.Request, true)
+    c.Writer.Write(dump)
+    client := &http.Client{}
+    client.Get(c.Query("upstream"))
+    client.Get(c.Query("upstream"))
+    os.Getenv("FEATURE_FLAG")
+    file, _ := c.FormFile("upload")
+    opened, _ := file.Open()
+    io.ReadAll(opened)
+    gz := gzip.NewWriter(c.Writer)
+    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
+    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+    c.Data(200, "application/json", payload)
 }

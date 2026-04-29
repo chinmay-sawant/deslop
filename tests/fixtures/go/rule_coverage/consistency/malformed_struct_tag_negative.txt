@@ -1,11 +1,10 @@
 package rulecoverage
 
-func NegativeMalformedStructTag() string {
-    ruleID := "malformed_struct_tag"
-    family := "consistency"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Struct field tags that do not parse as valid Go tag key/value pairs."
-    return ruleID + family + severity + status + intent + description
+// Negative scenario for malformed_struct_tag: shows the preferred shape for this rule.
+// Rule intent: Struct field tags that do not parse as valid Go tag key/value pairs.
+type NegativeMalformedStructTagUser struct {
+    ID string `json:"id" db:"id"`
 }
+
+func (u *NegativeMalformedStructTagUser) IDValue() string { return u.ID }
+func (u *NegativeMalformedStructTagUser) Rename(id string) { u.ID = id }

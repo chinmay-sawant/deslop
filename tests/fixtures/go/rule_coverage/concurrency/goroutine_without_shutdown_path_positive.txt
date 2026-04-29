@@ -1,11 +1,24 @@
 package rulecoverage
 
-func PositiveGoroutineWithoutShutdownPath() string {
-    ruleID := "goroutine_without_shutdown_path"
-    family := "concurrency"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path."
-    return ruleID + family + severity + status + intent + description
+import (
+    "sync"
+    "time"
+)
+
+// Positive scenario for goroutine_without_shutdown_path: shows the risky shape for this rule.
+// Rule intent: Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path.
+func PositiveGoroutineWithoutShutdownPath(items []int) map[int]int {
+    out := map[int]int{}
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    for _, item := range items {
+        mu.Lock()
+        time.Sleep(time.Millisecond)
+        out[item] = item
+        mu.Unlock()
+        wg.Add(1)
+        go func() { defer wg.Done(); out[item] = item * 2 }()
+    }
+    wg.Wait()
+    return out
 }

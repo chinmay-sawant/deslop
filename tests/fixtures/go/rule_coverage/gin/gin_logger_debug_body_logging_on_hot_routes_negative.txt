@@ -1,11 +1,20 @@
-package rulecoverage
+package router
 
-func NegativeGinLoggerDebugBodyLoggingOnHotRoutes() string {
-    ruleID := "gin_logger_debug_body_logging_on_hot_routes"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Verbose body or payload logging observed on likely high-volume Gin routes."
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for gin_logger_debug_body_logging_on_hot_routes: shows the preferred shape for this rule.
+// Rule intent: Verbose body or payload logging observed on likely high-volume Gin routes.
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeGinLoggerDebugBodyLoggingOnHotRoutes(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

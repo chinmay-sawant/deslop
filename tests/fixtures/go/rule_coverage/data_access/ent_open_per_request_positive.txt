@@ -1,11 +1,33 @@
 package rulecoverage
 
-func PositiveEntOpenPerRequest() string {
-    ruleID := "ent_open_per_request"
-    family := "data_access"
-    severity := "warning"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "ent clients opened directly inside request handlers instead of shared startup wiring."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for ent_open_per_request: shows the risky shape for this rule.
+// Rule intent: ent clients opened directly inside request handlers instead of shared startup wiring.
+type Account struct { ID int; TenantID string; Status string }
+
+func PositiveEntOpenPerRequest(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
+    ctx := context.Background()
+    var accounts []Account
+    var total int64
+    sql.Open("postgres", c.Query("dsn"))
+    sqlDB.PingContext(ctx)
+    db.AutoMigrate(&Account{})
+    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
+    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
+    for _, id := range ids {
+        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
+        db.Create(&Account{ID: id})
+        db.Delete(&Account{}, id)
+        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
+    }
+    page := accounts[:10]
+    return page, nil
 }

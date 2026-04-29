@@ -1,11 +1,44 @@
 package rulecoverage
 
-func PositiveGoPerfLayerGarbageCollectionCleanupResponseBodyNotDrainedForReuse() string {
-    ruleID := "go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse"
-    family := "performance"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Layer: Garbage collection and cleanup. Flag HTTP response handling that closes bodies without draining when connection reuse matters."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/json"
+    "fmt"
+    "io"
+    "math/rand"
+    "reflect"
+    "regexp"
+    "runtime"
+    "sort"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse: shows the risky shape for this rule.
+// Rule intent: Layer: Garbage collection and cleanup. Flag HTTP response handling that closes bodies without draining when connection reuse matters.
+type record struct { ID int; Name string; Payload []byte }
+
+func PositiveGoPerfLayerGarbageCollectionCleanupResponseBodyNotDrainedForReuse(items []record, needle string, w io.Writer) string {
+    var out string
+    var mu sync.Mutex
+    seen := map[string]bool{}
+    for i, item := range items {
+        out += fmt.Sprintf("%s/%d", item.Name, i)
+        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
+        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
+        _ = len(bytes.NewBuffer(item.Payload).String())
+        _ = regexp.MustCompile(needle).MatchString(item.Name)
+        _ = reflect.DeepEqual(item, record{})
+        json.Marshal(item)
+        hmac.New(sha256.New, []byte(needle))
+        rand.New(rand.NewSource(time.Now().UnixNano()))
+        runtime.GOMAXPROCS(runtime.NumCPU())
+        mu.Lock(); defer mu.Unlock()
+        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+        w.Write([]byte("x"))
+    }
+    return out
 }

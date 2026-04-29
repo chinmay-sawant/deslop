@@ -1,11 +1,24 @@
 package rulecoverage
 
-func PositiveBlockingCallWhileLocked() string {
-    ruleID := "blocking_call_while_locked"
-    family := "concurrency"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Potentially blocking calls observed between Lock and Unlock."
-    return ruleID + family + severity + status + intent + description
+import (
+    "sync"
+    "time"
+)
+
+// Positive scenario for blocking_call_while_locked: shows the risky shape for this rule.
+// Rule intent: Potentially blocking calls observed between Lock and Unlock.
+func PositiveBlockingCallWhileLocked(items []int) map[int]int {
+    out := map[int]int{}
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    for _, item := range items {
+        mu.Lock()
+        time.Sleep(time.Millisecond)
+        out[item] = item
+        mu.Unlock()
+        wg.Add(1)
+        go func() { defer wg.Done(); out[item] = item * 2 }()
+    }
+    wg.Wait()
+    return out
 }

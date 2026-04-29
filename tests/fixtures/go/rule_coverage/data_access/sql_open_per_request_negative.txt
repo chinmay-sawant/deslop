@@ -1,11 +1,17 @@
-package rulecoverage
+package repository
 
-func NegativeSqlOpenPerRequest() string {
-    ruleID := "sql_open_per_request"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "database/sql pools opened on request paths instead of process-level setup."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for sql_open_per_request: shows the preferred shape for this rule.
+// Rule intent: database/sql pools opened on request paths instead of process-level setup.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeSqlOpenPerRequest(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

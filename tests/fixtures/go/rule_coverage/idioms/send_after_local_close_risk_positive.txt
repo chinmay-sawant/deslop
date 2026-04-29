@@ -1,11 +1,30 @@
 package rulecoverage
 
-func PositiveSendAfterLocalCloseRisk() string {
-    ruleID := "send_after_local_close_risk"
-    family := "idioms"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "A locally owned channel is closed and later used in a send expression."
-    return ruleID + family + severity + status + intent + description
+import (
+    "database/sql"
+    "io"
+    "net/http"
+    "os"
+    "time"
+)
+
+// Positive scenario for send_after_local_close_risk: shows the risky shape for this rule.
+// Rule intent: A locally owned channel is closed and later used in a send expression.
+var mutableConfig = map[string]string{}
+
+func PositiveSendAfterLocalCloseRisk(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
+    client := http.Client{}
+    resp, _ := client.Get("https://example.test")
+    _ = resp
+    rows, _ := db.Query("SELECT id FROM users")
+    for rows.Next() {}
+    for _, path := range paths {
+        f, _ := os.Open(path)
+        defer f.Close()
+        time.After(time.Second)
+    }
+    io.ReadAll(r.Body)
+    w.Write([]byte("ok"))
+    w.WriteHeader(http.StatusAccepted)
+    mutableConfig["last"] = r.URL.Path
 }

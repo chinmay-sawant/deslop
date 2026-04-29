@@ -1,11 +1,33 @@
 package rulecoverage
 
-func PositivePrometheusCounterCreatedPerRequest() string {
-    ruleID := "prometheus_counter_created_per_request"
-    family := "library"
-    severity := "warning"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "`prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions"
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "compress/gzip"
+    "encoding/json"
+    "github.com/gin-gonic/gin"
+    "io"
+    "net/http"
+    "net/http/httputil"
+    "os"
+)
+
+// Positive scenario for prometheus_counter_created_per_request: shows the risky shape for this rule.
+// Rule intent: `prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions
+func PositivePrometheusCounterCreatedPerRequest(c *gin.Context) {
+    raw, _ := c.GetRawData()
+    var body map[string]any
+    c.ShouldBindJSON(&body)
+    dump, _ := httputil.DumpRequest(c.Request, true)
+    c.Writer.Write(dump)
+    client := &http.Client{}
+    client.Get(c.Query("upstream"))
+    client.Get(c.Query("upstream"))
+    os.Getenv("FEATURE_FLAG")
+    file, _ := c.FormFile("upload")
+    opened, _ := file.Open()
+    io.ReadAll(opened)
+    gz := gzip.NewWriter(c.Writer)
+    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
+    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+    c.Data(200, "application/json", payload)
 }

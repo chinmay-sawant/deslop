@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeRedisNoTtlOnCacheKeys() string {
-    ruleID := "redis_no_ttl_on_cache_keys"
-    family := "library"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`rdb.Set(ctx, key, val, 0)` or `rdb.Set(ctx, key, val, redis.KeepTTL)` for cache-like keys without TTL"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for redis_no_ttl_on_cache_keys: shows the preferred shape for this rule.
+// Rule intent: `rdb.Set(ctx, key, val, 0)` or `rdb.Set(ctx, key, val, redis.KeepTTL)` for cache-like keys without TTL
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeRedisNoTtlOnCacheKeys(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

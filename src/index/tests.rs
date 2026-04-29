@@ -5,8 +5,8 @@ use proptest::prelude::*;
 use super::{ImportResolution, build_repository_index};
 use crate::analysis::{
     DeclaredSymbol, GoFileData, GoFunctionEvidence, Language, LanguageFileData,
-    LanguageFunctionData, ParsedFile, ParsedFunction, PythonFileData, PythonFunctionEvidence,
-    RustFileData, RustFunctionEvidence,
+    LanguageFunctionData, ParsedFile, ParsedFunction, PythonFileData, RustFileData,
+    RustFunctionEvidence,
 };
 use crate::model::{FunctionFingerprint, SymbolKind};
 
@@ -83,7 +83,7 @@ fn sample_file(
 fn sample_function_data(language: Language) -> LanguageFunctionData {
     match language {
         Language::Go => LanguageFunctionData::Go(GoFunctionEvidence::default()),
-        Language::Python => LanguageFunctionData::Python(PythonFunctionEvidence::default()),
+        Language::Python => LanguageFunctionData::Python(Box::default()),
         Language::Rust => LanguageFunctionData::Rust(RustFunctionEvidence::default()),
     }
 }

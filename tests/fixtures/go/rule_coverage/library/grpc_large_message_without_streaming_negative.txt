@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeGrpcLargeMessageWithoutStreaming() string {
-    ruleID := "grpc_large_message_without_streaming"
-    family := "library"
-    severity := "warning"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "unary RPC handlers returning or receiving messages > 4MB (inferred from large slice/struct serialization patterns)"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for grpc_large_message_without_streaming: shows the preferred shape for this rule.
+// Rule intent: unary RPC handlers returning or receiving messages > 4MB (inferred from large slice/struct serialization patterns)
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeGrpcLargeMessageWithoutStreaming(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

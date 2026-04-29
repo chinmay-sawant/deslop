@@ -1,11 +1,17 @@
-package rulecoverage
+package repository
 
-func NegativeGormSelectMissingProjectionOnWideModel() string {
-    ruleID := "gorm_select_missing_projection_on_wide_model"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "GORM queries on wide models without a Select projection to limit fetched columns."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for gorm_select_missing_projection_on_wide_model: shows the preferred shape for this rule.
+// Rule intent: GORM queries on wide models without a Select projection to limit fetched columns.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeGormSelectMissingProjectionOnWideModel(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

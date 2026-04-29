@@ -1,11 +1,24 @@
 package rulecoverage
 
-func PositiveWaitgroupFanoutWithoutErrgroupOnErrorPath() string {
-    ruleID := "waitgroup_fanout_without_errgroup_on_error_path"
-    family := "concurrency"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup."
-    return ruleID + family + severity + status + intent + description
+import (
+    "sync"
+    "time"
+)
+
+// Positive scenario for waitgroup_fanout_without_errgroup_on_error_path: shows the risky shape for this rule.
+// Rule intent: WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup.
+func PositiveWaitgroupFanoutWithoutErrgroupOnErrorPath(items []int) map[int]int {
+    out := map[int]int{}
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    for _, item := range items {
+        mu.Lock()
+        time.Sleep(time.Millisecond)
+        out[item] = item
+        mu.Unlock()
+        wg.Add(1)
+        go func() { defer wg.Done(); out[item] = item * 2 }()
+    }
+    wg.Wait()
+    return out
 }

@@ -1,11 +1,24 @@
 package rulecoverage
 
-func PositiveMutexInLoop() string {
-    ruleID := "mutex_in_loop"
-    family := "concurrency"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Repeated Lock or RLock acquisition inside loops."
-    return ruleID + family + severity + status + intent + description
+import (
+    "sync"
+    "time"
+)
+
+// Positive scenario for mutex_in_loop: shows the risky shape for this rule.
+// Rule intent: Repeated Lock or RLock acquisition inside loops.
+func PositiveMutexInLoop(items []int) map[int]int {
+    out := map[int]int{}
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    for _, item := range items {
+        mu.Lock()
+        time.Sleep(time.Millisecond)
+        out[item] = item
+        mu.Unlock()
+        wg.Add(1)
+        go func() { defer wg.Done(); out[item] = item * 2 }()
+    }
+    wg.Wait()
+    return out
 }

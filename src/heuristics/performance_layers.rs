@@ -245,7 +245,10 @@ fn compile_rule(
             .map(|markers| markers.to_vec())
             .unwrap_or_else(|| vec![token]);
 
-        if !groups.iter().any(|group: &MarkerGroup| group.token == token) {
+        if !groups
+            .iter()
+            .any(|group: &MarkerGroup| group.token == token)
+        {
             groups.push(MarkerGroup { token, markers });
         }
     }
@@ -972,12 +975,13 @@ mod tests {
         let rule = compiled_rule(language, rule_id);
         let source = generated_source(language, rule, true);
         let body_lc = generated_body(language, rule, true).to_ascii_lowercase();
-        let file = parse_source_file(Path::new(generated_path(language)), &source)
-            .unwrap_or_else(|error| {
+        let file = parse_source_file(Path::new(generated_path(language)), &source).unwrap_or_else(
+            |error| {
                 std::panic::panic_any(format!(
                     "generated positive source for {rule_id} should parse: {error}\n{source}"
                 ))
-            });
+            },
+        );
         let function = &file.functions[0];
 
         assert!(
@@ -994,12 +998,13 @@ mod tests {
         let rule = compiled_rule(language, rule_id);
         let source = generated_source(language, rule, false);
         let body_lc = generated_body(language, rule, false).to_ascii_lowercase();
-        let file = parse_source_file(Path::new(generated_path(language)), &source)
-            .unwrap_or_else(|error| {
+        let file = parse_source_file(Path::new(generated_path(language)), &source).unwrap_or_else(
+            |error| {
                 std::panic::panic_any(format!(
                     "generated negative source for {rule_id} should parse: {error}\n{source}"
                 ))
-            });
+            },
+        );
         let function = &file.functions[0];
 
         assert!(
@@ -1056,10 +1061,7 @@ mod tests {
         }));
     }
 
-    fn compiled_rule(
-        language: PerfLayerLanguage,
-        rule_id: &str,
-    ) -> &'static CompiledPerfLayerRule {
+    fn compiled_rule(language: PerfLayerLanguage, rule_id: &str) -> &'static CompiledPerfLayerRule {
         compiled_rules(language)
             .iter()
             .find(|rule| rule.rule_id == rule_id)
@@ -1167,7 +1169,9 @@ mod tests {
         let mut selected = Vec::new();
         for group in &rule.groups {
             for marker in group.markers.iter().copied() {
-                if !marker.chars().any(|character| character.is_ascii_alphanumeric())
+                if !marker
+                    .chars()
+                    .any(|character| character.is_ascii_alphanumeric())
                     || rule
                         .excluded_markers
                         .iter()

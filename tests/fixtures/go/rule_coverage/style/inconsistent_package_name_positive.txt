@@ -1,11 +1,5 @@
-package rulecoverage
+package alpha
 
-func PositiveInconsistentPackageName() string {
-    ruleID := "inconsistent_package_name"
-    family := "style"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Directories that mix base Go package names after ignoring the _test suffix."
-    return ruleID + family + severity + status + intent + description
-}
+// Positive scenario for inconsistent_package_name: shows the risky shape for this rule.
+// Rule intent: Directories that mix base Go package names after ignoring the _test suffix.
+func PositiveInconsistentPackageName() string { return "mixed package names in same directory" }

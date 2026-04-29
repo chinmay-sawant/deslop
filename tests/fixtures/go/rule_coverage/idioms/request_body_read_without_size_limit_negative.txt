@@ -1,11 +1,28 @@
 package rulecoverage
 
-func NegativeRequestBodyReadWithoutSizeLimit() string {
-    ruleID := "request_body_read_without_size_limit"
-    family := "idioms"
-    severity := "warning"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+    "io"
+    "net/http"
+    "time"
+)
+
+// Negative scenario for request_body_read_without_size_limit: shows the preferred shape for this rule.
+// Rule intent: HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader.
+var sharedClient = &http.Client{Timeout: 2 * time.Second}
+
+func NegativeRequestBodyReadWithoutSizeLimit(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
+    limited := http.MaxBytesReader(w, r.Body, 1<<20)
+    defer limited.Close()
+    if _, err := io.ReadAll(limited); err != nil { return err }
+    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
+    if err != nil { return err }
+    defer rows.Close()
+    for rows.Next() {}
+    if err := rows.Err(); err != nil { return err }
+    w.WriteHeader(http.StatusAccepted)
+    _, _ = w.Write([]byte("ok"))
+    _ = sharedClient
+    return nil
 }

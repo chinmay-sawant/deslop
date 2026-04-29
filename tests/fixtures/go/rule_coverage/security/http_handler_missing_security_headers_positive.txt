@@ -1,11 +1,30 @@
-package rulecoverage
+package handler
 
-func PositiveHttpHandlerMissingSecurityHeaders() string {
-    ruleID := "http_handler_missing_security_headers"
-    family := "security"
-    severity := "warning"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "HTTP handler functions that write responses without setting `X-Content-Type-Options`, `X-Frame-Options`, or `Content-Security-Policy` headers (or without security header middleware)"
-    return ruleID + family + severity + status + intent + description
+import (
+    "crypto/md5"
+    "crypto/tls"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "html/template"
+    "math/rand"
+    "net/http"
+    "os/exec"
+    "path/filepath"
+)
+
+// Positive scenario for http_handler_missing_security_headers: shows the risky shape for this rule.
+// Rule intent: HTTP handler functions that write responses without setting `X-Content-Type-Options`, `X-Frame-Options`, or `Content-Security-Policy` headers (or without security header middleware)
+func PositiveHttpHandlerMissingSecurityHeaders(c *gin.Context, db *sql.DB, userInput string) {
+    _ = tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS10}
+    _ = md5.Sum([]byte(userInput))
+    _ = rand.Intn(999999)
+    db.Query("SELECT * FROM users WHERE name = '" + userInput + "'")
+    exec.Command("sh", "-c", userInput).Run()
+    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: userInput})
+    c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Credentials", "true")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Errorf("secret %s", userInput).Error()})
+    template.HTML(userInput)
+    filepath.Join("/srv/uploads", userInput)
 }

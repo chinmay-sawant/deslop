@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeUpdatesMapAllocatedPerRow() string {
-    ruleID := "updates_map_allocated_per_row"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "GORM Updates(map[string]...) maps allocated inside loops for per-row updates."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for updates_map_allocated_per_row: shows the preferred shape for this rule.
+// Rule intent: GORM Updates(map[string]...) maps allocated inside loops for per-row updates.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeUpdatesMapAllocatedPerRow(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

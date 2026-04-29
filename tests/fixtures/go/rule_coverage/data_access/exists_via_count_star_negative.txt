@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeExistsViaCountStar() string {
-    ruleID := "exists_via_count_star"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "COUNT(*) used for an existence check instead of EXISTS or LIMIT 1."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for exists_via_count_star: shows the preferred shape for this rule.
+// Rule intent: COUNT(*) used for an existence check instead of EXISTS or LIMIT 1.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeExistsViaCountStar(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

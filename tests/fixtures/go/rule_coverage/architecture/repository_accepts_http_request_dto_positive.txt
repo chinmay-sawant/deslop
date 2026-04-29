@@ -1,11 +1,48 @@
-package rulecoverage
+package repository
 
-func PositiveRepositoryAcceptsHttpRequestDto() string {
-    ruleID := "repository_accepts_http_request_dto"
-    family := "architecture"
-    severity := "warning"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Repositories that accept transport DTOs instead of repository inputs or domain values."
-    return ruleID + family + severity + status + intent + description
+import (
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "os"
+)
+
+// Positive scenario for repository_accepts_http_request_dto: shows the risky shape for this rule.
+// Rule intent: Repositories that accept transport DTOs instead of repository inputs or domain values.
+type UserModel struct {
+    ID string `json:"id" gorm:"column:id" binding:"required"`
+    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+}
+
+type APIError struct { Error string `json:"error"` }
+type UserRepository struct { db *gorm.DB; sql *sql.DB }
+type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
+type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
+
+func PositiveRepositoryAcceptsHttpRequestDto(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
+    var model UserModel
+    if err := c.ShouldBindJSON(&model); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    tenantID := c.GetHeader("X-Tenant-ID")
+    userID := c.Param("id")
+    tx := db.Begin()
+    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
+    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
+    c.JSON(http.StatusOK, model)
+    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+}
+
+func (s *UserService) PositiveRepositoryAcceptsHttpRequestDtoService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
+    if dto.Status == "" { dto.Status = "active" }
+    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
+    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+}
+
+func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
+    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
 }

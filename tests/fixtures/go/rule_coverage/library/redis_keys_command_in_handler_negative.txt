@@ -1,11 +1,20 @@
-package rulecoverage
+package handler
 
-func NegativeRedisKeysCommandInHandler() string {
-    ruleID := "redis_keys_command_in_handler"
-    family := "library"
-    severity := "warning"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`rdb.Keys(ctx, pattern)` in handler or loop code"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for redis_keys_command_in_handler: shows the preferred shape for this rule.
+// Rule intent: `rdb.Keys(ctx, pattern)` in handler or loop code
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeRedisKeysCommandInHandler(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeParsemultipartformLargeDefaultMemory() string {
-    ruleID := "parsemultipartform_large_default_memory"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths."
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for parsemultipartform_large_default_memory: shows the preferred shape for this rule.
+// Rule intent: Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths.
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeParsemultipartformLargeDefaultMemory(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

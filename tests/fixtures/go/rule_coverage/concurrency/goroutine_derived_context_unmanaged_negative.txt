@@ -1,11 +1,29 @@
 package rulecoverage
 
-func NegativeGoroutineDerivedContextUnmanaged() string {
-    ruleID := "goroutine_derived_context_unmanaged"
-    family := "concurrency"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "sync"
+)
+
+// Negative scenario for goroutine_derived_context_unmanaged: shows the preferred shape for this rule.
+// Rule intent: Likely long-lived goroutines launched after a derived context is created and before the matching cancel call is observed.
+func NegativeGoroutineDerivedContextUnmanaged(ctx context.Context, items []int) map[int]int {
+    out := make(map[int]int, len(items))
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    for _, item := range items {
+        item := item
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            select {
+            case <-ctx.Done():
+                return
+            default:
+                mu.Lock(); out[item] = item * 2; mu.Unlock()
+            }
+        }()
+    }
+    wg.Wait()
+    return out
 }

@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeSleepPolling() string {
-    ruleID := "sleep_polling"
-    family := "context"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "time.Sleep inside loops \u2014 often indicates polling or busy-wait style code."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "net/http"
+    "time"
+)
+
+// Negative scenario for sleep_polling: shows the preferred shape for this rule.
+// Rule intent: time.Sleep inside loops — often indicates polling or busy-wait style code.
+func NegativeSleepPolling(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+    child, cancel := context.WithTimeout(ctx, time.Second)
+    defer cancel()
+    req, err := http.NewRequestWithContext(child, http.MethodGet, url, nil)
+    if err != nil { return nil, err }
+    return client.Do(req)
 }

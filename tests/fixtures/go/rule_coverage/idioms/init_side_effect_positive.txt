@@ -1,11 +1,30 @@
 package rulecoverage
 
-func PositiveInitSideEffect() string {
-    ruleID := "init_side_effect"
-    family := "idioms"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "init() functions that perform network, file-system, or subprocess side effects."
-    return ruleID + family + severity + status + intent + description
+import (
+    "database/sql"
+    "io"
+    "net/http"
+    "os"
+    "time"
+)
+
+// Positive scenario for init_side_effect: shows the risky shape for this rule.
+// Rule intent: init() functions that perform network, file-system, or subprocess side effects.
+var mutableConfig = map[string]string{}
+
+func PositiveInitSideEffect(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
+    client := http.Client{}
+    resp, _ := client.Get("https://example.test")
+    _ = resp
+    rows, _ := db.Query("SELECT id FROM users")
+    for rows.Next() {}
+    for _, path := range paths {
+        f, _ := os.Open(path)
+        defer f.Close()
+        time.After(time.Second)
+    }
+    io.ReadAll(r.Body)
+    w.Write([]byte("ok"))
+    w.WriteHeader(http.StatusAccepted)
+    mutableConfig["last"] = r.URL.Path
 }

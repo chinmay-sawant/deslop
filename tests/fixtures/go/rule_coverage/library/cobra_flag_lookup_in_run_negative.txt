@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeCobraFlagLookupInRun() string {
-    ruleID := "cobra_flag_lookup_in_run"
-    family := "library"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`cmd.Flags().GetString(\"flag\")` inside `RunE` when the flag could be bound to a variable with `StringVar`"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for cobra_flag_lookup_in_run: shows the preferred shape for this rule.
+// Rule intent: `cmd.Flags().GetString("flag")` inside `RunE` when the flag could be bound to a variable with `StringVar`
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeCobraFlagLookupInRun(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

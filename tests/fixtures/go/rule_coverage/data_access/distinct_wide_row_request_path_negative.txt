@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeDistinctWideRowRequestPath() string {
-    ruleID := "distinct_wide_row_request_path"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Distinct on wide rows without Select projection \u2014 a key-only subquery is usually cheaper."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for distinct_wide_row_request_path: shows the preferred shape for this rule.
+// Rule intent: Distinct on wide rows without Select projection — a key-only subquery is usually cheaper.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeDistinctWideRowRequestPath(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

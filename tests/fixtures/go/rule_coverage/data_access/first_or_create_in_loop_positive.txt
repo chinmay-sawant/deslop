@@ -1,11 +1,33 @@
 package rulecoverage
 
-func PositiveFirstOrCreateInLoop() string {
-    ruleID := "first_or_create_in_loop"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "GORM FirstOrCreate(...) chains observed inside loops."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for first_or_create_in_loop: shows the risky shape for this rule.
+// Rule intent: GORM FirstOrCreate(...) chains observed inside loops.
+type Account struct { ID int; TenantID string; Status string }
+
+func PositiveFirstOrCreateInLoop(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
+    ctx := context.Background()
+    var accounts []Account
+    var total int64
+    sql.Open("postgres", c.Query("dsn"))
+    sqlDB.PingContext(ctx)
+    db.AutoMigrate(&Account{})
+    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
+    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
+    for _, id := range ids {
+        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
+        db.Create(&Account{ID: id})
+        db.Delete(&Account{}, id)
+        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
+    }
+    page := accounts[:10]
+    return page, nil
 }

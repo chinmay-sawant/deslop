@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeRowsToStructAllocationPerRowWithoutReuse() string {
-    ruleID := "rows_to_struct_allocation_per_row_without_reuse"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "New struct allocated for each row scan instead of reusing a scratch variable."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for rows_to_struct_allocation_per_row_without_reuse: shows the preferred shape for this rule.
+// Rule intent: New struct allocated for each row scan instead of reusing a scratch variable.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeRowsToStructAllocationPerRowWithoutReuse(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

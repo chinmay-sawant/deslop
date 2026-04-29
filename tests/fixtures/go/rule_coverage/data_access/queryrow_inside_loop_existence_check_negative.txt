@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeQueryrowInsideLoopExistenceCheck() string {
-    ruleID := "queryrow_inside_loop_existence_check"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "QueryRow(...) or QueryRowContext(...) used inside loops for point lookups that usually want a bulk prefetch path."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for queryrow_inside_loop_existence_check: shows the preferred shape for this rule.
+// Rule intent: QueryRow(...) or QueryRowContext(...) used inside loops for point lookups that usually want a bulk prefetch path.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeQueryrowInsideLoopExistenceCheck(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

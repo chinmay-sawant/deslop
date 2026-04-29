@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeRedisCommandLoopWithoutPipeline() string {
-    ruleID := "redis_command_loop_without_pipeline"
-    family := "data_access"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Redis command loops that issue round-trips without pipeline or batch usage."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for redis_command_loop_without_pipeline: shows the preferred shape for this rule.
+// Rule intent: Redis command loops that issue round-trips without pipeline or batch usage.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeRedisCommandLoopWithoutPipeline(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

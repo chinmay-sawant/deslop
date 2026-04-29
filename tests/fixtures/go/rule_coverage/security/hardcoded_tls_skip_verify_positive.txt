@@ -1,11 +1,30 @@
 package rulecoverage
 
-func PositiveHardcodedTlsSkipVerify() string {
-    ruleID := "hardcoded_tls_skip_verify"
-    family := "security"
-    severity := "error"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "`tls.Config{InsecureSkipVerify: true}` in non-test code"
-    return ruleID + family + severity + status + intent + description
+import (
+    "crypto/md5"
+    "crypto/tls"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "html/template"
+    "math/rand"
+    "net/http"
+    "os/exec"
+    "path/filepath"
+)
+
+// Positive scenario for hardcoded_tls_skip_verify: shows the risky shape for this rule.
+// Rule intent: `tls.Config{InsecureSkipVerify: true}` in non-test code
+func PositiveHardcodedTlsSkipVerify(c *gin.Context, db *sql.DB, userInput string) {
+    _ = tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS10}
+    _ = md5.Sum([]byte(userInput))
+    _ = rand.Intn(999999)
+    db.Query("SELECT * FROM users WHERE name = '" + userInput + "'")
+    exec.Command("sh", "-c", userInput).Run()
+    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: userInput})
+    c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Credentials", "true")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Errorf("secret %s", userInput).Error()})
+    template.HTML(userInput)
+    filepath.Join("/srv/uploads", userInput)
 }

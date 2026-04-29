@@ -1,11 +1,31 @@
 package rulecoverage
 
-func NegativeGoPerfLayerDatabaseAccessQueryInsideLoopWithoutBatching() string {
-    ruleID := "go_perf_layer_database_access_query_inside_loop_without_batching"
-    family := "performance"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Layer: Database access. Flag SQL queries issued inside loops where batching or IN queries can bound round trips."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "io"
+    "sort"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_database_access_query_inside_loop_without_batching: shows the preferred shape for this rule.
+// Rule intent: Layer: Database access. Flag SQL queries issued inside loops where batching or IN queries can bound round trips.
+type record struct { ID int; Name string; Payload []byte }
+
+func NegativeGoPerfLayerDatabaseAccessQueryInsideLoopWithoutBatching(items []record, needle string, w io.Writer) string {
+    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+    var b strings.Builder
+    b.Grow(len(items) * 8)
+    scratch := bytes.NewBuffer(make([]byte, 0, 64))
+    for i, item := range items {
+        if strings.Contains(item.Name, needle) {
+            b.WriteString(item.Name)
+            b.WriteByte('/')
+            b.WriteString(strconv.Itoa(i))
+        }
+        scratch.Reset()
+        scratch.Write(item.Payload)
+    }
+    _, _ = io.WriteString(w, b.String())
+    return b.String()
 }

@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeLoadhtmlglobOrLoadhtmlfilesInRequestPath() string {
-    ruleID := "loadhtmlglob_or_loadhtmlfiles_in_request_path"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization."
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for loadhtmlglob_or_loadhtmlfiles_in_request_path: shows the preferred shape for this rule.
+// Rule intent: LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization.
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeLoadhtmlglobOrLoadhtmlfilesInRequestPath(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

@@ -1,11 +1,31 @@
 package rulecoverage
 
-func NegativeStrconvRepeatOnSameBinding() string {
-    ruleID := "strconv_repeat_on_same_binding"
-    family := "hot_path"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "The same string binding is converted with strconv parsing helpers multiple times in one function."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "io"
+    "sort"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for strconv_repeat_on_same_binding: shows the preferred shape for this rule.
+// Rule intent: The same string binding is converted with strconv parsing helpers multiple times in one function.
+type record struct { ID int; Name string; Payload []byte }
+
+func NegativeStrconvRepeatOnSameBinding(items []record, needle string, w io.Writer) string {
+    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+    var b strings.Builder
+    b.Grow(len(items) * 8)
+    scratch := bytes.NewBuffer(make([]byte, 0, 64))
+    for i, item := range items {
+        if strings.Contains(item.Name, needle) {
+            b.WriteString(item.Name)
+            b.WriteByte('/')
+            b.WriteString(strconv.Itoa(i))
+        }
+        scratch.Reset()
+        scratch.Write(item.Payload)
+    }
+    _, _ = io.WriteString(w, b.String())
+    return b.String()
 }

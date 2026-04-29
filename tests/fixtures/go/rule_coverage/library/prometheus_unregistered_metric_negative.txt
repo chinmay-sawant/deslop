@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativePrometheusUnregisteredMetric() string {
-    ruleID := "prometheus_unregistered_metric"
-    family := "library"
-    severity := "warning"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for prometheus_unregistered_metric: shows the preferred shape for this rule.
+// Rule intent: metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`
+type requestBody struct { ID string `json:"id"` }
+
+func NegativePrometheusUnregisteredMetric(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

@@ -1,11 +1,33 @@
-package rulecoverage
+package middleware
 
-func PositiveMiddlewareRebindsBodyAfterHandlerBind() string {
-    ruleID := "middleware_rebinds_body_after_handler_bind"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Middleware or helper chains that parse the request body after the main handler has already bound it."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "compress/gzip"
+    "encoding/json"
+    "github.com/gin-gonic/gin"
+    "io"
+    "net/http"
+    "net/http/httputil"
+    "os"
+)
+
+// Positive scenario for middleware_rebinds_body_after_handler_bind: shows the risky shape for this rule.
+// Rule intent: Middleware or helper chains that parse the request body after the main handler has already bound it.
+func PositiveMiddlewareRebindsBodyAfterHandlerBind(c *gin.Context) {
+    raw, _ := c.GetRawData()
+    var body map[string]any
+    c.ShouldBindJSON(&body)
+    dump, _ := httputil.DumpRequest(c.Request, true)
+    c.Writer.Write(dump)
+    client := &http.Client{}
+    client.Get(c.Query("upstream"))
+    client.Get(c.Query("upstream"))
+    os.Getenv("FEATURE_FLAG")
+    file, _ := c.FormFile("upload")
+    opened, _ := file.Open()
+    io.ReadAll(opened)
+    gz := gzip.NewWriter(c.Writer)
+    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
+    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+    c.Data(200, "application/json", payload)
 }

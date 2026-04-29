@@ -42,7 +42,10 @@ fn test_go_performance_layer_retry_without_backoff_positive() {
         go_fixture!("performance_layers_retry_positive.txt"),
     )]);
 
-    assert_rules_present(&report, &["go_perf_layer_network_calls_retry_loop_without_backoff"]);
+    assert_rules_present(
+        &report,
+        &["go_perf_layer_network_calls_retry_loop_without_backoff"],
+    );
 }
 
 #[test]
@@ -52,7 +55,10 @@ fn test_go_performance_layer_retry_without_backoff_clean() {
         go_fixture!("performance_layers_retry_clean.txt"),
     )]);
 
-    assert_rules_absent(&report, &["go_perf_layer_network_calls_retry_loop_without_backoff"]);
+    assert_rules_absent(
+        &report,
+        &["go_perf_layer_network_calls_retry_loop_without_backoff"],
+    );
 }
 
 #[test]

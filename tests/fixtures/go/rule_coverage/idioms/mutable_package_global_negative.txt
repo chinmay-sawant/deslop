@@ -1,11 +1,28 @@
-package rulecoverage
+package repository
 
-func NegativeMutablePackageGlobal() string {
-    ruleID := "mutable_package_global"
-    family := "idioms"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Package-level variables that are mutated from function bodies instead of kept immutable."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+    "io"
+    "net/http"
+    "time"
+)
+
+// Negative scenario for mutable_package_global: shows the preferred shape for this rule.
+// Rule intent: Package-level variables that are mutated from function bodies instead of kept immutable.
+var sharedClient = &http.Client{Timeout: 2 * time.Second}
+
+func NegativeMutablePackageGlobal(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
+    limited := http.MaxBytesReader(w, r.Body, 1<<20)
+    defer limited.Close()
+    if _, err := io.ReadAll(limited); err != nil { return err }
+    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
+    if err != nil { return err }
+    defer rows.Close()
+    for rows.Next() {}
+    if err := rows.Err(); err != nil { return err }
+    w.WriteHeader(http.StatusAccepted)
+    _, _ = w.Write([]byte("ok"))
+    _ = sharedClient
+    return nil
 }

@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeCreateSingleInLoopInsteadOfBatches() string {
-    ruleID := "create_single_in_loop_instead_of_batches"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "GORM .Create(...) used inside loops with no visible CreateInBatches(...) path in the same function."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for create_single_in_loop_instead_of_batches: shows the preferred shape for this rule.
+// Rule intent: GORM .Create(...) used inside loops with no visible CreateInBatches(...) path in the same function.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeCreateSingleInLoopInsteadOfBatches(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

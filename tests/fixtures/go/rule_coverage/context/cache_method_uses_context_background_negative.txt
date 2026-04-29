@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeCacheMethodUsesContextBackground() string {
-    ruleID := "cache_method_uses_context_background"
-    family := "context"
-    severity := "warning"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Cache implementations that call context.Background() or context.TODO() instead of propagating caller context."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "net/http"
+    "time"
+)
+
+// Negative scenario for cache_method_uses_context_background: shows the preferred shape for this rule.
+// Rule intent: Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.
+func NegativeCacheMethodUsesContextBackground(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+    child, cancel := context.WithTimeout(ctx, time.Second)
+    defer cancel()
+    req, err := http.NewRequestWithContext(child, http.MethodGet, url, nil)
+    if err != nil { return nil, err }
+    return client.Do(req)
 }

@@ -1,11 +1,30 @@
 package rulecoverage
 
-func PositiveDoubleCloseLocalChannel() string {
-    ruleID := "double_close_local_channel"
-    family := "idioms"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "The same locally created channel appears to be closed more than once in one function body."
-    return ruleID + family + severity + status + intent + description
+import (
+    "database/sql"
+    "io"
+    "net/http"
+    "os"
+    "time"
+)
+
+// Positive scenario for double_close_local_channel: shows the risky shape for this rule.
+// Rule intent: The same locally created channel appears to be closed more than once in one function body.
+var mutableConfig = map[string]string{}
+
+func PositiveDoubleCloseLocalChannel(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
+    client := http.Client{}
+    resp, _ := client.Get("https://example.test")
+    _ = resp
+    rows, _ := db.Query("SELECT id FROM users")
+    for rows.Next() {}
+    for _, path := range paths {
+        f, _ := os.Open(path)
+        defer f.Close()
+        time.After(time.Second)
+    }
+    io.ReadAll(r.Body)
+    w.Write([]byte("ok"))
+    w.WriteHeader(http.StatusAccepted)
+    mutableConfig["last"] = r.URL.Path
 }

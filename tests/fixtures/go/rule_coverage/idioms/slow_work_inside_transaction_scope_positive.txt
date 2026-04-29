@@ -1,11 +1,30 @@
 package rulecoverage
 
-func PositiveSlowWorkInsideTransactionScope() string {
-    ruleID := "slow_work_inside_transaction_scope"
-    family := "idioms"
-    severity := "warning"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Loop-heavy or slow work performed while a transaction appears open."
-    return ruleID + family + severity + status + intent + description
+import (
+    "database/sql"
+    "io"
+    "net/http"
+    "os"
+    "time"
+)
+
+// Positive scenario for slow_work_inside_transaction_scope: shows the risky shape for this rule.
+// Rule intent: Loop-heavy or slow work performed while a transaction appears open.
+var mutableConfig = map[string]string{}
+
+func PositiveSlowWorkInsideTransactionScope(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
+    client := http.Client{}
+    resp, _ := client.Get("https://example.test")
+    _ = resp
+    rows, _ := db.Query("SELECT id FROM users")
+    for rows.Next() {}
+    for _, path := range paths {
+        f, _ := os.Open(path)
+        defer f.Close()
+        time.After(time.Second)
+    }
+    io.ReadAll(r.Body)
+    w.Write([]byte("ok"))
+    w.WriteHeader(http.StatusAccepted)
+    mutableConfig["last"] = r.URL.Path
 }

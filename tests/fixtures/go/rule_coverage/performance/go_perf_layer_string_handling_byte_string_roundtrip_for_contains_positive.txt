@@ -1,11 +1,44 @@
 package rulecoverage
 
-func PositiveGoPerfLayerStringHandlingByteStringRoundtripForContains() string {
-    ruleID := "go_perf_layer_string_handling_byte_string_roundtrip_for_contains"
-    family := "performance"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Layer: String handling. Flag string/[]byte roundtrips around Contains/Index checks that have native package variants."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/json"
+    "fmt"
+    "io"
+    "math/rand"
+    "reflect"
+    "regexp"
+    "runtime"
+    "sort"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_string_handling_byte_string_roundtrip_for_contains: shows the risky shape for this rule.
+// Rule intent: Layer: String handling. Flag string/[]byte roundtrips around Contains/Index checks that have native package variants.
+type record struct { ID int; Name string; Payload []byte }
+
+func PositiveGoPerfLayerStringHandlingByteStringRoundtripForContains(items []record, needle string, w io.Writer) string {
+    var out string
+    var mu sync.Mutex
+    seen := map[string]bool{}
+    for i, item := range items {
+        out += fmt.Sprintf("%s/%d", item.Name, i)
+        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
+        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
+        _ = len(bytes.NewBuffer(item.Payload).String())
+        _ = regexp.MustCompile(needle).MatchString(item.Name)
+        _ = reflect.DeepEqual(item, record{})
+        json.Marshal(item)
+        hmac.New(sha256.New, []byte(needle))
+        rand.New(rand.NewSource(time.Now().UnixNano()))
+        runtime.GOMAXPROCS(runtime.NumCPU())
+        mu.Lock(); defer mu.Unlock()
+        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+        w.Write([]byte("x"))
+    }
+    return out
 }

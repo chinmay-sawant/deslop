@@ -1,11 +1,31 @@
 package rulecoverage
 
-func NegativeBase64DecodeStringInLoop() string {
-    ruleID := "base64_decode_string_in_loop"
-    family := "performance"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Base64 decode from string inside loops."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "io"
+    "sort"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for base64_decode_string_in_loop: shows the preferred shape for this rule.
+// Rule intent: Base64 decode from string inside loops.
+type record struct { ID int; Name string; Payload []byte }
+
+func NegativeBase64DecodeStringInLoop(items []record, needle string, w io.Writer) string {
+    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+    var b strings.Builder
+    b.Grow(len(items) * 8)
+    scratch := bytes.NewBuffer(make([]byte, 0, 64))
+    for i, item := range items {
+        if strings.Contains(item.Name, needle) {
+            b.WriteString(item.Name)
+            b.WriteByte('/')
+            b.WriteString(strconv.Itoa(i))
+        }
+        scratch.Reset()
+        scratch.Write(item.Payload)
+    }
+    _, _ = io.WriteString(w, b.String())
+    return b.String()
 }

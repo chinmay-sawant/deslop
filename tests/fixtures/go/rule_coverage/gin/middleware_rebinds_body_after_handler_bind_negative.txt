@@ -1,11 +1,20 @@
-package rulecoverage
+package middleware
 
-func NegativeMiddlewareRebindsBodyAfterHandlerBind() string {
-    ruleID := "middleware_rebinds_body_after_handler_bind"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Middleware or helper chains that parse the request body after the main handler has already bound it."
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for middleware_rebinds_body_after_handler_bind: shows the preferred shape for this rule.
+// Rule intent: Middleware or helper chains that parse the request body after the main handler has already bound it.
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeMiddlewareRebindsBodyAfterHandlerBind(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

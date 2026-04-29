@@ -1,11 +1,33 @@
-package rulecoverage
+package repository
 
-func PositiveGormFindWithoutLimitOnHandlerPath() string {
-    ruleID := "gorm_find_without_limit_on_handler_path"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Request-path GORM Find(...) chains with no visible Limit(...) step."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+)
+
+// Positive scenario for gorm_find_without_limit_on_handler_path: shows the risky shape for this rule.
+// Rule intent: Request-path GORM Find(...) chains with no visible Limit(...) step.
+type Account struct { ID int; TenantID string; Status string }
+
+func PositiveGormFindWithoutLimitOnHandlerPath(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
+    ctx := context.Background()
+    var accounts []Account
+    var total int64
+    sql.Open("postgres", c.Query("dsn"))
+    sqlDB.PingContext(ctx)
+    db.AutoMigrate(&Account{})
+    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
+    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
+    for _, id := range ids {
+        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
+        db.Create(&Account{ID: id})
+        db.Delete(&Account{}, id)
+        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
+    }
+    page := accounts[:10]
+    return page, nil
 }

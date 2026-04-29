@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeGrpcNoKeepaliveConfig() string {
-    ruleID := "grpc_no_keepalive_config"
-    family := "library"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`grpc.NewServer()` without keepalive server parameters in long-running services"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for grpc_no_keepalive_config: shows the preferred shape for this rule.
+// Rule intent: `grpc.NewServer()` without keepalive server parameters in long-running services
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeGrpcNoKeepaliveConfig(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

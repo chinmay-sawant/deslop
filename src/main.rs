@@ -5,7 +5,7 @@ mod cli;
 
 use std::path::PathBuf;
 
-use crate::cli::{execute_bench, execute_rules, execute_scan};
+use crate::cli::{ScanCommandOptions, execute_bench, execute_rules, execute_scan};
 use deslop::{RuleLanguage, RuleStatus};
 
 #[derive(Debug, Parser)]
@@ -79,7 +79,7 @@ fn main() -> Result<()> {
             experimental,
             ignore,
             no_fail,
-        } => execute_scan(
+        } => execute_scan(ScanCommandOptions {
             path,
             json,
             details,
@@ -88,7 +88,7 @@ fn main() -> Result<()> {
             experimental,
             ignore,
             no_fail,
-        ),
+        }),
         Command::Bench {
             path,
             repeats,

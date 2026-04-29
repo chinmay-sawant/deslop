@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeLogLevelCheckAfterFormat() string {
-    ruleID := "log_level_check_after_format"
-    family := "library"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`zap.S().Debugf(\"expensive %v\", computeDebug())` or `logrus.Debugf(\"data: %v\", expensiveCall())` where the expensive computation happens regardless of log level"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for log_level_check_after_format: shows the preferred shape for this rule.
+// Rule intent: `zap.S().Debugf("expensive %v", computeDebug())` or `logrus.Debugf("data: %v", expensiveCall())` where the expensive computation happens regardless of log level
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeLogLevelCheckAfterFormat(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

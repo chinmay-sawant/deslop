@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeLogPrintfForProduction() string {
-    ruleID := "log_printf_for_production"
-    family := "library"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`log.Printf` (stdlib) usage in web service handler code"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for log_printf_for_production: shows the preferred shape for this rule.
+// Rule intent: `log.Printf` (stdlib) usage in web service handler code
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeLogPrintfForProduction(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

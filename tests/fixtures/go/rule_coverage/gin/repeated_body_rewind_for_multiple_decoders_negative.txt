@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeRepeatedBodyRewindForMultipleDecoders() string {
-    ruleID := "repeated_body_rewind_for_multiple_decoders"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Gin handlers that read, rewind, and decode the same request body multiple times."
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for repeated_body_rewind_for_multiple_decoders: shows the preferred shape for this rule.
+// Rule intent: Gin handlers that read, rewind, and decode the same request body multiple times.
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeRepeatedBodyRewindForMultipleDecoders(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

@@ -1,11 +1,31 @@
 package rulecoverage
 
-func NegativeReadThenDecodeDuplicateMaterialization() string {
-    ruleID := "read_then_decode_duplicate_materialization"
-    family := "hot_path"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "io"
+    "sort"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for read_then_decode_duplicate_materialization: shows the preferred shape for this rule.
+// Rule intent: io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.
+type record struct { ID int; Name string; Payload []byte }
+
+func NegativeReadThenDecodeDuplicateMaterialization(items []record, needle string, w io.Writer) string {
+    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+    var b strings.Builder
+    b.Grow(len(items) * 8)
+    scratch := bytes.NewBuffer(make([]byte, 0, 64))
+    for i, item := range items {
+        if strings.Contains(item.Name, needle) {
+            b.WriteString(item.Name)
+            b.WriteByte('/')
+            b.WriteString(strconv.Itoa(i))
+        }
+        scratch.Reset()
+        scratch.Write(item.Payload)
+    }
+    _, _ = io.WriteString(w, b.String())
+    return b.String()
 }

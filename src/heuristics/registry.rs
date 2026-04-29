@@ -27,7 +27,8 @@ use super::rust::{
     rust_boundary_function_findings, rust_domain_file_findings, rust_import_resolution_findings,
     rust_local_call_findings, rust_module_surface_file_findings, rust_performance_file_findings,
     rust_performance_function_findings, rust_performance_layer_rule_findings,
-    rust_runtime_file_findings, rust_runtime_function_findings, rust_runtime_ownership_function_findings, rust_security_file_findings,
+    rust_runtime_file_findings, rust_runtime_function_findings,
+    rust_runtime_ownership_function_findings, rust_security_file_findings,
     rust_security_function_findings, rust_unsafe_soundness_findings,
 };
 use super::security::{crypto_findings, pkg_secret_findings, secret_findings, sql_findings};

@@ -12,46 +12,50 @@ use deslop::{
 };
 use std::path::PathBuf;
 
-#[allow(clippy::fn_params_excessive_bools, clippy::needless_pass_by_value)]
-pub(crate) fn execute_scan(
-    path: PathBuf,
-    json: bool,
-    details: bool,
-    no_ignore: bool,
-    enable_semantic: bool,
-    experimental: bool,
-    ignore: Vec<String>,
-    no_fail: bool,
-) -> Result<()> {
-    let scan_root = path.clone();
+pub(crate) struct ScanCommandOptions {
+    pub(crate) path: PathBuf,
+    pub(crate) json: bool,
+    pub(crate) details: bool,
+    pub(crate) no_ignore: bool,
+    pub(crate) enable_semantic: bool,
+    pub(crate) experimental: bool,
+    pub(crate) ignore: Vec<String>,
+    pub(crate) no_fail: bool,
+}
+
+pub(crate) fn execute_scan(options: ScanCommandOptions) -> Result<()> {
+    let scan_root = options.path.clone();
     let mut report = scan_repository_with_experimentals(
         &ScanOptions {
-            root: path,
-            respect_ignore: !no_ignore,
+            root: options.path,
+            respect_ignore: !options.no_ignore,
         },
-        enable_semantic || experimental,
-        experimental,
+        options.enable_semantic || options.experimental,
+        options.experimental,
     )
     .with_context(|| format!("scan failed for {}", scan_root.display()))?;
 
-    if !ignore.is_empty() {
-        report
-            .findings
-            .retain(|finding| !ignore.iter().any(|rule_id| rule_id == &finding.rule_id));
+    if !options.ignore.is_empty() {
+        report.findings.retain(|finding| {
+            !options
+                .ignore
+                .iter()
+                .any(|rule_id| rule_id == &finding.rule_id)
+        });
     }
 
-    if json {
-        println!("{}", format_scan_report_json(&report, details)?);
+    if options.json {
+        println!("{}", format_scan_report_json(&report, options.details)?);
     } else {
-        print!("{}", format_scan_report(&report, details));
+        print!("{}", format_scan_report(&report, options.details));
     }
 
-    if !no_fail {
+    if !options.no_fail {
         let finding_count = report
             .findings
             .iter()
             .filter(|finding| {
-                details
+                options.details
                     || finding_language(&report, finding).is_none_or(|language| {
                         !is_detail_only_rule(finding.rule_id.as_str(), language)
                     })

@@ -1,11 +1,23 @@
 package rulecoverage
 
-func PositiveMissingCancelCall() string {
-    ruleID := "missing_cancel_call"
-    family := "context"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Derived contexts where deslop cannot find a local cancel() or defer cancel() call."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "net/http"
+    "os/exec"
+    "time"
+)
+
+// Positive scenario for missing_cancel_call: shows the risky shape for this rule.
+// Rule intent: Derived contexts where deslop cannot find a local cancel() or defer cancel() call.
+type Worker struct { ctx context.Context }
+
+func PositiveMissingCancelCall(ctx context.Context, url string) {
+    child, _ := context.WithTimeout(ctx, time.Second)
+    _ = child
+    http.Get(url)
+    exec.Command("curl", url).Run()
+    go func() { http.Get(url) }()
+    for {
+        select { default: time.Sleep(time.Millisecond) }
+    }
 }

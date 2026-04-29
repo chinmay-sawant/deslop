@@ -1,11 +1,17 @@
 package rulecoverage
 
-func NegativeMissingCancelCall() string {
-    ruleID := "missing_cancel_call"
-    family := "context"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Derived contexts where deslop cannot find a local cancel() or defer cancel() call."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "net/http"
+    "time"
+)
+
+// Negative scenario for missing_cancel_call: shows the preferred shape for this rule.
+// Rule intent: Derived contexts where deslop cannot find a local cancel() or defer cancel() call.
+func NegativeMissingCancelCall(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+    child, cancel := context.WithTimeout(ctx, time.Second)
+    defer cancel()
+    req, err := http.NewRequestWithContext(child, http.MethodGet, url, nil)
+    if err != nil { return nil, err }
+    return client.Do(req)
 }

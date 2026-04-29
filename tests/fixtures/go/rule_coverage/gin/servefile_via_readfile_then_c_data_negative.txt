@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeServefileViaReadfileThenCData() string {
-    ruleID := "servefile_via_readfile_then_c_data"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming."
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for servefile_via_readfile_then_c_data: shows the preferred shape for this rule.
+// Rule intent: Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming.
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeServefileViaReadfileThenCData(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

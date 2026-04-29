@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeGrpcDialPerRequest() string {
-    ruleID := "grpc_dial_per_request"
-    family := "library"
-    severity := "warning"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`grpc.Dial(addr, opts...)` or `grpc.NewClient(addr, opts...)` inside handler functions"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for grpc_dial_per_request: shows the preferred shape for this rule.
+// Rule intent: `grpc.Dial(addr, opts...)` or `grpc.NewClient(addr, opts...)` inside handler functions
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeGrpcDialPerRequest(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

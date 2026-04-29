@@ -1,11 +1,17 @@
-package rulecoverage
+package repository
 
-func NegativeGormPreloadClauseAssociationsOnWideGraph() string {
-    ruleID := "gorm_preload_clause_associations_on_wide_graph"
-    family := "data_access"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Request-path GORM chains that use Preload(clause.Associations) or other broad preload graphs."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "database/sql"
+)
+
+// Negative scenario for gorm_preload_clause_associations_on_wide_graph: shows the preferred shape for this rule.
+// Rule intent: Request-path GORM chains that use Preload(clause.Associations) or other broad preload graphs.
+type Account struct { ID int; TenantID string; Status string }
+
+func NegativeGormPreloadClauseAssociationsOnWideGraph(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
+    if limit <= 0 || limit > 100 {
+        limit = 100
+    }
+    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
 }

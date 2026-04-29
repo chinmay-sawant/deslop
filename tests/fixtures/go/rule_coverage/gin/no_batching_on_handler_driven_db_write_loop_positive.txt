@@ -1,11 +1,33 @@
-package rulecoverage
+package handler
 
-func PositiveNoBatchingOnHandlerDrivenDbWriteLoop() string {
-    ruleID := "no_batching_on_handler_driven_db_write_loop"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Request handlers that drive row-by-row DB writes with no batch path."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "compress/gzip"
+    "encoding/json"
+    "github.com/gin-gonic/gin"
+    "io"
+    "net/http"
+    "net/http/httputil"
+    "os"
+)
+
+// Positive scenario for no_batching_on_handler_driven_db_write_loop: shows the risky shape for this rule.
+// Rule intent: Request handlers that drive row-by-row DB writes with no batch path.
+func PositiveNoBatchingOnHandlerDrivenDbWriteLoop(c *gin.Context) {
+    raw, _ := c.GetRawData()
+    var body map[string]any
+    c.ShouldBindJSON(&body)
+    dump, _ := httputil.DumpRequest(c.Request, true)
+    c.Writer.Write(dump)
+    client := &http.Client{}
+    client.Get(c.Query("upstream"))
+    client.Get(c.Query("upstream"))
+    os.Getenv("FEATURE_FLAG")
+    file, _ := c.FormFile("upload")
+    opened, _ := file.Open()
+    io.ReadAll(opened)
+    gz := gzip.NewWriter(c.Writer)
+    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
+    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+    c.Data(200, "application/json", payload)
 }

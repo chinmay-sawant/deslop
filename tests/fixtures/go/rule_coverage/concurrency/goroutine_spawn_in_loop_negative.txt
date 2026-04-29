@@ -1,11 +1,29 @@
 package rulecoverage
 
-func NegativeGoroutineSpawnInLoop() string {
-    ruleID := "goroutine_spawn_in_loop"
-    family := "concurrency"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Raw go statements launched from inside loops without obvious WaitGroup coordination."
-    return ruleID + family + severity + status + intent + description
+import (
+    "context"
+    "sync"
+)
+
+// Negative scenario for goroutine_spawn_in_loop: shows the preferred shape for this rule.
+// Rule intent: Raw go statements launched from inside loops without obvious WaitGroup coordination.
+func NegativeGoroutineSpawnInLoop(ctx context.Context, items []int) map[int]int {
+    out := make(map[int]int, len(items))
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    for _, item := range items {
+        item := item
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            select {
+            case <-ctx.Done():
+                return
+            default:
+                mu.Lock(); out[item] = item * 2; mu.Unlock()
+            }
+        }()
+    }
+    wg.Wait()
+    return out
 }

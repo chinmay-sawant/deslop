@@ -154,7 +154,7 @@ pub(crate) fn resolve_rust_module_file(
     };
 
     if current_files.is_empty() {
-        return rust_layout_resolution(index, &[index.root.clone()], &segments[1..]);
+        return rust_layout_resolution(index, std::slice::from_ref(&index.root), &segments[1..]);
     }
 
     let start_index = if head == "super" {
@@ -176,7 +176,9 @@ pub(crate) fn resolve_rust_module_file(
         }
         if next_files.is_empty() {
             return match head {
-                "crate" => rust_layout_resolution(index, &[index.root.clone()], &segments[1..]),
+                "crate" => {
+                    rust_layout_resolution(index, std::slice::from_ref(&index.root), &segments[1..])
+                }
                 "self" => current_file_path
                     .parent()
                     .map(|parent| {
@@ -290,11 +292,7 @@ fn rust_super_base_dirs(
 }
 
 fn rust_module_base_dir(module_file: &Path) -> Option<PathBuf> {
-    if module_file.file_name().and_then(|name| name.to_str()) == Some("mod.rs") {
-        module_file.parent().map(Path::to_path_buf)
-    } else {
-        module_file.parent().map(Path::to_path_buf)
-    }
+    module_file.parent().map(Path::to_path_buf)
 }
 
 fn legacy_resolve_rust_import<'a>(

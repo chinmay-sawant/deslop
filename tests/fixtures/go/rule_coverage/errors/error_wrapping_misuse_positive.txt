@@ -1,11 +1,18 @@
 package rulecoverage
 
-func PositiveErrorWrappingMisuse() string {
-    ruleID := "error_wrapping_misuse"
-    family := "errors"
-    severity := "warning"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "fmt.Errorf calls that reference err without %w."
-    return ruleID + family + severity + status + intent + description
+import (
+    "fmt"
+    "log"
+    "os"
+)
+
+// Positive scenario for error_wrapping_misuse: shows the risky shape for this rule.
+// Rule intent: fmt.Errorf calls that reference err without %w.
+func PositiveErrorWrappingMisuse() error {
+    _, _ = os.Open("missing.txt")
+    if _, err := os.ReadFile("config.json"); err != nil {
+        log.Fatal(err)
+    }
+    err := fmt.Errorf("disk failed")
+    return fmt.Errorf("load failed: %v", err)
 }

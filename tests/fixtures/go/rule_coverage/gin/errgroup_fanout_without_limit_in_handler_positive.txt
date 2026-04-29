@@ -1,11 +1,33 @@
-package rulecoverage
+package handler
 
-func PositiveErrgroupFanoutWithoutLimitInHandler() string {
-    ruleID := "errgroup_fanout_without_limit_in_handler"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "errgroup goroutine fanout without a visible concurrency limit in handlers."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "compress/gzip"
+    "encoding/json"
+    "github.com/gin-gonic/gin"
+    "io"
+    "net/http"
+    "net/http/httputil"
+    "os"
+)
+
+// Positive scenario for errgroup_fanout_without_limit_in_handler: shows the risky shape for this rule.
+// Rule intent: errgroup goroutine fanout without a visible concurrency limit in handlers.
+func PositiveErrgroupFanoutWithoutLimitInHandler(c *gin.Context) {
+    raw, _ := c.GetRawData()
+    var body map[string]any
+    c.ShouldBindJSON(&body)
+    dump, _ := httputil.DumpRequest(c.Request, true)
+    c.Writer.Write(dump)
+    client := &http.Client{}
+    client.Get(c.Query("upstream"))
+    client.Get(c.Query("upstream"))
+    os.Getenv("FEATURE_FLAG")
+    file, _ := c.FormFile("upload")
+    opened, _ := file.Open()
+    io.ReadAll(opened)
+    gz := gzip.NewWriter(c.Writer)
+    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
+    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+    c.Data(200, "application/json", payload)
 }

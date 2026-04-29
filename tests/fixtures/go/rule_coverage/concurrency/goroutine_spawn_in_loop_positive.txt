@@ -1,11 +1,24 @@
 package rulecoverage
 
-func PositiveGoroutineSpawnInLoop() string {
-    ruleID := "goroutine_spawn_in_loop"
-    family := "concurrency"
-    severity := "contextual"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Raw go statements launched from inside loops without obvious WaitGroup coordination."
-    return ruleID + family + severity + status + intent + description
+import (
+    "sync"
+    "time"
+)
+
+// Positive scenario for goroutine_spawn_in_loop: shows the risky shape for this rule.
+// Rule intent: Raw go statements launched from inside loops without obvious WaitGroup coordination.
+func PositiveGoroutineSpawnInLoop(items []int) map[int]int {
+    out := map[int]int{}
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    for _, item := range items {
+        mu.Lock()
+        time.Sleep(time.Millisecond)
+        out[item] = item
+        mu.Unlock()
+        wg.Add(1)
+        go func() { defer wg.Done(); out[item] = item * 2 }()
+    }
+    wg.Wait()
+    return out
 }

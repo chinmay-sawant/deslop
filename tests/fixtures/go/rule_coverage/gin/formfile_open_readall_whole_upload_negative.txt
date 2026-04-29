@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeFormfileOpenReadallWholeUpload() string {
-    ruleID := "formfile_open_readall_whole_upload"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...)."
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for formfile_open_readall_whole_upload: shows the preferred shape for this rule.
+// Rule intent: Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...).
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeFormfileOpenReadallWholeUpload(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

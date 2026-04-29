@@ -1,11 +1,30 @@
 package rulecoverage
 
-func PositiveUnsafePointerCast() string {
-    ruleID := "unsafe_pointer_cast"
-    family := "security"
-    severity := "warning"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "`unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`"
-    return ruleID + family + severity + status + intent + description
+import (
+    "crypto/md5"
+    "crypto/tls"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "html/template"
+    "math/rand"
+    "net/http"
+    "os/exec"
+    "path/filepath"
+)
+
+// Positive scenario for unsafe_pointer_cast: shows the risky shape for this rule.
+// Rule intent: `unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`
+func PositiveUnsafePointerCast(c *gin.Context, db *sql.DB, userInput string) {
+    _ = tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS10}
+    _ = md5.Sum([]byte(userInput))
+    _ = rand.Intn(999999)
+    db.Query("SELECT * FROM users WHERE name = '" + userInput + "'")
+    exec.Command("sh", "-c", userInput).Run()
+    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: userInput})
+    c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Credentials", "true")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Errorf("secret %s", userInput).Error()})
+    template.HTML(userInput)
+    filepath.Join("/srv/uploads", userInput)
 }

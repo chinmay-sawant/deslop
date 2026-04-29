@@ -1,11 +1,31 @@
 package rulecoverage
 
-func NegativeGoPerfLayerSerializationMapAnyJsonDecodeInHotPath() string {
-    ruleID := "go_perf_layer_serialization_map_any_json_decode_in_hot_path"
-    family := "performance"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Layer: Serialization and deserialization. Flag JSON decoding into map[string]any in hot paths where typed structs avoid reflection churn."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "io"
+    "sort"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_serialization_map_any_json_decode_in_hot_path: shows the preferred shape for this rule.
+// Rule intent: Layer: Serialization and deserialization. Flag JSON decoding into map[string]any in hot paths where typed structs avoid reflection churn.
+type record struct { ID int; Name string; Payload []byte }
+
+func NegativeGoPerfLayerSerializationMapAnyJsonDecodeInHotPath(items []record, needle string, w io.Writer) string {
+    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+    var b strings.Builder
+    b.Grow(len(items) * 8)
+    scratch := bytes.NewBuffer(make([]byte, 0, 64))
+    for i, item := range items {
+        if strings.Contains(item.Name, needle) {
+            b.WriteString(item.Name)
+            b.WriteByte('/')
+            b.WriteString(strconv.Itoa(i))
+        }
+        scratch.Reset()
+        scratch.Write(item.Payload)
+    }
+    _, _ = io.WriteString(w, b.String())
+    return b.String()
 }

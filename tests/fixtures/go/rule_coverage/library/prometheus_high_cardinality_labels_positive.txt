@@ -1,11 +1,33 @@
 package rulecoverage
 
-func PositivePrometheusHighCardinalityLabels() string {
-    ruleID := "prometheus_high_cardinality_labels"
-    family := "library"
-    severity := "warning"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "`counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources"
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "compress/gzip"
+    "encoding/json"
+    "github.com/gin-gonic/gin"
+    "io"
+    "net/http"
+    "net/http/httputil"
+    "os"
+)
+
+// Positive scenario for prometheus_high_cardinality_labels: shows the risky shape for this rule.
+// Rule intent: `counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources
+func PositivePrometheusHighCardinalityLabels(c *gin.Context) {
+    raw, _ := c.GetRawData()
+    var body map[string]any
+    c.ShouldBindJSON(&body)
+    dump, _ := httputil.DumpRequest(c.Request, true)
+    c.Writer.Write(dump)
+    client := &http.Client{}
+    client.Get(c.Query("upstream"))
+    client.Get(c.Query("upstream"))
+    os.Getenv("FEATURE_FLAG")
+    file, _ := c.FormFile("upload")
+    opened, _ := file.Open()
+    io.ReadAll(opened)
+    gz := gzip.NewWriter(c.Writer)
+    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
+    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+    c.Data(200, "application/json", payload)
 }

@@ -1,11 +1,48 @@
-package rulecoverage
+package handler
 
-func PositiveBusinessValidationMixedWithPersistenceCallsInHandler() string {
-    ruleID := "business_validation_mixed_with_persistence_calls_in_handler"
-    family := "architecture"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "Handlers that start querying or writing before finishing request validation."
-    return ruleID + family + severity + status + intent + description
+import (
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "net/http"
+    "os"
+)
+
+// Positive scenario for business_validation_mixed_with_persistence_calls_in_handler: shows the risky shape for this rule.
+// Rule intent: Handlers that start querying or writing before finishing request validation.
+type UserModel struct {
+    ID string `json:"id" gorm:"column:id" binding:"required"`
+    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+}
+
+type APIError struct { Error string `json:"error"` }
+type UserRepository struct { db *gorm.DB; sql *sql.DB }
+type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
+type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
+
+func PositiveBusinessValidationMixedWithPersistenceCallsInHandler(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
+    var model UserModel
+    if err := c.ShouldBindJSON(&model); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    tenantID := c.GetHeader("X-Tenant-ID")
+    userID := c.Param("id")
+    tx := db.Begin()
+    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
+    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
+    c.JSON(http.StatusOK, model)
+    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+}
+
+func (s *UserService) PositiveBusinessValidationMixedWithPersistenceCallsInHandlerService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
+    if dto.Status == "" { dto.Status = "active" }
+    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
+    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+}
+
+func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
+    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
 }

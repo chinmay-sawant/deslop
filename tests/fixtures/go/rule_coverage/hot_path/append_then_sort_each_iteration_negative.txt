@@ -1,11 +1,31 @@
 package rulecoverage
 
-func NegativeAppendThenSortEachIteration() string {
-    ruleID := "append_then_sort_each_iteration"
-    family := "hot_path"
-    severity := "info"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Slice sorting observed inside loops \u2014 often cheaper to sort once after the loop."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "io"
+    "sort"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for append_then_sort_each_iteration: shows the preferred shape for this rule.
+// Rule intent: Slice sorting observed inside loops — often cheaper to sort once after the loop.
+type record struct { ID int; Name string; Payload []byte }
+
+func NegativeAppendThenSortEachIteration(items []record, needle string, w io.Writer) string {
+    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+    var b strings.Builder
+    b.Grow(len(items) * 8)
+    scratch := bytes.NewBuffer(make([]byte, 0, 64))
+    for i, item := range items {
+        if strings.Contains(item.Name, needle) {
+            b.WriteString(item.Name)
+            b.WriteByte('/')
+            b.WriteString(strconv.Itoa(i))
+        }
+        scratch.Reset()
+        scratch.Write(item.Payload)
+    }
+    _, _ = io.WriteString(w, b.String())
+    return b.String()
 }

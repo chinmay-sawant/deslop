@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeUpstreamJsonDecodeSameResponseMultipleTimes() string {
-    ruleID := "upstream_json_decode_same_response_multiple_times"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "One upstream HTTP response body decoded into multiple targets in the same handler."
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for upstream_json_decode_same_response_multiple_times: shows the preferred shape for this rule.
+// Rule intent: One upstream HTTP response body decoded into multiple targets in the same handler.
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeUpstreamJsonDecodeSameResponseMultipleTimes(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

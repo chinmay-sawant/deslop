@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativeRepeatedLargeMapLiteralResponseConstruction() string {
-    ruleID := "repeated_large_map_literal_response_construction"
-    family := "gin"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "Large map-literal response assembly on hot routes where a stable typed response would be cheaper."
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for repeated_large_map_literal_response_construction: shows the preferred shape for this rule.
+// Rule intent: Large map-literal response assembly on hot routes where a stable typed response would be cheaper.
+type requestBody struct { ID string `json:"id"` }
+
+func NegativeRepeatedLargeMapLiteralResponseConstruction(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

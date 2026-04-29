@@ -1,11 +1,30 @@
 package rulecoverage
 
-func PositiveTimingAttackOnTokenComparison() string {
-    ruleID := "timing_attack_on_token_comparison"
-    family := "security"
-    severity := "warning"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values"
-    return ruleID + family + severity + status + intent + description
+import (
+    "crypto/md5"
+    "crypto/tls"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "html/template"
+    "math/rand"
+    "net/http"
+    "os/exec"
+    "path/filepath"
+)
+
+// Positive scenario for timing_attack_on_token_comparison: shows the risky shape for this rule.
+// Rule intent: `token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values
+func PositiveTimingAttackOnTokenComparison(c *gin.Context, db *sql.DB, userInput string) {
+    _ = tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS10}
+    _ = md5.Sum([]byte(userInput))
+    _ = rand.Intn(999999)
+    db.Query("SELECT * FROM users WHERE name = '" + userInput + "'")
+    exec.Command("sh", "-c", userInput).Run()
+    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: userInput})
+    c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Credentials", "true")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Errorf("secret %s", userInput).Error()})
+    template.HTML(userInput)
+    filepath.Join("/srv/uploads", userInput)
 }

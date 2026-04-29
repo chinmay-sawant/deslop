@@ -1,11 +1,15 @@
 package rulecoverage
 
-func NegativeProtoUnmarshalSamePayloadMultipleTimes() string {
-    ruleID := "proto_unmarshal_same_payload_multiple_times"
-    family := "mod"
-    severity := "contextual"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "The same local protobuf payload binding is unmarshaled into multiple targets in one function."
-    return ruleID + family + severity + status + intent + description
+import (
+    "encoding/json"
+)
+
+// Negative scenario for proto_unmarshal_same_payload_multiple_times: shows the preferred shape for this rule.
+// Rule intent: The same local protobuf payload binding is unmarshaled into multiple targets in one function.
+type envelope struct { ID string }
+
+func NegativeProtoUnmarshalSamePayloadMultipleTimes(payload []byte) (envelope, error) {
+    var first envelope
+    err := json.Unmarshal(payload, &first)
+    return first, err
 }

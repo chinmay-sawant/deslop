@@ -1,11 +1,20 @@
 package rulecoverage
 
-func NegativePrometheusHighCardinalityLabels() string {
-    ruleID := "prometheus_high_cardinality_labels"
-    family := "library"
-    severity := "warning"
-    status := "stable"
-    intent := "shows the preferred shape that should not trigger this rule"
-    description := "`counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources"
-    return ruleID + family + severity + status + intent + description
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+)
+
+// Negative scenario for prometheus_high_cardinality_labels: shows the preferred shape for this rule.
+// Rule intent: `counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources
+type requestBody struct { ID string `json:"id"` }
+
+func NegativePrometheusHighCardinalityLabels(c *gin.Context, client *http.Client) {
+    var body requestBody
+    if err := c.ShouldBindJSON(&body); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"id": body.ID})
+    _ = client
 }

@@ -1,11 +1,44 @@
 package rulecoverage
 
-func PositiveStringsSplitafternTwoIndexOneCut() string {
-    ruleID := "strings_splitaftern_two_index_one_cut"
-    family := "performance"
-    severity := "info"
-    status := "stable"
-    intent := "captures the smell described by this rule"
-    description := "`strings.SplitAfterN(..., 2)[1]` instead of a two-part `strings.Cut(...)` flow."
-    return ruleID + family + severity + status + intent + description
+import (
+    "bytes"
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/json"
+    "fmt"
+    "io"
+    "math/rand"
+    "reflect"
+    "regexp"
+    "runtime"
+    "sort"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for strings_splitaftern_two_index_one_cut: shows the risky shape for this rule.
+// Rule intent: `strings.SplitAfterN(..., 2)[1]` instead of a two-part `strings.Cut(...)` flow.
+type record struct { ID int; Name string; Payload []byte }
+
+func PositiveStringsSplitafternTwoIndexOneCut(items []record, needle string, w io.Writer) string {
+    var out string
+    var mu sync.Mutex
+    seen := map[string]bool{}
+    for i, item := range items {
+        out += fmt.Sprintf("%s/%d", item.Name, i)
+        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
+        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
+        _ = len(bytes.NewBuffer(item.Payload).String())
+        _ = regexp.MustCompile(needle).MatchString(item.Name)
+        _ = reflect.DeepEqual(item, record{})
+        json.Marshal(item)
+        hmac.New(sha256.New, []byte(needle))
+        rand.New(rand.NewSource(time.Now().UnixNano()))
+        runtime.GOMAXPROCS(runtime.NumCPU())
+        mu.Lock(); defer mu.Unlock()
+        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+        w.Write([]byte("x"))
+    }
+    return out
 }
