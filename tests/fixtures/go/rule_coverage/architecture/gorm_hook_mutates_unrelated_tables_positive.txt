@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormHookMutatesUnrelatedTables() string {
+    ruleID := "gorm_hook_mutates_unrelated_tables"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Hooks that reach beyond the owning aggregate and write unrelated records."
+    return ruleID + family + severity + status + intent + description
+}

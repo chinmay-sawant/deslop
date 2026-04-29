@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDeleteSingleRowInLoopWithoutBatch() string {
+    ruleID := "delete_single_row_in_loop_without_batch"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM Delete(...) chains observed inside loops one row at a time."
+    return ruleID + family + severity + status + intent + description
+}

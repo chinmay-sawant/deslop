@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceWritePassthroughWithoutDomainValidation() string {
+    ruleID := "service_write_passthrough_without_domain_validation"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Write-style service methods that mostly forward to repositories without visible domain guard checks."
+    return ruleID + family + severity + status + intent + description
+}

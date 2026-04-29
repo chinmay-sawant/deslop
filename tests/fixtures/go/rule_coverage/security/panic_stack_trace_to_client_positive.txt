@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePanicStackTraceToClient() string {
+    ruleID := "panic_stack_trace_to_client"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`recover()` in HTTP middleware that sends the panic message/stack to the response writer"
+    return ruleID + family + severity + status + intent + description
+}

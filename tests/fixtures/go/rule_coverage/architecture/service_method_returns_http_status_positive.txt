@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceMethodReturnsHttpStatus() string {
+    ruleID := "service_method_returns_http_status"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Services that return raw HTTP status codes or transport response metadata."
+    return ruleID + family + severity + status + intent + description
+}

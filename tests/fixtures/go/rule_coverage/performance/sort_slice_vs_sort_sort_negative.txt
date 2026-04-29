@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSortSliceVsSortSort() string {
+    ruleID := "sort_slice_vs_sort_sort"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeWorldReadableFilePermissions() string {
+    ruleID := "world_readable_file_permissions"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`os.OpenFile(path, flag, 0666)` or `os.WriteFile(path, data, 0777)` with world-readable/writable permissions"
+    return ruleID + family + severity + status + intent + description
+}

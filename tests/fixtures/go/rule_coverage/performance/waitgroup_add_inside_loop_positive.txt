@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveWaitgroupAddInsideLoop() string {
+    ruleID := "waitgroup_add_inside_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepositoryReturnsFrameworkBuilderToUpperLayer() string {
+    ruleID := "repository_returns_framework_builder_to_upper_layer"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repositories that leak `*gorm.DB`, `sqlx.NamedStmt`, query builders, or raw rows to higher layers instead of returning results or domain abstractions."
+    return ruleID + family + severity + status + intent + description
+}

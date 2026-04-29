@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSprintfForSimpleStringFormat() string {
+    ruleID := "sprintf_for_simple_string_format"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Sprintf(\"%s:%s\", a, b)` where only `%s` verbs are used"
+    return ruleID + family + severity + status + intent + description
+}

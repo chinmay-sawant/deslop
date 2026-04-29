@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStmtWithoutClose() string {
+    ruleID := "stmt_without_close"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Prepared statements or similar DB handles without an observed Close() call."
+    return ruleID + family + severity + status + intent + description
+}

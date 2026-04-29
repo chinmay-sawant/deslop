@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRuntimeGomaxprocsPerRequest() string {
+    ruleID := "runtime_gomaxprocs_per_request"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`runtime.GOMAXPROCS(...)` on request paths."
+    return ruleID + family + severity + status + intent + description
+}

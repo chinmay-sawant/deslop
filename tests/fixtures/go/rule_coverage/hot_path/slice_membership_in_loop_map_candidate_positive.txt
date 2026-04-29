@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSliceMembershipInLoopMapCandidate() string {
+    ruleID := "slice_membership_in_loop_map_candidate"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "slices.Contains(...) or slices.Index(...) used inside loops against a stable-looking slice binding."
+    return ruleID + family + severity + status + intent + description
+}

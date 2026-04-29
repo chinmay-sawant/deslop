@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeWeakHashForIntegrity() string {
+    ruleID := "weak_hash_for_integrity"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`md5.New()`, `sha1.New()`, `md5.Sum()`, `sha1.Sum()` used for integrity checks, checksums, or MAC operations (not just `weak_crypto` import-level detection)"
+    return ruleID + family + severity + status + intent + description
+}

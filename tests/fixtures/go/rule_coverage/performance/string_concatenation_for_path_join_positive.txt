@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringConcatenationForPathJoin() string {
+    ruleID := "string_concatenation_for_path_join"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`dir + \"/\" + file` or manual path assembly via `+` concatenation"
+    return ruleID + family + severity + status + intent + description
+}

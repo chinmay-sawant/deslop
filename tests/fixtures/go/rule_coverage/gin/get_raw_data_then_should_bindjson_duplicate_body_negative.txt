@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGetRawDataThenShouldBindjsonDuplicateBody() string {
+    ruleID := "get_raw_data_then_should_bindjson_duplicate_body"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Gin handlers that read GetRawData() and later bind JSON from the same request body."
+    return ruleID + family + severity + status + intent + description
+}

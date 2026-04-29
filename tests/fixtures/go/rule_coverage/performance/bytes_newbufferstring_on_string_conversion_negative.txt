@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBytesNewbufferstringOnStringConversion() string {
+    ruleID := "bytes_newbufferstring_on_string_conversion"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`bytes.NewBufferString(string(b))` instead of using the byte slice directly."
+    return ruleID + family + severity + status + intent + description
+}

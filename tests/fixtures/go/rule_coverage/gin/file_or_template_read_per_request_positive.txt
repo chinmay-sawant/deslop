@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFileOrTemplateReadPerRequest() string {
+    ruleID := "file_or_template_read_per_request"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Request-path handlers that read files directly instead of using startup caching or dedicated file-serving paths."
+    return ruleID + family + severity + status + intent + description
+}

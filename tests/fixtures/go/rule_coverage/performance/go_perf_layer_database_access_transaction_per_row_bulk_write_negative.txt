@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerDatabaseAccessTransactionPerRowBulkWrite() string {
+    ruleID := "go_perf_layer_database_access_transaction_per_row_bulk_write"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Database access. Flag bulk writes that open and commit one transaction per row."
+    return ruleID + family + severity + status + intent + description
+}

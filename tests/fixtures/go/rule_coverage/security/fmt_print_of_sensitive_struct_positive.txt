@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFmtPrintOfSensitiveStruct() string {
+    ruleID := "fmt_print_of_sensitive_struct"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Sprintf(\"%+v\", user)` or `fmt.Printf(\"%v\", config)` on structs that contain password/secret/token fields"
+    return ruleID + family + severity + status + intent + description
+}

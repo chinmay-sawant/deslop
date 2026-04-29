@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBytesSplitafternTwoIndexOneCut() string {
+    ruleID := "bytes_splitaftern_two_index_one_cut"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`bytes.SplitAfterN(..., 2)[1]` instead of a two-part `bytes.Cut(...)` flow."
+    return ruleID + family + severity + status + intent + description
+}

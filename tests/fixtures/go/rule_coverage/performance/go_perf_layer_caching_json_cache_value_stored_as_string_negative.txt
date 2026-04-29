@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerCachingJsonCacheValueStoredAsString() string {
+    ruleID := "go_perf_layer_caching_json_cache_value_stored_as_string"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Caching. Flag caches that store JSON strings only to unmarshal them again before every use."
+    return ruleID + family + severity + status + intent + description
+}

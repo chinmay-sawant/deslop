@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormFindWithoutLimitOnHandlerPath() string {
+    ruleID := "gorm_find_without_limit_on_handler_path"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Request-path GORM Find(...) chains with no visible Limit(...) step."
+    return ruleID + family + severity + status + intent + description
+}

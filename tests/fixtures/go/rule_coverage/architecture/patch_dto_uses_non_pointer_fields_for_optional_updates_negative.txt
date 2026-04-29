@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePatchDtoUsesNonPointerFieldsForOptionalUpdates() string {
+    ruleID := "patch_dto_uses_non_pointer_fields_for_optional_updates"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "PATCH-like DTOs that cannot distinguish omitted fields from zero values."
+    return ruleID + family + severity + status + intent + description
+}

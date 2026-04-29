@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeUpstreamHttpCallPerItemInHandlerLoop() string {
+    ruleID := "upstream_http_call_per_item_in_handler_loop"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Upstream HTTP calls made per item inside handler loops."
+    return ruleID + family + severity + status + intent + description
+}

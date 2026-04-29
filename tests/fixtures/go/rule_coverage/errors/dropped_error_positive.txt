@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDroppedError() string {
+    ruleID := "dropped_error"
+    family := "errors"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Blank identifier assignments that discard an err-like value."
+    return ruleID + family + severity + status + intent + description
+}

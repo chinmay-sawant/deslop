@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsToupperEqualfold() string {
+    ruleID := "strings_toupper_equalfold"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`strings.ToUpper(...) == strings.ToUpper(...)` instead of `strings.EqualFold(...)`."
+    return ruleID + family + severity + status + intent + description
+}

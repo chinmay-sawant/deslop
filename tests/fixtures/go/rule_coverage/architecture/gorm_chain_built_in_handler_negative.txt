@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGormChainBuiltInHandler() string {
+    ruleID := "gorm_chain_built_in_handler"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that construct `Where`, `Joins`, `Scopes`, or `Order` chains directly."
+    return ruleID + family + severity + status + intent + description
+}

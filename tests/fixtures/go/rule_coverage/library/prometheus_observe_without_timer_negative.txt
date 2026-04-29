@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePrometheusObserveWithoutTimer() string {
+    ruleID := "prometheus_observe_without_timer"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "manual `time.Since(start).Seconds()` + `histogram.Observe(duration)` patterns when `prometheus.NewTimer` would be safer"
+    return ruleID + family + severity + status + intent + description
+}

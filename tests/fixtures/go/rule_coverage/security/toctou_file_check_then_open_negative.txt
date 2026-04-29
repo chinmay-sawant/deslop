@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeToctouFileCheckThenOpen() string {
+    ruleID := "toctou_file_check_then_open"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`os.Stat(path)` or file existence check followed by `os.Open(path)` or `os.Create(path)` without atomic operations"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveUnnecessaryMapForSetOfInts() string {
+    ruleID := "unnecessary_map_for_set_of_ints"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`map[int]bool` or `map[int]struct{}` used as a set for small dense integer ranges"
+    return ruleID + family + severity + status + intent + description
+}

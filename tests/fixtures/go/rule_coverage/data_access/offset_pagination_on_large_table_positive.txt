@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveOffsetPaginationOnLargeTable() string {
+    ruleID := "offset_pagination_on_large_table"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Request-path GORM Find(...) chains that page with Offset(...), which often scales poorly on large lists."
+    return ruleID + family + severity + status + intent + description
+}

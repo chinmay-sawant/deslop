@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTypeSwitchVsRepeatedAssertions() string {
+    ruleID := "type_switch_vs_repeated_assertions"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns"
+    return ruleID + family + severity + status + intent + description
+}

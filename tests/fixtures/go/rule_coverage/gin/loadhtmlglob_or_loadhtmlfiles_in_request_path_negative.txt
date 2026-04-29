@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeLoadhtmlglobOrLoadhtmlfilesInRequestPath() string {
+    ruleID := "loadhtmlglob_or_loadhtmlfiles_in_request_path"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization."
+    return ruleID + family + severity + status + intent + description
+}

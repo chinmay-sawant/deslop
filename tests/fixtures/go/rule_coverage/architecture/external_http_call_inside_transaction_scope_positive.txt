@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveExternalHttpCallInsideTransactionScope() string {
+    ruleID := "external_http_call_inside_transaction_scope"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Network calls performed while a DB transaction is open."
+    return ruleID + family + severity + status + intent + description
+}

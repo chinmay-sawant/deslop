@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveNestedTransactionInRequestPath() string {
+    ruleID := "nested_transaction_in_request_path"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Multiple transactions started on a single request path."
+    return ruleID + family + severity + status + intent + description
+}

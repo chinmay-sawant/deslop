@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHandlerCallsRepositoryDirectlyWithoutService() string {
+    ruleID := "handler_calls_repository_directly_without_service"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that bypass a visible service layer and call repositories or query helpers directly for business orchestration."
+    return ruleID + family + severity + status + intent + description
+}

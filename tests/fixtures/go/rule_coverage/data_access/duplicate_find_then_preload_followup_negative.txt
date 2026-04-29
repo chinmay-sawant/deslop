@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDuplicateFindThenPreloadFollowup() string {
+    ruleID := "duplicate_find_then_preload_followup"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Initial Find followed by a separate Preload query that could be folded into one."
+    return ruleID + family + severity + status + intent + description
+}

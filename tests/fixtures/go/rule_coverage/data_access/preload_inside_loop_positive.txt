@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePreloadInsideLoop() string {
+    ruleID := "preload_inside_loop"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM Preload(...) queries configured and executed inside loops."
+    return ruleID + family + severity + status + intent + description
+}

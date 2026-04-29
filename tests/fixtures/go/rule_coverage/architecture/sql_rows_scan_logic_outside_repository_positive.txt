@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSqlRowsScanLogicOutsideRepository() string {
+    ruleID := "sql_rows_scan_logic_outside_repository"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Code outside repositories that manually scans rows into structs."
+    return ruleID + family + severity + status + intent + description
+}

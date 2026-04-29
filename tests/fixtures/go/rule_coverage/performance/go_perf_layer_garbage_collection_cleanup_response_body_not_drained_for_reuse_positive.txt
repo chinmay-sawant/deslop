@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerGarbageCollectionCleanupResponseBodyNotDrainedForReuse() string {
+    ruleID := "go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Garbage collection and cleanup. Flag HTTP response handling that closes bodies without draining when connection reuse matters."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGinHandlerStartsTransactionInline() string {
+    ruleID := "gin_handler_starts_transaction_inline"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that create or own transactions instead of delegating transactional work to services or unit-of-work helpers."
+    return ruleID + family + severity + status + intent + description
+}

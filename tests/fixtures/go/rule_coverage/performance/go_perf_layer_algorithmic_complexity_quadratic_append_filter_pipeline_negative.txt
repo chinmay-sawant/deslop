@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerAlgorithmicComplexityQuadraticAppendFilterPipeline() string {
+    ruleID := "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Algorithmic complexity. Flag append-based filter pipelines that rescan accumulated results for every input item."
+    return ruleID + family + severity + status + intent + description
+}

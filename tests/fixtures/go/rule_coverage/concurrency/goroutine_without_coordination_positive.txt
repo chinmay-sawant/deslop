@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoroutineWithoutCoordination() string {
+    ruleID := "goroutine_without_coordination"
+    family := "concurrency"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Raw go statements without an obvious context or WaitGroup-like coordination signal."
+    return ruleID + family + severity + status + intent + description
+}

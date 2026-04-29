@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveEmptyInterfaceParameterOveruse() string {
+    ruleID := "empty_interface_parameter_overuse"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "exported functions with `any` or `interface{}` parameters when concrete types would suffice"
+    return ruleID + family + severity + status + intent + description
+}

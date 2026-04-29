@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMigrationTestsLiveUnderHandlerPackages() string {
+    ruleID := "migration_tests_live_under_handler_packages"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Migration-specific tests located in transport packages."
+    return ruleID + family + severity + status + intent + description
+}

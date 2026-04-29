@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMapOfSlicesPrealloc() string {
+    ruleID := "map_of_slices_prealloc"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`m[k] = append(m[k], v)` in loops without pre-allocating inner slices"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMutexInLoop() string {
+    ruleID := "mutex_in_loop"
+    family := "concurrency"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated Lock or RLock acquisition inside loops."
+    return ruleID + family + severity + status + intent + description
+}

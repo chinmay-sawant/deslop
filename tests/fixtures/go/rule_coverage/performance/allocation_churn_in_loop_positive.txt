@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveAllocationChurnInLoop() string {
+    ruleID := "allocation_churn_in_loop"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Obvious make, new, or buffer-construction calls inside loops."
+    return ruleID + family + severity + status + intent + description
+}

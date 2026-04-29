@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerIoOperationsScannerUsedForLargeTokenStream() string {
+    ruleID := "go_perf_layer_io_operations_scanner_used_for_large_token_stream"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: I/O operations. Flag bufio.Scanner on potentially large tokens without Buffer sizing or Reader alternatives."
+    return ruleID + family + severity + status + intent + description
+}

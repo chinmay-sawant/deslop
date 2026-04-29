@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepositoryBeginsTransactionWithoutUowOrCallback() string {
+    ruleID := "repository_begins_transaction_without_uow_or_callback"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repositories that quietly start transactions inside generic CRUD methods."
+    return ruleID + family + severity + status + intent + description
+}

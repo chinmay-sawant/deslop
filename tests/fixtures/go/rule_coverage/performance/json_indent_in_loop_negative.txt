@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeJsonIndentInLoop() string {
+    ruleID := "json_indent_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`json.Indent(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

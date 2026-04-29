@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDoubleCloseLocalChannel() string {
+    ruleID := "double_close_local_channel"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "The same locally created channel appears to be closed more than once in one function body."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePanicOnError() string {
+    ruleID := "panic_on_error"
+    family := "errors"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "err != nil branches that jump straight to panic or log.Fatal style exits."
+    return ruleID + family + severity + status + intent + description
+}

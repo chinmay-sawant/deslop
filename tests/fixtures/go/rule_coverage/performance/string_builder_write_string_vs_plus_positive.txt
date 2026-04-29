@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringBuilderWriteStringVsPlus() string {
+    ruleID := "string_builder_write_string_vs_plus"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`builder.WriteString(a + b)` where `a` and `b` are separate bindings"
+    return ruleID + family + severity + status + intent + description
+}

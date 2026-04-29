@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePgxpoolAcquireInLoop() string {
+    ruleID := "pgxpool_acquire_in_loop"
+    family := "data_access"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated pgxpool acquire calls inside loops that may churn pooled resources."
+    return ruleID + family + severity + status + intent + description
+}

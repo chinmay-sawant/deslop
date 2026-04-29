@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerFrameworkPerformanceSqlxSelectSliceUnbounded() string {
+    ruleID := "go_perf_layer_framework_performance_sqlx_select_slice_unbounded"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Framework-specific performance. Flag sqlx Select into slices without LIMIT or streaming for large tables."
+    return ruleID + family + severity + status + intent + description
+}

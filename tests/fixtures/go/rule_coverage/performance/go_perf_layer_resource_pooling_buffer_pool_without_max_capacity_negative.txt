@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerResourcePoolingBufferPoolWithoutMaxCapacity() string {
+    ruleID := "go_perf_layer_resource_pooling_buffer_pool_without_max_capacity"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Resource pooling. Flag buffer pools that return arbitrarily large buffers and retain memory after spikes."
+    return ruleID + family + severity + status + intent + description
+}

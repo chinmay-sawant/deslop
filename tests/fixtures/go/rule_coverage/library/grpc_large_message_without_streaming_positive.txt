@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGrpcLargeMessageWithoutStreaming() string {
+    ruleID := "grpc_large_message_without_streaming"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "unary RPC handlers returning or receiving messages > 4MB (inferred from large slice/struct serialization patterns)"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsContainsVsIndex() string {
+    ruleID := "strings_contains_vs_index"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns"
+    return ruleID + family + severity + status + intent + description
+}

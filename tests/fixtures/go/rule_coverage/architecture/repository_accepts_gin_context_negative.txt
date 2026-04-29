@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepositoryAcceptsGinContext() string {
+    ruleID := "repository_accepts_gin_context"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repositories that accept `*gin.Context` rather than `context.Context`."
+    return ruleID + family + severity + status + intent + description
+}

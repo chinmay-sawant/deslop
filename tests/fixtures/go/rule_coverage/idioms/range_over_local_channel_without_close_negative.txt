@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRangeOverLocalChannelWithoutClose() string {
+    ruleID := "range_over_local_channel_without_close"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Functions that range over a locally owned channel without an observed close path."
+    return ruleID + family + severity + status + intent + description
+}

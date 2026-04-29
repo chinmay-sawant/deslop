@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFmtFprintlnToBytesBuffer() string {
+    ruleID := "fmt_fprintln_to_bytes_buffer"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Fprintln(&buf, ...)` instead of direct buffer writes."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeInitRegistersRoutesOrDependencies() string {
+    ruleID := "init_registers_routes_or_dependencies"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`init()` functions that register handlers, routes, or runtime dependencies."
+    return ruleID + family + severity + status + intent + description
+}

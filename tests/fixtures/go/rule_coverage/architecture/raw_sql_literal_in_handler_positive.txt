@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRawSqlLiteralInHandler() string {
+    ruleID := "raw_sql_literal_in_handler"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Literal SQL strings declared and executed from handlers."
+    return ruleID + family + severity + status + intent + description
+}

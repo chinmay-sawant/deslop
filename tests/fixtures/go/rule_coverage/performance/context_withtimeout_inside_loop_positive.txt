@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveContextWithtimeoutInsideLoop() string {
+    ruleID := "context_withtimeout_inside_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`context.WithTimeout(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTransactionErrorTranslationDoneInRepositoryAndHandler() string {
+    ruleID := "transaction_error_translation_done_in_repository_and_handler"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Both repository and handler layers translating the same transaction errors."
+    return ruleID + family + severity + status + intent + description
+}

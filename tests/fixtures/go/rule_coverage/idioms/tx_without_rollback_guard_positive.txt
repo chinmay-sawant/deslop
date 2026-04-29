@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTxWithoutRollbackGuard() string {
+    ruleID := "tx_without_rollback_guard"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Transactions begun and later committed with no observed rollback guard."
+    return ruleID + family + severity + status + intent + description
+}

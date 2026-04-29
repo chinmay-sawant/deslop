@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSharedPackageNamedCommonBaseUtilsWithMixedExports() string {
+    ruleID := "shared_package_named_common_base_utils_with_mixed_exports"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Generic packages that mix services, models, DTOs, validators, and queries behind one broad shared namespace."
+    return ruleID + family + severity + status + intent + description
+}

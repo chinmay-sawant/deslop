@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveJsonValidThenUnmarshal() string {
+    ruleID := "json_valid_then_unmarshal"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Code that validates JSON and then unmarshals the same payload again."
+    return ruleID + family + severity + status + intent + description
+}

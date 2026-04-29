@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBackgroundJobsRegisteredFromGinPackagesInsteadOfBootstrap() string {
+    ruleID := "background_jobs_registered_from_gin_packages_instead_of_bootstrap"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Scheduler or worker registration hidden inside Gin transport packages."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeManualRequiredChecksAfterValidateTagsAvailable() string {
+    ruleID := "manual_required_checks_after_validate_tags_available"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that re-check required fields manually even though struct-tag validation already exists."
+    return ruleID + family + severity + status + intent + description
+}

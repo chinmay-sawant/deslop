@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringConcatenationForPathJoin() string {
+    ruleID := "string_concatenation_for_path_join"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`dir + \"/\" + file` or manual path assembly via `+` concatenation"
+    return ruleID + family + severity + status + intent + description
+}

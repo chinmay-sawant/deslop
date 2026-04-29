@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReport() string {
+    ruleID := "go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Profiling and benchmarking. Flag benchmarks for allocation-sensitive code that omit b.ReportAllocs."
+    return ruleID + family + severity + status + intent + description
+}

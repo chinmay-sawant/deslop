@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerResourcePoolingWorkerPoolWithoutShutdownBackpressure() string {
+    ruleID := "go_perf_layer_resource_pooling_worker_pool_without_shutdown_backpressure"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Resource pooling. Flag worker pools that accept unlimited jobs without bounded queues or shutdown draining."
+    return ruleID + family + severity + status + intent + description
+}

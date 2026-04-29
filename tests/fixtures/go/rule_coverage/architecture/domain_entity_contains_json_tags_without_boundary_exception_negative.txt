@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDomainEntityContainsJsonTagsWithoutBoundaryException() string {
+    ruleID := "domain_entity_contains_json_tags_without_boundary_exception"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Core domain entities that are directly annotated for API serialization without a deliberate boundary exception."
+    return ruleID + family + severity + status + intent + description
+}

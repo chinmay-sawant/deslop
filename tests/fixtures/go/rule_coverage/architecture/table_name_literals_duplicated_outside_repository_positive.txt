@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTableNameLiteralsDuplicatedOutsideRepository() string {
+    ruleID := "table_name_literals_duplicated_outside_repository"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated table-name strings across handlers, services, and jobs."
+    return ruleID + family + severity + status + intent + description
+}

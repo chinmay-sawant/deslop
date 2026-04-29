@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFirstOrCreateInLoop() string {
+    ruleID := "first_or_create_in_loop"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM FirstOrCreate(...) chains observed inside loops."
+    return ruleID + family + severity + status + intent + description
+}

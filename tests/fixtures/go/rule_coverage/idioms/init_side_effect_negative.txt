@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeInitSideEffect() string {
+    ruleID := "init_side_effect"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "init() functions that perform network, file-system, or subprocess side effects."
+    return ruleID + family + severity + status + intent + description
+}

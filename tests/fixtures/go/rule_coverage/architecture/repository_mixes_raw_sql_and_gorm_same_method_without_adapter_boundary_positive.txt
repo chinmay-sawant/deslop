@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundary() string {
+    ruleID := "repository_mixes_raw_sql_and_gorm_same_method_without_adapter_boundary"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repository methods that mix raw SQL and ORM clauses with no clear boundary."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryConstructorAcceptsGinEngineOrRouter() string {
+    ruleID := "repository_constructor_accepts_gin_engine_or_router"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repository constructors that take transport objects."
+    return ruleID + family + severity + status + intent + description
+}

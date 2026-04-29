@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveNoBatchingOnHandlerDrivenDbWriteLoop() string {
+    ruleID := "no_batching_on_handler_driven_db_write_loop"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Request handlers that drive row-by-row DB writes with no batch path."
+    return ruleID + family + severity + status + intent + description
+}

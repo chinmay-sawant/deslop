@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfig() string {
+    ruleID := "main_or_cmd_mixes_cli_parsing_server_bootstrap_and_business_config"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Entrypoints that do too much without startup composition helpers."
+    return ruleID + family + severity + status + intent + description
+}

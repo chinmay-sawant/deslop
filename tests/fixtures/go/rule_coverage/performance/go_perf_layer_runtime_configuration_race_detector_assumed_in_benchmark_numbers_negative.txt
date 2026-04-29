@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbers() string {
+    ruleID := "go_perf_layer_runtime_configuration_race_detector_assumed_in_benchmark_numbers"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Build and runtime configuration. Flag benchmark guidance or scripts that compare race-enabled and normal builds directly."
+    return ruleID + family + severity + status + intent + description
+}

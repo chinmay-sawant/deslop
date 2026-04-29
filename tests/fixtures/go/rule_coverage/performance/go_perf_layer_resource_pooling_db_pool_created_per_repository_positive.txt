@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerResourcePoolingDbPoolCreatedPerRepository() string {
+    ruleID := "go_perf_layer_resource_pooling_db_pool_created_per_repository"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Resource pooling. Flag database pools constructed per repository instance instead of shared process ownership."
+    return ruleID + family + severity + status + intent + description
+}

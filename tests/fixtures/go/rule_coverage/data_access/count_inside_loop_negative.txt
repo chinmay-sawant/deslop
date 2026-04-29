@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCountInsideLoop() string {
+    ruleID := "count_inside_loop"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "COUNT(...) or GORM Count(...) observed inside loops."
+    return ruleID + family + severity + status + intent + description
+}

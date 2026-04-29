@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTestsStubGinContextInsteadOfHttptestBoundary() string {
+    ruleID := "tests_stub_gin_context_instead_of_httptest_boundary"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handler tests that mock Gin internals directly instead of using `httptest` when boundary behavior matters."
+    return ruleID + family + severity + status + intent + description
+}

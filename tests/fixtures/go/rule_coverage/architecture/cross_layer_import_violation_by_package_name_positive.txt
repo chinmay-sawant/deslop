@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCrossLayerImportViolationByPackageName() string {
+    ruleID := "cross_layer_import_violation_by_package_name"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Imports where package names clearly violate a layered direction such as `repository -> handler` or `model -> gin`."
+    return ruleID + family + severity + status + intent + description
+}

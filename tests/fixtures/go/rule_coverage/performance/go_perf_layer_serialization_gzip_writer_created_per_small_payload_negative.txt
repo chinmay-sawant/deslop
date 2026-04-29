@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerSerializationGzipWriterCreatedPerSmallPayload() string {
+    ruleID := "go_perf_layer_serialization_gzip_writer_created_per_small_payload"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Serialization and deserialization. Flag gzip writers created for tiny payloads where compression overhead can dominate."
+    return ruleID + family + severity + status + intent + description
+}

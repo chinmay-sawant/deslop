@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTableNameOverrideOrScopeLogicDuplicatedAcrossModels() string {
+    ruleID := "table_name_override_or_scope_logic_duplicated_across_models"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated table-name or model-scope customization across many model files without a shared convention."
+    return ruleID + family + severity + status + intent + description
+}

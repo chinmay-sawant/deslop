@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceMethodReturnsGormDbOrSqlRows() string {
+    ruleID := "service_method_returns_gorm_db_or_sql_rows"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that leak ORM or driver primitives upward instead of returning business results."
+    return ruleID + family + severity + status + intent + description
+}

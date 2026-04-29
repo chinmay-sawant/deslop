@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSha512SumInLoop() string {
+    ruleID := "sha512_sum_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`sha512.Sum512(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

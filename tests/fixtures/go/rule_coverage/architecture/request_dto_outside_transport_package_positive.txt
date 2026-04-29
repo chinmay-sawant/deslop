@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRequestDtoOutsideTransportPackage() string {
+    ruleID := "request_dto_outside_transport_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Request binding structs that live in repositories or service packages instead of transport-facing packages."
+    return ruleID + family + severity + status + intent + description
+}

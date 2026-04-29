@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHandlerCallsGormDirectlyOutsideRepository() string {
+    ruleID := "handler_calls_gorm_directly_outside_repository"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handler packages that import `gorm.io/gorm` and build query chains directly."
+    return ruleID + family + severity + status + intent + description
+}

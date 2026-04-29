@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRuntimeNumcpuInsideLoop() string {
+    ruleID := "runtime_numcpu_inside_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`runtime.NumCPU()` inside loops instead of caching once."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSendAfterLocalCloseRisk() string {
+    ruleID := "send_after_local_close_risk"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "A locally owned channel is closed and later used in a send expression."
+    return ruleID + family + severity + status + intent + description
+}

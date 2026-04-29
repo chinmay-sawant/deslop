@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinHandlerStoresContextInStructField() string {
+    ruleID := "gin_handler_stores_context_in_struct_field"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Code that saves `*gin.Context` onto long-lived structs."
+    return ruleID + family + severity + status + intent + description
+}

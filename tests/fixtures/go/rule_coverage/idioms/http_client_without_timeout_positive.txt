@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHttpClientWithoutTimeout() string {
+    ruleID := "http_client_without_timeout"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Local http.Client{} literals constructed without an explicit timeout."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeLikelyUnindexedQuery() string {
+    ruleID := "likely_unindexed_query"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMutexValueReceiver() string {
+    ruleID := "mutex_value_receiver"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field"
+    return ruleID + family + severity + status + intent + description
+}

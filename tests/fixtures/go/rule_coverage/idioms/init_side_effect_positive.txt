@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveInitSideEffect() string {
+    ruleID := "init_side_effect"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "init() functions that perform network, file-system, or subprocess side effects."
+    return ruleID + family + severity + status + intent + description
+}

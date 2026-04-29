@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepeatedLargeMapLiteralResponseConstruction() string {
+    ruleID := "repeated_large_map_literal_response_construction"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Large map-literal response assembly on hot routes where a stable typed response would be cheaper."
+    return ruleID + family + severity + status + intent + description
+}

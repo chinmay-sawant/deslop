@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSyncMutexForAtomicCounter() string {
+    ruleID := "sync_mutex_for_atomic_counter"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`mu.Lock(); count++; mu.Unlock()` for simple integer counters"
+    return ruleID + family + severity + status + intent + description
+}

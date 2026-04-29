@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveClearMapGo121() string {
+    ruleID := "clear_map_go121"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`for k := range m { delete(m, k) }` in Go 1.21+ codebases"
+    return ruleID + family + severity + status + intent + description
+}

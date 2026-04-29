@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsSplitTwoIndexZeroCut() string {
+    ruleID := "strings_split_two_index_zero_cut"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`strings.Split(...)[0]` when only the first segment is needed."
+    return ruleID + family + severity + status + intent + description
+}

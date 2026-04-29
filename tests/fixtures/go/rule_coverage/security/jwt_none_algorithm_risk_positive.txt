@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveJwtNoneAlgorithmRisk() string {
+    ruleID := "jwt_none_algorithm_risk"
+    family := "security"
+    severity := "error"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "JWT verification code that accepts `\"none\"` or `alg: \"\"` as valid signing methods, or uses `jwt.Parse` without `WithValidMethods`"
+    return ruleID + family + severity + status + intent + description
+}

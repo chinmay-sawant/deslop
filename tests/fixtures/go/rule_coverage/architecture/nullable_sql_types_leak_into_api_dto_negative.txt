@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeNullableSqlTypesLeakIntoApiDto() string {
+    ruleID := "nullable_sql_types_leak_into_api_dto"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Response or request DTOs that expose `sql.Null*` types instead of boundary-friendly contract types."
+    return ruleID + family + severity + status + intent + description
+}

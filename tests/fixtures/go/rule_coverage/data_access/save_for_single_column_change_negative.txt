@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSaveForSingleColumnChange() string {
+    ruleID := "save_for_single_column_change"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "GORM Save used for a single-column update instead of a targeted Update call."
+    return ruleID + family + severity + status + intent + description
+}

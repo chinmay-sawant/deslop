@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsReplaceAllForSingleChar() string {
+    ruleID := "strings_replace_all_for_single_char"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strings.ReplaceAll(s, \"x\", \"y\")` where both old and new are single characters"
+    return ruleID + family + severity + status + intent + description
+}

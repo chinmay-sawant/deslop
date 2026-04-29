@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHardcodedTlsMinVersionTooLow() string {
+    ruleID := "hardcoded_tls_min_version_too_low"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`tls.Config{MinVersion: tls.VersionTLS10}` or `tls.VersionTLS11` or `tls.VersionSSL30`"
+    return ruleID + family + severity + status + intent + description
+}

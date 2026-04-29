@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRequestBodyReadWithoutSizeLimit() string {
+    ruleID := "request_body_read_without_size_limit"
+    family := "idioms"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "HTTP request bodies read or decoded without an observed size limit such as io.LimitReader or http.MaxBytesReader."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormChainBuiltInService() string {
+    ruleID := "gorm_chain_built_in_service"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Services that own detailed ORM query shape instead of delegating to repositories."
+    return ruleID + family + severity + status + intent + description
+}

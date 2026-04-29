@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSqlxSelectLargeSliceWithoutLimit() string {
+    ruleID := "sqlx_select_large_slice_without_limit"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "sqlx.Select used on request paths without a visible LIMIT in the query."
+    return ruleID + family + severity + status + intent + description
+}

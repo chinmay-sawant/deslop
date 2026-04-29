@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTxBeginPerItemLoop() string {
+    ruleID := "tx_begin_per_item_loop"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Transactions started inside loops instead of once around the wider batch."
+    return ruleID + family + severity + status + intent + description
+}

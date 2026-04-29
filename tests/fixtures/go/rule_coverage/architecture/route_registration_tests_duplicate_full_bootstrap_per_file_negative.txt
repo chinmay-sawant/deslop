@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRouteRegistrationTestsDuplicateFullBootstrapPerFile() string {
+    ruleID := "route_registration_tests_duplicate_full_bootstrap_per_file"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Tests that rebuild the full application bootstrap repeatedly instead of using shared test setup."
+    return ruleID + family + severity + status + intent + description
+}

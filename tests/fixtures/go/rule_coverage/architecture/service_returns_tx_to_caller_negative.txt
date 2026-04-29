@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceReturnsTxToCaller() string {
+    ruleID := "service_returns_tx_to_caller"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that hand transaction objects back to handlers or controllers."
+    return ruleID + family + severity + status + intent + description
+}

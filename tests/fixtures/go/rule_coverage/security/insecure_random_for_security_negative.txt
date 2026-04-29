@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeInsecureRandomForSecurity() string {
+    ruleID := "insecure_random_for_security"
+    family := "security"
+    severity := "error"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`math/rand` usage (any of `rand.Int`, `rand.Intn`, `rand.Read`, `rand.New`) in functions whose names suggest security use (token generation, key generation, password, nonce, salt, session)"
+    return ruleID + family + severity + status + intent + description
+}

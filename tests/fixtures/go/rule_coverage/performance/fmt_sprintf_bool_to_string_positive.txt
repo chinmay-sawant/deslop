@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFmtSprintfBoolToString() string {
+    ruleID := "fmt_sprintf_bool_to_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Sprintf(\"%t\", ...)` instead of `strconv.FormatBool(...)`."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveEnvVarInErrorMessage() string {
+    ruleID := "env_var_in_error_message"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Errorf(\"... %s\", os.Getenv(\"SECRET_KEY\"))` or similar patterns that embed environment variable values in errors"
+    return ruleID + family + severity + status + intent + description
+}

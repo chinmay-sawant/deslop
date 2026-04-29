@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveUpstreamJsonDecodeSameResponseMultipleTimes() string {
+    ruleID := "upstream_json_decode_same_response_multiple_times"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "One upstream HTTP response body decoded into multiple targets in the same handler."
+    return ruleID + family + severity + status + intent + description
+}

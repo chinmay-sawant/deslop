@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMiddlewareAndHandlerTranslateSameErrorDomain() string {
+    ruleID := "middleware_and_handler_translate_same_error_domain"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Double translation layers where middleware and handlers both map the same error family to responses."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBufioScannerSmallBufferForLargeLines() string {
+    ruleID := "bufio_scanner_small_buffer_for_large_lines"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`bufio.NewScanner(r)` without `scanner.Buffer()` when processing files with lines > 64KB"
+    return ruleID + family + severity + status + intent + description
+}

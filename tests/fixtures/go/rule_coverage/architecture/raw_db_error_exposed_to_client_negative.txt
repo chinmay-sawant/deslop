@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRawDbErrorExposedToClient() string {
+    ruleID := "raw_db_error_exposed_to_client"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Direct serialization of SQL or GORM error text into API responses."
+    return ruleID + family + severity + status + intent + description
+}

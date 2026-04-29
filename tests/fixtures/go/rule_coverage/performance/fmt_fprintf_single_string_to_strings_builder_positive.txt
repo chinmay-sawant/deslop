@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFmtFprintfSingleStringToStringsBuilder() string {
+    ruleID := "fmt_fprintf_single_string_to_strings_builder"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Fprintf(&builder, \"%s\", s)` instead of `WriteString(s)`."
+    return ruleID + family + severity + status + intent + description
+}

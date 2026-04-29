@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSharedSliceAppendRace() string {
+    ruleID := "shared_slice_append_race"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "goroutines appending to a shared slice without synchronization"
+    return ruleID + family + severity + status + intent + description
+}

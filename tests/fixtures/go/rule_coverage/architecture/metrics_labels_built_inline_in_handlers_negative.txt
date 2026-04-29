@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMetricsLabelsBuiltInlineInHandlers() string {
+    ruleID := "metrics_labels_built_inline_in_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that hand-build metric labels repeatedly instead of using focused observation helpers."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTransportTestsBypassServiceInterfaceAndTouchRepoDirectly() string {
+    ruleID := "transport_tests_bypass_service_interface_and_touch_repo_directly"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Transport tests that skip the service seam and assert repository behavior."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRowsToStructAllocationPerRowWithoutReuse() string {
+    ruleID := "rows_to_struct_allocation_per_row_without_reuse"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "New struct allocated for each row scan instead of reusing a scratch variable."
+    return ruleID + family + severity + status + intent + description
+}

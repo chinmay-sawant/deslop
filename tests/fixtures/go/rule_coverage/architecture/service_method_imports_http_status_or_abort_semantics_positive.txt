@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceMethodImportsHttpStatusOrAbortSemantics() string {
+    ruleID := "service_method_imports_http_status_or_abort_semantics"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Services that depend on transport-specific status constants, abort helpers, or Gin response behavior."
+    return ruleID + family + severity + status + intent + description
+}

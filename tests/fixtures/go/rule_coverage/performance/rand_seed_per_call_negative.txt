@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRandSeedPerCall() string {
+    ruleID := "rand_seed_per_call"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`rand.Seed(...)` inside regular call paths instead of process startup."
+    return ruleID + family + severity + status + intent + description
+}

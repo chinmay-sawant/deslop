@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTimingAttackOnTokenComparison() string {
+    ruleID := "timing_attack_on_token_comparison"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values"
+    return ruleID + family + severity + status + intent + description
+}

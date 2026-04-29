@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSameDependencyWiredInMultipleBootstrapLocations() string {
+    ruleID := "same_dependency_wired_in_multiple_bootstrap_locations"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Duplicated construction of the same service or client in several startup files."
+    return ruleID + family + severity + status + intent + description
+}

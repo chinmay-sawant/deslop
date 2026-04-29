@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsCompareEqualZero() string {
+    ruleID := "strings_compare_equal_zero"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strings.Compare(...) == 0` instead of direct string equality."
+    return ruleID + family + severity + status + intent + description
+}

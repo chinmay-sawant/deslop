@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeEnvParsingRepeatedInInit() string {
+    ruleID := "env_parsing_repeated_in_init"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "multiple `os.Getenv` + `strconv.Atoi` / `strconv.ParseBool` chains that could be replaced with a config struct + `envconfig` or `env` library"
+    return ruleID + family + severity + status + intent + description
+}

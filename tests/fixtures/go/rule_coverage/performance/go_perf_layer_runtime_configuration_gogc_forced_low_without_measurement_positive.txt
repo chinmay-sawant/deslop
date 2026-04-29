@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurement() string {
+    ruleID := "go_perf_layer_runtime_configuration_gogc_forced_low_without_measurement"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Build and runtime configuration. Flag runtime/debug GC tuning in application code without benchmark notes."
+    return ruleID + family + severity + status + intent + description
+}

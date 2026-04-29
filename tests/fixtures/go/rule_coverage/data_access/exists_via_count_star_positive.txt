@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveExistsViaCountStar() string {
+    ruleID := "exists_via_count_star"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "COUNT(*) used for an existence check instead of EXISTS or LIMIT 1."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePrometheusHighCardinalityLabels() string {
+    ruleID := "prometheus_high_cardinality_labels"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources"
+    return ruleID + family + severity + status + intent + description
+}

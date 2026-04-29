@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerMemoryAllocationTemporaryByteSliceForStringWrite() string {
+    ruleID := "go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Memory allocation. Flag []byte(string) conversions used only to write strings to writers."
+    return ruleID + family + severity + status + intent + description
+}

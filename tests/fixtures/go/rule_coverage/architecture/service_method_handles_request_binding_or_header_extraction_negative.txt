@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceMethodHandlesRequestBindingOrHeaderExtraction() string {
+    ruleID := "service_method_handles_request_binding_or_header_extraction"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that extract headers, cookies, forms, or route params directly."
+    return ruleID + family + severity + status + intent + description
+}

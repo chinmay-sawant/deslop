@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerLoggingOverheadLogFieldsBuiltBeforeLevelCheck() string {
+    ruleID := "go_perf_layer_logging_overhead_log_fields_built_before_level_check"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Logging overhead. Flag expensive log field construction before checking whether the level is enabled."
+    return ruleID + family + severity + status + intent + description
+}

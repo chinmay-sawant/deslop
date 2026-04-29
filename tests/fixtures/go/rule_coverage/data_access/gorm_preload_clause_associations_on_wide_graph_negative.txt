@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGormPreloadClauseAssociationsOnWideGraph() string {
+    ruleID := "gorm_preload_clause_associations_on_wide_graph"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Request-path GORM chains that use Preload(clause.Associations) or other broad preload graphs."
+    return ruleID + family + severity + status + intent + description
+}

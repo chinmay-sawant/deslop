@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsTolowerEqualfold() string {
+    ruleID := "strings_tolower_equalfold"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`strings.ToLower(...) == strings.ToLower(...)` instead of `strings.EqualFold(...)`."
+    return ruleID + family + severity + status + intent + description
+}

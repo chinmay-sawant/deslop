@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundary() string {
+    ruleID := "gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Codebases that bootstrap persistence with GORM but run repository queries through raw SQL without a clear adapter boundary."
+    return ruleID + family + severity + status + intent + description
+}

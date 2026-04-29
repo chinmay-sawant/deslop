@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePaginationValidationMissingSharedBoundHelper() string {
+    ruleID := "pagination_validation_missing_shared_bound_helper"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "API modules that hand-roll page and page-size bounds in many handlers instead of a shared contract."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveLogLevelCheckAfterFormat() string {
+    ruleID := "log_level_check_after_format"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`zap.S().Debugf(\"expensive %v\", computeDebug())` or `logrus.Debugf(\"data: %v\", expensiveCall())` where the expensive computation happens regardless of log level"
+    return ruleID + family + severity + status + intent + description
+}

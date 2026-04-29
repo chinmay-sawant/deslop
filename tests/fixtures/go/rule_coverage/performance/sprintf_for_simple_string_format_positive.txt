@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSprintfForSimpleStringFormat() string {
+    ruleID := "sprintf_for_simple_string_format"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Sprintf(\"%s:%s\", a, b)` where only `%s` verbs are used"
+    return ruleID + family + severity + status + intent + description
+}

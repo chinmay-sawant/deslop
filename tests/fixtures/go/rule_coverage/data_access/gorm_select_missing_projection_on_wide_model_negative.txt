@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGormSelectMissingProjectionOnWideModel() string {
+    ruleID := "gorm_select_missing_projection_on_wide_model"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "GORM queries on wide models without a Select projection to limit fetched columns."
+    return ruleID + family + severity + status + intent + description
+}

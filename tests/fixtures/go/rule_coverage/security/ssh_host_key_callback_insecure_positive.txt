@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSshHostKeyCallbackInsecure() string {
+    ruleID := "ssh_host_key_callback_insecure"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`ssh.ClientConfig{HostKeyCallback: ssh.InsecureIgnoreHostKey()}` in non-test code"
+    return ruleID + family + severity + status + intent + description
+}

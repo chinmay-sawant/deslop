@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBindqueryIntoMapAnyHotEndpoint() string {
+    ruleID := "bindquery_into_map_any_hot_endpoint"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Gin handlers that bind query parameters into map[string]any or map[string]interface{} on hot request paths."
+    return ruleID + family + severity + status + intent + description
+}

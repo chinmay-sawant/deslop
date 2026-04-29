@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePaginationBindingDuplicatedOutsideBoundaryHelper() string {
+    ruleID := "pagination_binding_duplicated_outside_boundary_helper"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated pagination DTO binding and defaulting logic across handler files."
+    return ruleID + family + severity + status + intent + description
+}

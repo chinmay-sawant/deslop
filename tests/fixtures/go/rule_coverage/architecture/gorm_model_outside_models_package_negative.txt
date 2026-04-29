@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGormModelOutsideModelsPackage() string {
+    ruleID := "gorm_model_outside_models_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "GORM-backed structs with `gorm` tags declared outside `model` or `models` packages unless an explicit `entity` or `schema` package already exists."
+    return ruleID + family + severity + status + intent + description
+}

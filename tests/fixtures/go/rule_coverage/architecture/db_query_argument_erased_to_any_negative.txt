@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDbQueryArgumentErasedToAny() string {
+    ruleID := "db_query_argument_erased_to_any"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Concrete DB arguments erased to `any` or `interface{}` immediately before query execution."
+    return ruleID + family + severity + status + intent + description
+}

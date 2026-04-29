@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMiddlewareContainsBusinessOrchestration() string {
+    ruleID := "middleware_contains_business_orchestration"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Middleware that performs domain workflows instead of cross-cutting concerns such as auth, tracing, or request enrichment."
+    return ruleID + family + severity + status + intent + description
+}

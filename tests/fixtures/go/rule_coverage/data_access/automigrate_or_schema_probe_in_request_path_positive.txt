@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveAutomigrateOrSchemaProbeInRequestPath() string {
+    ruleID := "automigrate_or_schema_probe_in_request_path"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "AutoMigrate or schema probes running on request paths instead of startup."
+    return ruleID + family + severity + status + intent + description
+}

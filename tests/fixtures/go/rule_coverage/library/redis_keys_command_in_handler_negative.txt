@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRedisKeysCommandInHandler() string {
+    ruleID := "redis_keys_command_in_handler"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`rdb.Keys(ctx, pattern)` in handler or loop code"
+    return ruleID + family + severity + status + intent + description
+}

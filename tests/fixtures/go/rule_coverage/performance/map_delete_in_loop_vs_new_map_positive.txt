@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMapDeleteInLoopVsNewMap() string {
+    ruleID := "map_delete_in_loop_vs_new_map"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`for k := range m { delete(m, k) }` patterns"
+    return ruleID + family + severity + status + intent + description
+}

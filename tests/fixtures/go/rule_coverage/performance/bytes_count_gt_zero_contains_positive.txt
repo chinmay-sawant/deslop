@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBytesCountGtZeroContains() string {
+    ruleID := "bytes_count_gt_zero_contains"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`bytes.Count(...) > 0` instead of `bytes.Contains(...)`."
+    return ruleID + family + severity + status + intent + description
+}

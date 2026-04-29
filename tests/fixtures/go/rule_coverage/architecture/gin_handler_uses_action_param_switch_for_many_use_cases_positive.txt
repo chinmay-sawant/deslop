@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinHandlerUsesActionParamSwitchForManyUseCases() string {
+    ruleID := "gin_handler_uses_action_param_switch_for_many_use_cases"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that branch on `action`, `type`, or mode strings to serve many workflows from one endpoint function."
+    return ruleID + family + severity + status + intent + description
+}

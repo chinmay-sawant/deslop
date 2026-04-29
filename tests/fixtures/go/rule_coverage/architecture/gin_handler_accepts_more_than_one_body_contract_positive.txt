@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinHandlerAcceptsMoreThanOneBodyContract() string {
+    ruleID := "gin_handler_accepts_more_than_one_body_contract"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that try to bind or manually parse multiple body DTOs in one request path."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveConfigFileReadPerRequest() string {
+    ruleID := "config_file_read_per_request"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`os.ReadFile(\"config.json\")` or `viper.ReadInConfig()` inside handler or loop code"
+    return ruleID + family + severity + status + intent + description
+}

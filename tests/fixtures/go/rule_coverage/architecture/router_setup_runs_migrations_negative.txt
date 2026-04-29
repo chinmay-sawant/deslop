@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRouterSetupRunsMigrations() string {
+    ruleID := "router_setup_runs_migrations"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Gin router or handler setup code that also performs migrations."
+    return ruleID + family + severity + status + intent + description
+}

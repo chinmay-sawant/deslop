@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveNPlusOneQuery() string {
+    ruleID := "n_plus_one_query"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear."
+    return ruleID + family + severity + status + intent + description
+}

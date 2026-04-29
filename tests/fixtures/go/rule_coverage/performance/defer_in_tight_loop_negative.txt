@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDeferInTightLoop() string {
+    ruleID := "defer_in_tight_loop"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`defer` statements inside loops with > 100 iterations or visible hot-path markers"
+    return ruleID + family + severity + status + intent + description
+}

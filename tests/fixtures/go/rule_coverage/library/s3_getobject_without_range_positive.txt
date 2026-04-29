@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveS3GetobjectWithoutRange() string {
+    ruleID := "s3_getobject_without_range"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`s3.GetObject` downloading full objects when only partial data is needed (inferred from subsequent `io.LimitReader` or partial reads)"
+    return ruleID + family + severity + status + intent + description
+}

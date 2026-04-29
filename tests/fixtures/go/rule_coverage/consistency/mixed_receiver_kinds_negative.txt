@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMixedReceiverKinds() string {
+    ruleID := "mixed_receiver_kinds"
+    family := "consistency"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Methods on the same receiver type mix pointer and value receivers."
+    return ruleID + family + severity + status + intent + description
+}

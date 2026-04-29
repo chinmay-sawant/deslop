@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepeatedStringTrimNormalize() string {
+    ruleID := "repeated_string_trim_normalize"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "chains like `strings.TrimSpace(strings.ToLower(strings.TrimPrefix(s, ...)))` that scan the string multiple times"
+    return ruleID + family + severity + status + intent + description
+}

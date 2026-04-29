@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMultipleErrorEnvelopeShapesSameApiModule() string {
+    ruleID := "multiple_error_envelope_shapes_same_api_module"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Endpoints in the same API surface that serialize unrelated error payload structures."
+    return ruleID + family + severity + status + intent + description
+}

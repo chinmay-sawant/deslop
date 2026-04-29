@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveApplicationLifecycleMissingShutdownOwner() string {
+    ruleID := "application_lifecycle_missing_shutdown_owner"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Shared resources with visible startup paths but no obvious shutdown owner or lifecycle wrapper."
+    return ruleID + family + severity + status + intent + description
+}

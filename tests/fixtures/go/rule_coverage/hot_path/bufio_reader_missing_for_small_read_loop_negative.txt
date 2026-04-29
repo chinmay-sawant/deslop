@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBufioReaderMissingForSmallReadLoop() string {
+    ruleID := "bufio_reader_missing_for_small_read_loop"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "File or socket reads inside loops without visible bufio buffering."
+    return ruleID + family + severity + status + intent + description
+}

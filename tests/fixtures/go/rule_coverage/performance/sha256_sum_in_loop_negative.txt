@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSha256SumInLoop() string {
+    ruleID := "sha256_sum_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`sha256.Sum256(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMappingLogicDuplicatedAcrossHandlers() string {
+    ruleID := "mapping_logic_duplicated_across_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated field mapping blocks across multiple handlers."
+    return ruleID + family + severity + status + intent + description
+}

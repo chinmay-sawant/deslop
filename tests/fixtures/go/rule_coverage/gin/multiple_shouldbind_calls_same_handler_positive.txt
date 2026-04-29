@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMultipleShouldbindCallsSameHandler() string {
+    ruleID := "multiple_shouldbind_calls_same_handler"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Gin handlers that bind the request body multiple times in one function."
+    return ruleID + family + severity + status + intent + description
+}

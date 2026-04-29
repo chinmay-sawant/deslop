@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMultipleShouldbindCallsSameHandler() string {
+    ruleID := "multiple_shouldbind_calls_same_handler"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Gin handlers that bind the request body multiple times in one function."
+    return ruleID + family + severity + status + intent + description
+}

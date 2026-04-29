@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeInlineErrorToStatusMappingDuplicated() string {
+    ruleID := "inline_error_to_status_mapping_duplicated"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated error-to-status translation switches across handlers."
+    return ruleID + family + severity + status + intent + description
+}

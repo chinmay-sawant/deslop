@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceMethodReturnsHttpStatus() string {
+    ruleID := "service_method_returns_http_status"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that return raw HTTP status codes or transport response metadata."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRowsIteratedWithoutRowsErrCheck() string {
+    ruleID := "rows_iterated_without_rows_err_check"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Rows iterated with Next() but without a visible final Rows.Err() check."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTempFilePredictableName() string {
+    ruleID := "temp_file_predictable_name"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`os.Create(\"/tmp/myapp-data.txt\")` or `os.OpenFile(\"/tmp/\" + fixedName, ...)` with predictable filenames"
+    return ruleID + family + severity + status + intent + description
+}

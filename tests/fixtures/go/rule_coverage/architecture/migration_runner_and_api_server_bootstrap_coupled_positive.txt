@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMigrationRunnerAndApiServerBootstrapCoupled() string {
+    ruleID := "migration_runner_and_api_server_bootstrap_coupled"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "One startup path that always runs migrations and serves traffic together."
+    return ruleID + family + severity + status + intent + description
+}

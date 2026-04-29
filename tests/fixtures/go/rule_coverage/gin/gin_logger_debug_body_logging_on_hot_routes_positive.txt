@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinLoggerDebugBodyLoggingOnHotRoutes() string {
+    ruleID := "gin_logger_debug_body_logging_on_hot_routes"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Verbose body or payload logging observed on likely high-volume Gin routes."
+    return ruleID + family + severity + status + intent + description
+}

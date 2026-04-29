@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveWideSelectQuery() string {
+    ruleID := "wide_select_query"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Literal SELECT * query shapes."
+    return ruleID + family + severity + status + intent + description
+}

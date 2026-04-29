@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerDatabaseAccessQueryInsideLoopWithoutBatching() string {
+    ruleID := "go_perf_layer_database_access_query_inside_loop_without_batching"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Database access. Flag SQL queries issued inside loops where batching or IN queries can bound round trips."
+    return ruleID + family + severity + status + intent + description
+}

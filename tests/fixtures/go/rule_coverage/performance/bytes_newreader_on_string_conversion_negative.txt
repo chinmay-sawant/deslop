@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBytesNewreaderOnStringConversion() string {
+    ruleID := "bytes_newreader_on_string_conversion"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`."
+    return ruleID + family + severity + status + intent + description
+}

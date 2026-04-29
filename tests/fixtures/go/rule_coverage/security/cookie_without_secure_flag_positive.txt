@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCookieWithoutSecureFlag() string {
+    ruleID := "cookie_without_secure_flag"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`http.Cookie{...}` literals without `Secure: true` for session or authentication cookies"
+    return ruleID + family + severity + status + intent + description
+}

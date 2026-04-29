@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRedisPingPerRequest() string {
+    ruleID := "redis_ping_per_request"
+    family := "data_access"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Per-request Redis ping checks instead of startup or explicit health-probe validation."
+    return ruleID + family + severity + status + intent + description
+}

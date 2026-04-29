@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDurationNanosecondsZeroCheck() string {
+    ruleID := "duration_nanoseconds_zero_check"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`."
+    return ruleID + family + severity + status + intent + description
+}

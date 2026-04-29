@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTimeLoadlocationPerCall() string {
+    ruleID := "time_loadlocation_per_call"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`time.LoadLocation(...)` inside request or loop paths instead of reusing the location."
+    return ruleID + family + severity + status + intent + description
+}

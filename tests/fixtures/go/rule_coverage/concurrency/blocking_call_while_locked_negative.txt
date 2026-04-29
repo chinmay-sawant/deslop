@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBlockingCallWhileLocked() string {
+    ruleID := "blocking_call_while_locked"
+    family := "concurrency"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Potentially blocking calls observed between Lock and Unlock."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMiddlewareUsesGlobalLoggerOrConfigSingleton() string {
+    ruleID := "middleware_uses_global_logger_or_config_singleton"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Middleware that depends on mutable globals instead of injected config and logger instances."
+    return ruleID + family + severity + status + intent + description
+}

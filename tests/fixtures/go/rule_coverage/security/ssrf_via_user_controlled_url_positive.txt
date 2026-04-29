@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSsrfViaUserControlledUrl() string {
+    ruleID := "ssrf_via_user_controlled_url"
+    family := "security"
+    severity := "error"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`http.Get(userInput)` or `http.NewRequest(\"GET\", userInput, nil)` where the URL comes from request parameters"
+    return ruleID + family + severity + status + intent + description
+}

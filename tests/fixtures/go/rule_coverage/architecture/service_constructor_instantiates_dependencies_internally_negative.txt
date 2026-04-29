@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceConstructorInstantiatesDependenciesInternally() string {
+    ruleID := "service_constructor_instantiates_dependencies_internally"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Constructors that create repositories, clients, or loggers internally instead of accepting them explicitly."
+    return ruleID + family + severity + status + intent + description
+}

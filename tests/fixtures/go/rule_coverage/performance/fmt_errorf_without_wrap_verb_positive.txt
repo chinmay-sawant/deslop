@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFmtErrorfWithoutWrapVerb() string {
+    ruleID := "fmt_errorf_without_wrap_verb"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Errorf(\"context: %v\", err)` instead of `%w`"
+    return ruleID + family + severity + status + intent + description
+}

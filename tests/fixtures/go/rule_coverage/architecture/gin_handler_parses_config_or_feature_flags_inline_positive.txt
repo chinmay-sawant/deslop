@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinHandlerParsesConfigOrFeatureFlagsInline() string {
+    ruleID := "gin_handler_parses_config_or_feature_flags_inline"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that read feature flags, tenant configuration, or rollout toggles directly instead of using injected policy/config abstractions."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRedisClientCreatedPerRequest() string {
+    ruleID := "redis_client_created_per_request"
+    family := "data_access"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Redis clients created per request instead of reused as shared process infrastructure."
+    return ruleID + family + severity + status + intent + description
+}

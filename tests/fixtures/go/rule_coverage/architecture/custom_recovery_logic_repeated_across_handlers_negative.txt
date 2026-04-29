@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCustomRecoveryLogicRepeatedAcrossHandlers() string {
+    ruleID := "custom_recovery_logic_repeated_across_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated recover or panic-to-response logic inside handlers instead of centralized recovery middleware."
+    return ruleID + family + severity + status + intent + description
+}

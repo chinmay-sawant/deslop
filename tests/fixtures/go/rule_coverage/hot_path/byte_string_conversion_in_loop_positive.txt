@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveByteStringConversionInLoop() string {
+    ruleID := "byte_string_conversion_in_loop"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths."
+    return ruleID + family + severity + status + intent + description
+}

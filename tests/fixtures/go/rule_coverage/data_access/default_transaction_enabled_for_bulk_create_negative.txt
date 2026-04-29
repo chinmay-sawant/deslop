@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDefaultTransactionEnabledForBulkCreate() string {
+    ruleID := "default_transaction_enabled_for_bulk_create"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Bulk creates performed with GORM default transaction enabled \u2014 SkipDefaultTransaction improves throughput."
+    return ruleID + family + severity + status + intent + description
+}

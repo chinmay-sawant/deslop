@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGiantModelStructSpansMultipleSubdomains() string {
+    ruleID := "giant_model_struct_spans_multiple_subdomains"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Oversized model structs that appear to merge multiple bounded contexts into one persistence shape."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHexDecodeStringInLoop() string {
+    ruleID := "hex_decode_string_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`hex.DecodeString(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

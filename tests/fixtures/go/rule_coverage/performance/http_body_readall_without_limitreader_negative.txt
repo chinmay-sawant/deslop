@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHttpBodyReadallWithoutLimitreader() string {
+    ruleID := "http_body_readall_without_limitreader"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`io.ReadAll(req.Body)` in HTTP handlers without `io.LimitReader`"
+    return ruleID + family + severity + status + intent + description
+}

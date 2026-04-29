@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceStructHasExcessiveDependencyCount() string {
+    ruleID := "service_struct_has_excessive_dependency_count"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services with too many unrelated dependencies, which often signals a god-service."
+    return ruleID + family + severity + status + intent + description
+}

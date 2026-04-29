@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTimeLoadlocationPerCall() string {
+    ruleID := "time_loadlocation_per_call"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`time.LoadLocation(...)` inside request or loop paths instead of reusing the location."
+    return ruleID + family + severity + status + intent + description
+}

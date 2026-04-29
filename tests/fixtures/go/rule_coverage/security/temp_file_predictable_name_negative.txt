@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTempFilePredictableName() string {
+    ruleID := "temp_file_predictable_name"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`os.Create(\"/tmp/myapp-data.txt\")` or `os.OpenFile(\"/tmp/\" + fixedName, ...)` with predictable filenames"
+    return ruleID + family + severity + status + intent + description
+}

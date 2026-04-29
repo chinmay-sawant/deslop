@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsHassuffixThenTrimsuffix() string {
+    ruleID := "strings_hassuffix_then_trimsuffix"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`"
+    return ruleID + family + severity + status + intent + description
+}

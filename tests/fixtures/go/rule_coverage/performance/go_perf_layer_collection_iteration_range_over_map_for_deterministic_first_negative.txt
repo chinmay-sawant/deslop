@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerCollectionIterationRangeOverMapForDeterministicFirst() string {
+    ruleID := "go_perf_layer_collection_iteration_range_over_map_for_deterministic_first"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Collection iteration. Flag map iteration used to pick a deterministic first value, causing unstable work and extra sorting later."
+    return ruleID + family + severity + status + intent + description
+}

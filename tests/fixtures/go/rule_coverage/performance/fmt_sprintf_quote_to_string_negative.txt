@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFmtSprintfQuoteToString() string {
+    ruleID := "fmt_sprintf_quote_to_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Sprintf(\"%q\", s)` instead of `strconv.Quote(s)`."
+    return ruleID + family + severity + status + intent + description
+}

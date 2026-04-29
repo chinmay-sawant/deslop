@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormModelContainsCalculatedResponseFields() string {
+    ruleID := "gorm_model_contains_calculated_response_fields"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Persistence structs that carry API-only derived presentation fields."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHealthOrReadinessHandlersReachIntoBusinessRepositoriesDirectly() string {
+    ruleID := "health_or_readiness_handlers_reach_into_business_repositories_directly"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Health endpoints that depend on full business repositories instead of focused probes."
+    return ruleID + family + severity + status + intent + description
+}

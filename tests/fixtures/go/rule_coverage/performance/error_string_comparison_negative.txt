@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeErrorStringComparison() string {
+    ruleID := "error_string_comparison"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`if err.Error() == \"some error\"` string comparison for error checking"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePassthroughWrapperInterface() string {
+    ruleID := "passthrough_wrapper_interface"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Wrapper structs that mostly forward one-to-one through an interface field with little added policy."
+    return ruleID + family + severity + status + intent + description
+}

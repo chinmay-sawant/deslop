@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 RULES_PATH = ROOT / "rules" / "registry.json"
 TESTS_ROOT = ROOT / "tests"
+GO_RULE_FIXTURE_ROOT = TESTS_ROOT / "fixtures" / "go" / "rule_coverage"
 
 
 def load_go_rules() -> list[str]:
@@ -65,6 +66,19 @@ def update_from_direct_asserts(text: str, valid_ids: set[str], positive: set[str
             positive.add(rule_id)
 
 
+def collect_fixture_pairs(go_rules: list[str]) -> tuple[set[str], set[str]]:
+    positive = set()
+    negative = set()
+    for rule_id in go_rules:
+        positive_matches = list(GO_RULE_FIXTURE_ROOT.glob(f"*/{rule_id}_positive.txt"))
+        negative_matches = list(GO_RULE_FIXTURE_ROOT.glob(f"*/{rule_id}_negative.txt"))
+        if positive_matches:
+            positive.add(rule_id)
+        if negative_matches:
+            negative.add(rule_id)
+    return positive, negative
+
+
 def main() -> None:
     go_rules = load_go_rules()
     valid_ids = set(go_rules)
@@ -80,6 +94,8 @@ def main() -> None:
     both = positive & negative
     go_perf_layer = {rule_id for rule_id in valid_ids if rule_id.startswith("go_perf_layer_")}
     go_perf_layer_both = both & go_perf_layer
+    fixture_positive, fixture_negative = collect_fixture_pairs(go_rules)
+    fixture_both = fixture_positive & fixture_negative
 
     print(f"go_total {len(valid_ids)}")
     print(f"positive_rules {len(positive)}")
@@ -91,6 +107,10 @@ def main() -> None:
     print(f"go_perf_layer_total {len(go_perf_layer)}")
     print(f"go_perf_layer_both {len(go_perf_layer_both)}")
     print(f"go_perf_layer_missing_both {len(go_perf_layer - go_perf_layer_both)}")
+    print(f"fixture_positive_files {len(fixture_positive)}")
+    print(f"fixture_negative_files {len(fixture_negative)}")
+    print(f"fixture_both_positive_and_negative {len(fixture_both)}")
+    print(f"fixture_missing_both {len(valid_ids - fixture_both)}")
 
 
 if __name__ == "__main__":

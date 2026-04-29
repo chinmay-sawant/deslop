@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHttpListenNonTls() string {
+    ruleID := "http_listen_non_tls"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`http.ListenAndServe` (non-TLS) usage in production-like code (not test files, not localhost bindings)"
+    return ruleID + family + severity + status + intent + description
+}

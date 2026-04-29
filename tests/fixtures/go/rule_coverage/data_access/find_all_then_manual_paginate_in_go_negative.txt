@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFindAllThenManualPaginateInGo() string {
+    ruleID := "find_all_then_manual_paginate_in_go"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "All rows fetched and then sliced in Go instead of using database-level pagination."
+    return ruleID + family + severity + status + intent + description
+}

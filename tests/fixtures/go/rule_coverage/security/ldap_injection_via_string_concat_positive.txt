@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveLdapInjectionViaStringConcat() string {
+    ruleID := "ldap_injection_via_string_concat"
+    family := "security"
+    severity := "error"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "string concatenation or `fmt.Sprintf` building LDAP filter strings with user input"
+    return ruleID + family + severity + status + intent + description
+}

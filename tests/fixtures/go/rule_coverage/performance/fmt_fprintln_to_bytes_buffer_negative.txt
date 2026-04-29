@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFmtFprintlnToBytesBuffer() string {
+    ruleID := "fmt_fprintln_to_bytes_buffer"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Fprintln(&buf, ...)` instead of direct buffer writes."
+    return ruleID + family + severity + status + intent + description
+}

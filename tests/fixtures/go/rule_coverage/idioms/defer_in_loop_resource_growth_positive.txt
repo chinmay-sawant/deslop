@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDeferInLoopResourceGrowth() string {
+    ruleID := "defer_in_loop_resource_growth"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "defer statements inside loops that can accumulate resources until function exit."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTxBeginPerItemLoop() string {
+    ruleID := "tx_begin_per_item_loop"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Transactions started inside loops instead of once around the wider batch."
+    return ruleID + family + severity + status + intent + description
+}

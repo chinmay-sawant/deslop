@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsSplitafternTwoIndexOneCut() string {
+    ruleID := "strings_splitaftern_two_index_one_cut"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strings.SplitAfterN(..., 2)[1]` instead of a two-part `strings.Cut(...)` flow."
+    return ruleID + family + severity + status + intent + description
+}

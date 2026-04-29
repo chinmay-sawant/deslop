@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeReadThenDecodeDuplicateMaterialization() string {
+    ruleID := "read_then_decode_duplicate_materialization"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path."
+    return ruleID + family + severity + status + intent + description
+}

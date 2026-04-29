@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerSerializationJsonMarshalForDeepEqual() string {
+    ruleID := "go_perf_layer_serialization_json_marshal_for_deep_equal"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Serialization and deserialization. Flag json.Marshal used only to compare structures or build equality keys."
+    return ruleID + family + severity + status + intent + description
+}

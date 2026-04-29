@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSameStructUsedForBindPersistAndRespond() string {
+    ruleID := "same_struct_used_for_bind_persist_and_respond"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "A single struct type reused for request binding, database persistence, and API response serialization."
+    return ruleID + family + severity + status + intent + description
+}

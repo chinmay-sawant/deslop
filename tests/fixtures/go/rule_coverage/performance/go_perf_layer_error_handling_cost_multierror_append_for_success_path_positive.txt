@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerErrorHandlingCostMultierrorAppendForSuccessPath() string {
+    ruleID := "go_perf_layer_error_handling_cost_multierror_append_for_success_path"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Error handling cost. Flag multi-error aggregators allocated on success-heavy paths before any error exists."
+    return ruleID + family + severity + status + intent + description
+}

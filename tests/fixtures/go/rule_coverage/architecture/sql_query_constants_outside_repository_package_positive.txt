@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSqlQueryConstantsOutsideRepositoryPackage() string {
+    ruleID := "sql_query_constants_outside_repository_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Raw query templates stored in handlers, services, or DTO packages instead of repository-adjacent files."
+    return ruleID + family + severity + status + intent + description
+}

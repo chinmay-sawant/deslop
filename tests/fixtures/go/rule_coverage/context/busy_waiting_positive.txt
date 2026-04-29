@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBusyWaiting() string {
+    ruleID := "busy_waiting"
+    family := "context"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "select { default: ... } inside loops, which often spins instead of blocking."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoop() string {
+    ruleID := "go_perf_layer_profiling_benchmarking_benchmark_includes_setup_in_loop"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Profiling and benchmarking. Flag Go benchmarks that perform setup inside the timed loop without ResetTimer."
+    return ruleID + family + severity + status + intent + description
+}

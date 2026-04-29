@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveLoggerCreatedPerRequest() string {
+    ruleID := "logger_created_per_request"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`zap.NewProduction()` or `logrus.New()` inside handler functions"
+    return ruleID + family + severity + status + intent + description
+}

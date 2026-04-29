@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFmtPrintOfSensitiveStruct() string {
+    ruleID := "fmt_print_of_sensitive_struct"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Sprintf(\"%+v\", user)` or `fmt.Printf(\"%v\", config)` on structs that contain password/secret/token fields"
+    return ruleID + family + severity + status + intent + description
+}

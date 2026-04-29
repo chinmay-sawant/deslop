@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRawScanInsideLoop() string {
+    ruleID := "raw_scan_inside_loop"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM Raw(...).Scan(...) chains observed inside loops."
+    return ruleID + family + severity + status + intent + description
+}

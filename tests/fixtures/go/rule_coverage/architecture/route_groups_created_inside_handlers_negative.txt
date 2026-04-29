@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRouteGroupsCreatedInsideHandlers() string {
+    ruleID := "route_groups_created_inside_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Code that constructs or mutates route groups outside the startup router layer."
+    return ruleID + family + severity + status + intent + description
+}

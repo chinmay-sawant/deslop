@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTimeSinceCandidateViaNowSub() string {
+    ruleID := "time_since_candidate_via_now_sub"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`time.Now().Sub(start)` instead of `time.Since(start)`."
+    return ruleID + family + severity + status + intent + description
+}

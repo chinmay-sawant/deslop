@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerGarbageCollectionCleanupLargeSliceRetainedAfterTruncate() string {
+    ruleID := "go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Garbage collection and cleanup. Flag long-lived slices truncated to zero that still retain large backing arrays."
+    return ruleID + family + severity + status + intent + description
+}

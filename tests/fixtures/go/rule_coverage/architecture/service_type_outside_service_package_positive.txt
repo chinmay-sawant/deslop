@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceTypeOutsideServicePackage() string {
+    ruleID := "service_type_outside_service_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Concrete use-case services declared outside `service` or `services` packages in layered web-service repos."
+    return ruleID + family + severity + status + intent + description
+}

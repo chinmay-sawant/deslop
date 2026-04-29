@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBytesReplaceNegOneReplaceall() string {
+    ruleID := "bytes_replace_neg_one_replaceall"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`."
+    return ruleID + family + severity + status + intent + description
+}

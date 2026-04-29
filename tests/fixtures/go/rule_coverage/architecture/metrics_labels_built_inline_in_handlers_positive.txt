@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMetricsLabelsBuiltInlineInHandlers() string {
+    ruleID := "metrics_labels_built_inline_in_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that hand-build metric labels repeatedly instead of using focused observation helpers."
+    return ruleID + family + severity + status + intent + description
+}

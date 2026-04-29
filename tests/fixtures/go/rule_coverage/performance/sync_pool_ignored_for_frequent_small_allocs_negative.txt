@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSyncPoolIgnoredForFrequentSmallAllocs() string {
+    ruleID := "sync_pool_ignored_for_frequent_small_allocs"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "repeated `make([]byte, size)` or `new(T)` in hot paths where the object is short-lived and could be pooled"
+    return ruleID + family + severity + status + intent + description
+}

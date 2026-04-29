@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFindinbatchesCandidateForLargeScan() string {
+    ruleID := "findinbatches_candidate_for_large_scan"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Unbounded result sets that could use FindInBatches or cursor iteration."
+    return ruleID + family + severity + status + intent + description
+}

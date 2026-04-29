@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanup() string {
+    ruleID := "go_perf_layer_garbage_collection_cleanup_finalizer_used_for_regular_cleanup"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Garbage collection and cleanup. Flag runtime.SetFinalizer use for ordinary resource cleanup instead of explicit Close ownership."
+    return ruleID + family + severity + status + intent + description
+}

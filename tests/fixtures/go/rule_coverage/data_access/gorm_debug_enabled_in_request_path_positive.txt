@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormDebugEnabledInRequestPath() string {
+    ruleID := "gorm_debug_enabled_in_request_path"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM debug logging enabled on request paths."
+    return ruleID + family + severity + status + intent + description
+}

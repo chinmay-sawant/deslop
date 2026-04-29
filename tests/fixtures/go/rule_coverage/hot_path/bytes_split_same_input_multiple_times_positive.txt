@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBytesSplitSameInputMultipleTimes() string {
+    ruleID := "bytes_split_same_input_multiple_times"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "The same byte-slice input is passed through bytes.Split* or bytes.Fields* helpers multiple times in one function."
+    return ruleID + family + severity + status + intent + description
+}

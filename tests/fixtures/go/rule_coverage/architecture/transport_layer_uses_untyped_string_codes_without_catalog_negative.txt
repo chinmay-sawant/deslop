@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTransportLayerUsesUntypedStringCodesWithoutCatalog() string {
+    ruleID := "transport_layer_uses_untyped_string_codes_without_catalog"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Response code strings that have no shared type or catalog package."
+    return ruleID + family + severity + status + intent + description
+}

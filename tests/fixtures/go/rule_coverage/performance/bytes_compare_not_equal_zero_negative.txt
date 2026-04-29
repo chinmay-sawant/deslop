@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBytesCompareNotEqualZero() string {
+    ruleID := "bytes_compare_not_equal_zero"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`bytes.Compare(...) != 0` instead of `!bytes.Equal(...)`."
+    return ruleID + family + severity + status + intent + description
+}

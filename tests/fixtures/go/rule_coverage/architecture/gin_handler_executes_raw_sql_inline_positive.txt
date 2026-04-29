@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinHandlerExecutesRawSqlInline() string {
+    ruleID := "gin_handler_executes_raw_sql_inline"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that execute literal SQL or repository-unaware raw queries."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsHassuffixThenTrimsuffix() string {
+    ruleID := "strings_hassuffix_then_trimsuffix"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`"
+    return ruleID + family + severity + status + intent + description
+}

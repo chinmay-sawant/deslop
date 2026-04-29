@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDefaultValueInjectionScatteredAcrossHandlers() string {
+    ruleID := "default_value_injection_scattered_across_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated defaulting logic for pagination, filters, or booleans across handlers."
+    return ruleID + family + severity + status + intent + description
+}

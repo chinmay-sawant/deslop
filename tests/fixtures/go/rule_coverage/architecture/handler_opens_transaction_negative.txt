@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHandlerOpensTransaction() string {
+    ruleID := "handler_opens_transaction"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that call `Begin`, `Transaction`, or unit-of-work start helpers directly."
+    return ruleID + family + severity + status + intent + description
+}

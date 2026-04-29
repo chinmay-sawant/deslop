@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveResponseDtoContainsGormTags() string {
+    ruleID := "response_dto_contains_gorm_tags"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Response payload structs that carry persistence-only `gorm` tags."
+    return ruleID + family + severity + status + intent + description
+}

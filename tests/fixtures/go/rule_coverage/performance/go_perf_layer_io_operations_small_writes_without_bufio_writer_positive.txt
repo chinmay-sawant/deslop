@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerIoOperationsSmallWritesWithoutBufioWriter() string {
+    ruleID := "go_perf_layer_io_operations_small_writes_without_bufio_writer"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: I/O operations. Flag many Write calls to files or network connections without bufio buffering."
+    return ruleID + family + severity + status + intent + description
+}

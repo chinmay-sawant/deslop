@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerAlgorithmicComplexityPerRequestTopkFullSort() string {
+    ruleID := "go_perf_layer_algorithmic_complexity_per_request_topk_full_sort"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Algorithmic complexity. Flag request paths that sort all candidates when heap-based top-k selection would bound work."
+    return ruleID + family + severity + status + intent + description
+}

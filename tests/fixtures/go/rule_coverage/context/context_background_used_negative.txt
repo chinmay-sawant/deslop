@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeContextBackgroundUsed() string {
+    ruleID := "context_background_used"
+    family := "context"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Functions or request handlers that already have a caller-owned context available but still create context.Background() or context.TODO() locally."
+    return ruleID + family + severity + status + intent + description
+}

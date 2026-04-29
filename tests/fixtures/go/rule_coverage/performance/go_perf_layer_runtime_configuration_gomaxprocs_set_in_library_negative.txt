@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibrary() string {
+    ruleID := "go_perf_layer_runtime_configuration_gomaxprocs_set_in_library"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Build and runtime configuration. Flag libraries setting GOMAXPROCS and overriding host runtime policy."
+    return ruleID + family + severity + status + intent + description
+}

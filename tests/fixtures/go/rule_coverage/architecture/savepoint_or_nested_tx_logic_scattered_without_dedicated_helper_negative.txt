@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSavepointOrNestedTxLogicScatteredWithoutDedicatedHelper() string {
+    ruleID := "savepoint_or_nested_tx_logic_scattered_without_dedicated_helper"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Nested transaction or savepoint control scattered across services and repositories."
+    return ruleID + family + severity + status + intent + description
+}

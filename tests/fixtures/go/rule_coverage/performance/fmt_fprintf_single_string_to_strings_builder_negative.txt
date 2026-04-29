@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFmtFprintfSingleStringToStringsBuilder() string {
+    ruleID := "fmt_fprintf_single_string_to_strings_builder"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Fprintf(&builder, \"%s\", s)` instead of `WriteString(s)`."
+    return ruleID + family + severity + status + intent + description
+}

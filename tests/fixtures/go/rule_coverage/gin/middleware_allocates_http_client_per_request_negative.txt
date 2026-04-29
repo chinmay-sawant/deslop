@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMiddlewareAllocatesHttpClientPerRequest() string {
+    ruleID := "middleware_allocates_http_client_per_request"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "HTTP client allocated inside Gin handlers or middleware instead of being shared."
+    return ruleID + family + severity + status + intent + description
+}

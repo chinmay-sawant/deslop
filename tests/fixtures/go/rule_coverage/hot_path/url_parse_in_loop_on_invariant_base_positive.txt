@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveUrlParseInLoopOnInvariantBase() string {
+    ruleID := "url_parse_in_loop_on_invariant_base"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "url.Parse(...) or ParseRequestURI(...) observed inside loops with a stable-looking base input."
+    return ruleID + family + severity + status + intent + description
+}

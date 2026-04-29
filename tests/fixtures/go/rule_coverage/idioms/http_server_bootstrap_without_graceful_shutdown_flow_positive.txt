@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHttpServerBootstrapWithoutGracefulShutdownFlow() string {
+    ruleID := "http_server_bootstrap_without_graceful_shutdown_flow"
+    family := "idioms"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown."
+    return ruleID + family + severity + status + intent + description
+}

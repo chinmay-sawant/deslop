@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeOrderByClauseLiteralsScatteredAcrossLayers() string {
+    ruleID := "order_by_clause_literals_scattered_across_layers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Raw sort expressions duplicated in handlers and services instead of query helpers."
+    return ruleID + family + severity + status + intent + description
+}

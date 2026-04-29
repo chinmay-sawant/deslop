@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTimeUntilCandidateViaDeadlineSubNow() string {
+    ruleID := "time_until_candidate_via_deadline_sub_now"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`deadline.Sub(time.Now())` instead of `time.Until(deadline)`."
+    return ruleID + family + severity + status + intent + description
+}

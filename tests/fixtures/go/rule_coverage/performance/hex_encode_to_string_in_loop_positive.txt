@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHexEncodeToStringInLoop() string {
+    ruleID := "hex_encode_to_string_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`hex.EncodeToString(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

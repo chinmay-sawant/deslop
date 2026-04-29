@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCountThenFindSameFilter() string {
+    ruleID := "count_then_find_same_filter"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Request-path GORM flows that run Count(...) and then a broad Find(...) with the same filter shape."
+    return ruleID + family + severity + status + intent + description
+}

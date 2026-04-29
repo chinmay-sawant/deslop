@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveUrlRedirectWithoutValidation() string {
+    ruleID := "url_redirect_without_validation"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`http.Redirect(w, r, r.FormValue(\"redirect_url\"), 302)` or `c.Redirect(302, c.Query(\"url\"))` without URL validation"
+    return ruleID + family + severity + status + intent + description
+}

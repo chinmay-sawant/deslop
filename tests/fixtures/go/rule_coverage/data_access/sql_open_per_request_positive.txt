@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSqlOpenPerRequest() string {
+    ruleID := "sql_open_per_request"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "database/sql pools opened on request paths instead of process-level setup."
+    return ruleID + family + severity + status + intent + description
+}

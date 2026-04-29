@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveInitRegistersRoutesOrDependencies() string {
+    ruleID := "init_registers_routes_or_dependencies"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`init()` functions that register handlers, routes, or runtime dependencies."
+    return ruleID + family + severity + status + intent + description
+}

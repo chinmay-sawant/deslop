@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGormModelContainsBindingOrValidateTags() string {
+    ruleID := "gorm_model_contains_binding_or_validate_tags"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "GORM models that accumulate transport validation and binding concerns."
+    return ruleID + family + severity + status + intent + description
+}

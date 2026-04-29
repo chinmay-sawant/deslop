@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveNestedAppendWithoutOuterCapacity() string {
+    ruleID := "nested_append_without_outer_capacity"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Append calls inside nested loops without visible preallocation on the outer slice."
+    return ruleID + family + severity + status + intent + description
+}

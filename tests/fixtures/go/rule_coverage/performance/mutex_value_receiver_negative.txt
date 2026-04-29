@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMutexValueReceiver() string {
+    ruleID := "mutex_value_receiver"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`func (s MyStruct) Method()` where `MyStruct` contains a `sync.Mutex` or `sync.RWMutex` field"
+    return ruleID + family + severity + status + intent + description
+}

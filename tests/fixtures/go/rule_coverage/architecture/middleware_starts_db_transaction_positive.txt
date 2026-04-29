@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMiddlewareStartsDbTransaction() string {
+    ruleID := "middleware_starts_db_transaction"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Middleware that opens database transactions for the whole request path by default."
+    return ruleID + family + severity + status + intent + description
+}

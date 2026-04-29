@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBytesNewreaderOnStringConversion() string {
+    ruleID := "bytes_newreader_on_string_conversion"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`."
+    return ruleID + family + severity + status + intent + description
+}

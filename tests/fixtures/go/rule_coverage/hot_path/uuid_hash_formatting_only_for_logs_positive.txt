@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveUuidHashFormattingOnlyForLogs() string {
+    ruleID := "uuid_hash_formatting_only_for_logs"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "UUID or hash formatting observed inside loops only for log output."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerHotPathOptimizationInvariantParseInsideHandler() string {
+    ruleID := "go_perf_layer_hot_path_optimization_invariant_parse_inside_handler"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Hot path optimization. Flag handlers that parse invariant templates, schemas, or expressions per request."
+    return ruleID + family + severity + status + intent + description
+}

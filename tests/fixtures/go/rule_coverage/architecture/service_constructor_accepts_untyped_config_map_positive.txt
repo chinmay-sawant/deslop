@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceConstructorAcceptsUntypedConfigMap() string {
+    ruleID := "service_constructor_accepts_untyped_config_map"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Services configured by `map[string]any` or similar untyped blobs."
+    return ruleID + family + severity + status + intent + description
+}

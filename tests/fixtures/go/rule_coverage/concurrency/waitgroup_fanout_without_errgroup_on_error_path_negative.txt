@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeWaitgroupFanoutWithoutErrgroupOnErrorPath() string {
+    ruleID := "waitgroup_fanout_without_errgroup_on_error_path"
+    family := "concurrency"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup."
+    return ruleID + family + severity + status + intent + description
+}

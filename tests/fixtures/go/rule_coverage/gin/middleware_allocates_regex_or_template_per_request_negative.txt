@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMiddlewareAllocatesRegexOrTemplatePerRequest() string {
+    ruleID := "middleware_allocates_regex_or_template_per_request"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Regexp compilation inside Gin handlers instead of using precompiled patterns."
+    return ruleID + family + severity + status + intent + description
+}

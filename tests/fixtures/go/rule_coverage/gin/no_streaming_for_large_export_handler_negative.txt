@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeNoStreamingForLargeExportHandler() string {
+    ruleID := "no_streaming_for_large_export_handler"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Large list or export handlers that materialize everything before writing rather than using chunked or streaming output."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerStringHandlingStringsJoinSingleElementLoop() string {
+    ruleID := "go_perf_layer_string_handling_strings_join_single_element_loop"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: String handling. Flag repeated strings.Join calls in loops where one builder outside the loop would do."
+    return ruleID + family + severity + status + intent + description
+}

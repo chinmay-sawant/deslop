@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePgxCollectrowsUnboundedMaterialization() string {
+    ruleID := "pgx_collectrows_unbounded_materialization"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "pgx.CollectRows used on request paths without a visible LIMIT in the query."
+    return ruleID + family + severity + status + intent + description
+}

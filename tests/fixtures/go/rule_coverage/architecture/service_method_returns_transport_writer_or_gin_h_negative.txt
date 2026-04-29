@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceMethodReturnsTransportWriterOrGinH() string {
+    ruleID := "service_method_returns_transport_writer_or_gin_h"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that return `gin.H`, `http.ResponseWriter`, or response-writing helpers."
+    return ruleID + family + severity + status + intent + description
+}

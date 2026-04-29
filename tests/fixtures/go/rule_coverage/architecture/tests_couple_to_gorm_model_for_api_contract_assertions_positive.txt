@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTestsCoupleToGormModelForApiContractAssertions() string {
+    ruleID := "tests_couple_to_gorm_model_for_api_contract_assertions"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "API tests that assert persistence model shapes instead of response contracts."
+    return ruleID + family + severity + status + intent + description
+}

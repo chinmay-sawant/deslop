@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinRouteRegistrationAnonymousFunctionOveruse() string {
+    ruleID := "gin_route_registration_anonymous_function_overuse"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Route registration that uses many inline anonymous handlers instead of named handler methods or functions."
+    return ruleID + family + severity + status + intent + description
+}

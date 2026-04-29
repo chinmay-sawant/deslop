@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScans() string {
+    ruleID := "go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Algorithmic complexity. Flag nested slice scans that should be indexed or mapped before joining large collections."
+    return ruleID + family + severity + status + intent + description
+}

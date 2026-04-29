@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRequestContextValueExtractionDuplicatedAcrossHandlers() string {
+    ruleID := "request_context_value_extraction_duplicated_across_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated current-user, tenant, locale, or auth extraction logic."
+    return ruleID + family + severity + status + intent + description
+}

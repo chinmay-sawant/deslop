@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveErrorsNewForStaticSentinel() string {
+    ruleID := "errors_new_for_static_sentinel"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`errors.New(\"some error\")` called repeatedly in hot paths instead of a package-level sentinel"
+    return ruleID + family + severity + status + intent + description
+}

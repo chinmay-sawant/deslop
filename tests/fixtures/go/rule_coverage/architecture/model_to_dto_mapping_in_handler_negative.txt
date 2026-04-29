@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeModelToDtoMappingInHandler() string {
+    ruleID := "model_to_dto_mapping_in_handler"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that manually shape every response from persistence structs rather than using dedicated mapping helpers."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerNetworkCallsTransportWithoutConnectionLimits() string {
+    ruleID := "go_perf_layer_network_calls_transport_without_connection_limits"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Network calls. Flag custom http.Transport values missing MaxIdleConns or MaxIdleConnsPerHost for service clients."
+    return ruleID + family + severity + status + intent + description
+}

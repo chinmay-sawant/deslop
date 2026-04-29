@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeParsemultipartformLargeDefaultMemory() string {
+    ruleID := "parsemultipartform_large_default_memory"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Gin handlers that call ParseMultipartForm(...) with large in-memory thresholds on request paths."
+    return ruleID + family + severity + status + intent + description
+}

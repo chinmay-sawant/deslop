@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCacheInterfaceMethodMissingContext() string {
+    ruleID := "cache_interface_method_missing_context"
+    family := "context"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Cache-oriented interfaces whose IO-style methods omit context.Context."
+    return ruleID + family + severity + status + intent + description
+}

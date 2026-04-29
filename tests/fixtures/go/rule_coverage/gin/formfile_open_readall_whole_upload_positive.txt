@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFormfileOpenReadallWholeUpload() string {
+    ruleID := "formfile_open_readall_whole_upload"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...)."
+    return ruleID + family + severity + status + intent + description
+}

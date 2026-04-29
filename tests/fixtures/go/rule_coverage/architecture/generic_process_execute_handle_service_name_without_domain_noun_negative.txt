@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGenericProcessExecuteHandleServiceNameWithoutDomainNoun() string {
+    ruleID := "generic_process_execute_handle_service_name_without_domain_noun"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Generic service names and methods that hide business intent instead of naming the actual use case."
+    return ruleID + family + severity + status + intent + description
+}

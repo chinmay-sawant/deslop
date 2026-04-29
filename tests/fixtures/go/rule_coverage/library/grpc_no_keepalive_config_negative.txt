@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGrpcNoKeepaliveConfig() string {
+    ruleID := "grpc_no_keepalive_config"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`grpc.NewServer()` without keepalive server parameters in long-running services"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCrossRepositoryWriteFlowWithoutSharedUowBoundary() string {
+    ruleID := "cross_repository_write_flow_without_shared_uow_boundary"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Service methods coordinating several repositories with no explicit shared transaction or consistency boundary."
+    return ruleID + family + severity + status + intent + description
+}

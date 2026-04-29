@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeResponseEnvelopeShapingDuplicatedAcrossHandlers() string {
+    ruleID := "response_envelope_shaping_duplicated_across_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated success-response envelope formatting that should live in a renderer or transport helper."
+    return ruleID + family + severity + status + intent + description
+}

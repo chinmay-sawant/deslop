@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCacheMethodUsesContextBackground() string {
+    ruleID := "cache_method_uses_context_background"
+    family := "context"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Cache implementations that call context.Background() or context.TODO() instead of propagating caller context."
+    return ruleID + family + severity + status + intent + description
+}

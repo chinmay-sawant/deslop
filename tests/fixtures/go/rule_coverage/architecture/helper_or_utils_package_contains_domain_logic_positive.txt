@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHelperOrUtilsPackageContainsDomainLogic() string {
+    ruleID := "helper_or_utils_package_contains_domain_logic"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Generic `helper`, `common`, or `utils` packages that host concrete domain decisions."
+    return ruleID + family + severity + status + intent + description
+}

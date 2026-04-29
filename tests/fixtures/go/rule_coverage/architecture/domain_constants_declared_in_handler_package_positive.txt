@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDomainConstantsDeclaredInHandlerPackage() string {
+    ruleID := "domain_constants_declared_in_handler_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Domain enums, statuses, and lifecycle constants that live in handler packages instead of domain-facing packages."
+    return ruleID + family + severity + status + intent + description
+}

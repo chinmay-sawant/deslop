@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTxWithoutRollbackGuard() string {
+    ruleID := "tx_without_rollback_guard"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Transactions begun and later committed with no observed rollback guard."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMissingContextPropagation() string {
+    ruleID := "missing_context_propagation"
+    family := "context"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Functions that already accept context.Context but still call context-free stdlib APIs like http.Get or exec.Command."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBufferWriteStringSingleByteLiteral() string {
+    ruleID := "buffer_write_string_single_byte_literal"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`bytes.Buffer.WriteString(\"x\")` for single-byte literals instead of `WriteByte`."
+    return ruleID + family + severity + status + intent + description
+}

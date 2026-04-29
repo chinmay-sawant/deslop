@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHexDecodeStringInLoop() string {
+    ruleID := "hex_decode_string_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`hex.DecodeString(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

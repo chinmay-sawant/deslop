@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBinaryReadForSingleField() string {
+    ruleID := "binary_read_for_single_field"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`binary.Read(r, order, &singleField)` for reading a single integer"
+    return ruleID + family + severity + status + intent + description
+}

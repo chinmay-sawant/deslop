@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGormSessionOptionsConfiguredOutsideRepository() string {
+    ruleID := "gorm_session_options_configured_outside_repository"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Code above the repository layer that changes `Session`, `Clauses`, or transaction options directly."
+    return ruleID + family + severity + status + intent + description
+}

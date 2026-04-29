@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepositoryAcceptsHttpRequestDto() string {
+    ruleID := "repository_accepts_http_request_dto"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repositories that accept transport DTOs instead of repository inputs or domain values."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTemplateHtmlUnescaped() string {
+    ruleID := "template_html_unescaped"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`template.HTML(userInput)` or `template.JS(userInput)` type conversions on data from request parameters"
+    return ruleID + family + severity + status + intent + description
+}

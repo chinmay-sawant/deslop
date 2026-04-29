@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDistinctWideRowRequestPath() string {
+    ruleID := "distinct_wide_row_request_path"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Distinct on wide rows without Select projection \u2014 a key-only subquery is usually cheaper."
+    return ruleID + family + severity + status + intent + description
+}

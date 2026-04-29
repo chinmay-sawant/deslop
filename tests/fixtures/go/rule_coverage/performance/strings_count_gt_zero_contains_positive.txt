@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsCountGtZeroContains() string {
+    ruleID := "strings_count_gt_zero_contains"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strings.Count(...) > 0` instead of `strings.Contains(...)`."
+    return ruleID + family + severity + status + intent + description
+}

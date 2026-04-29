@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormModelHookContainsExternalIo() string {
+    ruleID := "gorm_model_hook_contains_external_io"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Hooks that call HTTP clients, queues, file I/O, or external side effects."
+    return ruleID + family + severity + status + intent + description
+}

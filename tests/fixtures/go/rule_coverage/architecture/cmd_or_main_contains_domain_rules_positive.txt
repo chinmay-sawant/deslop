@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCmdOrMainContainsDomainRules() string {
+    ruleID := "cmd_or_main_contains_domain_rules"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`main` or `cmd` packages that contain business-rule branches instead of wiring and startup concerns."
+    return ruleID + family + severity + status + intent + description
+}

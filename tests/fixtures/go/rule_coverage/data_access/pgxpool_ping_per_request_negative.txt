@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePgxpoolPingPerRequest() string {
+    ruleID := "pgxpool_ping_per_request"
+    family := "data_access"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Per-request pgxpool connectivity probes that add latency outside health-check boundaries."
+    return ruleID + family + severity + status + intent + description
+}

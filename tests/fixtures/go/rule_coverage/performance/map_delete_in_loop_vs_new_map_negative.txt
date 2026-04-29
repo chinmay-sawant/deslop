@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMapDeleteInLoopVsNewMap() string {
+    ruleID := "map_delete_in_loop_vs_new_map"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`for k := range m { delete(m, k) }` patterns"
+    return ruleID + family + severity + status + intent + description
+}

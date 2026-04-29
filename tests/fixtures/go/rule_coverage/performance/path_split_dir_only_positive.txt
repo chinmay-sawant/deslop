@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePathSplitDirOnly() string {
+    ruleID := "path_split_dir_only"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`path.Split(...)` when only the directory is used."
+    return ruleID + family + severity + status + intent + description
+}

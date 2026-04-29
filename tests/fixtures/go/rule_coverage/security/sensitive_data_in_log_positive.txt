@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSensitiveDataInLog() string {
+    ruleID := "sensitive_data_in_log"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`log.Printf`, `slog.Info`, `zap.String`, `logrus.WithField` calls that include variables named `password`, `secret`, `token`, `apiKey`, `creditCard`, `ssn`, or similar"
+    return ruleID + family + severity + status + intent + description
+}

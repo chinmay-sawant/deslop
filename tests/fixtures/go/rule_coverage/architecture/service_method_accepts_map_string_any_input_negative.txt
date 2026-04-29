@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceMethodAcceptsMapStringAnyInput() string {
+    ruleID := "service_method_accepts_map_string_any_input"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that use map-shaped dynamic input instead of typed request contracts."
+    return ruleID + family + severity + status + intent + description
+}

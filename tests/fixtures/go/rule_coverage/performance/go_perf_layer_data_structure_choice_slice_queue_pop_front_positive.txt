@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerDataStructureChoiceSliceQueuePopFront() string {
+    ruleID := "go_perf_layer_data_structure_choice_slice_queue_pop_front"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Data structure choice. Flag queue-style slice reslicing from the front that can retain backing arrays or shift too much data."
+    return ruleID + family + severity + status + intent + description
+}

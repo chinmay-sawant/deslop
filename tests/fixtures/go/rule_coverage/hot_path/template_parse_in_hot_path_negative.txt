@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTemplateParseInHotPath() string {
+    ruleID := "template_parse_in_hot_path"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "html/template or text/template parse calls observed on request-style paths instead of startup-time caching."
+    return ruleID + family + severity + status + intent + description
+}

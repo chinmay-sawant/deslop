@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinHandlerRunsAuthorizationBusinessRulesInline() string {
+    ruleID := "gin_handler_runs_authorization_business_rules_inline"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that contain complex permission matrices instead of delegating to policy or service logic."
+    return ruleID + family + severity + status + intent + description
+}

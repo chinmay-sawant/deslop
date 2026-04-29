@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGrpcDialPerRequest() string {
+    ruleID := "grpc_dial_per_request"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`grpc.Dial(addr, opts...)` or `grpc.NewClient(addr, opts...)` inside handler functions"
+    return ruleID + family + severity + status + intent + description
+}

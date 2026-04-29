@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerProfilingBenchmarkingMicrobenchmarkDeadCodeEliminated() string {
+    ruleID := "go_perf_layer_profiling_benchmarking_microbenchmark_dead_code_eliminated"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Profiling and benchmarking. Flag benchmarks that do not consume results and may let the compiler remove work."
+    return ruleID + family + severity + status + intent + description
+}

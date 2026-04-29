@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinHandlerReturnsPersistenceModelDirectly() string {
+    ruleID := "gin_handler_returns_persistence_model_directly"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that serialize database models directly to the client instead of mapping to response DTOs."
+    return ruleID + family + severity + status + intent + description
+}

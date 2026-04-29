@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCommitOrRollbackSplitAcrossFunctionsWithoutOwner() string {
+    ruleID := "commit_or_rollback_split_across_functions_without_owner"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Transaction end-state logic spread across helper functions with unclear ownership."
+    return ruleID + family + severity + status + intent + description
+}

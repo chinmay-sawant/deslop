@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsHassuffixManualSliceAfterLen() string {
+    ruleID := "strings_hassuffix_manual_slice_after_len"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Manual `len` and slice suffix checks instead of `strings.HasSuffix(...)`."
+    return ruleID + family + severity + status + intent + description
+}

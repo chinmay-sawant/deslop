@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceMethodAcceptsGinContext() string {
+    ruleID := "service_method_accepts_gin_context"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Service methods that take `*gin.Context` instead of domain inputs plus `context.Context`."
+    return ruleID + family + severity + status + intent + description
+}

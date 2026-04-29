@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveQueryrowInsideLoopExistenceCheck() string {
+    ruleID := "queryrow_inside_loop_existence_check"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "QueryRow(...) or QueryRowContext(...) used inside loops for point lookups that usually want a bulk prefetch path."
+    return ruleID + family + severity + status + intent + description
+}

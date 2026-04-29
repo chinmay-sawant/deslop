@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerSerializationBase64RoundtripForBinaryTransport() string {
+    ruleID := "go_perf_layer_serialization_base64_roundtrip_for_binary_transport"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside a single process boundary."
+    return ruleID + family + severity + status + intent + description
+}

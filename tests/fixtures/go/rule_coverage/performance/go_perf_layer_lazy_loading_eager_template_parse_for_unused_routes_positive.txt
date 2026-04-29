@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutes() string {
+    ruleID := "go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Lazy loading. Flag parsing templates for routes that may never be served in the current process mode."
+    return ruleID + family + severity + status + intent + description
+}

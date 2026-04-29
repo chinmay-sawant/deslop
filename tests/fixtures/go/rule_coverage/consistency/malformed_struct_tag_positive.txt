@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMalformedStructTag() string {
+    ruleID := "malformed_struct_tag"
+    family := "consistency"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Struct field tags that do not parse as valid Go tag key/value pairs."
+    return ruleID + family + severity + status + intent + description
+}

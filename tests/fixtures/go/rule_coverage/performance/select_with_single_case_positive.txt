@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSelectWithSingleCase() string {
+    ruleID := "select_with_single_case"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`select { case v := <-ch: ... }` with only one case and no default"
+    return ruleID + family + severity + status + intent + description
+}

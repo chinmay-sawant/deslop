@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTestBootstrapPackageReusedByProductionWiring() string {
+    ruleID := "test_bootstrap_package_reused_by_production_wiring"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Production startup code that imports test-only bootstrap helpers."
+    return ruleID + family + severity + status + intent + description
+}

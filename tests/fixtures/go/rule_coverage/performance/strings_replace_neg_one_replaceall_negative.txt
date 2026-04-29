@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsReplaceNegOneReplaceall() string {
+    ruleID := "strings_replace_neg_one_replaceall"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`strings.Replace(..., -1)` instead of `strings.ReplaceAll(...)`."
+    return ruleID + family + severity + status + intent + description
+}

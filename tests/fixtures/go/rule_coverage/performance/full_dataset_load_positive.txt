@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFullDatasetLoad() string {
+    ruleID := "full_dataset_load"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Calls that load an entire payload into memory instead of streaming."
+    return ruleID + family + severity + status + intent + description
+}

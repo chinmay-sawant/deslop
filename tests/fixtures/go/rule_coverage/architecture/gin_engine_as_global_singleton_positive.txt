@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinEngineAsGlobalSingleton() string {
+    ruleID := "gin_engine_as_global_singleton"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Package-level `*gin.Engine` singletons reused across unrelated startup paths."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTracingSpanNamesDuplicatedAsRawStrings() string {
+    ruleID := "tracing_span_names_duplicated_as_raw_strings"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated raw span-name literals across handlers and services."
+    return ruleID + family + severity + status + intent + description
+}

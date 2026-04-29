@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeContextWithtimeoutInsideLoop() string {
+    ruleID := "context_withtimeout_inside_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`context.WithTimeout(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

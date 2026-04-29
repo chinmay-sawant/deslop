@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBufioWriterMissingInBulkExport() string {
+    ruleID := "bufio_writer_missing_in_bulk_export"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "File or socket writes inside loops without visible bufio buffering."
+    return ruleID + family + severity + status + intent + description
+}

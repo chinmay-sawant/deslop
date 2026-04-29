@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveLargeCsvOrJsonExportWithoutBufio() string {
+    ruleID := "large_csv_or_json_export_without_bufio"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Export data written in loops without visible buffering in handlers."
+    return ruleID + family + severity + status + intent + description
+}

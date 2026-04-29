@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFormfileOpenReadallWholeUpload() string {
+    ruleID := "formfile_open_readall_whole_upload"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...)."
+    return ruleID + family + severity + status + intent + description
+}

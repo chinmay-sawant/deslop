@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveUnscopedQueryWithoutExplicitDangerNaming() string {
+    ruleID := "unscoped_query_without_explicit_danger_naming"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`Unscoped()` usage in generic repository methods without a clearly dangerous or admin-only name."
+    return ruleID + family + severity + status + intent + description
+}

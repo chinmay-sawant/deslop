@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSaveForSingleColumnChange() string {
+    ruleID := "save_for_single_column_change"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM Save used for a single-column update instead of a targeted Update call."
+    return ruleID + family + severity + status + intent + description
+}

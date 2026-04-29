@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeUuidHashFormattingOnlyForLogs() string {
+    ruleID := "uuid_hash_formatting_only_for_logs"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "UUID or hash formatting observed inside loops only for log output."
+    return ruleID + family + severity + status + intent + description
+}

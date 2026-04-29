@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMakeMapInsideHotLoopSameShape() string {
+    ruleID := "make_map_inside_hot_loop_same_shape"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "make(map[K]V, ...) scratch maps recreated inside loops instead of being reused or prebuilt."
+    return ruleID + family + severity + status + intent + description
+}

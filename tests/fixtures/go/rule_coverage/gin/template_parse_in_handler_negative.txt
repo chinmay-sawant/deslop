@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTemplateParseInHandler() string {
+    ruleID := "template_parse_in_handler"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Template construction or parsing inside Gin handlers instead of startup-time caching."
+    return ruleID + family + severity + status + intent + description
+}

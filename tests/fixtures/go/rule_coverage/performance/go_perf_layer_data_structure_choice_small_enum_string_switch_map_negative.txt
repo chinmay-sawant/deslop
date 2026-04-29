@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerDataStructureChoiceSmallEnumStringSwitchMap() string {
+    ruleID := "go_perf_layer_data_structure_choice_small_enum_string_switch_map"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Data structure choice. Flag map lookups for tiny static enum-like string sets where switch can avoid allocation and hashing."
+    return ruleID + family + severity + status + intent + description
+}

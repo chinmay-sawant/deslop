@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveOperationalCommandHandlersReuseHttpServicesWithoutAdapter() string {
+    ruleID := "operational_command_handlers_reuse_http_services_without_adapter"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "CLI or cron entrypoints that import Gin-only service contracts instead of neutral application services."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCobraFlagLookupInRun() string {
+    ruleID := "cobra_flag_lookup_in_run"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`cmd.Flags().GetString(\"flag\")` inside `RunE` when the flag could be bound to a variable with `StringVar`"
+    return ruleID + family + severity + status + intent + description
+}

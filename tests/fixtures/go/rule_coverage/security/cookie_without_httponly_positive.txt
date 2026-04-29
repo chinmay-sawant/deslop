@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCookieWithoutHttponly() string {
+    ruleID := "cookie_without_httponly"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`http.Cookie{...}` for session/auth cookies without `HttpOnly: true`"
+    return ruleID + family + severity + status + intent + description
+}

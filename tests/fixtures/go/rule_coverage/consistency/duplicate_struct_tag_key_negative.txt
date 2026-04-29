@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDuplicateStructTagKey() string {
+    ruleID := "duplicate_struct_tag_key"
+    family := "consistency"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Struct field tags that repeat the same key more than once."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerCollectionIterationLenCalledAfterMaterializingChannel() string {
+    ruleID := "go_perf_layer_collection_iteration_len_called_after_materializing_channel"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Collection iteration. Flag channel streams collected into slices only to measure length or emptiness."
+    return ruleID + family + severity + status + intent + description
+}

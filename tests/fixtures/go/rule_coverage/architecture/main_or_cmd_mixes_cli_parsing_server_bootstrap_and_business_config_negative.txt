@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfig() string {
+    ruleID := "main_or_cmd_mixes_cli_parsing_server_bootstrap_and_business_config"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Entrypoints that do too much without startup composition helpers."
+    return ruleID + family + severity + status + intent + description
+}

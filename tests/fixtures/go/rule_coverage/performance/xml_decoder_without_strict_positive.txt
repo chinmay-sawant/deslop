@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveXmlDecoderWithoutStrict() string {
+    ruleID := "xml_decoder_without_strict"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML"
+    return ruleID + family + severity + status + intent + description
+}

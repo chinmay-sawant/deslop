@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTemplateParseInHotPath() string {
+    ruleID := "template_parse_in_hot_path"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "html/template or text/template parse calls observed on request-style paths instead of startup-time caching."
+    return ruleID + family + severity + status + intent + description
+}

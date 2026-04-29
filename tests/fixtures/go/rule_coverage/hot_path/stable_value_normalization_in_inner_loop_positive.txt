@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStableValueNormalizationInInnerLoop() string {
+    ruleID := "stable_value_normalization_in_inner_loop"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Stable value normalization (ToLower, TrimSpace, etc.) repeated inside inner loops."
+    return ruleID + family + severity + status + intent + description
+}

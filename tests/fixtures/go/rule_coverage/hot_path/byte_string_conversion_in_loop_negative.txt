@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeByteStringConversionInLoop() string {
+    ruleID := "byte_string_conversion_in_loop"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths."
+    return ruleID + family + severity + status + intent + description
+}

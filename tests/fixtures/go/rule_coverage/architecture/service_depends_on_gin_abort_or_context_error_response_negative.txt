@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceDependsOnGinAbortOrContextErrorResponse() string {
+    ruleID := "service_depends_on_gin_abort_or_context_error_response"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that own transport abort behavior."
+    return ruleID + family + severity + status + intent + description
+}

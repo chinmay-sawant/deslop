@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepositoryTypeOutsideRepositoryPackage() string {
+    ruleID := "repository_type_outside_repository_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repository implementations declared outside `repository`, `repo`, or `store` packages when the repo already uses those roles elsewhere."
+    return ruleID + family + severity + status + intent + description
+}

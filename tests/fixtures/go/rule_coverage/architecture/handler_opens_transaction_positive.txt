@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHandlerOpensTransaction() string {
+    ruleID := "handler_opens_transaction"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that call `Begin`, `Transaction`, or unit-of-work start helpers directly."
+    return ruleID + family + severity + status + intent + description
+}

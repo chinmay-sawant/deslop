@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMockRepositoryTypesDuplicatedAcrossTests() string {
+    ruleID := "mock_repository_types_duplicated_across_tests"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Many copy-pasted mock repository structs with the same method sets."
+    return ruleID + family + severity + status + intent + description
+}

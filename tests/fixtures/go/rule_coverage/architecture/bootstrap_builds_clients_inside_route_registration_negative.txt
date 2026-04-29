@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBootstrapBuildsClientsInsideRouteRegistration() string {
+    ruleID := "bootstrap_builds_clients_inside_route_registration"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Startup code that hides dependency construction inside route registration functions."
+    return ruleID + family + severity + status + intent + description
+}

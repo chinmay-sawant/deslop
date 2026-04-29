@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCookieWithoutSamesite() string {
+    ruleID := "cookie_without_samesite"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`http.Cookie{...}` without `SameSite` set, particularly for auth/session cookies"
+    return ruleID + family + severity + status + intent + description
+}

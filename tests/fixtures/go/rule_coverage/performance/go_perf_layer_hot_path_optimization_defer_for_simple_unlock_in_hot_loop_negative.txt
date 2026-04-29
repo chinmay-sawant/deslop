@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerHotPathOptimizationDeferForSimpleUnlockInHotLoop() string {
+    ruleID := "go_perf_layer_hot_path_optimization_defer_for_simple_unlock_in_hot_loop"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Hot path optimization. Flag defer used for simple unlock/close work inside very hot loops."
+    return ruleID + family + severity + status + intent + description
+}

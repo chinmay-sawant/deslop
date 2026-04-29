@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequest() string {
+    ruleID := "go_perf_layer_lazy_loading_lazy_once_hides_slow_first_request"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Lazy loading. Flag sync.Once lazy initialization on request paths without warmup or latency accounting."
+    return ruleID + family + severity + status + intent + description
+}

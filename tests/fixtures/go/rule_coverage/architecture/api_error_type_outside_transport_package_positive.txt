@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveApiErrorTypeOutsideTransportPackage() string {
+    ruleID := "api_error_type_outside_transport_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "API-facing error payload structs living in persistence or business packages instead of transport-boundary packages."
+    return ruleID + family + severity + status + intent + description
+}

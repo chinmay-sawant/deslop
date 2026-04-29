@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePrometheusUnregisteredMetric() string {
+    ruleID := "prometheus_unregistered_metric"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "metrics created with `prometheus.NewCounter`/`NewHistogram` that are never registered with `prometheus.MustRegister` or `promauto`"
+    return ruleID + family + severity + status + intent + description
+}

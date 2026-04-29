@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveOptionalTxNilParameterOnRepositoryApi() string {
+    ruleID := "optional_tx_nil_parameter_on_repository_api"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repository APIs that use optional `tx *gorm.DB` parameters instead of explicit unit-of-work contracts."
+    return ruleID + family + severity + status + intent + description
+}

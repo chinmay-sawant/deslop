@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTemplateHtmlUnescaped() string {
+    ruleID := "template_html_unescaped"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`template.HTML(userInput)` or `template.JS(userInput)` type conversions on data from request parameters"
+    return ruleID + family + severity + status + intent + description
+}

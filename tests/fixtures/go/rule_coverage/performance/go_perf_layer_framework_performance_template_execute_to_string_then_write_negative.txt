@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWrite() string {
+    ruleID := "go_perf_layer_framework_performance_template_execute_to_string_then_write"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Framework-specific performance. Flag template rendering to strings before writing to the response writer."
+    return ruleID + family + severity + status + intent + description
+}

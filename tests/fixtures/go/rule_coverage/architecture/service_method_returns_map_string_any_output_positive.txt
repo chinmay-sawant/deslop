@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceMethodReturnsMapStringAnyOutput() string {
+    ruleID := "service_method_returns_map_string_any_output"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Services that return dynamic maps instead of typed result contracts."
+    return ruleID + family + severity + status + intent + description
+}

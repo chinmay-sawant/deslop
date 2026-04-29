@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeUnbufferedChannelForKnownProducerCount() string {
+    ruleID := "unbuffered_channel_for_known_producer_count"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "unbuffered channels `make(chan T)` when the number of producers/messages is known at construction time"
+    return ruleID + family + severity + status + intent + description
+}

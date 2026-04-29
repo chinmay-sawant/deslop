@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSelectOrGetInsideLoopLookup() string {
+    ruleID := "select_or_get_inside_loop_lookup"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "ORM lookups (Select, Get, First, etc.) executed inside loops."
+    return ruleID + family + severity + status + intent + description
+}

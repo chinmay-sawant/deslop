@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTypeAssertionWithoutCommaOk() string {
+    ruleID := "type_assertion_without_comma_ok"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`v := i.(T)` without the comma-ok form in non-panic-safe code"
+    return ruleID + family + severity + status + intent + description
+}

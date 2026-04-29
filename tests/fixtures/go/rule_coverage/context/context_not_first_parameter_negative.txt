@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeContextNotFirstParameter() string {
+    ruleID := "context_not_first_parameter"
+    family := "context"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Functions that accept context.Context but not as the first non-receiver parameter on context-aware call paths."
+    return ruleID + family + severity + status + intent + description
+}

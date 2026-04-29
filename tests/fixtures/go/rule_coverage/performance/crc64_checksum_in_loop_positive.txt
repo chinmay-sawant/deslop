@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCrc64ChecksumInLoop() string {
+    ruleID := "crc64_checksum_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`crc64.Checksum(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

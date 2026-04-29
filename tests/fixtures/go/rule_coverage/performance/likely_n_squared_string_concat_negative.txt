@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeLikelyNSquaredStringConcat() string {
+    ruleID := "likely_n_squared_string_concat"
+    family := "performance"
+    severity := "contextual"
+    status := "experimental"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage."
+    return ruleID + family + severity + status + intent + description
+}

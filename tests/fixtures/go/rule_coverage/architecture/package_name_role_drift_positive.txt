@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePackageNameRoleDrift() string {
+    ruleID := "package_name_role_drift"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role."
+    return ruleID + family + severity + status + intent + description
+}

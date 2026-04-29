@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFmtSprintfSingleStringPassthrough() string {
+    ruleID := "fmt_sprintf_single_string_passthrough"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Sprintf(\"%s\", s)` instead of returning or writing the string directly."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMapOfSlicesPrealloc() string {
+    ruleID := "map_of_slices_prealloc"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`m[k] = append(m[k], v)` in loops without pre-allocating inner slices"
+    return ruleID + family + severity + status + intent + description
+}

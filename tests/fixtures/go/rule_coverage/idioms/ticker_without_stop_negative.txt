@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTickerWithoutStop() string {
+    ruleID := "ticker_without_stop"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "time.NewTicker(...) is created without an observed Stop() call."
+    return ruleID + family + severity + status + intent + description
+}

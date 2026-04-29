@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMultipleBindSourcesIntoSameStructWithoutPrecedenceContract() string {
+    ruleID := "multiple_bind_sources_into_same_struct_without_precedence_contract"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "One DTO being filled from body, query, and path without a clear precedence policy."
+    return ruleID + family + severity + status + intent + description
+}

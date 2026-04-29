@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMiddlewareCallsRepositoryDirectly() string {
+    ruleID := "middleware_calls_repository_directly"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Middleware that reaches into repositories instead of delegating through focused services or auth abstractions."
+    return ruleID + family + severity + status + intent + description
+}

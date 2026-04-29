@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceMethodMutatesTransportDtoInPlace() string {
+    ruleID := "service_method_mutates_transport_dto_in_place"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that rewrite handler DTOs instead of mapping to service-layer inputs."
+    return ruleID + family + severity + status + intent + description
+}

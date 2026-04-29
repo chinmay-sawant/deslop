@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeS3ListobjectsWithoutPagination() string {
+    ruleID := "s3_listobjects_without_pagination"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`s3.ListObjectsV2` without `MaxKeys` or pagination in handler code"
+    return ruleID + family + severity + status + intent + description
+}

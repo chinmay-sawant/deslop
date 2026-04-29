@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeed() string {
+    ruleID := "go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Collection iteration. Flag manual index loops over slices where range would avoid repeated bounds-sensitive indexing."
+    return ruleID + family + severity + status + intent + description
+}

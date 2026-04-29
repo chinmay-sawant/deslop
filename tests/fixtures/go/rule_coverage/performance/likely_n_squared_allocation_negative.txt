@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeLikelyNSquaredAllocation() string {
+    ruleID := "likely_n_squared_allocation"
+    family := "performance"
+    severity := "contextual"
+    status := "experimental"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Opt-in deeper semantic signal for allocations that also sit inside nested loop structure."
+    return ruleID + family + severity + status + intent + description
+}

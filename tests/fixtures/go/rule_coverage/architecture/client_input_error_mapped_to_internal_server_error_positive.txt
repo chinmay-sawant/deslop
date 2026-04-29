@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveClientInputErrorMappedToInternalServerError() string {
+    ruleID := "client_input_error_mapped_to_internal_server_error"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Request parsing or binding errors that are translated into `500` responses instead of client-error status codes."
+    return ruleID + family + severity + status + intent + description
+}

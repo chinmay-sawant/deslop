@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveWhereClauseTemplatesDuplicatedAcrossRepositories() string {
+    ruleID := "where_clause_templates_duplicated_across_repositories"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated filter templates that should be shared through scopes or query builders."
+    return ruleID + family + severity + status + intent + description
+}

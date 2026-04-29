@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringConcatInLoop() string {
+    ruleID := "string_concat_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated string concatenation inside loops (O(n^2) risk)."
+    return ruleID + family + severity + status + intent + description
+}

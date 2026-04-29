@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRsaKeySizeTooSmall() string {
+    ruleID := "rsa_key_size_too_small"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`rsa.GenerateKey(rand, bits)` where `bits` is literally `< 2048`"
+    return ruleID + family + severity + status + intent + description
+}

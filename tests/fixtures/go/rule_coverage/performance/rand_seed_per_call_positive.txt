@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRandSeedPerCall() string {
+    ruleID := "rand_seed_per_call"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`rand.Seed(...)` inside regular call paths instead of process startup."
+    return ruleID + family + severity + status + intent + description
+}

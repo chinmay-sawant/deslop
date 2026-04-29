@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerNetworkCallsHttpClientCreatedPerCall() string {
+    ruleID := "go_perf_layer_network_calls_http_client_created_per_call"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Network calls. Flag http.Client construction per call instead of reusing clients and transports."
+    return ruleID + family + severity + status + intent + description
+}

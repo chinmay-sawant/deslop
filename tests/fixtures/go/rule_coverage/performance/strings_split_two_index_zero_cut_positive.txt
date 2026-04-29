@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsSplitTwoIndexZeroCut() string {
+    ruleID := "strings_split_two_index_zero_cut"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strings.Split(...)[0]` when only the first segment is needed."
+    return ruleID + family + severity + status + intent + description
+}

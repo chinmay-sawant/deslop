@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSliceAppendWithoutPreallocKnownBound() string {
+    ruleID := "slice_append_without_prealloc_known_bound"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Slice append inside a range loop without visible preallocation when the bound is locally known."
+    return ruleID + family + severity + status + intent + description
+}

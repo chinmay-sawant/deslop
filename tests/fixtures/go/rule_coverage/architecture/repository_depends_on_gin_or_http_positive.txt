@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryDependsOnGinOrHttp() string {
+    ruleID := "repository_depends_on_gin_or_http"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repository packages that import Gin, `net/http`, or transport-only response helpers."
+    return ruleID + family + severity + status + intent + description
+}

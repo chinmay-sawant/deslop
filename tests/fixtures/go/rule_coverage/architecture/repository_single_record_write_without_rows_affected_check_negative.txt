@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepositorySingleRecordWriteWithoutRowsAffectedCheck() string {
+    ruleID := "repository_single_record_write_without_rows_affected_check"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Single-record-oriented repository updates or deletes that never inspect `RowsAffected` or an equivalent write-outcome signal."
+    return ruleID + family + severity + status + intent + description
+}

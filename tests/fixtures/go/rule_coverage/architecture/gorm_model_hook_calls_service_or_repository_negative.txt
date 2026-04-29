@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGormModelHookCallsServiceOrRepository() string {
+    ruleID := "gorm_model_hook_calls_service_or_repository"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Model hooks that depend on higher-layer services or repositories."
+    return ruleID + family + severity + status + intent + description
+}

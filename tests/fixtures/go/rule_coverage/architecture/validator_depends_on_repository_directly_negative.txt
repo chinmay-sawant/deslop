@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeValidatorDependsOnRepositoryDirectly() string {
+    ruleID := "validator_depends_on_repository_directly"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Reusable validator code that reaches into repositories instead of receiving precomputed facts or focused services."
+    return ruleID + family + severity + status + intent + description
+}

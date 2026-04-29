@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeViperGetInHotPath() string {
+    ruleID := "viper_get_in_hot_path"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`viper.GetString(\"key\")` or `viper.GetInt(\"key\")` inside handler functions or loops"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveLowerOrFuncWrappedIndexedColumn() string {
+    ruleID := "lower_or_func_wrapped_indexed_column"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "LOWER() or other functions wrapping indexed columns in WHERE clauses, preventing index usage."
+    return ruleID + family + severity + status + intent + description
+}

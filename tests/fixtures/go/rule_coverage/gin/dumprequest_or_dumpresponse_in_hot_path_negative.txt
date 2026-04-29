@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDumprequestOrDumpresponseInHotPath() string {
+    ruleID := "dumprequest_or_dumpresponse_in_hot_path"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Request-path handlers that dump full HTTP requests or responses with httputil."
+    return ruleID + family + severity + status + intent + description
+}

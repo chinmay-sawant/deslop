@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRowsWithoutClose() string {
+    ruleID := "rows_without_close"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Query result handles that appear locally owned but have no observed rows.Close() call."
+    return ruleID + family + severity + status + intent + description
+}

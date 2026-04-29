@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBytesBufferTruncateZeroReset() string {
+    ruleID := "bytes_buffer_truncate_zero_reset"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`buf.Truncate(0)` instead of `buf.Reset()`."
+    return ruleID + family + severity + status + intent + description
+}

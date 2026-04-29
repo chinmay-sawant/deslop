@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceReturnsPreformattedClientMessage() string {
+    ruleID := "service_returns_preformatted_client_message"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that return final client-facing message strings instead of typed domain errors."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRawSqlLiteralInService() string {
+    ruleID := "raw_sql_literal_in_service"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Literal SQL strings executed from services instead of repositories or query packages."
+    return ruleID + family + severity + status + intent + description
+}

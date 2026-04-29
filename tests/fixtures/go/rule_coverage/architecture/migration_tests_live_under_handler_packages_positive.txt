@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMigrationTestsLiveUnderHandlerPackages() string {
+    ruleID := "migration_tests_live_under_handler_packages"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Migration-specific tests located in transport packages."
+    return ruleID + family + severity + status + intent + description
+}

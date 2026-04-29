@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerIoOperationsReadallOnKnownLargeFile() string {
+    ruleID := "go_perf_layer_io_operations_readall_on_known_large_file"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially."
+    return ruleID + family + severity + status + intent + description
+}

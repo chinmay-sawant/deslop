@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeExecInsideLoopWithoutBatch() string {
+    ruleID := "exec_inside_loop_without_batch"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Exec(...) or ExecContext(...) used for row-by-row SQL writes inside loops."
+    return ruleID + family + severity + status + intent + description
+}

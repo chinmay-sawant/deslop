@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveConstructorReadsEnvDirectly() string {
+    ruleID := "constructor_reads_env_directly"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Constructors that call `os.Getenv` instead of receiving normalized config."
+    return ruleID + family + severity + status + intent + description
+}

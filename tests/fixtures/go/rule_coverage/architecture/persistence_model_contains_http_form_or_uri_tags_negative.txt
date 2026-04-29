@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePersistenceModelContainsHttpFormOrUriTags() string {
+    ruleID := "persistence_model_contains_http_form_or_uri_tags"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Persistence models that are tied to form or URI binding tags."
+    return ruleID + family + severity + status + intent + description
+}

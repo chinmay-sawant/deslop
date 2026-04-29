@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBodyBindingDoneInMiddlewareAndHandler() string {
+    ruleID := "body_binding_done_in_middleware_and_handler"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Endpoints where middleware parses the body and the handler also owns body binding."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRowByRowUpsertLoop() string {
+    ruleID := "row_by_row_upsert_loop"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Upsert-style writes executed row by row inside loops instead of batched."
+    return ruleID + family + severity + status + intent + description
+}

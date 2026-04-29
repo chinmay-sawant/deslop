@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGinHandlerUsesGlobalSingletons() string {
+    ruleID := "gin_handler_uses_global_singletons"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that reach for global DB, logger, cache, or config variables instead of injected dependencies."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeAuditLoggingExecutedInHandlerBeforeServiceSuccess() string {
+    ruleID := "audit_logging_executed_in_handler_before_service_success"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Audit writes that happen before the service has confirmed success."
+    return ruleID + family + severity + status + intent + description
+}

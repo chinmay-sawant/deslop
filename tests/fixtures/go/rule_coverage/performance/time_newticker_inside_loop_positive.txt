@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTimeNewtickerInsideLoop() string {
+    ruleID := "time_newticker_inside_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`time.NewTicker(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

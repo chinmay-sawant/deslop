@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveEventPublishBeforeTransactionCommit() string {
+    ruleID := "event_publish_before_transaction_commit"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Event or message publication before durable commit is confirmed."
+    return ruleID + family + severity + status + intent + description
+}

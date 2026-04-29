@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMiddlewareWritesBusinessResponsePayloads() string {
+    ruleID := "middleware_writes_business_response_payloads"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Middleware that emits domain success payloads instead of leaving response bodies to handlers or render helpers."
+    return ruleID + family + severity + status + intent + description
+}

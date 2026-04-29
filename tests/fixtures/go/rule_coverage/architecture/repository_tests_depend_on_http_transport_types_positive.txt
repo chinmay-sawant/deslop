@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryTestsDependOnHttpTransportTypes() string {
+    ruleID := "repository_tests_depend_on_http_transport_types"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repository tests that assert HTTP DTOs or handler-layer types."
+    return ruleID + family + severity + status + intent + description
+}

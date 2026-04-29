@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetup() string {
+    ruleID := "admin_or_debug_endpoint_registration_mixed_into_public_router_setup"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Operational endpoints registered alongside public routes with no clear boundary."
+    return ruleID + family + severity + status + intent + description
+}

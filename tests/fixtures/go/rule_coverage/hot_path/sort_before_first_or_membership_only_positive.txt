@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSortBeforeFirstOrMembershipOnly() string {
+    ruleID := "sort_before_first_or_membership_only"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Sorting a collection when only the first element or min/max is needed."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSharedGormDbStateMutatedAndReusedAcrossRequests() string {
+    ruleID := "shared_gorm_db_state_mutated_and_reused_across_requests"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Code that mutates shared `*gorm.DB` state and reuses it as if it were immutable configuration."
+    return ruleID + family + severity + status + intent + description
+}

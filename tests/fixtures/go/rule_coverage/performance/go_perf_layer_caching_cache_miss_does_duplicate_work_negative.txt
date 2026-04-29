@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerCachingCacheMissDoesDuplicateWork() string {
+    ruleID := "go_perf_layer_caching_cache_miss_does_duplicate_work"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key."
+    return ruleID + family + severity + status + intent + description
+}

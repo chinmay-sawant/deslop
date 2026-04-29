@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeInconsistentPackageName() string {
+    ruleID := "inconsistent_package_name"
+    family := "style"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Directories that mix base Go package names after ignoring the _test suffix."
+    return ruleID + family + severity + status + intent + description
+}

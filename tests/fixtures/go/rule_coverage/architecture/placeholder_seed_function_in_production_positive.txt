@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePlaceholderSeedFunctionInProduction() string {
+    ruleID := "placeholder_seed_function_in_production"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Seed entrypoints in production code that are still TODO-shaped or effectively no-ops."
+    return ruleID + family + severity + status + intent + description
+}

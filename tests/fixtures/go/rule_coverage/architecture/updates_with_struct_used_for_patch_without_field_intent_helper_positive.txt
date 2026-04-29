@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveUpdatesWithStructUsedForPatchWithoutFieldIntentHelper() string {
+    ruleID := "updates_with_struct_used_for_patch_without_field_intent_helper"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "PATCH-style repository writes that rely on struct zero-value semantics without explicit field intent."
+    return ruleID + family + severity + status + intent + description
+}

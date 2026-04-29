@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHandlerCallsDatabaseSqlDirectlyOutsideRepository() string {
+    ruleID := "handler_calls_database_sql_directly_outside_repository"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handler packages that import `database/sql`, `sqlx`, or `pgx` and execute queries directly."
+    return ruleID + family + severity + status + intent + description
+}

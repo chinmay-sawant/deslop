@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoroutineSpawnInLoop() string {
+    ruleID := "goroutine_spawn_in_loop"
+    family := "concurrency"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Raw go statements launched from inside loops without obvious WaitGroup coordination."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinRoutePathsRepeatedAsRawStrings() string {
+    ruleID := "gin_route_paths_repeated_as_raw_strings"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated route path literals that should be centralized or grouped more intentionally."
+    return ruleID + family + severity + status + intent + description
+}

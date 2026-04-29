@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryReturnsGormQueryBuilder() string {
+    ruleID := "repository_returns_gorm_query_builder"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repositories that return partially built `*gorm.DB` chains for callers to finish."
+    return ruleID + family + severity + status + intent + description
+}

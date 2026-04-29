@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffers() string {
+    ruleID := "go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Garbage collection and cleanup. Flag sync.Pool usage that stores large buffers without a cap before putting them back."
+    return ruleID + family + severity + status + intent + description
+}

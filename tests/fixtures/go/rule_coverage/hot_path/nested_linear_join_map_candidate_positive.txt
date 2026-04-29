@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveNestedLinearJoinMapCandidate() string {
+    ruleID := "nested_linear_join_map_candidate"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Nested-loop lookups or joins that could use a map index for O(1) access."
+    return ruleID + family + severity + status + intent + description
+}

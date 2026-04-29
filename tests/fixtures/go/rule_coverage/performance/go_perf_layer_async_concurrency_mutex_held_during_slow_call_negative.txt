@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerAsyncConcurrencyMutexHeldDuringSlowCall() string {
+    ruleID := "go_perf_layer_async_concurrency_mutex_held_during_slow_call"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Async and concurrency. Flag mutex-protected regions that include network, disk, or database calls."
+    return ruleID + family + severity + status + intent + description
+}

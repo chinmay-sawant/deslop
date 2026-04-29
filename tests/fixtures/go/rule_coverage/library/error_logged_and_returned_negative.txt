@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeErrorLoggedAndReturned() string {
+    ruleID := "error_logged_and_returned"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`log.Error(err); return err` or `logger.Error(\"failed\", zap.Error(err)); return fmt.Errorf(\"failed: %w\", err)` \u2014 logging the error then returning it"
+    return ruleID + family + severity + status + intent + description
+}

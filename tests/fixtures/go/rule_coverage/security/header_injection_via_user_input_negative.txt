@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHeaderInjectionViaUserInput() string {
+    ruleID := "header_injection_via_user_input"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`w.Header().Set(name, userInput)` or `w.Header().Add(name, userInput)` where the value contains unvalidated user input that could contain `\\r\\n`"
+    return ruleID + family + severity + status + intent + description
+}

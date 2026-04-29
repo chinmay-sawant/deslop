@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDnsLookupForAccessControl() string {
+    ruleID := "dns_lookup_for_access_control"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`net.LookupHost` or `net.LookupAddr` results used in access control decisions"
+    return ruleID + family + severity + status + intent + description
+}

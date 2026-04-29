@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMiddlewareRebindsBodyAfterHandlerBind() string {
+    ruleID := "middleware_rebinds_body_after_handler_bind"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Middleware or helper chains that parse the request body after the main handler has already bound it."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSuccessResponseContainsErrorFieldOrMixedContract() string {
+    ruleID := "success_response_contains_error_field_or_mixed_contract"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Endpoints that blend success and error shapes into one ambiguous contract."
+    return ruleID + family + severity + status + intent + description
+}

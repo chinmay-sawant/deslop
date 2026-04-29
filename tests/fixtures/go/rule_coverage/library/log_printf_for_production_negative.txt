@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeLogPrintfForProduction() string {
+    ruleID := "log_printf_for_production"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`log.Printf` (stdlib) usage in web service handler code"
+    return ruleID + family + severity + status + intent + description
+}

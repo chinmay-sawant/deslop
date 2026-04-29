@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerCachingCacheKeyBuiltWithFmt() string {
+    ruleID := "go_perf_layer_caching_cache_key_built_with_fmt"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Caching. Flag cache keys built with fmt.Sprintf in hot paths where append/Builder or structured keys are cheaper."
+    return ruleID + family + severity + status + intent + description
+}

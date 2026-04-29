@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSingleImplInterface() string {
+    ruleID := "single_impl_interface"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repository-local interfaces with one obvious implementation and a very small consumer surface."
+    return ruleID + family + severity + status + intent + description
+}

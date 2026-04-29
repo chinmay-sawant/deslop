@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeColumnNameLiteralsDuplicatedOutsideRepository() string {
+    ruleID := "column_name_literals_duplicated_outside_repository"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated column-name strings outside repository or query packages."
+    return ruleID + family + severity + status + intent + description
+}

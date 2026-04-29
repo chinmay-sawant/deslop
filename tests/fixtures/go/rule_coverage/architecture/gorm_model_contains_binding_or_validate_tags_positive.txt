@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormModelContainsBindingOrValidateTags() string {
+    ruleID := "gorm_model_contains_binding_or_validate_tags"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM models that accumulate transport validation and binding concerns."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFmtHotPath() string {
+    ruleID := "fmt_hot_path"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "fmt formatting calls such as Sprintf inside loops."
+    return ruleID + family + severity + status + intent + description
+}

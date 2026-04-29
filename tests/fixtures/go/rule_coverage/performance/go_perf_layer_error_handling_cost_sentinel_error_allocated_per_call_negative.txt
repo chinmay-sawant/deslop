@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerErrorHandlingCostSentinelErrorAllocatedPerCall() string {
+    ruleID := "go_perf_layer_error_handling_cost_sentinel_error_allocated_per_call"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Error handling cost. Flag identical sentinel errors allocated inside functions instead of package-level variables."
+    return ruleID + family + severity + status + intent + description
+}

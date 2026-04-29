@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveJsonNumberVsFloat64Decode() string {
+    ruleID := "json_number_vs_float64_decode"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`json.Unmarshal` into `map[string]any` for numeric data without `UseNumber()`"
+    return ruleID + family + severity + status + intent + description
+}

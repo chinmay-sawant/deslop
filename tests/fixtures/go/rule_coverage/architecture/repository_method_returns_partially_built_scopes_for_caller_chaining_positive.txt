@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryMethodReturnsPartiallyBuiltScopesForCallerChaining() string {
+    ruleID := "repository_method_returns_partially_built_scopes_for_caller_chaining"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repositories that expose scope-building fragments instead of complete query APIs."
+    return ruleID + family + severity + status + intent + description
+}

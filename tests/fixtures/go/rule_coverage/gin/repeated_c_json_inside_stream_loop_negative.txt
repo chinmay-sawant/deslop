@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepeatedCJsonInsideStreamLoop() string {
+    ruleID := "repeated_c_json_inside_stream_loop"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Gin handlers that call c.JSON(...) or c.PureJSON(...) from inside loops."
+    return ruleID + family + severity + status + intent + description
+}

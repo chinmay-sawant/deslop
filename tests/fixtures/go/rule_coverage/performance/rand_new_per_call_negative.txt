@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRandNewPerCall() string {
+    ruleID := "rand_new_per_call"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`rand.New(...)` inside regular call paths instead of reusing a generator."
+    return ruleID + family + severity + status + intent + description
+}

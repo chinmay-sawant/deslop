@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveShouldbindbodywithWhenSingleBindIsEnough() string {
+    ruleID := "shouldbindbodywith_when_single_bind_is_enough"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Gin handlers that use ShouldBindBodyWith(...) even though only one body bind is observed."
+    return ruleID + family + severity + status + intent + description
+}

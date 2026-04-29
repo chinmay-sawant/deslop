@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsTrimleftSpaceTrimspace() string {
+    ruleID := "strings_trimleft_space_trimspace"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strings.TrimLeft(..., whitespace)` instead of `strings.TrimSpace(...)`."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerAsyncConcurrencySelectDefaultBusyPoll() string {
+    ruleID := "go_perf_layer_async_concurrency_select_default_busy_poll"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Async and concurrency. Flag select loops with default branches that spin instead of blocking or using timers."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSingleImplInterface() string {
+    ruleID := "single_impl_interface"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repository-local interfaces with one obvious implementation and a very small consumer surface."
+    return ruleID + family + severity + status + intent + description
+}

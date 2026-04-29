@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTemplateParseInHandler() string {
+    ruleID := "template_parse_in_handler"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Template construction or parsing inside Gin handlers instead of startup-time caching."
+    return ruleID + family + severity + status + intent + description
+}

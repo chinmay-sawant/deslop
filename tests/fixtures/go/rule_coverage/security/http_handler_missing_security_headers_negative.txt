@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHttpHandlerMissingSecurityHeaders() string {
+    ruleID := "http_handler_missing_security_headers"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "HTTP handler functions that write responses without setting `X-Content-Type-Options`, `X-Frame-Options`, or `Content-Security-Policy` headers (or without security header middleware)"
+    return ruleID + family + severity + status + intent + description
+}

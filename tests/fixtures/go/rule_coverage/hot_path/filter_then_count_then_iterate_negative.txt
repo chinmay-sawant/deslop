@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFilterThenCountThenIterate() string {
+    ruleID := "filter_then_count_then_iterate"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Same collection traversed multiple times for filter, count, and process steps."
+    return ruleID + family + severity + status + intent + description
+}

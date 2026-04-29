@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveUpstreamConsumedInterfaceDeclaredInProviderPackage() string {
+    ruleID := "upstream_consumed_interface_declared_in_provider_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Provider packages that declare an interface even though upstream packages appear to own the abstraction seam."
+    return ruleID + family + severity + status + intent + description
+}

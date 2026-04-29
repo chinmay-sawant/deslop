@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerGarbageCollectionCleanupTickerNotStoppedOnExit() string {
+    ruleID := "go_perf_layer_garbage_collection_cleanup_ticker_not_stopped_on_exit"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Garbage collection and cleanup. Flag time.Ticker creation without a visible Stop path in services or workers."
+    return ruleID + family + severity + status + intent + description
+}

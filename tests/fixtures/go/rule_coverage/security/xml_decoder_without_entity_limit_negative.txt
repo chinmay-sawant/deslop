@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeXmlDecoderWithoutEntityLimit() string {
+    ruleID := "xml_decoder_without_entity_limit"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`xml.NewDecoder(r)` processing untrusted XML without setting `d.Entity = nil` and without input size limits"
+    return ruleID + family + severity + status + intent + description
+}

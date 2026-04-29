@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMigrationRunnerAndApiServerBootstrapCoupled() string {
+    ruleID := "migration_runner_and_api_server_bootstrap_coupled"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "One startup path that always runs migrations and serves traffic together."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBytesNewbufferstringOnStringConversion() string {
+    ruleID := "bytes_newbufferstring_on_string_conversion"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`bytes.NewBufferString(string(b))` instead of using the byte slice directly."
+    return ruleID + family + severity + status + intent + description
+}

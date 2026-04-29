@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHttpWriteheaderAfterWrite() string {
+    ruleID := "http_writeheader_after_write"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that write the response body before calling WriteHeader(...)."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGzipReaderWriterRecreatedPerItem() string {
+    ruleID := "gzip_reader_writer_recreated_per_item"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "gzip.NewReader(...) or gzip.NewWriter(...) recreated inside iterative paths instead of per stream."
+    return ruleID + family + severity + status + intent + description
+}

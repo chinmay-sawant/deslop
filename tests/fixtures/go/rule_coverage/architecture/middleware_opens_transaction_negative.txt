@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMiddlewareOpensTransaction() string {
+    ruleID := "middleware_opens_transaction"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Middleware that owns transaction lifetime for all downstream business logic."
+    return ruleID + family + severity + status + intent + description
+}

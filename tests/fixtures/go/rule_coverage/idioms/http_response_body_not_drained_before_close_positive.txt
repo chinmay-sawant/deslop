@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHttpResponseBodyNotDrainedBeforeClose() string {
+    ruleID := "http_response_body_not_drained_before_close"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeValidationErrorResponseShapeInconsistent() string {
+    ruleID := "validation_error_response_shape_inconsistent"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers in the same API module that emit different validation error contracts."
+    return ruleID + family + severity + status + intent + description
+}

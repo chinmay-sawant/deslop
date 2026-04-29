@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTypeSwitchVsRepeatedAssertions() string {
+    ruleID := "type_switch_vs_repeated_assertions"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "multiple sequential `if _, ok := i.(T1); ok { ... } else if _, ok := i.(T2); ok { ... }` patterns"
+    return ruleID + family + severity + status + intent + description
+}

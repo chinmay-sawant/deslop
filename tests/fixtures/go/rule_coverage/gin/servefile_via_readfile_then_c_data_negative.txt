@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServefileViaReadfileThenCData() string {
+    ruleID := "servefile_via_readfile_then_c_data"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming."
+    return ruleID + family + severity + status + intent + description
+}

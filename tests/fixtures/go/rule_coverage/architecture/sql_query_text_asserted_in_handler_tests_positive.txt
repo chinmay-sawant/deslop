@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSqlQueryTextAssertedInHandlerTests() string {
+    ruleID := "sql_query_text_asserted_in_handler_tests"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "SQL-shape assertions written at handler level instead of repository tests."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeLenStringForEmptyCheck() string {
+    ruleID := "len_string_for_empty_check"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`len(s) == 0` used interchangeably with `s == \"\"`"
+    return ruleID + family + severity + status + intent + description
+}

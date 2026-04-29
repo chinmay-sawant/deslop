@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeNotFoundSemanticsImplementedByNilNilReturn() string {
+    ruleID := "not_found_semantics_implemented_by_nil_nil_return"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repository or service APIs that encode missing records as `nil, nil` with no explicit result contract."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceMethodHandlesPaginationOrQueryParsing() string {
+    ruleID := "service_method_handles_pagination_or_query_parsing"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Services that parse page, sort, filter, or URL values that should already be normalized at the transport boundary."
+    return ruleID + family + severity + status + intent + description
+}

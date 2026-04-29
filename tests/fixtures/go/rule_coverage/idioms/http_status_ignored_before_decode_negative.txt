@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHttpStatusIgnoredBeforeDecode() string {
+    ruleID := "http_status_ignored_before_decode"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Response decoding or body consumption that happens without an observed StatusCode check."
+    return ruleID + family + severity + status + intent + description
+}

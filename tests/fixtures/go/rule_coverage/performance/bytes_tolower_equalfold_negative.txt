@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBytesTolowerEqualfold() string {
+    ruleID := "bytes_tolower_equalfold"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`bytes.Equal(bytes.ToLower(...), bytes.ToLower(...))` instead of `bytes.EqualFold(...)`."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCsvWriterFlushPerRow() string {
+    ruleID := "csv_writer_flush_per_row"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "csv.Writer.Flush() called inside per-row loops, reducing buffering effectiveness."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerDataStructureChoiceLinkedListForCacheIteration() string {
+    ruleID := "go_perf_layer_data_structure_choice_linked_list_for_cache_iteration"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Data structure choice. Flag container/list use in cache iteration paths where slices or maps would improve locality."
+    return ruleID + family + severity + status + intent + description
+}

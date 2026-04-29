@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSleepPolling() string {
+    ruleID := "sleep_polling"
+    family := "context"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "time.Sleep inside loops \u2014 often indicates polling or busy-wait style code."
+    return ruleID + family + severity + status + intent + description
+}

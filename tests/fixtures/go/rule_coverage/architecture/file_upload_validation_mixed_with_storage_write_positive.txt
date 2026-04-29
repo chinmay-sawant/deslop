@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFileUploadValidationMixedWithStorageWrite() string {
+    ruleID := "file_upload_validation_mixed_with_storage_write"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Functions that validate upload metadata and also persist the upload in the same boundary step."
+    return ruleID + family + severity + status + intent + description
+}

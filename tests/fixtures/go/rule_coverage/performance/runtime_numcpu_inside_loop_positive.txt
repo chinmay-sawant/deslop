@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRuntimeNumcpuInsideLoop() string {
+    ruleID := "runtime_numcpu_inside_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`runtime.NumCPU()` inside loops instead of caching once."
+    return ruleID + family + severity + status + intent + description
+}

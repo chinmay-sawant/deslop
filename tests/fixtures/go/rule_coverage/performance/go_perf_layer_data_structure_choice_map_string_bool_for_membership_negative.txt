@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerDataStructureChoiceMapStringBoolForMembership() string {
+    ruleID := "go_perf_layer_data_structure_choice_map_string_bool_for_membership"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Data structure choice. Flag map[string]bool membership sets where map[string]struct{} avoids unnecessary value storage."
+    return ruleID + family + severity + status + intent + description
+}

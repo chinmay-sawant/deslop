@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerNetworkCallsDnsLookupPerRequestPath() string {
+    ruleID := "go_perf_layer_network_calls_dns_lookup_per_request_path"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Network calls. Flag net.Lookup* calls in request paths without caching or resolver ownership."
+    return ruleID + family + severity + status + intent + description
+}

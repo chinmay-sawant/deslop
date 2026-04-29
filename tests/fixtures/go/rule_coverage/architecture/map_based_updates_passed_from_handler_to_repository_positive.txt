@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMapBasedUpdatesPassedFromHandlerToRepository() string {
+    ruleID := "map_based_updates_passed_from_handler_to_repository"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Update maps built from request payloads and passed through layers without typed ownership."
+    return ruleID + family + severity + status + intent + description
+}

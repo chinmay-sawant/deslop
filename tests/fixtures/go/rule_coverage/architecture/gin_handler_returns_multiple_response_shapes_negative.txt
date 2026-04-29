@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGinHandlerReturnsMultipleResponseShapes() string {
+    ruleID := "gin_handler_returns_multiple_response_shapes"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that manually build several unrelated success payload shapes instead of delegating to clearer endpoints or render helpers."
+    return ruleID + family + severity + status + intent + description
+}

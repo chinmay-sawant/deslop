@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHandlerSwitchesOnErrorStrings() string {
+    ruleID := "handler_switches_on_error_strings"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that branch on `err.Error()` text rather than typed errors."
+    return ruleID + family + severity + status + intent + description
+}

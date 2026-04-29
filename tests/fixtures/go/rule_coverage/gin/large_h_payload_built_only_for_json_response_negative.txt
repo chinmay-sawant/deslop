@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeLargeHPayloadBuiltOnlyForJsonResponse() string {
+    ruleID := "large_h_payload_built_only_for_json_response"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Large gin.H payloads built as transient dynamic maps right before JSON rendering."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeContextWithvalueUsedForDependenciesOrLargePayloads() string {
+    ruleID := "context_withvalue_used_for_dependencies_or_large_payloads"
+    family := "context"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "context.WithValue used for dependency-like objects or payload-like data instead of lightweight request metadata."
+    return ruleID + family + severity + status + intent + description
+}

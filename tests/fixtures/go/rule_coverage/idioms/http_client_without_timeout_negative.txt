@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHttpClientWithoutTimeout() string {
+    ruleID := "http_client_without_timeout"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Local http.Client{} literals constructed without an explicit timeout."
+    return ruleID + family + severity + status + intent + description
+}

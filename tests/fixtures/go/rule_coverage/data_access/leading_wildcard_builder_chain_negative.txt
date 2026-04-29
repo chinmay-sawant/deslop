@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeLeadingWildcardBuilderChain() string {
+    ruleID := "leading_wildcard_builder_chain"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "LIKE queries with leading wildcards that prevent index usage."
+    return ruleID + family + severity + status + intent + description
+}

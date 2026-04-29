@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositivePreloadRulesScatteredAcrossLayers() string {
+    ruleID := "preload_rules_scattered_across_layers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Preload decisions spread across handlers, services, and repositories instead of one query owner."
+    return ruleID + family + severity + status + intent + description
+}

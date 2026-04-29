@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveModelPackageDependsOnTransportOrGin() string {
+    ruleID := "model_package_depends_on_transport_or_gin"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`model` or `models` packages that import transport-facing libraries or handler DTO packages."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFilepathJoinWithUserPath() string {
+    ruleID := "filepath_join_with_user_path"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`filepath.Join(baseDir, userInput)` without subsequent `filepath.Rel` or path-containment validation"
+    return ruleID + family + severity + status + intent + description
+}

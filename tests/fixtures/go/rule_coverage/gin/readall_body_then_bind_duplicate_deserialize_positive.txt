@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveReadallBodyThenBindDuplicateDeserialize() string {
+    ruleID := "readall_body_then_bind_duplicate_deserialize"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Gin handlers that materialize c.Request.Body with io.ReadAll(...) and then bind the same body again."
+    return ruleID + family + severity + status + intent + description
+}

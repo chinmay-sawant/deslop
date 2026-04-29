@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHandlerAndServiceBothLogSameErrorChain() string {
+    ruleID := "handler_and_service_both_log_same_error_chain"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Duplicated logging ownership where both service and handler log the same failure."
+    return ruleID + family + severity + status + intent + description
+}

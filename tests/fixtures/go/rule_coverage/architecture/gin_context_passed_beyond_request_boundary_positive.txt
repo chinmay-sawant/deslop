@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinContextPassedBeyondRequestBoundary() string {
+    ruleID := "gin_context_passed_beyond_request_boundary"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Code that passes `*gin.Context` into goroutines, repositories, or long-lived service objects instead of extracting `context.Context` and request values."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeClearMapGo121() string {
+    ruleID := "clear_map_go121"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`for k := range m { delete(m, k) }` in Go 1.21+ codebases"
+    return ruleID + family + severity + status + intent + description
+}

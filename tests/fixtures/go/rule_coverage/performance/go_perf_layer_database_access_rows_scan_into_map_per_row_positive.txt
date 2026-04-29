@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerDatabaseAccessRowsScanIntoMapPerRow() string {
+    ruleID := "go_perf_layer_database_access_rows_scan_into_map_per_row"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Database access. Flag row scans into map[string]any where typed structs or column slices would reduce allocation."
+    return ruleID + family + severity + status + intent + description
+}

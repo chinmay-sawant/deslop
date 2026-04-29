@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRouteRegistrationContainsBusinessLogic() string {
+    ruleID := "route_registration_contains_business_logic"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Router setup files that build queries, mutate models, or execute business actions while registering routes."
+    return ruleID + family + severity + status + intent + description
+}

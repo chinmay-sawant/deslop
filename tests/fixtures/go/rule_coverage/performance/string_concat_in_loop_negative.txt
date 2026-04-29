@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringConcatInLoop() string {
+    ruleID := "string_concat_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated string concatenation inside loops (O(n^2) risk)."
+    return ruleID + family + severity + status + intent + description
+}

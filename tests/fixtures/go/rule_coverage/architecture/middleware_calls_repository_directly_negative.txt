@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMiddlewareCallsRepositoryDirectly() string {
+    ruleID := "middleware_calls_repository_directly"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Middleware that reaches into repositories instead of delegating through focused services or auth abstractions."
+    return ruleID + family + severity + status + intent + description
+}

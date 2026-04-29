@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMakeSliceInsideHotLoopSameShape() string {
+    ruleID := "make_slice_inside_hot_loop_same_shape"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "make([]T, ...) scratch slices recreated inside loops instead of being reused."
+    return ruleID + family + severity + status + intent + description
+}

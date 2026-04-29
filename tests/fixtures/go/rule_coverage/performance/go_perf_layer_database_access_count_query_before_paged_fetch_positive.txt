@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerDatabaseAccessCountQueryBeforePagedFetch() string {
+    ruleID := "go_perf_layer_database_access_count_query_before_paged_fetch"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Database access. Flag count queries paired with page fetches on every request without cache or user-visible need."
+    return ruleID + family + severity + status + intent + description
+}

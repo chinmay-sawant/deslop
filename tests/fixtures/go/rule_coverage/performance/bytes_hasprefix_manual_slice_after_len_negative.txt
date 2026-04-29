@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBytesHasprefixManualSliceAfterLen() string {
+    ruleID := "bytes_hasprefix_manual_slice_after_len"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Manual `len` and slice prefix checks instead of `bytes.HasPrefix(...)`."
+    return ruleID + family + severity + status + intent + description
+}

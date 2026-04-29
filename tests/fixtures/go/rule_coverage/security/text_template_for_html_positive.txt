@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTextTemplateForHtml() string {
+    ruleID := "text_template_for_html"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`text/template` used to generate HTML content (check for HTML tags in template literals or `.html` file extensions in `ParseFiles`)"
+    return ruleID + family + severity + status + intent + description
+}

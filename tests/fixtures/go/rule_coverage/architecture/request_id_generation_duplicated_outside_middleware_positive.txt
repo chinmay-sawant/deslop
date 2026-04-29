@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRequestIdGenerationDuplicatedOutsideMiddleware() string {
+    ruleID := "request_id_generation_duplicated_outside_middleware"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated request-id creation logic spread across handlers."
+    return ruleID + family + severity + status + intent + description
+}

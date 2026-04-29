@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBytesIndexNotMinusOneContains() string {
+    ruleID := "bytes_index_not_minus_one_contains"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`bytes.Index(...) != -1` presence checks instead of `bytes.Contains(...)`."
+    return ruleID + family + severity + status + intent + description
+}

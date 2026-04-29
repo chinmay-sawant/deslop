@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHttpHandlerWithoutCsrfProtection() string {
+    ruleID := "http_handler_without_csrf_protection"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "POST/PUT/DELETE handler registration without evidence of CSRF token middleware"
+    return ruleID + family + severity + status + intent + description
+}

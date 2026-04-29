@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRouteParamNameAndDtoFieldNameDriftWithoutMappingHelper() string {
+    ruleID := "route_param_name_and_dto_field_name_drift_without_mapping_helper"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated manual renaming between route params and DTO fields that lacks a shared mapper."
+    return ruleID + family + severity + status + intent + description
+}

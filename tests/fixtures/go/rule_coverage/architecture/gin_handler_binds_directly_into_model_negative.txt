@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGinHandlerBindsDirectlyIntoModel() string {
+    ruleID := "gin_handler_binds_directly_into_model"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that bind request bodies directly into GORM or persistence structs."
+    return ruleID + family + severity + status + intent + description
+}

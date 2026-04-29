@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHandlerSwitchesOnErrorStrings() string {
+    ruleID := "handler_switches_on_error_strings"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that branch on `err.Error()` text rather than typed errors."
+    return ruleID + family + severity + status + intent + description
+}

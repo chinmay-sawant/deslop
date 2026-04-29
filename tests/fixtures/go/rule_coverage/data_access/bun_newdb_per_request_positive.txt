@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBunNewdbPerRequest() string {
+    ruleID := "bun_newdb_per_request"
+    family := "data_access"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Bun DB handles created directly on request paths instead of reused process-level state."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerDatabaseAccessSelectStarOnHotQuery() string {
+    ruleID := "go_perf_layer_database_access_select_star_on_hot_query"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Database access. Flag SELECT * in hot queries where narrow projections reduce scan and decode cost."
+    return ruleID + family + severity + status + intent + description
+}

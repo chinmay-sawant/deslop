@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTransactionObjectCrossesMoreThanOneLayerBoundary() string {
+    ruleID := "transaction_object_crosses_more_than_one_layer_boundary"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Transaction handles passed through multiple layers as ordinary arguments."
+    return ruleID + family + severity + status + intent + description
+}

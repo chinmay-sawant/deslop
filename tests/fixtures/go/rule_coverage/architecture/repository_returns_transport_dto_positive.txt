@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryReturnsTransportDto() string {
+    ruleID := "repository_returns_transport_dto"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repositories that know about response contracts instead of returning persistence or domain results."
+    return ruleID + family + severity + status + intent + description
+}

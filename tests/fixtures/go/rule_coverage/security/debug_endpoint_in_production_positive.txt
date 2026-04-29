@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDebugEndpointInProduction() string {
+    ruleID := "debug_endpoint_in_production"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`net/http/pprof` import or `http.Handle(\"/debug/pprof/\", ...)` registration without access control"
+    return ruleID + family + severity + status + intent + description
+}

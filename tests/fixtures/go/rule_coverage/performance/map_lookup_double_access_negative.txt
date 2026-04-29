@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMapLookupDoubleAccess() string {
+    ruleID := "map_lookup_double_access"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`if _, ok := m[k]; ok { v := m[k] }` \u2014 two map lookups for the same key"
+    return ruleID + family + severity + status + intent + description
+}

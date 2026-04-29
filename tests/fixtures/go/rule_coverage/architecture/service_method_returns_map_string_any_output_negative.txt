@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceMethodReturnsMapStringAnyOutput() string {
+    ruleID := "service_method_returns_map_string_any_output"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Services that return dynamic maps instead of typed result contracts."
+    return ruleID + family + severity + status + intent + description
+}

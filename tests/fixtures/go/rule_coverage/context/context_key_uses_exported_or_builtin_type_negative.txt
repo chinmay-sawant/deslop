@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeContextKeyUsesExportedOrBuiltinType() string {
+    ruleID := "context_key_uses_exported_or_builtin_type"
+    family := "context"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "context.WithValue keys or exported key declarations that use built-in scalar types instead of unexported key types."
+    return ruleID + family + severity + status + intent + description
+}

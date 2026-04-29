@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepeatedBodyRewindForMultipleDecoders() string {
+    ruleID := "repeated_body_rewind_for_multiple_decoders"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Gin handlers that read, rewind, and decode the same request body multiple times."
+    return ruleID + family + severity + status + intent + description
+}

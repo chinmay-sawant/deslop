@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepositoryLogsWithHttpStatusOrRouteLabels() string {
+    ruleID := "repository_logs_with_http_status_or_route_labels"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repositories that log transport metadata instead of persistence-domain details."
+    return ruleID + family + severity + status + intent + description
+}

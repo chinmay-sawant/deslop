@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePackageNameRoleDrift() string {
+    ruleID := "package_name_role_drift"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role."
+    return ruleID + family + severity + status + intent + description
+}

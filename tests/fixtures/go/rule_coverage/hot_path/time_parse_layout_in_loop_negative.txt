@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTimeParseLayoutInLoop() string {
+    ruleID := "time_parse_layout_in_loop"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "time.Parse(...) or ParseInLocation(...) observed inside loops with a stable layout."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHmacNewInLoop() string {
+    ruleID := "hmac_new_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`hmac.New(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

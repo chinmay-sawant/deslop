@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerStringHandlingByteStringRoundtripForContains() string {
+    ruleID := "go_perf_layer_string_handling_byte_string_roundtrip_for_contains"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: String handling. Flag string/[]byte roundtrips around Contains/Index checks that have native package variants."
+    return ruleID + family + severity + status + intent + description
+}

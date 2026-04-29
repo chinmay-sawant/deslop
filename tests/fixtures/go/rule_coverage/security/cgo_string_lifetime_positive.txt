@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCgoStringLifetime() string {
+    ruleID := "cgo_string_lifetime"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`C.CString(goString)` without a corresponding `C.free` in the same function, or deferred `C.free`"
+    return ruleID + family + severity + status + intent + description
+}

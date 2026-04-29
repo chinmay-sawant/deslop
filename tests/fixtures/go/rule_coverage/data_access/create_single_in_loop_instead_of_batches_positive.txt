@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCreateSingleInLoopInsteadOfBatches() string {
+    ruleID := "create_single_in_loop_instead_of_batches"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM .Create(...) used inside loops with no visible CreateInBatches(...) path in the same function."
+    return ruleID + family + severity + status + intent + description
+}

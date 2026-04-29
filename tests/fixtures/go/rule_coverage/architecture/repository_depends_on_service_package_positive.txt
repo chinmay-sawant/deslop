@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryDependsOnServicePackage() string {
+    ruleID := "repository_depends_on_service_package"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repositories that import service packages, which inverts the expected dependency flow."
+    return ruleID + family + severity + status + intent + description
+}

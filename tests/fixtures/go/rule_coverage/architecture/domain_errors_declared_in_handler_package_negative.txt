@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDomainErrorsDeclaredInHandlerPackage() string {
+    ruleID := "domain_errors_declared_in_handler_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Business error types declared only in handlers instead of a reusable domain or service boundary."
+    return ruleID + family + severity + status + intent + description
+}

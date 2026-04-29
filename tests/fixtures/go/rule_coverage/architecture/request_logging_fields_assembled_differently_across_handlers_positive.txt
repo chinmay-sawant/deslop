@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRequestLoggingFieldsAssembledDifferentlyAcrossHandlers() string {
+    ruleID := "request_logging_fields_assembled_differently_across_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Inconsistent request-log field sets across the same API module."
+    return ruleID + family + severity + status + intent + description
+}

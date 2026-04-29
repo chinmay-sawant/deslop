@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCacheInvalidationBeforeTransactionCommit() string {
+    ruleID := "cache_invalidation_before_transaction_commit"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Cache mutation or eviction that happens before a write transaction commits."
+    return ruleID + family + severity + status + intent + description
+}

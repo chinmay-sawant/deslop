@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFmtSprintfBinaryToString() string {
+    ruleID := "fmt_sprintf_binary_to_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Sprintf(\"%b\", ...)` instead of direct `strconv` integer formatting."
+    return ruleID + family + severity + status + intent + description
+}

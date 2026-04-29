@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeQueryPathAndBodyMergePerformedInHandler() string {
+    ruleID := "query_path_and_body_merge_performed_in_handler"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that merge several request sources inline instead of normalizing inputs before service calls."
+    return ruleID + family + severity + status + intent + description
+}

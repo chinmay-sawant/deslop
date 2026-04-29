@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStructFieldExposedInJson() string {
+    ruleID := "struct_field_exposed_in_json"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "exported struct fields containing sensitive data (Password, Secret, Token, APIKey, PrivateKey) without `json:\"-\"` tags in API response structs"
+    return ruleID + family + severity + status + intent + description
+}

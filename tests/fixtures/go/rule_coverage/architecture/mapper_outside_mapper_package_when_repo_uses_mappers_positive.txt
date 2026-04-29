@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMapperOutsideMapperPackageWhenRepoUsesMappers() string {
+    ruleID := "mapper_outside_mapper_package_when_repo_uses_mappers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Mapper functions scattered across handlers and services when the repo already has a dedicated mapping package."
+    return ruleID + family + severity + status + intent + description
+}

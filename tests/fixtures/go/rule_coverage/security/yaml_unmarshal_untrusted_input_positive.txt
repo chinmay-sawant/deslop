@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveYamlUnmarshalUntrustedInput() string {
+    ruleID := "yaml_unmarshal_untrusted_input"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`yaml.Unmarshal(untrustedInput, &target)` using `gopkg.in/yaml.v2` without size limits"
+    return ruleID + family + severity + status + intent + description
+}

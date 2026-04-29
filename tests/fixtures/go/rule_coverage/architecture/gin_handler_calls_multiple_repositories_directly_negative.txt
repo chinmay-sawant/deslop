@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGinHandlerCallsMultipleRepositoriesDirectly() string {
+    ruleID := "gin_handler_calls_multiple_repositories_directly"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that coordinate several repositories directly, which usually signals missing service orchestration."
+    return ruleID + family + severity + status + intent + description
+}

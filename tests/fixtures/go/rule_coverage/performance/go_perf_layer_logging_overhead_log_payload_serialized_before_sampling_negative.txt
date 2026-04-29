@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerLoggingOverheadLogPayloadSerializedBeforeSampling() string {
+    ruleID := "go_perf_layer_logging_overhead_log_payload_serialized_before_sampling"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Logging overhead. Flag payload serialization for logs before sampling or level filters run."
+    return ruleID + family + severity + status + intent + description
+}

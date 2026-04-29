@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRouterConstructorBuildsConcreteDependencies() string {
+    ruleID := "router_constructor_builds_concrete_dependencies"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Router setup that creates DB clients, external clients, or repositories directly instead of receiving prebuilt dependencies."
+    return ruleID + family + severity + status + intent + description
+}

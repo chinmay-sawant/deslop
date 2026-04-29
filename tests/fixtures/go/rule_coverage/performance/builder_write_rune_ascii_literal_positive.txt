@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBuilderWriteRuneAsciiLiteral() string {
+    ruleID := "builder_write_rune_ascii_literal"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strings.Builder.WriteRune('x')` for ASCII literals instead of `WriteByte`."
+    return ruleID + family + severity + status + intent + description
+}

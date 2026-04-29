@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveWebsocketWithoutOriginCheck() string {
+    ruleID := "websocket_without_origin_check"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}` or missing `CheckOrigin`"
+    return ruleID + family + severity + status + intent + description
+}

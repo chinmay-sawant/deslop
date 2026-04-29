@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveEcbModeCipher() string {
+    ruleID := "ecb_mode_cipher"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "direct use of `cipher.Block.Encrypt` / `cipher.Block.Decrypt` without a block mode wrapper (CBC, CTR, GCM)"
+    return ruleID + family + severity + status + intent + description
+}

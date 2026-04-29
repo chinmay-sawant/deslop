@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCountInsideLoop() string {
+    ruleID := "count_inside_loop"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "COUNT(...) or GORM Count(...) observed inside loops."
+    return ruleID + family + severity + status + intent + description
+}

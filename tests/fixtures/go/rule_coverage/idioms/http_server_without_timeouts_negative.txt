@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHttpServerWithoutTimeouts() string {
+    ruleID := "http_server_without_timeouts"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Explicit http.Server{} values that omit common timeout fields."
+    return ruleID + family + severity + status + intent + description
+}

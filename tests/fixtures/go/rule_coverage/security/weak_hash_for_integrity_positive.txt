@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveWeakHashForIntegrity() string {
+    ruleID := "weak_hash_for_integrity"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`md5.New()`, `sha1.New()`, `md5.Sum()`, `sha1.Sum()` used for integrity checks, checksums, or MAC operations (not just `weak_crypto` import-level detection)"
+    return ruleID + family + severity + status + intent + description
+}

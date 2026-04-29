@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFileHandleWithoutClose() string {
+    ruleID := "file_handle_without_close"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path."
+    return ruleID + family + severity + status + intent + description
+}

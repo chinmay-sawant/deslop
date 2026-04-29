@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeServiceImportsGinDirectly() string {
+    ruleID := "service_imports_gin_directly"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Service packages that depend on `github.com/gin-gonic/gin` instead of transport-neutral inputs."
+    return ruleID + family + severity + status + intent + description
+}

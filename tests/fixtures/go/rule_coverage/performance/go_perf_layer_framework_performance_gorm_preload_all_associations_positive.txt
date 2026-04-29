@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerFrameworkPerformanceGormPreloadAllAssociations() string {
+    ruleID := "go_perf_layer_framework_performance_gorm_preload_all_associations"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Framework-specific performance. Flag GORM Preload of broad association sets on list endpoints."
+    return ruleID + family + severity + status + intent + description
+}

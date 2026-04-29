@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsSplitSameInputMultipleTimes() string {
+    ruleID := "strings_split_same_input_multiple_times"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "The same string input is passed through strings.Split* or strings.Fields* helpers multiple times in one function."
+    return ruleID + family + severity + status + intent + description
+}

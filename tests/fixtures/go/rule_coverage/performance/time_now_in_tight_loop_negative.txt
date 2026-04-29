@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTimeNowInTightLoop() string {
+    ruleID := "time_now_in_tight_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`time.Now()` called on every iteration of a tight inner loop"
+    return ruleID + family + severity + status + intent + description
+}

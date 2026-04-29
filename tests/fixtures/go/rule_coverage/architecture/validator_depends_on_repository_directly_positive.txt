@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveValidatorDependsOnRepositoryDirectly() string {
+    ruleID := "validator_depends_on_repository_directly"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Reusable validator code that reaches into repositories instead of receiving precomputed facts or focused services."
+    return ruleID + family + severity + status + intent + description
+}

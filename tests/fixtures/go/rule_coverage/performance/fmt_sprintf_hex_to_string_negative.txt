@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFmtSprintfHexToString() string {
+    ruleID := "fmt_sprintf_hex_to_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Sprintf(\"%x\", ...)` instead of a direct hex formatter when only the string is needed."
+    return ruleID + family + severity + status + intent + description
+}

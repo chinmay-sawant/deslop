@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGrpcUnaryInterceptorPerRpc() string {
+    ruleID := "grpc_unary_interceptor_per_rpc"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "interceptor/middleware construction inside RPC handler methods instead of at server setup"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerCachingUnboundedCacheMap() string {
+    ruleID := "go_perf_layer_caching_unbounded_cache_map"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Caching. Flag package-level cache maps without size, TTL, or eviction policy."
+    return ruleID + family + severity + status + intent + description
+}

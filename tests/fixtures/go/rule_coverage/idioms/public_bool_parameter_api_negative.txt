@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePublicBoolParameterApi() string {
+    ruleID := "public_bool_parameter_api"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Exported functions or methods that expose raw boolean mode switches in their signatures."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeErrorDetailLeakedToClient() string {
+    ruleID := "error_detail_leaked_to_client"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`c.JSON(500, gin.H{\"error\": err.Error()})` or `http.Error(w, err.Error(), 500)` returning internal error details to the client"
+    return ruleID + family + severity + status + intent + description
+}

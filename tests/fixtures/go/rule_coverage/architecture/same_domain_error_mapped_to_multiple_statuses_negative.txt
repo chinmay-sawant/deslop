@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSameDomainErrorMappedToMultipleStatuses() string {
+    ruleID := "same_domain_error_mapped_to_multiple_statuses"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "The same error type being converted to different HTTP status codes in the same module."
+    return ruleID + family + severity + status + intent + description
+}

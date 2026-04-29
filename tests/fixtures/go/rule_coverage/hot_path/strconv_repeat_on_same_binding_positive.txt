@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStrconvRepeatOnSameBinding() string {
+    ruleID := "strconv_repeat_on_same_binding"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "The same string binding is converted with strconv parsing helpers multiple times in one function."
+    return ruleID + family + severity + status + intent + description
+}

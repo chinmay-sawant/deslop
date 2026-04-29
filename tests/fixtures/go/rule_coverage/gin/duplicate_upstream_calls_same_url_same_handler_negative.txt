@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeDuplicateUpstreamCallsSameUrlSameHandler() string {
+    ruleID := "duplicate_upstream_calls_same_url_same_handler"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Same upstream URL called multiple times in one handler."
+    return ruleID + family + severity + status + intent + description
+}

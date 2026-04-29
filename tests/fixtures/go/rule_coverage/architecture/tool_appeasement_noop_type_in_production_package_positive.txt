@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveToolAppeasementNoopTypeInProductionPackage() string {
+    ruleID := "tool_appeasement_noop_type_in_production_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Production no-op or dummy types that appear to exist mainly to satisfy tooling instead of runtime behavior."
+    return ruleID + family + severity + status + intent + description
+}

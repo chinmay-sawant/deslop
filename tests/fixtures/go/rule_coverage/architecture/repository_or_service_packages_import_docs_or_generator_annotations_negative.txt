@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepositoryOrServicePackagesImportDocsOrGeneratorAnnotations() string {
+    ruleID := "repository_or_service_packages_import_docs_or_generator_annotations"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Core business packages that depend on documentation-only tooling or generator-specific concerns."
+    return ruleID + family + severity + status + intent + description
+}

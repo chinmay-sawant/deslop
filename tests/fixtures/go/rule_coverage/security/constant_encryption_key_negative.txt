@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeConstantEncryptionKey() string {
+    ruleID := "constant_encryption_key"
+    family := "security"
+    severity := "error"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`[]byte(\"...\")` used directly as arguments to `cipher.NewGCM`, `aes.NewCipher`, or similar encryption constructor calls"
+    return ruleID + family + severity + status + intent + description
+}

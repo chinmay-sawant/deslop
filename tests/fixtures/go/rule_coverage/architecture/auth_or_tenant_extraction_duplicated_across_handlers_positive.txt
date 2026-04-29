@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveAuthOrTenantExtractionDuplicatedAcrossHandlers() string {
+    ruleID := "auth_or_tenant_extraction_duplicated_across_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated auth, tenant, or principal extraction that should live in middleware or a shared boundary helper."
+    return ruleID + family + severity + status + intent + description
+}

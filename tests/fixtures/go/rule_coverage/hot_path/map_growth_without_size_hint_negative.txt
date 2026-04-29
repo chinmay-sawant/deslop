@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMapGrowthWithoutSizeHint() string {
+    ruleID := "map_growth_without_size_hint"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Map insertions inside loops without a visible size hint on the initial make call."
+    return ruleID + family + severity + status + intent + description
+}

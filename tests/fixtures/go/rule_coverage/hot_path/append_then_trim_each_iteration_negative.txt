@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeAppendThenTrimEachIteration() string {
+    ruleID := "append_then_trim_each_iteration"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Slice append followed by reslice each iteration instead of batching."
+    return ruleID + family + severity + status + intent + description
+}

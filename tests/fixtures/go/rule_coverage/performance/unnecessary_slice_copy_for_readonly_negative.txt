@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeUnnecessarySliceCopyForReadonly() string {
+    ruleID := "unnecessary_slice_copy_for_readonly"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`copy := append([]T(nil), original...)` when `copy` is only read, never mutated"
+    return ruleID + family + severity + status + intent + description
+}

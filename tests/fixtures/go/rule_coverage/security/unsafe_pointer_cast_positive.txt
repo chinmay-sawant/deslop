@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveUnsafePointerCast() string {
+    ruleID := "unsafe_pointer_cast"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`"
+    return ruleID + family + severity + status + intent + description
+}

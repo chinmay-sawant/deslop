@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveConstantEncryptionKey() string {
+    ruleID := "constant_encryption_key"
+    family := "security"
+    severity := "error"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`[]byte(\"...\")` used directly as arguments to `cipher.NewGCM`, `aes.NewCipher`, or similar encryption constructor calls"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRequestContextPassedToBackgroundTaskWithoutDetach() string {
+    ruleID := "request_context_passed_to_background_task_without_detach"
+    family := "context"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Background goroutines that still appear to inherit request-scoped context instead of detaching with context.WithoutCancel or equivalent."
+    return ruleID + family + severity + status + intent + description
+}

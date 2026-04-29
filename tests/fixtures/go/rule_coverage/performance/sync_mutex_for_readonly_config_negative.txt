@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSyncMutexForReadonlyConfig() string {
+    ruleID := "sync_mutex_for_readonly_config"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`mu.RLock(); v := config.X; mu.RUnlock()` for read-mostly config that changes rarely"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCopyAppendIdiomWaste() string {
+    ruleID := "copy_append_idiom_waste"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known"
+    return ruleID + family + severity + status + intent + description
+}

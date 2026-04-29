@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCsvReaderReuseRecord() string {
+    ruleID := "csv_reader_reuse_record"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`csv.NewReader(r)` without `ReuseRecord = true` when records are processed one at a time and not stored"
+    return ruleID + family + severity + status + intent + description
+}

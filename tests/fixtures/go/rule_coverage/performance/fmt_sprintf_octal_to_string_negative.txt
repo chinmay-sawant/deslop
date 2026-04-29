@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFmtSprintfOctalToString() string {
+    ruleID := "fmt_sprintf_octal_to_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Sprintf(\"%o\", ...)` instead of direct `strconv` integer formatting."
+    return ruleID + family + severity + status + intent + description
+}

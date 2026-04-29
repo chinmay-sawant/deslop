@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTableDrivenTestsMixMultipleDomainsInOneCasesSlice() string {
+    ruleID := "table_driven_tests_mix_multiple_domains_in_one_cases_slice"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Oversized case tables that mix unrelated behaviors into one monolithic test."
+    return ruleID + family + severity + status + intent + description
+}

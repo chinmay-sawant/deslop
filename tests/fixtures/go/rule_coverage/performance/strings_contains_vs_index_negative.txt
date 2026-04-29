@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsContainsVsIndex() string {
+    ruleID := "strings_contains_vs_index"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns"
+    return ruleID + family + severity + status + intent + description
+}

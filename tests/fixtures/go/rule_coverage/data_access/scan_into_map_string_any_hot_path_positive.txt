@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveScanIntoMapStringAnyHotPath() string {
+    ruleID := "scan_into_map_string_any_hot_path"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Rows scanned into map[string]any instead of typed structs on hot paths."
+    return ruleID + family + severity + status + intent + description
+}

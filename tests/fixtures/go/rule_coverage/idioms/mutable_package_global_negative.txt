@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMutablePackageGlobal() string {
+    ruleID := "mutable_package_global"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Package-level variables that are mutated from function bodies instead of kept immutable."
+    return ruleID + family + severity + status + intent + description
+}

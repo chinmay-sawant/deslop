@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGrpcContextNotPropagated() string {
+    ruleID := "grpc_context_not_propagated"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "gRPC handler methods that create new `context.Background()` instead of using the stream/request context"
+    return ruleID + family + severity + status + intent + description
+}

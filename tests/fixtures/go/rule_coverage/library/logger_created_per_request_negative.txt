@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeLoggerCreatedPerRequest() string {
+    ruleID := "logger_created_per_request"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`zap.NewProduction()` or `logrus.New()` inside handler functions"
+    return ruleID + family + severity + status + intent + description
+}

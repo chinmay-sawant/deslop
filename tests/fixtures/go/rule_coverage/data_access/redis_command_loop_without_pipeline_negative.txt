@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRedisCommandLoopWithoutPipeline() string {
+    ruleID := "redis_command_loop_without_pipeline"
+    family := "data_access"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Redis command loops that issue round-trips without pipeline or batch usage."
+    return ruleID + family + severity + status + intent + description
+}

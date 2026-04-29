@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMissingContext() string {
+    ruleID := "missing_context"
+    family := "context"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Standard-library context-aware calls from functions that do not accept context.Context."
+    return ruleID + family + severity + status + intent + description
+}

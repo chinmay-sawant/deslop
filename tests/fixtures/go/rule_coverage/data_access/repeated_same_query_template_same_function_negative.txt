@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepeatedSameQueryTemplateSameFunction() string {
+    ruleID := "repeated_same_query_template_same_function"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "The same query template executed multiple times in one function."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSliceGrowWithoutCapHint() string {
+    ruleID := "slice_grow_without_cap_hint"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`var result []T` followed by `append` in a loop where the iteration count is visible from a `len()` or range source"
+    return ruleID + family + severity + status + intent + description
+}

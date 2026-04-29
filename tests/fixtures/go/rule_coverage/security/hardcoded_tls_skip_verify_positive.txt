@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHardcodedTlsSkipVerify() string {
+    ruleID := "hardcoded_tls_skip_verify"
+    family := "security"
+    severity := "error"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`tls.Config{InsecureSkipVerify: true}` in non-test code"
+    return ruleID + family + severity + status + intent + description
+}

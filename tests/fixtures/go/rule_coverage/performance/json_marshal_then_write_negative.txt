@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeJsonMarshalThenWrite() string {
+    ruleID := "json_marshal_then_write"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`data, _ := json.Marshal(v); w.Write(data)` when `json.NewEncoder(w).Encode(v)` would stream directly"
+    return ruleID + family + severity + status + intent + description
+}

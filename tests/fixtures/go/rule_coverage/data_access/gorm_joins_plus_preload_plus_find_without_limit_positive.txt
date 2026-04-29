@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormJoinsPlusPreloadPlusFindWithoutLimit() string {
+    ruleID := "gorm_joins_plus_preload_plus_find_without_limit"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM chains combining Joins, Preload, and unbounded Find on request paths."
+    return ruleID + family + severity + status + intent + description
+}

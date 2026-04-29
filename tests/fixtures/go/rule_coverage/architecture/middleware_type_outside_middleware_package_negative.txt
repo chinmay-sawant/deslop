@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMiddlewareTypeOutsideMiddlewarePackage() string {
+    ruleID := "middleware_type_outside_middleware_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Shared middleware types and constructors declared in handlers or services instead of a middleware-focused package."
+    return ruleID + family + severity + status + intent + description
+}

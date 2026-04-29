@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBuilderOrBufferRecreatedPerIteration() string {
+    ruleID := "builder_or_buffer_recreated_per_iteration"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "strings.Builder, bytes.Buffer, or bytes.NewBuffer(...) constructions observed inside loops instead of being reset or reused."
+    return ruleID + family + severity + status + intent + description
+}

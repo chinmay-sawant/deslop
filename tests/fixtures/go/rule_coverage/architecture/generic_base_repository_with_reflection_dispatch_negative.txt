@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGenericBaseRepositoryWithReflectionDispatch() string {
+    ruleID := "generic_base_repository_with_reflection_dispatch"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Catch-all repositories that depend on reflection-heavy generic CRUD instead of bounded repository APIs."
+    return ruleID + family + severity + status + intent + description
+}

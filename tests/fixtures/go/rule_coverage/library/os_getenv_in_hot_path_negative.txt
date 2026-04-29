@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeOsGetenvInHotPath() string {
+    ruleID := "os_getenv_in_hot_path"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`os.Getenv(\"KEY\")` inside handler functions or loops"
+    return ruleID + family + severity + status + intent + description
+}

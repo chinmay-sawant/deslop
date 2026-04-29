@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServefileViaReadfileThenCData() string {
+    ruleID := "servefile_via_readfile_then_c_data"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that load files into memory and then write them through gin.Context.Data(...) instead of using file helpers or streaming."
+    return ruleID + family + severity + status + intent + description
+}

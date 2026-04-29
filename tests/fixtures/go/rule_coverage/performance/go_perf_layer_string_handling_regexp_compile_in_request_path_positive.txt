@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerStringHandlingRegexpCompileInRequestPath() string {
+    ruleID := "go_perf_layer_string_handling_regexp_compile_in_request_path"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: String handling. Flag regexp.Compile or MustCompile inside handlers, loops, or repeated functions."
+    return ruleID + family + severity + status + intent + description
+}

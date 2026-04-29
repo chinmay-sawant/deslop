@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoop() string {
+    ruleID := "go_perf_layer_memory_allocation_closure_capture_allocates_in_loop"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Memory allocation. Flag loop-local closures that capture variables in high-frequency paths and may force heap allocation."
+    return ruleID + family + severity + status + intent + description
+}

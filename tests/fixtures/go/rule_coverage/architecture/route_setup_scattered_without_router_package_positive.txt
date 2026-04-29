@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRouteSetupScatteredWithoutRouterPackage() string {
+    ruleID := "route_setup_scattered_without_router_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Route registration split across unrelated files without a clear `router`, `routes`, or `transport` home."
+    return ruleID + family + severity + status + intent + description
+}

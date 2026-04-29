@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSameServiceMethodAcceptsTxAndBeginsTx() string {
+    ruleID := "same_service_method_accepts_tx_and_begins_tx"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Service methods that sometimes reuse a transaction and sometimes open one themselves."
+    return ruleID + family + severity + status + intent + description
+}

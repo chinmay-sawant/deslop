@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerLazyLoadingEagerConnectToAllBackends() string {
+    ruleID := "go_perf_layer_lazy_loading_eager_connect_to_all_backends"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Lazy loading. Flag services connecting to every optional backend at startup instead of lazy initialization."
+    return ruleID + family + severity + status + intent + description
+}

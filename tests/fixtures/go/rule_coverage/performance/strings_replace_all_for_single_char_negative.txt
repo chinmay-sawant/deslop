@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsReplaceAllForSingleChar() string {
+    ruleID := "strings_replace_all_for_single_char"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`strings.ReplaceAll(s, \"x\", \"y\")` where both old and new are single characters"
+    return ruleID + family + severity + status + intent + description
+}

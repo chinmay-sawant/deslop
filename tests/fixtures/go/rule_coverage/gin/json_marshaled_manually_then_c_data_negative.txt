@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeJsonMarshaledManuallyThenCData() string {
+    ruleID := "json_marshaled_manually_then_c_data"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that manually marshal JSON and then write it through gin.Context.Data(...)."
+    return ruleID + family + severity + status + intent + description
+}

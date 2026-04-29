@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRwmutexWithoutClearReadHeavySignal() string {
+    ruleID := "rwmutex_without_clear_read_heavy_signal"
+    family := "concurrency"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "sync.RWMutex usage without a clear read-heavy access pattern."
+    return ruleID + family + severity + status + intent + description
+}

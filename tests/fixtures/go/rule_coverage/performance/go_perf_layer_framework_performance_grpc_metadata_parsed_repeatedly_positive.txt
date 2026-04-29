@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerFrameworkPerformanceGrpcMetadataParsedRepeatedly() string {
+    ruleID := "go_perf_layer_framework_performance_grpc_metadata_parsed_repeatedly"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Framework-specific performance. Flag repeated metadata extraction/parsing in gRPC interceptors and handlers."
+    return ruleID + family + severity + status + intent + description
+}

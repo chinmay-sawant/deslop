@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceCallsHandlerHelper() string {
+    ruleID := "service_calls_handler_helper"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Service packages that reach upward into handler helpers for parsing, rendering, or Gin-specific utilities."
+    return ruleID + family + severity + status + intent + description
+}

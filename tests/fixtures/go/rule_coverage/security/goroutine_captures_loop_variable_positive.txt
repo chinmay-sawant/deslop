@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoroutineCapturesLoopVariable() string {
+    ruleID := "goroutine_captures_loop_variable"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`for _, v := range items { go func() { use(v) }() }` without rebinding `v` inside the loop body (pre-Go 1.22)"
+    return ruleID + family + severity + status + intent + description
+}

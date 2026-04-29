@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFilepathSplitBaseOnly() string {
+    ruleID := "filepath_split_base_only"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`filepath.Split(...)` when only the base name is used."
+    return ruleID + family + severity + status + intent + description
+}

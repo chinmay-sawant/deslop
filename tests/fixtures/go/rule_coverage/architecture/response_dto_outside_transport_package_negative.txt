@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeResponseDtoOutsideTransportPackage() string {
+    ruleID := "response_dto_outside_transport_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Response envelope structs that live in persistence or repository packages instead of transport or API contract packages."
+    return ruleID + family + severity + status + intent + description
+}

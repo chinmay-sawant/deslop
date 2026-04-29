@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFmtSprintfHexToString() string {
+    ruleID := "fmt_sprintf_hex_to_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Sprintf(\"%x\", ...)` instead of a direct hex formatter when only the string is needed."
+    return ruleID + family + severity + status + intent + description
+}

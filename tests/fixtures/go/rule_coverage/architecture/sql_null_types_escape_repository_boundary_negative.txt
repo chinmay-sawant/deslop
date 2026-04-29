@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSqlNullTypesEscapeRepositoryBoundary() string {
+    ruleID := "sql_null_types_escape_repository_boundary"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repository methods that leak driver-specific null wrappers beyond the persistence boundary."
+    return ruleID + family + severity + status + intent + description
+}

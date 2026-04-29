@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeWriterWriteByteSliceOfString() string {
+    ruleID := "writer_write_byte_slice_of_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`writer.Write([]byte(s))` instead of `io.WriteString(writer, s)`."
+    return ruleID + family + severity + status + intent + description
+}

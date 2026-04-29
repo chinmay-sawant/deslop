@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGinContextCopyForEachItemFanout() string {
+    ruleID := "gin_context_copy_for_each_item_fanout"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Gin handlers that call c.Copy() once per loop iteration before goroutine fanout."
+    return ruleID + family + severity + status + intent + description
+}

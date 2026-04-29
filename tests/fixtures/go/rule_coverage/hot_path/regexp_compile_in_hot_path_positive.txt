@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRegexpCompileInHotPath() string {
+    ruleID := "regexp_compile_in_hot_path"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "regexp.Compile or regexp.MustCompile observed inside obvious iterative paths."
+    return ruleID + family + severity + status + intent + description
+}

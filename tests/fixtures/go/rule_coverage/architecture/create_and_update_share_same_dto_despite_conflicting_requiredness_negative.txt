@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeCreateAndUpdateShareSameDtoDespiteConflictingRequiredness() string {
+    ruleID := "create_and_update_share_same_dto_despite_conflicting_requiredness"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "A single DTO reused for create and update when validation rules clearly differ."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerResourcePoolingRateLimiterPerRequest() string {
+    ruleID := "go_perf_layer_resource_pooling_rate_limiter_per_request"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Resource pooling. Flag rate limiter construction inside request handlers instead of per identity or dependency."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMissingRateLimitingOnAuthEndpoint() string {
+    ruleID := "missing_rate_limiting_on_auth_endpoint"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "login/authentication handler functions (name contains `Login`, `Authenticate`, `SignIn`) that don't reference rate limiting, throttling, or brute-force protection mechanisms"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBackgroundWorkerStartedFromHttpHandlerRegistration() string {
+    ruleID := "background_worker_started_from_http_handler_registration"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Route or middleware setup that also starts unrelated background jobs."
+    return ruleID + family + severity + status + intent + description
+}

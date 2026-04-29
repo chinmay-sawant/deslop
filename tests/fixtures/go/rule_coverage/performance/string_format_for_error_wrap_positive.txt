@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringFormatForErrorWrap() string {
+    ruleID := "string_format_for_error_wrap"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`fmt.Errorf(\"failed: %s\", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`"
+    return ruleID + family + severity + status + intent + description
+}

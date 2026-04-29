@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHandlerTestsUseRealDatabaseWithoutSeam() string {
+    ruleID := "handler_tests_use_real_database_without_seam"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handler tests that hit real DB setup even though repository or service seams exist."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveContextStoredInStructField() string {
+    ruleID := "context_stored_in_struct_field"
+    family := "context"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Struct fields that store context.Context instead of keeping context request-scoped through method parameters."
+    return ruleID + family + severity + status + intent + description
+}

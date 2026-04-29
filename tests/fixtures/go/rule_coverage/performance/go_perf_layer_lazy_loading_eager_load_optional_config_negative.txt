@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerLazyLoadingEagerLoadOptionalConfig() string {
+    ruleID := "go_perf_layer_lazy_loading_eager_load_optional_config"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Lazy loading. Flag optional configuration or metadata loaded at startup before any feature uses it."
+    return ruleID + family + severity + status + intent + description
+}

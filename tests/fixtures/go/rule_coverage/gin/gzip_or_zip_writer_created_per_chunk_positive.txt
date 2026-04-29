@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGzipOrZipWriterCreatedPerChunk() string {
+    ruleID := "gzip_or_zip_writer_created_per_chunk"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Gzip or zip writers recreated per chunk inside handler loops instead of reusing per stream."
+    return ruleID + family + severity + status + intent + description
+}

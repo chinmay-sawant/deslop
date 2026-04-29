@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerHotPathOptimizationTimeNowCalledManyTimesPerItem() string {
+    ruleID := "go_perf_layer_hot_path_optimization_time_now_called_many_times_per_item"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Hot path optimization. Flag repeated time.Now calls inside per-item loops where one timestamp would suffice."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveCiMissingGoTestRace() string {
+    ruleID := "ci_missing_go_test_race"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repository automation that does not visibly run `go test -race` for Go code."
+    return ruleID + family + severity + status + intent + description
+}

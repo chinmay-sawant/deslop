@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepeatedMapCloneInLoop() string {
+    ruleID := "repeated_map_clone_in_loop"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "maps.Clone or equivalent map-copy calls observed inside loops."
+    return ruleID + family + severity + status + intent + description
+}

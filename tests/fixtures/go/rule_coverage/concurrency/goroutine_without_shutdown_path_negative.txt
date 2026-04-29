@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoroutineWithoutShutdownPath() string {
+    ruleID := "goroutine_without_shutdown_path"
+    family := "concurrency"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Looping goroutine literals without an obvious ctx.Done() or done-channel shutdown path."
+    return ruleID + family + severity + status + intent + description
+}

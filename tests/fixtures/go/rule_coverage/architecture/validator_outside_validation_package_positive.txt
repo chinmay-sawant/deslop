@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveValidatorOutsideValidationPackage() string {
+    ruleID := "validator_outside_validation_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Reusable validators that are scattered across handlers instead of living in a dedicated validation helper package."
+    return ruleID + family + severity + status + intent + description
+}

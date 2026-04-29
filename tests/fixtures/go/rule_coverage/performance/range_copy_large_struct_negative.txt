@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRangeCopyLargeStruct() string {
+    ruleID := "range_copy_large_struct"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`for _, v := range largeStructSlice` where the struct is > 64 bytes"
+    return ruleID + family + severity + status + intent + description
+}

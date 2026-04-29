@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePrepareOnEveryRequestSameSql() string {
+    ruleID := "prepare_on_every_request_same_sql"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "The same literal SQL is prepared multiple times on one request path."
+    return ruleID + family + severity + status + intent + description
+}

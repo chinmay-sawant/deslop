@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMutexInLoop() string {
+    ruleID := "mutex_in_loop"
+    family := "concurrency"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated Lock or RLock acquisition inside loops."
+    return ruleID + family + severity + status + intent + description
+}

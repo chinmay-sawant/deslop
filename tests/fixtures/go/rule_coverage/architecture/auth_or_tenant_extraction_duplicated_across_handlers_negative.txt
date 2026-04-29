@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeAuthOrTenantExtractionDuplicatedAcrossHandlers() string {
+    ruleID := "auth_or_tenant_extraction_duplicated_across_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated auth, tenant, or principal extraction that should live in middleware or a shared boundary helper."
+    return ruleID + family + severity + status + intent + description
+}

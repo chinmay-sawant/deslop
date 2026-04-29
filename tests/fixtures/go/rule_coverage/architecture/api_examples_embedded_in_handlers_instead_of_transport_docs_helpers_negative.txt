@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpers() string {
+    ruleID := "api_examples_embedded_in_handlers_instead_of_transport_docs_helpers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Long example payload blocks hardcoded in handlers rather than doc or example helpers."
+    return ruleID + family + severity + status + intent + description
+}

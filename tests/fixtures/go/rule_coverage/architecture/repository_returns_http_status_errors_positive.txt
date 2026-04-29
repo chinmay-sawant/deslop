@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryReturnsHttpStatusErrors() string {
+    ruleID := "repository_returns_http_status_errors"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repositories that construct transport-layer error objects or status-code wrappers."
+    return ruleID + family + severity + status + intent + description
+}

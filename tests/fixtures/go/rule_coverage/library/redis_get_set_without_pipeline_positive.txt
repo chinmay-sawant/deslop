@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRedisGetSetWithoutPipeline() string {
+    ruleID := "redis_get_set_without_pipeline"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "multiple sequential `rdb.Get(ctx, key)` or `rdb.Set(ctx, key, val, ...)` calls in the same function without pipeline"
+    return ruleID + family + severity + status + intent + description
+}

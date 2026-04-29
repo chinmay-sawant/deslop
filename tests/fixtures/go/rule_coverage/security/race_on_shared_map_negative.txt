@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRaceOnSharedMap() string {
+    ruleID := "race_on_shared_map"
+    family := "security"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "map reads/writes from multiple goroutines without mutex or `sync.Map` protection (detect goroutine launches + shared map access patterns)"
+    return ruleID + family + severity + status + intent + description
+}

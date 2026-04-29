@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBusyWaiting() string {
+    ruleID := "busy_waiting"
+    family := "context"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "select { default: ... } inside loops, which often spins instead of blocking."
+    return ruleID + family + severity + status + intent + description
+}

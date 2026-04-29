@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveConstantIvOrNonce() string {
+    ruleID := "constant_iv_or_nonce"
+    family := "security"
+    severity := "error"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "constant or zero-valued byte slices used as IV/nonce arguments to `cipher.NewCBCEncrypter`, `gcm.Seal`, or similar"
+    return ruleID + family + severity + status + intent + description
+}

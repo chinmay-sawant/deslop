@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBase64EncodeToStringInLoop() string {
+    ruleID := "base64_encode_to_string_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Base64 encoding to string inside loops."
+    return ruleID + family + severity + status + intent + description
+}

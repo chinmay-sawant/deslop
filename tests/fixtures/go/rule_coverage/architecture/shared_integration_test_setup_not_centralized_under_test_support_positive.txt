@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSharedIntegrationTestSetupNotCentralizedUnderTestSupport() string {
+    ruleID := "shared_integration_test_setup_not_centralized_under_test_support"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated app, DB, or router bootstrapping that is not moved into shared test support."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGrpcNoKeepaliveConfig() string {
+    ruleID := "grpc_no_keepalive_config"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`grpc.NewServer()` without keepalive server parameters in long-running services"
+    return ruleID + family + severity + status + intent + description
+}

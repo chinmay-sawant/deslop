@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFmtSprintfBoolToString() string {
+    ruleID := "fmt_sprintf_bool_to_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Sprintf(\"%t\", ...)` instead of `strconv.FormatBool(...)`."
+    return ruleID + family + severity + status + intent + description
+}

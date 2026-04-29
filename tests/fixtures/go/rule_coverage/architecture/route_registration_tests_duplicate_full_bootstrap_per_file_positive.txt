@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRouteRegistrationTestsDuplicateFullBootstrapPerFile() string {
+    ruleID := "route_registration_tests_duplicate_full_bootstrap_per_file"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Tests that rebuild the full application bootstrap repeatedly instead of using shared test setup."
+    return ruleID + family + severity + status + intent + description
+}

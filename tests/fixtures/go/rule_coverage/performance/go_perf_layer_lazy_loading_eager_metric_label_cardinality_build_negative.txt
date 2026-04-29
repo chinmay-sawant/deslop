@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerLazyLoadingEagerMetricLabelCardinalityBuild() string {
+    ruleID := "go_perf_layer_lazy_loading_eager_metric_label_cardinality_build"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Lazy loading. Flag eager construction of high-cardinality metric labels before the metric is emitted."
+    return ruleID + family + severity + status + intent + description
+}

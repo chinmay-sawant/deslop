@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveLogPrintfForProduction() string {
+    ruleID := "log_printf_for_production"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`log.Printf` (stdlib) usage in web service handler code"
+    return ruleID + family + severity + status + intent + description
+}

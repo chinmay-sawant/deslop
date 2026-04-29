@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerNetworkCallsTlsConfigBuiltPerRequest() string {
+    ruleID := "go_perf_layer_network_calls_tls_config_built_per_request"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Network calls. Flag TLS configuration construction per request instead of reusing immutable configs."
+    return ruleID + family + severity + status + intent + description
+}

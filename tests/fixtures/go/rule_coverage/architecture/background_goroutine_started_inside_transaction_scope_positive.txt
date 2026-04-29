@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBackgroundGoroutineStartedInsideTransactionScope() string {
+    ruleID := "background_goroutine_started_inside_transaction_scope"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Goroutines launched while relying on open transaction state."
+    return ruleID + family + severity + status + intent + description
+}

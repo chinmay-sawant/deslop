@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStringsToupperEqualfold() string {
+    ruleID := "strings_toupper_equalfold"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strings.ToUpper(...) == strings.ToUpper(...)` instead of `strings.EqualFold(...)`."
+    return ruleID + family + severity + status + intent + description
+}

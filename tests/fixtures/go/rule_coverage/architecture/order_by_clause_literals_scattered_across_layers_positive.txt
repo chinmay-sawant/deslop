@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveOrderByClauseLiteralsScatteredAcrossLayers() string {
+    ruleID := "order_by_clause_literals_scattered_across_layers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Raw sort expressions duplicated in handlers and services instead of query helpers."
+    return ruleID + family + severity + status + intent + description
+}

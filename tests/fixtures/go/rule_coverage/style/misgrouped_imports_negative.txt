@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeMisgroupedImports() string {
+    ruleID := "misgrouped_imports"
+    family := "style"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Import blocks that place stdlib imports after third-party imports."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerCachingPerRequestConfigCacheRebuild() string {
+    ruleID := "go_perf_layer_caching_per_request_config_cache_rebuild"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Caching. Flag request-scoped caches rebuilt from config or environment on every call."
+    return ruleID + family + severity + status + intent + description
+}

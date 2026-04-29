@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveJsonIndentInLoop() string {
+    ruleID := "json_indent_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`json.Indent(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

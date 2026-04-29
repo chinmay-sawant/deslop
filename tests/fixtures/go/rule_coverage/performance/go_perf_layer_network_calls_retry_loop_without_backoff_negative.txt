@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerNetworkCallsRetryLoopWithoutBackoff() string {
+    ruleID := "go_perf_layer_network_calls_retry_loop_without_backoff"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Network calls. Flag network retry loops that immediately retry and amplify load."
+    return ruleID + family + severity + status + intent + description
+}

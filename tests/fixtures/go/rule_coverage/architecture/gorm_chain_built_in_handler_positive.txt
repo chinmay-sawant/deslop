@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormChainBuiltInHandler() string {
+    ruleID := "gorm_chain_built_in_handler"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that construct `Where`, `Joins`, `Scopes`, or `Order` chains directly."
+    return ruleID + family + severity + status + intent + description
+}

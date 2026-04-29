@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativePrometheusCounterCreatedPerRequest() string {
+    ruleID := "prometheus_counter_created_per_request"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions"
+    return ruleID + family + severity + status + intent + description
+}

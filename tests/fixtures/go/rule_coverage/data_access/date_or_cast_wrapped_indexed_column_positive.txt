@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDateOrCastWrappedIndexedColumn() string {
+    ruleID := "date_or_cast_wrapped_indexed_column"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "DATE/CAST wrapping indexed columns in WHERE clauses, preventing index usage."
+    return ruleID + family + severity + status + intent + description
+}

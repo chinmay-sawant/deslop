@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeUpdatesMapAllocatedPerRow() string {
+    ruleID := "updates_map_allocated_per_row"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "GORM Updates(map[string]...) maps allocated inside loops for per-row updates."
+    return ruleID + family + severity + status + intent + description
+}

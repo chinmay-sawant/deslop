@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTransportMetricsEmittedFromRepositoryLayer() string {
+    ruleID := "transport_metrics_emitted_from_repository_layer"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repositories that record HTTP-route or handler-oriented metrics."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDtoToModelMappingInHandler() string {
+    ruleID := "dto_to_model_mapping_in_handler"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that own transport-to-model mapping instead of dedicated mappers or services."
+    return ruleID + family + severity + status + intent + description
+}

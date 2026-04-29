@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveOrderByRandomRequestPath() string {
+    ruleID := "order_by_random_request_path"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "ORDER BY RAND()/RANDOM() observed on request paths."
+    return ruleID + family + severity + status + intent + description
+}

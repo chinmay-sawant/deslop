@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBindjsonIntoMapAnyHotEndpoint() string {
+    ruleID := "bindjson_into_map_any_hot_endpoint"
+    family := "gin"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Gin handlers that bind JSON into map[string]any or map[string]interface{} on hot request paths."
+    return ruleID + family + severity + status + intent + description
+}

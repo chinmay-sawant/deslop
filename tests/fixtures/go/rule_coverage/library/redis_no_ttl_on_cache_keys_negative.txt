@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRedisNoTtlOnCacheKeys() string {
+    ruleID := "redis_no_ttl_on_cache_keys"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`rdb.Set(ctx, key, val, 0)` or `rdb.Set(ctx, key, val, redis.KeepTTL)` for cache-like keys without TTL"
+    return ruleID + family + severity + status + intent + description
+}

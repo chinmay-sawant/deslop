@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMiddlewareMutatesDomainModelState() string {
+    ruleID := "middleware_mutates_domain_model_state"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Middleware that writes business entities or persistence models as a side effect of request plumbing."
+    return ruleID + family + severity + status + intent + description
+}

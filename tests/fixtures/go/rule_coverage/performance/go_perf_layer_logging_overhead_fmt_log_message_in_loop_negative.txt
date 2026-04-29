@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerLoggingOverheadFmtLogMessageInLoop() string {
+    ruleID := "go_perf_layer_logging_overhead_fmt_log_message_in_loop"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Logging overhead. Flag formatted log strings built inside loops instead of structured lazy fields."
+    return ruleID + family + severity + status + intent + description
+}

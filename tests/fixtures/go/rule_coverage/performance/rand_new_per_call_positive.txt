@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRandNewPerCall() string {
+    ruleID := "rand_new_per_call"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`rand.New(...)` inside regular call paths instead of reusing a generator."
+    return ruleID + family + severity + status + intent + description
+}

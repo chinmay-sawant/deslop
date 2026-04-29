@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsSplitafternTwoIndexZeroCut() string {
+    ruleID := "strings_splitaftern_two_index_zero_cut"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`strings.SplitAfterN(..., 2)[0]` instead of a two-part `strings.Cut(...)` flow."
+    return ruleID + family + severity + status + intent + description
+}

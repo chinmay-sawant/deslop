@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeFeatureFlagLookupWithoutConfigAbstraction() string {
+    ruleID := "feature_flag_lookup_without_config_abstraction"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers or services that query feature flags directly without a focused flag interface."
+    return ruleID + family + severity + status + intent + description
+}

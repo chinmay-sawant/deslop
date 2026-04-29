@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRedisLargeValueWithoutCompression() string {
+    ruleID := "redis_large_value_without_compression"
+    family := "library"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`rdb.Set(ctx, key, largePayload, ...)` where `largePayload` is the result of `json.Marshal` on a large struct or slice, without visible compression"
+    return ruleID + family + severity + status + intent + description
+}

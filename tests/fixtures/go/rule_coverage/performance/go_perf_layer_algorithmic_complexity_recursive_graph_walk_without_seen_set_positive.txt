@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSet() string {
+    ruleID := "go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Algorithmic complexity. Flag recursive graph or tree walks that do not track visited nodes for cyclic or shared inputs."
+    return ruleID + family + severity + status + intent + description
+}

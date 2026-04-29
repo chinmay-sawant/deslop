@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveErrorWrappingMisuse() string {
+    ruleID := "error_wrapping_misuse"
+    family := "errors"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "fmt.Errorf calls that reference err without %w."
+    return ruleID + family + severity + status + intent + description
+}

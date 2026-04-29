@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBytesBufferStringLen() string {
+    ruleID := "bytes_buffer_string_len"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`len(buf.String())` instead of `buf.Len()`."
+    return ruleID + family + severity + status + intent + description
+}

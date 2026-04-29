@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSlowWorkInsideTransactionScope() string {
+    ruleID := "slow_work_inside_transaction_scope"
+    family := "idioms"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Loop-heavy or slow work performed while a transaction appears open."
+    return ruleID + family + severity + status + intent + description
+}

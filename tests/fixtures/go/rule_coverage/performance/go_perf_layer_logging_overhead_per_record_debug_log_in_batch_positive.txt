@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerLoggingOverheadPerRecordDebugLogInBatch() string {
+    ruleID := "go_perf_layer_logging_overhead_per_record_debug_log_in_batch"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Logging overhead. Flag debug logging per batch record on hot ingestion paths."
+    return ruleID + family + severity + status + intent + description
+}

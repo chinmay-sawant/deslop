@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSortOrFilterWhitelistLogicDuplicatedAcrossHandlers() string {
+    ruleID := "sort_or_filter_whitelist_logic_duplicated_across_handlers"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Repeated client-field whitelist logic across endpoints."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSwaggerOrOpenapiAnnotationsOnPersistenceModels() string {
+    ruleID := "swagger_or_openapi_annotations_on_persistence_models"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Persistence structs used as the public docs contract instead of transport DTOs."
+    return ruleID + family + severity + status + intent + description
+}

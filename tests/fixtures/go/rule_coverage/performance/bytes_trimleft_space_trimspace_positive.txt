@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBytesTrimleftSpaceTrimspace() string {
+    ruleID := "bytes_trimleft_space_trimspace"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`bytes.TrimLeft(..., whitespace)` instead of `bytes.TrimSpace(...)`."
+    return ruleID + family + severity + status + intent + description
+}

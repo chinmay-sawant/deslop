@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRepositoryTypeOutsideRepositoryPackage() string {
+    ruleID := "repository_type_outside_repository_package"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repository implementations declared outside `repository`, `repo`, or `store` packages when the repo already uses those roles elsewhere."
+    return ruleID + family + severity + status + intent + description
+}

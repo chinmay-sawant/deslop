@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBytesSplitafternTwoIndexOneCut() string {
+    ruleID := "bytes_splitaftern_two_index_one_cut"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`bytes.SplitAfterN(..., 2)[1]` instead of a two-part `bytes.Cut(...)` flow."
+    return ruleID + family + severity + status + intent + description
+}

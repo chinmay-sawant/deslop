@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceMethodAcceptsDtoAndPersistenceModelTogether() string {
+    ruleID := "service_method_accepts_dto_and_persistence_model_together"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Signatures that mix transport DTOs and GORM models in the same service API."
+    return ruleID + family + severity + status + intent + description
+}

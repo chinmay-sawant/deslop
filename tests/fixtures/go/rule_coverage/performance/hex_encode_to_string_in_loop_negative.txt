@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeHexEncodeToStringInLoop() string {
+    ruleID := "hex_encode_to_string_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`hex.EncodeToString(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

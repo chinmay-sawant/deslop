@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceTestsImportGin() string {
+    ruleID := "service_tests_import_gin"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Service-level tests that depend on Gin when the service contract is supposed to be transport-neutral."
+    return ruleID + family + severity + status + intent + description
+}

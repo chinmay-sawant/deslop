@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoroutineForSyncWork() string {
+    ruleID := "goroutine_for_sync_work"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited"
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceDependsOnTransportRequestType() string {
+    ruleID := "service_depends_on_transport_request_type"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Service signatures that accept request DTOs declared in handler or transport packages."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeTestFixtureBuildersLiveInProductionPackages() string {
+    ruleID := "test_fixture_builders_live_in_production_packages"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Fixture and factory helpers defined in non-test production files."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHttpResponseBodyNotClosed() string {
+    ruleID := "http_response_body_not_closed"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "HTTP responses acquired locally without an observed resp.Body.Close() call."
+    return ruleID + family + severity + status + intent + description
+}

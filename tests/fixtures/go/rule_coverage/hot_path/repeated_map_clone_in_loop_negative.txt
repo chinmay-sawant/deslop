@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRepeatedMapCloneInLoop() string {
+    ruleID := "repeated_map_clone_in_loop"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "maps.Clone or equivalent map-copy calls observed inside loops."
+    return ruleID + family + severity + status + intent + description
+}

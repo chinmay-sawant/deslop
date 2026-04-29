@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeSprintfForSimpleIntToString() string {
+    ruleID := "sprintf_for_simple_int_to_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`fmt.Sprintf(\"%d\", n)` where `n` is clearly an integer type"
+    return ruleID + family + severity + status + intent + description
+}

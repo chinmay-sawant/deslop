@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeRequestDtoContainsGormTags() string {
+    ruleID := "request_dto_contains_gorm_tags"
+    family := "architecture"
+    severity := "warning"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Request DTOs that carry persistence-only `gorm` tags."
+    return ruleID + family + severity + status + intent + description
+}

@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveFeatureFlagLookupWithoutConfigAbstraction() string {
+    ruleID := "feature_flag_lookup_without_config_abstraction"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers or services that query feature flags directly without a focused flag interface."
+    return ruleID + family + severity + status + intent + description
+}

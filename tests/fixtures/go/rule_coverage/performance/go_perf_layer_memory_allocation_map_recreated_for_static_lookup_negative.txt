@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGoPerfLayerMemoryAllocationMapRecreatedForStaticLookup() string {
+    ruleID := "go_perf_layer_memory_allocation_map_recreated_for_static_lookup"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables."
+    return ruleID + family + severity + status + intent + description
+}

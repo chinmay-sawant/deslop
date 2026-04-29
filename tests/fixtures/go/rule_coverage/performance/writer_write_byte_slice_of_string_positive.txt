@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveWriterWriteByteSliceOfString() string {
+    ruleID := "writer_write_byte_slice_of_string"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`writer.Write([]byte(s))` instead of `io.WriteString(writer, s)`."
+    return ruleID + family + severity + status + intent + description
+}

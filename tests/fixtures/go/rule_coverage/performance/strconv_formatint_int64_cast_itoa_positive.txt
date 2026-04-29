@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveStrconvFormatintInt64CastItoa() string {
+    ruleID := "strconv_formatint_int64_cast_itoa"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`strconv.FormatInt(int64(v), 10)` instead of `strconv.Itoa(v)`."
+    return ruleID + family + severity + status + intent + description
+}

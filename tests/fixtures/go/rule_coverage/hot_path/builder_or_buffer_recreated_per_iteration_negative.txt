@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBuilderOrBufferRecreatedPerIteration() string {
+    ruleID := "builder_or_buffer_recreated_per_iteration"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "strings.Builder, bytes.Buffer, or bytes.NewBuffer(...) constructions observed inside loops instead of being reset or reused."
+    return ruleID + family + severity + status + intent + description
+}

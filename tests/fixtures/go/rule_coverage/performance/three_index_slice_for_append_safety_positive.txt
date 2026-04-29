@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveThreeIndexSliceForAppendSafety() string {
+    ruleID := "three_index_slice_for_append_safety"
+    family := "performance"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound"
+    return ruleID + family + severity + status + intent + description
+}

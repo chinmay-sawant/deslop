@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveServiceMethodCombinesUnrelatedWritePathsViaActionString() string {
+    ruleID := "service_method_combines_unrelated_write_paths_via_action_string"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Services that branch on action strings to implement many create, update, or delete variants in one method."
+    return ruleID + family + severity + status + intent + description
+}

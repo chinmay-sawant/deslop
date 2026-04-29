@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveBytesBufferWithoutGrowKnownBound() string {
+    ruleID := "bytes_buffer_without_grow_known_bound"
+    family := "hot_path"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "bytes.Buffer used without Grow when approximate output size is locally visible."
+    return ruleID + family + severity + status + intent + description
+}

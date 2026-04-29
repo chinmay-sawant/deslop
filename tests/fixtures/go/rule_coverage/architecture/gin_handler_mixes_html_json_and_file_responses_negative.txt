@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeGinHandlerMixesHtmlJsonAndFileResponses() string {
+    ruleID := "gin_handler_mixes_html_json_and_file_responses"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "Handlers that serve fundamentally different transport modes from one function."
+    return ruleID + family + severity + status + intent + description
+}

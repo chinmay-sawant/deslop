@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRedisConnectionPerRequest() string {
+    ruleID := "redis_connection_per_request"
+    family := "library"
+    severity := "warning"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`redis.NewClient(&redis.Options{...})` inside handler/request functions"
+    return ruleID + family + severity + status + intent + description
+}

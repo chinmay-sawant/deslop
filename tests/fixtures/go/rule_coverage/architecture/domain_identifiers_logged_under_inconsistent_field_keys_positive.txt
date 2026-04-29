@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveDomainIdentifiersLoggedUnderInconsistentFieldKeys() string {
+    ruleID := "domain_identifiers_logged_under_inconsistent_field_keys"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "The same entity ID being logged under many different keys across packages."
+    return ruleID + family + severity + status + intent + description
+}

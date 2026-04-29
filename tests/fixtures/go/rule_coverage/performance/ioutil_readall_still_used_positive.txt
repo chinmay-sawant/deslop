@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveIoutilReadallStillUsed() string {
+    ruleID := "ioutil_readall_still_used"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+)"
+    return ruleID + family + severity + status + intent + description
+}

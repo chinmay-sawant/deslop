@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeStringsBuilderStringLen() string {
+    ruleID := "strings_builder_string_len"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`len(builder.String())` instead of `builder.Len()`."
+    return ruleID + family + severity + status + intent + description
+}

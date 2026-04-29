@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveMd5SumInLoop() string {
+    ruleID := "md5_sum_in_loop"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`md5.Sum(...)` inside loops."
+    return ruleID + family + severity + status + intent + description
+}

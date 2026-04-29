@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGoPerfLayerProfilingBenchmarkingPprofEndpointEnabledWithoutSamplingPlan() string {
+    ruleID := "go_perf_layer_profiling_benchmarking_pprof_endpoint_enabled_without_sampling_plan"
+    family := "performance"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Layer: Profiling and benchmarking. Flag always-on profiling endpoints in production services without access or sampling controls."
+    return ruleID + family + severity + status + intent + description
+}

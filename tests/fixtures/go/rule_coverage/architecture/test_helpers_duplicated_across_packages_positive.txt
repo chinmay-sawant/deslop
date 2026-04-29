@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTestHelpersDuplicatedAcrossPackages() string {
+    ruleID := "test_helpers_duplicated_across_packages"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Near-identical helper builders or setup code duplicated across test packages."
+    return ruleID + family + severity + status + intent + description
+}

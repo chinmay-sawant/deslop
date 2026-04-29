@@ -1,0 +1,11 @@
+package rulecoverage
+
+func NegativeBytesBufferStringLen() string {
+    ruleID := "bytes_buffer_string_len"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "shows the preferred shape that should not trigger this rule"
+    description := "`len(buf.String())` instead of `buf.Len()`."
+    return ruleID + family + severity + status + intent + description
+}

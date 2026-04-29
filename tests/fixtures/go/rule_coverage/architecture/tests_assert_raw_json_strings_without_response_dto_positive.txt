@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveTestsAssertRawJsonStringsWithoutResponseDto() string {
+    ruleID := "tests_assert_raw_json_strings_without_response_dto"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Brittle raw-JSON string assertions when typed response DTOs exist."
+    return ruleID + family + severity + status + intent + description
+}

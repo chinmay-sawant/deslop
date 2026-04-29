@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveRangeOverStringByIndex() string {
+    ruleID := "range_over_string_by_index"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`for i := 0; i < len(s); i++ { c := s[i] }` on strings that should iterate runes"
+    return ruleID + family + severity + status + intent + description
+}

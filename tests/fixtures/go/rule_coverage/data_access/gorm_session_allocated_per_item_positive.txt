@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveGormSessionAllocatedPerItem() string {
+    ruleID := "gorm_session_allocated_per_item"
+    family := "data_access"
+    severity := "contextual"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "GORM Session(...) chains allocated inside loops before issuing queries."
+    return ruleID + family + severity + status + intent + description
+}

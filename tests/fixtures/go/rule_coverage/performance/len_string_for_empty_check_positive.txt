@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveLenStringForEmptyCheck() string {
+    ruleID := "len_string_for_empty_check"
+    family := "performance"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "`len(s) == 0` used interchangeably with `s == \"\"`"
+    return ruleID + family + severity + status + intent + description
+}

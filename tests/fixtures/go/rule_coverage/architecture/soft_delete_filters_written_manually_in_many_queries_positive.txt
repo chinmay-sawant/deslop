@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveSoftDeleteFiltersWrittenManuallyInManyQueries() string {
+    ruleID := "soft_delete_filters_written_manually_in_many_queries"
+    family := "architecture"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Repeated `deleted_at IS NULL` style filters rather than a shared repository or scope policy."
+    return ruleID + family + severity + status + intent + description
+}

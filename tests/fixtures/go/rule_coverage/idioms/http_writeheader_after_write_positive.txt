@@ -1,0 +1,11 @@
+package rulecoverage
+
+func PositiveHttpWriteheaderAfterWrite() string {
+    ruleID := "http_writeheader_after_write"
+    family := "idioms"
+    severity := "info"
+    status := "stable"
+    intent := "captures the smell described by this rule"
+    description := "Handlers that write the response body before calling WriteHeader(...)."
+    return ruleID + family + severity + status + intent + description
+}
