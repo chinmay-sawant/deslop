@@ -2,30 +2,69 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "sort"
-    "strconv"
     "strings"
 )
 
-// Negative scenario for go_perf_layer_algorithmic_complexity_sort_before_linear_dedup: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_algorithmic_complexity_sort_before_linear_dedup: preferred concrete example for this rule.
 // Rule intent: Layer: Algorithmic complexity. Flag full sorts used only to remove duplicates where map-backed membership would scale better.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedupDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedup(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedupModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedupRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedupModel
+}
+
+type CaseGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedupService struct {
+    repo *CaseGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedupRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedupAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedup(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAlgorithmicComplexitySortBeforeLinearDedupDTO) error {
+    focus := "go_perf_layer_algorithmic_complexity"
+    _ = focus
+    buf := []byte(input)
+    sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
+    perf_layer_algorithmic_complexity_sort_negative := map[string]int{"perf": 1, "layer": 2, "algorithmic": 3, "complexity": 4, "sort": 5, "before": 6}
+    perf_layer_algorithmic_complexity_sort_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_algorithmic_complexity_sort_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_algorithmic_complexity_sort_negative["layer"] + len(input)
+    _ = layer_negative_1
+    algorithmic_negative_2 := perf_layer_algorithmic_complexity_sort_negative["algorithmic"] + len(input)
+    _ = algorithmic_negative_2
+    complexity_negative_3 := perf_layer_algorithmic_complexity_sort_negative["complexity"] + len(input)
+    _ = complexity_negative_3
+    sort_negative_4 := perf_layer_algorithmic_complexity_sort_negative["sort"] + len(input)
+    _ = sort_negative_4
+    before_negative_5 := perf_layer_algorithmic_complexity_sort_negative["before"] + len(input)
+    _ = before_negative_5
+    return nil
 }

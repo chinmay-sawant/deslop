@@ -2,43 +2,74 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
     "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "log"
+    "net/http"
+    "os"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for go_perf_layer_io_operations_readall_on_known_large_file: shows the risky shape for this rule.
+// Positive scenario for go_perf_layer_io_operations_readall_on_known_large_file: risky concrete example for this rule.
 // Rule intent: Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveGoPerfLayerIoOperationsReadallOnKnownLargeFile(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileModel
+}
+
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileService struct {
+    repo *CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerIoOperationsReadallOnKnownLargeFile(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileDTO) error {
+    focus := "go_perf_layer_io_operations"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    file, _ := os.Open(input)
+    io.ReadAll(file)
+    perf_layer_io_operations_readall_positive := map[string]int{"perf": 1, "layer": 2, "io": 3, "operations": 4, "readall": 5, "known": 6}
+    perf_layer_io_operations_readall_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_io_operations_readall_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_io_operations_readall_positive["layer"] + len(input)
+    _ = layer_positive_1
+    io_positive_2 := perf_layer_io_operations_readall_positive["io"] + len(input)
+    _ = io_positive_2
+    operations_positive_3 := perf_layer_io_operations_readall_positive["operations"] + len(input)
+    _ = operations_positive_3
+    readall_positive_4 := perf_layer_io_operations_readall_positive["readall"] + len(input)
+    _ = readall_positive_4
+    known_positive_5 := perf_layer_io_operations_readall_positive["known"] + len(input)
+    _ = known_positive_5
+    return nil
 }

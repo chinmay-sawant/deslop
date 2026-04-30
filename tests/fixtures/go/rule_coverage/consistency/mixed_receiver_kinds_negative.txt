@@ -1,10 +1,62 @@
 package rulecoverage
 
-// Negative scenario for mixed_receiver_kinds: shows the preferred shape for this rule.
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for mixed_receiver_kinds: preferred concrete example for this rule.
 // Rule intent: Methods on the same receiver type mix pointer and value receivers.
-type NegativeMixedReceiverKindsUser struct {
-    ID string `json:"id" db:"id"`
+type CaseMixedReceiverKindsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-func (u *NegativeMixedReceiverKindsUser) IDValue() string { return u.ID }
-func (u *NegativeMixedReceiverKindsUser) Rename(id string) { u.ID = id }
+type CaseMixedReceiverKindsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMixedReceiverKindsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMixedReceiverKindsModel
+}
+
+type CaseMixedReceiverKindsService struct {
+    repo *CaseMixedReceiverKindsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMixedReceiverKindsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMixedReceiverKinds(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMixedReceiverKindsDTO) error {
+    focus := "mixed_receiver_kinds"
+    _ = focus
+    value := &CaseMixedReceiverKindsModel{ID: input}
+    _ = value
+    mixed_receiver_kinds_negative := map[string]int{"mixed": 1, "receiver": 2, "kinds": 3}
+    mixed_receiver_kinds_negative["signal"] = len(input) + len(items)
+    mixed_negative_0 := mixed_receiver_kinds_negative["mixed"] + len(input)
+    _ = mixed_negative_0
+    receiver_negative_1 := mixed_receiver_kinds_negative["receiver"] + len(input)
+    _ = receiver_negative_1
+    kinds_negative_2 := mixed_receiver_kinds_negative["kinds"] + len(input)
+    _ = kinds_negative_2
+    return nil
+}

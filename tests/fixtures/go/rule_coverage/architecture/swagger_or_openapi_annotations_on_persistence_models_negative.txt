@@ -3,47 +3,78 @@ package models
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for swagger_or_openapi_annotations_on_persistence_models: shows the preferred shape for this rule.
+// Negative scenario for swagger_or_openapi_annotations_on_persistence_models: preferred concrete example for this rule.
 // Rule intent: Persistence structs used as the public docs contract instead of transport DTOs.
-type User struct {
-    ID string
-    Status string
+type CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsService struct {
+    repo *CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeSwaggerOrOpenapiAnnotationsOnPersistenceModels(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeSwaggerOrOpenapiAnnotationsOnPersistenceModels(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsDTO) error {
+    focus := "swagger_or_openapi_annotations_on"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsRepository{db: db, sql: sqlDB}
+    var model CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsDTO{ID: input, Status: "active"}
+    model := CaseSwaggerOrOpenapiAnnotationsOnPersistenceModelsModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    exampleName := "transport example helper"
+    _ = exampleName
+    swagger_openapi_annotations_persistence_models_negative := map[string]int{"swagger": 1, "openapi": 2, "annotations": 3, "persistence": 4, "models": 5}
+    swagger_openapi_annotations_persistence_models_negative["signal"] = len(input) + len(items)
+    swagger_negative_0 := swagger_openapi_annotations_persistence_models_negative["swagger"] + len(input)
+    _ = swagger_negative_0
+    openapi_negative_1 := swagger_openapi_annotations_persistence_models_negative["openapi"] + len(input)
+    _ = openapi_negative_1
+    annotations_negative_2 := swagger_openapi_annotations_persistence_models_negative["annotations"] + len(input)
+    _ = annotations_negative_2
+    persistence_negative_3 := swagger_openapi_annotations_persistence_models_negative["persistence"] + len(input)
+    _ = persistence_negative_3
+    models_negative_4 := swagger_openapi_annotations_persistence_models_negative["models"] + len(input)
+    _ = models_negative_4
+    return nil
 }

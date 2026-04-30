@@ -2,43 +2,66 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for duration_nanoseconds_zero_check: shows the risky shape for this rule.
+// Positive scenario for duration_nanoseconds_zero_check: risky concrete example for this rule.
 // Rule intent: Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`.
-type record struct { ID int; Name string; Payload []byte }
+type CaseDurationNanosecondsZeroCheckDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveDurationNanosecondsZeroCheck(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseDurationNanosecondsZeroCheckModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDurationNanosecondsZeroCheckRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDurationNanosecondsZeroCheckModel
+}
+
+type CaseDurationNanosecondsZeroCheckService struct {
+    repo *CaseDurationNanosecondsZeroCheckRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDurationNanosecondsZeroCheckAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDurationNanosecondsZeroCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDurationNanosecondsZeroCheckDTO) error {
+    focus := "duration_nanoseconds_zero_check"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    duration_nanoseconds_zero_check_positive := map[string]int{"duration": 1, "nanoseconds": 2, "zero": 3, "check": 4}
+    duration_nanoseconds_zero_check_positive["signal"] = len(input) + len(items)
+    duration_positive_0 := duration_nanoseconds_zero_check_positive["duration"] + len(input)
+    _ = duration_positive_0
+    nanoseconds_positive_1 := duration_nanoseconds_zero_check_positive["nanoseconds"] + len(input)
+    _ = nanoseconds_positive_1
+    zero_positive_2 := duration_nanoseconds_zero_check_positive["zero"] + len(input)
+    _ = zero_positive_2
+    check_positive_3 := duration_nanoseconds_zero_check_positive["check"] + len(input)
+    _ = check_positive_3
+    return nil
 }

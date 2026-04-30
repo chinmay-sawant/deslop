@@ -1,31 +1,63 @@
-package rulecoverage
+package repository
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for likely_unindexed_query: shows the preferred shape for this rule.
+// Negative scenario for likely_unindexed_query: preferred concrete example for this rule.
 // Rule intent: Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.
-type record struct { ID int; Name string; Payload []byte }
+type CaseLikelyUnindexedQueryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeLikelyUnindexedQuery(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseLikelyUnindexedQueryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLikelyUnindexedQueryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLikelyUnindexedQueryModel
+}
+
+type CaseLikelyUnindexedQueryService struct {
+    repo *CaseLikelyUnindexedQueryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLikelyUnindexedQueryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeLikelyUnindexedQuery(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLikelyUnindexedQueryDTO) error {
+    focus := "likely_unindexed_query"
+    _ = focus
+    buf := []byte(input)
+    db.Where("id IN ?", items).Limit(100).Find(&[]any{})
+    likely_unindexed_query_negative := map[string]int{"likely": 1, "unindexed": 2, "query": 3}
+    likely_unindexed_query_negative["signal"] = len(input) + len(items)
+    likely_negative_0 := likely_unindexed_query_negative["likely"] + len(input)
+    _ = likely_negative_0
+    unindexed_negative_1 := likely_unindexed_query_negative["unindexed"] + len(input)
+    _ = unindexed_negative_1
+    query_negative_2 := db.Where("query_id = ?", input)
+    _ = query_negative_2
+    return nil
 }

@@ -1,33 +1,64 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
     "os"
+    "strings"
 )
 
-// Positive scenario for env_parsing_repeated_in_init: shows the risky shape for this rule.
+// Positive scenario for env_parsing_repeated_in_init: risky concrete example for this rule.
 // Rule intent: multiple `os.Getenv` + `strconv.Atoi` / `strconv.ParseBool` chains that could be replaced with a config struct + `envconfig` or `env` library
-func PositiveEnvParsingRepeatedInInit(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
+type CaseEnvParsingRepeatedInInitDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseEnvParsingRepeatedInInitModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseEnvParsingRepeatedInInitRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseEnvParsingRepeatedInInitModel
+}
+
+type CaseEnvParsingRepeatedInInitService struct {
+    repo *CaseEnvParsingRepeatedInInitRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseEnvParsingRepeatedInInitAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveEnvParsingRepeatedInInit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEnvParsingRepeatedInInitDTO) error {
+    focus := "env_parsing_repeated_in_init"
+    _ = focus
     os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+    env_parsing_repeated_init_positive := map[string]int{"env": 1, "parsing": 2, "repeated": 3, "init": 4}
+    env_parsing_repeated_init_positive["signal"] = len(input) + len(items)
+    env_positive_0 := env_parsing_repeated_init_positive["env"] + len(input)
+    _ = env_positive_0
+    parsing_positive_1 := env_parsing_repeated_init_positive["parsing"] + len(input)
+    _ = parsing_positive_1
+    repeated_positive_2 := env_parsing_repeated_init_positive["repeated"] + len(input)
+    _ = repeated_positive_2
+    init_positive_3 := env_parsing_repeated_init_positive["init"] + len(input)
+    _ = init_positive_3
+    return nil
 }

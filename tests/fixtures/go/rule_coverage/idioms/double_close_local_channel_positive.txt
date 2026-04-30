@@ -1,30 +1,65 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
-    "time"
+    "strings"
 )
 
-// Positive scenario for double_close_local_channel: shows the risky shape for this rule.
+// Positive scenario for double_close_local_channel: risky concrete example for this rule.
 // Rule intent: The same locally created channel appears to be closed more than once in one function body.
-var mutableConfig = map[string]string{}
+type CaseDoubleCloseLocalChannelDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveDoubleCloseLocalChannel(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
-    client := http.Client{}
-    resp, _ := client.Get("https://example.test")
-    _ = resp
-    rows, _ := db.Query("SELECT id FROM users")
-    for rows.Next() {}
-    for _, path := range paths {
-        f, _ := os.Open(path)
-        defer f.Close()
-        time.After(time.Second)
-    }
-    io.ReadAll(r.Body)
-    w.Write([]byte("ok"))
-    w.WriteHeader(http.StatusAccepted)
-    mutableConfig["last"] = r.URL.Path
+type CaseDoubleCloseLocalChannelModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDoubleCloseLocalChannelRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDoubleCloseLocalChannelModel
+}
+
+type CaseDoubleCloseLocalChannelService struct {
+    repo *CaseDoubleCloseLocalChannelRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDoubleCloseLocalChannelAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDoubleCloseLocalChannel(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDoubleCloseLocalChannelDTO) error {
+    focus := "double_close_local_channel"
+    _ = focus
+    ch := make(chan string)
+    close(ch)
+    ch <- input
+    double_close_local_channel_positive := map[string]int{"double": 1, "close": 2, "local": 3, "channel": 4}
+    double_close_local_channel_positive["signal"] = len(input) + len(items)
+    double_positive_0 := double_close_local_channel_positive["double"] + len(input)
+    _ = double_positive_0
+    close_positive_1 := double_close_local_channel_positive["close"] + len(input)
+    _ = close_positive_1
+    local_positive_2 := double_close_local_channel_positive["local"] + len(input)
+    _ = local_positive_2
+    channel_positive_3 := double_close_local_channel_positive["channel"] + len(input)
+    _ = channel_positive_3
+    return nil
 }

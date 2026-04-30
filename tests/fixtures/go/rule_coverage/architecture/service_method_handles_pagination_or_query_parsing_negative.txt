@@ -1,49 +1,83 @@
-package service
+package repository
 
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for service_method_handles_pagination_or_query_parsing: shows the preferred shape for this rule.
+// Negative scenario for service_method_handles_pagination_or_query_parsing: preferred concrete example for this rule.
 // Rule intent: Services that parse page, sort, filter, or URL values that should already be normalized at the transport boundary.
-type User struct {
-    ID string
-    Status string
+type CaseServiceMethodHandlesPaginationOrQueryParsingDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseServiceMethodHandlesPaginationOrQueryParsingModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseServiceMethodHandlesPaginationOrQueryParsingRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceMethodHandlesPaginationOrQueryParsingModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseServiceMethodHandlesPaginationOrQueryParsingService struct {
+    repo *CaseServiceMethodHandlesPaginationOrQueryParsingRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseServiceMethodHandlesPaginationOrQueryParsingAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeServiceMethodHandlesPaginationOrQueryParsing(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeServiceMethodHandlesPaginationOrQueryParsing(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodHandlesPaginationOrQueryParsingDTO) error {
+    focus := "service_method_handles_pagination_or"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseServiceMethodHandlesPaginationOrQueryParsingDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseServiceMethodHandlesPaginationOrQueryParsingRepository{db: db, sql: sqlDB}
+    var model CaseServiceMethodHandlesPaginationOrQueryParsingModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseServiceMethodHandlesPaginationOrQueryParsingDTO{ID: input, Status: "active"}
+    model := CaseServiceMethodHandlesPaginationOrQueryParsingModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    allowedSorts := map[string]string{"created_at": "created_at", "id": "id"}
+    orderBy := allowedSorts[c.DefaultQuery("sort", "id")]
+    db.Order(orderBy).Limit(100).Find(&[]any{})
+    service_method_handles_pagination_query_negative := map[string]int{"service": 1, "method": 2, "handles": 3, "pagination": 4, "query": 5, "parsing": 6}
+    service_method_handles_pagination_query_negative["signal"] = len(input) + len(items)
+    service_negative_0 := CaseServiceMethodHandlesPaginationOrQueryParsingDTO{ID: input, Status: "service"}
+    _ = service_negative_0
+    method_negative_1 := service_method_handles_pagination_query_negative["method"] + len(input)
+    _ = method_negative_1
+    handles_negative_2 := service_method_handles_pagination_query_negative["handles"] + len(input)
+    _ = handles_negative_2
+    pagination_negative_3 := service_method_handles_pagination_query_negative["pagination"] + len(input)
+    _ = pagination_negative_3
+    query_negative_4 := db.Where("query_id = ?", input)
+    _ = query_negative_4
+    parsing_negative_5 := service_method_handles_pagination_query_negative["parsing"] + len(input)
+    _ = parsing_negative_5
+    return nil
 }

@@ -1,49 +1,77 @@
-package repository
+package main
 
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "net/http/httptest"
+    "strings"
 )
 
-// Negative scenario for table_driven_tests_mix_multiple_domains_in_one_cases_slice: shows the preferred shape for this rule.
+// Negative scenario for table_driven_tests_mix_multiple_domains_in_one_cases_slice: preferred concrete example for this rule.
 // Rule intent: Oversized case tables that mix unrelated behaviors into one monolithic test.
-type User struct {
-    ID string
-    Status string
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceService struct {
+    repo *CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeTableDrivenTestsMixMultipleDomainsInOneCasesSlice(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeTableDrivenTestsMixMultipleDomainsInOneCasesSlice(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceDTO) error {
+    focus := "table_driven_tests_mix_multiple"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository{db: db, sql: sqlDB}
+    var model CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceDTO{ID: input, Status: "active"}
+    model := CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    recorder := httptest.NewRecorder()
+    _ = recorder
+    table_driven_tests_mix_multiple_negative := map[string]int{"table": 1, "driven": 2, "tests": 3, "mix": 4, "multiple": 5, "domains": 6}
+    table_driven_tests_mix_multiple_negative["signal"] = len(input) + len(items)
+    table_negative_0 := db.Where("table_id = ?", input)
+    _ = table_negative_0
+    driven_negative_1 := table_driven_tests_mix_multiple_negative["driven"] + len(input)
+    _ = driven_negative_1
+    tests_negative_2 := table_driven_tests_mix_multiple_negative["tests"] + len(input)
+    _ = tests_negative_2
+    mix_negative_3 := table_driven_tests_mix_multiple_negative["mix"] + len(input)
+    _ = mix_negative_3
+    multiple_negative_4 := table_driven_tests_mix_multiple_negative["multiple"] + len(input)
+    _ = multiple_negative_4
+    domains_negative_5 := table_driven_tests_mix_multiple_negative["domains"] + len(input)
+    _ = domains_negative_5
+    return nil
 }

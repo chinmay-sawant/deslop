@@ -1,48 +1,72 @@
-package service
+package main
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for generic_process_execute_handle_service_name_without_domain_noun: shows the risky shape for this rule.
+// Positive scenario for generic_process_execute_handle_service_name_without_domain_noun: risky concrete example for this rule.
 // Rule intent: Generic service names and methods that hide business intent instead of naming the actual use case.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveGenericProcessExecuteHandleServiceNameWithoutDomainNoun(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveGenericProcessExecuteHandleServiceNameWithoutDomainNounService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounService struct {
+    repo *CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGenericProcessExecuteHandleServiceNameWithoutDomainNoun(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO) error {
+    focus := "generic_process_execute_handle_service"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounService{repo: &CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    generic_process_execute_handle_service_positive := map[string]int{"generic": 1, "process": 2, "execute": 3, "handle": 4, "service": 5, "name": 6}
+    generic_process_execute_handle_service_positive["signal"] = len(input) + len(items)
+    generic_positive_0 := generic_process_execute_handle_service_positive["generic"] + len(input)
+    _ = generic_positive_0
+    process_positive_1 := generic_process_execute_handle_service_positive["process"] + len(input)
+    _ = process_positive_1
+    execute_positive_2 := generic_process_execute_handle_service_positive["execute"] + len(input)
+    _ = execute_positive_2
+    handle_positive_3 := generic_process_execute_handle_service_positive["handle"] + len(input)
+    _ = handle_positive_3
+    service_positive_4 := CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO{ID: input, Status: "service"}
+    _ = service_positive_4
+    name_positive_5 := generic_process_execute_handle_service_positive["name"] + len(input)
+    _ = name_positive_5
+    return nil
 }

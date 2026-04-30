@@ -2,30 +2,65 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for template_parse_in_hot_path: shows the preferred shape for this rule.
+// Negative scenario for template_parse_in_hot_path: preferred concrete example for this rule.
 // Rule intent: html/template or text/template parse calls observed on request-style paths instead of startup-time caching.
-type record struct { ID int; Name string; Payload []byte }
+type CaseTemplateParseInHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeTemplateParseInHotPath(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseTemplateParseInHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTemplateParseInHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTemplateParseInHotPathModel
+}
+
+type CaseTemplateParseInHotPathService struct {
+    repo *CaseTemplateParseInHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTemplateParseInHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTemplateParseInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTemplateParseInHotPathDTO) error {
+    focus := "template_parse_in_hot_path"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    template_parse_hot_path_negative := map[string]int{"template": 1, "parse": 2, "hot": 3, "path": 4}
+    template_parse_hot_path_negative["signal"] = len(input) + len(items)
+    template_negative_0 := template_parse_hot_path_negative["template"] + len(input)
+    _ = template_negative_0
+    parse_negative_1 := template_parse_hot_path_negative["parse"] + len(input)
+    _ = parse_negative_1
+    hot_negative_2 := template_parse_hot_path_negative["hot"] + len(input)
+    _ = hot_negative_2
+    path_negative_3 := template_parse_hot_path_negative["path"] + len(input)
+    _ = path_negative_3
+    return nil
 }

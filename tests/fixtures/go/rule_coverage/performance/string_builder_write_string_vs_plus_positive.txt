@@ -2,43 +2,68 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for string_builder_write_string_vs_plus: shows the risky shape for this rule.
+// Positive scenario for string_builder_write_string_vs_plus: risky concrete example for this rule.
 // Rule intent: `builder.WriteString(a + b)` where `a` and `b` are separate bindings
-type record struct { ID int; Name string; Payload []byte }
+type CaseStringBuilderWriteStringVsPlusDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveStringBuilderWriteStringVsPlus(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseStringBuilderWriteStringVsPlusModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringBuilderWriteStringVsPlusRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringBuilderWriteStringVsPlusModel
+}
+
+type CaseStringBuilderWriteStringVsPlusService struct {
+    repo *CaseStringBuilderWriteStringVsPlusRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringBuilderWriteStringVsPlusAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveStringBuilderWriteStringVsPlus(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringBuilderWriteStringVsPlusDTO) error {
+    focus := "string_builder_write_string_vs"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    string_builder_write_vs_plus_positive := map[string]int{"string": 1, "builder": 2, "write": 3, "vs": 4, "plus": 5}
+    string_builder_write_vs_plus_positive["signal"] = len(input) + len(items)
+    string_positive_0 := strings.TrimSpace(input)
+    _ = string_positive_0
+    builder_positive_1 := strings.TrimSpace(input)
+    _ = builder_positive_1
+    write_positive_2 := string_builder_write_vs_plus_positive["write"] + len(input)
+    _ = write_positive_2
+    vs_positive_3 := string_builder_write_vs_plus_positive["vs"] + len(input)
+    _ = vs_positive_3
+    plus_positive_4 := string_builder_write_vs_plus_positive["plus"] + len(input)
+    _ = plus_positive_4
+    return nil
 }

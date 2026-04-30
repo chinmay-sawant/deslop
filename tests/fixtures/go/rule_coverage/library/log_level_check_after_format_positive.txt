@@ -1,33 +1,66 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for log_level_check_after_format: shows the risky shape for this rule.
+// Positive scenario for log_level_check_after_format: risky concrete example for this rule.
 // Rule intent: `zap.S().Debugf("expensive %v", computeDebug())` or `logrus.Debugf("data: %v", expensiveCall())` where the expensive computation happens regardless of log level
-func PositiveLogLevelCheckAfterFormat(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+type CaseLogLevelCheckAfterFormatDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseLogLevelCheckAfterFormatModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLogLevelCheckAfterFormatRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLogLevelCheckAfterFormatModel
+}
+
+type CaseLogLevelCheckAfterFormatService struct {
+    repo *CaseLogLevelCheckAfterFormatRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLogLevelCheckAfterFormatAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveLogLevelCheckAfterFormat(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLogLevelCheckAfterFormatDTO) error {
+    focus := "log_level_check_after_format"
+    _ = focus
+    msg := fmt.Sprintf("rule=%s input=%s", "log_level_check_after_format", input)
+    log.Print(msg)
+    log_level_check_after_format_positive := map[string]int{"log": 1, "level": 2, "check": 3, "after": 4, "format": 5}
+    log_level_check_after_format_positive["signal"] = len(input) + len(items)
+    log_positive_0 := fmt.Sprintf("log=%s", input)
+    _ = log_positive_0
+    level_positive_1 := log_level_check_after_format_positive["level"] + len(input)
+    _ = level_positive_1
+    check_positive_2 := log_level_check_after_format_positive["check"] + len(input)
+    _ = check_positive_2
+    after_positive_3 := log_level_check_after_format_positive["after"] + len(input)
+    _ = after_positive_3
+    format_positive_4 := log_level_check_after_format_positive["format"] + len(input)
+    _ = format_positive_4
+    return nil
 }

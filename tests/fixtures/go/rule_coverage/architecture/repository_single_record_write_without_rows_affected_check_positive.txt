@@ -1,48 +1,71 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for repository_single_record_write_without_rows_affected_check: shows the risky shape for this rule.
+// Positive scenario for repository_single_record_write_without_rows_affected_check: risky concrete example for this rule.
 // Rule intent: Single-record-oriented repository updates or deletes that never inspect `RowsAffected` or an equivalent write-outcome signal.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveRepositorySingleRecordWriteWithoutRowsAffectedCheck(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveRepositorySingleRecordWriteWithoutRowsAffectedCheckService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckService struct {
+    repo *CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepositorySingleRecordWriteWithoutRowsAffectedCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckDTO) error {
+    focus := "repository_single_record_write_without"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositorySingleRecordWriteWithoutRowsAffectedCheckModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    repository_single_record_write_rows_positive := map[string]int{"repository": 1, "single": 2, "record": 3, "write": 4, "rows": 5, "affected": 6}
+    repository_single_record_write_rows_positive["signal"] = len(input) + len(items)
+    repository_positive_0 := db.Where("repository_id = ?", input)
+    _ = repository_positive_0
+    single_positive_1 := repository_single_record_write_rows_positive["single"] + len(input)
+    _ = single_positive_1
+    record_positive_2 := repository_single_record_write_rows_positive["record"] + len(input)
+    _ = record_positive_2
+    write_positive_3 := repository_single_record_write_rows_positive["write"] + len(input)
+    _ = write_positive_3
+    rows_positive_4 := repository_single_record_write_rows_positive["rows"] + len(input)
+    _ = rows_positive_4
+    affected_positive_5 := repository_single_record_write_rows_positive["affected"] + len(input)
+    _ = affected_positive_5
+    return nil
 }

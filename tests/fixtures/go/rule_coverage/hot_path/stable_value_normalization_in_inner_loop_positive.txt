@@ -2,43 +2,68 @@ package repository
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for stable_value_normalization_in_inner_loop: shows the risky shape for this rule.
+// Positive scenario for stable_value_normalization_in_inner_loop: risky concrete example for this rule.
 // Rule intent: Stable value normalization (ToLower, TrimSpace, etc.) repeated inside inner loops.
-type record struct { ID int; Name string; Payload []byte }
+type CaseStableValueNormalizationInInnerLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveStableValueNormalizationInInnerLoop(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseStableValueNormalizationInInnerLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStableValueNormalizationInInnerLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStableValueNormalizationInInnerLoopModel
+}
+
+type CaseStableValueNormalizationInInnerLoopService struct {
+    repo *CaseStableValueNormalizationInInnerLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStableValueNormalizationInInnerLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveStableValueNormalizationInInnerLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStableValueNormalizationInInnerLoopDTO) error {
+    focus := "stable_value_normalization_in_inner"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    stable_value_normalization_inner_loop_positive := map[string]int{"stable": 1, "value": 2, "normalization": 3, "inner": 4, "loop": 5}
+    stable_value_normalization_inner_loop_positive["signal"] = len(input) + len(items)
+    stable_positive_0 := stable_value_normalization_inner_loop_positive["stable"] + len(input)
+    _ = stable_positive_0
+    value_positive_1 := stable_value_normalization_inner_loop_positive["value"] + len(input)
+    _ = value_positive_1
+    normalization_positive_2 := stable_value_normalization_inner_loop_positive["normalization"] + len(input)
+    _ = normalization_positive_2
+    inner_positive_3 := stable_value_normalization_inner_loop_positive["inner"] + len(input)
+    _ = inner_positive_3
+    for loop_positive_4Index, item := range items { stable_value_normalization_inner_loop_positive[item.ID] = loop_positive_4Index }
+    return nil
 }

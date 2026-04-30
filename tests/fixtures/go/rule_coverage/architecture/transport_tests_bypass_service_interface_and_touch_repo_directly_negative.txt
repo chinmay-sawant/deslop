@@ -3,47 +3,81 @@ package service
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "net/http/httptest"
+    "strings"
 )
 
-// Negative scenario for transport_tests_bypass_service_interface_and_touch_repo_directly: shows the preferred shape for this rule.
+// Negative scenario for transport_tests_bypass_service_interface_and_touch_repo_directly: preferred concrete example for this rule.
 // Rule intent: Transport tests that skip the service seam and assert repository behavior.
-type User struct {
-    ID string
-    Status string
+type CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyService struct {
+    repo *CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeTransportTestsBypassServiceInterfaceAndTouchRepoDirectly(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeTransportTestsBypassServiceInterfaceAndTouchRepoDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyDTO) error {
+    focus := "transport_tests_bypass_service_interface"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyRepository{db: db, sql: sqlDB}
+    var model CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyDTO{ID: input, Status: "active"}
+    model := CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    recorder := httptest.NewRecorder()
+    _ = recorder
+    transport_tests_bypass_service_interface_negative := map[string]int{"transport": 1, "tests": 2, "bypass": 3, "service": 4, "interface": 5, "touch": 6}
+    transport_tests_bypass_service_interface_negative["signal"] = len(input) + len(items)
+    transport_negative_0 := c.FullPath() + ":" + input
+    _ = transport_negative_0
+    tests_negative_1 := transport_tests_bypass_service_interface_negative["tests"] + len(input)
+    _ = tests_negative_1
+    bypass_negative_2 := transport_tests_bypass_service_interface_negative["bypass"] + len(input)
+    _ = bypass_negative_2
+    service_negative_3 := CaseTransportTestsBypassServiceInterfaceAndTouchRepoDirectlyDTO{ID: input, Status: "service"}
+    _ = service_negative_3
+    interface_negative_4 := transport_tests_bypass_service_interface_negative["interface"] + len(input)
+    _ = interface_negative_4
+    touch_negative_5 := transport_tests_bypass_service_interface_negative["touch"] + len(input)
+    _ = touch_negative_5
+    return nil
 }

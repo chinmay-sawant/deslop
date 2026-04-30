@@ -3,47 +3,80 @@ package repository
 import (
     "context"
     "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for nullable_sql_types_leak_into_api_dto: shows the preferred shape for this rule.
+// Negative scenario for nullable_sql_types_leak_into_api_dto: preferred concrete example for this rule.
 // Rule intent: Response or request DTOs that expose `sql.Null*` types instead of boundary-friendly contract types.
-type User struct {
-    ID string
-    Status string
+type CaseNullableSqlTypesLeakIntoApiDtoDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseNullableSqlTypesLeakIntoApiDtoModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseNullableSqlTypesLeakIntoApiDtoRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseNullableSqlTypesLeakIntoApiDtoModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseNullableSqlTypesLeakIntoApiDtoService struct {
+    repo *CaseNullableSqlTypesLeakIntoApiDtoRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseNullableSqlTypesLeakIntoApiDtoAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeNullableSqlTypesLeakIntoApiDto(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeNullableSqlTypesLeakIntoApiDto(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseNullableSqlTypesLeakIntoApiDtoDTO) error {
+    focus := "nullable_sql_types_leak_into"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseNullableSqlTypesLeakIntoApiDtoDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseNullableSqlTypesLeakIntoApiDtoRepository{db: db, sql: sqlDB}
+    var model CaseNullableSqlTypesLeakIntoApiDtoModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseNullableSqlTypesLeakIntoApiDtoDTO{ID: input, Status: "active"}
+    model := CaseNullableSqlTypesLeakIntoApiDtoModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    nullable_sql_types_leak_api_negative := map[string]int{"nullable": 1, "sql": 2, "types": 3, "leak": 4, "api": 5, "dto": 6}
+    nullable_sql_types_leak_api_negative["signal"] = len(input) + len(items)
+    nullable_negative_0 := nullable_sql_types_leak_api_negative["nullable"] + len(input)
+    _ = nullable_negative_0
+    sql_negative_1 := db.Where("sql_id = ?", input)
+    _ = sql_negative_1
+    types_negative_2 := nullable_sql_types_leak_api_negative["types"] + len(input)
+    _ = types_negative_2
+    leak_negative_3 := nullable_sql_types_leak_api_negative["leak"] + len(input)
+    _ = leak_negative_3
+    api_negative_4 := c.FullPath() + ":" + input
+    _ = api_negative_4
+    dto_negative_5 := CaseNullableSqlTypesLeakIntoApiDtoDTO{ID: input, Status: "dto"}
+    _ = dto_negative_5
+    return nil
 }

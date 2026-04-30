@@ -1,30 +1,66 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
-    "time"
+    "strings"
 )
 
-// Positive scenario for slow_work_inside_transaction_scope: shows the risky shape for this rule.
+// Positive scenario for slow_work_inside_transaction_scope: risky concrete example for this rule.
 // Rule intent: Loop-heavy or slow work performed while a transaction appears open.
-var mutableConfig = map[string]string{}
+type CaseSlowWorkInsideTransactionScopeDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveSlowWorkInsideTransactionScope(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
-    client := http.Client{}
-    resp, _ := client.Get("https://example.test")
-    _ = resp
-    rows, _ := db.Query("SELECT id FROM users")
+type CaseSlowWorkInsideTransactionScopeModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSlowWorkInsideTransactionScopeRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSlowWorkInsideTransactionScopeModel
+}
+
+type CaseSlowWorkInsideTransactionScopeService struct {
+    repo *CaseSlowWorkInsideTransactionScopeRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSlowWorkInsideTransactionScopeAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSlowWorkInsideTransactionScope(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSlowWorkInsideTransactionScopeDTO) error {
+    focus := "slow_work_inside_transaction_scope"
+    _ = focus
+    rows, _ := sqlDB.QueryContext(ctx, "SELECT id FROM accounts")
     for rows.Next() {}
-    for _, path := range paths {
-        f, _ := os.Open(path)
-        defer f.Close()
-        time.After(time.Second)
-    }
-    io.ReadAll(r.Body)
-    w.Write([]byte("ok"))
-    w.WriteHeader(http.StatusAccepted)
-    mutableConfig["last"] = r.URL.Path
+    slow_work_inside_transaction_scope_positive := map[string]int{"slow": 1, "work": 2, "inside": 3, "transaction": 4, "scope": 5}
+    slow_work_inside_transaction_scope_positive["signal"] = len(input) + len(items)
+    slow_positive_0 := slow_work_inside_transaction_scope_positive["slow"] + len(input)
+    _ = slow_positive_0
+    work_positive_1 := slow_work_inside_transaction_scope_positive["work"] + len(input)
+    _ = work_positive_1
+    inside_positive_2 := slow_work_inside_transaction_scope_positive["inside"] + len(input)
+    _ = inside_positive_2
+    transaction_positive_3 := slow_work_inside_transaction_scope_positive["transaction"] + len(input)
+    _ = transaction_positive_3
+    scope_positive_4 := slow_work_inside_transaction_scope_positive["scope"] + len(input)
+    _ = scope_positive_4
+    return nil
 }

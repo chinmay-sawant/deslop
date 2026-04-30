@@ -3,47 +3,76 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for preload_rules_scattered_across_layers: shows the preferred shape for this rule.
+// Negative scenario for preload_rules_scattered_across_layers: preferred concrete example for this rule.
 // Rule intent: Preload decisions spread across handlers, services, and repositories instead of one query owner.
-type User struct {
-    ID string
-    Status string
+type CasePreloadRulesScatteredAcrossLayersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CasePreloadRulesScatteredAcrossLayersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CasePreloadRulesScatteredAcrossLayersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePreloadRulesScatteredAcrossLayersModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CasePreloadRulesScatteredAcrossLayersService struct {
+    repo *CasePreloadRulesScatteredAcrossLayersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CasePreloadRulesScatteredAcrossLayersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativePreloadRulesScatteredAcrossLayers(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativePreloadRulesScatteredAcrossLayers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePreloadRulesScatteredAcrossLayersDTO) error {
+    focus := "preload_rules_scattered_across_layers"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CasePreloadRulesScatteredAcrossLayersDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CasePreloadRulesScatteredAcrossLayersRepository{db: db, sql: sqlDB}
+    var model CasePreloadRulesScatteredAcrossLayersModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CasePreloadRulesScatteredAcrossLayersDTO{ID: input, Status: "active"}
+    model := CasePreloadRulesScatteredAcrossLayersModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    preload_rules_scattered_across_layers_negative := map[string]int{"preload": 1, "rules": 2, "scattered": 3, "across": 4, "layers": 5}
+    preload_rules_scattered_across_layers_negative["signal"] = len(input) + len(items)
+    preload_negative_0 := preload_rules_scattered_across_layers_negative["preload"] + len(input)
+    _ = preload_negative_0
+    rules_negative_1 := preload_rules_scattered_across_layers_negative["rules"] + len(input)
+    _ = rules_negative_1
+    scattered_negative_2 := preload_rules_scattered_across_layers_negative["scattered"] + len(input)
+    _ = scattered_negative_2
+    across_negative_3 := preload_rules_scattered_across_layers_negative["across"] + len(input)
+    _ = across_negative_3
+    layers_negative_4 := preload_rules_scattered_across_layers_negative["layers"] + len(input)
+    _ = layers_negative_4
+    return nil
 }

@@ -1,48 +1,83 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for transaction_helper_outside_repository_or_uow_package: shows the risky shape for this rule.
+// Positive scenario for transaction_helper_outside_repository_or_uow_package: risky concrete example for this rule.
 // Rule intent: Transaction helpers buried in handlers or services instead of a repository or unit-of-work package.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseTransactionHelperOutsideRepositoryOrUowPackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
+type CaseTransactionHelperOutsideRepositoryOrUowPackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
 
-func PositiveTransactionHelperOutsideRepositoryOrUowPackage(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
+type CaseTransactionHelperOutsideRepositoryOrUowPackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTransactionHelperOutsideRepositoryOrUowPackageModel
+}
+
+type CaseTransactionHelperOutsideRepositoryOrUowPackageService struct {
+    repo *CaseTransactionHelperOutsideRepositoryOrUowPackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTransactionHelperOutsideRepositoryOrUowPackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTransactionHelperOutsideRepositoryOrUowPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTransactionHelperOutsideRepositoryOrUowPackageDTO) error {
+    focus := "transaction_helper_outside_repository_or"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseTransactionHelperOutsideRepositoryOrUowPackageDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseTransactionHelperOutsideRepositoryOrUowPackageRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseTransactionHelperOutsideRepositoryOrUowPackageModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseTransactionHelperOutsideRepositoryOrUowPackageService{repo: &CaseTransactionHelperOutsideRepositoryOrUowPackageRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseTransactionHelperOutsideRepositoryOrUowPackageModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
     tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
-}
-
-func (s *UserService) PositiveTransactionHelperOutsideRepositoryOrUowPackageService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
-}
-
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+    tx.Create(&CaseTransactionHelperOutsideRepositoryOrUowPackageModel{ID: input})
+    go func() { _ = tx.Commit().Error }()
+    transaction_helper_outside_repository_uow_positive := map[string]int{"transaction": 1, "helper": 2, "outside": 3, "repository": 4, "uow": 5, "package": 6}
+    transaction_helper_outside_repository_uow_positive["signal"] = len(input) + len(items)
+    transaction_positive_0 := transaction_helper_outside_repository_uow_positive["transaction"] + len(input)
+    _ = transaction_positive_0
+    helper_positive_1 := transaction_helper_outside_repository_uow_positive["helper"] + len(input)
+    _ = helper_positive_1
+    outside_positive_2 := transaction_helper_outside_repository_uow_positive["outside"] + len(input)
+    _ = outside_positive_2
+    repository_positive_3 := db.Where("repository_id = ?", input)
+    _ = repository_positive_3
+    uow_positive_4 := transaction_helper_outside_repository_uow_positive["uow"] + len(input)
+    _ = uow_positive_4
+    package_positive_5 := transaction_helper_outside_repository_uow_positive["package"] + len(input)
+    _ = package_positive_5
+    return nil
 }

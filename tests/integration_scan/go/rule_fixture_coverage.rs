@@ -77,6 +77,35 @@ fn go_rule_fixtures_do_not_reuse_identical_text() {
 }
 
 #[test]
+fn go_rule_fixtures_do_not_reuse_normalized_scenario_shape() {
+    let fixture_root = go_rule_fixture_root();
+    let mut fixture_shapes: BTreeMap<String, Vec<String>> = BTreeMap::new();
+
+    for metadata in go_rules() {
+        for polarity in ["positive", "negative"] {
+            let path = fixture_root
+                .join(metadata.family)
+                .join(format!("{}_{}.txt", metadata.id, polarity));
+            let fixture = read_fixture(&path);
+
+            fixture_shapes
+                .entry(normalized_fixture_shape(&fixture))
+                .or_default()
+                .push(path.display().to_string());
+        }
+    }
+
+    let duplicates = fixture_shapes
+        .values()
+        .filter(|paths| paths.len() > 1)
+        .collect::<Vec<_>>();
+    assert!(
+        duplicates.is_empty(),
+        "duplicate normalized Go rule scenario shapes found: {duplicates:?}"
+    );
+}
+
+#[test]
 fn go_rule_fixture_batch_000_099_is_parseable_scenario_code() {
     assert_go_rule_fixture_batch(0, 100);
 }
@@ -203,4 +232,80 @@ fn read_fixture(path: &Path) -> String {
     fs::read_to_string(path).unwrap_or_else(|error| {
         panic!("failed to read Go rule fixture {}: {error}", path.display())
     })
+}
+
+fn normalized_fixture_shape(fixture: &str) -> String {
+    let mut without_comments = String::new();
+    for line in fixture.lines() {
+        if let Some((prefix, _)) = line.split_once("//") {
+            without_comments.push_str(prefix);
+        } else {
+            without_comments.push_str(line);
+        }
+        without_comments.push('\n');
+    }
+
+    let mut normalized_literals = String::new();
+    let mut chars = without_comments.chars().peekable();
+    while let Some(ch) = chars.next() {
+        match ch {
+            '"' => {
+                normalized_literals.push_str("\"STR\"");
+                let mut escaped = false;
+                for inner in chars.by_ref() {
+                    if escaped {
+                        escaped = false;
+                    } else if inner == '\\' {
+                        escaped = true;
+                    } else if inner == '"' {
+                        break;
+                    }
+                }
+            }
+            '`' => {
+                normalized_literals.push_str("`TAG`");
+                for inner in chars.by_ref() {
+                    if inner == '`' {
+                        break;
+                    }
+                }
+            }
+            _ => normalized_literals.push(ch),
+        }
+    }
+
+    let mut normalized_names = String::new();
+    let mut token = String::new();
+    for ch in normalized_literals.chars() {
+        if ch == '_' || ch.is_ascii_alphanumeric() {
+            token.push(ch);
+            continue;
+        }
+
+        push_normalized_token(&mut normalized_names, &token);
+        token.clear();
+        if !ch.is_whitespace() {
+            normalized_names.push(ch);
+        } else if !normalized_names.ends_with(' ') {
+            normalized_names.push(' ');
+        }
+    }
+    push_normalized_token(&mut normalized_names, &token);
+
+    normalized_names
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn push_normalized_token(output: &mut String, token: &str) {
+    if token.is_empty() {
+        return;
+    }
+
+    if token.starts_with("Positive") || token.starts_with("Negative") || token.starts_with("Case") {
+        output.push_str("FixtureName");
+    } else {
+        output.push_str(token);
+    }
 }

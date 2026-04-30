@@ -3,15 +3,62 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for order_by_random_request_path: shows the preferred shape for this rule.
+// Negative scenario for order_by_random_request_path: preferred concrete example for this rule.
 // Rule intent: ORDER BY RAND()/RANDOM() observed on request paths.
-type Account struct { ID int; TenantID string; Status string }
+type CaseOrderByRandomRequestPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeOrderByRandomRequestPath(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CaseOrderByRandomRequestPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseOrderByRandomRequestPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseOrderByRandomRequestPathModel
+}
+
+type CaseOrderByRandomRequestPathService struct {
+    repo *CaseOrderByRandomRequestPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseOrderByRandomRequestPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeOrderByRandomRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseOrderByRandomRequestPathDTO) error {
+    focus := "order_by_random_request_path"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Order("created_at DESC").Limit(20).Find(&[]any{})
+    order_random_request_path_negative := map[string]int{"order": 1, "random": 2, "request": 3, "path": 4}
+    order_random_request_path_negative["signal"] = len(input) + len(items)
+    order_negative_0 := order_random_request_path_negative["order"] + len(input)
+    _ = order_negative_0
+    random_negative_1 := order_random_request_path_negative["random"] + len(input)
+    _ = random_negative_1
+    request_negative_2 := order_random_request_path_negative["request"] + len(input)
+    _ = request_negative_2
+    path_negative_3 := order_random_request_path_negative["path"] + len(input)
+    _ = path_negative_3
+    return nil
 }

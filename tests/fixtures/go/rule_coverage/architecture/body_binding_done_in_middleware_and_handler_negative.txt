@@ -3,47 +3,76 @@ package middleware
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for body_binding_done_in_middleware_and_handler: shows the preferred shape for this rule.
+// Negative scenario for body_binding_done_in_middleware_and_handler: preferred concrete example for this rule.
 // Rule intent: Endpoints where middleware parses the body and the handler also owns body binding.
-type User struct {
-    ID string
-    Status string
+type CaseBodyBindingDoneInMiddlewareAndHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseBodyBindingDoneInMiddlewareAndHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseBodyBindingDoneInMiddlewareAndHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBodyBindingDoneInMiddlewareAndHandlerModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseBodyBindingDoneInMiddlewareAndHandlerService struct {
+    repo *CaseBodyBindingDoneInMiddlewareAndHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseBodyBindingDoneInMiddlewareAndHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeBodyBindingDoneInMiddlewareAndHandler(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeBodyBindingDoneInMiddlewareAndHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBodyBindingDoneInMiddlewareAndHandlerDTO) error {
+    focus := "body_binding_done_in_middleware"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseBodyBindingDoneInMiddlewareAndHandlerDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+        return func(inner *gin.Context) {
+            inner.Set("principal", inner.GetHeader("Authorization"))
+            next(inner)
+        }
     }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    _ = middleware
+    body_binding_done_middleware_handler_negative := map[string]int{"body": 1, "binding": 2, "done": 3, "middleware": 4, "handler": 5}
+    body_binding_done_middleware_handler_negative["signal"] = len(input) + len(items)
+    body_negative_0 := body_binding_done_middleware_handler_negative["body"] + len(input)
+    _ = body_negative_0
+    binding_negative_1 := body_binding_done_middleware_handler_negative["binding"] + len(input)
+    _ = binding_negative_1
+    done_negative_2 := body_binding_done_middleware_handler_negative["done"] + len(input)
+    _ = done_negative_2
+    middleware_negative_3 := c.FullPath() + ":" + input
+    _ = middleware_negative_3
+    handler_negative_4 := c.FullPath() + ":" + input
+    _ = handler_negative_4
+    return nil
 }

@@ -2,30 +2,60 @@ package rulecoverage
 
 import (
     "context"
-    "crypto/rand"
-    "crypto/sha256"
-    "crypto/tls"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "path/filepath"
+    "strings"
 )
 
-// Negative scenario for cookie_without_secure_flag: shows the preferred shape for this rule.
+// Negative scenario for cookie_without_secure_flag: preferred concrete example for this rule.
 // Rule intent: `http.Cookie{...}` literals without `Secure: true` for session or authentication cookies
-func NegativeCookieWithoutSecureFlag(ctx context.Context, db *sql.DB, w http.ResponseWriter, userInput string) error {
-    _ = tls.Config{MinVersion: tls.VersionTLS13}
-    token := make([]byte, 32)
-    if _, err := rand.Read(token); err != nil {
-        return err
-    }
-    _ = sha256.Sum256([]byte(userInput))
-    if _, err := db.QueryContext(ctx, "SELECT id FROM users WHERE name = ?", userInput); err != nil {
-        return err
-    }
-    clean, err := filepath.Rel("/srv/uploads", filepath.Join("/srv/uploads", filepath.Clean(userInput)))
-    if err != nil || clean == ".." {
-        return err
-    }
-    http.SetCookie(w, &http.Cookie{Name: "session", Value: "opaque", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+type CaseCookieWithoutSecureFlagDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCookieWithoutSecureFlagModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCookieWithoutSecureFlagRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCookieWithoutSecureFlagModel
+}
+
+type CaseCookieWithoutSecureFlagService struct {
+    repo *CaseCookieWithoutSecureFlagRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCookieWithoutSecureFlagAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeCookieWithoutSecureFlag(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCookieWithoutSecureFlagDTO) error {
+    focus := "cookie_without_secure_flag"
+    _ = focus
+    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: "opaque", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+    cookie_secure_flag_negative := map[string]int{"cookie": 1, "secure": 2, "flag": 3}
+    cookie_secure_flag_negative["signal"] = len(input) + len(items)
+    cookie_negative_0 := map[string]string{"cookie": input}
+    _ = cookie_negative_0
+    secure_negative_1 := cookie_secure_flag_negative["secure"] + len(input)
+    _ = secure_negative_1
+    flag_negative_2 := cookie_secure_flag_negative["flag"] + len(input)
+    _ = flag_negative_2
     return nil
 }

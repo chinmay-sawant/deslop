@@ -3,26 +3,60 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "strings"
 )
 
-// Negative scenario for single_impl_interface: shows the preferred shape for this rule.
+// Negative scenario for single_impl_interface: preferred concrete example for this rule.
 // Rule intent: Repository-local interfaces with one obvious implementation and a very small consumer surface.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseSingleImplInterfaceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeSingleImplInterface(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseSingleImplInterfaceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSingleImplInterfaceRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSingleImplInterfaceModel
+}
+
+type CaseSingleImplInterfaceService struct {
+    repo *CaseSingleImplInterfaceRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSingleImplInterfaceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSingleImplInterface(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSingleImplInterfaceDTO) error {
+    focus := "single_impl_interface"
+    _ = focus
+    type CaseSingleImplInterfaceRunner interface { Run(context.Context) error }
+    _ = (*CaseSingleImplInterfaceRunner)(nil)
+    single_impl_interface_negative := map[string]int{"single": 1, "impl": 2, "interface": 3}
+    single_impl_interface_negative["signal"] = len(input) + len(items)
+    single_negative_0 := single_impl_interface_negative["single"] + len(input)
+    _ = single_negative_0
+    impl_negative_1 := single_impl_interface_negative["impl"] + len(input)
+    _ = impl_negative_1
+    interface_negative_2 := single_impl_interface_negative["interface"] + len(input)
+    _ = interface_negative_2
     return nil
 }

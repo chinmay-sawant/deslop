@@ -3,47 +3,71 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for table_name_override_or_scope_logic_duplicated_across_models: shows the preferred shape for this rule.
+// Negative scenario for table_name_override_or_scope_logic_duplicated_across_models: preferred concrete example for this rule.
 // Rule intent: Repeated table-name or model-scope customization across many model files without a shared convention.
-type User struct {
-    ID string
-    Status string
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsService struct {
+    repo *CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeTableNameOverrideOrScopeLogicDuplicatedAcrossModels(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeTableNameOverrideOrScopeLogicDuplicatedAcrossModels(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsDTO) error {
+    focus := "table_name_override_or_scope"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsRepository{db: db, sql: sqlDB}
+    var model CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    slog.InfoContext(ctx, "table_name_override_or_scope_logic_duplicated_across_models", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    table_name_override_scope_logic_negative := map[string]int{"table": 1, "name": 2, "override": 3, "scope": 4, "logic": 5, "duplicated": 6}
+    table_name_override_scope_logic_negative["signal"] = len(input) + len(items)
+    table_negative_0 := db.Where("table_id = ?", input)
+    _ = table_negative_0
+    name_negative_1 := table_name_override_scope_logic_negative["name"] + len(input)
+    _ = name_negative_1
+    override_negative_2 := table_name_override_scope_logic_negative["override"] + len(input)
+    _ = override_negative_2
+    scope_negative_3 := table_name_override_scope_logic_negative["scope"] + len(input)
+    _ = scope_negative_3
+    logic_negative_4 := table_name_override_scope_logic_negative["logic"] + len(input)
+    _ = logic_negative_4
+    duplicated_negative_5 := table_name_override_scope_logic_negative["duplicated"] + len(input)
+    _ = duplicated_negative_5
+    return nil
 }

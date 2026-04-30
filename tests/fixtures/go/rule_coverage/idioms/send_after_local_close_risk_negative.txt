@@ -3,26 +3,65 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "strings"
 )
 
-// Negative scenario for send_after_local_close_risk: shows the preferred shape for this rule.
+// Negative scenario for send_after_local_close_risk: preferred concrete example for this rule.
 // Rule intent: A locally owned channel is closed and later used in a send expression.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseSendAfterLocalCloseRiskDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeSendAfterLocalCloseRisk(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseSendAfterLocalCloseRiskModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSendAfterLocalCloseRiskRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSendAfterLocalCloseRiskModel
+}
+
+type CaseSendAfterLocalCloseRiskService struct {
+    repo *CaseSendAfterLocalCloseRiskRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSendAfterLocalCloseRiskAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSendAfterLocalCloseRisk(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSendAfterLocalCloseRiskDTO) error {
+    focus := "send_after_local_close_risk"
+    _ = focus
+    ch := make(chan string, 1)
+    ch <- input
+    close(ch)
+    send_after_local_close_risk_negative := map[string]int{"send": 1, "after": 2, "local": 3, "close": 4, "risk": 5}
+    send_after_local_close_risk_negative["signal"] = len(input) + len(items)
+    send_negative_0 := send_after_local_close_risk_negative["send"] + len(input)
+    _ = send_negative_0
+    after_negative_1 := send_after_local_close_risk_negative["after"] + len(input)
+    _ = after_negative_1
+    local_negative_2 := send_after_local_close_risk_negative["local"] + len(input)
+    _ = local_negative_2
+    close_negative_3 := send_after_local_close_risk_negative["close"] + len(input)
+    _ = close_negative_3
+    risk_negative_4 := send_after_local_close_risk_negative["risk"] + len(input)
+    _ = risk_negative_4
     return nil
 }

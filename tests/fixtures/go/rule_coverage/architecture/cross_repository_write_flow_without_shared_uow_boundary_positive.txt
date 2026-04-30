@@ -1,48 +1,79 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for cross_repository_write_flow_without_shared_uow_boundary: shows the risky shape for this rule.
+// Positive scenario for cross_repository_write_flow_without_shared_uow_boundary: risky concrete example for this rule.
 // Rule intent: Service methods coordinating several repositories with no explicit shared transaction or consistency boundary.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
+type CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
 
-func PositiveCrossRepositoryWriteFlowWithoutSharedUowBoundary(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
+type CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryModel
+}
+
+type CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryService struct {
+    repo *CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCrossRepositoryWriteFlowWithoutSharedUowBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryDTO) error {
+    focus := "cross_repository_write_flow_without"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryService{repo: &CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
     tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
-}
-
-func (s *UserService) PositiveCrossRepositoryWriteFlowWithoutSharedUowBoundaryService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
-}
-
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+    tx.Create(&CaseCrossRepositoryWriteFlowWithoutSharedUowBoundaryModel{ID: input})
+    go func() { _ = tx.Commit().Error }()
+    cross_repository_write_flow_shared_positive := map[string]int{"cross": 1, "repository": 2, "write": 3, "flow": 4, "shared": 5, "uow": 6}
+    cross_repository_write_flow_shared_positive["signal"] = len(input) + len(items)
+    cross_positive_0 := cross_repository_write_flow_shared_positive["cross"] + len(input)
+    _ = cross_positive_0
+    repository_positive_1 := db.Where("repository_id = ?", input)
+    _ = repository_positive_1
+    write_positive_2 := cross_repository_write_flow_shared_positive["write"] + len(input)
+    _ = write_positive_2
+    flow_positive_3 := cross_repository_write_flow_shared_positive["flow"] + len(input)
+    _ = flow_positive_3
+    shared_positive_4 := cross_repository_write_flow_shared_positive["shared"] + len(input)
+    _ = shared_positive_4
+    uow_positive_5 := cross_repository_write_flow_shared_positive["uow"] + len(input)
+    _ = uow_positive_5
+    return nil
 }

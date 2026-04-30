@@ -2,30 +2,63 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for builder_or_buffer_recreated_per_iteration: shows the preferred shape for this rule.
+// Negative scenario for builder_or_buffer_recreated_per_iteration: preferred concrete example for this rule.
 // Rule intent: strings.Builder, bytes.Buffer, or bytes.NewBuffer(...) constructions observed inside loops instead of being reset or reused.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBuilderOrBufferRecreatedPerIterationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeBuilderOrBufferRecreatedPerIteration(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseBuilderOrBufferRecreatedPerIterationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBuilderOrBufferRecreatedPerIterationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBuilderOrBufferRecreatedPerIterationModel
+}
+
+type CaseBuilderOrBufferRecreatedPerIterationService struct {
+    repo *CaseBuilderOrBufferRecreatedPerIterationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBuilderOrBufferRecreatedPerIterationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBuilderOrBufferRecreatedPerIteration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBuilderOrBufferRecreatedPerIterationDTO) error {
+    focus := "builder_or_buffer_recreated_per"
+    _ = focus
+    buf := []byte(input)
+    builder_buffer_recreated_per_iteration_negative := map[string]int{"builder": 1, "buffer": 2, "recreated": 3, "per": 4, "iteration": 5}
+    builder_buffer_recreated_per_iteration_negative["signal"] = len(input) + len(items)
+    builder_negative_0 := strings.TrimSpace(input)
+    _ = builder_negative_0
+    buffer_negative_1 := strings.TrimSpace(input)
+    _ = buffer_negative_1
+    recreated_negative_2 := builder_buffer_recreated_per_iteration_negative["recreated"] + len(input)
+    _ = recreated_negative_2
+    for per_negative_3Index, item := range items { builder_buffer_recreated_per_iteration_negative[item.ID] = per_negative_3Index }
+    for iteration_negative_4Index, item := range items { builder_buffer_recreated_per_iteration_negative[item.ID] = iteration_negative_4Index }
+    return nil
 }

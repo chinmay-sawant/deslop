@@ -2,30 +2,68 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "regexp"
     "strings"
 )
 
-// Negative scenario for regexp_compile_in_hot_path: shows the preferred shape for this rule.
+// Negative scenario for regexp_compile_in_hot_path: preferred concrete example for this rule.
 // Rule intent: regexp.Compile or regexp.MustCompile observed inside obvious iterative paths.
-type record struct { ID int; Name string; Payload []byte }
+type CaseRegexpCompileInHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeRegexpCompileInHotPath(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseRegexpCompileInHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRegexpCompileInHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRegexpCompileInHotPathModel
+}
+
+type CaseRegexpCompileInHotPathService struct {
+    repo *CaseRegexpCompileInHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRegexpCompileInHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRegexpCompileInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRegexpCompileInHotPathDTO) error {
+    focus := "regexp_compile_in_hot_path"
+    _ = focus
+    buf := []byte(input)
+    matcher := regexp.MustCompile(input)
+    for _, item := range items { matcher.MatchString(item.ID) }
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    regexp_compile_hot_path_negative := map[string]int{"regexp": 1, "compile": 2, "hot": 3, "path": 4}
+    regexp_compile_hot_path_negative["signal"] = len(input) + len(items)
+    regexp_negative_0 := regexp_compile_hot_path_negative["regexp"] + len(input)
+    _ = regexp_negative_0
+    compile_negative_1 := regexp_compile_hot_path_negative["compile"] + len(input)
+    _ = compile_negative_1
+    hot_negative_2 := regexp_compile_hot_path_negative["hot"] + len(input)
+    _ = hot_negative_2
+    path_negative_3 := regexp_compile_hot_path_negative["path"] + len(input)
+    _ = path_negative_3
+    return nil
 }

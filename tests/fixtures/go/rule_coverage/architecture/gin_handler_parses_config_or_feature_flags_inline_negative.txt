@@ -3,47 +3,73 @@ package handler
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for gin_handler_parses_config_or_feature_flags_inline: shows the preferred shape for this rule.
+// Negative scenario for gin_handler_parses_config_or_feature_flags_inline: preferred concrete example for this rule.
 // Rule intent: Handlers that read feature flags, tenant configuration, or rollout toggles directly instead of using injected policy/config abstractions.
-type User struct {
-    ID string
-    Status string
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinHandlerParsesConfigOrFeatureFlagsInlineModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineService struct {
+    repo *CaseGinHandlerParsesConfigOrFeatureFlagsInlineRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeGinHandlerParsesConfigOrFeatureFlagsInline(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeGinHandlerParsesConfigOrFeatureFlagsInline(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerParsesConfigOrFeatureFlagsInlineDTO) error {
+    focus := "gin_handler_parses_config_or"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinHandlerParsesConfigOrFeatureFlagsInlineDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    cfg := map[string]string{"gin_handler_parses_config_or_feature_flags_inline": "configured at startup"}
+    _ = cfg
+    gin_handler_parses_config_feature_negative := map[string]int{"gin": 1, "handler": 2, "parses": 3, "config": 4, "feature": 5, "flags": 6}
+    gin_handler_parses_config_feature_negative["signal"] = len(input) + len(items)
+    gin_negative_0 := c.FullPath() + ":" + input
+    _ = gin_negative_0
+    handler_negative_1 := c.FullPath() + ":" + input
+    _ = handler_negative_1
+    parses_negative_2 := gin_handler_parses_config_feature_negative["parses"] + len(input)
+    _ = parses_negative_2
+    config_negative_3 := gin_handler_parses_config_feature_negative["config"] + len(input)
+    _ = config_negative_3
+    feature_negative_4 := gin_handler_parses_config_feature_negative["feature"] + len(input)
+    _ = feature_negative_4
+    flags_negative_5 := gin_handler_parses_config_feature_negative["flags"] + len(input)
+    _ = flags_negative_5
+    return nil
 }

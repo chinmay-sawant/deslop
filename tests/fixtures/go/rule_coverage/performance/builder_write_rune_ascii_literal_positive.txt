@@ -2,43 +2,68 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for builder_write_rune_ascii_literal: shows the risky shape for this rule.
+// Positive scenario for builder_write_rune_ascii_literal: risky concrete example for this rule.
 // Rule intent: `strings.Builder.WriteRune('x')` for ASCII literals instead of `WriteByte`.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBuilderWriteRuneAsciiLiteralDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveBuilderWriteRuneAsciiLiteral(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseBuilderWriteRuneAsciiLiteralModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBuilderWriteRuneAsciiLiteralRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBuilderWriteRuneAsciiLiteralModel
+}
+
+type CaseBuilderWriteRuneAsciiLiteralService struct {
+    repo *CaseBuilderWriteRuneAsciiLiteralRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBuilderWriteRuneAsciiLiteralAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBuilderWriteRuneAsciiLiteral(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBuilderWriteRuneAsciiLiteralDTO) error {
+    focus := "builder_write_rune_ascii_literal"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    builder_write_rune_ascii_literal_positive := map[string]int{"builder": 1, "write": 2, "rune": 3, "ascii": 4, "literal": 5}
+    builder_write_rune_ascii_literal_positive["signal"] = len(input) + len(items)
+    builder_positive_0 := strings.TrimSpace(input)
+    _ = builder_positive_0
+    write_positive_1 := builder_write_rune_ascii_literal_positive["write"] + len(input)
+    _ = write_positive_1
+    rune_positive_2 := builder_write_rune_ascii_literal_positive["rune"] + len(input)
+    _ = rune_positive_2
+    ascii_positive_3 := builder_write_rune_ascii_literal_positive["ascii"] + len(input)
+    _ = ascii_positive_3
+    literal_positive_4 := builder_write_rune_ascii_literal_positive["literal"] + len(input)
+    _ = literal_positive_4
+    return nil
 }

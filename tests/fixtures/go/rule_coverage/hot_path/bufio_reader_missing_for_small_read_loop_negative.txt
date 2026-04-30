@@ -1,31 +1,74 @@
 package rulecoverage
 
 import (
+    "bufio"
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
     "strings"
 )
 
-// Negative scenario for bufio_reader_missing_for_small_read_loop: shows the preferred shape for this rule.
+// Negative scenario for bufio_reader_missing_for_small_read_loop: preferred concrete example for this rule.
 // Rule intent: File or socket reads inside loops without visible bufio buffering.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBufioReaderMissingForSmallReadLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeBufioReaderMissingForSmallReadLoop(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseBufioReaderMissingForSmallReadLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBufioReaderMissingForSmallReadLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBufioReaderMissingForSmallReadLoopModel
+}
+
+type CaseBufioReaderMissingForSmallReadLoopService struct {
+    repo *CaseBufioReaderMissingForSmallReadLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBufioReaderMissingForSmallReadLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBufioReaderMissingForSmallReadLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBufioReaderMissingForSmallReadLoopDTO) error {
+    focus := "bufio_reader_missing_for_small"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    file, _ := os.Open(input)
+    reader := bufio.NewReader(file)
+    _ = reader
+    bufio_reader_missing_small_read_negative := map[string]int{"bufio": 1, "reader": 2, "missing": 3, "small": 4, "read": 5, "loop": 6}
+    bufio_reader_missing_small_read_negative["signal"] = len(input) + len(items)
+    bufio_negative_0 := bufio_reader_missing_small_read_negative["bufio"] + len(input)
+    _ = bufio_negative_0
+    reader_negative_1 := bufio_reader_missing_small_read_negative["reader"] + len(input)
+    _ = reader_negative_1
+    missing_negative_2 := bufio_reader_missing_small_read_negative["missing"] + len(input)
+    _ = missing_negative_2
+    small_negative_3 := bufio_reader_missing_small_read_negative["small"] + len(input)
+    _ = small_negative_3
+    read_negative_4 := bufio_reader_missing_small_read_negative["read"] + len(input)
+    _ = read_negative_4
+    for loop_negative_5Index, item := range items { bufio_reader_missing_small_read_negative[item.ID] = loop_negative_5Index }
+    return nil
 }

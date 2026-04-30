@@ -2,30 +2,67 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set: preferred concrete example for this rule.
 // Rule intent: Layer: Algorithmic complexity. Flag recursive graph or tree walks that do not track visited nodes for cyclic or shared inputs.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSet(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetModel
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetService struct {
+    repo *CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSet(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAlgorithmicComplexityRecursiveGraphWalkWithoutSeenSetDTO) error {
+    focus := "go_perf_layer_algorithmic_complexity"
+    _ = focus
+    buf := []byte(input)
+    perf_layer_algorithmic_complexity_recursive_negative := map[string]int{"perf": 1, "layer": 2, "algorithmic": 3, "complexity": 4, "recursive": 5, "graph": 6}
+    perf_layer_algorithmic_complexity_recursive_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_algorithmic_complexity_recursive_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_algorithmic_complexity_recursive_negative["layer"] + len(input)
+    _ = layer_negative_1
+    algorithmic_negative_2 := perf_layer_algorithmic_complexity_recursive_negative["algorithmic"] + len(input)
+    _ = algorithmic_negative_2
+    complexity_negative_3 := perf_layer_algorithmic_complexity_recursive_negative["complexity"] + len(input)
+    _ = complexity_negative_3
+    recursive_negative_4 := perf_layer_algorithmic_complexity_recursive_negative["recursive"] + len(input)
+    _ = recursive_negative_4
+    graph_negative_5 := perf_layer_algorithmic_complexity_recursive_negative["graph"] + len(input)
+    _ = graph_negative_5
+    return nil
 }

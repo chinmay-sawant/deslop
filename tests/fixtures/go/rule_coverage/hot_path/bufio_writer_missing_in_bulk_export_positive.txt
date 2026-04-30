@@ -2,43 +2,72 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
     "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "log"
+    "net/http"
+    "os"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for bufio_writer_missing_in_bulk_export: shows the risky shape for this rule.
+// Positive scenario for bufio_writer_missing_in_bulk_export: risky concrete example for this rule.
 // Rule intent: File or socket writes inside loops without visible bufio buffering.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBufioWriterMissingInBulkExportDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveBufioWriterMissingInBulkExport(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseBufioWriterMissingInBulkExportModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBufioWriterMissingInBulkExportRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBufioWriterMissingInBulkExportModel
+}
+
+type CaseBufioWriterMissingInBulkExportService struct {
+    repo *CaseBufioWriterMissingInBulkExportRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBufioWriterMissingInBulkExportAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBufioWriterMissingInBulkExport(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBufioWriterMissingInBulkExportDTO) error {
+    focus := "bufio_writer_missing_in_bulk"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    file, _ := os.Open(input)
+    io.ReadAll(file)
+    bufio_writer_missing_bulk_export_positive := map[string]int{"bufio": 1, "writer": 2, "missing": 3, "bulk": 4, "export": 5}
+    bufio_writer_missing_bulk_export_positive["signal"] = len(input) + len(items)
+    bufio_positive_0 := bufio_writer_missing_bulk_export_positive["bufio"] + len(input)
+    _ = bufio_positive_0
+    writer_positive_1 := bufio_writer_missing_bulk_export_positive["writer"] + len(input)
+    _ = writer_positive_1
+    missing_positive_2 := bufio_writer_missing_bulk_export_positive["missing"] + len(input)
+    _ = missing_positive_2
+    bulk_positive_3 := bufio_writer_missing_bulk_export_positive["bulk"] + len(input)
+    _ = bulk_positive_3
+    export_positive_4 := bufio_writer_missing_bulk_export_positive["export"] + len(input)
+    _ = export_positive_4
+    return nil
 }

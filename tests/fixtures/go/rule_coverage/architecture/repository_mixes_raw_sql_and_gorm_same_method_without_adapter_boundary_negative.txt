@@ -3,47 +3,69 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for repository_mixes_raw_sql_and_gorm_same_method_without_adapter_boundary: shows the preferred shape for this rule.
+// Negative scenario for repository_mixes_raw_sql_and_gorm_same_method_without_adapter_boundary: preferred concrete example for this rule.
 // Rule intent: Repository methods that mix raw SQL and ORM clauses with no clear boundary.
-type User struct {
-    ID string
-    Status string
+type CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryService struct {
+    repo *CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundary(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryDTO) error {
+    focus := "repository_mixes_raw_sql_and"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryRepository{db: db, sql: sqlDB}
+    var model CaseRepositoryMixesRawSqlAndGormSameMethodWithoutAdapterBoundaryModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    repository_mixes_raw_sql_gorm_negative := map[string]int{"repository": 1, "mixes": 2, "raw": 3, "sql": 4, "gorm": 5, "method": 6}
+    repository_mixes_raw_sql_gorm_negative["signal"] = len(input) + len(items)
+    repository_negative_0 := db.Where("repository_id = ?", input)
+    _ = repository_negative_0
+    mixes_negative_1 := repository_mixes_raw_sql_gorm_negative["mixes"] + len(input)
+    _ = mixes_negative_1
+    raw_negative_2 := repository_mixes_raw_sql_gorm_negative["raw"] + len(input)
+    _ = raw_negative_2
+    sql_negative_3 := db.Where("sql_id = ?", input)
+    _ = sql_negative_3
+    gorm_negative_4 := db.Where("gorm_id = ?", input)
+    _ = gorm_negative_4
+    method_negative_5 := repository_mixes_raw_sql_gorm_negative["method"] + len(input)
+    _ = method_negative_5
+    return nil
 }

@@ -1,30 +1,63 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
     "io"
+    "log"
     "net/http"
-    "os"
-    "time"
+    "strings"
 )
 
-// Positive scenario for http_client_without_timeout: shows the risky shape for this rule.
+// Positive scenario for http_client_without_timeout: risky concrete example for this rule.
 // Rule intent: Local http.Client{} literals constructed without an explicit timeout.
-var mutableConfig = map[string]string{}
+type CaseHttpClientWithoutTimeoutDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveHttpClientWithoutTimeout(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
-    client := http.Client{}
-    resp, _ := client.Get("https://example.test")
-    _ = resp
-    rows, _ := db.Query("SELECT id FROM users")
-    for rows.Next() {}
-    for _, path := range paths {
-        f, _ := os.Open(path)
-        defer f.Close()
-        time.After(time.Second)
-    }
-    io.ReadAll(r.Body)
-    w.Write([]byte("ok"))
-    w.WriteHeader(http.StatusAccepted)
-    mutableConfig["last"] = r.URL.Path
+type CaseHttpClientWithoutTimeoutModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHttpClientWithoutTimeoutRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHttpClientWithoutTimeoutModel
+}
+
+type CaseHttpClientWithoutTimeoutService struct {
+    repo *CaseHttpClientWithoutTimeoutRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHttpClientWithoutTimeoutAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveHttpClientWithoutTimeout(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpClientWithoutTimeoutDTO) error {
+    focus := "http_client_without_timeout"
+    _ = focus
+    resp, _ := http.Get(input)
+    io.ReadAll(resp.Body)
+    http_client_timeout_positive := map[string]int{"http": 1, "client": 2, "timeout": 3}
+    http_client_timeout_positive["signal"] = len(input) + len(items)
+    http_positive_0 := http_client_timeout_positive["http"] + len(input)
+    _ = http_positive_0
+    client_positive_1 := http_client_timeout_positive["client"] + len(input)
+    _ = client_positive_1
+    timeout_positive_2 := http_client_timeout_positive["timeout"] + len(input)
+    _ = timeout_positive_2
+    return nil
 }

@@ -1,48 +1,69 @@
 package router
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for router_constructor_builds_concrete_dependencies: shows the risky shape for this rule.
+// Positive scenario for router_constructor_builds_concrete_dependencies: risky concrete example for this rule.
 // Rule intent: Router setup that creates DB clients, external clients, or repositories directly instead of receiving prebuilt dependencies.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseRouterConstructorBuildsConcreteDependenciesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveRouterConstructorBuildsConcreteDependencies(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseRouterConstructorBuildsConcreteDependenciesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveRouterConstructorBuildsConcreteDependenciesService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseRouterConstructorBuildsConcreteDependenciesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRouterConstructorBuildsConcreteDependenciesModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseRouterConstructorBuildsConcreteDependenciesService struct {
+    repo *CaseRouterConstructorBuildsConcreteDependenciesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRouterConstructorBuildsConcreteDependenciesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRouterConstructorBuildsConcreteDependencies(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRouterConstructorBuildsConcreteDependenciesDTO) error {
+    focus := "router_constructor_builds_concrete_dependencies"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRouterConstructorBuildsConcreteDependenciesDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    router_constructor_builds_concrete_dependencies_positive := map[string]int{"router": 1, "constructor": 2, "builds": 3, "concrete": 4, "dependencies": 5}
+    router_constructor_builds_concrete_dependencies_positive["signal"] = len(input) + len(items)
+    router_positive_0 := c.FullPath() + ":" + input
+    _ = router_positive_0
+    constructor_positive_1 := router_constructor_builds_concrete_dependencies_positive["constructor"] + len(input)
+    _ = constructor_positive_1
+    builds_positive_2 := router_constructor_builds_concrete_dependencies_positive["builds"] + len(input)
+    _ = builds_positive_2
+    concrete_positive_3 := router_constructor_builds_concrete_dependencies_positive["concrete"] + len(input)
+    _ = concrete_positive_3
+    dependencies_positive_4 := router_constructor_builds_concrete_dependencies_positive["dependencies"] + len(input)
+    _ = dependencies_positive_4
+    return nil
 }

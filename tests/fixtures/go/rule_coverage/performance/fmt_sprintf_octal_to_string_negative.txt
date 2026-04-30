@@ -2,30 +2,67 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strconv"
     "strings"
 )
 
-// Negative scenario for fmt_sprintf_octal_to_string: shows the preferred shape for this rule.
+// Negative scenario for fmt_sprintf_octal_to_string: preferred concrete example for this rule.
 // Rule intent: `fmt.Sprintf("%o", ...)` instead of direct `strconv` integer formatting.
-type record struct { ID int; Name string; Payload []byte }
+type CaseFmtSprintfOctalToStringDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeFmtSprintfOctalToString(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+type CaseFmtSprintfOctalToStringModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtSprintfOctalToStringRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtSprintfOctalToStringModel
+}
+
+type CaseFmtSprintfOctalToStringService struct {
+    repo *CaseFmtSprintfOctalToStringRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtSprintfOctalToStringAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeFmtSprintfOctalToString(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtSprintfOctalToStringDTO) error {
+    focus := "fmt_sprintf_octal_to_string"
+    _ = focus
+    buf := []byte(input)
     var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+    b.WriteString(input)
+    b.WriteString(strconv.Itoa(len(items)))
+    fmt_sprintf_octal_string_negative := map[string]int{"fmt": 1, "sprintf": 2, "octal": 3, "string": 4}
+    fmt_sprintf_octal_string_negative["signal"] = len(input) + len(items)
+    fmt_negative_0 := fmt_sprintf_octal_string_negative["fmt"] + len(input)
+    _ = fmt_negative_0
+    sprintf_negative_1 := fmt_sprintf_octal_string_negative["sprintf"] + len(input)
+    _ = sprintf_negative_1
+    octal_negative_2 := fmt_sprintf_octal_string_negative["octal"] + len(input)
+    _ = octal_negative_2
+    string_negative_3 := strings.TrimSpace(input)
+    _ = string_negative_3
+    return nil
 }

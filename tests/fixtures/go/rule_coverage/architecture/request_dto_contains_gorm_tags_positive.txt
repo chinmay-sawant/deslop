@@ -1,48 +1,74 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for request_dto_contains_gorm_tags: shows the risky shape for this rule.
+// Positive scenario for request_dto_contains_gorm_tags: risky concrete example for this rule.
 // Rule intent: Request DTOs that carry persistence-only `gorm` tags.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseRequestDtoContainsGormTagsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveRequestDtoContainsGormTags(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseRequestDtoContainsGormTagsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveRequestDtoContainsGormTagsService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseRequestDtoContainsGormTagsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRequestDtoContainsGormTagsModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseRequestDtoContainsGormTagsService struct {
+    repo *CaseRequestDtoContainsGormTagsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRequestDtoContainsGormTagsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRequestDtoContainsGormTags(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestDtoContainsGormTagsDTO) error {
+    focus := "request_dto_contains_gorm_tags"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseRequestDtoContainsGormTagsRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRequestDtoContainsGormTagsModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseRequestDtoContainsGormTagsService{repo: &CaseRequestDtoContainsGormTagsRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseRequestDtoContainsGormTagsModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    request_dto_contains_gorm_tags_positive := map[string]int{"request": 1, "dto": 2, "contains": 3, "gorm": 4, "tags": 5}
+    request_dto_contains_gorm_tags_positive["signal"] = len(input) + len(items)
+    request_positive_0 := request_dto_contains_gorm_tags_positive["request"] + len(input)
+    _ = request_positive_0
+    dto_positive_1 := CaseRequestDtoContainsGormTagsDTO{ID: input, Status: "dto"}
+    _ = dto_positive_1
+    contains_positive_2 := strings.TrimSpace(input)
+    _ = contains_positive_2
+    gorm_positive_3 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_3
+    tags_positive_4 := request_dto_contains_gorm_tags_positive["tags"] + len(input)
+    _ = tags_positive_4
+    return nil
 }

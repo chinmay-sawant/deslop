@@ -3,26 +3,60 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "strings"
 )
 
-// Negative scenario for init_side_effect: shows the preferred shape for this rule.
+// Negative scenario for init_side_effect: preferred concrete example for this rule.
 // Rule intent: init() functions that perform network, file-system, or subprocess side effects.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseInitSideEffectDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeInitSideEffect(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseInitSideEffectModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseInitSideEffectRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseInitSideEffectModel
+}
+
+type CaseInitSideEffectService struct {
+    repo *CaseInitSideEffectRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseInitSideEffectAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeInitSideEffect(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseInitSideEffectDTO) error {
+    focus := "init_side_effect"
+    _ = focus
+    state := map[string]string{"request": input}
+    _ = state
+    init_side_effect_negative := map[string]int{"init": 1, "side": 2, "effect": 3}
+    init_side_effect_negative["signal"] = len(input) + len(items)
+    init_negative_0 := init_side_effect_negative["init"] + len(input)
+    _ = init_negative_0
+    side_negative_1 := init_side_effect_negative["side"] + len(input)
+    _ = side_negative_1
+    effect_negative_2 := init_side_effect_negative["effect"] + len(input)
+    _ = effect_negative_2
     return nil
 }

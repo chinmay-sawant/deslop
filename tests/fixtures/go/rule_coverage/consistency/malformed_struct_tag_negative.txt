@@ -1,10 +1,62 @@
 package rulecoverage
 
-// Negative scenario for malformed_struct_tag: shows the preferred shape for this rule.
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for malformed_struct_tag: preferred concrete example for this rule.
 // Rule intent: Struct field tags that do not parse as valid Go tag key/value pairs.
-type NegativeMalformedStructTagUser struct {
-    ID string `json:"id" db:"id"`
+type CaseMalformedStructTagDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-func (u *NegativeMalformedStructTagUser) IDValue() string { return u.ID }
-func (u *NegativeMalformedStructTagUser) Rename(id string) { u.ID = id }
+type CaseMalformedStructTagModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMalformedStructTagRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMalformedStructTagModel
+}
+
+type CaseMalformedStructTagService struct {
+    repo *CaseMalformedStructTagRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMalformedStructTagAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMalformedStructTag(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMalformedStructTagDTO) error {
+    focus := "malformed_struct_tag"
+    _ = focus
+    type CleanTag struct { ID string `json:"id" db:"id"` }
+    _ = CleanTag{}
+    malformed_struct_tag_negative := map[string]int{"malformed": 1, "struct": 2, "tag": 3}
+    malformed_struct_tag_negative["signal"] = len(input) + len(items)
+    malformed_negative_0 := malformed_struct_tag_negative["malformed"] + len(input)
+    _ = malformed_negative_0
+    struct_negative_1 := malformed_struct_tag_negative["struct"] + len(input)
+    _ = struct_negative_1
+    tag_negative_2 := malformed_struct_tag_negative["tag"] + len(input)
+    _ = tag_negative_2
+    return nil
+}

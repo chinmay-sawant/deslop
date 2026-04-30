@@ -3,26 +3,67 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "strings"
 )
 
-// Negative scenario for slow_work_inside_transaction_scope: shows the preferred shape for this rule.
+// Negative scenario for slow_work_inside_transaction_scope: preferred concrete example for this rule.
 // Rule intent: Loop-heavy or slow work performed while a transaction appears open.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseSlowWorkInsideTransactionScopeDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeSlowWorkInsideTransactionScope(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
+type CaseSlowWorkInsideTransactionScopeModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSlowWorkInsideTransactionScopeRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSlowWorkInsideTransactionScopeModel
+}
+
+type CaseSlowWorkInsideTransactionScopeService struct {
+    repo *CaseSlowWorkInsideTransactionScopeRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSlowWorkInsideTransactionScopeAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSlowWorkInsideTransactionScope(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSlowWorkInsideTransactionScopeDTO) error {
+    focus := "slow_work_inside_transaction_scope"
+    _ = focus
+    rows, err := sqlDB.QueryContext(ctx, "SELECT id FROM accounts")
     if err != nil { return err }
     defer rows.Close()
     for rows.Next() {}
     if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+    slow_work_inside_transaction_scope_negative := map[string]int{"slow": 1, "work": 2, "inside": 3, "transaction": 4, "scope": 5}
+    slow_work_inside_transaction_scope_negative["signal"] = len(input) + len(items)
+    slow_negative_0 := slow_work_inside_transaction_scope_negative["slow"] + len(input)
+    _ = slow_negative_0
+    work_negative_1 := slow_work_inside_transaction_scope_negative["work"] + len(input)
+    _ = work_negative_1
+    inside_negative_2 := slow_work_inside_transaction_scope_negative["inside"] + len(input)
+    _ = inside_negative_2
+    transaction_negative_3 := slow_work_inside_transaction_scope_negative["transaction"] + len(input)
+    _ = transaction_negative_3
+    scope_negative_4 := slow_work_inside_transaction_scope_negative["scope"] + len(input)
+    _ = scope_negative_4
     return nil
 }

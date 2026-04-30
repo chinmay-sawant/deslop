@@ -3,47 +3,78 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for gorm_locking_clauses_built_outside_repository: shows the preferred shape for this rule.
+// Negative scenario for gorm_locking_clauses_built_outside_repository: preferred concrete example for this rule.
 // Rule intent: `FOR UPDATE` or similar locking behavior built in handlers or services instead of repository-owned methods.
-type User struct {
-    ID string
-    Status string
+type CaseGormLockingClausesBuiltOutsideRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseGormLockingClausesBuiltOutsideRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseGormLockingClausesBuiltOutsideRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormLockingClausesBuiltOutsideRepositoryModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseGormLockingClausesBuiltOutsideRepositoryService struct {
+    repo *CaseGormLockingClausesBuiltOutsideRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseGormLockingClausesBuiltOutsideRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeGormLockingClausesBuiltOutsideRepository(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeGormLockingClausesBuiltOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormLockingClausesBuiltOutsideRepositoryDTO) error {
+    focus := "gorm_locking_clauses_built_outside"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGormLockingClausesBuiltOutsideRepositoryDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseGormLockingClausesBuiltOutsideRepositoryRepository{db: db, sql: sqlDB}
+    var model CaseGormLockingClausesBuiltOutsideRepositoryModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseGormLockingClausesBuiltOutsideRepositoryDTO{ID: input, Status: "active"}
+    model := CaseGormLockingClausesBuiltOutsideRepositoryModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    gorm_locking_clauses_built_outside_negative := map[string]int{"gorm": 1, "locking": 2, "clauses": 3, "built": 4, "outside": 5, "repository": 6}
+    gorm_locking_clauses_built_outside_negative["signal"] = len(input) + len(items)
+    gorm_negative_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_negative_0
+    locking_negative_1 := gorm_locking_clauses_built_outside_negative["locking"] + len(input)
+    _ = locking_negative_1
+    clauses_negative_2 := gorm_locking_clauses_built_outside_negative["clauses"] + len(input)
+    _ = clauses_negative_2
+    built_negative_3 := gorm_locking_clauses_built_outside_negative["built"] + len(input)
+    _ = built_negative_3
+    outside_negative_4 := gorm_locking_clauses_built_outside_negative["outside"] + len(input)
+    _ = outside_negative_4
+    repository_negative_5 := db.Where("repository_id = ?", input)
+    _ = repository_negative_5
+    return nil
 }

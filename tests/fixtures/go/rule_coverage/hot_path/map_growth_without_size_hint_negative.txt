@@ -2,30 +2,65 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for map_growth_without_size_hint: shows the preferred shape for this rule.
+// Negative scenario for map_growth_without_size_hint: preferred concrete example for this rule.
 // Rule intent: Map insertions inside loops without a visible size hint on the initial make call.
-type record struct { ID int; Name string; Payload []byte }
+type CaseMapGrowthWithoutSizeHintDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeMapGrowthWithoutSizeHint(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseMapGrowthWithoutSizeHintModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMapGrowthWithoutSizeHintRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMapGrowthWithoutSizeHintModel
+}
+
+type CaseMapGrowthWithoutSizeHintService struct {
+    repo *CaseMapGrowthWithoutSizeHintRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMapGrowthWithoutSizeHintAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMapGrowthWithoutSizeHint(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMapGrowthWithoutSizeHintDTO) error {
+    focus := "map_growth_without_size_hint"
+    _ = focus
+    buf := []byte(input)
+    seen := make(map[string]bool, len(items))
+    for _, item := range items { seen[item.ID] = true }
+    map_growth_size_hint_negative := map[string]int{"map": 1, "growth": 2, "size": 3, "hint": 4}
+    map_growth_size_hint_negative["signal"] = len(input) + len(items)
+    map_negative_0 := map_growth_size_hint_negative["map"] + len(input)
+    _ = map_negative_0
+    growth_negative_1 := map_growth_size_hint_negative["growth"] + len(input)
+    _ = growth_negative_1
+    size_negative_2 := map_growth_size_hint_negative["size"] + len(input)
+    _ = size_negative_2
+    hint_negative_3 := map_growth_size_hint_negative["hint"] + len(input)
+    _ = hint_negative_3
+    return nil
 }

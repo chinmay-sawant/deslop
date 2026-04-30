@@ -1,48 +1,71 @@
 package handler
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for gin_handler_uses_action_param_switch_for_many_use_cases: shows the risky shape for this rule.
+// Positive scenario for gin_handler_uses_action_param_switch_for_many_use_cases: risky concrete example for this rule.
 // Rule intent: Handlers that branch on `action`, `type`, or mode strings to serve many workflows from one endpoint function.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseGinHandlerUsesActionParamSwitchForManyUseCasesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveGinHandlerUsesActionParamSwitchForManyUseCases(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseGinHandlerUsesActionParamSwitchForManyUseCasesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveGinHandlerUsesActionParamSwitchForManyUseCasesService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseGinHandlerUsesActionParamSwitchForManyUseCasesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinHandlerUsesActionParamSwitchForManyUseCasesModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseGinHandlerUsesActionParamSwitchForManyUseCasesService struct {
+    repo *CaseGinHandlerUsesActionParamSwitchForManyUseCasesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGinHandlerUsesActionParamSwitchForManyUseCasesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGinHandlerUsesActionParamSwitchForManyUseCases(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerUsesActionParamSwitchForManyUseCasesDTO) error {
+    focus := "gin_handler_uses_action_param"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinHandlerUsesActionParamSwitchForManyUseCasesDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    gin_handler_uses_action_param_positive := map[string]int{"gin": 1, "handler": 2, "uses": 3, "action": 4, "param": 5, "switch": 6}
+    gin_handler_uses_action_param_positive["signal"] = len(input) + len(items)
+    gin_positive_0 := c.FullPath() + ":" + input
+    _ = gin_positive_0
+    handler_positive_1 := c.FullPath() + ":" + input
+    _ = handler_positive_1
+    uses_positive_2 := gin_handler_uses_action_param_positive["uses"] + len(input)
+    _ = uses_positive_2
+    action_positive_3 := gin_handler_uses_action_param_positive["action"] + len(input)
+    _ = action_positive_3
+    param_positive_4 := gin_handler_uses_action_param_positive["param"] + len(input)
+    _ = param_positive_4
+    switch_positive_5 := gin_handler_uses_action_param_positive["switch"] + len(input)
+    _ = switch_positive_5
+    return nil
 }

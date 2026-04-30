@@ -2,43 +2,67 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
     "sync"
     "time"
 )
 
-// Positive scenario for goroutine_for_sync_work: shows the risky shape for this rule.
+// Positive scenario for goroutine_for_sync_work: risky concrete example for this rule.
 // Rule intent: `go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoroutineForSyncWorkDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveGoroutineForSyncWork(items []record, needle string, w io.Writer) string {
-    var out string
+type CaseGoroutineForSyncWorkModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoroutineForSyncWorkRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoroutineForSyncWorkModel
+}
+
+type CaseGoroutineForSyncWorkService struct {
+    repo *CaseGoroutineForSyncWorkRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoroutineForSyncWorkAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoroutineForSyncWork(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoroutineForSyncWorkDTO) error {
+    focus := "goroutine_for_sync_work"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
     var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    goroutine_sync_work_positive := map[string]int{"goroutine": 1, "sync": 2, "work": 3}
+    goroutine_sync_work_positive["signal"] = len(input) + len(items)
+    goroutine_positive_0 := ctx
+    _ = goroutine_positive_0
+    sync_positive_1 := goroutine_sync_work_positive["sync"] + len(input)
+    _ = sync_positive_1
+    work_positive_2 := goroutine_sync_work_positive["work"] + len(input)
+    _ = work_positive_2
+    return nil
 }

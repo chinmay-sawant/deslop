@@ -1,48 +1,69 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for repository_returns_gorm_query_builder: shows the risky shape for this rule.
+// Positive scenario for repository_returns_gorm_query_builder: risky concrete example for this rule.
 // Rule intent: Repositories that return partially built `*gorm.DB` chains for callers to finish.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseRepositoryReturnsGormQueryBuilderDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveRepositoryReturnsGormQueryBuilder(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseRepositoryReturnsGormQueryBuilderModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveRepositoryReturnsGormQueryBuilderService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseRepositoryReturnsGormQueryBuilderRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryReturnsGormQueryBuilderModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseRepositoryReturnsGormQueryBuilderService struct {
+    repo *CaseRepositoryReturnsGormQueryBuilderRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryReturnsGormQueryBuilderAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepositoryReturnsGormQueryBuilder(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsGormQueryBuilderDTO) error {
+    focus := "repository_returns_gorm_query_builder"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseRepositoryReturnsGormQueryBuilderRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryReturnsGormQueryBuilderModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    repository_returns_gorm_query_builder_positive := map[string]int{"repository": 1, "returns": 2, "gorm": 3, "query": 4, "builder": 5}
+    repository_returns_gorm_query_builder_positive["signal"] = len(input) + len(items)
+    repository_positive_0 := db.Where("repository_id = ?", input)
+    _ = repository_positive_0
+    returns_positive_1 := repository_returns_gorm_query_builder_positive["returns"] + len(input)
+    _ = returns_positive_1
+    gorm_positive_2 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_2
+    query_positive_3 := db.Where("query_id = ?", input)
+    _ = query_positive_3
+    builder_positive_4 := strings.TrimSpace(input)
+    _ = builder_positive_4
+    return nil
 }

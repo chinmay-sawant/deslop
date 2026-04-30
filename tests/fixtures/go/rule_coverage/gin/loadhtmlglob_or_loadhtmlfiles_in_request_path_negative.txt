@@ -1,20 +1,64 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for loadhtmlglob_or_loadhtmlfiles_in_request_path: shows the preferred shape for this rule.
+// Negative scenario for loadhtmlglob_or_loadhtmlfiles_in_request_path: preferred concrete example for this rule.
 // Rule intent: LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization.
-type requestBody struct { ID string `json:"id"` }
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeLoadhtmlglobOrLoadhtmlfilesInRequestPath(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathModel
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathService struct {
+    repo *CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeLoadhtmlglobOrLoadhtmlfilesInRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathDTO) error {
+    focus := "loadhtmlglob_or_loadhtmlfiles_in_request"
+    _ = focus
+    templateCache := map[string]string{"page": "parsed at startup"}
+    _ = templateCache
+    loadhtmlglob_loadhtmlfiles_request_path_negative := map[string]int{"loadhtmlglob": 1, "loadhtmlfiles": 2, "request": 3, "path": 4}
+    loadhtmlglob_loadhtmlfiles_request_path_negative["signal"] = len(input) + len(items)
+    loadhtmlglob_negative_0 := loadhtmlglob_loadhtmlfiles_request_path_negative["loadhtmlglob"] + len(input)
+    _ = loadhtmlglob_negative_0
+    loadhtmlfiles_negative_1 := loadhtmlglob_loadhtmlfiles_request_path_negative["loadhtmlfiles"] + len(input)
+    _ = loadhtmlfiles_negative_1
+    request_negative_2 := loadhtmlglob_loadhtmlfiles_request_path_negative["request"] + len(input)
+    _ = request_negative_2
+    path_negative_3 := loadhtmlglob_loadhtmlfiles_request_path_negative["path"] + len(input)
+    _ = path_negative_3
+    return nil
 }

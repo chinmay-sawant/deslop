@@ -1,48 +1,79 @@
 package handler
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for gin_handler_runs_authorization_business_rules_inline: shows the risky shape for this rule.
+// Positive scenario for gin_handler_runs_authorization_business_rules_inline: risky concrete example for this rule.
 // Rule intent: Handlers that contain complex permission matrices instead of delegating to policy or service logic.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseGinHandlerRunsAuthorizationBusinessRulesInlineDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveGinHandlerRunsAuthorizationBusinessRulesInline(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseGinHandlerRunsAuthorizationBusinessRulesInlineModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveGinHandlerRunsAuthorizationBusinessRulesInlineService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseGinHandlerRunsAuthorizationBusinessRulesInlineRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinHandlerRunsAuthorizationBusinessRulesInlineModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseGinHandlerRunsAuthorizationBusinessRulesInlineService struct {
+    repo *CaseGinHandlerRunsAuthorizationBusinessRulesInlineRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGinHandlerRunsAuthorizationBusinessRulesInlineAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGinHandlerRunsAuthorizationBusinessRulesInline(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerRunsAuthorizationBusinessRulesInlineDTO) error {
+    focus := "gin_handler_runs_authorization_business"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinHandlerRunsAuthorizationBusinessRulesInlineDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    service := &CaseGinHandlerRunsAuthorizationBusinessRulesInlineService{repo: &CaseGinHandlerRunsAuthorizationBusinessRulesInlineRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseGinHandlerRunsAuthorizationBusinessRulesInlineModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    log.Printf("gin_handler_runs_authorization_business_rules_inline tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    gin_handler_runs_authorization_business_positive := map[string]int{"gin": 1, "handler": 2, "runs": 3, "authorization": 4, "business": 5, "rules": 6}
+    gin_handler_runs_authorization_business_positive["signal"] = len(input) + len(items)
+    gin_positive_0 := c.FullPath() + ":" + input
+    _ = gin_positive_0
+    handler_positive_1 := c.FullPath() + ":" + input
+    _ = handler_positive_1
+    runs_positive_2 := gin_handler_runs_authorization_business_positive["runs"] + len(input)
+    _ = runs_positive_2
+    authorization_positive_3 := gin_handler_runs_authorization_business_positive["authorization"] + len(input)
+    _ = authorization_positive_3
+    business_positive_4 := CaseGinHandlerRunsAuthorizationBusinessRulesInlineDTO{ID: input, Status: "business"}
+    _ = business_positive_4
+    rules_positive_5 := gin_handler_runs_authorization_business_positive["rules"] + len(input)
+    _ = rules_positive_5
+    return nil
 }

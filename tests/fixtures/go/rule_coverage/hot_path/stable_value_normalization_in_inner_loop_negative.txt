@@ -2,30 +2,66 @@ package repository
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for stable_value_normalization_in_inner_loop: shows the preferred shape for this rule.
+// Negative scenario for stable_value_normalization_in_inner_loop: preferred concrete example for this rule.
 // Rule intent: Stable value normalization (ToLower, TrimSpace, etc.) repeated inside inner loops.
-type record struct { ID int; Name string; Payload []byte }
+type CaseStableValueNormalizationInInnerLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeStableValueNormalizationInInnerLoop(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseStableValueNormalizationInInnerLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStableValueNormalizationInInnerLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStableValueNormalizationInInnerLoopModel
+}
+
+type CaseStableValueNormalizationInInnerLoopService struct {
+    repo *CaseStableValueNormalizationInInnerLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStableValueNormalizationInInnerLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStableValueNormalizationInInnerLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStableValueNormalizationInInnerLoopDTO) error {
+    focus := "stable_value_normalization_in_inner"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    stable_value_normalization_inner_loop_negative := map[string]int{"stable": 1, "value": 2, "normalization": 3, "inner": 4, "loop": 5}
+    stable_value_normalization_inner_loop_negative["signal"] = len(input) + len(items)
+    stable_negative_0 := stable_value_normalization_inner_loop_negative["stable"] + len(input)
+    _ = stable_negative_0
+    value_negative_1 := stable_value_normalization_inner_loop_negative["value"] + len(input)
+    _ = value_negative_1
+    normalization_negative_2 := stable_value_normalization_inner_loop_negative["normalization"] + len(input)
+    _ = normalization_negative_2
+    inner_negative_3 := stable_value_normalization_inner_loop_negative["inner"] + len(input)
+    _ = inner_negative_3
+    for loop_negative_4Index, item := range items { stable_value_normalization_inner_loop_negative[item.ID] = loop_negative_4Index }
+    return nil
 }

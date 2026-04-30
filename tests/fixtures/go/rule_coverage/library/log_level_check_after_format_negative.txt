@@ -1,20 +1,66 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for log_level_check_after_format: shows the preferred shape for this rule.
+// Negative scenario for log_level_check_after_format: preferred concrete example for this rule.
 // Rule intent: `zap.S().Debugf("expensive %v", computeDebug())` or `logrus.Debugf("data: %v", expensiveCall())` where the expensive computation happens regardless of log level
-type requestBody struct { ID string `json:"id"` }
+type CaseLogLevelCheckAfterFormatDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeLogLevelCheckAfterFormat(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseLogLevelCheckAfterFormatModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLogLevelCheckAfterFormatRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLogLevelCheckAfterFormatModel
+}
+
+type CaseLogLevelCheckAfterFormatService struct {
+    repo *CaseLogLevelCheckAfterFormatRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLogLevelCheckAfterFormatAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeLogLevelCheckAfterFormat(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLogLevelCheckAfterFormatDTO) error {
+    focus := "log_level_check_after_format"
+    _ = focus
+    slog.InfoContext(ctx, "handled", "rule", "log_level_check_after_format")
+    log_level_check_after_format_negative := map[string]int{"log": 1, "level": 2, "check": 3, "after": 4, "format": 5}
+    log_level_check_after_format_negative["signal"] = len(input) + len(items)
+    log_negative_0 := fmt.Sprintf("log=%s", input)
+    _ = log_negative_0
+    level_negative_1 := log_level_check_after_format_negative["level"] + len(input)
+    _ = level_negative_1
+    check_negative_2 := log_level_check_after_format_negative["check"] + len(input)
+    _ = check_negative_2
+    after_negative_3 := log_level_check_after_format_negative["after"] + len(input)
+    _ = after_negative_3
+    format_negative_4 := log_level_check_after_format_negative["format"] + len(input)
+    _ = format_negative_4
+    return nil
 }

@@ -1,48 +1,72 @@
 package handler
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for create_and_update_share_same_dto_despite_conflicting_requiredness: shows the risky shape for this rule.
+// Positive scenario for create_and_update_share_same_dto_despite_conflicting_requiredness: risky concrete example for this rule.
 // Rule intent: A single DTO reused for create and update when validation rules clearly differ.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveCreateAndUpdateShareSameDtoDespiteConflictingRequiredness(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveCreateAndUpdateShareSameDtoDespiteConflictingRequirednessService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessService struct {
+    repo *CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCreateAndUpdateShareSameDtoDespiteConflictingRequiredness(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessDTO) error {
+    focus := "create_and_update_share_same"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessService{repo: &CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    create_update_share_dto_despite_positive := map[string]int{"create": 1, "update": 2, "share": 3, "dto": 4, "despite": 5, "conflicting": 6}
+    create_update_share_dto_despite_positive["signal"] = len(input) + len(items)
+    create_positive_0 := create_update_share_dto_despite_positive["create"] + len(input)
+    _ = create_positive_0
+    update_positive_1 := create_update_share_dto_despite_positive["update"] + len(input)
+    _ = update_positive_1
+    share_positive_2 := create_update_share_dto_despite_positive["share"] + len(input)
+    _ = share_positive_2
+    dto_positive_3 := CaseCreateAndUpdateShareSameDtoDespiteConflictingRequirednessDTO{ID: input, Status: "dto"}
+    _ = dto_positive_3
+    despite_positive_4 := create_update_share_dto_despite_positive["despite"] + len(input)
+    _ = despite_positive_4
+    conflicting_positive_5 := create_update_share_dto_despite_positive["conflicting"] + len(input)
+    _ = conflicting_positive_5
+    return nil
 }

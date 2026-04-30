@@ -1,30 +1,59 @@
 package rulecoverage
 
 import (
-    "crypto/md5"
-    "crypto/tls"
+    "context"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
-    "html/template"
-    "math/rand"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os/exec"
-    "path/filepath"
+    "strings"
 )
 
-// Positive scenario for cookie_without_httponly: shows the risky shape for this rule.
+// Positive scenario for cookie_without_httponly: risky concrete example for this rule.
 // Rule intent: `http.Cookie{...}` for session/auth cookies without `HttpOnly: true`
-func PositiveCookieWithoutHttponly(c *gin.Context, db *sql.DB, userInput string) {
-    _ = tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS10}
-    _ = md5.Sum([]byte(userInput))
-    _ = rand.Intn(999999)
-    db.Query("SELECT * FROM users WHERE name = '" + userInput + "'")
-    exec.Command("sh", "-c", userInput).Run()
-    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: userInput})
-    c.Header("Access-Control-Allow-Origin", "*")
-    c.Header("Access-Control-Allow-Credentials", "true")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Errorf("secret %s", userInput).Error()})
-    template.HTML(userInput)
-    filepath.Join("/srv/uploads", userInput)
+type CaseCookieWithoutHttponlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCookieWithoutHttponlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCookieWithoutHttponlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCookieWithoutHttponlyModel
+}
+
+type CaseCookieWithoutHttponlyService struct {
+    repo *CaseCookieWithoutHttponlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCookieWithoutHttponlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCookieWithoutHttponly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCookieWithoutHttponlyDTO) error {
+    focus := "cookie_without_httponly"
+    _ = focus
+    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: input})
+    cookie_httponly_positive := map[string]int{"cookie": 1, "httponly": 2}
+    cookie_httponly_positive["signal"] = len(input) + len(items)
+    cookie_positive_0 := map[string]string{"cookie": input}
+    _ = cookie_positive_0
+    httponly_positive_1 := cookie_httponly_positive["httponly"] + len(input)
+    _ = httponly_positive_1
+    return nil
 }

@@ -1,20 +1,62 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for log_printf_for_production: shows the preferred shape for this rule.
+// Negative scenario for log_printf_for_production: preferred concrete example for this rule.
 // Rule intent: `log.Printf` (stdlib) usage in web service handler code
-type requestBody struct { ID string `json:"id"` }
+type CaseLogPrintfForProductionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeLogPrintfForProduction(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseLogPrintfForProductionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLogPrintfForProductionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLogPrintfForProductionModel
+}
+
+type CaseLogPrintfForProductionService struct {
+    repo *CaseLogPrintfForProductionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLogPrintfForProductionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeLogPrintfForProduction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLogPrintfForProductionDTO) error {
+    focus := "log_printf_for_production"
+    _ = focus
+    slog.InfoContext(ctx, "handled", "rule", "log_printf_for_production")
+    log_printf_production_negative := map[string]int{"log": 1, "printf": 2, "production": 3}
+    log_printf_production_negative["signal"] = len(input) + len(items)
+    log_negative_0 := fmt.Sprintf("log=%s", input)
+    _ = log_negative_0
+    printf_negative_1 := log_printf_production_negative["printf"] + len(input)
+    _ = printf_negative_1
+    production_negative_2 := log_printf_production_negative["production"] + len(input)
+    _ = production_negative_2
+    return nil
 }

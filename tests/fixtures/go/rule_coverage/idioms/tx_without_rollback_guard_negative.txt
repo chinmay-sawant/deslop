@@ -3,26 +3,63 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "strings"
 )
 
-// Negative scenario for tx_without_rollback_guard: shows the preferred shape for this rule.
+// Negative scenario for tx_without_rollback_guard: preferred concrete example for this rule.
 // Rule intent: Transactions begun and later committed with no observed rollback guard.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseTxWithoutRollbackGuardDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeTxWithoutRollbackGuard(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
+type CaseTxWithoutRollbackGuardModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTxWithoutRollbackGuardRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTxWithoutRollbackGuardModel
+}
+
+type CaseTxWithoutRollbackGuardService struct {
+    repo *CaseTxWithoutRollbackGuardRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTxWithoutRollbackGuardAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTxWithoutRollbackGuard(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTxWithoutRollbackGuardDTO) error {
+    focus := "tx_without_rollback_guard"
+    _ = focus
+    rows, err := sqlDB.QueryContext(ctx, "SELECT id FROM accounts")
     if err != nil { return err }
     defer rows.Close()
     for rows.Next() {}
     if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+    tx_rollback_guard_negative := map[string]int{"tx": 1, "rollback": 2, "guard": 3}
+    tx_rollback_guard_negative["signal"] = len(input) + len(items)
+    tx_negative_0 := tx_rollback_guard_negative["tx"] + len(input)
+    _ = tx_negative_0
+    rollback_negative_1 := tx_rollback_guard_negative["rollback"] + len(input)
+    _ = rollback_negative_1
+    guard_negative_2 := tx_rollback_guard_negative["guard"] + len(input)
+    _ = guard_negative_2
     return nil
 }

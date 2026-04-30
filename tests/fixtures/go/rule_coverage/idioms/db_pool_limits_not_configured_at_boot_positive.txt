@@ -1,30 +1,68 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
-    "time"
+    "strings"
 )
 
-// Positive scenario for db_pool_limits_not_configured_at_boot: shows the risky shape for this rule.
+// Positive scenario for db_pool_limits_not_configured_at_boot: risky concrete example for this rule.
 // Rule intent: Bootstrap code that opens long-lived DB clients without visible pool sizing or lifetime limits.
-var mutableConfig = map[string]string{}
+type CaseDbPoolLimitsNotConfiguredAtBootDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveDbPoolLimitsNotConfiguredAtBoot(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
-    client := http.Client{}
-    resp, _ := client.Get("https://example.test")
-    _ = resp
-    rows, _ := db.Query("SELECT id FROM users")
+type CaseDbPoolLimitsNotConfiguredAtBootModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDbPoolLimitsNotConfiguredAtBootRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDbPoolLimitsNotConfiguredAtBootModel
+}
+
+type CaseDbPoolLimitsNotConfiguredAtBootService struct {
+    repo *CaseDbPoolLimitsNotConfiguredAtBootRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDbPoolLimitsNotConfiguredAtBootAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDbPoolLimitsNotConfiguredAtBoot(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDbPoolLimitsNotConfiguredAtBootDTO) error {
+    focus := "db_pool_limits_not_configured"
+    _ = focus
+    rows, _ := sqlDB.QueryContext(ctx, "SELECT id FROM accounts")
     for rows.Next() {}
-    for _, path := range paths {
-        f, _ := os.Open(path)
-        defer f.Close()
-        time.After(time.Second)
-    }
-    io.ReadAll(r.Body)
-    w.Write([]byte("ok"))
-    w.WriteHeader(http.StatusAccepted)
-    mutableConfig["last"] = r.URL.Path
+    db_pool_limits_not_configured_positive := map[string]int{"db": 1, "pool": 2, "limits": 3, "not": 4, "configured": 5, "at": 6}
+    db_pool_limits_not_configured_positive["signal"] = len(input) + len(items)
+    db_positive_0 := db.Where("db_id = ?", input)
+    _ = db_positive_0
+    pool_positive_1 := db_pool_limits_not_configured_positive["pool"] + len(input)
+    _ = pool_positive_1
+    limits_positive_2 := db_pool_limits_not_configured_positive["limits"] + len(input)
+    _ = limits_positive_2
+    not_positive_3 := db_pool_limits_not_configured_positive["not"] + len(input)
+    _ = not_positive_3
+    configured_positive_4 := db_pool_limits_not_configured_positive["configured"] + len(input)
+    _ = configured_positive_4
+    at_positive_5 := db_pool_limits_not_configured_positive["at"] + len(input)
+    _ = at_positive_5
+    return nil
 }

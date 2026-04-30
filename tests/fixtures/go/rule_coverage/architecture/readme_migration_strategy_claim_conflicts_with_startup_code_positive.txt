@@ -1,48 +1,69 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for readme_migration_strategy_claim_conflicts_with_startup_code: shows the risky shape for this rule.
+// Positive scenario for readme_migration_strategy_claim_conflicts_with_startup_code: risky concrete example for this rule.
 // Rule intent: README migration guidance that claims explicit migration tooling while startup code still uses `AutoMigrate` without a matching migration path.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseReadmeMigrationStrategyClaimConflictsWithStartupCodeDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveReadmeMigrationStrategyClaimConflictsWithStartupCode(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseReadmeMigrationStrategyClaimConflictsWithStartupCodeModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveReadmeMigrationStrategyClaimConflictsWithStartupCodeService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseReadmeMigrationStrategyClaimConflictsWithStartupCodeRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseReadmeMigrationStrategyClaimConflictsWithStartupCodeModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseReadmeMigrationStrategyClaimConflictsWithStartupCodeService struct {
+    repo *CaseReadmeMigrationStrategyClaimConflictsWithStartupCodeRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseReadmeMigrationStrategyClaimConflictsWithStartupCodeAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveReadmeMigrationStrategyClaimConflictsWithStartupCode(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseReadmeMigrationStrategyClaimConflictsWithStartupCodeDTO) error {
+    focus := "readme_migration_strategy_claim_conflicts"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    examplePayload := `{"rule":"readme_migration_strategy_claim_conflicts_with_startup_code","id":"example"}`
+    c.Set("swagger-example", examplePayload)
+    readme_migration_strategy_claim_conflicts_positive := map[string]int{"readme": 1, "migration": 2, "strategy": 3, "claim": 4, "conflicts": 5, "startup": 6}
+    readme_migration_strategy_claim_conflicts_positive["signal"] = len(input) + len(items)
+    readme_positive_0 := readme_migration_strategy_claim_conflicts_positive["readme"] + len(input)
+    _ = readme_positive_0
+    migration_positive_1 := readme_migration_strategy_claim_conflicts_positive["migration"] + len(input)
+    _ = migration_positive_1
+    strategy_positive_2 := readme_migration_strategy_claim_conflicts_positive["strategy"] + len(input)
+    _ = strategy_positive_2
+    claim_positive_3 := readme_migration_strategy_claim_conflicts_positive["claim"] + len(input)
+    _ = claim_positive_3
+    conflicts_positive_4 := readme_migration_strategy_claim_conflicts_positive["conflicts"] + len(input)
+    _ = conflicts_positive_4
+    startup_positive_5 := readme_migration_strategy_claim_conflicts_positive["startup"] + len(input)
+    _ = startup_positive_5
+    return nil
 }

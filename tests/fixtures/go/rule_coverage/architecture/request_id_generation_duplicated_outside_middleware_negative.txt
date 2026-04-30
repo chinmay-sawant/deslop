@@ -3,47 +3,80 @@ package middleware
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for request_id_generation_duplicated_outside_middleware: shows the preferred shape for this rule.
+// Negative scenario for request_id_generation_duplicated_outside_middleware: preferred concrete example for this rule.
 // Rule intent: Repeated request-id creation logic spread across handlers.
-type User struct {
-    ID string
-    Status string
+type CaseRequestIdGenerationDuplicatedOutsideMiddlewareDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseRequestIdGenerationDuplicatedOutsideMiddlewareModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseRequestIdGenerationDuplicatedOutsideMiddlewareRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRequestIdGenerationDuplicatedOutsideMiddlewareModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseRequestIdGenerationDuplicatedOutsideMiddlewareService struct {
+    repo *CaseRequestIdGenerationDuplicatedOutsideMiddlewareRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseRequestIdGenerationDuplicatedOutsideMiddlewareAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeRequestIdGenerationDuplicatedOutsideMiddleware(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeRequestIdGenerationDuplicatedOutsideMiddleware(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestIdGenerationDuplicatedOutsideMiddlewareDTO) error {
+    focus := "request_id_generation_duplicated_outside"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRequestIdGenerationDuplicatedOutsideMiddlewareDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+        return func(inner *gin.Context) {
+            inner.Set("principal", inner.GetHeader("Authorization"))
+            next(inner)
+        }
     }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    _ = middleware
+    slog.InfoContext(ctx, "request_id_generation_duplicated_outside_middleware", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    request_id_generation_duplicated_outside_negative := map[string]int{"request": 1, "id": 2, "generation": 3, "duplicated": 4, "outside": 5, "middleware": 6}
+    request_id_generation_duplicated_outside_negative["signal"] = len(input) + len(items)
+    request_negative_0 := request_id_generation_duplicated_outside_negative["request"] + len(input)
+    _ = request_negative_0
+    id_negative_1 := request_id_generation_duplicated_outside_negative["id"] + len(input)
+    _ = id_negative_1
+    generation_negative_2 := request_id_generation_duplicated_outside_negative["generation"] + len(input)
+    _ = generation_negative_2
+    duplicated_negative_3 := request_id_generation_duplicated_outside_negative["duplicated"] + len(input)
+    _ = duplicated_negative_3
+    outside_negative_4 := request_id_generation_duplicated_outside_negative["outside"] + len(input)
+    _ = outside_negative_4
+    middleware_negative_5 := c.FullPath() + ":" + input
+    _ = middleware_negative_5
+    return nil
 }

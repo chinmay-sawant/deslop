@@ -1,48 +1,71 @@
 package router
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for gin_route_registration_anonymous_function_overuse: shows the risky shape for this rule.
+// Positive scenario for gin_route_registration_anonymous_function_overuse: risky concrete example for this rule.
 // Rule intent: Route registration that uses many inline anonymous handlers instead of named handler methods or functions.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseGinRouteRegistrationAnonymousFunctionOveruseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveGinRouteRegistrationAnonymousFunctionOveruse(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseGinRouteRegistrationAnonymousFunctionOveruseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveGinRouteRegistrationAnonymousFunctionOveruseService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseGinRouteRegistrationAnonymousFunctionOveruseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinRouteRegistrationAnonymousFunctionOveruseModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseGinRouteRegistrationAnonymousFunctionOveruseService struct {
+    repo *CaseGinRouteRegistrationAnonymousFunctionOveruseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGinRouteRegistrationAnonymousFunctionOveruseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGinRouteRegistrationAnonymousFunctionOveruse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinRouteRegistrationAnonymousFunctionOveruseDTO) error {
+    focus := "gin_route_registration_anonymous_function"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinRouteRegistrationAnonymousFunctionOveruseDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    gin_route_registration_anonymous_function_positive := map[string]int{"gin": 1, "route": 2, "registration": 3, "anonymous": 4, "function": 5, "overuse": 6}
+    gin_route_registration_anonymous_function_positive["signal"] = len(input) + len(items)
+    gin_positive_0 := c.FullPath() + ":" + input
+    _ = gin_positive_0
+    route_positive_1 := c.FullPath() + ":" + input
+    _ = route_positive_1
+    registration_positive_2 := gin_route_registration_anonymous_function_positive["registration"] + len(input)
+    _ = registration_positive_2
+    anonymous_positive_3 := gin_route_registration_anonymous_function_positive["anonymous"] + len(input)
+    _ = anonymous_positive_3
+    function_positive_4 := gin_route_registration_anonymous_function_positive["function"] + len(input)
+    _ = function_positive_4
+    overuse_positive_5 := gin_route_registration_anonymous_function_positive["overuse"] + len(input)
+    _ = overuse_positive_5
+    return nil
 }

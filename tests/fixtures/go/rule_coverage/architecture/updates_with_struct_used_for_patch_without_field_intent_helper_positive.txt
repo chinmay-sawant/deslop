@@ -1,48 +1,71 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for updates_with_struct_used_for_patch_without_field_intent_helper: shows the risky shape for this rule.
+// Positive scenario for updates_with_struct_used_for_patch_without_field_intent_helper: risky concrete example for this rule.
 // Rule intent: PATCH-style repository writes that rely on struct zero-value semantics without explicit field intent.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveUpdatesWithStructUsedForPatchWithoutFieldIntentHelper(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveUpdatesWithStructUsedForPatchWithoutFieldIntentHelperService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperService struct {
+    repo *CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveUpdatesWithStructUsedForPatchWithoutFieldIntentHelper(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperDTO) error {
+    focus := "updates_with_struct_used_for"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseUpdatesWithStructUsedForPatchWithoutFieldIntentHelperModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    updates_struct_used_patch_field_positive := map[string]int{"updates": 1, "struct": 2, "used": 3, "patch": 4, "field": 5, "intent": 6}
+    updates_struct_used_patch_field_positive["signal"] = len(input) + len(items)
+    updates_positive_0 := updates_struct_used_patch_field_positive["updates"] + len(input)
+    _ = updates_positive_0
+    struct_positive_1 := updates_struct_used_patch_field_positive["struct"] + len(input)
+    _ = struct_positive_1
+    used_positive_2 := updates_struct_used_patch_field_positive["used"] + len(input)
+    _ = used_positive_2
+    patch_positive_3 := updates_struct_used_patch_field_positive["patch"] + len(input)
+    _ = patch_positive_3
+    field_positive_4 := updates_struct_used_patch_field_positive["field"] + len(input)
+    _ = field_positive_4
+    intent_positive_5 := updates_struct_used_patch_field_positive["intent"] + len(input)
+    _ = intent_positive_5
+    return nil
 }

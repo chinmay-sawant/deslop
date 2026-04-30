@@ -2,30 +2,64 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for strings_newreplacer_per_call: shows the preferred shape for this rule.
+// Negative scenario for strings_newreplacer_per_call: preferred concrete example for this rule.
 // Rule intent: `strings.NewReplacer(...)` recreated on request or loop paths.
-type record struct { ID int; Name string; Payload []byte }
+type CaseStringsNewreplacerPerCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeStringsNewreplacerPerCall(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseStringsNewreplacerPerCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringsNewreplacerPerCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringsNewreplacerPerCallModel
+}
+
+type CaseStringsNewreplacerPerCallService struct {
+    repo *CaseStringsNewreplacerPerCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringsNewreplacerPerCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStringsNewreplacerPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsNewreplacerPerCallDTO) error {
+    focus := "strings_newreplacer_per_call"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    strings_newreplacer_per_call_negative := map[string]int{"strings": 1, "newreplacer": 2, "per": 3, "call": 4}
+    strings_newreplacer_per_call_negative["signal"] = len(input) + len(items)
+    strings_negative_0 := strings.TrimSpace(input)
+    _ = strings_negative_0
+    newreplacer_negative_1 := strings_newreplacer_per_call_negative["newreplacer"] + len(input)
+    _ = newreplacer_negative_1
+    for per_negative_2Index, item := range items { strings_newreplacer_per_call_negative[item.ID] = per_negative_2Index }
+    call_negative_3 := strings_newreplacer_per_call_negative["call"] + len(input)
+    _ = call_negative_3
+    return nil
 }

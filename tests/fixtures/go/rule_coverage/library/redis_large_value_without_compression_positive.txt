@@ -1,33 +1,63 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for redis_large_value_without_compression: shows the risky shape for this rule.
+// Positive scenario for redis_large_value_without_compression: risky concrete example for this rule.
 // Rule intent: `rdb.Set(ctx, key, largePayload, ...)` where `largePayload` is the result of `json.Marshal` on a large struct or slice, without visible compression
-func PositiveRedisLargeValueWithoutCompression(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+type CaseRedisLargeValueWithoutCompressionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRedisLargeValueWithoutCompressionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisLargeValueWithoutCompressionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisLargeValueWithoutCompressionModel
+}
+
+type CaseRedisLargeValueWithoutCompressionService struct {
+    repo *CaseRedisLargeValueWithoutCompressionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisLargeValueWithoutCompressionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRedisLargeValueWithoutCompression(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisLargeValueWithoutCompressionDTO) error {
+    focus := "redis_large_value_without_compression"
+    _ = focus
+    for _, item := range items { db.Create(&item) }
+    redis_large_value_compression_positive := map[string]int{"redis": 1, "large": 2, "value": 3, "compression": 4}
+    redis_large_value_compression_positive["signal"] = len(input) + len(items)
+    redis_positive_0 := redis_large_value_compression_positive["redis"] + len(input)
+    _ = redis_positive_0
+    large_positive_1 := redis_large_value_compression_positive["large"] + len(input)
+    _ = large_positive_1
+    value_positive_2 := redis_large_value_compression_positive["value"] + len(input)
+    _ = value_positive_2
+    compression_positive_3 := redis_large_value_compression_positive["compression"] + len(input)
+    _ = compression_positive_3
+    return nil
 }

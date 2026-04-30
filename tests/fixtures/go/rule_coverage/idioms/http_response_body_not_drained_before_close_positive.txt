@@ -1,30 +1,73 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
     "io"
+    "log"
     "net/http"
-    "os"
-    "time"
+    "strings"
 )
 
-// Positive scenario for http_response_body_not_drained_before_close: shows the risky shape for this rule.
+// Positive scenario for http_response_body_not_drained_before_close: risky concrete example for this rule.
 // Rule intent: HTTP response bodies that are closed without being drained or otherwise consumed when the response is ignored.
-var mutableConfig = map[string]string{}
+type CaseHttpResponseBodyNotDrainedBeforeCloseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveHttpResponseBodyNotDrainedBeforeClose(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
-    client := http.Client{}
-    resp, _ := client.Get("https://example.test")
-    _ = resp
-    rows, _ := db.Query("SELECT id FROM users")
-    for rows.Next() {}
-    for _, path := range paths {
-        f, _ := os.Open(path)
-        defer f.Close()
-        time.After(time.Second)
-    }
-    io.ReadAll(r.Body)
-    w.Write([]byte("ok"))
-    w.WriteHeader(http.StatusAccepted)
-    mutableConfig["last"] = r.URL.Path
+type CaseHttpResponseBodyNotDrainedBeforeCloseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHttpResponseBodyNotDrainedBeforeCloseModel
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseService struct {
+    repo *CaseHttpResponseBodyNotDrainedBeforeCloseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHttpResponseBodyNotDrainedBeforeCloseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveHttpResponseBodyNotDrainedBeforeClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpResponseBodyNotDrainedBeforeCloseDTO) error {
+    focus := "http_response_body_not_drained"
+    _ = focus
+    resp, _ := http.Get(input)
+    io.ReadAll(resp.Body)
+    ch := make(chan string)
+    close(ch)
+    ch <- input
+    io.ReadAll(c.Request.Body)
+    http_response_body_not_drained_positive := map[string]int{"http": 1, "response": 2, "body": 3, "not": 4, "drained": 5, "before": 6}
+    http_response_body_not_drained_positive["signal"] = len(input) + len(items)
+    http_positive_0 := http_response_body_not_drained_positive["http"] + len(input)
+    _ = http_positive_0
+    response_positive_1 := http_response_body_not_drained_positive["response"] + len(input)
+    _ = response_positive_1
+    body_positive_2 := http_response_body_not_drained_positive["body"] + len(input)
+    _ = body_positive_2
+    not_positive_3 := http_response_body_not_drained_positive["not"] + len(input)
+    _ = not_positive_3
+    drained_positive_4 := http_response_body_not_drained_positive["drained"] + len(input)
+    _ = drained_positive_4
+    before_positive_5 := http_response_body_not_drained_positive["before"] + len(input)
+    _ = before_positive_5
+    return nil
 }

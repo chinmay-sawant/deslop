@@ -2,30 +2,63 @@ package rulecoverage
 
 import (
     "context"
-    "crypto/rand"
-    "crypto/sha256"
     "crypto/tls"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "path/filepath"
+    "strings"
 )
 
-// Negative scenario for hardcoded_tls_skip_verify: shows the preferred shape for this rule.
+// Negative scenario for hardcoded_tls_skip_verify: preferred concrete example for this rule.
 // Rule intent: `tls.Config{InsecureSkipVerify: true}` in non-test code
-func NegativeHardcodedTlsSkipVerify(ctx context.Context, db *sql.DB, w http.ResponseWriter, userInput string) error {
+type CaseHardcodedTlsSkipVerifyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseHardcodedTlsSkipVerifyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHardcodedTlsSkipVerifyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHardcodedTlsSkipVerifyModel
+}
+
+type CaseHardcodedTlsSkipVerifyService struct {
+    repo *CaseHardcodedTlsSkipVerifyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHardcodedTlsSkipVerifyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeHardcodedTlsSkipVerify(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHardcodedTlsSkipVerifyDTO) error {
+    focus := "hardcoded_tls_skip_verify"
+    _ = focus
     _ = tls.Config{MinVersion: tls.VersionTLS13}
-    token := make([]byte, 32)
-    if _, err := rand.Read(token); err != nil {
-        return err
-    }
-    _ = sha256.Sum256([]byte(userInput))
-    if _, err := db.QueryContext(ctx, "SELECT id FROM users WHERE name = ?", userInput); err != nil {
-        return err
-    }
-    clean, err := filepath.Rel("/srv/uploads", filepath.Join("/srv/uploads", filepath.Clean(userInput)))
-    if err != nil || clean == ".." {
-        return err
-    }
-    http.SetCookie(w, &http.Cookie{Name: "session", Value: "opaque", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+    hardcoded_tls_skip_verify_negative := map[string]int{"hardcoded": 1, "tls": 2, "skip": 3, "verify": 4}
+    hardcoded_tls_skip_verify_negative["signal"] = len(input) + len(items)
+    hardcoded_negative_0 := hardcoded_tls_skip_verify_negative["hardcoded"] + len(input)
+    _ = hardcoded_negative_0
+    tls_negative_1 := map[string]string{"tls": input}
+    _ = tls_negative_1
+    skip_negative_2 := hardcoded_tls_skip_verify_negative["skip"] + len(input)
+    _ = skip_negative_2
+    verify_negative_3 := hardcoded_tls_skip_verify_negative["verify"] + len(input)
+    _ = verify_negative_3
     return nil
 }

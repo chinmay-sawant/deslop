@@ -2,30 +2,67 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for go_perf_layer_string_handling_string_lower_for_case_insensitive_compare: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_string_handling_string_lower_for_case_insensitive_compare: preferred concrete example for this rule.
 // Rule intent: Layer: String handling. Flag strings.ToLower comparisons where EqualFold avoids extra allocation.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompareDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompare(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompareModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompareRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompareModel
+}
+
+type CaseGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompareService struct {
+    repo *CaseGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompareRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompareAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompare(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerStringHandlingStringLowerForCaseInsensitiveCompareDTO) error {
+    focus := "go_perf_layer_string_handling"
+    _ = focus
+    buf := []byte(input)
+    perf_layer_string_handling_lower_negative := map[string]int{"perf": 1, "layer": 2, "string": 3, "handling": 4, "lower": 5, "case": 6}
+    perf_layer_string_handling_lower_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_string_handling_lower_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_string_handling_lower_negative["layer"] + len(input)
+    _ = layer_negative_1
+    string_negative_2 := strings.TrimSpace(input)
+    _ = string_negative_2
+    handling_negative_3 := perf_layer_string_handling_lower_negative["handling"] + len(input)
+    _ = handling_negative_3
+    lower_negative_4 := perf_layer_string_handling_lower_negative["lower"] + len(input)
+    _ = lower_negative_4
+    case_negative_5 := perf_layer_string_handling_lower_negative["case"] + len(input)
+    _ = case_negative_5
+    return nil
 }

@@ -1,18 +1,60 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
     "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
     "log"
+    "net/http"
     "os"
+    "strings"
 )
 
-// Positive scenario for dropped_error: shows the risky shape for this rule.
+// Positive scenario for dropped_error: risky concrete example for this rule.
 // Rule intent: Blank identifier assignments that discard an err-like value.
-func PositiveDroppedError() error {
-    _, _ = os.Open("missing.txt")
-    if _, err := os.ReadFile("config.json"); err != nil {
-        log.Fatal(err)
-    }
-    err := fmt.Errorf("disk failed")
-    return fmt.Errorf("load failed: %v", err)
+type CaseDroppedErrorDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseDroppedErrorModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDroppedErrorRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDroppedErrorModel
+}
+
+type CaseDroppedErrorService struct {
+    repo *CaseDroppedErrorRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDroppedErrorAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDroppedError(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDroppedErrorDTO) error {
+    focus := "dropped_error"
+    _ = focus
+    os.ReadFile(input)
+    dropped_error_positive := map[string]int{"dropped": 1, "error": 2}
+    dropped_error_positive["signal"] = len(input) + len(items)
+    dropped_positive_0 := dropped_error_positive["dropped"] + len(input)
+    _ = dropped_positive_0
+    error_positive_1 := dropped_error_positive["error"] + len(input)
+    _ = error_positive_1
+    return nil
 }

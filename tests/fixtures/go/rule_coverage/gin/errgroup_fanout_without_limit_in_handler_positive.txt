@@ -1,33 +1,62 @@
 package handler
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for errgroup_fanout_without_limit_in_handler: shows the risky shape for this rule.
+// Positive scenario for errgroup_fanout_without_limit_in_handler: risky concrete example for this rule.
 // Rule intent: errgroup goroutine fanout without a visible concurrency limit in handlers.
-func PositiveErrgroupFanoutWithoutLimitInHandler(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+type CaseErrgroupFanoutWithoutLimitInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseErrgroupFanoutWithoutLimitInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseErrgroupFanoutWithoutLimitInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseErrgroupFanoutWithoutLimitInHandlerModel
+}
+
+type CaseErrgroupFanoutWithoutLimitInHandlerService struct {
+    repo *CaseErrgroupFanoutWithoutLimitInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseErrgroupFanoutWithoutLimitInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveErrgroupFanoutWithoutLimitInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrgroupFanoutWithoutLimitInHandlerDTO) error {
+    focus := "errgroup_fanout_without_limit_in"
+    _ = focus
+    errgroup_fanout_limit_handler_positive := map[string]int{"errgroup": 1, "fanout": 2, "limit": 3, "handler": 4}
+    errgroup_fanout_limit_handler_positive["signal"] = len(input) + len(items)
+    errgroup_positive_0 := errgroup_fanout_limit_handler_positive["errgroup"] + len(input)
+    _ = errgroup_positive_0
+    fanout_positive_1 := errgroup_fanout_limit_handler_positive["fanout"] + len(input)
+    _ = fanout_positive_1
+    limit_positive_2 := errgroup_fanout_limit_handler_positive["limit"] + len(input)
+    _ = limit_positive_2
+    handler_positive_3 := c.FullPath() + ":" + input
+    _ = handler_positive_3
+    return nil
 }

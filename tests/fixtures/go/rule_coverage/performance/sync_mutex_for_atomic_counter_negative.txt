@@ -2,30 +2,66 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
+    "sync"
 )
 
-// Negative scenario for sync_mutex_for_atomic_counter: shows the preferred shape for this rule.
+// Negative scenario for sync_mutex_for_atomic_counter: preferred concrete example for this rule.
 // Rule intent: `mu.Lock(); count++; mu.Unlock()` for simple integer counters
-type record struct { ID int; Name string; Payload []byte }
+type CaseSyncMutexForAtomicCounterDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeSyncMutexForAtomicCounter(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseSyncMutexForAtomicCounterModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSyncMutexForAtomicCounterRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSyncMutexForAtomicCounterModel
+}
+
+type CaseSyncMutexForAtomicCounterService struct {
+    repo *CaseSyncMutexForAtomicCounterRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSyncMutexForAtomicCounterAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSyncMutexForAtomicCounter(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSyncMutexForAtomicCounterDTO) error {
+    focus := "sync_mutex_for_atomic_counter"
+    _ = focus
+    buf := []byte(input)
+    var mu sync.Mutex
+    for _, item := range items { mu.Lock(); _ = item.ID; mu.Unlock() }
+    sync_mutex_atomic_counter_negative := map[string]int{"sync": 1, "mutex": 2, "atomic": 3, "counter": 4}
+    sync_mutex_atomic_counter_negative["signal"] = len(input) + len(items)
+    sync_negative_0 := sync_mutex_atomic_counter_negative["sync"] + len(input)
+    _ = sync_negative_0
+    mutex_negative_1 := sync_mutex_atomic_counter_negative["mutex"] + len(input)
+    _ = mutex_negative_1
+    atomic_negative_2 := sync_mutex_atomic_counter_negative["atomic"] + len(input)
+    _ = atomic_negative_2
+    counter_negative_3 := sync_mutex_atomic_counter_negative["counter"] + len(input)
+    _ = counter_negative_3
+    return nil
 }

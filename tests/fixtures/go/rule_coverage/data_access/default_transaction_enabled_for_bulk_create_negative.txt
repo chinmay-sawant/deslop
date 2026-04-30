@@ -3,15 +3,64 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for default_transaction_enabled_for_bulk_create: shows the preferred shape for this rule.
+// Negative scenario for default_transaction_enabled_for_bulk_create: preferred concrete example for this rule.
 // Rule intent: Bulk creates performed with GORM default transaction enabled — SkipDefaultTransaction improves throughput.
-type Account struct { ID int; TenantID string; Status string }
+type CaseDefaultTransactionEnabledForBulkCreateDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeDefaultTransactionEnabledForBulkCreate(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CaseDefaultTransactionEnabledForBulkCreateModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDefaultTransactionEnabledForBulkCreateRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDefaultTransactionEnabledForBulkCreateModel
+}
+
+type CaseDefaultTransactionEnabledForBulkCreateService struct {
+    repo *CaseDefaultTransactionEnabledForBulkCreateRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDefaultTransactionEnabledForBulkCreateAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeDefaultTransactionEnabledForBulkCreate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDefaultTransactionEnabledForBulkCreateDTO) error {
+    focus := "default_transaction_enabled_for_bulk"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Transaction(func(tx *gorm.DB) error { return tx.CreateInBatches(items, 500).Error })
+    default_transaction_enabled_bulk_create_negative := map[string]int{"default": 1, "transaction": 2, "enabled": 3, "bulk": 4, "create": 5}
+    default_transaction_enabled_bulk_create_negative["signal"] = len(input) + len(items)
+    default_negative_0 := default_transaction_enabled_bulk_create_negative["default"] + len(input)
+    _ = default_negative_0
+    transaction_negative_1 := default_transaction_enabled_bulk_create_negative["transaction"] + len(input)
+    _ = transaction_negative_1
+    enabled_negative_2 := default_transaction_enabled_bulk_create_negative["enabled"] + len(input)
+    _ = enabled_negative_2
+    bulk_negative_3 := default_transaction_enabled_bulk_create_negative["bulk"] + len(input)
+    _ = bulk_negative_3
+    create_negative_4 := default_transaction_enabled_bulk_create_negative["create"] + len(input)
+    _ = create_negative_4
+    return nil
 }

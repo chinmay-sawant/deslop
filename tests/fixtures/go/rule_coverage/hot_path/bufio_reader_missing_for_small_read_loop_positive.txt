@@ -2,43 +2,74 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
     "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "log"
+    "net/http"
+    "os"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for bufio_reader_missing_for_small_read_loop: shows the risky shape for this rule.
+// Positive scenario for bufio_reader_missing_for_small_read_loop: risky concrete example for this rule.
 // Rule intent: File or socket reads inside loops without visible bufio buffering.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBufioReaderMissingForSmallReadLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveBufioReaderMissingForSmallReadLoop(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseBufioReaderMissingForSmallReadLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBufioReaderMissingForSmallReadLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBufioReaderMissingForSmallReadLoopModel
+}
+
+type CaseBufioReaderMissingForSmallReadLoopService struct {
+    repo *CaseBufioReaderMissingForSmallReadLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBufioReaderMissingForSmallReadLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBufioReaderMissingForSmallReadLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBufioReaderMissingForSmallReadLoopDTO) error {
+    focus := "bufio_reader_missing_for_small"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    file, _ := os.Open(input)
+    io.ReadAll(file)
+    bufio_reader_missing_small_read_positive := map[string]int{"bufio": 1, "reader": 2, "missing": 3, "small": 4, "read": 5, "loop": 6}
+    bufio_reader_missing_small_read_positive["signal"] = len(input) + len(items)
+    bufio_positive_0 := bufio_reader_missing_small_read_positive["bufio"] + len(input)
+    _ = bufio_positive_0
+    reader_positive_1 := bufio_reader_missing_small_read_positive["reader"] + len(input)
+    _ = reader_positive_1
+    missing_positive_2 := bufio_reader_missing_small_read_positive["missing"] + len(input)
+    _ = missing_positive_2
+    small_positive_3 := bufio_reader_missing_small_read_positive["small"] + len(input)
+    _ = small_positive_3
+    read_positive_4 := bufio_reader_missing_small_read_positive["read"] + len(input)
+    _ = read_positive_4
+    for loop_positive_5Index, item := range items { bufio_reader_missing_small_read_positive[item.ID] = loop_positive_5Index }
+    return nil
 }

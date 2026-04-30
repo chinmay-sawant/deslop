@@ -1,48 +1,75 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strconv"
+    "strings"
 )
 
-// Positive scenario for soft_delete_filters_written_manually_in_many_queries: shows the risky shape for this rule.
+// Positive scenario for soft_delete_filters_written_manually_in_many_queries: risky concrete example for this rule.
 // Rule intent: Repeated `deleted_at IS NULL` style filters rather than a shared repository or scope policy.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveSoftDeleteFiltersWrittenManuallyInManyQueries(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveSoftDeleteFiltersWrittenManuallyInManyQueriesService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSoftDeleteFiltersWrittenManuallyInManyQueriesModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesService struct {
+    repo *CaseSoftDeleteFiltersWrittenManuallyInManyQueriesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSoftDeleteFiltersWrittenManuallyInManyQueries(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSoftDeleteFiltersWrittenManuallyInManyQueriesDTO) error {
+    focus := "soft_delete_filters_written_manually"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseSoftDeleteFiltersWrittenManuallyInManyQueriesRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseSoftDeleteFiltersWrittenManuallyInManyQueriesModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    page, _ := strconv.Atoi(c.Query("page"))
+    size, _ := strconv.Atoi(c.Query("size"))
+    db.Order(c.Query("sort")).Offset((page - 1) * size).Limit(size).Find(&[]any{})
+    soft_delete_filters_written_manually_positive := map[string]int{"soft": 1, "delete": 2, "filters": 3, "written": 4, "manually": 5, "many": 6}
+    soft_delete_filters_written_manually_positive["signal"] = len(input) + len(items)
+    soft_positive_0 := soft_delete_filters_written_manually_positive["soft"] + len(input)
+    _ = soft_positive_0
+    delete_positive_1 := soft_delete_filters_written_manually_positive["delete"] + len(input)
+    _ = delete_positive_1
+    filters_positive_2 := soft_delete_filters_written_manually_positive["filters"] + len(input)
+    _ = filters_positive_2
+    written_positive_3 := soft_delete_filters_written_manually_positive["written"] + len(input)
+    _ = written_positive_3
+    manually_positive_4 := soft_delete_filters_written_manually_positive["manually"] + len(input)
+    _ = manually_positive_4
+    many_positive_5 := soft_delete_filters_written_manually_positive["many"] + len(input)
+    _ = many_positive_5
+    return nil
 }

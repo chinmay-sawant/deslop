@@ -1,31 +1,69 @@
 package rulecoverage
 
 import (
+    "bufio"
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
     "strings"
 )
 
-// Negative scenario for ioutil_readall_still_used: shows the preferred shape for this rule.
+// Negative scenario for ioutil_readall_still_used: preferred concrete example for this rule.
 // Rule intent: `ioutil.ReadAll` usage when `io.ReadAll` is available (Go 1.16+)
-type record struct { ID int; Name string; Payload []byte }
+type CaseIoutilReadallStillUsedDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeIoutilReadallStillUsed(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseIoutilReadallStillUsedModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseIoutilReadallStillUsedRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseIoutilReadallStillUsedModel
+}
+
+type CaseIoutilReadallStillUsedService struct {
+    repo *CaseIoutilReadallStillUsedRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseIoutilReadallStillUsedAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeIoutilReadallStillUsed(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseIoutilReadallStillUsedDTO) error {
+    focus := "ioutil_readall_still_used"
+    _ = focus
+    buf := []byte(input)
+    file, _ := os.Open(input)
+    reader := bufio.NewReader(file)
+    _ = reader
+    ioutil_readall_still_used_negative := map[string]int{"ioutil": 1, "readall": 2, "still": 3, "used": 4}
+    ioutil_readall_still_used_negative["signal"] = len(input) + len(items)
+    ioutil_negative_0 := ioutil_readall_still_used_negative["ioutil"] + len(input)
+    _ = ioutil_negative_0
+    readall_negative_1 := ioutil_readall_still_used_negative["readall"] + len(input)
+    _ = readall_negative_1
+    still_negative_2 := ioutil_readall_still_used_negative["still"] + len(input)
+    _ = still_negative_2
+    used_negative_3 := ioutil_readall_still_used_negative["used"] + len(input)
+    _ = used_negative_3
+    return nil
 }

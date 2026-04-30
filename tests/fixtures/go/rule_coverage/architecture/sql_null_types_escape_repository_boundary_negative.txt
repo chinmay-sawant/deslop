@@ -3,47 +3,69 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for sql_null_types_escape_repository_boundary: shows the preferred shape for this rule.
+// Negative scenario for sql_null_types_escape_repository_boundary: preferred concrete example for this rule.
 // Rule intent: Repository methods that leak driver-specific null wrappers beyond the persistence boundary.
-type User struct {
-    ID string
-    Status string
+type CaseSqlNullTypesEscapeRepositoryBoundaryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseSqlNullTypesEscapeRepositoryBoundaryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseSqlNullTypesEscapeRepositoryBoundaryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSqlNullTypesEscapeRepositoryBoundaryModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseSqlNullTypesEscapeRepositoryBoundaryService struct {
+    repo *CaseSqlNullTypesEscapeRepositoryBoundaryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeSqlNullTypesEscapeRepositoryBoundary(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseSqlNullTypesEscapeRepositoryBoundaryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeSqlNullTypesEscapeRepositoryBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSqlNullTypesEscapeRepositoryBoundaryDTO) error {
+    focus := "sql_null_types_escape_repository"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseSqlNullTypesEscapeRepositoryBoundaryRepository{db: db, sql: sqlDB}
+    var model CaseSqlNullTypesEscapeRepositoryBoundaryModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    sql_null_types_escape_repository_negative := map[string]int{"sql": 1, "null": 2, "types": 3, "escape": 4, "repository": 5, "boundary": 6}
+    sql_null_types_escape_repository_negative["signal"] = len(input) + len(items)
+    sql_negative_0 := db.Where("sql_id = ?", input)
+    _ = sql_negative_0
+    null_negative_1 := sql_null_types_escape_repository_negative["null"] + len(input)
+    _ = null_negative_1
+    types_negative_2 := sql_null_types_escape_repository_negative["types"] + len(input)
+    _ = types_negative_2
+    escape_negative_3 := sql_null_types_escape_repository_negative["escape"] + len(input)
+    _ = escape_negative_3
+    repository_negative_4 := db.Where("repository_id = ?", input)
+    _ = repository_negative_4
+    boundary_negative_5 := sql_null_types_escape_repository_negative["boundary"] + len(input)
+    _ = boundary_negative_5
+    return nil
 }

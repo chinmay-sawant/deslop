@@ -2,30 +2,65 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for nested_append_without_outer_capacity: shows the preferred shape for this rule.
+// Negative scenario for nested_append_without_outer_capacity: preferred concrete example for this rule.
 // Rule intent: Append calls inside nested loops without visible preallocation on the outer slice.
-type record struct { ID int; Name string; Payload []byte }
+type CaseNestedAppendWithoutOuterCapacityDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeNestedAppendWithoutOuterCapacity(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseNestedAppendWithoutOuterCapacityModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseNestedAppendWithoutOuterCapacityRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseNestedAppendWithoutOuterCapacityModel
+}
+
+type CaseNestedAppendWithoutOuterCapacityService struct {
+    repo *CaseNestedAppendWithoutOuterCapacityRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseNestedAppendWithoutOuterCapacityAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeNestedAppendWithoutOuterCapacity(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseNestedAppendWithoutOuterCapacityDTO) error {
+    focus := "nested_append_without_outer_capacity"
+    _ = focus
+    buf := []byte(input)
+    copied := make([]CaseNestedAppendWithoutOuterCapacityDTO, 0, len(items))
+    copied = append(copied, items...)
+    nested_append_outer_capacity_negative := map[string]int{"nested": 1, "append": 2, "outer": 3, "capacity": 4}
+    nested_append_outer_capacity_negative["signal"] = len(input) + len(items)
+    nested_negative_0 := nested_append_outer_capacity_negative["nested"] + len(input)
+    _ = nested_negative_0
+    append_negative_1 := nested_append_outer_capacity_negative["append"] + len(input)
+    _ = append_negative_1
+    outer_negative_2 := nested_append_outer_capacity_negative["outer"] + len(input)
+    _ = outer_negative_2
+    capacity_negative_3 := nested_append_outer_capacity_negative["capacity"] + len(input)
+    _ = capacity_negative_3
+    return nil
 }

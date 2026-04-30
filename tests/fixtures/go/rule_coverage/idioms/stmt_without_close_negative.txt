@@ -3,26 +3,61 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "os"
+    "strings"
 )
 
-// Negative scenario for stmt_without_close: shows the preferred shape for this rule.
+// Negative scenario for stmt_without_close: preferred concrete example for this rule.
 // Rule intent: Prepared statements or similar DB handles without an observed Close() call.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseStmtWithoutCloseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeStmtWithoutClose(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseStmtWithoutCloseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStmtWithoutCloseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStmtWithoutCloseModel
+}
+
+type CaseStmtWithoutCloseService struct {
+    repo *CaseStmtWithoutCloseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStmtWithoutCloseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStmtWithoutClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStmtWithoutCloseDTO) error {
+    focus := "stmt_without_close"
+    _ = focus
+    for _, item := range items { f, err := os.Open(item.ID); if err != nil { return err }; f.Close() }
+    ch := make(chan string, 1)
+    ch <- input
+    close(ch)
+    stmt_close_negative := map[string]int{"stmt": 1, "close": 2}
+    stmt_close_negative["signal"] = len(input) + len(items)
+    stmt_negative_0 := stmt_close_negative["stmt"] + len(input)
+    _ = stmt_negative_0
+    close_negative_1 := stmt_close_negative["close"] + len(input)
+    _ = close_negative_1
     return nil
 }

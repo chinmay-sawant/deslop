@@ -2,22 +2,59 @@ package rulecoverage
 
 import (
     "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os/exec"
+    "strings"
     "time"
 )
 
-// Positive scenario for sleep_polling: shows the risky shape for this rule.
+// Positive scenario for sleep_polling: risky concrete example for this rule.
 // Rule intent: time.Sleep inside loops — often indicates polling or busy-wait style code.
-type Worker struct { ctx context.Context }
+type CaseSleepPollingDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveSleepPolling(ctx context.Context, url string) {
-    child, _ := context.WithTimeout(ctx, time.Second)
-    _ = child
-    http.Get(url)
-    exec.Command("curl", url).Run()
-    go func() { http.Get(url) }()
-    for {
-        select { default: time.Sleep(time.Millisecond) }
-    }
+type CaseSleepPollingModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSleepPollingRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSleepPollingModel
+}
+
+type CaseSleepPollingService struct {
+    repo *CaseSleepPollingRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSleepPollingAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSleepPolling(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSleepPollingDTO) error {
+    focus := "sleep_polling"
+    _ = focus
+    for i := 0; i < 2; i++ { time.Sleep(time.Millisecond) }
+    sleep_polling_positive := map[string]int{"sleep": 1, "polling": 2}
+    sleep_polling_positive["signal"] = len(input) + len(items)
+    sleep_positive_0 := sleep_polling_positive["sleep"] + len(input)
+    _ = sleep_positive_0
+    polling_positive_1 := sleep_polling_positive["polling"] + len(input)
+    _ = polling_positive_1
+    return nil
 }

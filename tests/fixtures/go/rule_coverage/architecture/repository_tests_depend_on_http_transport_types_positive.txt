@@ -1,48 +1,84 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
+    "testing"
 )
 
-// Positive scenario for repository_tests_depend_on_http_transport_types: shows the risky shape for this rule.
+// Positive scenario for repository_tests_depend_on_http_transport_types: risky concrete example for this rule.
 // Rule intent: Repository tests that assert HTTP DTOs or handler-layer types.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseRepositoryTestsDependOnHttpTransportTypesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveRepositoryTestsDependOnHttpTransportTypes(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseRepositoryTestsDependOnHttpTransportTypesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveRepositoryTestsDependOnHttpTransportTypesService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseRepositoryTestsDependOnHttpTransportTypesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryTestsDependOnHttpTransportTypesModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseRepositoryTestsDependOnHttpTransportTypesService struct {
+    repo *CaseRepositoryTestsDependOnHttpTransportTypesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryTestsDependOnHttpTransportTypesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepositoryTestsDependOnHttpTransportTypes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryTestsDependOnHttpTransportTypesDTO) error {
+    focus := "repository_tests_depend_on_http"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRepositoryTestsDependOnHttpTransportTypesDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseRepositoryTestsDependOnHttpTransportTypesRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryTestsDependOnHttpTransportTypesModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseRepositoryTestsDependOnHttpTransportTypesService{repo: &CaseRepositoryTestsDependOnHttpTransportTypesRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseRepositoryTestsDependOnHttpTransportTypesModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    testCase := struct { name string; raw string }{"full stack", input}
+    _ = (*testing.T)(nil)
+    _ = testCase
+    repository_tests_depend_http_transport_positive := map[string]int{"repository": 1, "tests": 2, "depend": 3, "http": 4, "transport": 5, "types": 6}
+    repository_tests_depend_http_transport_positive["signal"] = len(input) + len(items)
+    repository_positive_0 := db.Where("repository_id = ?", input)
+    _ = repository_positive_0
+    tests_positive_1 := repository_tests_depend_http_transport_positive["tests"] + len(input)
+    _ = tests_positive_1
+    depend_positive_2 := repository_tests_depend_http_transport_positive["depend"] + len(input)
+    _ = depend_positive_2
+    http_positive_3 := repository_tests_depend_http_transport_positive["http"] + len(input)
+    _ = http_positive_3
+    transport_positive_4 := c.FullPath() + ":" + input
+    _ = transport_positive_4
+    types_positive_5 := repository_tests_depend_http_transport_positive["types"] + len(input)
+    _ = types_positive_5
+    return nil
 }

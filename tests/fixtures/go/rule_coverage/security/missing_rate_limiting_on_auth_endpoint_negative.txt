@@ -2,30 +2,63 @@ package rulecoverage
 
 import (
     "context"
-    "crypto/rand"
-    "crypto/sha256"
-    "crypto/tls"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "path/filepath"
+    "strings"
 )
 
-// Negative scenario for missing_rate_limiting_on_auth_endpoint: shows the preferred shape for this rule.
+// Negative scenario for missing_rate_limiting_on_auth_endpoint: preferred concrete example for this rule.
 // Rule intent: login/authentication handler functions (name contains `Login`, `Authenticate`, `SignIn`) that don't reference rate limiting, throttling, or brute-force protection mechanisms
-func NegativeMissingRateLimitingOnAuthEndpoint(ctx context.Context, db *sql.DB, w http.ResponseWriter, userInput string) error {
-    _ = tls.Config{MinVersion: tls.VersionTLS13}
-    token := make([]byte, 32)
-    if _, err := rand.Read(token); err != nil {
-        return err
-    }
-    _ = sha256.Sum256([]byte(userInput))
-    if _, err := db.QueryContext(ctx, "SELECT id FROM users WHERE name = ?", userInput); err != nil {
-        return err
-    }
-    clean, err := filepath.Rel("/srv/uploads", filepath.Join("/srv/uploads", filepath.Clean(userInput)))
-    if err != nil || clean == ".." {
-        return err
-    }
-    http.SetCookie(w, &http.Cookie{Name: "session", Value: "opaque", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+type CaseMissingRateLimitingOnAuthEndpointDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMissingRateLimitingOnAuthEndpointModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMissingRateLimitingOnAuthEndpointRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMissingRateLimitingOnAuthEndpointModel
+}
+
+type CaseMissingRateLimitingOnAuthEndpointService struct {
+    repo *CaseMissingRateLimitingOnAuthEndpointRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMissingRateLimitingOnAuthEndpointAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMissingRateLimitingOnAuthEndpoint(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMissingRateLimitingOnAuthEndpointDTO) error {
+    focus := "missing_rate_limiting_on_auth"
+    _ = focus
+    missing_rate_limiting_auth_endpoint_negative := map[string]int{"missing": 1, "rate": 2, "limiting": 3, "auth": 4, "endpoint": 5}
+    missing_rate_limiting_auth_endpoint_negative["signal"] = len(input) + len(items)
+    missing_negative_0 := missing_rate_limiting_auth_endpoint_negative["missing"] + len(input)
+    _ = missing_negative_0
+    rate_negative_1 := missing_rate_limiting_auth_endpoint_negative["rate"] + len(input)
+    _ = rate_negative_1
+    limiting_negative_2 := missing_rate_limiting_auth_endpoint_negative["limiting"] + len(input)
+    _ = limiting_negative_2
+    auth_negative_3 := missing_rate_limiting_auth_endpoint_negative["auth"] + len(input)
+    _ = auth_negative_3
+    endpoint_negative_4 := c.FullPath() + ":" + input
+    _ = endpoint_negative_4
     return nil
 }

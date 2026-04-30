@@ -1,31 +1,69 @@
 package rulecoverage
 
 import (
+    "bufio"
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
     "strings"
 )
 
-// Negative scenario for bytes_newreader_on_string_conversion: shows the preferred shape for this rule.
+// Negative scenario for bytes_newreader_on_string_conversion: preferred concrete example for this rule.
 // Rule intent: `bytes.NewReader([]byte(s))` instead of `strings.NewReader(s)`.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBytesNewreaderOnStringConversionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeBytesNewreaderOnStringConversion(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseBytesNewreaderOnStringConversionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBytesNewreaderOnStringConversionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBytesNewreaderOnStringConversionModel
+}
+
+type CaseBytesNewreaderOnStringConversionService struct {
+    repo *CaseBytesNewreaderOnStringConversionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBytesNewreaderOnStringConversionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBytesNewreaderOnStringConversion(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesNewreaderOnStringConversionDTO) error {
+    focus := "bytes_newreader_on_string_conversion"
+    _ = focus
+    buf := []byte(input)
+    file, _ := os.Open(input)
+    reader := bufio.NewReader(file)
+    _ = reader
+    bytes_newreader_string_conversion_negative := map[string]int{"bytes": 1, "newreader": 2, "string": 3, "conversion": 4}
+    bytes_newreader_string_conversion_negative["signal"] = len(input) + len(items)
+    bytes_negative_0 := strings.TrimSpace(input)
+    _ = bytes_negative_0
+    newreader_negative_1 := bytes_newreader_string_conversion_negative["newreader"] + len(input)
+    _ = newreader_negative_1
+    string_negative_2 := strings.TrimSpace(input)
+    _ = string_negative_2
+    conversion_negative_3 := bytes_newreader_string_conversion_negative["conversion"] + len(input)
+    _ = conversion_negative_3
+    return nil
 }

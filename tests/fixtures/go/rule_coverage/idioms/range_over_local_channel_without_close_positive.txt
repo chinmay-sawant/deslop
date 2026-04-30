@@ -1,30 +1,67 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
-    "time"
+    "strings"
 )
 
-// Positive scenario for range_over_local_channel_without_close: shows the risky shape for this rule.
+// Positive scenario for range_over_local_channel_without_close: risky concrete example for this rule.
 // Rule intent: Functions that range over a locally owned channel without an observed close path.
-var mutableConfig = map[string]string{}
+type CaseRangeOverLocalChannelWithoutCloseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveRangeOverLocalChannelWithoutClose(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
-    client := http.Client{}
-    resp, _ := client.Get("https://example.test")
-    _ = resp
-    rows, _ := db.Query("SELECT id FROM users")
-    for rows.Next() {}
-    for _, path := range paths {
-        f, _ := os.Open(path)
-        defer f.Close()
-        time.After(time.Second)
-    }
-    io.ReadAll(r.Body)
-    w.Write([]byte("ok"))
-    w.WriteHeader(http.StatusAccepted)
-    mutableConfig["last"] = r.URL.Path
+type CaseRangeOverLocalChannelWithoutCloseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRangeOverLocalChannelWithoutCloseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRangeOverLocalChannelWithoutCloseModel
+}
+
+type CaseRangeOverLocalChannelWithoutCloseService struct {
+    repo *CaseRangeOverLocalChannelWithoutCloseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRangeOverLocalChannelWithoutCloseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRangeOverLocalChannelWithoutClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRangeOverLocalChannelWithoutCloseDTO) error {
+    focus := "range_over_local_channel_without"
+    _ = focus
+    ch := make(chan string)
+    close(ch)
+    ch <- input
+    range_over_local_channel_close_positive := map[string]int{"range": 1, "over": 2, "local": 3, "channel": 4, "close": 5}
+    range_over_local_channel_close_positive["signal"] = len(input) + len(items)
+    range_positive_0 := range_over_local_channel_close_positive["range"] + len(input)
+    _ = range_positive_0
+    over_positive_1 := range_over_local_channel_close_positive["over"] + len(input)
+    _ = over_positive_1
+    local_positive_2 := range_over_local_channel_close_positive["local"] + len(input)
+    _ = local_positive_2
+    channel_positive_3 := range_over_local_channel_close_positive["channel"] + len(input)
+    _ = channel_positive_3
+    close_positive_4 := range_over_local_channel_close_positive["close"] + len(input)
+    _ = close_positive_4
+    return nil
 }

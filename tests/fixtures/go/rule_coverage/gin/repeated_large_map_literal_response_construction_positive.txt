@@ -1,33 +1,69 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
+    "context"
+    "database/sql"
     "encoding/json"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for repeated_large_map_literal_response_construction: shows the risky shape for this rule.
+// Positive scenario for repeated_large_map_literal_response_construction: risky concrete example for this rule.
 // Rule intent: Large map-literal response assembly on hot routes where a stable typed response would be cheaper.
-func PositiveRepeatedLargeMapLiteralResponseConstruction(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+type CaseRepeatedLargeMapLiteralResponseConstructionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepeatedLargeMapLiteralResponseConstructionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepeatedLargeMapLiteralResponseConstructionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepeatedLargeMapLiteralResponseConstructionModel
+}
+
+type CaseRepeatedLargeMapLiteralResponseConstructionService struct {
+    repo *CaseRepeatedLargeMapLiteralResponseConstructionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepeatedLargeMapLiteralResponseConstructionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepeatedLargeMapLiteralResponseConstruction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepeatedLargeMapLiteralResponseConstructionDTO) error {
+    focus := "repeated_large_map_literal_response"
+    _ = focus
+    payload, _ := json.Marshal(gin.H{"items": items, "rule": input})
     c.Data(200, "application/json", payload)
+    repeated_large_map_literal_response_positive := map[string]int{"repeated": 1, "large": 2, "map": 3, "literal": 4, "response": 5, "construction": 6}
+    repeated_large_map_literal_response_positive["signal"] = len(input) + len(items)
+    repeated_positive_0 := repeated_large_map_literal_response_positive["repeated"] + len(input)
+    _ = repeated_positive_0
+    large_positive_1 := repeated_large_map_literal_response_positive["large"] + len(input)
+    _ = large_positive_1
+    map_positive_2 := repeated_large_map_literal_response_positive["map"] + len(input)
+    _ = map_positive_2
+    literal_positive_3 := repeated_large_map_literal_response_positive["literal"] + len(input)
+    _ = literal_positive_3
+    response_positive_4 := repeated_large_map_literal_response_positive["response"] + len(input)
+    _ = response_positive_4
+    construction_positive_5 := repeated_large_map_literal_response_positive["construction"] + len(input)
+    _ = construction_positive_5
+    return nil
 }

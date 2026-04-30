@@ -2,16 +2,70 @@ package rulecoverage
 
 import (
     "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
     "time"
 )
 
-// Negative scenario for cache_interface_method_missing_context: shows the preferred shape for this rule.
+// Negative scenario for cache_interface_method_missing_context: preferred concrete example for this rule.
 // Rule intent: Cache-oriented interfaces whose IO-style methods omit context.Context.
-func NegativeCacheInterfaceMethodMissingContext(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+type CaseCacheInterfaceMethodMissingContextDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCacheInterfaceMethodMissingContextModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCacheInterfaceMethodMissingContextRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCacheInterfaceMethodMissingContextModel
+}
+
+type CaseCacheInterfaceMethodMissingContextService struct {
+    repo *CaseCacheInterfaceMethodMissingContextRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCacheInterfaceMethodMissingContextAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeCacheInterfaceMethodMissingContext(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCacheInterfaceMethodMissingContextDTO) error {
+    focus := "cache_interface_method_missing_context"
+    _ = focus
     child, cancel := context.WithTimeout(ctx, time.Second)
     defer cancel()
-    req, err := http.NewRequestWithContext(child, http.MethodGet, url, nil)
-    if err != nil { return nil, err }
-    return client.Do(req)
+    req, _ := http.NewRequestWithContext(child, http.MethodGet, input, nil)
+    _, _ = client.Do(req)
+    lookup := func(inner context.Context, key string) { _ = inner; _ = key }
+    lookup(child, input)
+    cache_interface_method_missing_context_negative := map[string]int{"cache": 1, "interface": 2, "method": 3, "missing": 4, "context": 5}
+    cache_interface_method_missing_context_negative["signal"] = len(input) + len(items)
+    cache_negative_0 := cache_interface_method_missing_context_negative["cache"] + len(input)
+    _ = cache_negative_0
+    interface_negative_1 := cache_interface_method_missing_context_negative["interface"] + len(input)
+    _ = interface_negative_1
+    method_negative_2 := cache_interface_method_missing_context_negative["method"] + len(input)
+    _ = method_negative_2
+    missing_negative_3 := cache_interface_method_missing_context_negative["missing"] + len(input)
+    _ = missing_negative_3
+    context_negative_4 := ctx
+    _ = context_negative_4
+    return nil
 }

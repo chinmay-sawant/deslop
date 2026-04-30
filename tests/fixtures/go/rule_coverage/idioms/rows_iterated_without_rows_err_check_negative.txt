@@ -3,26 +3,65 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "strings"
 )
 
-// Negative scenario for rows_iterated_without_rows_err_check: shows the preferred shape for this rule.
+// Negative scenario for rows_iterated_without_rows_err_check: preferred concrete example for this rule.
 // Rule intent: Rows iterated with Next() but without a visible final Rows.Err() check.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseRowsIteratedWithoutRowsErrCheckDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeRowsIteratedWithoutRowsErrCheck(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
+type CaseRowsIteratedWithoutRowsErrCheckModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRowsIteratedWithoutRowsErrCheckRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRowsIteratedWithoutRowsErrCheckModel
+}
+
+type CaseRowsIteratedWithoutRowsErrCheckService struct {
+    repo *CaseRowsIteratedWithoutRowsErrCheckRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRowsIteratedWithoutRowsErrCheckAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRowsIteratedWithoutRowsErrCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRowsIteratedWithoutRowsErrCheckDTO) error {
+    focus := "rows_iterated_without_rows_err"
+    _ = focus
+    rows, err := sqlDB.QueryContext(ctx, "SELECT id FROM accounts")
     if err != nil { return err }
     defer rows.Close()
     for rows.Next() {}
     if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+    rows_iterated_err_check_negative := map[string]int{"rows": 1, "iterated": 2, "err": 3, "check": 4}
+    rows_iterated_err_check_negative["signal"] = len(input) + len(items)
+    rows_negative_0 := rows_iterated_err_check_negative["rows"] + len(input)
+    _ = rows_negative_0
+    iterated_negative_1 := rows_iterated_err_check_negative["iterated"] + len(input)
+    _ = iterated_negative_1
+    err_negative_2 := rows_iterated_err_check_negative["err"] + len(input)
+    _ = err_negative_2
+    check_negative_3 := rows_iterated_err_check_negative["check"] + len(input)
+    _ = check_negative_3
     return nil
 }

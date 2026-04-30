@@ -3,15 +3,64 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for gorm_find_without_limit_on_handler_path: shows the preferred shape for this rule.
+// Negative scenario for gorm_find_without_limit_on_handler_path: preferred concrete example for this rule.
 // Rule intent: Request-path GORM Find(...) chains with no visible Limit(...) step.
-type Account struct { ID int; TenantID string; Status string }
+type CaseGormFindWithoutLimitOnHandlerPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGormFindWithoutLimitOnHandlerPath(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CaseGormFindWithoutLimitOnHandlerPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGormFindWithoutLimitOnHandlerPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormFindWithoutLimitOnHandlerPathModel
+}
+
+type CaseGormFindWithoutLimitOnHandlerPathService struct {
+    repo *CaseGormFindWithoutLimitOnHandlerPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormFindWithoutLimitOnHandlerPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGormFindWithoutLimitOnHandlerPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormFindWithoutLimitOnHandlerPathDTO) error {
+    focus := "gorm_find_without_limit_on"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Select("id", "status").Where("tenant_id = ?", c.Query("tenant")).Limit(100).Find(&[]CaseGormFindWithoutLimitOnHandlerPathModel{})
+    gorm_find_limit_handler_path_negative := map[string]int{"gorm": 1, "find": 2, "limit": 3, "handler": 4, "path": 5}
+    gorm_find_limit_handler_path_negative["signal"] = len(input) + len(items)
+    gorm_negative_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_negative_0
+    find_negative_1 := gorm_find_limit_handler_path_negative["find"] + len(input)
+    _ = find_negative_1
+    limit_negative_2 := gorm_find_limit_handler_path_negative["limit"] + len(input)
+    _ = limit_negative_2
+    handler_negative_3 := c.FullPath() + ":" + input
+    _ = handler_negative_3
+    path_negative_4 := gorm_find_limit_handler_path_negative["path"] + len(input)
+    _ = path_negative_4
+    return nil
 }

@@ -2,43 +2,73 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
     "sync"
     "time"
 )
 
-// Positive scenario for go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers: shows the risky shape for this rule.
+// Positive scenario for go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers: risky concrete example for this rule.
 // Rule intent: Layer: Garbage collection and cleanup. Flag sync.Pool usage that stores large buffers without a cap before putting them back.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffers(items []record, needle string, w io.Writer) string {
-    var out string
+type CaseGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffersModel
+}
+
+type CaseGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffersService struct {
+    repo *CaseGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuffersDTO) error {
+    focus := "go_perf_layer_garbage_collection"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
     var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    perf_layer_garbage_collection_cleanup_positive := map[string]int{"perf": 1, "layer": 2, "garbage": 3, "collection": 4, "cleanup": 5, "sync": 6}
+    perf_layer_garbage_collection_cleanup_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_garbage_collection_cleanup_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_garbage_collection_cleanup_positive["layer"] + len(input)
+    _ = layer_positive_1
+    garbage_positive_2 := perf_layer_garbage_collection_cleanup_positive["garbage"] + len(input)
+    _ = garbage_positive_2
+    collection_positive_3 := perf_layer_garbage_collection_cleanup_positive["collection"] + len(input)
+    _ = collection_positive_3
+    cleanup_positive_4 := perf_layer_garbage_collection_cleanup_positive["cleanup"] + len(input)
+    _ = cleanup_positive_4
+    sync_positive_5 := perf_layer_garbage_collection_cleanup_positive["sync"] + len(input)
+    _ = sync_positive_5
+    return nil
 }

@@ -1,48 +1,80 @@
-package rulecoverage
+package service
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strconv"
+    "strings"
 )
 
-// Positive scenario for pagination_validation_missing_shared_bound_helper: shows the risky shape for this rule.
+// Positive scenario for pagination_validation_missing_shared_bound_helper: risky concrete example for this rule.
 // Rule intent: API modules that hand-roll page and page-size bounds in many handlers instead of a shared contract.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CasePaginationValidationMissingSharedBoundHelperDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositivePaginationValidationMissingSharedBoundHelper(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CasePaginationValidationMissingSharedBoundHelperModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositivePaginationValidationMissingSharedBoundHelperService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CasePaginationValidationMissingSharedBoundHelperRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePaginationValidationMissingSharedBoundHelperModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CasePaginationValidationMissingSharedBoundHelperService struct {
+    repo *CasePaginationValidationMissingSharedBoundHelperRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePaginationValidationMissingSharedBoundHelperAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePaginationValidationMissingSharedBoundHelper(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePaginationValidationMissingSharedBoundHelperDTO) error {
+    focus := "pagination_validation_missing_shared_bound"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CasePaginationValidationMissingSharedBoundHelperDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    service := &CasePaginationValidationMissingSharedBoundHelperService{repo: &CasePaginationValidationMissingSharedBoundHelperRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CasePaginationValidationMissingSharedBoundHelperModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    page, _ := strconv.Atoi(c.Query("page"))
+    size, _ := strconv.Atoi(c.Query("size"))
+    db.Order(c.Query("sort")).Offset((page - 1) * size).Limit(size).Find(&[]any{})
+    pagination_validation_missing_shared_bound_positive := map[string]int{"pagination": 1, "validation": 2, "missing": 3, "shared": 4, "bound": 5, "helper": 6}
+    pagination_validation_missing_shared_bound_positive["signal"] = len(input) + len(items)
+    pagination_positive_0 := pagination_validation_missing_shared_bound_positive["pagination"] + len(input)
+    _ = pagination_positive_0
+    validation_positive_1 := CasePaginationValidationMissingSharedBoundHelperDTO{ID: input, Status: "validation"}
+    _ = validation_positive_1
+    missing_positive_2 := pagination_validation_missing_shared_bound_positive["missing"] + len(input)
+    _ = missing_positive_2
+    shared_positive_3 := pagination_validation_missing_shared_bound_positive["shared"] + len(input)
+    _ = shared_positive_3
+    bound_positive_4 := pagination_validation_missing_shared_bound_positive["bound"] + len(input)
+    _ = bound_positive_4
+    helper_positive_5 := pagination_validation_missing_shared_bound_positive["helper"] + len(input)
+    _ = helper_positive_5
+    return nil
 }

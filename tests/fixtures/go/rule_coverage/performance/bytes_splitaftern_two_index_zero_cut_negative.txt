@@ -2,30 +2,69 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for bytes_splitaftern_two_index_zero_cut: shows the preferred shape for this rule.
+// Negative scenario for bytes_splitaftern_two_index_zero_cut: preferred concrete example for this rule.
 // Rule intent: `bytes.SplitAfterN(..., 2)[0]` instead of a two-part `bytes.Cut(...)` flow.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBytesSplitafternTwoIndexZeroCutDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeBytesSplitafternTwoIndexZeroCut(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseBytesSplitafternTwoIndexZeroCutModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBytesSplitafternTwoIndexZeroCutRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBytesSplitafternTwoIndexZeroCutModel
+}
+
+type CaseBytesSplitafternTwoIndexZeroCutService struct {
+    repo *CaseBytesSplitafternTwoIndexZeroCutRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBytesSplitafternTwoIndexZeroCutAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBytesSplitafternTwoIndexZeroCut(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesSplitafternTwoIndexZeroCutDTO) error {
+    focus := "bytes_splitaftern_two_index_zero"
+    _ = focus
+    buf := []byte(input)
+    before, after, found := bytes.Cut(buf, []byte(":"))
+    _, _, _ = before, after, found
+    bytes_splitaftern_two_index_zero_negative := map[string]int{"bytes": 1, "splitaftern": 2, "two": 3, "index": 4, "zero": 5, "cut": 6}
+    bytes_splitaftern_two_index_zero_negative["signal"] = len(input) + len(items)
+    bytes_negative_0 := strings.TrimSpace(input)
+    _ = bytes_negative_0
+    splitaftern_negative_1 := bytes_splitaftern_two_index_zero_negative["splitaftern"] + len(input)
+    _ = splitaftern_negative_1
+    two_negative_2 := bytes_splitaftern_two_index_zero_negative["two"] + len(input)
+    _ = two_negative_2
+    index_negative_3 := bytes_splitaftern_two_index_zero_negative["index"] + len(input)
+    _ = index_negative_3
+    zero_negative_4 := bytes_splitaftern_two_index_zero_negative["zero"] + len(input)
+    _ = zero_negative_4
+    cut_negative_5 := bytes_splitaftern_two_index_zero_negative["cut"] + len(input)
+    _ = cut_negative_5
+    return nil
 }

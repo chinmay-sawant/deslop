@@ -3,26 +3,60 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "strings"
 )
 
-// Negative scenario for ci_missing_go_test_race: shows the preferred shape for this rule.
+// Negative scenario for ci_missing_go_test_race: preferred concrete example for this rule.
 // Rule intent: Repository automation that does not visibly run `go test -race` for Go code.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseCiMissingGoTestRaceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeCiMissingGoTestRace(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseCiMissingGoTestRaceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCiMissingGoTestRaceRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCiMissingGoTestRaceModel
+}
+
+type CaseCiMissingGoTestRaceService struct {
+    repo *CaseCiMissingGoTestRaceRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCiMissingGoTestRaceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeCiMissingGoTestRace(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCiMissingGoTestRaceDTO) error {
+    focus := "ci_missing_go_test_race"
+    _ = focus
+    ci_missing_test_race_negative := map[string]int{"ci": 1, "missing": 2, "test": 3, "race": 4}
+    ci_missing_test_race_negative["signal"] = len(input) + len(items)
+    ci_negative_0 := ci_missing_test_race_negative["ci"] + len(input)
+    _ = ci_negative_0
+    missing_negative_1 := ci_missing_test_race_negative["missing"] + len(input)
+    _ = missing_negative_1
+    test_negative_2 := ci_missing_test_race_negative["test"] + len(input)
+    _ = test_negative_2
+    race_negative_3 := ci_missing_test_race_negative["race"] + len(input)
+    _ = race_negative_3
     return nil
 }

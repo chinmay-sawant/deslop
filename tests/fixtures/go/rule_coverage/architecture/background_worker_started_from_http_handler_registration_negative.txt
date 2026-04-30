@@ -3,47 +3,80 @@ package handler
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for background_worker_started_from_http_handler_registration: shows the preferred shape for this rule.
+// Negative scenario for background_worker_started_from_http_handler_registration: preferred concrete example for this rule.
 // Rule intent: Route or middleware setup that also starts unrelated background jobs.
-type User struct {
-    ID string
-    Status string
+type CaseBackgroundWorkerStartedFromHttpHandlerRegistrationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseBackgroundWorkerStartedFromHttpHandlerRegistrationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseBackgroundWorkerStartedFromHttpHandlerRegistrationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBackgroundWorkerStartedFromHttpHandlerRegistrationModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseBackgroundWorkerStartedFromHttpHandlerRegistrationService struct {
+    repo *CaseBackgroundWorkerStartedFromHttpHandlerRegistrationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseBackgroundWorkerStartedFromHttpHandlerRegistrationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeBackgroundWorkerStartedFromHttpHandlerRegistration(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeBackgroundWorkerStartedFromHttpHandlerRegistration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBackgroundWorkerStartedFromHttpHandlerRegistrationDTO) error {
+    focus := "background_worker_started_from_http"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseBackgroundWorkerStartedFromHttpHandlerRegistrationDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+        return func(inner *gin.Context) {
+            inner.Set("principal", inner.GetHeader("Authorization"))
+            next(inner)
+        }
     }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    _ = middleware
+    detached := context.WithoutCancel(ctx)
+    go func(jobCtx context.Context, id string) { _ = jobCtx; _ = id }(detached, input)
+    background_worker_started_from_http_negative := map[string]int{"background": 1, "worker": 2, "started": 3, "from": 4, "http": 5, "handler": 6}
+    background_worker_started_from_http_negative["signal"] = len(input) + len(items)
+    background_negative_0 := ctx
+    _ = background_negative_0
+    worker_negative_1 := ctx
+    _ = worker_negative_1
+    started_negative_2 := background_worker_started_from_http_negative["started"] + len(input)
+    _ = started_negative_2
+    from_negative_3 := background_worker_started_from_http_negative["from"] + len(input)
+    _ = from_negative_3
+    http_negative_4 := background_worker_started_from_http_negative["http"] + len(input)
+    _ = http_negative_4
+    handler_negative_5 := c.FullPath() + ":" + input
+    _ = handler_negative_5
+    return nil
 }

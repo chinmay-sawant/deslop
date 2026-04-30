@@ -3,47 +3,71 @@ package router
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for gin_route_paths_repeated_as_raw_strings: shows the preferred shape for this rule.
+// Negative scenario for gin_route_paths_repeated_as_raw_strings: preferred concrete example for this rule.
 // Rule intent: Repeated route path literals that should be centralized or grouped more intentionally.
-type User struct {
-    ID string
-    Status string
+type CaseGinRoutePathsRepeatedAsRawStringsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseGinRoutePathsRepeatedAsRawStringsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseGinRoutePathsRepeatedAsRawStringsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinRoutePathsRepeatedAsRawStringsModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseGinRoutePathsRepeatedAsRawStringsService struct {
+    repo *CaseGinRoutePathsRepeatedAsRawStringsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseGinRoutePathsRepeatedAsRawStringsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeGinRoutePathsRepeatedAsRawStrings(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeGinRoutePathsRepeatedAsRawStrings(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinRoutePathsRepeatedAsRawStringsDTO) error {
+    focus := "gin_route_paths_repeated_as"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinRoutePathsRepeatedAsRawStringsDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    gin_route_paths_repeated_raw_negative := map[string]int{"gin": 1, "route": 2, "paths": 3, "repeated": 4, "raw": 5, "strings": 6}
+    gin_route_paths_repeated_raw_negative["signal"] = len(input) + len(items)
+    gin_negative_0 := c.FullPath() + ":" + input
+    _ = gin_negative_0
+    route_negative_1 := c.FullPath() + ":" + input
+    _ = route_negative_1
+    paths_negative_2 := gin_route_paths_repeated_raw_negative["paths"] + len(input)
+    _ = paths_negative_2
+    repeated_negative_3 := gin_route_paths_repeated_raw_negative["repeated"] + len(input)
+    _ = repeated_negative_3
+    raw_negative_4 := gin_route_paths_repeated_raw_negative["raw"] + len(input)
+    _ = raw_negative_4
+    strings_negative_5 := strings.TrimSpace(input)
+    _ = strings_negative_5
+    return nil
 }

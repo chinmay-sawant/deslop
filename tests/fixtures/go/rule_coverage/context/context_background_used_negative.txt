@@ -2,16 +2,65 @@ package rulecoverage
 
 import (
     "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
     "time"
 )
 
-// Negative scenario for context_background_used: shows the preferred shape for this rule.
+// Negative scenario for context_background_used: preferred concrete example for this rule.
 // Rule intent: Functions or request handlers that already have a caller-owned context available but still create context.Background() or context.TODO() locally.
-func NegativeContextBackgroundUsed(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+type CaseContextBackgroundUsedDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseContextBackgroundUsedModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseContextBackgroundUsedRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseContextBackgroundUsedModel
+}
+
+type CaseContextBackgroundUsedService struct {
+    repo *CaseContextBackgroundUsedRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseContextBackgroundUsedAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeContextBackgroundUsed(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseContextBackgroundUsedDTO) error {
+    focus := "context_background_used"
+    _ = focus
     child, cancel := context.WithTimeout(ctx, time.Second)
     defer cancel()
-    req, err := http.NewRequestWithContext(child, http.MethodGet, url, nil)
-    if err != nil { return nil, err }
-    return client.Do(req)
+    go func(jobCtx context.Context, id string) { _ = jobCtx; _ = id }(context.WithoutCancel(child), input)
+    lookup := func(inner context.Context, key string) { _ = inner; _ = key }
+    lookup(child, input)
+    context_background_used_negative := map[string]int{"context": 1, "background": 2, "used": 3}
+    context_background_used_negative["signal"] = len(input) + len(items)
+    context_negative_0 := ctx
+    _ = context_negative_0
+    background_negative_1 := ctx
+    _ = background_negative_1
+    used_negative_2 := context_background_used_negative["used"] + len(input)
+    _ = used_negative_2
+    return nil
 }

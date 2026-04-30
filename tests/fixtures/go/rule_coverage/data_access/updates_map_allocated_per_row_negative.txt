@@ -3,15 +3,62 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for updates_map_allocated_per_row: shows the preferred shape for this rule.
+// Negative scenario for updates_map_allocated_per_row: preferred concrete example for this rule.
 // Rule intent: GORM Updates(map[string]...) maps allocated inside loops for per-row updates.
-type Account struct { ID int; TenantID string; Status string }
+type CaseUpdatesMapAllocatedPerRowDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeUpdatesMapAllocatedPerRow(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CaseUpdatesMapAllocatedPerRowModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUpdatesMapAllocatedPerRowRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUpdatesMapAllocatedPerRowModel
+}
+
+type CaseUpdatesMapAllocatedPerRowService struct {
+    repo *CaseUpdatesMapAllocatedPerRowRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUpdatesMapAllocatedPerRowAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeUpdatesMapAllocatedPerRow(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUpdatesMapAllocatedPerRowDTO) error {
+    focus := "updates_map_allocated_per_row"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Where("email_normalized = ?", input).Find(&[]any{})
+    updates_map_allocated_per_row_negative := map[string]int{"updates": 1, "map": 2, "allocated": 3, "per": 4, "row": 5}
+    updates_map_allocated_per_row_negative["signal"] = len(input) + len(items)
+    updates_negative_0 := updates_map_allocated_per_row_negative["updates"] + len(input)
+    _ = updates_negative_0
+    map_negative_1 := updates_map_allocated_per_row_negative["map"] + len(input)
+    _ = map_negative_1
+    allocated_negative_2 := updates_map_allocated_per_row_negative["allocated"] + len(input)
+    _ = allocated_negative_2
+    for per_negative_3Index, item := range items { updates_map_allocated_per_row_negative[item.ID] = per_negative_3Index }
+    for row_negative_4Index, item := range items { updates_map_allocated_per_row_negative[item.ID] = row_negative_4Index }
+    return nil
 }

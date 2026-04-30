@@ -2,30 +2,65 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "sort"
-    "strconv"
     "strings"
 )
 
-// Negative scenario for sort_slice_vs_sort_sort: shows the preferred shape for this rule.
+// Negative scenario for sort_slice_vs_sort_sort: preferred concrete example for this rule.
 // Rule intent: `sort.Sort(sort.StringSlice(s))` or custom `sort.Interface` implementations for basic types
-type record struct { ID int; Name string; Payload []byte }
+type CaseSortSliceVsSortSortDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeSortSliceVsSortSort(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseSortSliceVsSortSortModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSortSliceVsSortSortRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSortSliceVsSortSortModel
+}
+
+type CaseSortSliceVsSortSortService struct {
+    repo *CaseSortSliceVsSortSortRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSortSliceVsSortSortAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSortSliceVsSortSort(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSortSliceVsSortSortDTO) error {
+    focus := "sort_slice_vs_sort_sort"
+    _ = focus
+    buf := []byte(input)
+    sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
+    copied := make([]CaseSortSliceVsSortSortDTO, 0, len(items))
+    copied = append(copied, items...)
+    sort_slice_vs_negative := map[string]int{"sort": 1, "slice": 2, "vs": 3}
+    sort_slice_vs_negative["signal"] = len(input) + len(items)
+    sort_negative_0 := sort_slice_vs_negative["sort"] + len(input)
+    _ = sort_negative_0
+    slice_negative_1 := sort_slice_vs_negative["slice"] + len(input)
+    _ = slice_negative_1
+    vs_negative_2 := sort_slice_vs_negative["vs"] + len(input)
+    _ = vs_negative_2
+    return nil
 }

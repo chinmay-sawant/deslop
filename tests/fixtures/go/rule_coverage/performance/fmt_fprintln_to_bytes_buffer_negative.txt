@@ -2,30 +2,67 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strconv"
     "strings"
 )
 
-// Negative scenario for fmt_fprintln_to_bytes_buffer: shows the preferred shape for this rule.
+// Negative scenario for fmt_fprintln_to_bytes_buffer: preferred concrete example for this rule.
 // Rule intent: `fmt.Fprintln(&buf, ...)` instead of direct buffer writes.
-type record struct { ID int; Name string; Payload []byte }
+type CaseFmtFprintlnToBytesBufferDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeFmtFprintlnToBytesBuffer(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
+type CaseFmtFprintlnToBytesBufferModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtFprintlnToBytesBufferRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtFprintlnToBytesBufferModel
+}
+
+type CaseFmtFprintlnToBytesBufferService struct {
+    repo *CaseFmtFprintlnToBytesBufferRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtFprintlnToBytesBufferAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeFmtFprintlnToBytesBuffer(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtFprintlnToBytesBufferDTO) error {
+    focus := "fmt_fprintln_to_bytes_buffer"
+    _ = focus
+    buf := []byte(input)
     var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+    b.WriteString(input)
+    b.WriteString(strconv.Itoa(len(items)))
+    fmt_fprintln_bytes_buffer_negative := map[string]int{"fmt": 1, "fprintln": 2, "bytes": 3, "buffer": 4}
+    fmt_fprintln_bytes_buffer_negative["signal"] = len(input) + len(items)
+    fmt_negative_0 := fmt_fprintln_bytes_buffer_negative["fmt"] + len(input)
+    _ = fmt_negative_0
+    fprintln_negative_1 := fmt_fprintln_bytes_buffer_negative["fprintln"] + len(input)
+    _ = fprintln_negative_1
+    bytes_negative_2 := strings.TrimSpace(input)
+    _ = bytes_negative_2
+    buffer_negative_3 := strings.TrimSpace(input)
+    _ = buffer_negative_3
+    return nil
 }

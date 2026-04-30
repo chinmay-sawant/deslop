@@ -2,30 +2,68 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need: preferred concrete example for this rule.
 // Rule intent: Layer: Collection iteration. Flag manual index loops over slices where range would avoid repeated bounds-sensitive indexing.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeedDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeed(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeedModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeedRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeedModel
+}
+
+type CaseGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeedService struct {
+    repo *CaseGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeedRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeedAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeed(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCollectionIterationManualIndexLoopWithoutBoundsNeedDTO) error {
+    focus := "go_perf_layer_collection_iteration"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    perf_layer_collection_iteration_manual_negative := map[string]int{"perf": 1, "layer": 2, "collection": 3, "iteration": 4, "manual": 5, "index": 6}
+    perf_layer_collection_iteration_manual_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_collection_iteration_manual_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_collection_iteration_manual_negative["layer"] + len(input)
+    _ = layer_negative_1
+    collection_negative_2 := perf_layer_collection_iteration_manual_negative["collection"] + len(input)
+    _ = collection_negative_2
+    for iteration_negative_3Index, item := range items { perf_layer_collection_iteration_manual_negative[item.ID] = iteration_negative_3Index }
+    manual_negative_4 := perf_layer_collection_iteration_manual_negative["manual"] + len(input)
+    _ = manual_negative_4
+    index_negative_5 := perf_layer_collection_iteration_manual_negative["index"] + len(input)
+    _ = index_negative_5
+    return nil
 }

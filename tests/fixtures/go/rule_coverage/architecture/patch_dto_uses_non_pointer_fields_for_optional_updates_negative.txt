@@ -3,47 +3,68 @@ package handler
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for patch_dto_uses_non_pointer_fields_for_optional_updates: shows the preferred shape for this rule.
+// Negative scenario for patch_dto_uses_non_pointer_fields_for_optional_updates: preferred concrete example for this rule.
 // Rule intent: PATCH-like DTOs that cannot distinguish omitted fields from zero values.
-type User struct {
-    ID string
-    Status string
+type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesService struct {
+    repo *CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativePatchDtoUsesNonPointerFieldsForOptionalUpdates(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativePatchDtoUsesNonPointerFieldsForOptionalUpdates(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesDTO) error {
+    focus := "patch_dto_uses_non_pointer"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    dto := CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesDTO{ID: input, Status: "active"}
+    model := CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    patch_dto_uses_non_pointer_negative := map[string]int{"patch": 1, "dto": 2, "uses": 3, "non": 4, "pointer": 5, "fields": 6}
+    patch_dto_uses_non_pointer_negative["signal"] = len(input) + len(items)
+    patch_negative_0 := patch_dto_uses_non_pointer_negative["patch"] + len(input)
+    _ = patch_negative_0
+    dto_negative_1 := CasePatchDtoUsesNonPointerFieldsForOptionalUpdatesDTO{ID: input, Status: "dto"}
+    _ = dto_negative_1
+    uses_negative_2 := patch_dto_uses_non_pointer_negative["uses"] + len(input)
+    _ = uses_negative_2
+    non_negative_3 := patch_dto_uses_non_pointer_negative["non"] + len(input)
+    _ = non_negative_3
+    pointer_negative_4 := patch_dto_uses_non_pointer_negative["pointer"] + len(input)
+    _ = pointer_negative_4
+    fields_negative_5 := patch_dto_uses_non_pointer_negative["fields"] + len(input)
+    _ = fields_negative_5
+    return nil
 }

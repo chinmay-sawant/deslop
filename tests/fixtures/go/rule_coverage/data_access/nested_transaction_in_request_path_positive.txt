@@ -6,28 +6,59 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Positive scenario for nested_transaction_in_request_path: shows the risky shape for this rule.
+// Positive scenario for nested_transaction_in_request_path: risky concrete example for this rule.
 // Rule intent: Multiple transactions started on a single request path.
-type Account struct { ID int; TenantID string; Status string }
+type CaseNestedTransactionInRequestPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveNestedTransactionInRequestPath(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
-    ctx := context.Background()
-    var accounts []Account
-    var total int64
-    sql.Open("postgres", c.Query("dsn"))
-    sqlDB.PingContext(ctx)
-    db.AutoMigrate(&Account{})
-    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
-    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
-    for _, id := range ids {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
-        db.Create(&Account{ID: id})
-        db.Delete(&Account{}, id)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
-    }
-    page := accounts[:10]
-    return page, nil
+type CaseNestedTransactionInRequestPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseNestedTransactionInRequestPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseNestedTransactionInRequestPathModel
+}
+
+type CaseNestedTransactionInRequestPathService struct {
+    repo *CaseNestedTransactionInRequestPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseNestedTransactionInRequestPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveNestedTransactionInRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseNestedTransactionInRequestPathDTO) error {
+    focus := "nested_transaction_in_request_path"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    for _, item := range items { tx := db.Begin(); tx.Save(&item); tx.Commit() }
+    nested_transaction_request_path_positive := map[string]int{"nested": 1, "transaction": 2, "request": 3, "path": 4}
+    nested_transaction_request_path_positive["signal"] = len(input) + len(items)
+    nested_positive_0 := nested_transaction_request_path_positive["nested"] + len(input)
+    _ = nested_positive_0
+    transaction_positive_1 := nested_transaction_request_path_positive["transaction"] + len(input)
+    _ = transaction_positive_1
+    request_positive_2 := nested_transaction_request_path_positive["request"] + len(input)
+    _ = request_positive_2
+    path_positive_3 := nested_transaction_request_path_positive["path"] + len(input)
+    _ = path_positive_3
+    return nil
 }

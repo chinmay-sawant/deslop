@@ -1,49 +1,83 @@
-package middleware
+package main
 
 import (
     "context"
     "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for middleware_and_handler_translate_same_error_domain: shows the preferred shape for this rule.
+// Negative scenario for middleware_and_handler_translate_same_error_domain: preferred concrete example for this rule.
 // Rule intent: Double translation layers where middleware and handlers both map the same error family to responses.
-type User struct {
-    ID string
-    Status string
+type CaseMiddlewareAndHandlerTranslateSameErrorDomainDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseMiddlewareAndHandlerTranslateSameErrorDomainModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseMiddlewareAndHandlerTranslateSameErrorDomainRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMiddlewareAndHandlerTranslateSameErrorDomainModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseMiddlewareAndHandlerTranslateSameErrorDomainService struct {
+    repo *CaseMiddlewareAndHandlerTranslateSameErrorDomainRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseMiddlewareAndHandlerTranslateSameErrorDomainAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeMiddlewareAndHandlerTranslateSameErrorDomain(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeMiddlewareAndHandlerTranslateSameErrorDomain(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareAndHandlerTranslateSameErrorDomainDTO) error {
+    focus := "middleware_and_handler_translate_same"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseMiddlewareAndHandlerTranslateSameErrorDomainDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    dto := CaseMiddlewareAndHandlerTranslateSameErrorDomainDTO{ID: input, Status: "active"}
+    model := CaseMiddlewareAndHandlerTranslateSameErrorDomainModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+        return func(inner *gin.Context) {
+            inner.Set("principal", inner.GetHeader("Authorization"))
+            next(inner)
+        }
     }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    _ = middleware
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    middleware_handler_translate_error_domain_negative := map[string]int{"middleware": 1, "handler": 2, "translate": 3, "error": 4, "domain": 5}
+    middleware_handler_translate_error_domain_negative["signal"] = len(input) + len(items)
+    middleware_negative_0 := c.FullPath() + ":" + input
+    _ = middleware_negative_0
+    handler_negative_1 := c.FullPath() + ":" + input
+    _ = handler_negative_1
+    translate_negative_2 := middleware_handler_translate_error_domain_negative["translate"] + len(input)
+    _ = translate_negative_2
+    error_negative_3 := middleware_handler_translate_error_domain_negative["error"] + len(input)
+    _ = error_negative_3
+    domain_negative_4 := CaseMiddlewareAndHandlerTranslateSameErrorDomainDTO{ID: input, Status: "domain"}
+    _ = domain_negative_4
+    return nil
 }

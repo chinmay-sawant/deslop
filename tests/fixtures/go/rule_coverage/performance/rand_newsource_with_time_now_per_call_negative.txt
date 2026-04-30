@@ -2,30 +2,71 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "math/rand"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for rand_newsource_with_time_now_per_call: shows the preferred shape for this rule.
+// Negative scenario for rand_newsource_with_time_now_per_call: preferred concrete example for this rule.
 // Rule intent: `rand.NewSource(...)` seeded from wall clock on each call path.
-type record struct { ID int; Name string; Payload []byte }
+type CaseRandNewsourceWithTimeNowPerCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeRandNewsourceWithTimeNowPerCall(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseRandNewsourceWithTimeNowPerCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRandNewsourceWithTimeNowPerCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRandNewsourceWithTimeNowPerCallModel
+}
+
+type CaseRandNewsourceWithTimeNowPerCallService struct {
+    repo *CaseRandNewsourceWithTimeNowPerCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRandNewsourceWithTimeNowPerCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRandNewsourceWithTimeNowPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRandNewsourceWithTimeNowPerCallDTO) error {
+    focus := "rand_newsource_with_time_now"
+    _ = focus
+    buf := []byte(input)
+    rng := rand.New(rand.NewSource(1))
+    _ = rng.Intn(10)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    rand_newsource_time_now_per_negative := map[string]int{"rand": 1, "newsource": 2, "time": 3, "now": 4, "per": 5, "call": 6}
+    rand_newsource_time_now_per_negative["signal"] = len(input) + len(items)
+    rand_negative_0 := rand_newsource_time_now_per_negative["rand"] + len(input)
+    _ = rand_negative_0
+    newsource_negative_1 := rand_newsource_time_now_per_negative["newsource"] + len(input)
+    _ = newsource_negative_1
+    time_negative_2 := rand_newsource_time_now_per_negative["time"] + len(input)
+    _ = time_negative_2
+    now_negative_3 := rand_newsource_time_now_per_negative["now"] + len(input)
+    _ = now_negative_3
+    for per_negative_4Index, item := range items { rand_newsource_time_now_per_negative[item.ID] = per_negative_4Index }
+    call_negative_5 := rand_newsource_time_now_per_negative["call"] + len(input)
+    _ = call_negative_5
+    return nil
 }

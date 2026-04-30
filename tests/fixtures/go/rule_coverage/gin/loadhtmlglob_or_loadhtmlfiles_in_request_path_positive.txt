@@ -1,33 +1,64 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
     "os"
+    "strings"
 )
 
-// Positive scenario for loadhtmlglob_or_loadhtmlfiles_in_request_path: shows the risky shape for this rule.
+// Positive scenario for loadhtmlglob_or_loadhtmlfiles_in_request_path: risky concrete example for this rule.
 // Rule intent: LoadHTMLGlob or LoadHTMLFiles called on request paths instead of startup initialization.
-func PositiveLoadhtmlglobOrLoadhtmlfilesInRequestPath(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathModel
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathService struct {
+    repo *CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveLoadhtmlglobOrLoadhtmlfilesInRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLoadhtmlglobOrLoadhtmlfilesInRequestPathDTO) error {
+    focus := "loadhtmlglob_or_loadhtmlfiles_in_request"
+    _ = focus
+    os.ReadFile(input)
+    loadhtmlglob_loadhtmlfiles_request_path_positive := map[string]int{"loadhtmlglob": 1, "loadhtmlfiles": 2, "request": 3, "path": 4}
+    loadhtmlglob_loadhtmlfiles_request_path_positive["signal"] = len(input) + len(items)
+    loadhtmlglob_positive_0 := loadhtmlglob_loadhtmlfiles_request_path_positive["loadhtmlglob"] + len(input)
+    _ = loadhtmlglob_positive_0
+    loadhtmlfiles_positive_1 := loadhtmlglob_loadhtmlfiles_request_path_positive["loadhtmlfiles"] + len(input)
+    _ = loadhtmlfiles_positive_1
+    request_positive_2 := loadhtmlglob_loadhtmlfiles_request_path_positive["request"] + len(input)
+    _ = request_positive_2
+    path_positive_3 := loadhtmlglob_loadhtmlfiles_request_path_positive["path"] + len(input)
+    _ = path_positive_3
+    return nil
 }

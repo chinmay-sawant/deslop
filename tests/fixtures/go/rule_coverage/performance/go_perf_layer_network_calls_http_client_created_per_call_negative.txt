@@ -2,30 +2,72 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
+    "time"
 )
 
-// Negative scenario for go_perf_layer_network_calls_http_client_created_per_call: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_network_calls_http_client_created_per_call: preferred concrete example for this rule.
 // Rule intent: Layer: Network calls. Flag http.Client construction per call instead of reusing clients and transports.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerNetworkCallsHttpClientCreatedPerCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerNetworkCallsHttpClientCreatedPerCall(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerNetworkCallsHttpClientCreatedPerCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerNetworkCallsHttpClientCreatedPerCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerNetworkCallsHttpClientCreatedPerCallModel
+}
+
+type CaseGoPerfLayerNetworkCallsHttpClientCreatedPerCallService struct {
+    repo *CaseGoPerfLayerNetworkCallsHttpClientCreatedPerCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerNetworkCallsHttpClientCreatedPerCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerNetworkCallsHttpClientCreatedPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerNetworkCallsHttpClientCreatedPerCallDTO) error {
+    focus := "go_perf_layer_network_calls"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    reusable := &http.Client{Timeout: 2 * time.Second}
+    _ = reusable
+    perf_layer_network_calls_http_negative := map[string]int{"perf": 1, "layer": 2, "network": 3, "calls": 4, "http": 5, "client": 6}
+    perf_layer_network_calls_http_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_network_calls_http_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_network_calls_http_negative["layer"] + len(input)
+    _ = layer_negative_1
+    network_negative_2 := perf_layer_network_calls_http_negative["network"] + len(input)
+    _ = network_negative_2
+    calls_negative_3 := perf_layer_network_calls_http_negative["calls"] + len(input)
+    _ = calls_negative_3
+    http_negative_4 := perf_layer_network_calls_http_negative["http"] + len(input)
+    _ = http_negative_4
+    client_negative_5 := perf_layer_network_calls_http_negative["client"] + len(input)
+    _ = client_negative_5
+    return nil
 }

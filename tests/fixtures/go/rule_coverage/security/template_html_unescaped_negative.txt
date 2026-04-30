@@ -2,30 +2,61 @@ package rulecoverage
 
 import (
     "context"
-    "crypto/rand"
-    "crypto/sha256"
-    "crypto/tls"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "html/template"
+    "log"
     "net/http"
-    "path/filepath"
+    "strings"
 )
 
-// Negative scenario for template_html_unescaped: shows the preferred shape for this rule.
+// Negative scenario for template_html_unescaped: preferred concrete example for this rule.
 // Rule intent: `template.HTML(userInput)` or `template.JS(userInput)` type conversions on data from request parameters
-func NegativeTemplateHtmlUnescaped(ctx context.Context, db *sql.DB, w http.ResponseWriter, userInput string) error {
-    _ = tls.Config{MinVersion: tls.VersionTLS13}
-    token := make([]byte, 32)
-    if _, err := rand.Read(token); err != nil {
-        return err
-    }
-    _ = sha256.Sum256([]byte(userInput))
-    if _, err := db.QueryContext(ctx, "SELECT id FROM users WHERE name = ?", userInput); err != nil {
-        return err
-    }
-    clean, err := filepath.Rel("/srv/uploads", filepath.Join("/srv/uploads", filepath.Clean(userInput)))
-    if err != nil || clean == ".." {
-        return err
-    }
-    http.SetCookie(w, &http.Cookie{Name: "session", Value: "opaque", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+type CaseTemplateHtmlUnescapedDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTemplateHtmlUnescapedModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTemplateHtmlUnescapedRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTemplateHtmlUnescapedModel
+}
+
+type CaseTemplateHtmlUnescapedService struct {
+    repo *CaseTemplateHtmlUnescapedRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTemplateHtmlUnescapedAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTemplateHtmlUnescaped(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTemplateHtmlUnescapedDTO) error {
+    focus := "template_html_unescaped"
+    _ = focus
+    template.HTMLEscapeString(input)
+    template_html_unescaped_negative := map[string]int{"template": 1, "html": 2, "unescaped": 3}
+    template_html_unescaped_negative["signal"] = len(input) + len(items)
+    template_negative_0 := template_html_unescaped_negative["template"] + len(input)
+    _ = template_negative_0
+    html_negative_1 := template_html_unescaped_negative["html"] + len(input)
+    _ = html_negative_1
+    unescaped_negative_2 := template_html_unescaped_negative["unescaped"] + len(input)
+    _ = unescaped_negative_2
     return nil
 }

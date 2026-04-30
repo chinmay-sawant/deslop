@@ -3,47 +3,63 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for constructor_reads_env_directly: shows the preferred shape for this rule.
+// Negative scenario for constructor_reads_env_directly: preferred concrete example for this rule.
 // Rule intent: Constructors that call `os.Getenv` instead of receiving normalized config.
-type User struct {
-    ID string
-    Status string
+type CaseConstructorReadsEnvDirectlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseConstructorReadsEnvDirectlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseConstructorReadsEnvDirectlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseConstructorReadsEnvDirectlyModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseConstructorReadsEnvDirectlyService struct {
+    repo *CaseConstructorReadsEnvDirectlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeConstructorReadsEnvDirectly(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseConstructorReadsEnvDirectlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeConstructorReadsEnvDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseConstructorReadsEnvDirectlyDTO) error {
+    focus := "constructor_reads_env_directly"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    cfg := map[string]string{"constructor_reads_env_directly": "configured at startup"}
+    _ = cfg
+    constructor_reads_env_directly_negative := map[string]int{"constructor": 1, "reads": 2, "env": 3, "directly": 4}
+    constructor_reads_env_directly_negative["signal"] = len(input) + len(items)
+    constructor_negative_0 := constructor_reads_env_directly_negative["constructor"] + len(input)
+    _ = constructor_negative_0
+    reads_negative_1 := constructor_reads_env_directly_negative["reads"] + len(input)
+    _ = reads_negative_1
+    env_negative_2 := constructor_reads_env_directly_negative["env"] + len(input)
+    _ = env_negative_2
+    directly_negative_3 := constructor_reads_env_directly_negative["directly"] + len(input)
+    _ = directly_negative_3
+    return nil
 }

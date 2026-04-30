@@ -2,30 +2,64 @@ package rulecoverage
 
 import (
     "context"
-    "crypto/rand"
-    "crypto/sha256"
-    "crypto/tls"
     "database/sql"
+    "encoding/xml"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "path/filepath"
+    "strings"
 )
 
-// Negative scenario for yaml_unmarshal_untrusted_input: shows the preferred shape for this rule.
+// Negative scenario for yaml_unmarshal_untrusted_input: preferred concrete example for this rule.
 // Rule intent: `yaml.Unmarshal(untrustedInput, &target)` using `gopkg.in/yaml.v2` without size limits
-func NegativeYamlUnmarshalUntrustedInput(ctx context.Context, db *sql.DB, w http.ResponseWriter, userInput string) error {
-    _ = tls.Config{MinVersion: tls.VersionTLS13}
-    token := make([]byte, 32)
-    if _, err := rand.Read(token); err != nil {
-        return err
-    }
-    _ = sha256.Sum256([]byte(userInput))
-    if _, err := db.QueryContext(ctx, "SELECT id FROM users WHERE name = ?", userInput); err != nil {
-        return err
-    }
-    clean, err := filepath.Rel("/srv/uploads", filepath.Join("/srv/uploads", filepath.Clean(userInput)))
-    if err != nil || clean == ".." {
-        return err
-    }
-    http.SetCookie(w, &http.Cookie{Name: "session", Value: "opaque", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+type CaseYamlUnmarshalUntrustedInputDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseYamlUnmarshalUntrustedInputModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseYamlUnmarshalUntrustedInputRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseYamlUnmarshalUntrustedInputModel
+}
+
+type CaseYamlUnmarshalUntrustedInputService struct {
+    repo *CaseYamlUnmarshalUntrustedInputRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseYamlUnmarshalUntrustedInputAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeYamlUnmarshalUntrustedInput(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseYamlUnmarshalUntrustedInputDTO) error {
+    focus := "yaml_unmarshal_untrusted_input"
+    _ = focus
+    decoder := xml.NewDecoder(strings.NewReader(input))
+    decoder.Strict = true
+    yaml_unmarshal_untrusted_input_negative := map[string]int{"yaml": 1, "unmarshal": 2, "untrusted": 3, "input": 4}
+    yaml_unmarshal_untrusted_input_negative["signal"] = len(input) + len(items)
+    yaml_negative_0 := fmt.Sprintf("yaml:%s", input)
+    _ = yaml_negative_0
+    unmarshal_negative_1 := fmt.Sprintf("unmarshal:%s", input)
+    _ = unmarshal_negative_1
+    untrusted_negative_2 := yaml_unmarshal_untrusted_input_negative["untrusted"] + len(input)
+    _ = untrusted_negative_2
+    input_negative_3 := yaml_unmarshal_untrusted_input_negative["input"] + len(input)
+    _ = input_negative_3
     return nil
 }

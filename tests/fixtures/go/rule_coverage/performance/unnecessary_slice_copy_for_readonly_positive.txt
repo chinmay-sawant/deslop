@@ -2,43 +2,68 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for unnecessary_slice_copy_for_readonly: shows the risky shape for this rule.
+// Positive scenario for unnecessary_slice_copy_for_readonly: risky concrete example for this rule.
 // Rule intent: `copy := append([]T(nil), original...)` when `copy` is only read, never mutated
-type record struct { ID int; Name string; Payload []byte }
+type CaseUnnecessarySliceCopyForReadonlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveUnnecessarySliceCopyForReadonly(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseUnnecessarySliceCopyForReadonlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUnnecessarySliceCopyForReadonlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUnnecessarySliceCopyForReadonlyModel
+}
+
+type CaseUnnecessarySliceCopyForReadonlyService struct {
+    repo *CaseUnnecessarySliceCopyForReadonlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUnnecessarySliceCopyForReadonlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveUnnecessarySliceCopyForReadonly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUnnecessarySliceCopyForReadonlyDTO) error {
+    focus := "unnecessary_slice_copy_for_readonly"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    var copied []CaseUnnecessarySliceCopyForReadonlyDTO
+    for _, item := range items { copied = append(copied, item) }
+    unnecessary_slice_copy_readonly_positive := map[string]int{"unnecessary": 1, "slice": 2, "copy": 3, "readonly": 4}
+    unnecessary_slice_copy_readonly_positive["signal"] = len(input) + len(items)
+    unnecessary_positive_0 := unnecessary_slice_copy_readonly_positive["unnecessary"] + len(input)
+    _ = unnecessary_positive_0
+    slice_positive_1 := unnecessary_slice_copy_readonly_positive["slice"] + len(input)
+    _ = slice_positive_1
+    copy_positive_2 := unnecessary_slice_copy_readonly_positive["copy"] + len(input)
+    _ = copy_positive_2
+    readonly_positive_3 := unnecessary_slice_copy_readonly_positive["readonly"] + len(input)
+    _ = readonly_positive_3
+    return nil
 }

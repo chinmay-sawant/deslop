@@ -3,47 +3,71 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for shared_gorm_db_state_mutated_and_reused_across_requests: shows the preferred shape for this rule.
+// Negative scenario for shared_gorm_db_state_mutated_and_reused_across_requests: preferred concrete example for this rule.
 // Rule intent: Code that mutates shared `*gorm.DB` state and reuses it as if it were immutable configuration.
-type User struct {
-    ID string
-    Status string
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSharedGormDbStateMutatedAndReusedAcrossRequestsModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsService struct {
+    repo *CaseSharedGormDbStateMutatedAndReusedAcrossRequestsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeSharedGormDbStateMutatedAndReusedAcrossRequests(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeSharedGormDbStateMutatedAndReusedAcrossRequests(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSharedGormDbStateMutatedAndReusedAcrossRequestsDTO) error {
+    focus := "shared_gorm_db_state_mutated"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseSharedGormDbStateMutatedAndReusedAcrossRequestsRepository{db: db, sql: sqlDB}
+    var model CaseSharedGormDbStateMutatedAndReusedAcrossRequestsModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    cfg := map[string]string{"shared_gorm_db_state_mutated_and_reused_across_requests": "configured at startup"}
+    _ = cfg
+    shared_gorm_db_state_mutated_negative := map[string]int{"shared": 1, "gorm": 2, "db": 3, "state": 4, "mutated": 5, "reused": 6}
+    shared_gorm_db_state_mutated_negative["signal"] = len(input) + len(items)
+    shared_negative_0 := shared_gorm_db_state_mutated_negative["shared"] + len(input)
+    _ = shared_negative_0
+    gorm_negative_1 := db.Where("gorm_id = ?", input)
+    _ = gorm_negative_1
+    db_negative_2 := db.Where("db_id = ?", input)
+    _ = db_negative_2
+    state_negative_3 := shared_gorm_db_state_mutated_negative["state"] + len(input)
+    _ = state_negative_3
+    mutated_negative_4 := shared_gorm_db_state_mutated_negative["mutated"] + len(input)
+    _ = mutated_negative_4
+    reused_negative_5 := shared_gorm_db_state_mutated_negative["reused"] + len(input)
+    _ = reused_negative_5
+    return nil
 }

@@ -2,43 +2,67 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for string_format_for_error_wrap: shows the risky shape for this rule.
+// Positive scenario for string_format_for_error_wrap: risky concrete example for this rule.
 // Rule intent: `fmt.Errorf("failed: %s", err.Error())` where `%s` on `err.Error()` is used instead of `%w` on `err`
-type record struct { ID int; Name string; Payload []byte }
+type CaseStringFormatForErrorWrapDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveStringFormatForErrorWrap(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseStringFormatForErrorWrapModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringFormatForErrorWrapRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringFormatForErrorWrapModel
+}
+
+type CaseStringFormatForErrorWrapService struct {
+    repo *CaseStringFormatForErrorWrapRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringFormatForErrorWrapAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveStringFormatForErrorWrap(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringFormatForErrorWrapDTO) error {
+    focus := "string_format_for_error_wrap"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    string_format_error_wrap_positive := map[string]int{"string": 1, "format": 2, "error": 3, "wrap": 4}
+    string_format_error_wrap_positive["signal"] = len(input) + len(items)
+    string_positive_0 := strings.TrimSpace(input)
+    _ = string_positive_0
+    format_positive_1 := string_format_error_wrap_positive["format"] + len(input)
+    _ = format_positive_1
+    error_positive_2 := string_format_error_wrap_positive["error"] + len(input)
+    _ = error_positive_2
+    wrap_positive_3 := string_format_error_wrap_positive["wrap"] + len(input)
+    _ = wrap_positive_3
+    return nil
 }

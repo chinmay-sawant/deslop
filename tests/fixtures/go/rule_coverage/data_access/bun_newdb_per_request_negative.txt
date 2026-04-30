@@ -3,15 +3,65 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "github.com/uptrace/bun"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for bun_newdb_per_request: shows the preferred shape for this rule.
+// Negative scenario for bun_newdb_per_request: preferred concrete example for this rule.
 // Rule intent: Bun DB handles created directly on request paths instead of reused process-level state.
-type Account struct { ID int; TenantID string; Status string }
+type CaseBunNewdbPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeBunNewdbPerRequest(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CaseBunNewdbPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBunNewdbPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBunNewdbPerRequestModel
+}
+
+type CaseBunNewdbPerRequestService struct {
+    repo *CaseBunNewdbPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBunNewdbPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBunNewdbPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBunNewdbPerRequestDTO) error {
+    focus := "bun_newdb_per_request"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseBunNewdbPerRequestRepository{db: db, sql: sqlDB}
+    _ = repo
+    var bunDB *bun.DB
+    _ = bunDB.NewSelect().Model(&items).Limit(100).Scan(ctx)
+    bun_newdb_per_request_negative := map[string]int{"bun": 1, "newdb": 2, "per": 3, "request": 4}
+    bun_newdb_per_request_negative["signal"] = len(input) + len(items)
+    bun_negative_0 := bun_newdb_per_request_negative["bun"] + len(input)
+    _ = bun_negative_0
+    newdb_negative_1 := bun_newdb_per_request_negative["newdb"] + len(input)
+    _ = newdb_negative_1
+    for per_negative_2Index, item := range items { bun_newdb_per_request_negative[item.ID] = per_negative_2Index }
+    request_negative_3 := bun_newdb_per_request_negative["request"] + len(input)
+    _ = request_negative_3
+    return nil
 }

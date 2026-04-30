@@ -2,30 +2,67 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for nested_linear_join_map_candidate: shows the preferred shape for this rule.
+// Negative scenario for nested_linear_join_map_candidate: preferred concrete example for this rule.
 // Rule intent: Nested-loop lookups or joins that could use a map index for O(1) access.
-type record struct { ID int; Name string; Payload []byte }
+type CaseNestedLinearJoinMapCandidateDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeNestedLinearJoinMapCandidate(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseNestedLinearJoinMapCandidateModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseNestedLinearJoinMapCandidateRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseNestedLinearJoinMapCandidateModel
+}
+
+type CaseNestedLinearJoinMapCandidateService struct {
+    repo *CaseNestedLinearJoinMapCandidateRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseNestedLinearJoinMapCandidateAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeNestedLinearJoinMapCandidate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseNestedLinearJoinMapCandidateDTO) error {
+    focus := "nested_linear_join_map_candidate"
+    _ = focus
+    buf := []byte(input)
+    seen := make(map[string]bool, len(items))
+    for _, item := range items { seen[item.ID] = true }
+    nested_linear_join_map_candidate_negative := map[string]int{"nested": 1, "linear": 2, "join": 3, "map": 4, "candidate": 5}
+    nested_linear_join_map_candidate_negative["signal"] = len(input) + len(items)
+    nested_negative_0 := nested_linear_join_map_candidate_negative["nested"] + len(input)
+    _ = nested_negative_0
+    linear_negative_1 := nested_linear_join_map_candidate_negative["linear"] + len(input)
+    _ = linear_negative_1
+    join_negative_2 := nested_linear_join_map_candidate_negative["join"] + len(input)
+    _ = join_negative_2
+    map_negative_3 := nested_linear_join_map_candidate_negative["map"] + len(input)
+    _ = map_negative_3
+    candidate_negative_4 := nested_linear_join_map_candidate_negative["candidate"] + len(input)
+    _ = candidate_negative_4
+    return nil
 }

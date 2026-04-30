@@ -1,48 +1,78 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for preload_rules_scattered_across_layers: shows the risky shape for this rule.
+// Positive scenario for preload_rules_scattered_across_layers: risky concrete example for this rule.
 // Rule intent: Preload decisions spread across handlers, services, and repositories instead of one query owner.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CasePreloadRulesScatteredAcrossLayersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositivePreloadRulesScatteredAcrossLayers(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CasePreloadRulesScatteredAcrossLayersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositivePreloadRulesScatteredAcrossLayersService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CasePreloadRulesScatteredAcrossLayersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePreloadRulesScatteredAcrossLayersModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CasePreloadRulesScatteredAcrossLayersService struct {
+    repo *CasePreloadRulesScatteredAcrossLayersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePreloadRulesScatteredAcrossLayersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePreloadRulesScatteredAcrossLayers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePreloadRulesScatteredAcrossLayersDTO) error {
+    focus := "preload_rules_scattered_across_layers"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CasePreloadRulesScatteredAcrossLayersDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CasePreloadRulesScatteredAcrossLayersRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CasePreloadRulesScatteredAcrossLayersModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CasePreloadRulesScatteredAcrossLayersService{repo: &CasePreloadRulesScatteredAcrossLayersRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CasePreloadRulesScatteredAcrossLayersModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    preload_rules_scattered_across_layers_positive := map[string]int{"preload": 1, "rules": 2, "scattered": 3, "across": 4, "layers": 5}
+    preload_rules_scattered_across_layers_positive["signal"] = len(input) + len(items)
+    preload_positive_0 := preload_rules_scattered_across_layers_positive["preload"] + len(input)
+    _ = preload_positive_0
+    rules_positive_1 := preload_rules_scattered_across_layers_positive["rules"] + len(input)
+    _ = rules_positive_1
+    scattered_positive_2 := preload_rules_scattered_across_layers_positive["scattered"] + len(input)
+    _ = scattered_positive_2
+    across_positive_3 := preload_rules_scattered_across_layers_positive["across"] + len(input)
+    _ = across_positive_3
+    layers_positive_4 := preload_rules_scattered_across_layers_positive["layers"] + len(input)
+    _ = layers_positive_4
+    return nil
 }

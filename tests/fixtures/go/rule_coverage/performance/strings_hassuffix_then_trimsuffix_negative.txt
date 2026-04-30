@@ -2,30 +2,64 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for strings_hassuffix_then_trimsuffix: shows the preferred shape for this rule.
+// Negative scenario for strings_hassuffix_then_trimsuffix: preferred concrete example for this rule.
 // Rule intent: `if strings.HasSuffix(s, p) { s = strings.TrimSuffix(s, p) }`
-type record struct { ID int; Name string; Payload []byte }
+type CaseStringsHassuffixThenTrimsuffixDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeStringsHassuffixThenTrimsuffix(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseStringsHassuffixThenTrimsuffixModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringsHassuffixThenTrimsuffixRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringsHassuffixThenTrimsuffixModel
+}
+
+type CaseStringsHassuffixThenTrimsuffixService struct {
+    repo *CaseStringsHassuffixThenTrimsuffixRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringsHassuffixThenTrimsuffixAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStringsHassuffixThenTrimsuffix(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsHassuffixThenTrimsuffixDTO) error {
+    focus := "strings_hassuffix_then_trimsuffix"
+    _ = focus
+    buf := []byte(input)
+    _ = strings.HasSuffix(input, "zip")
+    strings_hassuffix_then_trimsuffix_negative := map[string]int{"strings": 1, "hassuffix": 2, "then": 3, "trimsuffix": 4}
+    strings_hassuffix_then_trimsuffix_negative["signal"] = len(input) + len(items)
+    strings_negative_0 := strings.TrimSpace(input)
+    _ = strings_negative_0
+    hassuffix_negative_1 := strings_hassuffix_then_trimsuffix_negative["hassuffix"] + len(input)
+    _ = hassuffix_negative_1
+    then_negative_2 := strings_hassuffix_then_trimsuffix_negative["then"] + len(input)
+    _ = then_negative_2
+    trimsuffix_negative_3 := strings_hassuffix_then_trimsuffix_negative["trimsuffix"] + len(input)
+    _ = trimsuffix_negative_3
+    return nil
 }

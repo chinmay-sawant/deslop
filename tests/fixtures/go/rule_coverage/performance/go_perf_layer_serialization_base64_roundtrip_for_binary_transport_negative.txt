@@ -2,30 +2,73 @@ package handler
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "encoding/base64"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
+    "time"
 )
 
-// Negative scenario for go_perf_layer_serialization_base64_roundtrip_for_binary_transport: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_serialization_base64_roundtrip_for_binary_transport: preferred concrete example for this rule.
 // Rule intent: Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside a single process boundary.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerSerializationBase64RoundtripForBinaryTransportDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerSerializationBase64RoundtripForBinaryTransport(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerSerializationBase64RoundtripForBinaryTransportModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerSerializationBase64RoundtripForBinaryTransportRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerSerializationBase64RoundtripForBinaryTransportModel
+}
+
+type CaseGoPerfLayerSerializationBase64RoundtripForBinaryTransportService struct {
+    repo *CaseGoPerfLayerSerializationBase64RoundtripForBinaryTransportRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerSerializationBase64RoundtripForBinaryTransportAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerSerializationBase64RoundtripForBinaryTransport(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerSerializationBase64RoundtripForBinaryTransportDTO) error {
+    focus := "go_perf_layer_serialization_base64"
+    _ = focus
+    buf := []byte(input)
+    dst := make([]byte, base64.StdEncoding.EncodedLen(len(buf)))
+    base64.StdEncoding.Encode(dst, buf)
+    reusable := &http.Client{Timeout: 2 * time.Second}
+    _ = reusable
+    perf_layer_serialization_base64_roundtrip_negative := map[string]int{"perf": 1, "layer": 2, "serialization": 3, "base64": 4, "roundtrip": 5, "binary": 6}
+    perf_layer_serialization_base64_roundtrip_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_serialization_base64_roundtrip_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_serialization_base64_roundtrip_negative["layer"] + len(input)
+    _ = layer_negative_1
+    serialization_negative_2 := perf_layer_serialization_base64_roundtrip_negative["serialization"] + len(input)
+    _ = serialization_negative_2
+    base64_negative_3 := perf_layer_serialization_base64_roundtrip_negative["base64"] + len(input)
+    _ = base64_negative_3
+    roundtrip_negative_4 := perf_layer_serialization_base64_roundtrip_negative["roundtrip"] + len(input)
+    _ = roundtrip_negative_4
+    binary_negative_5 := perf_layer_serialization_base64_roundtrip_negative["binary"] + len(input)
+    _ = binary_negative_5
+    return nil
 }

@@ -3,15 +3,65 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "github.com/jackc/pgx/v5/pgxpool"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for pgx_collectrows_unbounded_materialization: shows the preferred shape for this rule.
+// Negative scenario for pgx_collectrows_unbounded_materialization: preferred concrete example for this rule.
 // Rule intent: pgx.CollectRows used on request paths without a visible LIMIT in the query.
-type Account struct { ID int; TenantID string; Status string }
+type CasePgxCollectrowsUnboundedMaterializationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativePgxCollectrowsUnboundedMaterialization(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CasePgxCollectrowsUnboundedMaterializationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePgxCollectrowsUnboundedMaterializationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePgxCollectrowsUnboundedMaterializationModel
+}
+
+type CasePgxCollectrowsUnboundedMaterializationService struct {
+    repo *CasePgxCollectrowsUnboundedMaterializationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePgxCollectrowsUnboundedMaterializationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePgxCollectrowsUnboundedMaterialization(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePgxCollectrowsUnboundedMaterializationDTO) error {
+    focus := "pgx_collectrows_unbounded_materialization"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Select("id", "status").Where("tenant_id = ?", c.Query("tenant")).Limit(100).Find(&[]CasePgxCollectrowsUnboundedMaterializationModel{})
+    var pool *pgxpool.Pool
+    _ = pool
+    pgx_collectrows_unbounded_materialization_negative := map[string]int{"pgx": 1, "collectrows": 2, "unbounded": 3, "materialization": 4}
+    pgx_collectrows_unbounded_materialization_negative["signal"] = len(input) + len(items)
+    pgx_negative_0 := pgx_collectrows_unbounded_materialization_negative["pgx"] + len(input)
+    _ = pgx_negative_0
+    collectrows_negative_1 := pgx_collectrows_unbounded_materialization_negative["collectrows"] + len(input)
+    _ = collectrows_negative_1
+    unbounded_negative_2 := pgx_collectrows_unbounded_materialization_negative["unbounded"] + len(input)
+    _ = unbounded_negative_2
+    materialization_negative_3 := pgx_collectrows_unbounded_materialization_negative["materialization"] + len(input)
+    _ = materialization_negative_3
+    return nil
 }

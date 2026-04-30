@@ -3,15 +3,61 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for first_or_create_in_loop: shows the preferred shape for this rule.
+// Negative scenario for first_or_create_in_loop: preferred concrete example for this rule.
 // Rule intent: GORM FirstOrCreate(...) chains observed inside loops.
-type Account struct { ID int; TenantID string; Status string }
+type CaseFirstOrCreateInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeFirstOrCreateInLoop(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CaseFirstOrCreateInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFirstOrCreateInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFirstOrCreateInLoopModel
+}
+
+type CaseFirstOrCreateInLoopService struct {
+    repo *CaseFirstOrCreateInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFirstOrCreateInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeFirstOrCreateInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFirstOrCreateInLoopDTO) error {
+    focus := "first_or_create_in_loop"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    batch := make([]CaseFirstOrCreateInLoopModel, 0, len(items))
+    for _, item := range items { batch = append(batch, CaseFirstOrCreateInLoopModel{ID: item.ID, Status: item.Status}) }
+    db.CreateInBatches(batch, 500)
+    first_create_loop_negative := map[string]int{"first": 1, "create": 2, "loop": 3}
+    first_create_loop_negative["signal"] = len(input) + len(items)
+    first_negative_0 := first_create_loop_negative["first"] + len(input)
+    _ = first_negative_0
+    create_negative_1 := first_create_loop_negative["create"] + len(input)
+    _ = create_negative_1
+    for loop_negative_2Index, item := range items { first_create_loop_negative[item.ID] = loop_negative_2Index }
+    return nil
 }

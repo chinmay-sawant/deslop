@@ -6,28 +6,60 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Positive scenario for distinct_wide_row_request_path: shows the risky shape for this rule.
+// Positive scenario for distinct_wide_row_request_path: risky concrete example for this rule.
 // Rule intent: Distinct on wide rows without Select projection — a key-only subquery is usually cheaper.
-type Account struct { ID int; TenantID string; Status string }
+type CaseDistinctWideRowRequestPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveDistinctWideRowRequestPath(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
-    ctx := context.Background()
-    var accounts []Account
-    var total int64
-    sql.Open("postgres", c.Query("dsn"))
-    sqlDB.PingContext(ctx)
-    db.AutoMigrate(&Account{})
-    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
-    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
-    for _, id := range ids {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
-        db.Create(&Account{ID: id})
-        db.Delete(&Account{}, id)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
-    }
-    page := accounts[:10]
-    return page, nil
+type CaseDistinctWideRowRequestPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDistinctWideRowRequestPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDistinctWideRowRequestPathModel
+}
+
+type CaseDistinctWideRowRequestPathService struct {
+    repo *CaseDistinctWideRowRequestPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDistinctWideRowRequestPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDistinctWideRowRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDistinctWideRowRequestPathDTO) error {
+    focus := "distinct_wide_row_request_path"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Find(&[]CaseDistinctWideRowRequestPathModel{})
+    distinct_wide_row_request_path_positive := map[string]int{"distinct": 1, "wide": 2, "row": 3, "request": 4, "path": 5}
+    distinct_wide_row_request_path_positive["signal"] = len(input) + len(items)
+    distinct_positive_0 := distinct_wide_row_request_path_positive["distinct"] + len(input)
+    _ = distinct_positive_0
+    wide_positive_1 := distinct_wide_row_request_path_positive["wide"] + len(input)
+    _ = wide_positive_1
+    for row_positive_2Index, item := range items { distinct_wide_row_request_path_positive[item.ID] = row_positive_2Index }
+    request_positive_3 := distinct_wide_row_request_path_positive["request"] + len(input)
+    _ = request_positive_3
+    path_positive_4 := distinct_wide_row_request_path_positive["path"] + len(input)
+    _ = path_positive_4
+    return nil
 }

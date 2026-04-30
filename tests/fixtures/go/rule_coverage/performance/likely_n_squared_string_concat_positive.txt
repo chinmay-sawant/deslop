@@ -2,43 +2,68 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for likely_n_squared_string_concat: shows the risky shape for this rule.
+// Positive scenario for likely_n_squared_string_concat: risky concrete example for this rule.
 // Rule intent: Opt-in deeper semantic signal for repeated string concatenation inside nested loops without obvious builder usage.
-type record struct { ID int; Name string; Payload []byte }
+type CaseLikelyNSquaredStringConcatDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveLikelyNSquaredStringConcat(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseLikelyNSquaredStringConcatModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLikelyNSquaredStringConcatRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLikelyNSquaredStringConcatModel
+}
+
+type CaseLikelyNSquaredStringConcatService struct {
+    repo *CaseLikelyNSquaredStringConcatRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLikelyNSquaredStringConcatAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveLikelyNSquaredStringConcat(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLikelyNSquaredStringConcatDTO) error {
+    focus := "likely_n_squared_string_concat"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    likely_n_squared_string_concat_positive := map[string]int{"likely": 1, "n": 2, "squared": 3, "string": 4, "concat": 5}
+    likely_n_squared_string_concat_positive["signal"] = len(input) + len(items)
+    likely_positive_0 := likely_n_squared_string_concat_positive["likely"] + len(input)
+    _ = likely_positive_0
+    n_positive_1 := likely_n_squared_string_concat_positive["n"] + len(input)
+    _ = n_positive_1
+    squared_positive_2 := likely_n_squared_string_concat_positive["squared"] + len(input)
+    _ = squared_positive_2
+    string_positive_3 := strings.TrimSpace(input)
+    _ = string_positive_3
+    concat_positive_4 := likely_n_squared_string_concat_positive["concat"] + len(input)
+    _ = concat_positive_4
+    return nil
 }

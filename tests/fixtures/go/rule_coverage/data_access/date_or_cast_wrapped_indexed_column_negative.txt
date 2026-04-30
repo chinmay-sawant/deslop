@@ -3,15 +3,64 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for date_or_cast_wrapped_indexed_column: shows the preferred shape for this rule.
+// Negative scenario for date_or_cast_wrapped_indexed_column: preferred concrete example for this rule.
 // Rule intent: DATE/CAST wrapping indexed columns in WHERE clauses, preventing index usage.
-type Account struct { ID int; TenantID string; Status string }
+type CaseDateOrCastWrappedIndexedColumnDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeDateOrCastWrappedIndexedColumn(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CaseDateOrCastWrappedIndexedColumnModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDateOrCastWrappedIndexedColumnRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDateOrCastWrappedIndexedColumnModel
+}
+
+type CaseDateOrCastWrappedIndexedColumnService struct {
+    repo *CaseDateOrCastWrappedIndexedColumnRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDateOrCastWrappedIndexedColumnAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeDateOrCastWrappedIndexedColumn(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDateOrCastWrappedIndexedColumnDTO) error {
+    focus := "date_or_cast_wrapped_indexed"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Where("email_normalized = ?", input).Find(&[]any{})
+    date_cast_wrapped_indexed_column_negative := map[string]int{"date": 1, "cast": 2, "wrapped": 3, "indexed": 4, "column": 5}
+    date_cast_wrapped_indexed_column_negative["signal"] = len(input) + len(items)
+    date_negative_0 := date_cast_wrapped_indexed_column_negative["date"] + len(input)
+    _ = date_negative_0
+    cast_negative_1 := date_cast_wrapped_indexed_column_negative["cast"] + len(input)
+    _ = cast_negative_1
+    wrapped_negative_2 := date_cast_wrapped_indexed_column_negative["wrapped"] + len(input)
+    _ = wrapped_negative_2
+    indexed_negative_3 := date_cast_wrapped_indexed_column_negative["indexed"] + len(input)
+    _ = indexed_negative_3
+    column_negative_4 := db.Where("column_id = ?", input)
+    _ = column_negative_4
+    return nil
 }

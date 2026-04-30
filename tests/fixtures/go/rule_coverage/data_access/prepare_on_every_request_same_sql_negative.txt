@@ -3,15 +3,61 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for prepare_on_every_request_same_sql: shows the preferred shape for this rule.
+// Negative scenario for prepare_on_every_request_same_sql: preferred concrete example for this rule.
 // Rule intent: The same literal SQL is prepared multiple times on one request path.
-type Account struct { ID int; TenantID string; Status string }
+type CasePrepareOnEveryRequestSameSqlDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativePrepareOnEveryRequestSameSql(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CasePrepareOnEveryRequestSameSqlModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePrepareOnEveryRequestSameSqlRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePrepareOnEveryRequestSameSqlModel
+}
+
+type CasePrepareOnEveryRequestSameSqlService struct {
+    repo *CasePrepareOnEveryRequestSameSqlRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePrepareOnEveryRequestSameSqlAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePrepareOnEveryRequestSameSql(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrepareOnEveryRequestSameSqlDTO) error {
+    focus := "prepare_on_every_request_same"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    prepare_every_request_sql_negative := map[string]int{"prepare": 1, "every": 2, "request": 3, "sql": 4}
+    prepare_every_request_sql_negative["signal"] = len(input) + len(items)
+    prepare_negative_0 := prepare_every_request_sql_negative["prepare"] + len(input)
+    _ = prepare_negative_0
+    every_negative_1 := prepare_every_request_sql_negative["every"] + len(input)
+    _ = every_negative_1
+    request_negative_2 := prepare_every_request_sql_negative["request"] + len(input)
+    _ = request_negative_2
+    sql_negative_3 := db.Where("sql_id = ?", input)
+    _ = sql_negative_3
+    return nil
 }

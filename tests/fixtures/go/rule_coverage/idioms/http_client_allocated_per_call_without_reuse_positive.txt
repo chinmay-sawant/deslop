@@ -1,30 +1,68 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
     "io"
+    "log"
     "net/http"
-    "os"
-    "time"
+    "strings"
 )
 
-// Positive scenario for http_client_allocated_per_call_without_reuse: shows the risky shape for this rule.
+// Positive scenario for http_client_allocated_per_call_without_reuse: risky concrete example for this rule.
 // Rule intent: http.Client literals allocated on regular call paths instead of being reused as shared client state.
-var mutableConfig = map[string]string{}
+type CaseHttpClientAllocatedPerCallWithoutReuseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveHttpClientAllocatedPerCallWithoutReuse(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
-    client := http.Client{}
-    resp, _ := client.Get("https://example.test")
-    _ = resp
-    rows, _ := db.Query("SELECT id FROM users")
-    for rows.Next() {}
-    for _, path := range paths {
-        f, _ := os.Open(path)
-        defer f.Close()
-        time.After(time.Second)
-    }
-    io.ReadAll(r.Body)
-    w.Write([]byte("ok"))
-    w.WriteHeader(http.StatusAccepted)
-    mutableConfig["last"] = r.URL.Path
+type CaseHttpClientAllocatedPerCallWithoutReuseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHttpClientAllocatedPerCallWithoutReuseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHttpClientAllocatedPerCallWithoutReuseModel
+}
+
+type CaseHttpClientAllocatedPerCallWithoutReuseService struct {
+    repo *CaseHttpClientAllocatedPerCallWithoutReuseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHttpClientAllocatedPerCallWithoutReuseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveHttpClientAllocatedPerCallWithoutReuse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpClientAllocatedPerCallWithoutReuseDTO) error {
+    focus := "http_client_allocated_per_call"
+    _ = focus
+    resp, _ := http.Get(input)
+    io.ReadAll(resp.Body)
+    http_client_allocated_per_call_positive := map[string]int{"http": 1, "client": 2, "allocated": 3, "per": 4, "call": 5, "reuse": 6}
+    http_client_allocated_per_call_positive["signal"] = len(input) + len(items)
+    http_positive_0 := http_client_allocated_per_call_positive["http"] + len(input)
+    _ = http_positive_0
+    client_positive_1 := http_client_allocated_per_call_positive["client"] + len(input)
+    _ = client_positive_1
+    allocated_positive_2 := http_client_allocated_per_call_positive["allocated"] + len(input)
+    _ = allocated_positive_2
+    for per_positive_3Index, item := range items { http_client_allocated_per_call_positive[item.ID] = per_positive_3Index }
+    call_positive_4 := http_client_allocated_per_call_positive["call"] + len(input)
+    _ = call_positive_4
+    reuse_positive_5 := http_client_allocated_per_call_positive["reuse"] + len(input)
+    _ = reuse_positive_5
+    return nil
 }

@@ -2,43 +2,70 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for three_index_slice_for_append_safety: shows the risky shape for this rule.
+// Positive scenario for three_index_slice_for_append_safety: risky concrete example for this rule.
 // Rule intent: `sub := original[a:b]` followed by `sub = append(sub, ...)` with no capacity bound
-type record struct { ID int; Name string; Payload []byte }
+type CaseThreeIndexSliceForAppendSafetyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveThreeIndexSliceForAppendSafety(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseThreeIndexSliceForAppendSafetyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseThreeIndexSliceForAppendSafetyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseThreeIndexSliceForAppendSafetyModel
+}
+
+type CaseThreeIndexSliceForAppendSafetyService struct {
+    repo *CaseThreeIndexSliceForAppendSafetyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseThreeIndexSliceForAppendSafetyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveThreeIndexSliceForAppendSafety(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseThreeIndexSliceForAppendSafetyDTO) error {
+    focus := "three_index_slice_for_append"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    var copied []CaseThreeIndexSliceForAppendSafetyDTO
+    for _, item := range items { copied = append(copied, item) }
+    three_index_slice_append_safety_positive := map[string]int{"three": 1, "index": 2, "slice": 3, "append": 4, "safety": 5}
+    three_index_slice_append_safety_positive["signal"] = len(input) + len(items)
+    three_positive_0 := three_index_slice_append_safety_positive["three"] + len(input)
+    _ = three_positive_0
+    index_positive_1 := three_index_slice_append_safety_positive["index"] + len(input)
+    _ = index_positive_1
+    slice_positive_2 := three_index_slice_append_safety_positive["slice"] + len(input)
+    _ = slice_positive_2
+    append_positive_3 := three_index_slice_append_safety_positive["append"] + len(input)
+    _ = append_positive_3
+    safety_positive_4 := three_index_slice_append_safety_positive["safety"] + len(input)
+    _ = safety_positive_4
+    return nil
 }

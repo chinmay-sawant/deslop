@@ -3,47 +3,67 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for gorm_model_outside_models_package: shows the preferred shape for this rule.
+// Negative scenario for gorm_model_outside_models_package: preferred concrete example for this rule.
 // Rule intent: GORM-backed structs with `gorm` tags declared outside `model` or `models` packages unless an explicit `entity` or `schema` package already exists.
-type User struct {
-    ID string
-    Status string
+type CaseGormModelOutsideModelsPackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseGormModelOutsideModelsPackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseGormModelOutsideModelsPackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormModelOutsideModelsPackageModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseGormModelOutsideModelsPackageService struct {
+    repo *CaseGormModelOutsideModelsPackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeGormModelOutsideModelsPackage(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseGormModelOutsideModelsPackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeGormModelOutsideModelsPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormModelOutsideModelsPackageDTO) error {
+    focus := "gorm_model_outside_models_package"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseGormModelOutsideModelsPackageRepository{db: db, sql: sqlDB}
+    var model CaseGormModelOutsideModelsPackageModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    gorm_model_outside_models_package_negative := map[string]int{"gorm": 1, "model": 2, "outside": 3, "models": 4, "package": 5}
+    gorm_model_outside_models_package_negative["signal"] = len(input) + len(items)
+    gorm_negative_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_negative_0
+    model_negative_1 := CaseGormModelOutsideModelsPackageDTO{ID: input, Status: "model"}
+    _ = model_negative_1
+    outside_negative_2 := gorm_model_outside_models_package_negative["outside"] + len(input)
+    _ = outside_negative_2
+    models_negative_3 := gorm_model_outside_models_package_negative["models"] + len(input)
+    _ = models_negative_3
+    package_negative_4 := gorm_model_outside_models_package_negative["package"] + len(input)
+    _ = package_negative_4
+    return nil
 }

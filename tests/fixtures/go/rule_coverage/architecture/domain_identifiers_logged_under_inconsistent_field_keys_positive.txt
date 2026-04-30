@@ -1,48 +1,75 @@
 package main
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for domain_identifiers_logged_under_inconsistent_field_keys: shows the risky shape for this rule.
+// Positive scenario for domain_identifiers_logged_under_inconsistent_field_keys: risky concrete example for this rule.
 // Rule intent: The same entity ID being logged under many different keys across packages.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveDomainIdentifiersLoggedUnderInconsistentFieldKeys(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveDomainIdentifiersLoggedUnderInconsistentFieldKeysService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysService struct {
+    repo *CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDomainIdentifiersLoggedUnderInconsistentFieldKeys(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysDTO) error {
+    focus := "domain_identifiers_logged_under_inconsistent"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysService{repo: &CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    log.Printf("domain_identifiers_logged_under_inconsistent_field_keys tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    domain_identifiers_logged_under_inconsistent_positive := map[string]int{"domain": 1, "identifiers": 2, "logged": 3, "under": 4, "inconsistent": 5, "field": 6}
+    domain_identifiers_logged_under_inconsistent_positive["signal"] = len(input) + len(items)
+    domain_positive_0 := CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysDTO{ID: input, Status: "domain"}
+    _ = domain_positive_0
+    identifiers_positive_1 := domain_identifiers_logged_under_inconsistent_positive["identifiers"] + len(input)
+    _ = identifiers_positive_1
+    logged_positive_2 := domain_identifiers_logged_under_inconsistent_positive["logged"] + len(input)
+    _ = logged_positive_2
+    under_positive_3 := domain_identifiers_logged_under_inconsistent_positive["under"] + len(input)
+    _ = under_positive_3
+    inconsistent_positive_4 := domain_identifiers_logged_under_inconsistent_positive["inconsistent"] + len(input)
+    _ = inconsistent_positive_4
+    field_positive_5 := domain_identifiers_logged_under_inconsistent_positive["field"] + len(input)
+    _ = field_positive_5
+    return nil
 }

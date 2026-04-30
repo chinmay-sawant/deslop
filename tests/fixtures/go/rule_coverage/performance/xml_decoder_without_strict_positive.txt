@@ -2,43 +2,64 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for xml_decoder_without_strict: shows the risky shape for this rule.
+// Positive scenario for xml_decoder_without_strict: risky concrete example for this rule.
 // Rule intent: `xml.NewDecoder(r)` without setting `Strict = false` when processing trusted XML
-type record struct { ID int; Name string; Payload []byte }
+type CaseXmlDecoderWithoutStrictDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveXmlDecoderWithoutStrict(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseXmlDecoderWithoutStrictModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseXmlDecoderWithoutStrictRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseXmlDecoderWithoutStrictModel
+}
+
+type CaseXmlDecoderWithoutStrictService struct {
+    repo *CaseXmlDecoderWithoutStrictRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseXmlDecoderWithoutStrictAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveXmlDecoderWithoutStrict(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseXmlDecoderWithoutStrictDTO) error {
+    focus := "xml_decoder_without_strict"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    xml_decoder_strict_positive := map[string]int{"xml": 1, "decoder": 2, "strict": 3}
+    xml_decoder_strict_positive["signal"] = len(input) + len(items)
+    xml_positive_0 := fmt.Sprintf("xml:%s", input)
+    _ = xml_positive_0
+    decoder_positive_1 := xml_decoder_strict_positive["decoder"] + len(input)
+    _ = decoder_positive_1
+    strict_positive_2 := xml_decoder_strict_positive["strict"] + len(input)
+    _ = strict_positive_2
+    return nil
 }

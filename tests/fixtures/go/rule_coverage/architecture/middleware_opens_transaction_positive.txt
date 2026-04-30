@@ -1,48 +1,80 @@
 package middleware
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for middleware_opens_transaction: shows the risky shape for this rule.
+// Positive scenario for middleware_opens_transaction: risky concrete example for this rule.
 // Rule intent: Middleware that owns transaction lifetime for all downstream business logic.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseMiddlewareOpensTransactionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
+type CaseMiddlewareOpensTransactionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
 
-func PositiveMiddlewareOpensTransaction(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
+type CaseMiddlewareOpensTransactionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMiddlewareOpensTransactionModel
+}
+
+type CaseMiddlewareOpensTransactionService struct {
+    repo *CaseMiddlewareOpensTransactionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMiddlewareOpensTransactionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMiddlewareOpensTransaction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareOpensTransactionDTO) error {
+    focus := "middleware_opens_transaction"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseMiddlewareOpensTransactionService{repo: &CaseMiddlewareOpensTransactionRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseMiddlewareOpensTransactionModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
     tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
-}
-
-func (s *UserService) PositiveMiddlewareOpensTransactionService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
-}
-
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+    tx.Create(&CaseMiddlewareOpensTransactionModel{ID: input})
+    go func() { _ = tx.Commit().Error }()
+    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+        return func(inner *gin.Context) {
+            db.Exec("UPDATE accounts SET touched_at = now() WHERE tenant_id = ?", inner.GetHeader("X-Tenant-ID"))
+            inner.JSON(http.StatusOK, gin.H{"status": "mutated by middleware"})
+            next(inner)
+        }
+    }
+    _ = middleware
+    log.Printf("middleware_opens_transaction tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    middleware_opens_transaction_positive := map[string]int{"middleware": 1, "opens": 2, "transaction": 3}
+    middleware_opens_transaction_positive["signal"] = len(input) + len(items)
+    middleware_positive_0 := c.FullPath() + ":" + input
+    _ = middleware_positive_0
+    opens_positive_1 := middleware_opens_transaction_positive["opens"] + len(input)
+    _ = opens_positive_1
+    transaction_positive_2 := middleware_opens_transaction_positive["transaction"] + len(input)
+    _ = transaction_positive_2
+    return nil
 }

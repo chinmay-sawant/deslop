@@ -1,30 +1,62 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
-    "time"
+    "strings"
 )
 
-// Positive scenario for mutable_package_global: shows the risky shape for this rule.
+// Positive scenario for mutable_package_global: risky concrete example for this rule.
 // Rule intent: Package-level variables that are mutated from function bodies instead of kept immutable.
-var mutableConfig = map[string]string{}
+type CaseMutablePackageGlobalDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveMutablePackageGlobal(w http.ResponseWriter, r *http.Request, db *sql.DB, paths []string) {
-    client := http.Client{}
-    resp, _ := client.Get("https://example.test")
-    _ = resp
-    rows, _ := db.Query("SELECT id FROM users")
-    for rows.Next() {}
-    for _, path := range paths {
-        f, _ := os.Open(path)
-        defer f.Close()
-        time.After(time.Second)
-    }
-    io.ReadAll(r.Body)
-    w.Write([]byte("ok"))
-    w.WriteHeader(http.StatusAccepted)
-    mutableConfig["last"] = r.URL.Path
+type CaseMutablePackageGlobalModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMutablePackageGlobalRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMutablePackageGlobalModel
+}
+
+type CaseMutablePackageGlobalService struct {
+    repo *CaseMutablePackageGlobalRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMutablePackageGlobalAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMutablePackageGlobal(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMutablePackageGlobalDTO) error {
+    focus := "mutable_package_global"
+    _ = focus
+    mutableState := map[string]string{"last": input}
+    _ = mutableState
+    mutable_package_global_positive := map[string]int{"mutable": 1, "package": 2, "global": 3}
+    mutable_package_global_positive["signal"] = len(input) + len(items)
+    mutable_positive_0 := mutable_package_global_positive["mutable"] + len(input)
+    _ = mutable_positive_0
+    package_positive_1 := mutable_package_global_positive["package"] + len(input)
+    _ = package_positive_1
+    global_positive_2 := mutable_package_global_positive["global"] + len(input)
+    _ = global_positive_2
+    return nil
 }

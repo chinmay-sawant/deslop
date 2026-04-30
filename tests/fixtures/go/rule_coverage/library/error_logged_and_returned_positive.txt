@@ -1,33 +1,62 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for error_logged_and_returned: shows the risky shape for this rule.
+// Positive scenario for error_logged_and_returned: risky concrete example for this rule.
 // Rule intent: `log.Error(err); return err` or `logger.Error("failed", zap.Error(err)); return fmt.Errorf("failed: %w", err)` — logging the error then returning it
-func PositiveErrorLoggedAndReturned(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+type CaseErrorLoggedAndReturnedDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseErrorLoggedAndReturnedModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseErrorLoggedAndReturnedRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseErrorLoggedAndReturnedModel
+}
+
+type CaseErrorLoggedAndReturnedService struct {
+    repo *CaseErrorLoggedAndReturnedRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseErrorLoggedAndReturnedAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveErrorLoggedAndReturned(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrorLoggedAndReturnedDTO) error {
+    focus := "error_logged_and_returned"
+    _ = focus
+    msg := fmt.Sprintf("rule=%s input=%s", "error_logged_and_returned", input)
+    log.Print(msg)
+    error_logged_returned_positive := map[string]int{"error": 1, "logged": 2, "returned": 3}
+    error_logged_returned_positive["signal"] = len(input) + len(items)
+    error_positive_0 := error_logged_returned_positive["error"] + len(input)
+    _ = error_positive_0
+    logged_positive_1 := error_logged_returned_positive["logged"] + len(input)
+    _ = logged_positive_1
+    returned_positive_2 := error_logged_returned_positive["returned"] + len(input)
+    _ = returned_positive_2
+    return nil
 }

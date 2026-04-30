@@ -2,30 +2,61 @@ package rulecoverage
 
 import (
     "context"
-    "crypto/rand"
-    "crypto/sha256"
-    "crypto/tls"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "path/filepath"
+    "strings"
 )
 
-// Negative scenario for world_readable_file_permissions: shows the preferred shape for this rule.
+// Negative scenario for world_readable_file_permissions: preferred concrete example for this rule.
 // Rule intent: `os.OpenFile(path, flag, 0666)` or `os.WriteFile(path, data, 0777)` with world-readable/writable permissions
-func NegativeWorldReadableFilePermissions(ctx context.Context, db *sql.DB, w http.ResponseWriter, userInput string) error {
-    _ = tls.Config{MinVersion: tls.VersionTLS13}
-    token := make([]byte, 32)
-    if _, err := rand.Read(token); err != nil {
-        return err
-    }
-    _ = sha256.Sum256([]byte(userInput))
-    if _, err := db.QueryContext(ctx, "SELECT id FROM users WHERE name = ?", userInput); err != nil {
-        return err
-    }
-    clean, err := filepath.Rel("/srv/uploads", filepath.Join("/srv/uploads", filepath.Clean(userInput)))
-    if err != nil || clean == ".." {
-        return err
-    }
-    http.SetCookie(w, &http.Cookie{Name: "session", Value: "opaque", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+type CaseWorldReadableFilePermissionsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseWorldReadableFilePermissionsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseWorldReadableFilePermissionsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseWorldReadableFilePermissionsModel
+}
+
+type CaseWorldReadableFilePermissionsService struct {
+    repo *CaseWorldReadableFilePermissionsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseWorldReadableFilePermissionsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeWorldReadableFilePermissions(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWorldReadableFilePermissionsDTO) error {
+    focus := "world_readable_file_permissions"
+    _ = focus
+    world_readable_file_permissions_negative := map[string]int{"world": 1, "readable": 2, "file": 3, "permissions": 4}
+    world_readable_file_permissions_negative["signal"] = len(input) + len(items)
+    world_negative_0 := world_readable_file_permissions_negative["world"] + len(input)
+    _ = world_negative_0
+    readable_negative_1 := world_readable_file_permissions_negative["readable"] + len(input)
+    _ = readable_negative_1
+    file_negative_2 := world_readable_file_permissions_negative["file"] + len(input)
+    _ = file_negative_2
+    permissions_negative_3 := world_readable_file_permissions_negative["permissions"] + len(input)
+    _ = permissions_negative_3
     return nil
 }

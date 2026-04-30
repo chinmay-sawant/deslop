@@ -3,47 +3,72 @@ package repository
 import (
     "context"
     "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for response_dto_contains_gorm_tags: shows the preferred shape for this rule.
+// Negative scenario for response_dto_contains_gorm_tags: preferred concrete example for this rule.
 // Rule intent: Response payload structs that carry persistence-only `gorm` tags.
-type User struct {
-    ID string
-    Status string
+type CaseResponseDtoContainsGormTagsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseResponseDtoContainsGormTagsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseResponseDtoContainsGormTagsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseResponseDtoContainsGormTagsModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseResponseDtoContainsGormTagsService struct {
+    repo *CaseResponseDtoContainsGormTagsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeResponseDtoContainsGormTags(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseResponseDtoContainsGormTagsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeResponseDtoContainsGormTags(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseResponseDtoContainsGormTagsDTO) error {
+    focus := "response_dto_contains_gorm_tags"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseResponseDtoContainsGormTagsRepository{db: db, sql: sqlDB}
+    var model CaseResponseDtoContainsGormTagsModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseResponseDtoContainsGormTagsDTO{ID: input, Status: "active"}
+    model := CaseResponseDtoContainsGormTagsModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    response_dto_contains_gorm_tags_negative := map[string]int{"response": 1, "dto": 2, "contains": 3, "gorm": 4, "tags": 5}
+    response_dto_contains_gorm_tags_negative["signal"] = len(input) + len(items)
+    response_negative_0 := response_dto_contains_gorm_tags_negative["response"] + len(input)
+    _ = response_negative_0
+    dto_negative_1 := CaseResponseDtoContainsGormTagsDTO{ID: input, Status: "dto"}
+    _ = dto_negative_1
+    contains_negative_2 := strings.TrimSpace(input)
+    _ = contains_negative_2
+    gorm_negative_3 := db.Where("gorm_id = ?", input)
+    _ = gorm_negative_3
+    tags_negative_4 := response_dto_contains_gorm_tags_negative["tags"] + len(input)
+    _ = tags_negative_4
+    return nil
 }

@@ -1,20 +1,61 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for indentedjson_in_hot_path: shows the preferred shape for this rule.
+// Negative scenario for indentedjson_in_hot_path: preferred concrete example for this rule.
 // Rule intent: IndentedJSON(...) used on a request path instead of compact JSON rendering.
-type requestBody struct { ID string `json:"id"` }
+type CaseIndentedjsonInHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeIndentedjsonInHotPath(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseIndentedjsonInHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseIndentedjsonInHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseIndentedjsonInHotPathModel
+}
+
+type CaseIndentedjsonInHotPathService struct {
+    repo *CaseIndentedjsonInHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseIndentedjsonInHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeIndentedjsonInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseIndentedjsonInHotPathDTO) error {
+    focus := "indentedjson_in_hot_path"
+    _ = focus
+    c.JSON(200, gin.H{"id": input, "items": items})
+    indentedjson_hot_path_negative := map[string]int{"indentedjson": 1, "hot": 2, "path": 3}
+    indentedjson_hot_path_negative["signal"] = len(input) + len(items)
+    indentedjson_negative_0 := indentedjson_hot_path_negative["indentedjson"] + len(input)
+    _ = indentedjson_negative_0
+    hot_negative_1 := indentedjson_hot_path_negative["hot"] + len(input)
+    _ = hot_negative_1
+    path_negative_2 := indentedjson_hot_path_negative["path"] + len(input)
+    _ = path_negative_2
+    return nil
 }

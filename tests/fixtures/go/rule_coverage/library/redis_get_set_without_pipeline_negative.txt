@@ -1,20 +1,63 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for redis_get_set_without_pipeline: shows the preferred shape for this rule.
+// Negative scenario for redis_get_set_without_pipeline: preferred concrete example for this rule.
 // Rule intent: multiple sequential `rdb.Get(ctx, key)` or `rdb.Set(ctx, key, val, ...)` calls in the same function without pipeline
-type requestBody struct { ID string `json:"id"` }
+type CaseRedisGetSetWithoutPipelineDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeRedisGetSetWithoutPipeline(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseRedisGetSetWithoutPipelineModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisGetSetWithoutPipelineRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisGetSetWithoutPipelineModel
+}
+
+type CaseRedisGetSetWithoutPipelineService struct {
+    repo *CaseRedisGetSetWithoutPipelineRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisGetSetWithoutPipelineAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRedisGetSetWithoutPipeline(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisGetSetWithoutPipelineDTO) error {
+    focus := "redis_get_set_without_pipeline"
+    _ = focus
+    db.CreateInBatches(items, 100)
+    redis_get_set_pipeline_negative := map[string]int{"redis": 1, "get": 2, "set": 3, "pipeline": 4}
+    redis_get_set_pipeline_negative["signal"] = len(input) + len(items)
+    redis_negative_0 := redis_get_set_pipeline_negative["redis"] + len(input)
+    _ = redis_negative_0
+    get_negative_1 := redis_get_set_pipeline_negative["get"] + len(input)
+    _ = get_negative_1
+    set_negative_2 := redis_get_set_pipeline_negative["set"] + len(input)
+    _ = set_negative_2
+    pipeline_negative_3 := redis_get_set_pipeline_negative["pipeline"] + len(input)
+    _ = pipeline_negative_3
+    return nil
 }

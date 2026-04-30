@@ -6,28 +6,58 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Positive scenario for save_for_single_column_change: shows the risky shape for this rule.
+// Positive scenario for save_for_single_column_change: risky concrete example for this rule.
 // Rule intent: GORM Save used for a single-column update instead of a targeted Update call.
-type Account struct { ID int; TenantID string; Status string }
+type CaseSaveForSingleColumnChangeDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveSaveForSingleColumnChange(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
-    ctx := context.Background()
-    var accounts []Account
-    var total int64
-    sql.Open("postgres", c.Query("dsn"))
-    sqlDB.PingContext(ctx)
-    db.AutoMigrate(&Account{})
-    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
-    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
-    for _, id := range ids {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
-        db.Create(&Account{ID: id})
-        db.Delete(&Account{}, id)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
-    }
-    page := accounts[:10]
-    return page, nil
+type CaseSaveForSingleColumnChangeModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSaveForSingleColumnChangeRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSaveForSingleColumnChangeModel
+}
+
+type CaseSaveForSingleColumnChangeService struct {
+    repo *CaseSaveForSingleColumnChangeRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSaveForSingleColumnChangeAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSaveForSingleColumnChange(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSaveForSingleColumnChangeDTO) error {
+    focus := "save_for_single_column_change"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    save_single_column_change_positive := map[string]int{"save": 1, "single": 2, "column": 3, "change": 4}
+    save_single_column_change_positive["signal"] = len(input) + len(items)
+    save_positive_0 := save_single_column_change_positive["save"] + len(input)
+    _ = save_positive_0
+    single_positive_1 := save_single_column_change_positive["single"] + len(input)
+    _ = single_positive_1
+    column_positive_2 := db.Where("column_id = ?", input)
+    _ = column_positive_2
+    change_positive_3 := save_single_column_change_positive["change"] + len(input)
+    _ = change_positive_3
+    return nil
 }

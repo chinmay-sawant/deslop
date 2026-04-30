@@ -1,49 +1,73 @@
-package router
+package main
 
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for bootstrap_builds_clients_inside_route_registration: shows the preferred shape for this rule.
+// Negative scenario for bootstrap_builds_clients_inside_route_registration: preferred concrete example for this rule.
 // Rule intent: Startup code that hides dependency construction inside route registration functions.
-type User struct {
-    ID string
-    Status string
+type CaseBootstrapBuildsClientsInsideRouteRegistrationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseBootstrapBuildsClientsInsideRouteRegistrationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseBootstrapBuildsClientsInsideRouteRegistrationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBootstrapBuildsClientsInsideRouteRegistrationModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseBootstrapBuildsClientsInsideRouteRegistrationService struct {
+    repo *CaseBootstrapBuildsClientsInsideRouteRegistrationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseBootstrapBuildsClientsInsideRouteRegistrationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeBootstrapBuildsClientsInsideRouteRegistration(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeBootstrapBuildsClientsInsideRouteRegistration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBootstrapBuildsClientsInsideRouteRegistrationDTO) error {
+    focus := "bootstrap_builds_clients_inside_route"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseBootstrapBuildsClientsInsideRouteRegistrationDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    bootstrap_builds_clients_inside_route_negative := map[string]int{"bootstrap": 1, "builds": 2, "clients": 3, "inside": 4, "route": 5, "registration": 6}
+    bootstrap_builds_clients_inside_route_negative["signal"] = len(input) + len(items)
+    bootstrap_negative_0 := bootstrap_builds_clients_inside_route_negative["bootstrap"] + len(input)
+    _ = bootstrap_negative_0
+    builds_negative_1 := bootstrap_builds_clients_inside_route_negative["builds"] + len(input)
+    _ = builds_negative_1
+    clients_negative_2 := bootstrap_builds_clients_inside_route_negative["clients"] + len(input)
+    _ = clients_negative_2
+    inside_negative_3 := bootstrap_builds_clients_inside_route_negative["inside"] + len(input)
+    _ = inside_negative_3
+    route_negative_4 := c.FullPath() + ":" + input
+    _ = route_negative_4
+    registration_negative_5 := bootstrap_builds_clients_inside_route_negative["registration"] + len(input)
+    _ = registration_negative_5
+    return nil
 }

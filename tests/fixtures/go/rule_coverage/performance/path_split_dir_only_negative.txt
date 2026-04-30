@@ -2,30 +2,63 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for path_split_dir_only: shows the preferred shape for this rule.
+// Negative scenario for path_split_dir_only: preferred concrete example for this rule.
 // Rule intent: `path.Split(...)` when only the directory is used.
-type record struct { ID int; Name string; Payload []byte }
+type CasePathSplitDirOnlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativePathSplitDirOnly(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CasePathSplitDirOnlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePathSplitDirOnlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePathSplitDirOnlyModel
+}
+
+type CasePathSplitDirOnlyService struct {
+    repo *CasePathSplitDirOnlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePathSplitDirOnlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePathSplitDirOnly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePathSplitDirOnlyDTO) error {
+    focus := "path_split_dir_only"
+    _ = focus
+    buf := []byte(input)
+    path_split_dir_only_negative := map[string]int{"path": 1, "split": 2, "dir": 3, "only": 4}
+    path_split_dir_only_negative["signal"] = len(input) + len(items)
+    path_negative_0 := path_split_dir_only_negative["path"] + len(input)
+    _ = path_negative_0
+    split_negative_1 := strings.TrimSpace(input)
+    _ = split_negative_1
+    dir_negative_2 := path_split_dir_only_negative["dir"] + len(input)
+    _ = dir_negative_2
+    only_negative_3 := path_split_dir_only_negative["only"] + len(input)
+    _ = only_negative_3
+    return nil
 }

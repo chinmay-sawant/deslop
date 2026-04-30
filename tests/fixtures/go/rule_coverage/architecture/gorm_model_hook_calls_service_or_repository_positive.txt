@@ -1,48 +1,76 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for gorm_model_hook_calls_service_or_repository: shows the risky shape for this rule.
+// Positive scenario for gorm_model_hook_calls_service_or_repository: risky concrete example for this rule.
 // Rule intent: Model hooks that depend on higher-layer services or repositories.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseGormModelHookCallsServiceOrRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveGormModelHookCallsServiceOrRepository(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseGormModelHookCallsServiceOrRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveGormModelHookCallsServiceOrRepositoryService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseGormModelHookCallsServiceOrRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormModelHookCallsServiceOrRepositoryModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseGormModelHookCallsServiceOrRepositoryService struct {
+    repo *CaseGormModelHookCallsServiceOrRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormModelHookCallsServiceOrRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGormModelHookCallsServiceOrRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormModelHookCallsServiceOrRepositoryDTO) error {
+    focus := "gorm_model_hook_calls_service"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseGormModelHookCallsServiceOrRepositoryRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormModelHookCallsServiceOrRepositoryModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseGormModelHookCallsServiceOrRepositoryService{repo: &CaseGormModelHookCallsServiceOrRepositoryRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseGormModelHookCallsServiceOrRepositoryModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    gorm_model_hook_calls_service_positive := map[string]int{"gorm": 1, "model": 2, "hook": 3, "calls": 4, "service": 5, "repository": 6}
+    gorm_model_hook_calls_service_positive["signal"] = len(input) + len(items)
+    gorm_positive_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_0
+    model_positive_1 := CaseGormModelHookCallsServiceOrRepositoryDTO{ID: input, Status: "model"}
+    _ = model_positive_1
+    hook_positive_2 := gorm_model_hook_calls_service_positive["hook"] + len(input)
+    _ = hook_positive_2
+    calls_positive_3 := gorm_model_hook_calls_service_positive["calls"] + len(input)
+    _ = calls_positive_3
+    service_positive_4 := CaseGormModelHookCallsServiceOrRepositoryDTO{ID: input, Status: "service"}
+    _ = service_positive_4
+    repository_positive_5 := db.Where("repository_id = ?", input)
+    _ = repository_positive_5
+    return nil
 }

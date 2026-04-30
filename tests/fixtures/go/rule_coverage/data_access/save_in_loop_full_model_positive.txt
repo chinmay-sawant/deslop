@@ -6,28 +6,61 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Positive scenario for save_in_loop_full_model: shows the risky shape for this rule.
+// Positive scenario for save_in_loop_full_model: risky concrete example for this rule.
 // Rule intent: GORM Save(...) writes full models inside loops.
-type Account struct { ID int; TenantID string; Status string }
+type CaseSaveInLoopFullModelDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveSaveInLoopFullModel(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
-    ctx := context.Background()
-    var accounts []Account
-    var total int64
-    sql.Open("postgres", c.Query("dsn"))
-    sqlDB.PingContext(ctx)
-    db.AutoMigrate(&Account{})
-    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
-    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
-    for _, id := range ids {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
-        db.Create(&Account{ID: id})
-        db.Delete(&Account{}, id)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
+type CaseSaveInLoopFullModelModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSaveInLoopFullModelRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSaveInLoopFullModelModel
+}
+
+type CaseSaveInLoopFullModelService struct {
+    repo *CaseSaveInLoopFullModelRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSaveInLoopFullModelAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSaveInLoopFullModel(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSaveInLoopFullModelDTO) error {
+    focus := "save_in_loop_full_model"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    for _, item := range items {
+        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
+        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
     }
-    page := accounts[:10]
-    return page, nil
+    save_loop_full_model_positive := map[string]int{"save": 1, "loop": 2, "full": 3, "model": 4}
+    save_loop_full_model_positive["signal"] = len(input) + len(items)
+    save_positive_0 := save_loop_full_model_positive["save"] + len(input)
+    _ = save_positive_0
+    for loop_positive_1Index, item := range items { save_loop_full_model_positive[item.ID] = loop_positive_1Index }
+    full_positive_2 := save_loop_full_model_positive["full"] + len(input)
+    _ = full_positive_2
+    model_positive_3 := CaseSaveInLoopFullModelDTO{ID: input, Status: "model"}
+    _ = model_positive_3
+    return nil
 }

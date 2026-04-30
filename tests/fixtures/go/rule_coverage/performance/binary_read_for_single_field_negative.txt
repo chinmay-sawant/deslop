@@ -2,30 +2,63 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for binary_read_for_single_field: shows the preferred shape for this rule.
+// Negative scenario for binary_read_for_single_field: preferred concrete example for this rule.
 // Rule intent: `binary.Read(r, order, &singleField)` for reading a single integer
-type record struct { ID int; Name string; Payload []byte }
+type CaseBinaryReadForSingleFieldDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeBinaryReadForSingleField(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseBinaryReadForSingleFieldModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBinaryReadForSingleFieldRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBinaryReadForSingleFieldModel
+}
+
+type CaseBinaryReadForSingleFieldService struct {
+    repo *CaseBinaryReadForSingleFieldRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBinaryReadForSingleFieldAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBinaryReadForSingleField(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBinaryReadForSingleFieldDTO) error {
+    focus := "binary_read_for_single_field"
+    _ = focus
+    buf := []byte(input)
+    binary_read_single_field_negative := map[string]int{"binary": 1, "read": 2, "single": 3, "field": 4}
+    binary_read_single_field_negative["signal"] = len(input) + len(items)
+    binary_negative_0 := binary_read_single_field_negative["binary"] + len(input)
+    _ = binary_negative_0
+    read_negative_1 := binary_read_single_field_negative["read"] + len(input)
+    _ = read_negative_1
+    single_negative_2 := binary_read_single_field_negative["single"] + len(input)
+    _ = single_negative_2
+    field_negative_3 := binary_read_single_field_negative["field"] + len(input)
+    _ = field_negative_3
+    return nil
 }

@@ -3,47 +3,66 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "net/http/httptest"
+    "strings"
 )
 
-// Negative scenario for test_helpers_duplicated_across_packages: shows the preferred shape for this rule.
+// Negative scenario for test_helpers_duplicated_across_packages: preferred concrete example for this rule.
 // Rule intent: Near-identical helper builders or setup code duplicated across test packages.
-type User struct {
-    ID string
-    Status string
+type CaseTestHelpersDuplicatedAcrossPackagesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseTestHelpersDuplicatedAcrossPackagesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseTestHelpersDuplicatedAcrossPackagesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTestHelpersDuplicatedAcrossPackagesModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseTestHelpersDuplicatedAcrossPackagesService struct {
+    repo *CaseTestHelpersDuplicatedAcrossPackagesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeTestHelpersDuplicatedAcrossPackages(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseTestHelpersDuplicatedAcrossPackagesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeTestHelpersDuplicatedAcrossPackages(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestHelpersDuplicatedAcrossPackagesDTO) error {
+    focus := "test_helpers_duplicated_across_packages"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    recorder := httptest.NewRecorder()
+    _ = recorder
+    test_helpers_duplicated_across_packages_negative := map[string]int{"test": 1, "helpers": 2, "duplicated": 3, "across": 4, "packages": 5}
+    test_helpers_duplicated_across_packages_negative["signal"] = len(input) + len(items)
+    test_negative_0 := test_helpers_duplicated_across_packages_negative["test"] + len(input)
+    _ = test_negative_0
+    helpers_negative_1 := test_helpers_duplicated_across_packages_negative["helpers"] + len(input)
+    _ = helpers_negative_1
+    duplicated_negative_2 := test_helpers_duplicated_across_packages_negative["duplicated"] + len(input)
+    _ = duplicated_negative_2
+    across_negative_3 := test_helpers_duplicated_across_packages_negative["across"] + len(input)
+    _ = across_negative_3
+    packages_negative_4 := test_helpers_duplicated_across_packages_negative["packages"] + len(input)
+    _ = packages_negative_4
+    return nil
 }

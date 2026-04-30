@@ -3,47 +3,75 @@ package repository
 import (
     "context"
     "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for repository_returns_http_status_errors: shows the preferred shape for this rule.
+// Negative scenario for repository_returns_http_status_errors: preferred concrete example for this rule.
 // Rule intent: Repositories that construct transport-layer error objects or status-code wrappers.
-type User struct {
-    ID string
-    Status string
+type CaseRepositoryReturnsHttpStatusErrorsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseRepositoryReturnsHttpStatusErrorsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseRepositoryReturnsHttpStatusErrorsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryReturnsHttpStatusErrorsModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseRepositoryReturnsHttpStatusErrorsService struct {
+    repo *CaseRepositoryReturnsHttpStatusErrorsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseRepositoryReturnsHttpStatusErrorsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeRepositoryReturnsHttpStatusErrors(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeRepositoryReturnsHttpStatusErrors(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsHttpStatusErrorsDTO) error {
+    focus := "repository_returns_http_status_errors"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRepositoryReturnsHttpStatusErrorsDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseRepositoryReturnsHttpStatusErrorsRepository{db: db, sql: sqlDB}
+    var model CaseRepositoryReturnsHttpStatusErrorsModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    repository_returns_http_status_errors_negative := map[string]int{"repository": 1, "returns": 2, "http": 3, "status": 4, "errors": 5}
+    repository_returns_http_status_errors_negative["signal"] = len(input) + len(items)
+    repository_negative_0 := db.Where("repository_id = ?", input)
+    _ = repository_negative_0
+    returns_negative_1 := repository_returns_http_status_errors_negative["returns"] + len(input)
+    _ = returns_negative_1
+    http_negative_2 := repository_returns_http_status_errors_negative["http"] + len(input)
+    _ = http_negative_2
+    status_negative_3 := repository_returns_http_status_errors_negative["status"] + len(input)
+    _ = status_negative_3
+    errors_negative_4 := repository_returns_http_status_errors_negative["errors"] + len(input)
+    _ = errors_negative_4
+    return nil
 }

@@ -1,48 +1,69 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for gorm_model_outside_models_package: shows the risky shape for this rule.
+// Positive scenario for gorm_model_outside_models_package: risky concrete example for this rule.
 // Rule intent: GORM-backed structs with `gorm` tags declared outside `model` or `models` packages unless an explicit `entity` or `schema` package already exists.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseGormModelOutsideModelsPackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveGormModelOutsideModelsPackage(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseGormModelOutsideModelsPackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveGormModelOutsideModelsPackageService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseGormModelOutsideModelsPackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormModelOutsideModelsPackageModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseGormModelOutsideModelsPackageService struct {
+    repo *CaseGormModelOutsideModelsPackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormModelOutsideModelsPackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGormModelOutsideModelsPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormModelOutsideModelsPackageDTO) error {
+    focus := "gorm_model_outside_models_package"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseGormModelOutsideModelsPackageRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormModelOutsideModelsPackageModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    gorm_model_outside_models_package_positive := map[string]int{"gorm": 1, "model": 2, "outside": 3, "models": 4, "package": 5}
+    gorm_model_outside_models_package_positive["signal"] = len(input) + len(items)
+    gorm_positive_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_0
+    model_positive_1 := CaseGormModelOutsideModelsPackageDTO{ID: input, Status: "model"}
+    _ = model_positive_1
+    outside_positive_2 := gorm_model_outside_models_package_positive["outside"] + len(input)
+    _ = outside_positive_2
+    models_positive_3 := gorm_model_outside_models_package_positive["models"] + len(input)
+    _ = models_positive_3
+    package_positive_4 := gorm_model_outside_models_package_positive["package"] + len(input)
+    _ = package_positive_4
+    return nil
 }

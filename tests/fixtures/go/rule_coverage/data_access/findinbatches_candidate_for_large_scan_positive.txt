@@ -6,28 +6,59 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Positive scenario for findinbatches_candidate_for_large_scan: shows the risky shape for this rule.
+// Positive scenario for findinbatches_candidate_for_large_scan: risky concrete example for this rule.
 // Rule intent: Unbounded result sets that could use FindInBatches or cursor iteration.
-type Account struct { ID int; TenantID string; Status string }
+type CaseFindinbatchesCandidateForLargeScanDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveFindinbatchesCandidateForLargeScan(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
-    ctx := context.Background()
-    var accounts []Account
-    var total int64
-    sql.Open("postgres", c.Query("dsn"))
-    sqlDB.PingContext(ctx)
-    db.AutoMigrate(&Account{})
-    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
-    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
-    for _, id := range ids {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
-        db.Create(&Account{ID: id})
-        db.Delete(&Account{}, id)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
-    }
-    page := accounts[:10]
-    return page, nil
+type CaseFindinbatchesCandidateForLargeScanModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFindinbatchesCandidateForLargeScanRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFindinbatchesCandidateForLargeScanModel
+}
+
+type CaseFindinbatchesCandidateForLargeScanService struct {
+    repo *CaseFindinbatchesCandidateForLargeScanRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFindinbatchesCandidateForLargeScanAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFindinbatchesCandidateForLargeScan(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFindinbatchesCandidateForLargeScanDTO) error {
+    focus := "findinbatches_candidate_for_large_scan"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Where("LOWER(email) LIKE ?", "%"+input+"%").Find(&[]any{})
+    findinbatches_candidate_large_scan_positive := map[string]int{"findinbatches": 1, "candidate": 2, "large": 3, "scan": 4}
+    findinbatches_candidate_large_scan_positive["signal"] = len(input) + len(items)
+    findinbatches_positive_0 := findinbatches_candidate_large_scan_positive["findinbatches"] + len(input)
+    _ = findinbatches_positive_0
+    candidate_positive_1 := findinbatches_candidate_large_scan_positive["candidate"] + len(input)
+    _ = candidate_positive_1
+    large_positive_2 := findinbatches_candidate_large_scan_positive["large"] + len(input)
+    _ = large_positive_2
+    scan_positive_3 := findinbatches_candidate_large_scan_positive["scan"] + len(input)
+    _ = scan_positive_3
+    return nil
 }

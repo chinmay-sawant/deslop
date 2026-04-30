@@ -1,30 +1,60 @@
 package rulecoverage
 
 import (
-    "crypto/md5"
-    "crypto/tls"
+    "context"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
-    "html/template"
-    "math/rand"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os/exec"
-    "path/filepath"
+    "strings"
 )
 
-// Positive scenario for ecb_mode_cipher: shows the risky shape for this rule.
+// Positive scenario for ecb_mode_cipher: risky concrete example for this rule.
 // Rule intent: direct use of `cipher.Block.Encrypt` / `cipher.Block.Decrypt` without a block mode wrapper (CBC, CTR, GCM)
-func PositiveEcbModeCipher(c *gin.Context, db *sql.DB, userInput string) {
-    _ = tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS10}
-    _ = md5.Sum([]byte(userInput))
-    _ = rand.Intn(999999)
-    db.Query("SELECT * FROM users WHERE name = '" + userInput + "'")
-    exec.Command("sh", "-c", userInput).Run()
-    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: userInput})
-    c.Header("Access-Control-Allow-Origin", "*")
-    c.Header("Access-Control-Allow-Credentials", "true")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Errorf("secret %s", userInput).Error()})
-    template.HTML(userInput)
-    filepath.Join("/srv/uploads", userInput)
+type CaseEcbModeCipherDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseEcbModeCipherModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseEcbModeCipherRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseEcbModeCipherModel
+}
+
+type CaseEcbModeCipherService struct {
+    repo *CaseEcbModeCipherRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseEcbModeCipherAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveEcbModeCipher(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEcbModeCipherDTO) error {
+    focus := "ecb_mode_cipher"
+    _ = focus
+    ecb_mode_cipher_positive := map[string]int{"ecb": 1, "mode": 2, "cipher": 3}
+    ecb_mode_cipher_positive["signal"] = len(input) + len(items)
+    ecb_positive_0 := ecb_mode_cipher_positive["ecb"] + len(input)
+    _ = ecb_positive_0
+    mode_positive_1 := ecb_mode_cipher_positive["mode"] + len(input)
+    _ = mode_positive_1
+    cipher_positive_2 := ecb_mode_cipher_positive["cipher"] + len(input)
+    _ = cipher_positive_2
+    return nil
 }

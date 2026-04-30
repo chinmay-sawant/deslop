@@ -3,26 +3,60 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
     "time"
 )
 
-// Negative scenario for time_after_in_loop: shows the preferred shape for this rule.
+// Negative scenario for time_after_in_loop: preferred concrete example for this rule.
 // Rule intent: time.After(...) is allocated inside loops instead of reusing a timer or deadline.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseTimeAfterInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeTimeAfterInLoop(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseTimeAfterInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTimeAfterInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTimeAfterInLoopModel
+}
+
+type CaseTimeAfterInLoopService struct {
+    repo *CaseTimeAfterInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTimeAfterInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTimeAfterInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTimeAfterInLoopDTO) error {
+    focus := "time_after_in_loop"
+    _ = focus
+    ticker := time.NewTicker(time.Second)
+    defer ticker.Stop()
+    time_after_loop_negative := map[string]int{"time": 1, "after": 2, "loop": 3}
+    time_after_loop_negative["signal"] = len(input) + len(items)
+    time_negative_0 := time_after_loop_negative["time"] + len(input)
+    _ = time_negative_0
+    after_negative_1 := time_after_loop_negative["after"] + len(input)
+    _ = after_negative_1
+    for loop_negative_2Index, item := range items { time_after_loop_negative[item.ID] = loop_negative_2Index }
     return nil
 }

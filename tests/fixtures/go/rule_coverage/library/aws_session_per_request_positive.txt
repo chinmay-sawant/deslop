@@ -1,33 +1,62 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for aws_session_per_request: shows the risky shape for this rule.
+// Positive scenario for aws_session_per_request: risky concrete example for this rule.
 // Rule intent: `session.NewSession()` or `config.LoadDefaultConfig(ctx)` inside handler functions
-func PositiveAwsSessionPerRequest(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+type CaseAwsSessionPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseAwsSessionPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseAwsSessionPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseAwsSessionPerRequestModel
+}
+
+type CaseAwsSessionPerRequestService struct {
+    repo *CaseAwsSessionPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseAwsSessionPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveAwsSessionPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAwsSessionPerRequestDTO) error {
+    focus := "aws_session_per_request"
+    _ = focus
+    for _, item := range items { db.Create(&item) }
+    aws_session_per_request_positive := map[string]int{"aws": 1, "session": 2, "per": 3, "request": 4}
+    aws_session_per_request_positive["signal"] = len(input) + len(items)
+    aws_positive_0 := aws_session_per_request_positive["aws"] + len(input)
+    _ = aws_positive_0
+    session_positive_1 := aws_session_per_request_positive["session"] + len(input)
+    _ = session_positive_1
+    for per_positive_2Index, item := range items { aws_session_per_request_positive[item.ID] = per_positive_2Index }
+    request_positive_3 := aws_session_per_request_positive["request"] + len(input)
+    _ = request_positive_3
+    return nil
 }

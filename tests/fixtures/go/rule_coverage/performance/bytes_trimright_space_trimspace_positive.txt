@@ -2,43 +2,67 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for bytes_trimright_space_trimspace: shows the risky shape for this rule.
+// Positive scenario for bytes_trimright_space_trimspace: risky concrete example for this rule.
 // Rule intent: `bytes.TrimRight(..., whitespace)` instead of `bytes.TrimSpace(...)`.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBytesTrimrightSpaceTrimspaceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveBytesTrimrightSpaceTrimspace(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseBytesTrimrightSpaceTrimspaceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBytesTrimrightSpaceTrimspaceRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBytesTrimrightSpaceTrimspaceModel
+}
+
+type CaseBytesTrimrightSpaceTrimspaceService struct {
+    repo *CaseBytesTrimrightSpaceTrimspaceRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBytesTrimrightSpaceTrimspaceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBytesTrimrightSpaceTrimspace(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesTrimrightSpaceTrimspaceDTO) error {
+    focus := "bytes_trimright_space_trimspace"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    _ = bytes.TrimLeft(buf, " \t\n")
+    bytes_trimright_space_trimspace_positive := map[string]int{"bytes": 1, "trimright": 2, "space": 3, "trimspace": 4}
+    bytes_trimright_space_trimspace_positive["signal"] = len(input) + len(items)
+    bytes_positive_0 := strings.TrimSpace(input)
+    _ = bytes_positive_0
+    trimright_positive_1 := bytes_trimright_space_trimspace_positive["trimright"] + len(input)
+    _ = trimright_positive_1
+    space_positive_2 := bytes_trimright_space_trimspace_positive["space"] + len(input)
+    _ = space_positive_2
+    trimspace_positive_3 := bytes_trimright_space_trimspace_positive["trimspace"] + len(input)
+    _ = trimspace_positive_3
+    return nil
 }

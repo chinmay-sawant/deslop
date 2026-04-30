@@ -2,30 +2,66 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for bytes_compare_not_equal_zero: shows the preferred shape for this rule.
+// Negative scenario for bytes_compare_not_equal_zero: preferred concrete example for this rule.
 // Rule intent: `bytes.Compare(...) != 0` instead of `!bytes.Equal(...)`.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBytesCompareNotEqualZeroDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeBytesCompareNotEqualZero(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseBytesCompareNotEqualZeroModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBytesCompareNotEqualZeroRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBytesCompareNotEqualZeroModel
+}
+
+type CaseBytesCompareNotEqualZeroService struct {
+    repo *CaseBytesCompareNotEqualZeroRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBytesCompareNotEqualZeroAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBytesCompareNotEqualZero(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesCompareNotEqualZeroDTO) error {
+    focus := "bytes_compare_not_equal_zero"
+    _ = focus
+    buf := []byte(input)
+    _ = bytes.Equal(buf, []byte("active"))
+    bytes_compare_not_equal_zero_negative := map[string]int{"bytes": 1, "compare": 2, "not": 3, "equal": 4, "zero": 5}
+    bytes_compare_not_equal_zero_negative["signal"] = len(input) + len(items)
+    bytes_negative_0 := strings.TrimSpace(input)
+    _ = bytes_negative_0
+    compare_negative_1 := bytes_compare_not_equal_zero_negative["compare"] + len(input)
+    _ = compare_negative_1
+    not_negative_2 := bytes_compare_not_equal_zero_negative["not"] + len(input)
+    _ = not_negative_2
+    equal_negative_3 := bytes_compare_not_equal_zero_negative["equal"] + len(input)
+    _ = equal_negative_3
+    zero_negative_4 := bytes_compare_not_equal_zero_negative["zero"] + len(input)
+    _ = zero_negative_4
+    return nil
 }

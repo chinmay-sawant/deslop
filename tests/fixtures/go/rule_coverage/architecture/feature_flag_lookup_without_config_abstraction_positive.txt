@@ -1,48 +1,80 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
     "os"
+    "strings"
 )
 
-// Positive scenario for feature_flag_lookup_without_config_abstraction: shows the risky shape for this rule.
+// Positive scenario for feature_flag_lookup_without_config_abstraction: risky concrete example for this rule.
 // Rule intent: Handlers or services that query feature flags directly without a focused flag interface.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseFeatureFlagLookupWithoutConfigAbstractionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveFeatureFlagLookupWithoutConfigAbstraction(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseFeatureFlagLookupWithoutConfigAbstractionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveFeatureFlagLookupWithoutConfigAbstractionService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseFeatureFlagLookupWithoutConfigAbstractionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFeatureFlagLookupWithoutConfigAbstractionModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseFeatureFlagLookupWithoutConfigAbstractionService struct {
+    repo *CaseFeatureFlagLookupWithoutConfigAbstractionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFeatureFlagLookupWithoutConfigAbstractionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFeatureFlagLookupWithoutConfigAbstraction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFeatureFlagLookupWithoutConfigAbstractionDTO) error {
+    focus := "feature_flag_lookup_without_config"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseFeatureFlagLookupWithoutConfigAbstractionDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseFeatureFlagLookupWithoutConfigAbstractionRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseFeatureFlagLookupWithoutConfigAbstractionModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseFeatureFlagLookupWithoutConfigAbstractionService{repo: &CaseFeatureFlagLookupWithoutConfigAbstractionRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseFeatureFlagLookupWithoutConfigAbstractionModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
+    feature_flag_lookup_config_abstraction_positive := map[string]int{"feature": 1, "flag": 2, "lookup": 3, "config": 4, "abstraction": 5}
+    feature_flag_lookup_config_abstraction_positive["signal"] = len(input) + len(items)
+    feature_positive_0 := feature_flag_lookup_config_abstraction_positive["feature"] + len(input)
+    _ = feature_positive_0
+    flag_positive_1 := feature_flag_lookup_config_abstraction_positive["flag"] + len(input)
+    _ = flag_positive_1
+    lookup_positive_2 := feature_flag_lookup_config_abstraction_positive["lookup"] + len(input)
+    _ = lookup_positive_2
+    config_positive_3 := feature_flag_lookup_config_abstraction_positive["config"] + len(input)
+    _ = config_positive_3
+    abstraction_positive_4 := feature_flag_lookup_config_abstraction_positive["abstraction"] + len(input)
+    _ = abstraction_positive_4
+    return nil
 }

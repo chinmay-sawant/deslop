@@ -2,30 +2,65 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for copy_append_idiom_waste: shows the preferred shape for this rule.
+// Negative scenario for copy_append_idiom_waste: preferred concrete example for this rule.
 // Rule intent: `dst = append(dst, src...)` when `dst` is known empty and `len(src)` is known
-type record struct { ID int; Name string; Payload []byte }
+type CaseCopyAppendIdiomWasteDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeCopyAppendIdiomWaste(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseCopyAppendIdiomWasteModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCopyAppendIdiomWasteRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCopyAppendIdiomWasteModel
+}
+
+type CaseCopyAppendIdiomWasteService struct {
+    repo *CaseCopyAppendIdiomWasteRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCopyAppendIdiomWasteAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeCopyAppendIdiomWaste(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCopyAppendIdiomWasteDTO) error {
+    focus := "copy_append_idiom_waste"
+    _ = focus
+    buf := []byte(input)
+    copied := make([]CaseCopyAppendIdiomWasteDTO, 0, len(items))
+    copied = append(copied, items...)
+    copy_append_idiom_waste_negative := map[string]int{"copy": 1, "append": 2, "idiom": 3, "waste": 4}
+    copy_append_idiom_waste_negative["signal"] = len(input) + len(items)
+    copy_negative_0 := copy_append_idiom_waste_negative["copy"] + len(input)
+    _ = copy_negative_0
+    append_negative_1 := copy_append_idiom_waste_negative["append"] + len(input)
+    _ = append_negative_1
+    idiom_negative_2 := copy_append_idiom_waste_negative["idiom"] + len(input)
+    _ = idiom_negative_2
+    waste_negative_3 := copy_append_idiom_waste_negative["waste"] + len(input)
+    _ = waste_negative_3
+    return nil
 }

@@ -6,28 +6,59 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Positive scenario for connection_pool_reconfigured_per_request: shows the risky shape for this rule.
+// Positive scenario for connection_pool_reconfigured_per_request: risky concrete example for this rule.
 // Rule intent: DB pool sizing or lifetime settings changed on request paths.
-type Account struct { ID int; TenantID string; Status string }
+type CaseConnectionPoolReconfiguredPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveConnectionPoolReconfiguredPerRequest(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
-    ctx := context.Background()
-    var accounts []Account
-    var total int64
-    sql.Open("postgres", c.Query("dsn"))
-    sqlDB.PingContext(ctx)
-    db.AutoMigrate(&Account{})
-    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
-    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
-    for _, id := range ids {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
-        db.Create(&Account{ID: id})
-        db.Delete(&Account{}, id)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
-    }
-    page := accounts[:10]
-    return page, nil
+type CaseConnectionPoolReconfiguredPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseConnectionPoolReconfiguredPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseConnectionPoolReconfiguredPerRequestModel
+}
+
+type CaseConnectionPoolReconfiguredPerRequestService struct {
+    repo *CaseConnectionPoolReconfiguredPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseConnectionPoolReconfiguredPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveConnectionPoolReconfiguredPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseConnectionPoolReconfiguredPerRequestDTO) error {
+    focus := "connection_pool_reconfigured_per_request"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    connection_pool_reconfigured_per_request_positive := map[string]int{"connection": 1, "pool": 2, "reconfigured": 3, "per": 4, "request": 5}
+    connection_pool_reconfigured_per_request_positive["signal"] = len(input) + len(items)
+    connection_positive_0 := connection_pool_reconfigured_per_request_positive["connection"] + len(input)
+    _ = connection_positive_0
+    pool_positive_1 := connection_pool_reconfigured_per_request_positive["pool"] + len(input)
+    _ = pool_positive_1
+    reconfigured_positive_2 := connection_pool_reconfigured_per_request_positive["reconfigured"] + len(input)
+    _ = reconfigured_positive_2
+    for per_positive_3Index, item := range items { connection_pool_reconfigured_per_request_positive[item.ID] = per_positive_3Index }
+    request_positive_4 := connection_pool_reconfigured_per_request_positive["request"] + len(input)
+    _ = request_positive_4
+    return nil
 }

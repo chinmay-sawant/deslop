@@ -1,11 +1,8 @@
 package alpha
 
-import (
-    "fmt"
-
-    "github.com/acme/pkg"
-)
-
-// Negative scenario for inconsistent_package_name: shows the preferred shape for this rule.
+// Negative scenario for inconsistent_package_name: preferred concrete example for this rule.
 // Rule intent: Directories that mix base Go package names after ignoring the _test suffix.
-func NegativeInconsistentPackageName() { fmt.Println(pkg.Name) }
+func NegativeInconsistentPackageName() string {
+    packageNames := []string{"alpha"}
+    return packageNames[0]
+}

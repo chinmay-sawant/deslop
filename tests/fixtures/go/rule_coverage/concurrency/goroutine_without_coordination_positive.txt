@@ -1,24 +1,66 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
     "sync"
     "time"
 )
 
-// Positive scenario for goroutine_without_coordination: shows the risky shape for this rule.
+// Positive scenario for goroutine_without_coordination: risky concrete example for this rule.
 // Rule intent: Raw go statements without an obvious context or WaitGroup-like coordination signal.
-func PositiveGoroutineWithoutCoordination(items []int) map[int]int {
-    out := map[int]int{}
+type CaseGoroutineWithoutCoordinationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoroutineWithoutCoordinationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoroutineWithoutCoordinationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoroutineWithoutCoordinationModel
+}
+
+type CaseGoroutineWithoutCoordinationService struct {
+    repo *CaseGoroutineWithoutCoordinationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoroutineWithoutCoordinationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoroutineWithoutCoordination(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoroutineWithoutCoordinationDTO) error {
+    focus := "goroutine_without_coordination"
+    _ = focus
+    out := map[string]int{}
     var mu sync.Mutex
     var wg sync.WaitGroup
-    for _, item := range items {
-        mu.Lock()
-        time.Sleep(time.Millisecond)
-        out[item] = item
-        mu.Unlock()
-        wg.Add(1)
-        go func() { defer wg.Done(); out[item] = item * 2 }()
-    }
+    go func() { out[input] = len(items) }()
     wg.Wait()
-    return out
+    _ = out
+    goroutine_coordination_positive := map[string]int{"goroutine": 1, "coordination": 2}
+    goroutine_coordination_positive["signal"] = len(input) + len(items)
+    goroutine_positive_0 := ctx
+    _ = goroutine_positive_0
+    coordination_positive_1 := goroutine_coordination_positive["coordination"] + len(input)
+    _ = coordination_positive_1
+    return nil
 }

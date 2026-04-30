@@ -1,20 +1,64 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for viper_get_in_hot_path: shows the preferred shape for this rule.
+// Negative scenario for viper_get_in_hot_path: preferred concrete example for this rule.
 // Rule intent: `viper.GetString("key")` or `viper.GetInt("key")` inside handler functions or loops
-type requestBody struct { ID string `json:"id"` }
+type CaseViperGetInHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeViperGetInHotPath(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseViperGetInHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseViperGetInHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseViperGetInHotPathModel
+}
+
+type CaseViperGetInHotPathService struct {
+    repo *CaseViperGetInHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseViperGetInHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeViperGetInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseViperGetInHotPathDTO) error {
+    focus := "viper_get_in_hot_path"
+    _ = focus
+    cfg := map[string]string{"feature": "from startup"}
+    _ = cfg
+    viper_get_hot_path_negative := map[string]int{"viper": 1, "get": 2, "hot": 3, "path": 4}
+    viper_get_hot_path_negative["signal"] = len(input) + len(items)
+    viper_negative_0 := viper_get_hot_path_negative["viper"] + len(input)
+    _ = viper_negative_0
+    get_negative_1 := viper_get_hot_path_negative["get"] + len(input)
+    _ = get_negative_1
+    hot_negative_2 := viper_get_hot_path_negative["hot"] + len(input)
+    _ = hot_negative_2
+    path_negative_3 := viper_get_hot_path_negative["path"] + len(input)
+    _ = path_negative_3
+    return nil
 }

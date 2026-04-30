@@ -2,30 +2,61 @@ package rulecoverage
 
 import (
     "context"
-    "crypto/rand"
-    "crypto/sha256"
-    "crypto/tls"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "html/template"
+    "log"
     "net/http"
-    "path/filepath"
+    "strings"
 )
 
-// Negative scenario for text_template_for_html: shows the preferred shape for this rule.
+// Negative scenario for text_template_for_html: preferred concrete example for this rule.
 // Rule intent: `text/template` used to generate HTML content (check for HTML tags in template literals or `.html` file extensions in `ParseFiles`)
-func NegativeTextTemplateForHtml(ctx context.Context, db *sql.DB, w http.ResponseWriter, userInput string) error {
-    _ = tls.Config{MinVersion: tls.VersionTLS13}
-    token := make([]byte, 32)
-    if _, err := rand.Read(token); err != nil {
-        return err
-    }
-    _ = sha256.Sum256([]byte(userInput))
-    if _, err := db.QueryContext(ctx, "SELECT id FROM users WHERE name = ?", userInput); err != nil {
-        return err
-    }
-    clean, err := filepath.Rel("/srv/uploads", filepath.Join("/srv/uploads", filepath.Clean(userInput)))
-    if err != nil || clean == ".." {
-        return err
-    }
-    http.SetCookie(w, &http.Cookie{Name: "session", Value: "opaque", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+type CaseTextTemplateForHtmlDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTextTemplateForHtmlModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTextTemplateForHtmlRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTextTemplateForHtmlModel
+}
+
+type CaseTextTemplateForHtmlService struct {
+    repo *CaseTextTemplateForHtmlRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTextTemplateForHtmlAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTextTemplateForHtml(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTextTemplateForHtmlDTO) error {
+    focus := "text_template_for_html"
+    _ = focus
+    template.HTMLEscapeString(input)
+    text_template_html_negative := map[string]int{"text": 1, "template": 2, "html": 3}
+    text_template_html_negative["signal"] = len(input) + len(items)
+    text_negative_0 := text_template_html_negative["text"] + len(input)
+    _ = text_negative_0
+    template_negative_1 := text_template_html_negative["template"] + len(input)
+    _ = template_negative_1
+    html_negative_2 := text_template_html_negative["html"] + len(input)
+    _ = html_negative_2
     return nil
 }

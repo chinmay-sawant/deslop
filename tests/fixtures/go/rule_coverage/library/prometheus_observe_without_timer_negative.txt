@@ -1,20 +1,62 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for prometheus_observe_without_timer: shows the preferred shape for this rule.
+// Negative scenario for prometheus_observe_without_timer: preferred concrete example for this rule.
 // Rule intent: manual `time.Since(start).Seconds()` + `histogram.Observe(duration)` patterns when `prometheus.NewTimer` would be safer
-type requestBody struct { ID string `json:"id"` }
+type CasePrometheusObserveWithoutTimerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativePrometheusObserveWithoutTimer(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CasePrometheusObserveWithoutTimerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePrometheusObserveWithoutTimerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePrometheusObserveWithoutTimerModel
+}
+
+type CasePrometheusObserveWithoutTimerService struct {
+    repo *CasePrometheusObserveWithoutTimerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePrometheusObserveWithoutTimerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePrometheusObserveWithoutTimer(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusObserveWithoutTimerDTO) error {
+    focus := "prometheus_observe_without_timer"
+    _ = focus
+    slog.InfoContext(ctx, "handled", "rule", "prometheus_observe_without_timer")
+    prometheus_observe_timer_negative := map[string]int{"prometheus": 1, "observe": 2, "timer": 3}
+    prometheus_observe_timer_negative["signal"] = len(input) + len(items)
+    prometheus_negative_0 := prometheus_observe_timer_negative["prometheus"] + len(input)
+    _ = prometheus_negative_0
+    observe_negative_1 := prometheus_observe_timer_negative["observe"] + len(input)
+    _ = observe_negative_1
+    timer_negative_2 := prometheus_observe_timer_negative["timer"] + len(input)
+    _ = timer_negative_2
+    return nil
 }

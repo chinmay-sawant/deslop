@@ -3,47 +3,80 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for table_name_literals_duplicated_outside_repository: shows the preferred shape for this rule.
+// Negative scenario for table_name_literals_duplicated_outside_repository: preferred concrete example for this rule.
 // Rule intent: Repeated table-name strings across handlers, services, and jobs.
-type User struct {
-    ID string
-    Status string
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTableNameLiteralsDuplicatedOutsideRepositoryModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryService struct {
+    repo *CaseTableNameLiteralsDuplicatedOutsideRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseTableNameLiteralsDuplicatedOutsideRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeTableNameLiteralsDuplicatedOutsideRepository(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeTableNameLiteralsDuplicatedOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTableNameLiteralsDuplicatedOutsideRepositoryDTO) error {
+    focus := "table_name_literals_duplicated_outside"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseTableNameLiteralsDuplicatedOutsideRepositoryDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseTableNameLiteralsDuplicatedOutsideRepositoryRepository{db: db, sql: sqlDB}
+    var model CaseTableNameLiteralsDuplicatedOutsideRepositoryModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseTableNameLiteralsDuplicatedOutsideRepositoryDTO{ID: input, Status: "active"}
+    model := CaseTableNameLiteralsDuplicatedOutsideRepositoryModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    detached := context.WithoutCancel(ctx)
+    go func(jobCtx context.Context, id string) { _ = jobCtx; _ = id }(detached, input)
+    table_name_literals_duplicated_outside_negative := map[string]int{"table": 1, "name": 2, "literals": 3, "duplicated": 4, "outside": 5, "repository": 6}
+    table_name_literals_duplicated_outside_negative["signal"] = len(input) + len(items)
+    table_negative_0 := db.Where("table_id = ?", input)
+    _ = table_negative_0
+    name_negative_1 := table_name_literals_duplicated_outside_negative["name"] + len(input)
+    _ = name_negative_1
+    literals_negative_2 := table_name_literals_duplicated_outside_negative["literals"] + len(input)
+    _ = literals_negative_2
+    duplicated_negative_3 := table_name_literals_duplicated_outside_negative["duplicated"] + len(input)
+    _ = duplicated_negative_3
+    outside_negative_4 := table_name_literals_duplicated_outside_negative["outside"] + len(input)
+    _ = outside_negative_4
+    repository_negative_5 := db.Where("repository_id = ?", input)
+    _ = repository_negative_5
+    return nil
 }

@@ -2,22 +2,58 @@ package rulecoverage
 
 import (
     "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os/exec"
-    "time"
+    "strings"
 )
 
-// Positive scenario for missing_context: shows the risky shape for this rule.
+// Positive scenario for missing_context: risky concrete example for this rule.
 // Rule intent: Standard-library context-aware calls from functions that do not accept context.Context.
-type Worker struct { ctx context.Context }
+type CaseMissingContextDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveMissingContext(ctx context.Context, url string) {
-    child, _ := context.WithTimeout(ctx, time.Second)
-    _ = child
-    http.Get(url)
-    exec.Command("curl", url).Run()
-    go func() { http.Get(url) }()
-    for {
-        select { default: time.Sleep(time.Millisecond) }
-    }
+type CaseMissingContextModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMissingContextRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMissingContextModel
+}
+
+type CaseMissingContextService struct {
+    repo *CaseMissingContextRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMissingContextAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMissingContext(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMissingContextDTO) error {
+    focus := "missing_context"
+    _ = focus
+    http.Get(input)
+    missing_context_positive := map[string]int{"missing": 1, "context": 2}
+    missing_context_positive["signal"] = len(input) + len(items)
+    missing_positive_0 := missing_context_positive["missing"] + len(input)
+    _ = missing_positive_0
+    context_positive_1 := ctx
+    _ = context_positive_1
+    return nil
 }

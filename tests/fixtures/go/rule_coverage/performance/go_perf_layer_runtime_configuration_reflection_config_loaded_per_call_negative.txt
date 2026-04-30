@@ -2,30 +2,73 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for go_perf_layer_runtime_configuration_reflection_config_loaded_per_call: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_runtime_configuration_reflection_config_loaded_per_call: preferred concrete example for this rule.
 // Rule intent: Layer: Build and runtime configuration. Flag reflection-based config decoding performed per operation instead of at startup.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCall(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallModel
+}
+
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallService struct {
+    repo *CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallDTO) error {
+    focus := "go_perf_layer_runtime_configuration"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    typed := []CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallDTO(items)
+    _ = typed
+    workers := 4
+    _ = workers
+    perf_layer_runtime_configuration_reflection_negative := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "reflection": 5, "config": 6}
+    perf_layer_runtime_configuration_reflection_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_runtime_configuration_reflection_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_runtime_configuration_reflection_negative["layer"] + len(input)
+    _ = layer_negative_1
+    runtime_negative_2 := perf_layer_runtime_configuration_reflection_negative["runtime"] + len(input)
+    _ = runtime_negative_2
+    configuration_negative_3 := perf_layer_runtime_configuration_reflection_negative["configuration"] + len(input)
+    _ = configuration_negative_3
+    reflection_negative_4 := perf_layer_runtime_configuration_reflection_negative["reflection"] + len(input)
+    _ = reflection_negative_4
+    config_negative_5 := perf_layer_runtime_configuration_reflection_negative["config"] + len(input)
+    _ = config_negative_5
+    return nil
 }

@@ -1,48 +1,63 @@
 package rulecoverage
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for placeholder_seed_function_in_production: shows the risky shape for this rule.
+// Positive scenario for placeholder_seed_function_in_production: risky concrete example for this rule.
 // Rule intent: Seed entrypoints in production code that are still TODO-shaped or effectively no-ops.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CasePlaceholderSeedFunctionInProductionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositivePlaceholderSeedFunctionInProduction(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CasePlaceholderSeedFunctionInProductionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositivePlaceholderSeedFunctionInProductionService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CasePlaceholderSeedFunctionInProductionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePlaceholderSeedFunctionInProductionModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CasePlaceholderSeedFunctionInProductionService struct {
+    repo *CasePlaceholderSeedFunctionInProductionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePlaceholderSeedFunctionInProductionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePlaceholderSeedFunctionInProduction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePlaceholderSeedFunctionInProductionDTO) error {
+    focus := "placeholder_seed_function_in_production"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    placeholder_seed_function_production_positive := map[string]int{"placeholder": 1, "seed": 2, "function": 3, "production": 4}
+    placeholder_seed_function_production_positive["signal"] = len(input) + len(items)
+    placeholder_positive_0 := placeholder_seed_function_production_positive["placeholder"] + len(input)
+    _ = placeholder_positive_0
+    seed_positive_1 := placeholder_seed_function_production_positive["seed"] + len(input)
+    _ = seed_positive_1
+    function_positive_2 := placeholder_seed_function_production_positive["function"] + len(input)
+    _ = function_positive_2
+    production_positive_3 := placeholder_seed_function_production_positive["production"] + len(input)
+    _ = production_positive_3
+    return nil
 }

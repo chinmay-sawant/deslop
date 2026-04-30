@@ -3,47 +3,78 @@ package service
 import (
     "context"
     "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for handler_and_service_both_log_same_error_chain: shows the preferred shape for this rule.
+// Negative scenario for handler_and_service_both_log_same_error_chain: preferred concrete example for this rule.
 // Rule intent: Duplicated logging ownership where both service and handler log the same failure.
-type User struct {
-    ID string
-    Status string
+type CaseHandlerAndServiceBothLogSameErrorChainDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseHandlerAndServiceBothLogSameErrorChainModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseHandlerAndServiceBothLogSameErrorChainRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHandlerAndServiceBothLogSameErrorChainModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseHandlerAndServiceBothLogSameErrorChainService struct {
+    repo *CaseHandlerAndServiceBothLogSameErrorChainRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseHandlerAndServiceBothLogSameErrorChainAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeHandlerAndServiceBothLogSameErrorChain(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeHandlerAndServiceBothLogSameErrorChain(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHandlerAndServiceBothLogSameErrorChainDTO) error {
+    focus := "handler_and_service_both_log"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseHandlerAndServiceBothLogSameErrorChainDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    dto := CaseHandlerAndServiceBothLogSameErrorChainDTO{ID: input, Status: "active"}
+    model := CaseHandlerAndServiceBothLogSameErrorChainModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    slog.InfoContext(ctx, "handler_and_service_both_log_same_error_chain", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    handler_service_both_log_error_negative := map[string]int{"handler": 1, "service": 2, "both": 3, "log": 4, "error": 5, "chain": 6}
+    handler_service_both_log_error_negative["signal"] = len(input) + len(items)
+    handler_negative_0 := c.FullPath() + ":" + input
+    _ = handler_negative_0
+    service_negative_1 := CaseHandlerAndServiceBothLogSameErrorChainDTO{ID: input, Status: "service"}
+    _ = service_negative_1
+    both_negative_2 := handler_service_both_log_error_negative["both"] + len(input)
+    _ = both_negative_2
+    log_negative_3 := fmt.Sprintf("log=%s", input)
+    _ = log_negative_3
+    error_negative_4 := handler_service_both_log_error_negative["error"] + len(input)
+    _ = error_negative_4
+    chain_negative_5 := handler_service_both_log_error_negative["chain"] + len(input)
+    _ = chain_negative_5
+    return nil
 }

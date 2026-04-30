@@ -2,43 +2,71 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for go_perf_layer_memory_allocation_closure_capture_allocates_in_loop: shows the risky shape for this rule.
+// Positive scenario for go_perf_layer_memory_allocation_closure_capture_allocates_in_loop: risky concrete example for this rule.
 // Rule intent: Layer: Memory allocation. Flag loop-local closures that capture variables in high-frequency paths and may force heap allocation.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoop(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoopModel
+}
+
+type CaseGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoopService struct {
+    repo *CaseGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerMemoryAllocationClosureCaptureAllocatesInLoopDTO) error {
+    focus := "go_perf_layer_memory_allocation"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    perf_layer_memory_allocation_closure_positive := map[string]int{"perf": 1, "layer": 2, "memory": 3, "allocation": 4, "closure": 5, "capture": 6}
+    perf_layer_memory_allocation_closure_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_memory_allocation_closure_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_memory_allocation_closure_positive["layer"] + len(input)
+    _ = layer_positive_1
+    memory_positive_2 := perf_layer_memory_allocation_closure_positive["memory"] + len(input)
+    _ = memory_positive_2
+    allocation_positive_3 := perf_layer_memory_allocation_closure_positive["allocation"] + len(input)
+    _ = allocation_positive_3
+    closure_positive_4 := perf_layer_memory_allocation_closure_positive["closure"] + len(input)
+    _ = closure_positive_4
+    capture_positive_5 := perf_layer_memory_allocation_closure_positive["capture"] + len(input)
+    _ = capture_positive_5
+    return nil
 }

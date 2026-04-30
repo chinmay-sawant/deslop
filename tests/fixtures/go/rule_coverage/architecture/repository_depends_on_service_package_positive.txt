@@ -1,48 +1,72 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for repository_depends_on_service_package: shows the risky shape for this rule.
+// Positive scenario for repository_depends_on_service_package: risky concrete example for this rule.
 // Rule intent: Repositories that import service packages, which inverts the expected dependency flow.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseRepositoryDependsOnServicePackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveRepositoryDependsOnServicePackage(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseRepositoryDependsOnServicePackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveRepositoryDependsOnServicePackageService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseRepositoryDependsOnServicePackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryDependsOnServicePackageModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseRepositoryDependsOnServicePackageService struct {
+    repo *CaseRepositoryDependsOnServicePackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryDependsOnServicePackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepositoryDependsOnServicePackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryDependsOnServicePackageDTO) error {
+    focus := "repository_depends_on_service_package"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseRepositoryDependsOnServicePackageRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryDependsOnServicePackageModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseRepositoryDependsOnServicePackageService{repo: &CaseRepositoryDependsOnServicePackageRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseRepositoryDependsOnServicePackageModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    repository_depends_service_package_positive := map[string]int{"repository": 1, "depends": 2, "service": 3, "package": 4}
+    repository_depends_service_package_positive["signal"] = len(input) + len(items)
+    repository_positive_0 := db.Where("repository_id = ?", input)
+    _ = repository_positive_0
+    depends_positive_1 := repository_depends_service_package_positive["depends"] + len(input)
+    _ = depends_positive_1
+    service_positive_2 := CaseRepositoryDependsOnServicePackageDTO{ID: input, Status: "service"}
+    _ = service_positive_2
+    package_positive_3 := repository_depends_service_package_positive["package"] + len(input)
+    _ = package_positive_3
+    return nil
 }

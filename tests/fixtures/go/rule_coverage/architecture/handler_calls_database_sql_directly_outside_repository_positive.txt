@@ -1,48 +1,75 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for handler_calls_database_sql_directly_outside_repository: shows the risky shape for this rule.
+// Positive scenario for handler_calls_database_sql_directly_outside_repository: risky concrete example for this rule.
 // Rule intent: Handler packages that import `database/sql`, `sqlx`, or `pgx` and execute queries directly.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveHandlerCallsDatabaseSqlDirectlyOutsideRepository(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveHandlerCallsDatabaseSqlDirectlyOutsideRepositoryService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryService struct {
+    repo *CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveHandlerCallsDatabaseSqlDirectlyOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryDTO) error {
+    focus := "handler_calls_database_sql_directly"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseHandlerCallsDatabaseSqlDirectlyOutsideRepositoryModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    handler_calls_database_sql_directly_positive := map[string]int{"handler": 1, "calls": 2, "database": 3, "sql": 4, "directly": 5, "outside": 6}
+    handler_calls_database_sql_directly_positive["signal"] = len(input) + len(items)
+    handler_positive_0 := c.FullPath() + ":" + input
+    _ = handler_positive_0
+    calls_positive_1 := handler_calls_database_sql_directly_positive["calls"] + len(input)
+    _ = calls_positive_1
+    database_positive_2 := db.Where("database_id = ?", input)
+    _ = database_positive_2
+    sql_positive_3 := db.Where("sql_id = ?", input)
+    _ = sql_positive_3
+    directly_positive_4 := handler_calls_database_sql_directly_positive["directly"] + len(input)
+    _ = directly_positive_4
+    outside_positive_5 := handler_calls_database_sql_directly_positive["outside"] + len(input)
+    _ = outside_positive_5
+    return nil
 }

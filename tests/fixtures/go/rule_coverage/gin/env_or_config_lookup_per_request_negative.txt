@@ -1,20 +1,65 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for env_or_config_lookup_per_request: shows the preferred shape for this rule.
+// Negative scenario for env_or_config_lookup_per_request: preferred concrete example for this rule.
 // Rule intent: Environment variable reads observed on request paths instead of cached configuration.
-type requestBody struct { ID string `json:"id"` }
+type CaseEnvOrConfigLookupPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeEnvOrConfigLookupPerRequest(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseEnvOrConfigLookupPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseEnvOrConfigLookupPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseEnvOrConfigLookupPerRequestModel
+}
+
+type CaseEnvOrConfigLookupPerRequestService struct {
+    repo *CaseEnvOrConfigLookupPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseEnvOrConfigLookupPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeEnvOrConfigLookupPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEnvOrConfigLookupPerRequestDTO) error {
+    focus := "env_or_config_lookup_per"
+    _ = focus
+    cfg := map[string]string{"feature": "from startup"}
+    _ = cfg
+    env_config_lookup_per_request_negative := map[string]int{"env": 1, "config": 2, "lookup": 3, "per": 4, "request": 5}
+    env_config_lookup_per_request_negative["signal"] = len(input) + len(items)
+    env_negative_0 := env_config_lookup_per_request_negative["env"] + len(input)
+    _ = env_negative_0
+    config_negative_1 := env_config_lookup_per_request_negative["config"] + len(input)
+    _ = config_negative_1
+    lookup_negative_2 := env_config_lookup_per_request_negative["lookup"] + len(input)
+    _ = lookup_negative_2
+    for per_negative_3Index, item := range items { env_config_lookup_per_request_negative[item.ID] = per_negative_3Index }
+    request_negative_4 := env_config_lookup_per_request_negative["request"] + len(input)
+    _ = request_negative_4
+    return nil
 }

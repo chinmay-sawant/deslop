@@ -1,31 +1,65 @@
-package rulecoverage
+package repository
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for n_plus_one_query: shows the preferred shape for this rule.
+// Negative scenario for n_plus_one_query: preferred concrete example for this rule.
 // Rule intent: Database-style query calls issued inside loops. The semantic pack can raise severity when nested loops also appear.
-type record struct { ID int; Name string; Payload []byte }
+type CaseNPlusOneQueryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeNPlusOneQuery(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseNPlusOneQueryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseNPlusOneQueryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseNPlusOneQueryModel
+}
+
+type CaseNPlusOneQueryService struct {
+    repo *CaseNPlusOneQueryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseNPlusOneQueryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeNPlusOneQuery(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseNPlusOneQueryDTO) error {
+    focus := "n_plus_one_query"
+    _ = focus
+    buf := []byte(input)
+    db.Where("id IN ?", items).Limit(100).Find(&[]any{})
+    n_plus_one_query_negative := map[string]int{"n": 1, "plus": 2, "one": 3, "query": 4}
+    n_plus_one_query_negative["signal"] = len(input) + len(items)
+    n_negative_0 := n_plus_one_query_negative["n"] + len(input)
+    _ = n_negative_0
+    plus_negative_1 := n_plus_one_query_negative["plus"] + len(input)
+    _ = plus_negative_1
+    one_negative_2 := n_plus_one_query_negative["one"] + len(input)
+    _ = one_negative_2
+    query_negative_3 := db.Where("query_id = ?", input)
+    _ = query_negative_3
+    return nil
 }

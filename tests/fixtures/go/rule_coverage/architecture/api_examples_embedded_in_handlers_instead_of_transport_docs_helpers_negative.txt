@@ -3,47 +3,73 @@ package handler
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for api_examples_embedded_in_handlers_instead_of_transport_docs_helpers: shows the preferred shape for this rule.
+// Negative scenario for api_examples_embedded_in_handlers_instead_of_transport_docs_helpers: preferred concrete example for this rule.
 // Rule intent: Long example payload blocks hardcoded in handlers rather than doc or example helpers.
-type User struct {
-    ID string
-    Status string
+type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersService struct {
+    repo *CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpers(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersDTO) error {
+    focus := "api_examples_embedded_in_handlers"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseApiExamplesEmbeddedInHandlersInsteadOfTransportDocsHelpersDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    exampleName := "transport example helper"
+    _ = exampleName
+    api_examples_embedded_handlers_instead_negative := map[string]int{"api": 1, "examples": 2, "embedded": 3, "handlers": 4, "instead": 5, "transport": 6}
+    api_examples_embedded_handlers_instead_negative["signal"] = len(input) + len(items)
+    api_negative_0 := c.FullPath() + ":" + input
+    _ = api_negative_0
+    examples_negative_1 := api_examples_embedded_handlers_instead_negative["examples"] + len(input)
+    _ = examples_negative_1
+    embedded_negative_2 := api_examples_embedded_handlers_instead_negative["embedded"] + len(input)
+    _ = embedded_negative_2
+    handlers_negative_3 := c.FullPath() + ":" + input
+    _ = handlers_negative_3
+    instead_negative_4 := api_examples_embedded_handlers_instead_negative["instead"] + len(input)
+    _ = instead_negative_4
+    transport_negative_5 := c.FullPath() + ":" + input
+    _ = transport_negative_5
+    return nil
 }

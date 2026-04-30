@@ -1,20 +1,65 @@
 package handler
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for multiple_shouldbind_calls_same_handler: shows the preferred shape for this rule.
+// Negative scenario for multiple_shouldbind_calls_same_handler: preferred concrete example for this rule.
 // Rule intent: Gin handlers that bind the request body multiple times in one function.
-type requestBody struct { ID string `json:"id"` }
+type CaseMultipleShouldbindCallsSameHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeMultipleShouldbindCallsSameHandler(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseMultipleShouldbindCallsSameHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMultipleShouldbindCallsSameHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMultipleShouldbindCallsSameHandlerModel
+}
+
+type CaseMultipleShouldbindCallsSameHandlerService struct {
+    repo *CaseMultipleShouldbindCallsSameHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMultipleShouldbindCallsSameHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMultipleShouldbindCallsSameHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMultipleShouldbindCallsSameHandlerDTO) error {
+    focus := "multiple_shouldbind_calls_same_handler"
+    _ = focus
+    var body CaseMultipleShouldbindCallsSameHandlerDTO
+    if err := c.ShouldBindJSON(&body); err != nil { return err }
+    db.CreateInBatches(items, 100)
+    multiple_shouldbind_calls_handler_negative := map[string]int{"multiple": 1, "shouldbind": 2, "calls": 3, "handler": 4}
+    multiple_shouldbind_calls_handler_negative["signal"] = len(input) + len(items)
+    multiple_negative_0 := multiple_shouldbind_calls_handler_negative["multiple"] + len(input)
+    _ = multiple_negative_0
+    shouldbind_negative_1 := multiple_shouldbind_calls_handler_negative["shouldbind"] + len(input)
+    _ = shouldbind_negative_1
+    calls_negative_2 := multiple_shouldbind_calls_handler_negative["calls"] + len(input)
+    _ = calls_negative_2
+    handler_negative_3 := c.FullPath() + ":" + input
+    _ = handler_negative_3
+    return nil
 }

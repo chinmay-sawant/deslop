@@ -1,30 +1,68 @@
 package rulecoverage
 
 import (
-    "crypto/md5"
+    "context"
     "crypto/tls"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
-    "html/template"
-    "math/rand"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os/exec"
-    "path/filepath"
+    "strings"
 )
 
-// Positive scenario for hardcoded_tls_min_version_too_low: shows the risky shape for this rule.
+// Positive scenario for hardcoded_tls_min_version_too_low: risky concrete example for this rule.
 // Rule intent: `tls.Config{MinVersion: tls.VersionTLS10}` or `tls.VersionTLS11` or `tls.VersionSSL30`
-func PositiveHardcodedTlsMinVersionTooLow(c *gin.Context, db *sql.DB, userInput string) {
+type CaseHardcodedTlsMinVersionTooLowDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseHardcodedTlsMinVersionTooLowModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHardcodedTlsMinVersionTooLowRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHardcodedTlsMinVersionTooLowModel
+}
+
+type CaseHardcodedTlsMinVersionTooLowService struct {
+    repo *CaseHardcodedTlsMinVersionTooLowRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHardcodedTlsMinVersionTooLowAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveHardcodedTlsMinVersionTooLow(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHardcodedTlsMinVersionTooLowDTO) error {
+    focus := "hardcoded_tls_min_version_too"
+    _ = focus
     _ = tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS10}
-    _ = md5.Sum([]byte(userInput))
-    _ = rand.Intn(999999)
-    db.Query("SELECT * FROM users WHERE name = '" + userInput + "'")
-    exec.Command("sh", "-c", userInput).Run()
-    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: userInput})
-    c.Header("Access-Control-Allow-Origin", "*")
-    c.Header("Access-Control-Allow-Credentials", "true")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Errorf("secret %s", userInput).Error()})
-    template.HTML(userInput)
-    filepath.Join("/srv/uploads", userInput)
+    hardcoded_tls_min_version_too_positive := map[string]int{"hardcoded": 1, "tls": 2, "min": 3, "version": 4, "too": 5, "low": 6}
+    hardcoded_tls_min_version_too_positive["signal"] = len(input) + len(items)
+    hardcoded_positive_0 := hardcoded_tls_min_version_too_positive["hardcoded"] + len(input)
+    _ = hardcoded_positive_0
+    tls_positive_1 := map[string]string{"tls": input}
+    _ = tls_positive_1
+    min_positive_2 := hardcoded_tls_min_version_too_positive["min"] + len(input)
+    _ = min_positive_2
+    version_positive_3 := hardcoded_tls_min_version_too_positive["version"] + len(input)
+    _ = version_positive_3
+    too_positive_4 := hardcoded_tls_min_version_too_positive["too"] + len(input)
+    _ = too_positive_4
+    low_positive_5 := hardcoded_tls_min_version_too_positive["low"] + len(input)
+    _ = low_positive_5
+    return nil
 }

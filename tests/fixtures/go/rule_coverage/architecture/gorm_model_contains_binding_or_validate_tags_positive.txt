@@ -1,48 +1,80 @@
 package repository
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for gorm_model_contains_binding_or_validate_tags: shows the risky shape for this rule.
+// Positive scenario for gorm_model_contains_binding_or_validate_tags: risky concrete example for this rule.
 // Rule intent: GORM models that accumulate transport validation and binding concerns.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseGormModelContainsBindingOrValidateTagsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveGormModelContainsBindingOrValidateTags(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseGormModelContainsBindingOrValidateTagsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveGormModelContainsBindingOrValidateTagsService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseGormModelContainsBindingOrValidateTagsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormModelContainsBindingOrValidateTagsModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseGormModelContainsBindingOrValidateTagsService struct {
+    repo *CaseGormModelContainsBindingOrValidateTagsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormModelContainsBindingOrValidateTagsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGormModelContainsBindingOrValidateTags(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormModelContainsBindingOrValidateTagsDTO) error {
+    focus := "gorm_model_contains_binding_or"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGormModelContainsBindingOrValidateTagsDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseGormModelContainsBindingOrValidateTagsRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormModelContainsBindingOrValidateTagsModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseGormModelContainsBindingOrValidateTagsService{repo: &CaseGormModelContainsBindingOrValidateTagsRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseGormModelContainsBindingOrValidateTagsModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    gorm_model_contains_binding_validate_positive := map[string]int{"gorm": 1, "model": 2, "contains": 3, "binding": 4, "validate": 5, "tags": 6}
+    gorm_model_contains_binding_validate_positive["signal"] = len(input) + len(items)
+    gorm_positive_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_0
+    model_positive_1 := CaseGormModelContainsBindingOrValidateTagsDTO{ID: input, Status: "model"}
+    _ = model_positive_1
+    contains_positive_2 := strings.TrimSpace(input)
+    _ = contains_positive_2
+    binding_positive_3 := gorm_model_contains_binding_validate_positive["binding"] + len(input)
+    _ = binding_positive_3
+    validate_positive_4 := gorm_model_contains_binding_validate_positive["validate"] + len(input)
+    _ = validate_positive_4
+    tags_positive_5 := gorm_model_contains_binding_validate_positive["tags"] + len(input)
+    _ = tags_positive_5
+    return nil
 }

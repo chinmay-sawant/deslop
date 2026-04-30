@@ -3,47 +3,81 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "net/http/httptest"
+    "strings"
 )
 
-// Negative scenario for repository_tests_depend_on_http_transport_types: shows the preferred shape for this rule.
+// Negative scenario for repository_tests_depend_on_http_transport_types: preferred concrete example for this rule.
 // Rule intent: Repository tests that assert HTTP DTOs or handler-layer types.
-type User struct {
-    ID string
-    Status string
+type CaseRepositoryTestsDependOnHttpTransportTypesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseRepositoryTestsDependOnHttpTransportTypesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseRepositoryTestsDependOnHttpTransportTypesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryTestsDependOnHttpTransportTypesModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseRepositoryTestsDependOnHttpTransportTypesService struct {
+    repo *CaseRepositoryTestsDependOnHttpTransportTypesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseRepositoryTestsDependOnHttpTransportTypesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeRepositoryTestsDependOnHttpTransportTypes(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeRepositoryTestsDependOnHttpTransportTypes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryTestsDependOnHttpTransportTypesDTO) error {
+    focus := "repository_tests_depend_on_http"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRepositoryTestsDependOnHttpTransportTypesDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseRepositoryTestsDependOnHttpTransportTypesRepository{db: db, sql: sqlDB}
+    var model CaseRepositoryTestsDependOnHttpTransportTypesModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseRepositoryTestsDependOnHttpTransportTypesDTO{ID: input, Status: "active"}
+    model := CaseRepositoryTestsDependOnHttpTransportTypesModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    recorder := httptest.NewRecorder()
+    _ = recorder
+    repository_tests_depend_http_transport_negative := map[string]int{"repository": 1, "tests": 2, "depend": 3, "http": 4, "transport": 5, "types": 6}
+    repository_tests_depend_http_transport_negative["signal"] = len(input) + len(items)
+    repository_negative_0 := db.Where("repository_id = ?", input)
+    _ = repository_negative_0
+    tests_negative_1 := repository_tests_depend_http_transport_negative["tests"] + len(input)
+    _ = tests_negative_1
+    depend_negative_2 := repository_tests_depend_http_transport_negative["depend"] + len(input)
+    _ = depend_negative_2
+    http_negative_3 := repository_tests_depend_http_transport_negative["http"] + len(input)
+    _ = http_negative_3
+    transport_negative_4 := c.FullPath() + ":" + input
+    _ = transport_negative_4
+    types_negative_5 := repository_tests_depend_http_transport_negative["types"] + len(input)
+    _ = types_negative_5
+    return nil
 }

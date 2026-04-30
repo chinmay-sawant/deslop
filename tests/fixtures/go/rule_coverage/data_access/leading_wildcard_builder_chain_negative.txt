@@ -3,15 +3,62 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for leading_wildcard_builder_chain: shows the preferred shape for this rule.
+// Negative scenario for leading_wildcard_builder_chain: preferred concrete example for this rule.
 // Rule intent: LIKE queries with leading wildcards that prevent index usage.
-type Account struct { ID int; TenantID string; Status string }
+type CaseLeadingWildcardBuilderChainDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeLeadingWildcardBuilderChain(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CaseLeadingWildcardBuilderChainModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLeadingWildcardBuilderChainRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLeadingWildcardBuilderChainModel
+}
+
+type CaseLeadingWildcardBuilderChainService struct {
+    repo *CaseLeadingWildcardBuilderChainRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLeadingWildcardBuilderChainAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeLeadingWildcardBuilderChain(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLeadingWildcardBuilderChainDTO) error {
+    focus := "leading_wildcard_builder_chain"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Where("email_normalized = ?", input).Find(&[]any{})
+    leading_wildcard_builder_chain_negative := map[string]int{"leading": 1, "wildcard": 2, "builder": 3, "chain": 4}
+    leading_wildcard_builder_chain_negative["signal"] = len(input) + len(items)
+    leading_negative_0 := leading_wildcard_builder_chain_negative["leading"] + len(input)
+    _ = leading_negative_0
+    wildcard_negative_1 := leading_wildcard_builder_chain_negative["wildcard"] + len(input)
+    _ = wildcard_negative_1
+    builder_negative_2 := strings.TrimSpace(input)
+    _ = builder_negative_2
+    chain_negative_3 := leading_wildcard_builder_chain_negative["chain"] + len(input)
+    _ = chain_negative_3
+    return nil
 }

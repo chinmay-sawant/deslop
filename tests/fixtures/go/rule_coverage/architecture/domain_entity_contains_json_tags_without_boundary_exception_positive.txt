@@ -1,48 +1,76 @@
-package models
+package main
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for domain_entity_contains_json_tags_without_boundary_exception: shows the risky shape for this rule.
+// Positive scenario for domain_entity_contains_json_tags_without_boundary_exception: risky concrete example for this rule.
 // Rule intent: Core domain entities that are directly annotated for API serialization without a deliberate boundary exception.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveDomainEntityContainsJsonTagsWithoutBoundaryException(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveDomainEntityContainsJsonTagsWithoutBoundaryExceptionService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionService struct {
+    repo *CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDomainEntityContainsJsonTagsWithoutBoundaryException(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO) error {
+    focus := "domain_entity_contains_json_tags"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    service := &CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionService{repo: &CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    domain_entity_contains_json_tags_positive := map[string]int{"domain": 1, "entity": 2, "contains": 3, "json": 4, "tags": 5, "boundary": 6}
+    domain_entity_contains_json_tags_positive["signal"] = len(input) + len(items)
+    domain_positive_0 := CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO{ID: input, Status: "domain"}
+    _ = domain_positive_0
+    entity_positive_1 := CaseDomainEntityContainsJsonTagsWithoutBoundaryExceptionDTO{ID: input, Status: "entity"}
+    _ = entity_positive_1
+    contains_positive_2 := strings.TrimSpace(input)
+    _ = contains_positive_2
+    json_positive_3 := fmt.Sprintf("json:%s", input)
+    _ = json_positive_3
+    tags_positive_4 := domain_entity_contains_json_tags_positive["tags"] + len(input)
+    _ = tags_positive_4
+    boundary_positive_5 := domain_entity_contains_json_tags_positive["boundary"] + len(input)
+    _ = boundary_positive_5
+    return nil
 }

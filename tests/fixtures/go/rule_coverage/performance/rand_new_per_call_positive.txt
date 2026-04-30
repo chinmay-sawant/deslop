@@ -2,43 +2,68 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for rand_new_per_call: shows the risky shape for this rule.
+// Positive scenario for rand_new_per_call: risky concrete example for this rule.
 // Rule intent: `rand.New(...)` inside regular call paths instead of reusing a generator.
-type record struct { ID int; Name string; Payload []byte }
+type CaseRandNewPerCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveRandNewPerCall(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseRandNewPerCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRandNewPerCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRandNewPerCallModel
+}
+
+type CaseRandNewPerCallService struct {
+    repo *CaseRandNewPerCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRandNewPerCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRandNewPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRandNewPerCallDTO) error {
+    focus := "rand_new_per_call"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    _ = rand.New(rand.NewSource(time.Now().UnixNano())).Intn(10)
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    rand_new_per_call_positive := map[string]int{"rand": 1, "new": 2, "per": 3, "call": 4}
+    rand_new_per_call_positive["signal"] = len(input) + len(items)
+    rand_positive_0 := rand_new_per_call_positive["rand"] + len(input)
+    _ = rand_positive_0
+    new_positive_1 := rand_new_per_call_positive["new"] + len(input)
+    _ = new_positive_1
+    for per_positive_2Index, item := range items { rand_new_per_call_positive[item.ID] = per_positive_2Index }
+    call_positive_3 := rand_new_per_call_positive["call"] + len(input)
+    _ = call_positive_3
+    return nil
 }

@@ -1,48 +1,85 @@
 package handler
 
 import (
+    "context"
     "database/sql"
     "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for custom_recovery_logic_repeated_across_handlers: shows the risky shape for this rule.
+// Positive scenario for custom_recovery_logic_repeated_across_handlers: risky concrete example for this rule.
 // Rule intent: Repeated recover or panic-to-response logic inside handlers instead of centralized recovery middleware.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseCustomRecoveryLogicRepeatedAcrossHandlersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
+type CaseCustomRecoveryLogicRepeatedAcrossHandlersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
 
-func PositiveCustomRecoveryLogicRepeatedAcrossHandlers(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
+type CaseCustomRecoveryLogicRepeatedAcrossHandlersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCustomRecoveryLogicRepeatedAcrossHandlersModel
+}
+
+type CaseCustomRecoveryLogicRepeatedAcrossHandlersService struct {
+    repo *CaseCustomRecoveryLogicRepeatedAcrossHandlersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCustomRecoveryLogicRepeatedAcrossHandlersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCustomRecoveryLogicRepeatedAcrossHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCustomRecoveryLogicRepeatedAcrossHandlersDTO) error {
+    focus := "custom_recovery_logic_repeated_across"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseCustomRecoveryLogicRepeatedAcrossHandlersDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+        return func(inner *gin.Context) {
+            db.Exec("UPDATE accounts SET touched_at = now() WHERE tenant_id = ?", inner.GetHeader("X-Tenant-ID"))
+            inner.JSON(http.StatusOK, gin.H{"status": "mutated by middleware"})
+            next(inner)
+        }
     }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
-}
-
-func (s *UserService) PositiveCustomRecoveryLogicRepeatedAcrossHandlersService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
-}
-
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+    _ = middleware
+    log.Printf("custom_recovery_logic_repeated_across_handlers tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    err := errors.New("sql: no rows in result set for " + input)
+    if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
+    custom_recovery_logic_repeated_across_positive := map[string]int{"custom": 1, "recovery": 2, "logic": 3, "repeated": 4, "across": 5, "handlers": 6}
+    custom_recovery_logic_repeated_across_positive["signal"] = len(input) + len(items)
+    custom_positive_0 := custom_recovery_logic_repeated_across_positive["custom"] + len(input)
+    _ = custom_positive_0
+    recovery_positive_1 := custom_recovery_logic_repeated_across_positive["recovery"] + len(input)
+    _ = recovery_positive_1
+    logic_positive_2 := custom_recovery_logic_repeated_across_positive["logic"] + len(input)
+    _ = logic_positive_2
+    repeated_positive_3 := custom_recovery_logic_repeated_across_positive["repeated"] + len(input)
+    _ = repeated_positive_3
+    across_positive_4 := custom_recovery_logic_repeated_across_positive["across"] + len(input)
+    _ = across_positive_4
+    handlers_positive_5 := c.FullPath() + ":" + input
+    _ = handlers_positive_5
+    return nil
 }

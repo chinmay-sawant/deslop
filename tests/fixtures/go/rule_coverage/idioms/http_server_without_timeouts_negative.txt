@@ -3,26 +3,61 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
     "time"
 )
 
-// Negative scenario for http_server_without_timeouts: shows the preferred shape for this rule.
+// Negative scenario for http_server_without_timeouts: preferred concrete example for this rule.
 // Rule intent: Explicit http.Server{} values that omit common timeout fields.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseHttpServerWithoutTimeoutsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeHttpServerWithoutTimeouts(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseHttpServerWithoutTimeoutsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHttpServerWithoutTimeoutsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHttpServerWithoutTimeoutsModel
+}
+
+type CaseHttpServerWithoutTimeoutsService struct {
+    repo *CaseHttpServerWithoutTimeoutsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHttpServerWithoutTimeoutsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeHttpServerWithoutTimeouts(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpServerWithoutTimeoutsDTO) error {
+    focus := "http_server_without_timeouts"
+    _ = focus
+    srv := &http.Server{Addr: ":8080", ReadHeaderTimeout: time.Second, WriteTimeout: time.Second}
+    _ = srv
+    http_server_timeouts_negative := map[string]int{"http": 1, "server": 2, "timeouts": 3}
+    http_server_timeouts_negative["signal"] = len(input) + len(items)
+    http_negative_0 := http_server_timeouts_negative["http"] + len(input)
+    _ = http_negative_0
+    server_negative_1 := http_server_timeouts_negative["server"] + len(input)
+    _ = server_negative_1
+    timeouts_negative_2 := http_server_timeouts_negative["timeouts"] + len(input)
+    _ = timeouts_negative_2
     return nil
 }

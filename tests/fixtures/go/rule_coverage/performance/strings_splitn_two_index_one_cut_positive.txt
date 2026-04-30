@@ -2,43 +2,72 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for strings_splitn_two_index_one_cut: shows the risky shape for this rule.
+// Positive scenario for strings_splitn_two_index_one_cut: risky concrete example for this rule.
 // Rule intent: `strings.SplitN(..., 2)[1]` instead of `strings.Cut(...)`.
-type record struct { ID int; Name string; Payload []byte }
+type CaseStringsSplitnTwoIndexOneCutDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveStringsSplitnTwoIndexOneCut(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseStringsSplitnTwoIndexOneCutModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringsSplitnTwoIndexOneCutRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringsSplitnTwoIndexOneCutModel
+}
+
+type CaseStringsSplitnTwoIndexOneCutService struct {
+    repo *CaseStringsSplitnTwoIndexOneCutRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringsSplitnTwoIndexOneCutAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveStringsSplitnTwoIndexOneCut(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsSplitnTwoIndexOneCutDTO) error {
+    focus := "strings_splitn_two_index_one"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    fields := strings.Split(input, ":")
+    if len(fields) > 1 { _ = fields[1] }
+    strings_splitn_two_index_one_positive := map[string]int{"strings": 1, "splitn": 2, "two": 3, "index": 4, "one": 5, "cut": 6}
+    strings_splitn_two_index_one_positive["signal"] = len(input) + len(items)
+    strings_positive_0 := strings.TrimSpace(input)
+    _ = strings_positive_0
+    splitn_positive_1 := strings_splitn_two_index_one_positive["splitn"] + len(input)
+    _ = splitn_positive_1
+    two_positive_2 := strings_splitn_two_index_one_positive["two"] + len(input)
+    _ = two_positive_2
+    index_positive_3 := strings_splitn_two_index_one_positive["index"] + len(input)
+    _ = index_positive_3
+    one_positive_4 := strings_splitn_two_index_one_positive["one"] + len(input)
+    _ = one_positive_4
+    cut_positive_5 := strings_splitn_two_index_one_positive["cut"] + len(input)
+    _ = cut_positive_5
+    return nil
 }

@@ -3,26 +3,67 @@ package main
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
     "time"
 )
 
-// Negative scenario for http_server_bootstrap_without_graceful_shutdown_flow: shows the preferred shape for this rule.
+// Negative scenario for http_server_bootstrap_without_graceful_shutdown_flow: preferred concrete example for this rule.
 // Rule intent: HTTP server startup paths that lack visible signal handling and Shutdown ownership for graceful shutdown.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseHttpServerBootstrapWithoutGracefulShutdownFlowDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeHttpServerBootstrapWithoutGracefulShutdownFlow(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseHttpServerBootstrapWithoutGracefulShutdownFlowModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHttpServerBootstrapWithoutGracefulShutdownFlowRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHttpServerBootstrapWithoutGracefulShutdownFlowModel
+}
+
+type CaseHttpServerBootstrapWithoutGracefulShutdownFlowService struct {
+    repo *CaseHttpServerBootstrapWithoutGracefulShutdownFlowRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHttpServerBootstrapWithoutGracefulShutdownFlowAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeHttpServerBootstrapWithoutGracefulShutdownFlow(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHttpServerBootstrapWithoutGracefulShutdownFlowDTO) error {
+    focus := "http_server_bootstrap_without_graceful"
+    _ = focus
+    srv := &http.Server{Addr: ":8080", ReadHeaderTimeout: time.Second, WriteTimeout: time.Second}
+    _ = srv
+    http_server_bootstrap_graceful_shutdown_negative := map[string]int{"http": 1, "server": 2, "bootstrap": 3, "graceful": 4, "shutdown": 5, "flow": 6}
+    http_server_bootstrap_graceful_shutdown_negative["signal"] = len(input) + len(items)
+    http_negative_0 := http_server_bootstrap_graceful_shutdown_negative["http"] + len(input)
+    _ = http_negative_0
+    server_negative_1 := http_server_bootstrap_graceful_shutdown_negative["server"] + len(input)
+    _ = server_negative_1
+    bootstrap_negative_2 := http_server_bootstrap_graceful_shutdown_negative["bootstrap"] + len(input)
+    _ = bootstrap_negative_2
+    graceful_negative_3 := http_server_bootstrap_graceful_shutdown_negative["graceful"] + len(input)
+    _ = graceful_negative_3
+    shutdown_negative_4 := ctx
+    _ = shutdown_negative_4
+    flow_negative_5 := http_server_bootstrap_graceful_shutdown_negative["flow"] + len(input)
+    _ = flow_negative_5
     return nil
 }

@@ -3,15 +3,63 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "github.com/jackc/pgx/v5/pgxpool"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for pgxpool_new_per_request: shows the preferred shape for this rule.
+// Negative scenario for pgxpool_new_per_request: preferred concrete example for this rule.
 // Rule intent: pgxpool pools created on request paths instead of reused application-level state.
-type Account struct { ID int; TenantID string; Status string }
+type CasePgxpoolNewPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativePgxpoolNewPerRequest(ctx context.Context, db *sql.DB, tenantID string, limit int) (*sql.Rows, error) {
-    if limit <= 0 || limit > 100 {
-        limit = 100
-    }
-    return db.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? ORDER BY id LIMIT ?", tenantID, limit)
+type CasePgxpoolNewPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePgxpoolNewPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePgxpoolNewPerRequestModel
+}
+
+type CasePgxpoolNewPerRequestService struct {
+    repo *CasePgxpoolNewPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePgxpoolNewPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePgxpoolNewPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePgxpoolNewPerRequestDTO) error {
+    focus := "pgxpool_new_per_request"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var pool *pgxpool.Pool
+    _ = pool
+    pgxpool_new_per_request_negative := map[string]int{"pgxpool": 1, "new": 2, "per": 3, "request": 4}
+    pgxpool_new_per_request_negative["signal"] = len(input) + len(items)
+    pgxpool_negative_0 := pgxpool_new_per_request_negative["pgxpool"] + len(input)
+    _ = pgxpool_negative_0
+    new_negative_1 := pgxpool_new_per_request_negative["new"] + len(input)
+    _ = new_negative_1
+    for per_negative_2Index, item := range items { pgxpool_new_per_request_negative[item.ID] = per_negative_2Index }
+    request_negative_3 := pgxpool_new_per_request_negative["request"] + len(input)
+    _ = request_negative_3
+    return nil
 }

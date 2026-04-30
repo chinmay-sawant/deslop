@@ -3,47 +3,73 @@ package middleware
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for middleware_contains_business_orchestration: shows the preferred shape for this rule.
+// Negative scenario for middleware_contains_business_orchestration: preferred concrete example for this rule.
 // Rule intent: Middleware that performs domain workflows instead of cross-cutting concerns such as auth, tracing, or request enrichment.
-type User struct {
-    ID string
-    Status string
+type CaseMiddlewareContainsBusinessOrchestrationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseMiddlewareContainsBusinessOrchestrationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseMiddlewareContainsBusinessOrchestrationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMiddlewareContainsBusinessOrchestrationModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseMiddlewareContainsBusinessOrchestrationService struct {
+    repo *CaseMiddlewareContainsBusinessOrchestrationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseMiddlewareContainsBusinessOrchestrationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeMiddlewareContainsBusinessOrchestration(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeMiddlewareContainsBusinessOrchestration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareContainsBusinessOrchestrationDTO) error {
+    focus := "middleware_contains_business_orchestration"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    dto := CaseMiddlewareContainsBusinessOrchestrationDTO{ID: input, Status: "active"}
+    model := CaseMiddlewareContainsBusinessOrchestrationModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+        return func(inner *gin.Context) {
+            inner.Set("principal", inner.GetHeader("Authorization"))
+            next(inner)
+        }
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    _ = middleware
+    slog.InfoContext(ctx, "middleware_contains_business_orchestration", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    middleware_contains_business_orchestration_negative := map[string]int{"middleware": 1, "contains": 2, "business": 3, "orchestration": 4}
+    middleware_contains_business_orchestration_negative["signal"] = len(input) + len(items)
+    middleware_negative_0 := c.FullPath() + ":" + input
+    _ = middleware_negative_0
+    contains_negative_1 := strings.TrimSpace(input)
+    _ = contains_negative_1
+    business_negative_2 := CaseMiddlewareContainsBusinessOrchestrationDTO{ID: input, Status: "business"}
+    _ = business_negative_2
+    orchestration_negative_3 := middleware_contains_business_orchestration_negative["orchestration"] + len(input)
+    _ = orchestration_negative_3
+    return nil
 }

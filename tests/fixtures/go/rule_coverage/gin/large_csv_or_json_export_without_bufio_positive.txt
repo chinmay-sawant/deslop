@@ -1,33 +1,68 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
+    "context"
+    "database/sql"
     "encoding/json"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for large_csv_or_json_export_without_bufio: shows the risky shape for this rule.
+// Positive scenario for large_csv_or_json_export_without_bufio: risky concrete example for this rule.
 // Rule intent: Export data written in loops without visible buffering in handlers.
-func PositiveLargeCsvOrJsonExportWithoutBufio(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+type CaseLargeCsvOrJsonExportWithoutBufioDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseLargeCsvOrJsonExportWithoutBufioModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLargeCsvOrJsonExportWithoutBufioRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLargeCsvOrJsonExportWithoutBufioModel
+}
+
+type CaseLargeCsvOrJsonExportWithoutBufioService struct {
+    repo *CaseLargeCsvOrJsonExportWithoutBufioRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLargeCsvOrJsonExportWithoutBufioAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveLargeCsvOrJsonExportWithoutBufio(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLargeCsvOrJsonExportWithoutBufioDTO) error {
+    focus := "large_csv_or_json_export"
+    _ = focus
+    payload, _ := json.Marshal(gin.H{"items": items, "rule": input})
     c.Data(200, "application/json", payload)
+    for _, item := range items { c.JSON(200, gin.H{"id": item.ID}) }
+    large_csv_json_export_bufio_positive := map[string]int{"large": 1, "csv": 2, "json": 3, "export": 4, "bufio": 5}
+    large_csv_json_export_bufio_positive["signal"] = len(input) + len(items)
+    large_positive_0 := large_csv_json_export_bufio_positive["large"] + len(input)
+    _ = large_positive_0
+    csv_positive_1 := large_csv_json_export_bufio_positive["csv"] + len(input)
+    _ = csv_positive_1
+    json_positive_2 := fmt.Sprintf("json:%s", input)
+    _ = json_positive_2
+    export_positive_3 := large_csv_json_export_bufio_positive["export"] + len(input)
+    _ = export_positive_3
+    bufio_positive_4 := large_csv_json_export_bufio_positive["bufio"] + len(input)
+    _ = bufio_positive_4
+    return nil
 }

@@ -1,20 +1,67 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for large_h_payload_built_only_for_json_response: shows the preferred shape for this rule.
+// Negative scenario for large_h_payload_built_only_for_json_response: preferred concrete example for this rule.
 // Rule intent: Large gin.H payloads built as transient dynamic maps right before JSON rendering.
-type requestBody struct { ID string `json:"id"` }
+type CaseLargeHPayloadBuiltOnlyForJsonResponseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeLargeHPayloadBuiltOnlyForJsonResponse(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseLargeHPayloadBuiltOnlyForJsonResponseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLargeHPayloadBuiltOnlyForJsonResponseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLargeHPayloadBuiltOnlyForJsonResponseModel
+}
+
+type CaseLargeHPayloadBuiltOnlyForJsonResponseService struct {
+    repo *CaseLargeHPayloadBuiltOnlyForJsonResponseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLargeHPayloadBuiltOnlyForJsonResponseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeLargeHPayloadBuiltOnlyForJsonResponse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLargeHPayloadBuiltOnlyForJsonResponseDTO) error {
+    focus := "large_h_payload_built_only"
+    _ = focus
+    c.JSON(200, gin.H{"id": input, "items": items})
+    large_h_payload_built_only_negative := map[string]int{"large": 1, "h": 2, "payload": 3, "built": 4, "only": 5, "json": 6}
+    large_h_payload_built_only_negative["signal"] = len(input) + len(items)
+    large_negative_0 := large_h_payload_built_only_negative["large"] + len(input)
+    _ = large_negative_0
+    h_negative_1 := large_h_payload_built_only_negative["h"] + len(input)
+    _ = h_negative_1
+    payload_negative_2 := large_h_payload_built_only_negative["payload"] + len(input)
+    _ = payload_negative_2
+    built_negative_3 := large_h_payload_built_only_negative["built"] + len(input)
+    _ = built_negative_3
+    only_negative_4 := large_h_payload_built_only_negative["only"] + len(input)
+    _ = only_negative_4
+    json_negative_5 := fmt.Sprintf("json:%s", input)
+    _ = json_negative_5
+    return nil
 }

@@ -1,20 +1,63 @@
 package handler
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for redis_keys_command_in_handler: shows the preferred shape for this rule.
+// Negative scenario for redis_keys_command_in_handler: preferred concrete example for this rule.
 // Rule intent: `rdb.Keys(ctx, pattern)` in handler or loop code
-type requestBody struct { ID string `json:"id"` }
+type CaseRedisKeysCommandInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeRedisKeysCommandInHandler(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseRedisKeysCommandInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisKeysCommandInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisKeysCommandInHandlerModel
+}
+
+type CaseRedisKeysCommandInHandlerService struct {
+    repo *CaseRedisKeysCommandInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisKeysCommandInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRedisKeysCommandInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisKeysCommandInHandlerDTO) error {
+    focus := "redis_keys_command_in_handler"
+    _ = focus
+    db.CreateInBatches(items, 100)
+    redis_keys_command_handler_negative := map[string]int{"redis": 1, "keys": 2, "command": 3, "handler": 4}
+    redis_keys_command_handler_negative["signal"] = len(input) + len(items)
+    redis_negative_0 := redis_keys_command_handler_negative["redis"] + len(input)
+    _ = redis_negative_0
+    keys_negative_1 := redis_keys_command_handler_negative["keys"] + len(input)
+    _ = keys_negative_1
+    command_negative_2 := redis_keys_command_handler_negative["command"] + len(input)
+    _ = command_negative_2
+    handler_negative_3 := c.FullPath() + ":" + input
+    _ = handler_negative_3
+    return nil
 }

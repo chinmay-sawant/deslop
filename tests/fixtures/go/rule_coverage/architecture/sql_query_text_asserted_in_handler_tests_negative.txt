@@ -3,47 +3,78 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "net/http/httptest"
+    "strings"
 )
 
-// Negative scenario for sql_query_text_asserted_in_handler_tests: shows the preferred shape for this rule.
+// Negative scenario for sql_query_text_asserted_in_handler_tests: preferred concrete example for this rule.
 // Rule intent: SQL-shape assertions written at handler level instead of repository tests.
-type User struct {
-    ID string
-    Status string
+type CaseSqlQueryTextAssertedInHandlerTestsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseSqlQueryTextAssertedInHandlerTestsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseSqlQueryTextAssertedInHandlerTestsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSqlQueryTextAssertedInHandlerTestsModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseSqlQueryTextAssertedInHandlerTestsService struct {
+    repo *CaseSqlQueryTextAssertedInHandlerTestsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseSqlQueryTextAssertedInHandlerTestsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeSqlQueryTextAssertedInHandlerTests(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeSqlQueryTextAssertedInHandlerTests(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSqlQueryTextAssertedInHandlerTestsDTO) error {
+    focus := "sql_query_text_asserted_in"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseSqlQueryTextAssertedInHandlerTestsDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseSqlQueryTextAssertedInHandlerTestsRepository{db: db, sql: sqlDB}
+    var model CaseSqlQueryTextAssertedInHandlerTestsModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    recorder := httptest.NewRecorder()
+    _ = recorder
+    sql_query_text_asserted_handler_negative := map[string]int{"sql": 1, "query": 2, "text": 3, "asserted": 4, "handler": 5, "tests": 6}
+    sql_query_text_asserted_handler_negative["signal"] = len(input) + len(items)
+    sql_negative_0 := db.Where("sql_id = ?", input)
+    _ = sql_negative_0
+    query_negative_1 := db.Where("query_id = ?", input)
+    _ = query_negative_1
+    text_negative_2 := sql_query_text_asserted_handler_negative["text"] + len(input)
+    _ = text_negative_2
+    asserted_negative_3 := sql_query_text_asserted_handler_negative["asserted"] + len(input)
+    _ = asserted_negative_3
+    handler_negative_4 := c.FullPath() + ":" + input
+    _ = handler_negative_4
+    tests_negative_5 := sql_query_text_asserted_handler_negative["tests"] + len(input)
+    _ = tests_negative_5
+    return nil
 }

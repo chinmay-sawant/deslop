@@ -2,30 +2,64 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for strings_contains_vs_index: shows the preferred shape for this rule.
+// Negative scenario for strings_contains_vs_index: preferred concrete example for this rule.
 // Rule intent: `strings.Index(s, sub) != -1` or `strings.Index(s, sub) >= 0` patterns
-type record struct { ID int; Name string; Payload []byte }
+type CaseStringsContainsVsIndexDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeStringsContainsVsIndex(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseStringsContainsVsIndexModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringsContainsVsIndexRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringsContainsVsIndexModel
+}
+
+type CaseStringsContainsVsIndexService struct {
+    repo *CaseStringsContainsVsIndexRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringsContainsVsIndexAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStringsContainsVsIndex(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsContainsVsIndexDTO) error {
+    focus := "strings_contains_vs_index"
+    _ = focus
+    buf := []byte(input)
+    _ = strings.Contains(input, ":")
+    strings_contains_vs_index_negative := map[string]int{"strings": 1, "contains": 2, "vs": 3, "index": 4}
+    strings_contains_vs_index_negative["signal"] = len(input) + len(items)
+    strings_negative_0 := strings.TrimSpace(input)
+    _ = strings_negative_0
+    contains_negative_1 := strings.TrimSpace(input)
+    _ = contains_negative_1
+    vs_negative_2 := strings_contains_vs_index_negative["vs"] + len(input)
+    _ = vs_negative_2
+    index_negative_3 := strings_contains_vs_index_negative["index"] + len(input)
+    _ = index_negative_3
+    return nil
 }

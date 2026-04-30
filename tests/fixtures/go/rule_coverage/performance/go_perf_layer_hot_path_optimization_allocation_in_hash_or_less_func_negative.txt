@@ -2,30 +2,69 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for go_perf_layer_hot_path_optimization_allocation_in_hash_or_less_func: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_hot_path_optimization_allocation_in_hash_or_less_func: preferred concrete example for this rule.
 // Rule intent: Layer: Hot path optimization. Flag allocations inside sort comparison or hashing callbacks.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerHotPathOptimizationAllocationInHashOrLessFuncDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerHotPathOptimizationAllocationInHashOrLessFunc(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerHotPathOptimizationAllocationInHashOrLessFuncModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerHotPathOptimizationAllocationInHashOrLessFuncRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerHotPathOptimizationAllocationInHashOrLessFuncModel
+}
+
+type CaseGoPerfLayerHotPathOptimizationAllocationInHashOrLessFuncService struct {
+    repo *CaseGoPerfLayerHotPathOptimizationAllocationInHashOrLessFuncRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerHotPathOptimizationAllocationInHashOrLessFuncAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerHotPathOptimizationAllocationInHashOrLessFunc(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerHotPathOptimizationAllocationInHashOrLessFuncDTO) error {
+    focus := "go_perf_layer_hot_path"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    perf_layer_hot_path_optimization_negative := map[string]int{"perf": 1, "layer": 2, "hot": 3, "path": 4, "optimization": 5, "allocation": 6}
+    perf_layer_hot_path_optimization_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_hot_path_optimization_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_hot_path_optimization_negative["layer"] + len(input)
+    _ = layer_negative_1
+    hot_negative_2 := perf_layer_hot_path_optimization_negative["hot"] + len(input)
+    _ = hot_negative_2
+    path_negative_3 := perf_layer_hot_path_optimization_negative["path"] + len(input)
+    _ = path_negative_3
+    optimization_negative_4 := perf_layer_hot_path_optimization_negative["optimization"] + len(input)
+    _ = optimization_negative_4
+    allocation_negative_5 := perf_layer_hot_path_optimization_negative["allocation"] + len(input)
+    _ = allocation_negative_5
+    return nil
 }

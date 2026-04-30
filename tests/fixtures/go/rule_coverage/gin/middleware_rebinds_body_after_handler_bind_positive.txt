@@ -1,33 +1,70 @@
 package middleware
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for middleware_rebinds_body_after_handler_bind: shows the risky shape for this rule.
+// Positive scenario for middleware_rebinds_body_after_handler_bind: risky concrete example for this rule.
 // Rule intent: Middleware or helper chains that parse the request body after the main handler has already bound it.
-func PositiveMiddlewareRebindsBodyAfterHandlerBind(c *gin.Context) {
+type CaseMiddlewareRebindsBodyAfterHandlerBindDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMiddlewareRebindsBodyAfterHandlerBindModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMiddlewareRebindsBodyAfterHandlerBindRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMiddlewareRebindsBodyAfterHandlerBindModel
+}
+
+type CaseMiddlewareRebindsBodyAfterHandlerBindService struct {
+    repo *CaseMiddlewareRebindsBodyAfterHandlerBindRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMiddlewareRebindsBodyAfterHandlerBindAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMiddlewareRebindsBodyAfterHandlerBind(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareRebindsBodyAfterHandlerBindDTO) error {
+    focus := "middleware_rebinds_body_after_handler"
+    _ = focus
     raw, _ := c.GetRawData()
     var body map[string]any
     c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+    _ = raw
+    middleware_rebinds_body_after_handler_positive := map[string]int{"middleware": 1, "rebinds": 2, "body": 3, "after": 4, "handler": 5, "bind": 6}
+    middleware_rebinds_body_after_handler_positive["signal"] = len(input) + len(items)
+    middleware_positive_0 := c.FullPath() + ":" + input
+    _ = middleware_positive_0
+    rebinds_positive_1 := middleware_rebinds_body_after_handler_positive["rebinds"] + len(input)
+    _ = rebinds_positive_1
+    body_positive_2 := middleware_rebinds_body_after_handler_positive["body"] + len(input)
+    _ = body_positive_2
+    after_positive_3 := middleware_rebinds_body_after_handler_positive["after"] + len(input)
+    _ = after_positive_3
+    handler_positive_4 := c.FullPath() + ":" + input
+    _ = handler_positive_4
+    bind_positive_5 := middleware_rebinds_body_after_handler_positive["bind"] + len(input)
+    _ = bind_positive_5
+    return nil
 }

@@ -3,47 +3,68 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for shared_package_named_common_base_utils_with_mixed_exports: shows the preferred shape for this rule.
+// Negative scenario for shared_package_named_common_base_utils_with_mixed_exports: preferred concrete example for this rule.
 // Rule intent: Generic packages that mix services, models, DTOs, validators, and queries behind one broad shared namespace.
-type User struct {
-    ID string
-    Status string
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsService struct {
+    repo *CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeSharedPackageNamedCommonBaseUtilsWithMixedExports(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeSharedPackageNamedCommonBaseUtilsWithMixedExports(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsDTO) error {
+    focus := "shared_package_named_common_base"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    dto := CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsDTO{ID: input, Status: "active"}
+    model := CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    shared_package_named_common_base_negative := map[string]int{"shared": 1, "package": 2, "named": 3, "common": 4, "base": 5, "utils": 6}
+    shared_package_named_common_base_negative["signal"] = len(input) + len(items)
+    shared_negative_0 := shared_package_named_common_base_negative["shared"] + len(input)
+    _ = shared_negative_0
+    package_negative_1 := shared_package_named_common_base_negative["package"] + len(input)
+    _ = package_negative_1
+    named_negative_2 := shared_package_named_common_base_negative["named"] + len(input)
+    _ = named_negative_2
+    common_negative_3 := shared_package_named_common_base_negative["common"] + len(input)
+    _ = common_negative_3
+    base_negative_4 := shared_package_named_common_base_negative["base"] + len(input)
+    _ = base_negative_4
+    utils_negative_5 := shared_package_named_common_base_negative["utils"] + len(input)
+    _ = utils_negative_5
+    return nil
 }

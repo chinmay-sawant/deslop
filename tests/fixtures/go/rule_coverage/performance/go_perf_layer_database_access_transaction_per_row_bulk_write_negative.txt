@@ -2,30 +2,67 @@ package rulecoverage
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for go_perf_layer_database_access_transaction_per_row_bulk_write: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_database_access_transaction_per_row_bulk_write: preferred concrete example for this rule.
 // Rule intent: Layer: Database access. Flag bulk writes that open and commit one transaction per row.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerDatabaseAccessTransactionPerRowBulkWrite(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteModel
+}
+
+type CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteService struct {
+    repo *CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerDatabaseAccessTransactionPerRowBulkWrite(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerDatabaseAccessTransactionPerRowBulkWriteDTO) error {
+    focus := "go_perf_layer_database_access"
+    _ = focus
+    buf := []byte(input)
+    db.Where("id IN ?", items).Limit(100).Find(&[]any{})
+    perf_layer_database_access_transaction_negative := map[string]int{"perf": 1, "layer": 2, "database": 3, "access": 4, "transaction": 5, "per": 6}
+    perf_layer_database_access_transaction_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_database_access_transaction_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_database_access_transaction_negative["layer"] + len(input)
+    _ = layer_negative_1
+    database_negative_2 := db.Where("database_id = ?", input)
+    _ = database_negative_2
+    access_negative_3 := perf_layer_database_access_transaction_negative["access"] + len(input)
+    _ = access_negative_3
+    transaction_negative_4 := perf_layer_database_access_transaction_negative["transaction"] + len(input)
+    _ = transaction_negative_4
+    for per_negative_5Index, item := range items { perf_layer_database_access_transaction_negative[item.ID] = per_negative_5Index }
+    return nil
 }

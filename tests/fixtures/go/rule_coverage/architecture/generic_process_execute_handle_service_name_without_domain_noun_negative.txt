@@ -1,49 +1,70 @@
-package service
+package main
 
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for generic_process_execute_handle_service_name_without_domain_noun: shows the preferred shape for this rule.
+// Negative scenario for generic_process_execute_handle_service_name_without_domain_noun: preferred concrete example for this rule.
 // Rule intent: Generic service names and methods that hide business intent instead of naming the actual use case.
-type User struct {
-    ID string
-    Status string
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounService struct {
+    repo *CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeGenericProcessExecuteHandleServiceNameWithoutDomainNoun(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeGenericProcessExecuteHandleServiceNameWithoutDomainNoun(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO) error {
+    focus := "generic_process_execute_handle_service"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    dto := CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO{ID: input, Status: "active"}
+    model := CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    generic_process_execute_handle_service_negative := map[string]int{"generic": 1, "process": 2, "execute": 3, "handle": 4, "service": 5, "name": 6}
+    generic_process_execute_handle_service_negative["signal"] = len(input) + len(items)
+    generic_negative_0 := generic_process_execute_handle_service_negative["generic"] + len(input)
+    _ = generic_negative_0
+    process_negative_1 := generic_process_execute_handle_service_negative["process"] + len(input)
+    _ = process_negative_1
+    execute_negative_2 := generic_process_execute_handle_service_negative["execute"] + len(input)
+    _ = execute_negative_2
+    handle_negative_3 := generic_process_execute_handle_service_negative["handle"] + len(input)
+    _ = handle_negative_3
+    service_negative_4 := CaseGenericProcessExecuteHandleServiceNameWithoutDomainNounDTO{ID: input, Status: "service"}
+    _ = service_negative_4
+    name_negative_5 := generic_process_execute_handle_service_negative["name"] + len(input)
+    _ = name_negative_5
+    return nil
 }

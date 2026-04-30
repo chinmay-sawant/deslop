@@ -1,30 +1,63 @@
 package rulecoverage
 
 import (
-    "crypto/md5"
-    "crypto/tls"
+    "context"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
-    "html/template"
-    "math/rand"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "os/exec"
-    "path/filepath"
+    "strings"
 )
 
-// Positive scenario for race_on_shared_map: shows the risky shape for this rule.
+// Positive scenario for race_on_shared_map: risky concrete example for this rule.
 // Rule intent: map reads/writes from multiple goroutines without mutex or `sync.Map` protection (detect goroutine launches + shared map access patterns)
-func PositiveRaceOnSharedMap(c *gin.Context, db *sql.DB, userInput string) {
-    _ = tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS10}
-    _ = md5.Sum([]byte(userInput))
-    _ = rand.Intn(999999)
-    db.Query("SELECT * FROM users WHERE name = '" + userInput + "'")
-    exec.Command("sh", "-c", userInput).Run()
-    http.SetCookie(c.Writer, &http.Cookie{Name: "session", Value: userInput})
-    c.Header("Access-Control-Allow-Origin", "*")
-    c.Header("Access-Control-Allow-Credentials", "true")
-    c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Errorf("secret %s", userInput).Error()})
-    template.HTML(userInput)
-    filepath.Join("/srv/uploads", userInput)
+type CaseRaceOnSharedMapDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRaceOnSharedMapModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRaceOnSharedMapRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRaceOnSharedMapModel
+}
+
+type CaseRaceOnSharedMapService struct {
+    repo *CaseRaceOnSharedMapRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRaceOnSharedMapAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRaceOnSharedMap(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRaceOnSharedMapDTO) error {
+    focus := "race_on_shared_map"
+    _ = focus
+    shared := map[string]string{}
+    go func() { shared[input] = input }()
+    shared[input+"x"] = input
+    race_shared_map_positive := map[string]int{"race": 1, "shared": 2, "map": 3}
+    race_shared_map_positive["signal"] = len(input) + len(items)
+    race_positive_0 := race_shared_map_positive["race"] + len(input)
+    _ = race_positive_0
+    shared_positive_1 := race_shared_map_positive["shared"] + len(input)
+    _ = shared_positive_1
+    map_positive_2 := race_shared_map_positive["map"] + len(input)
+    _ = map_positive_2
+    return nil
 }

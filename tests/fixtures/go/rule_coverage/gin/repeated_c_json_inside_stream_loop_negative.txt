@@ -1,20 +1,69 @@
 package rulecoverage
 
 import (
+    "bufio"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for repeated_c_json_inside_stream_loop: shows the preferred shape for this rule.
+// Negative scenario for repeated_c_json_inside_stream_loop: preferred concrete example for this rule.
 // Rule intent: Gin handlers that call c.JSON(...) or c.PureJSON(...) from inside loops.
-type requestBody struct { ID string `json:"id"` }
+type CaseRepeatedCJsonInsideStreamLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeRepeatedCJsonInsideStreamLoop(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseRepeatedCJsonInsideStreamLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepeatedCJsonInsideStreamLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepeatedCJsonInsideStreamLoopModel
+}
+
+type CaseRepeatedCJsonInsideStreamLoopService struct {
+    repo *CaseRepeatedCJsonInsideStreamLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepeatedCJsonInsideStreamLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRepeatedCJsonInsideStreamLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepeatedCJsonInsideStreamLoopDTO) error {
+    focus := "repeated_c_json_inside_stream"
+    _ = focus
+    c.JSON(200, gin.H{"id": input, "items": items})
+    writer := bufio.NewWriter(c.Writer)
+    defer writer.Flush()
+    repeated_c_json_inside_stream_negative := map[string]int{"repeated": 1, "c": 2, "json": 3, "inside": 4, "stream": 5, "loop": 6}
+    repeated_c_json_inside_stream_negative["signal"] = len(input) + len(items)
+    repeated_negative_0 := repeated_c_json_inside_stream_negative["repeated"] + len(input)
+    _ = repeated_negative_0
+    c_negative_1 := repeated_c_json_inside_stream_negative["c"] + len(input)
+    _ = c_negative_1
+    json_negative_2 := fmt.Sprintf("json:%s", input)
+    _ = json_negative_2
+    inside_negative_3 := repeated_c_json_inside_stream_negative["inside"] + len(input)
+    _ = inside_negative_3
+    stream_negative_4 := repeated_c_json_inside_stream_negative["stream"] + len(input)
+    _ = stream_negative_4
+    for loop_negative_5Index, item := range items { repeated_c_json_inside_stream_negative[item.ID] = loop_negative_5Index }
+    return nil
 }

@@ -5,29 +5,63 @@ import (
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
+    "github.com/jackc/pgx/v5/pgxpool"
     "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Positive scenario for pgxpool_acquire_in_loop: shows the risky shape for this rule.
+// Positive scenario for pgxpool_acquire_in_loop: risky concrete example for this rule.
 // Rule intent: Repeated pgxpool acquire calls inside loops that may churn pooled resources.
-type Account struct { ID int; TenantID string; Status string }
+type CasePgxpoolAcquireInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositivePgxpoolAcquireInLoop(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
-    ctx := context.Background()
-    var accounts []Account
-    var total int64
-    sql.Open("postgres", c.Query("dsn"))
-    sqlDB.PingContext(ctx)
-    db.AutoMigrate(&Account{})
-    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
-    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
-    for _, id := range ids {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
-        db.Create(&Account{ID: id})
-        db.Delete(&Account{}, id)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
+type CasePgxpoolAcquireInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePgxpoolAcquireInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePgxpoolAcquireInLoopModel
+}
+
+type CasePgxpoolAcquireInLoopService struct {
+    repo *CasePgxpoolAcquireInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePgxpoolAcquireInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePgxpoolAcquireInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePgxpoolAcquireInLoopDTO) error {
+    focus := "pgxpool_acquire_in_loop"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    for _, item := range items {
+        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
+        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
     }
-    page := accounts[:10]
-    return page, nil
+    pool, _ := pgxpool.New(ctx, c.Query("dsn"))
+    pool.Ping(ctx)
+    pgxpool_acquire_loop_positive := map[string]int{"pgxpool": 1, "acquire": 2, "loop": 3}
+    pgxpool_acquire_loop_positive["signal"] = len(input) + len(items)
+    pgxpool_positive_0 := pgxpool_acquire_loop_positive["pgxpool"] + len(input)
+    _ = pgxpool_positive_0
+    acquire_positive_1 := pgxpool_acquire_loop_positive["acquire"] + len(input)
+    _ = acquire_positive_1
+    for loop_positive_2Index, item := range items { pgxpool_acquire_loop_positive[item.ID] = loop_positive_2Index }
+    return nil
 }

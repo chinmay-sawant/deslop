@@ -3,47 +3,75 @@ package handler
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for gin_handler_starts_transaction_inline: shows the preferred shape for this rule.
+// Negative scenario for gin_handler_starts_transaction_inline: preferred concrete example for this rule.
 // Rule intent: Handlers that create or own transactions instead of delegating transactional work to services or unit-of-work helpers.
-type User struct {
-    ID string
-    Status string
+type CaseGinHandlerStartsTransactionInlineDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseGinHandlerStartsTransactionInlineModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseGinHandlerStartsTransactionInlineRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinHandlerStartsTransactionInlineModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseGinHandlerStartsTransactionInlineService struct {
+    repo *CaseGinHandlerStartsTransactionInlineRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseGinHandlerStartsTransactionInlineAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeGinHandlerStartsTransactionInline(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeGinHandlerStartsTransactionInline(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerStartsTransactionInlineDTO) error {
+    focus := "gin_handler_starts_transaction_inline"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinHandlerStartsTransactionInlineDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    dto := CaseGinHandlerStartsTransactionInlineDTO{ID: input, Status: "active"}
+    model := CaseGinHandlerStartsTransactionInlineModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    return db.Transaction(func(tx *gorm.DB) error {
+        return tx.WithContext(ctx).Save(&CaseGinHandlerStartsTransactionInlineModel{ID: input}).Error
+    })
+    gin_handler_starts_transaction_inline_negative := map[string]int{"gin": 1, "handler": 2, "starts": 3, "transaction": 4, "inline": 5}
+    gin_handler_starts_transaction_inline_negative["signal"] = len(input) + len(items)
+    gin_negative_0 := c.FullPath() + ":" + input
+    _ = gin_negative_0
+    handler_negative_1 := c.FullPath() + ":" + input
+    _ = handler_negative_1
+    starts_negative_2 := gin_handler_starts_transaction_inline_negative["starts"] + len(input)
+    _ = starts_negative_2
+    transaction_negative_3 := gin_handler_starts_transaction_inline_negative["transaction"] + len(input)
+    _ = transaction_negative_3
+    inline_negative_4 := gin_handler_starts_transaction_inline_negative["inline"] + len(input)
+    _ = inline_negative_4
+    return nil
 }

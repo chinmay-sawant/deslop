@@ -2,43 +2,74 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
     "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "log"
+    "net/http"
+    "os"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for go_perf_layer_serialization_gzip_writer_created_per_small_payload: shows the risky shape for this rule.
+// Positive scenario for go_perf_layer_serialization_gzip_writer_created_per_small_payload: risky concrete example for this rule.
 // Rule intent: Layer: Serialization and deserialization. Flag gzip writers created for tiny payloads where compression overhead can dominate.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveGoPerfLayerSerializationGzipWriterCreatedPerSmallPayload(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadModel
+}
+
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadService struct {
+    repo *CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerSerializationGzipWriterCreatedPerSmallPayload(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadDTO) error {
+    focus := "go_perf_layer_serialization_gzip"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    file, _ := os.Open(input)
+    io.ReadAll(file)
+    perf_layer_serialization_gzip_writer_positive := map[string]int{"perf": 1, "layer": 2, "serialization": 3, "gzip": 4, "writer": 5, "created": 6}
+    perf_layer_serialization_gzip_writer_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_serialization_gzip_writer_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_serialization_gzip_writer_positive["layer"] + len(input)
+    _ = layer_positive_1
+    serialization_positive_2 := perf_layer_serialization_gzip_writer_positive["serialization"] + len(input)
+    _ = serialization_positive_2
+    gzip_positive_3 := perf_layer_serialization_gzip_writer_positive["gzip"] + len(input)
+    _ = gzip_positive_3
+    writer_positive_4 := perf_layer_serialization_gzip_writer_positive["writer"] + len(input)
+    _ = writer_positive_4
+    created_positive_5 := perf_layer_serialization_gzip_writer_positive["created"] + len(input)
+    _ = created_positive_5
+    return nil
 }

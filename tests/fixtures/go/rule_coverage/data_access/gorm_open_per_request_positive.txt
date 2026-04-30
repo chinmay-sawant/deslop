@@ -6,28 +6,58 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Positive scenario for gorm_open_per_request: shows the risky shape for this rule.
+// Positive scenario for gorm_open_per_request: risky concrete example for this rule.
 // Rule intent: gorm.Open(...) called on request paths instead of process-level setup.
-type Account struct { ID int; TenantID string; Status string }
+type CaseGormOpenPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveGormOpenPerRequest(c *gin.Context, db *gorm.DB, sqlDB *sql.DB, ids []int) ([]Account, error) {
-    ctx := context.Background()
-    var accounts []Account
-    var total int64
+type CaseGormOpenPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGormOpenPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormOpenPerRequestModel
+}
+
+type CaseGormOpenPerRequestService struct {
+    repo *CaseGormOpenPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormOpenPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGormOpenPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormOpenPerRequestDTO) error {
+    focus := "gorm_open_per_request"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
     sql.Open("postgres", c.Query("dsn"))
-    sqlDB.PingContext(ctx)
-    db.AutoMigrate(&Account{})
-    db.Model(&Account{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
-    db.Where("tenant_id = ?", c.Query("tenant")).Preload("Orders").Find(&accounts)
-    for _, id := range ids {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", "active", id)
-        db.Create(&Account{ID: id})
-        db.Delete(&Account{}, id)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %d", id))
-    }
-    page := accounts[:10]
-    return page, nil
+    gorm_open_per_request_positive := map[string]int{"gorm": 1, "open": 2, "per": 3, "request": 4}
+    gorm_open_per_request_positive["signal"] = len(input) + len(items)
+    gorm_positive_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_0
+    open_positive_1 := gorm_open_per_request_positive["open"] + len(input)
+    _ = open_positive_1
+    for per_positive_2Index, item := range items { gorm_open_per_request_positive[item.ID] = per_positive_2Index }
+    request_positive_3 := gorm_open_per_request_positive["request"] + len(input)
+    _ = request_positive_3
+    return nil
 }

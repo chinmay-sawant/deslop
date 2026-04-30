@@ -3,47 +3,75 @@ package repository
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for repository_constructor_accepts_gin_engine_or_router: shows the preferred shape for this rule.
+// Negative scenario for repository_constructor_accepts_gin_engine_or_router: preferred concrete example for this rule.
 // Rule intent: Repository constructors that take transport objects.
-type User struct {
-    ID string
-    Status string
+type CaseRepositoryConstructorAcceptsGinEngineOrRouterDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseRepositoryConstructorAcceptsGinEngineOrRouterModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseRepositoryConstructorAcceptsGinEngineOrRouterRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryConstructorAcceptsGinEngineOrRouterModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseRepositoryConstructorAcceptsGinEngineOrRouterService struct {
+    repo *CaseRepositoryConstructorAcceptsGinEngineOrRouterRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
+type CaseRepositoryConstructorAcceptsGinEngineOrRouterAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
 
-func (s UserService) NegativeRepositoryConstructorAcceptsGinEngineOrRouter(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
+func NegativeRepositoryConstructorAcceptsGinEngineOrRouter(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryConstructorAcceptsGinEngineOrRouterDTO) error {
+    focus := "repository_constructor_accepts_gin_engine"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRepositoryConstructorAcceptsGinEngineOrRouterDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
     }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
-}
-
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseRepositoryConstructorAcceptsGinEngineOrRouterRepository{db: db, sql: sqlDB}
+    var model CaseRepositoryConstructorAcceptsGinEngineOrRouterModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    repository_constructor_accepts_gin_engine_negative := map[string]int{"repository": 1, "constructor": 2, "accepts": 3, "gin": 4, "engine": 5, "router": 6}
+    repository_constructor_accepts_gin_engine_negative["signal"] = len(input) + len(items)
+    repository_negative_0 := db.Where("repository_id = ?", input)
+    _ = repository_negative_0
+    constructor_negative_1 := repository_constructor_accepts_gin_engine_negative["constructor"] + len(input)
+    _ = constructor_negative_1
+    accepts_negative_2 := repository_constructor_accepts_gin_engine_negative["accepts"] + len(input)
+    _ = accepts_negative_2
+    gin_negative_3 := c.FullPath() + ":" + input
+    _ = gin_negative_3
+    engine_negative_4 := repository_constructor_accepts_gin_engine_negative["engine"] + len(input)
+    _ = engine_negative_4
+    router_negative_5 := c.FullPath() + ":" + input
+    _ = router_negative_5
+    return nil
 }

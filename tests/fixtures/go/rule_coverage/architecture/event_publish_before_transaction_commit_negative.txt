@@ -3,47 +3,68 @@ package rulecoverage
 import (
     "context"
     "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for event_publish_before_transaction_commit: shows the preferred shape for this rule.
+// Negative scenario for event_publish_before_transaction_commit: preferred concrete example for this rule.
 // Rule intent: Event or message publication before durable commit is confirmed.
-type User struct {
-    ID string
-    Status string
+type CaseEventPublishBeforeTransactionCommitDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type UserRequest struct {
-    Status *string `json:"status"`
+type CaseEventPublishBeforeTransactionCommitModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-type UserResponse struct {
-    ID string `json:"id"`
-    Status string `json:"status"`
+type CaseEventPublishBeforeTransactionCommitRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseEventPublishBeforeTransactionCommitModel
 }
 
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (User, error)
+type CaseEventPublishBeforeTransactionCommitService struct {
+    repo *CaseEventPublishBeforeTransactionCommitRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
 }
 
-type UserService struct { repo UserRepository }
-
-func (s UserService) NegativeEventPublishBeforeTransactionCommit(ctx context.Context, id string, req UserRequest) (UserResponse, error) {
-    user, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return UserResponse{}, err
-    }
-    if req.Status != nil {
-        user.Status = *req.Status
-    }
-    return UserResponse{ID: user.ID, Status: user.Status}, nil
+type CaseEventPublishBeforeTransactionCommitAuditSink interface {
+    Record(context.Context, string, map[string]string) error
 }
 
-func writeUser(w http.ResponseWriter, response UserResponse) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-}
-
-func queryUser(ctx context.Context, db *sql.DB, id string) (*sql.Rows, error) {
-    return db.QueryContext(ctx, "SELECT id, status FROM users WHERE id = ?", id)
+func NegativeEventPublishBeforeTransactionCommit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEventPublishBeforeTransactionCommitDTO) error {
+    focus := "event_publish_before_transaction_commit"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    return db.Transaction(func(tx *gorm.DB) error {
+        return tx.WithContext(ctx).Save(&CaseEventPublishBeforeTransactionCommitModel{ID: input}).Error
+    })
+    cacheKey := "account:" + input
+    _ = cacheKey
+    event_publish_before_transaction_commit_negative := map[string]int{"event": 1, "publish": 2, "before": 3, "transaction": 4, "commit": 5}
+    event_publish_before_transaction_commit_negative["signal"] = len(input) + len(items)
+    event_negative_0 := event_publish_before_transaction_commit_negative["event"] + len(input)
+    _ = event_negative_0
+    publish_negative_1 := event_publish_before_transaction_commit_negative["publish"] + len(input)
+    _ = publish_negative_1
+    before_negative_2 := event_publish_before_transaction_commit_negative["before"] + len(input)
+    _ = before_negative_2
+    transaction_negative_3 := event_publish_before_transaction_commit_negative["transaction"] + len(input)
+    _ = transaction_negative_3
+    commit_negative_4 := event_publish_before_transaction_commit_negative["commit"] + len(input)
+    _ = commit_negative_4
+    return nil
 }

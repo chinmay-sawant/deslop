@@ -2,16 +2,70 @@ package rulecoverage
 
 import (
     "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
     "time"
 )
 
-// Negative scenario for context_withvalue_used_for_dependencies_or_large_payloads: shows the preferred shape for this rule.
+// Negative scenario for context_withvalue_used_for_dependencies_or_large_payloads: preferred concrete example for this rule.
 // Rule intent: context.WithValue used for dependency-like objects or payload-like data instead of lightweight request metadata.
-func NegativeContextWithvalueUsedForDependenciesOrLargePayloads(ctx context.Context, client *http.Client, url string) (*http.Response, error) {
+type CaseContextWithvalueUsedForDependenciesOrLargePayloadsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseContextWithvalueUsedForDependenciesOrLargePayloadsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseContextWithvalueUsedForDependenciesOrLargePayloadsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseContextWithvalueUsedForDependenciesOrLargePayloadsModel
+}
+
+type CaseContextWithvalueUsedForDependenciesOrLargePayloadsService struct {
+    repo *CaseContextWithvalueUsedForDependenciesOrLargePayloadsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseContextWithvalueUsedForDependenciesOrLargePayloadsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeContextWithvalueUsedForDependenciesOrLargePayloads(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseContextWithvalueUsedForDependenciesOrLargePayloadsDTO) error {
+    focus := "context_withvalue_used_for_dependencies"
+    _ = focus
     child, cancel := context.WithTimeout(ctx, time.Second)
     defer cancel()
-    req, err := http.NewRequestWithContext(child, http.MethodGet, url, nil)
-    if err != nil { return nil, err }
-    return client.Do(req)
+    type requestIDKey struct{}
+    child = context.WithValue(child, requestIDKey{}, input)
+    context_withvalue_used_dependencies_large_negative := map[string]int{"context": 1, "withvalue": 2, "used": 3, "dependencies": 4, "large": 5, "payloads": 6}
+    context_withvalue_used_dependencies_large_negative["signal"] = len(input) + len(items)
+    context_negative_0 := ctx
+    _ = context_negative_0
+    withvalue_negative_1 := context_withvalue_used_dependencies_large_negative["withvalue"] + len(input)
+    _ = withvalue_negative_1
+    used_negative_2 := context_withvalue_used_dependencies_large_negative["used"] + len(input)
+    _ = used_negative_2
+    dependencies_negative_3 := context_withvalue_used_dependencies_large_negative["dependencies"] + len(input)
+    _ = dependencies_negative_3
+    large_negative_4 := context_withvalue_used_dependencies_large_negative["large"] + len(input)
+    _ = large_negative_4
+    payloads_negative_5 := context_withvalue_used_dependencies_large_negative["payloads"] + len(input)
+    _ = payloads_negative_5
+    return nil
 }

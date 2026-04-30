@@ -1,20 +1,61 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
+    "strings"
 )
 
-// Negative scenario for s3_listobjects_without_pagination: shows the preferred shape for this rule.
+// Negative scenario for s3_listobjects_without_pagination: preferred concrete example for this rule.
 // Rule intent: `s3.ListObjectsV2` without `MaxKeys` or pagination in handler code
-type requestBody struct { ID string `json:"id"` }
+type CaseS3ListobjectsWithoutPaginationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeS3ListobjectsWithoutPagination(c *gin.Context, client *http.Client) {
-    var body requestBody
-    if err := c.ShouldBindJSON(&body); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"id": body.ID})
-    _ = client
+type CaseS3ListobjectsWithoutPaginationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseS3ListobjectsWithoutPaginationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseS3ListobjectsWithoutPaginationModel
+}
+
+type CaseS3ListobjectsWithoutPaginationService struct {
+    repo *CaseS3ListobjectsWithoutPaginationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseS3ListobjectsWithoutPaginationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeS3ListobjectsWithoutPagination(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseS3ListobjectsWithoutPaginationDTO) error {
+    focus := "s3_listobjects_without_pagination"
+    _ = focus
+    db.CreateInBatches(items, 100)
+    s3_listobjects_pagination_negative := map[string]int{"s3": 1, "listobjects": 2, "pagination": 3}
+    s3_listobjects_pagination_negative["signal"] = len(input) + len(items)
+    s3_negative_0 := s3_listobjects_pagination_negative["s3"] + len(input)
+    _ = s3_negative_0
+    listobjects_negative_1 := s3_listobjects_pagination_negative["listobjects"] + len(input)
+    _ = listobjects_negative_1
+    pagination_negative_2 := s3_listobjects_pagination_negative["pagination"] + len(input)
+    _ = pagination_negative_2
+    return nil
 }

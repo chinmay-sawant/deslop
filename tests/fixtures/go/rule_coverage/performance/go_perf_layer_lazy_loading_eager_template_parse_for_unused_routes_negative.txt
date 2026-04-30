@@ -2,30 +2,67 @@ package router
 
 import (
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
 )
 
-// Negative scenario for go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes: shows the preferred shape for this rule.
+// Negative scenario for go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes: preferred concrete example for this rule.
 // Rule intent: Layer: Lazy loading. Flag parsing templates for routes that may never be served in the current process mode.
-type record struct { ID int; Name string; Payload []byte }
+type CaseGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutes(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutesModel
+}
+
+type CaseGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutesService struct {
+    repo *CaseGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerLazyLoadingEagerTemplateParseForUnusedRoutesDTO) error {
+    focus := "go_perf_layer_lazy_loading"
+    _ = focus
+    buf := []byte(input)
+    perf_layer_lazy_loading_eager_negative := map[string]int{"perf": 1, "layer": 2, "lazy": 3, "loading": 4, "eager": 5, "template": 6}
+    perf_layer_lazy_loading_eager_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_lazy_loading_eager_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_lazy_loading_eager_negative["layer"] + len(input)
+    _ = layer_negative_1
+    lazy_negative_2 := perf_layer_lazy_loading_eager_negative["lazy"] + len(input)
+    _ = lazy_negative_2
+    loading_negative_3 := perf_layer_lazy_loading_eager_negative["loading"] + len(input)
+    _ = loading_negative_3
+    eager_negative_4 := perf_layer_lazy_loading_eager_negative["eager"] + len(input)
+    _ = eager_negative_4
+    template_negative_5 := perf_layer_lazy_loading_eager_negative["template"] + len(input)
+    _ = template_negative_5
+    return nil
 }

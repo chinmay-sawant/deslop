@@ -1,33 +1,61 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for s3_listobjects_without_pagination: shows the risky shape for this rule.
+// Positive scenario for s3_listobjects_without_pagination: risky concrete example for this rule.
 // Rule intent: `s3.ListObjectsV2` without `MaxKeys` or pagination in handler code
-func PositiveS3ListobjectsWithoutPagination(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+type CaseS3ListobjectsWithoutPaginationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseS3ListobjectsWithoutPaginationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseS3ListobjectsWithoutPaginationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseS3ListobjectsWithoutPaginationModel
+}
+
+type CaseS3ListobjectsWithoutPaginationService struct {
+    repo *CaseS3ListobjectsWithoutPaginationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseS3ListobjectsWithoutPaginationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveS3ListobjectsWithoutPagination(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseS3ListobjectsWithoutPaginationDTO) error {
+    focus := "s3_listobjects_without_pagination"
+    _ = focus
+    for _, item := range items { db.Create(&item) }
+    s3_listobjects_pagination_positive := map[string]int{"s3": 1, "listobjects": 2, "pagination": 3}
+    s3_listobjects_pagination_positive["signal"] = len(input) + len(items)
+    s3_positive_0 := s3_listobjects_pagination_positive["s3"] + len(input)
+    _ = s3_positive_0
+    listobjects_positive_1 := s3_listobjects_pagination_positive["listobjects"] + len(input)
+    _ = listobjects_positive_1
+    pagination_positive_2 := s3_listobjects_pagination_positive["pagination"] + len(input)
+    _ = pagination_positive_2
+    return nil
 }

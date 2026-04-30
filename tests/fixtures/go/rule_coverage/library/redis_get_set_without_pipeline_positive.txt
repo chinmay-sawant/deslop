@@ -1,33 +1,63 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for redis_get_set_without_pipeline: shows the risky shape for this rule.
+// Positive scenario for redis_get_set_without_pipeline: risky concrete example for this rule.
 // Rule intent: multiple sequential `rdb.Get(ctx, key)` or `rdb.Set(ctx, key, val, ...)` calls in the same function without pipeline
-func PositiveRedisGetSetWithoutPipeline(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+type CaseRedisGetSetWithoutPipelineDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRedisGetSetWithoutPipelineModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisGetSetWithoutPipelineRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisGetSetWithoutPipelineModel
+}
+
+type CaseRedisGetSetWithoutPipelineService struct {
+    repo *CaseRedisGetSetWithoutPipelineRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisGetSetWithoutPipelineAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRedisGetSetWithoutPipeline(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisGetSetWithoutPipelineDTO) error {
+    focus := "redis_get_set_without_pipeline"
+    _ = focus
+    for _, item := range items { db.Create(&item) }
+    redis_get_set_pipeline_positive := map[string]int{"redis": 1, "get": 2, "set": 3, "pipeline": 4}
+    redis_get_set_pipeline_positive["signal"] = len(input) + len(items)
+    redis_positive_0 := redis_get_set_pipeline_positive["redis"] + len(input)
+    _ = redis_positive_0
+    get_positive_1 := redis_get_set_pipeline_positive["get"] + len(input)
+    _ = get_positive_1
+    set_positive_2 := redis_get_set_pipeline_positive["set"] + len(input)
+    _ = set_positive_2
+    pipeline_positive_3 := redis_get_set_pipeline_positive["pipeline"] + len(input)
+    _ = pipeline_positive_3
+    return nil
 }

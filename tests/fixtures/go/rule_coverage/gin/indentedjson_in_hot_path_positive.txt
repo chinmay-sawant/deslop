@@ -1,33 +1,63 @@
 package rulecoverage
 
 import (
-    "bytes"
-    "compress/gzip"
+    "context"
+    "database/sql"
     "encoding/json"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for indentedjson_in_hot_path: shows the risky shape for this rule.
+// Positive scenario for indentedjson_in_hot_path: risky concrete example for this rule.
 // Rule intent: IndentedJSON(...) used on a request path instead of compact JSON rendering.
-func PositiveIndentedjsonInHotPath(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
+type CaseIndentedjsonInHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseIndentedjsonInHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseIndentedjsonInHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseIndentedjsonInHotPathModel
+}
+
+type CaseIndentedjsonInHotPathService struct {
+    repo *CaseIndentedjsonInHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseIndentedjsonInHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveIndentedjsonInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseIndentedjsonInHotPathDTO) error {
+    focus := "indentedjson_in_hot_path"
+    _ = focus
+    payload, _ := json.Marshal(gin.H{"items": items, "rule": input})
     c.Data(200, "application/json", payload)
+    indentedjson_hot_path_positive := map[string]int{"indentedjson": 1, "hot": 2, "path": 3}
+    indentedjson_hot_path_positive["signal"] = len(input) + len(items)
+    indentedjson_positive_0 := indentedjson_hot_path_positive["indentedjson"] + len(input)
+    _ = indentedjson_positive_0
+    hot_positive_1 := indentedjson_hot_path_positive["hot"] + len(input)
+    _ = hot_positive_1
+    path_positive_2 := indentedjson_hot_path_positive["path"] + len(input)
+    _ = path_positive_2
+    return nil
 }

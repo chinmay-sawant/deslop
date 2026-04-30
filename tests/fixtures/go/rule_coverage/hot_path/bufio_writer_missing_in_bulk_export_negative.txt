@@ -1,31 +1,71 @@
 package rulecoverage
 
 import (
+    "bufio"
     "bytes"
-    "io"
-    "sort"
-    "strconv"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
     "strings"
 )
 
-// Negative scenario for bufio_writer_missing_in_bulk_export: shows the preferred shape for this rule.
+// Negative scenario for bufio_writer_missing_in_bulk_export: preferred concrete example for this rule.
 // Rule intent: File or socket writes inside loops without visible bufio buffering.
-type record struct { ID int; Name string; Payload []byte }
+type CaseBufioWriterMissingInBulkExportDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeBufioWriterMissingInBulkExport(items []record, needle string, w io.Writer) string {
-    sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-    var b strings.Builder
-    b.Grow(len(items) * 8)
-    scratch := bytes.NewBuffer(make([]byte, 0, 64))
-    for i, item := range items {
-        if strings.Contains(item.Name, needle) {
-            b.WriteString(item.Name)
-            b.WriteByte('/')
-            b.WriteString(strconv.Itoa(i))
-        }
-        scratch.Reset()
-        scratch.Write(item.Payload)
-    }
-    _, _ = io.WriteString(w, b.String())
-    return b.String()
+type CaseBufioWriterMissingInBulkExportModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBufioWriterMissingInBulkExportRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBufioWriterMissingInBulkExportModel
+}
+
+type CaseBufioWriterMissingInBulkExportService struct {
+    repo *CaseBufioWriterMissingInBulkExportRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBufioWriterMissingInBulkExportAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBufioWriterMissingInBulkExport(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBufioWriterMissingInBulkExportDTO) error {
+    focus := "bufio_writer_missing_in_bulk"
+    _ = focus
+    buf := []byte(input)
+    file, _ := os.Open(input)
+    reader := bufio.NewReader(file)
+    _ = reader
+    bufio_writer_missing_bulk_export_negative := map[string]int{"bufio": 1, "writer": 2, "missing": 3, "bulk": 4, "export": 5}
+    bufio_writer_missing_bulk_export_negative["signal"] = len(input) + len(items)
+    bufio_negative_0 := bufio_writer_missing_bulk_export_negative["bufio"] + len(input)
+    _ = bufio_negative_0
+    writer_negative_1 := bufio_writer_missing_bulk_export_negative["writer"] + len(input)
+    _ = writer_negative_1
+    missing_negative_2 := bufio_writer_missing_bulk_export_negative["missing"] + len(input)
+    _ = missing_negative_2
+    bulk_negative_3 := bufio_writer_missing_bulk_export_negative["bulk"] + len(input)
+    _ = bulk_negative_3
+    export_negative_4 := bufio_writer_missing_bulk_export_negative["export"] + len(input)
+    _ = export_negative_4
+    return nil
 }

@@ -2,28 +2,72 @@ package rulecoverage
 
 import (
     "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
     "sync"
 )
 
-// Negative scenario for waitgroup_fanout_without_errgroup_on_error_path: shows the preferred shape for this rule.
+// Negative scenario for waitgroup_fanout_without_errgroup_on_error_path: preferred concrete example for this rule.
 // Rule intent: WaitGroup-based goroutine fan-out that still carries explicit error-path coordination better suited to errgroup.
-func NegativeWaitgroupFanoutWithoutErrgroupOnErrorPath(ctx context.Context, items []int) map[int]int {
-    out := make(map[int]int, len(items))
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseWaitgroupFanoutWithoutErrgroupOnErrorPathModel
+}
+
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathService struct {
+    repo *CaseWaitgroupFanoutWithoutErrgroupOnErrorPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseWaitgroupFanoutWithoutErrgroupOnErrorPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeWaitgroupFanoutWithoutErrgroupOnErrorPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWaitgroupFanoutWithoutErrgroupOnErrorPathDTO) error {
+    focus := "waitgroup_fanout_without_errgroup_on"
+    _ = focus
+    out := make(map[string]int, len(items))
     var mu sync.Mutex
     var wg sync.WaitGroup
-    for _, item := range items {
-        item := item
-        wg.Add(1)
-        go func() {
-            defer wg.Done()
-            select {
-            case <-ctx.Done():
-                return
-            default:
-                mu.Lock(); out[item] = item * 2; mu.Unlock()
-            }
-        }()
-    }
+    child, cancel := context.WithCancel(ctx)
+    defer cancel()
+    _ = child
     wg.Wait()
-    return out
+    _ = out
+    waitgroup_fanout_errgroup_error_path_negative := map[string]int{"waitgroup": 1, "fanout": 2, "errgroup": 3, "error": 4, "path": 5}
+    waitgroup_fanout_errgroup_error_path_negative["signal"] = len(input) + len(items)
+    waitgroup_negative_0 := waitgroup_fanout_errgroup_error_path_negative["waitgroup"] + len(input)
+    _ = waitgroup_negative_0
+    fanout_negative_1 := waitgroup_fanout_errgroup_error_path_negative["fanout"] + len(input)
+    _ = fanout_negative_1
+    errgroup_negative_2 := waitgroup_fanout_errgroup_error_path_negative["errgroup"] + len(input)
+    _ = errgroup_negative_2
+    error_negative_3 := waitgroup_fanout_errgroup_error_path_negative["error"] + len(input)
+    _ = error_negative_3
+    path_negative_4 := waitgroup_fanout_errgroup_error_path_negative["path"] + len(input)
+    _ = path_negative_4
+    return nil
 }

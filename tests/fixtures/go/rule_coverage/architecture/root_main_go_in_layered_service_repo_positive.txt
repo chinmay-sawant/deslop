@@ -1,48 +1,74 @@
-package service
+package main
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for root_main_go_in_layered_service_repo: shows the risky shape for this rule.
+// Positive scenario for root_main_go_in_layered_service_repo: risky concrete example for this rule.
 // Rule intent: Layered service repos that keep the primary binary at repository-root `main.go` instead of `cmd/<name>/main.go`.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseRootMainGoInLayeredServiceRepoDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveRootMainGoInLayeredServiceRepo(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseRootMainGoInLayeredServiceRepoModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveRootMainGoInLayeredServiceRepoService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseRootMainGoInLayeredServiceRepoRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRootMainGoInLayeredServiceRepoModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseRootMainGoInLayeredServiceRepoService struct {
+    repo *CaseRootMainGoInLayeredServiceRepoRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRootMainGoInLayeredServiceRepoAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRootMainGoInLayeredServiceRepo(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRootMainGoInLayeredServiceRepoDTO) error {
+    focus := "root_main_go_in_layered"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseRootMainGoInLayeredServiceRepoRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRootMainGoInLayeredServiceRepoModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseRootMainGoInLayeredServiceRepoService{repo: &CaseRootMainGoInLayeredServiceRepoRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseRootMainGoInLayeredServiceRepoModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    root_main_layered_service_repo_positive := map[string]int{"root": 1, "main": 2, "layered": 3, "service": 4, "repo": 5}
+    root_main_layered_service_repo_positive["signal"] = len(input) + len(items)
+    root_positive_0 := root_main_layered_service_repo_positive["root"] + len(input)
+    _ = root_positive_0
+    main_positive_1 := root_main_layered_service_repo_positive["main"] + len(input)
+    _ = main_positive_1
+    layered_positive_2 := root_main_layered_service_repo_positive["layered"] + len(input)
+    _ = layered_positive_2
+    service_positive_3 := CaseRootMainGoInLayeredServiceRepoDTO{ID: input, Status: "service"}
+    _ = service_positive_3
+    repo_positive_4 := db.Where("repo_id = ?", input)
+    _ = repo_positive_4
+    return nil
 }

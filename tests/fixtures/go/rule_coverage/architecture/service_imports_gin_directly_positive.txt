@@ -1,48 +1,72 @@
 package service
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for service_imports_gin_directly: shows the risky shape for this rule.
+// Positive scenario for service_imports_gin_directly: risky concrete example for this rule.
 // Rule intent: Service packages that depend on `github.com/gin-gonic/gin` instead of transport-neutral inputs.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseServiceImportsGinDirectlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveServiceImportsGinDirectly(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseServiceImportsGinDirectlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveServiceImportsGinDirectlyService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseServiceImportsGinDirectlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceImportsGinDirectlyModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseServiceImportsGinDirectlyService struct {
+    repo *CaseServiceImportsGinDirectlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServiceImportsGinDirectlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveServiceImportsGinDirectly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceImportsGinDirectlyDTO) error {
+    focus := "service_imports_gin_directly"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseServiceImportsGinDirectlyDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    service := &CaseServiceImportsGinDirectlyService{repo: &CaseServiceImportsGinDirectlyRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseServiceImportsGinDirectlyModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    service_imports_gin_directly_positive := map[string]int{"service": 1, "imports": 2, "gin": 3, "directly": 4}
+    service_imports_gin_directly_positive["signal"] = len(input) + len(items)
+    service_positive_0 := CaseServiceImportsGinDirectlyDTO{ID: input, Status: "service"}
+    _ = service_positive_0
+    imports_positive_1 := service_imports_gin_directly_positive["imports"] + len(input)
+    _ = imports_positive_1
+    gin_positive_2 := c.FullPath() + ":" + input
+    _ = gin_positive_2
+    directly_positive_3 := service_imports_gin_directly_positive["directly"] + len(input)
+    _ = directly_positive_3
+    return nil
 }

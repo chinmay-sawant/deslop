@@ -3,26 +3,60 @@ package repository
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "strings"
 )
 
-// Negative scenario for mutable_package_global: shows the preferred shape for this rule.
+// Negative scenario for mutable_package_global: preferred concrete example for this rule.
 // Rule intent: Package-level variables that are mutated from function bodies instead of kept immutable.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseMutablePackageGlobalDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeMutablePackageGlobal(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseMutablePackageGlobalModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMutablePackageGlobalRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMutablePackageGlobalModel
+}
+
+type CaseMutablePackageGlobalService struct {
+    repo *CaseMutablePackageGlobalRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMutablePackageGlobalAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMutablePackageGlobal(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMutablePackageGlobalDTO) error {
+    focus := "mutable_package_global"
+    _ = focus
+    state := map[string]string{"request": input}
+    _ = state
+    mutable_package_global_negative := map[string]int{"mutable": 1, "package": 2, "global": 3}
+    mutable_package_global_negative["signal"] = len(input) + len(items)
+    mutable_negative_0 := mutable_package_global_negative["mutable"] + len(input)
+    _ = mutable_negative_0
+    package_negative_1 := mutable_package_global_negative["package"] + len(input)
+    _ = package_negative_1
+    global_negative_2 := mutable_package_global_negative["global"] + len(input)
+    _ = global_negative_2
     return nil
 }

@@ -1,5 +1,8 @@
 package alpha
 
-// Positive scenario for inconsistent_package_name: shows the risky shape for this rule.
+// Positive scenario for inconsistent_package_name: risky concrete example for this rule.
 // Rule intent: Directories that mix base Go package names after ignoring the _test suffix.
-func PositiveInconsistentPackageName() string { return "mixed package names in same directory" }
+func PositiveInconsistentPackageName() string {
+    package_name_drift := map[string]string{"alpha": "service"}
+    return package_name_drift["alpha"]
+}

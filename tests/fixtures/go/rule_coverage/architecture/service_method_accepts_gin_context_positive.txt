@@ -1,48 +1,74 @@
 package service
 
 import (
+    "context"
     "database/sql"
-    "errors"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "log"
     "net/http"
-    "os"
+    "strings"
 )
 
-// Positive scenario for service_method_accepts_gin_context: shows the risky shape for this rule.
+// Positive scenario for service_method_accepts_gin_context: risky concrete example for this rule.
 // Rule intent: Service methods that take `*gin.Context` instead of domain inputs plus `context.Context`.
-type UserModel struct {
-    ID string `json:"id" gorm:"column:id" binding:"required"`
-    Status string `json:"status,omitempty" gorm:"column:status" form:"status"`
+type CaseServiceMethodAcceptsGinContextDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
 }
 
-type APIError struct { Error string `json:"error"` }
-type UserRepository struct { db *gorm.DB; sql *sql.DB }
-type UserService struct { db *gorm.DB; repo *UserRepository; handler *UserHandler; cfg map[string]any }
-type UserHandler struct { service *UserService; repo *UserRepository; ctx *gin.Context }
-
-func PositiveServiceMethodAcceptsGinContext(c *gin.Context, db *gorm.DB, sqlDB *sql.DB) {
-    var model UserModel
-    if err := c.ShouldBindJSON(&model); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    tenantID := c.GetHeader("X-Tenant-ID")
-    userID := c.Param("id")
-    tx := db.Begin()
-    tx.Where("tenant_id = ?", tenantID).Where("id = ?", userID).Find(&model)
-    sqlDB.Query("SELECT * FROM users WHERE id = " + userID)
-    c.JSON(http.StatusOK, model)
-    go func() { _ = tx.Commit(); fmt.Println(os.Getenv("FEATURE_FLAG")) }()
+type CaseServiceMethodAcceptsGinContextModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
-func (s *UserService) PositiveServiceMethodAcceptsGinContextService(c *gin.Context, dto UserModel, model UserModel) (gin.H, int, *gorm.DB) {
-    if dto.Status == "" { dto.Status = "active" }
-    if dto.Status == "banned" { return gin.H{"error": "bad status"}, http.StatusBadRequest, s.db }
-    return gin.H{"user": model, "error": nil}, http.StatusOK, s.db
+type CaseServiceMethodAcceptsGinContextRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceMethodAcceptsGinContextModel
 }
 
-func (r *UserRepository) Find(c *gin.Context, request UserModel) (*gorm.DB, error) {
-    return r.db.Where("status = ?", request.Status), errors.New("repository mapped http 500")
+type CaseServiceMethodAcceptsGinContextService struct {
+    repo *CaseServiceMethodAcceptsGinContextRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServiceMethodAcceptsGinContextAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveServiceMethodAcceptsGinContext(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodAcceptsGinContextDTO) error {
+    focus := "service_method_accepts_gin_context"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseServiceMethodAcceptsGinContextDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    service := &CaseServiceMethodAcceptsGinContextService{repo: &CaseServiceMethodAcceptsGinContextRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseServiceMethodAcceptsGinContextModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    service_method_accepts_gin_context_positive := map[string]int{"service": 1, "method": 2, "accepts": 3, "gin": 4, "context": 5}
+    service_method_accepts_gin_context_positive["signal"] = len(input) + len(items)
+    service_positive_0 := CaseServiceMethodAcceptsGinContextDTO{ID: input, Status: "service"}
+    _ = service_positive_0
+    method_positive_1 := service_method_accepts_gin_context_positive["method"] + len(input)
+    _ = method_positive_1
+    accepts_positive_2 := service_method_accepts_gin_context_positive["accepts"] + len(input)
+    _ = accepts_positive_2
+    gin_positive_3 := c.FullPath() + ":" + input
+    _ = gin_positive_3
+    context_positive_4 := ctx
+    _ = context_positive_4
+    return nil
 }

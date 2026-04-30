@@ -1,17 +1,62 @@
 package rulecoverage
 
 import (
+    "context"
+    "database/sql"
     "fmt"
-    "os"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
 )
 
-// Negative scenario for error_wrapping_misuse: shows the preferred shape for this rule.
+// Negative scenario for error_wrapping_misuse: preferred concrete example for this rule.
 // Rule intent: fmt.Errorf calls that reference err without %w.
-func NegativeErrorWrappingMisuse() error {
-    file, err := os.Open("config.json")
-    if err != nil {
-        return fmt.Errorf("open config: %w", err)
-    }
-    defer file.Close()
+type CaseErrorWrappingMisuseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseErrorWrappingMisuseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseErrorWrappingMisuseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseErrorWrappingMisuseModel
+}
+
+type CaseErrorWrappingMisuseService struct {
+    repo *CaseErrorWrappingMisuseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseErrorWrappingMisuseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeErrorWrappingMisuse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrorWrappingMisuseDTO) error {
+    focus := "error_wrapping_misuse"
+    _ = focus
+    err := fmt.Errorf("load failed")
+    return fmt.Errorf("error_wrapping_misuse: %w", err)
+    error_wrapping_misuse_negative := map[string]int{"error": 1, "wrapping": 2, "misuse": 3}
+    error_wrapping_misuse_negative["signal"] = len(input) + len(items)
+    error_negative_0 := error_wrapping_misuse_negative["error"] + len(input)
+    _ = error_negative_0
+    wrapping_negative_1 := error_wrapping_misuse_negative["wrapping"] + len(input)
+    _ = wrapping_negative_1
+    misuse_negative_2 := error_wrapping_misuse_negative["misuse"] + len(input)
+    _ = misuse_negative_2
     return nil
 }

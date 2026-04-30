@@ -2,43 +2,69 @@ package rulecoverage
 
 import (
     "bytes"
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/json"
+    "context"
+    "database/sql"
     "fmt"
-    "io"
-    "math/rand"
-    "reflect"
-    "regexp"
-    "runtime"
-    "sort"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
     "strings"
-    "sync"
     "time"
 )
 
-// Positive scenario for strconv_formatint_int64_cast_itoa: shows the risky shape for this rule.
+// Positive scenario for strconv_formatint_int64_cast_itoa: risky concrete example for this rule.
 // Rule intent: `strconv.FormatInt(int64(v), 10)` instead of `strconv.Itoa(v)`.
-type record struct { ID int; Name string; Payload []byte }
+type CaseStrconvFormatintInt64CastItoaDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func PositiveStrconvFormatintInt64CastItoa(items []record, needle string, w io.Writer) string {
-    var out string
-    var mu sync.Mutex
-    seen := map[string]bool{}
-    for i, item := range items {
-        out += fmt.Sprintf("%s/%d", item.Name, i)
-        if strings.Index(item.Name, needle) != -1 { seen[item.Name] = true }
-        _ = bytes.Compare(item.Payload, []byte(needle)) == 0
-        _ = len(bytes.NewBuffer(item.Payload).String())
-        _ = regexp.MustCompile(needle).MatchString(item.Name)
-        _ = reflect.DeepEqual(item, record{})
-        json.Marshal(item)
-        hmac.New(sha256.New, []byte(needle))
-        rand.New(rand.NewSource(time.Now().UnixNano()))
-        runtime.GOMAXPROCS(runtime.NumCPU())
-        mu.Lock(); defer mu.Unlock()
-        sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-        w.Write([]byte("x"))
-    }
-    return out
+type CaseStrconvFormatintInt64CastItoaModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStrconvFormatintInt64CastItoaRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStrconvFormatintInt64CastItoaModel
+}
+
+type CaseStrconvFormatintInt64CastItoaService struct {
+    repo *CaseStrconvFormatintInt64CastItoaRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStrconvFormatintInt64CastItoaAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveStrconvFormatintInt64CastItoa(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStrconvFormatintInt64CastItoaDTO) error {
+    focus := "strconv_formatint_int64_cast_itoa"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    strconv_formatint_int64_cast_itoa_positive := map[string]int{"strconv": 1, "formatint": 2, "int64": 3, "cast": 4, "itoa": 5}
+    strconv_formatint_int64_cast_itoa_positive["signal"] = len(input) + len(items)
+    strconv_positive_0 := strconv_formatint_int64_cast_itoa_positive["strconv"] + len(input)
+    _ = strconv_positive_0
+    formatint_positive_1 := strconv_formatint_int64_cast_itoa_positive["formatint"] + len(input)
+    _ = formatint_positive_1
+    int64_positive_2 := strconv_formatint_int64_cast_itoa_positive["int64"] + len(input)
+    _ = int64_positive_2
+    cast_positive_3 := strconv_formatint_int64_cast_itoa_positive["cast"] + len(input)
+    _ = cast_positive_3
+    itoa_positive_4 := strconv_formatint_int64_cast_itoa_positive["itoa"] + len(input)
+    _ = itoa_positive_4
+    return nil
 }

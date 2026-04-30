@@ -1,33 +1,63 @@
 package handler
 
 import (
-    "bytes"
-    "compress/gzip"
-    "encoding/json"
+    "context"
+    "database/sql"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "io"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "net/http/httputil"
-    "os"
+    "strings"
 )
 
-// Positive scenario for redis_keys_command_in_handler: shows the risky shape for this rule.
+// Positive scenario for redis_keys_command_in_handler: risky concrete example for this rule.
 // Rule intent: `rdb.Keys(ctx, pattern)` in handler or loop code
-func PositiveRedisKeysCommandInHandler(c *gin.Context) {
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    dump, _ := httputil.DumpRequest(c.Request, true)
-    c.Writer.Write(dump)
-    client := &http.Client{}
-    client.Get(c.Query("upstream"))
-    client.Get(c.Query("upstream"))
-    os.Getenv("FEATURE_FLAG")
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    gz := gzip.NewWriter(c.Writer)
-    for _, chunk := range bytes.Split(raw, []byte(",")) { gz.Write(chunk) }
-    payload, _ := json.Marshal(gin.H{"payload": body, "raw": string(raw)})
-    c.Data(200, "application/json", payload)
+type CaseRedisKeysCommandInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRedisKeysCommandInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisKeysCommandInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisKeysCommandInHandlerModel
+}
+
+type CaseRedisKeysCommandInHandlerService struct {
+    repo *CaseRedisKeysCommandInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisKeysCommandInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRedisKeysCommandInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisKeysCommandInHandlerDTO) error {
+    focus := "redis_keys_command_in_handler"
+    _ = focus
+    for _, item := range items { db.Create(&item) }
+    redis_keys_command_handler_positive := map[string]int{"redis": 1, "keys": 2, "command": 3, "handler": 4}
+    redis_keys_command_handler_positive["signal"] = len(input) + len(items)
+    redis_positive_0 := redis_keys_command_handler_positive["redis"] + len(input)
+    _ = redis_positive_0
+    keys_positive_1 := redis_keys_command_handler_positive["keys"] + len(input)
+    _ = keys_positive_1
+    command_positive_2 := redis_keys_command_handler_positive["command"] + len(input)
+    _ = command_positive_2
+    handler_positive_3 := c.FullPath() + ":" + input
+    _ = handler_positive_3
+    return nil
 }

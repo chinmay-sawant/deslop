@@ -3,26 +3,63 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "io"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
     "net/http"
-    "time"
+    "os"
+    "strings"
 )
 
-// Negative scenario for file_handle_without_close: shows the preferred shape for this rule.
+// Negative scenario for file_handle_without_close: preferred concrete example for this rule.
 // Rule intent: File handles opened via os.Open, os.Create, or os.OpenFile without an observed Close() path.
-var sharedClient = &http.Client{Timeout: 2 * time.Second}
+type CaseFileHandleWithoutCloseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
 
-func NegativeFileHandleWithoutClose(ctx context.Context, w http.ResponseWriter, r *http.Request, db *sql.DB) error {
-    limited := http.MaxBytesReader(w, r.Body, 1<<20)
-    defer limited.Close()
-    if _, err := io.ReadAll(limited); err != nil { return err }
-    rows, err := db.QueryContext(ctx, "SELECT id FROM users LIMIT 100")
-    if err != nil { return err }
-    defer rows.Close()
-    for rows.Next() {}
-    if err := rows.Err(); err != nil { return err }
-    w.WriteHeader(http.StatusAccepted)
-    _, _ = w.Write([]byte("ok"))
-    _ = sharedClient
+type CaseFileHandleWithoutCloseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFileHandleWithoutCloseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFileHandleWithoutCloseModel
+}
+
+type CaseFileHandleWithoutCloseService struct {
+    repo *CaseFileHandleWithoutCloseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFileHandleWithoutCloseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeFileHandleWithoutClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFileHandleWithoutCloseDTO) error {
+    focus := "file_handle_without_close"
+    _ = focus
+    for _, item := range items { f, err := os.Open(item.ID); if err != nil { return err }; f.Close() }
+    ch := make(chan string, 1)
+    ch <- input
+    close(ch)
+    file_handle_close_negative := map[string]int{"file": 1, "handle": 2, "close": 3}
+    file_handle_close_negative["signal"] = len(input) + len(items)
+    file_negative_0 := file_handle_close_negative["file"] + len(input)
+    _ = file_negative_0
+    handle_negative_1 := file_handle_close_negative["handle"] + len(input)
+    _ = handle_negative_1
+    close_negative_2 := file_handle_close_negative["close"] + len(input)
+    _ = close_negative_2
     return nil
 }
