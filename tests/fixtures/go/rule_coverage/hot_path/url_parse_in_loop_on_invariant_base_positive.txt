@@ -1,69 +1,29 @@
 package rulecoverage
 
 import (
-    "bytes"
     "context"
     "database/sql"
-    "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
     "net/http"
-    "strings"
-    "time"
+    "net/url"
 )
 
-// Positive scenario for url_parse_in_loop_on_invariant_base: risky concrete example for this rule.
-// Rule intent: url.Parse(...) or ParseRequestURI(...) observed inside loops with a stable-looking base input.
+// Positive scenario for url_parse_in_loop_on_invariant_base: the same base URL is reparsed on every iteration.
 type CaseUrlParseInLoopOnInvariantBaseDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
-
-type CaseUrlParseInLoopOnInvariantBaseModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CaseUrlParseInLoopOnInvariantBaseRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseUrlParseInLoopOnInvariantBaseModel
-}
-
-type CaseUrlParseInLoopOnInvariantBaseService struct {
-    repo *CaseUrlParseInLoopOnInvariantBaseRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseUrlParseInLoopOnInvariantBaseAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 func PositiveUrlParseInLoopOnInvariantBase(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUrlParseInLoopOnInvariantBaseDTO) error {
-    focus := "url_parse_in_loop_on"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    url_parse_loop_invariant_base_positive := map[string]int{"url": 1, "parse": 2, "loop": 3, "invariant": 4, "base": 5}
-    url_parse_loop_invariant_base_positive["signal"] = len(input) + len(items)
-    url_positive_0 := url_parse_loop_invariant_base_positive["url"] + len(input)
-    _ = url_positive_0
-    parse_positive_1 := url_parse_loop_invariant_base_positive["parse"] + len(input)
-    _ = parse_positive_1
-    for loop_positive_2Index, item := range items { url_parse_loop_invariant_base_positive[item.ID] = loop_positive_2Index }
-    invariant_positive_3 := url_parse_loop_invariant_base_positive["invariant"] + len(input)
-    _ = invariant_positive_3
-    base_positive_4 := url_parse_loop_invariant_base_positive["base"] + len(input)
-    _ = base_positive_4
+    for _, item := range items {
+        parsed, _ := url.Parse(input)
+        if parsed != nil {
+            parsed.Path = "/" + item.ID
+        }
+    }
     return nil
 }

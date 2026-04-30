@@ -53,7 +53,11 @@ func PositiveUnnecessaryMapForSetOfInts(c *gin.Context, ctx context.Context, db 
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
+    seen := map[int]bool{}
+    for _, item := range items {
+        seen[item.Amount] = true
+    }
+    _ = seen
     unnecessary_map_set_ints_positive := map[string]int{"unnecessary": 1, "map": 2, "set": 3, "ints": 4}
     unnecessary_map_set_ints_positive["signal"] = len(input) + len(items)
     unnecessary_positive_0 := unnecessary_map_set_ints_positive["unnecessary"] + len(input)

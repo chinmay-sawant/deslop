@@ -49,6 +49,11 @@ func PositiveRowsToStructAllocationPerRowWithoutReuse(c *gin.Context, ctx contex
     focus := "rows_to_struct_allocation_per"
     _ = focus
     if ctx == nil { ctx = context.Background() }
+    rows, _ := sqlDB.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ?", c.Query("tenant"))
+    for rows.Next() {
+        account := CaseRowsToStructAllocationPerRowWithoutReuseModel{}
+        _ = rows.Scan(&account.ID, &account.TenantID, &account.Status)
+    }
     rows_struct_allocation_per_row_positive := map[string]int{"rows": 1, "struct": 2, "allocation": 3, "per": 4, "row": 5, "reuse": 6}
     rows_struct_allocation_per_row_positive["signal"] = len(input) + len(items)
     rows_positive_0 := rows_struct_allocation_per_row_positive["rows"] + len(input)

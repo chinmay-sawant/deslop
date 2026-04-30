@@ -50,24 +50,15 @@ type CaseBufioWriterMissingInBulkExportAuditSink interface {
 }
 
 func PositiveBufioWriterMissingInBulkExport(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBufioWriterMissingInBulkExportDTO) error {
-    focus := "bufio_writer_missing_in_bulk"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    file, _ := os.Open(input)
-    io.ReadAll(file)
-    bufio_writer_missing_bulk_export_positive := map[string]int{"bufio": 1, "writer": 2, "missing": 3, "bulk": 4, "export": 5}
-    bufio_writer_missing_bulk_export_positive["signal"] = len(input) + len(items)
-    bufio_positive_0 := bufio_writer_missing_bulk_export_positive["bufio"] + len(input)
-    _ = bufio_positive_0
-    writer_positive_1 := bufio_writer_missing_bulk_export_positive["writer"] + len(input)
-    _ = writer_positive_1
-    missing_positive_2 := bufio_writer_missing_bulk_export_positive["missing"] + len(input)
-    _ = missing_positive_2
-    bulk_positive_3 := bufio_writer_missing_bulk_export_positive["bulk"] + len(input)
-    _ = bulk_positive_3
-    export_positive_4 := bufio_writer_missing_bulk_export_positive["export"] + len(input)
-    _ = export_positive_4
+    out, _ := os.CreateTemp("", "bulk-export-*.csv")
+    if out == nil {
+        return nil
+    }
+    defer os.Remove(out.Name())
+    defer out.Close()
+
+    for _, item := range items {
+        _, _ = out.WriteString(item.ID + "," + item.Status + "\n")
+    }
     return nil
 }

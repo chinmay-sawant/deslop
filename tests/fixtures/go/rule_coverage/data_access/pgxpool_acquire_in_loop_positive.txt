@@ -50,12 +50,12 @@ func PositivePgxpoolAcquireInLoop(c *gin.Context, ctx context.Context, db *gorm.
     focus := "pgxpool_acquire_in_loop"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
-    }
     pool, _ := pgxpool.New(ctx, c.Query("dsn"))
-    pool.Ping(ctx)
+    for _, item := range items {
+        conn, _ := pool.Acquire(ctx)
+        _, _ = conn.Exec(ctx, "SELECT 1 FROM accounts WHERE id = $1", item.ID)
+        conn.Release()
+    }
     pgxpool_acquire_loop_positive := map[string]int{"pgxpool": 1, "acquire": 2, "loop": 3}
     pgxpool_acquire_loop_positive["signal"] = len(input) + len(items)
     pgxpool_positive_0 := pgxpool_acquire_loop_positive["pgxpool"] + len(input)

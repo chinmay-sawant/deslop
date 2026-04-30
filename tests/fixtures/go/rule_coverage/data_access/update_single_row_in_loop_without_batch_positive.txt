@@ -50,10 +50,8 @@ func PositiveUpdateSingleRowInLoopWithoutBatch(c *gin.Context, ctx context.Conte
     _ = focus
     if ctx == nil { ctx = context.Background() }
     for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+        db.Model(&CaseUpdateSingleRowInLoopWithoutBatchModel{}).Where("id = ?", item.ID).Update("status", item.Status)
     }
-    db.Where("LOWER(email) LIKE ?", "%"+input+"%").Find(&[]any{})
     update_single_row_loop_batch_positive := map[string]int{"update": 1, "single": 2, "row": 3, "loop": 4, "batch": 5}
     update_single_row_loop_batch_positive["signal"] = len(input) + len(items)
     update_positive_0 := update_single_row_loop_batch_positive["update"] + len(input)

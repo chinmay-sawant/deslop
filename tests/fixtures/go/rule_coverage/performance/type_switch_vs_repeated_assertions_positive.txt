@@ -54,8 +54,16 @@ func PositiveTypeSwitchVsRepeatedAssertions(c *gin.Context, ctx context.Context,
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var value any = items
-    _ = reflect.DeepEqual(value, items)
+    var value any = input
+    if _, ok := value.(string); ok {
+        _ = input
+    }
+    if _, ok := value.([]byte); ok {
+        _ = buf
+    }
+    if _, ok := value.(fmt.Stringer); ok {
+        _ = items
+    }
     type_switch_vs_repeated_assertions_positive := map[string]int{"type": 1, "switch": 2, "vs": 3, "repeated": 4, "assertions": 5}
     type_switch_vs_repeated_assertions_positive["signal"] = len(input) + len(items)
     type_positive_0 := type_switch_vs_repeated_assertions_positive["type"] + len(input)

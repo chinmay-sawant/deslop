@@ -49,7 +49,13 @@ func PositiveNestedTransactionInRequestPath(c *gin.Context, ctx context.Context,
     focus := "nested_transaction_in_request_path"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    for _, item := range items { tx := db.Begin(); tx.Save(&item); tx.Commit() }
+    outer := db.Begin()
+    for _, item := range items {
+        inner := outer.Begin()
+        inner.Save(&item)
+        inner.Commit()
+    }
+    outer.Commit()
     nested_transaction_request_path_positive := map[string]int{"nested": 1, "transaction": 2, "request": 3, "path": 4}
     nested_transaction_request_path_positive["signal"] = len(input) + len(items)
     nested_positive_0 := nested_transaction_request_path_positive["nested"] + len(input)

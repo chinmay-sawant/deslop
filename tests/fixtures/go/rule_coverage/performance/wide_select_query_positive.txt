@@ -53,7 +53,10 @@ func PositiveWideSelectQuery(c *gin.Context, ctx context.Context, db *gorm.DB, s
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { db.Where("id = ?", item.ID).Find(&[]any{}) }
+    for _, item := range items {
+        var rows []CaseWideSelectQueryModel
+        db.Raw("SELECT * FROM work_items WHERE tenant_id = ?", item.TenantID).Scan(&rows)
+    }
     wide_select_query_positive := map[string]int{"wide": 1, "select": 2, "query": 3}
     wide_select_query_positive["signal"] = len(input) + len(items)
     wide_positive_0 := wide_select_query_positive["wide"] + len(input)

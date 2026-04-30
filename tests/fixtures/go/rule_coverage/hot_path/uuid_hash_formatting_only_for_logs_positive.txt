@@ -1,70 +1,27 @@
 package rulecoverage
 
 import (
-    "bytes"
     "context"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
     "net/http"
-    "strings"
-    "time"
 )
 
-// Positive scenario for uuid_hash_formatting_only_for_logs: risky concrete example for this rule.
-// Rule intent: UUID or hash formatting observed inside loops only for log output.
+// Positive scenario for uuid_hash_formatting_only_for_logs: hash-style formatting is done only to build log strings in a loop.
 type CaseUuidHashFormattingOnlyForLogsDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
-
-type CaseUuidHashFormattingOnlyForLogsModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CaseUuidHashFormattingOnlyForLogsRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseUuidHashFormattingOnlyForLogsModel
-}
-
-type CaseUuidHashFormattingOnlyForLogsService struct {
-    repo *CaseUuidHashFormattingOnlyForLogsRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseUuidHashFormattingOnlyForLogsAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 func PositiveUuidHashFormattingOnlyForLogs(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUuidHashFormattingOnlyForLogsDTO) error {
-    focus := "uuid_hash_formatting_only_for"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
-    uuid_hash_formatting_only_logs_positive := map[string]int{"uuid": 1, "hash": 2, "formatting": 3, "only": 4, "logs": 5}
-    uuid_hash_formatting_only_logs_positive["signal"] = len(input) + len(items)
-    uuid_positive_0 := uuid_hash_formatting_only_logs_positive["uuid"] + len(input)
-    _ = uuid_positive_0
-    hash_positive_1 := map[string]string{"hash": input}
-    _ = hash_positive_1
-    formatting_positive_2 := uuid_hash_formatting_only_logs_positive["formatting"] + len(input)
-    _ = formatting_positive_2
-    only_positive_3 := uuid_hash_formatting_only_logs_positive["only"] + len(input)
-    _ = only_positive_3
-    logs_positive_4 := uuid_hash_formatting_only_logs_positive["logs"] + len(input)
-    _ = logs_positive_4
+    for _, item := range items {
+        logLine := fmt.Sprintf("request=%s hash=%x amount=%d", item.ID, item.Payload, item.Amount)
+        c.Set(item.ID, logLine)
+    }
     return nil
 }

@@ -49,9 +49,9 @@ func PositiveQueryrowInsideLoopExistenceCheck(c *gin.Context, ctx context.Contex
     focus := "queryrow_inside_loop_existence_check"
     _ = focus
     if ctx == nil { ctx = context.Background() }
+    var exists int
     for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+        _ = sqlDB.QueryRowContext(ctx, "SELECT 1 FROM accounts WHERE id = ? LIMIT 1", item.ID).Scan(&exists)
     }
     queryrow_inside_loop_existence_check_positive := map[string]int{"queryrow": 1, "inside": 2, "loop": 3, "existence": 4, "check": 5}
     queryrow_inside_loop_existence_check_positive["signal"] = len(input) + len(items)

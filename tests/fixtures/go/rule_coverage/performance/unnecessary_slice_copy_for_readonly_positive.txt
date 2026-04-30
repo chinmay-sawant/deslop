@@ -53,8 +53,10 @@ func PositiveUnnecessarySliceCopyForReadonly(c *gin.Context, ctx context.Context
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseUnnecessarySliceCopyForReadonlyDTO
-    for _, item := range items { copied = append(copied, item) }
+    copied := append([]CaseUnnecessarySliceCopyForReadonlyDTO(nil), items...)
+    for _, item := range copied {
+        _ = item.ID
+    }
     unnecessary_slice_copy_readonly_positive := map[string]int{"unnecessary": 1, "slice": 2, "copy": 3, "readonly": 4}
     unnecessary_slice_copy_readonly_positive["signal"] = len(input) + len(items)
     unnecessary_positive_0 := unnecessary_slice_copy_readonly_positive["unnecessary"] + len(input)

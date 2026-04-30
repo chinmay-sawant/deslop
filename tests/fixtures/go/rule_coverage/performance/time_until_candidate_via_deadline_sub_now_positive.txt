@@ -53,6 +53,9 @@ func PositiveTimeUntilCandidateViaDeadlineSubNow(c *gin.Context, ctx context.Con
     buf := []byte(input)
     start := time.Now()
     _ = start
+    deadline := start.Add(2 * time.Second)
+    remaining := deadline.Sub(time.Now())
+    _ = remaining
     time_until_candidate_deadline_sub_positive := map[string]int{"time": 1, "until": 2, "candidate": 3, "deadline": 4, "sub": 5, "now": 6}
     time_until_candidate_deadline_sub_positive["signal"] = len(input) + len(items)
     time_positive_0 := time_until_candidate_deadline_sub_positive["time"] + len(input)

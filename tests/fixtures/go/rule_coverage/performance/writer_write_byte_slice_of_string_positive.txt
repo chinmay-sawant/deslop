@@ -55,10 +55,10 @@ func PositiveWriterWriteByteSliceOfString(c *gin.Context, ctx context.Context, d
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseWriterWriteByteSliceOfStringDTO
-    for _, item := range items { copied = append(copied, item) }
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    var sink bytes.Buffer
+    for _, item := range items {
+        _, _ = sink.Write([]byte(item.ID + ":" + item.TenantID))
+    }
     writer_write_byte_slice_string_positive := map[string]int{"writer": 1, "write": 2, "byte": 3, "slice": 4, "string": 5}
     writer_write_byte_slice_string_positive["signal"] = len(input) + len(items)
     writer_positive_0 := writer_write_byte_slice_string_positive["writer"] + len(input)

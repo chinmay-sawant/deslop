@@ -1,11 +1,14 @@
 package rulecoverage
 
 import (
+    "bytes"
     "context"
     "database/sql"
+    "encoding/json"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "io"
     "log"
     "net/http"
     "strings"
@@ -46,23 +49,16 @@ type CaseRepeatedBodyRewindForMultipleDecodersAuditSink interface {
 }
 
 func PositiveRepeatedBodyRewindForMultipleDecoders(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepeatedBodyRewindForMultipleDecodersDTO) error {
-    focus := "repeated_body_rewind_for_multiple"
-    _ = focus
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    _ = raw
-    repeated_body_rewind_multiple_decoders_positive := map[string]int{"repeated": 1, "body": 2, "rewind": 3, "multiple": 4, "decoders": 5}
-    repeated_body_rewind_multiple_decoders_positive["signal"] = len(input) + len(items)
-    repeated_positive_0 := repeated_body_rewind_multiple_decoders_positive["repeated"] + len(input)
-    _ = repeated_positive_0
-    body_positive_1 := repeated_body_rewind_multiple_decoders_positive["body"] + len(input)
-    _ = body_positive_1
-    rewind_positive_2 := repeated_body_rewind_multiple_decoders_positive["rewind"] + len(input)
-    _ = rewind_positive_2
-    multiple_positive_3 := repeated_body_rewind_multiple_decoders_positive["multiple"] + len(input)
-    _ = multiple_positive_3
-    decoders_positive_4 := repeated_body_rewind_multiple_decoders_positive["decoders"] + len(input)
-    _ = decoders_positive_4
+    raw, _ := io.ReadAll(c.Request.Body)
+
+    c.Request.Body = io.NopCloser(bytes.NewReader(raw))
+    var firstPass CaseRepeatedBodyRewindForMultipleDecodersDTO
+    _ = json.NewDecoder(c.Request.Body).Decode(&firstPass)
+
+    c.Request.Body = io.NopCloser(bytes.NewReader(raw))
+    var secondPass map[string]any
+    _ = json.NewDecoder(c.Request.Body).Decode(&secondPass)
+
+    c.Set("decoded_body", secondPass)
     return nil
 }

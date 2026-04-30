@@ -9,6 +9,7 @@ import (
     "log"
     "net/http"
     "strings"
+    "time"
 )
 
 // Positive scenario for middleware_allocates_http_client_per_request: risky concrete example for this rule.
@@ -46,20 +47,17 @@ type CaseMiddlewareAllocatesHttpClientPerRequestAuditSink interface {
 }
 
 func PositiveMiddlewareAllocatesHttpClientPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareAllocatesHttpClientPerRequestDTO) error {
-    focus := "middleware_allocates_http_client_per"
-    _ = focus
-    middleware_allocates_http_client_per_positive := map[string]int{"middleware": 1, "allocates": 2, "http": 3, "client": 4, "per": 5, "request": 6}
-    middleware_allocates_http_client_per_positive["signal"] = len(input) + len(items)
-    middleware_positive_0 := c.FullPath() + ":" + input
-    _ = middleware_positive_0
-    allocates_positive_1 := middleware_allocates_http_client_per_positive["allocates"] + len(input)
-    _ = allocates_positive_1
-    http_positive_2 := middleware_allocates_http_client_per_positive["http"] + len(input)
-    _ = http_positive_2
-    client_positive_3 := middleware_allocates_http_client_per_positive["client"] + len(input)
-    _ = client_positive_3
-    for per_positive_4Index, item := range items { middleware_allocates_http_client_per_positive[item.ID] = per_positive_4Index }
-    request_positive_5 := middleware_allocates_http_client_per_positive["request"] + len(input)
-    _ = request_positive_5
+    requestClient := &http.Client{Timeout: 2 * time.Second}
+    req, _ := http.NewRequestWithContext(ctx, http.MethodGet, input, nil)
+    if len(items) > 0 {
+        req.Header.Set("X-First-Item", items[0].ID)
+    }
+
+    resp, _ := requestClient.Do(req)
+    if resp != nil {
+        resp.Body.Close()
+    }
+
+    c.Set("per_request_client", requestClient)
     return nil
 }

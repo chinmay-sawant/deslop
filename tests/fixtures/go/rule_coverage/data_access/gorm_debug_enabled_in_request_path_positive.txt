@@ -49,6 +49,8 @@ func PositiveGormDebugEnabledInRequestPath(c *gin.Context, ctx context.Context, 
     focus := "gorm_debug_enabled_in_request"
     _ = focus
     if ctx == nil { ctx = context.Background() }
+    debugDB := db.Debug()
+    debugDB.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormDebugEnabledInRequestPathModel{})
     gorm_debug_enabled_request_path_positive := map[string]int{"gorm": 1, "debug": 2, "enabled": 3, "request": 4, "path": 5}
     gorm_debug_enabled_request_path_positive["signal"] = len(input) + len(items)
     gorm_positive_0 := db.Where("gorm_id = ?", input)

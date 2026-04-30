@@ -53,8 +53,11 @@ func PositiveGoPerfLayerLoggingOverheadFmtLogMessageInLoop(c *gin.Context, ctx c
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    logger := log.New(io.Discard, "perf", 0)
+    for _, item := range items {
+        logLine := fmt.Sprintf("processed item=%s amount=%d tenant=%s", item.ID, item.Amount, item.TenantID)
+        logger.Print(logLine)
+    }
     perf_layer_logging_overhead_fmt_positive := map[string]int{"perf": 1, "layer": 2, "logging": 3, "overhead": 4, "fmt": 5, "log": 6}
     perf_layer_logging_overhead_fmt_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_logging_overhead_fmt_positive["perf"] + len(input)

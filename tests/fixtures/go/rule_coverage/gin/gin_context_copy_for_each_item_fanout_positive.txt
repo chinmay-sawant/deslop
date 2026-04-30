@@ -48,6 +48,12 @@ type CaseGinContextCopyForEachItemFanoutAuditSink interface {
 func PositiveGinContextCopyForEachItemFanout(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinContextCopyForEachItemFanoutDTO) error {
     focus := "gin_context_copy_for_each"
     _ = focus
+    for _, item := range items {
+        copied := c.Copy()
+        go func(item CaseGinContextCopyForEachItemFanoutDTO, copied *gin.Context) {
+            copied.Set("item_id", item.ID)
+        }(item, copied)
+    }
     gin_context_copy_each_item_positive := map[string]int{"gin": 1, "context": 2, "copy": 3, "each": 4, "item": 5, "fanout": 6}
     gin_context_copy_each_item_positive["signal"] = len(input) + len(items)
     gin_positive_0 := c.FullPath() + ":" + input

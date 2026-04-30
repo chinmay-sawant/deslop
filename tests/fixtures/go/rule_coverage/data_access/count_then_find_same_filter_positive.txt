@@ -50,7 +50,10 @@ func PositiveCountThenFindSameFilter(c *gin.Context, ctx context.Context, db *go
     _ = focus
     if ctx == nil { ctx = context.Background() }
     var total int64
-    db.Model(&CaseCountThenFindSameFilterModel{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
+    scope := db.Model(&CaseCountThenFindSameFilterModel{}).Where("tenant_id = ? AND status = ?", c.Query("tenant"), "active")
+    scope.Count(&total)
+    var rows []CaseCountThenFindSameFilterModel
+    scope.Find(&rows)
     count_then_find_filter_positive := map[string]int{"count": 1, "then": 2, "find": 3, "filter": 4}
     count_then_find_filter_positive["signal"] = len(input) + len(items)
     count_positive_0 := count_then_find_filter_positive["count"] + len(input)

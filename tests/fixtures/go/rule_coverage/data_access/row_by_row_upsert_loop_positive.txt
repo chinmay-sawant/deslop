@@ -50,8 +50,10 @@ func PositiveRowByRowUpsertLoop(c *gin.Context, ctx context.Context, db *gorm.DB
     _ = focus
     if ctx == nil { ctx = context.Background() }
     for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+        db.Clauses(clause.OnConflict{
+            Columns:   []clause.Column{{Name: "id"}},
+            DoUpdates: clause.AssignmentColumns([]string{"status", "tenant_id"}),
+        }).Create(&CaseRowByRowUpsertLoopModel{ID: item.ID, TenantID: item.TenantID, Status: item.Status})
     }
     row_upsert_loop_positive := map[string]int{"row": 1, "upsert": 2, "loop": 3}
     row_upsert_loop_positive["signal"] = len(input) + len(items)

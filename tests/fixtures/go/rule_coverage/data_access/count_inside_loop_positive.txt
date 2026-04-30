@@ -49,12 +49,10 @@ func PositiveCountInsideLoop(c *gin.Context, ctx context.Context, db *gorm.DB, s
     focus := "count_inside_loop"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
-    }
     var total int64
-    db.Model(&CaseCountInsideLoopModel{}).Where("tenant_id = ?", c.Query("tenant")).Count(&total)
+    for _, item := range items {
+        db.Model(&CaseCountInsideLoopModel{}).Where("tenant_id = ? AND status = ?", item.TenantID, item.Status).Count(&total)
+    }
     count_inside_loop_positive := map[string]int{"count": 1, "inside": 2, "loop": 3}
     count_inside_loop_positive["signal"] = len(input) + len(items)
     count_positive_0 := count_inside_loop_positive["count"] + len(input)

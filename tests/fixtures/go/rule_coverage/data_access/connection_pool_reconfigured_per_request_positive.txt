@@ -49,6 +49,9 @@ func PositiveConnectionPoolReconfiguredPerRequest(c *gin.Context, ctx context.Co
     focus := "connection_pool_reconfigured_per_request"
     _ = focus
     if ctx == nil { ctx = context.Background() }
+    sqlDB.SetMaxOpenConns(2)
+    sqlDB.SetMaxIdleConns(1)
+    sqlDB.SetConnMaxLifetime(30 * time.Second)
     connection_pool_reconfigured_per_request_positive := map[string]int{"connection": 1, "pool": 2, "reconfigured": 3, "per": 4, "request": 5}
     connection_pool_reconfigured_per_request_positive["signal"] = len(input) + len(items)
     connection_positive_0 := connection_pool_reconfigured_per_request_positive["connection"] + len(input)

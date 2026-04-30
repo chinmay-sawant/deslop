@@ -49,6 +49,9 @@ func PositiveScanIntoMapStringAnyHotPath(c *gin.Context, ctx context.Context, db
     focus := "scan_into_map_string_any"
     _ = focus
     if ctx == nil { ctx = context.Background() }
+    result := map[string]any{}
+    db.Raw("SELECT id, tenant_id, status FROM accounts WHERE id = ?", input).Scan(&result)
+    _ = result
     scan_map_string_any_hot_positive := map[string]int{"scan": 1, "map": 2, "string": 3, "any": 4, "hot": 5, "path": 6}
     scan_map_string_any_hot_positive["signal"] = len(input) + len(items)
     scan_positive_0 := scan_map_string_any_hot_positive["scan"] + len(input)

@@ -48,10 +48,9 @@ type CaseBindqueryIntoMapAnyHotEndpointAuditSink interface {
 func PositiveBindqueryIntoMapAnyHotEndpoint(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBindqueryIntoMapAnyHotEndpointDTO) error {
     focus := "bindquery_into_map_any_hot"
     _ = focus
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    _ = raw
+    values := map[string]any{}
+    _ = c.ShouldBindQuery(&values)
+    _ = values
     bindquery_map_any_hot_endpoint_positive := map[string]int{"bindquery": 1, "map": 2, "any": 3, "hot": 4, "endpoint": 5}
     bindquery_map_any_hot_endpoint_positive["signal"] = len(input) + len(items)
     bindquery_positive_0 := bindquery_map_any_hot_endpoint_positive["bindquery"] + len(input)

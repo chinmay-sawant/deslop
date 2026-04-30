@@ -50,26 +50,21 @@ type CaseBufioReaderMissingForSmallReadLoopAuditSink interface {
 }
 
 func PositiveBufioReaderMissingForSmallReadLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBufioReaderMissingForSmallReadLoopDTO) error {
-    focus := "bufio_reader_missing_for_small"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
     file, _ := os.Open(input)
-    io.ReadAll(file)
-    bufio_reader_missing_small_read_positive := map[string]int{"bufio": 1, "reader": 2, "missing": 3, "small": 4, "read": 5, "loop": 6}
-    bufio_reader_missing_small_read_positive["signal"] = len(input) + len(items)
-    bufio_positive_0 := bufio_reader_missing_small_read_positive["bufio"] + len(input)
-    _ = bufio_positive_0
-    reader_positive_1 := bufio_reader_missing_small_read_positive["reader"] + len(input)
-    _ = reader_positive_1
-    missing_positive_2 := bufio_reader_missing_small_read_positive["missing"] + len(input)
-    _ = missing_positive_2
-    small_positive_3 := bufio_reader_missing_small_read_positive["small"] + len(input)
-    _ = small_positive_3
-    read_positive_4 := bufio_reader_missing_small_read_positive["read"] + len(input)
-    _ = read_positive_4
-    for loop_positive_5Index, item := range items { bufio_reader_missing_small_read_positive[item.ID] = loop_positive_5Index }
+    if file == nil {
+        return nil
+    }
+    defer file.Close()
+
+    scratch := make([]byte, 64)
+    for {
+        _, err := file.Read(scratch)
+        if err == io.EOF {
+            break
+        }
+        if err != nil {
+            break
+        }
+    }
     return nil
 }

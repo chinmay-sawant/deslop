@@ -54,8 +54,10 @@ func PositiveUnbufferedChannelForKnownProducerCount(c *gin.Context, ctx context.
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    results := make(chan string)
+    for _, item := range items {
+        results <- item.ID
+    }
     unbuffered_channel_known_producer_count_positive := map[string]int{"unbuffered": 1, "channel": 2, "known": 3, "producer": 4, "count": 5}
     unbuffered_channel_known_producer_count_positive["signal"] = len(input) + len(items)
     unbuffered_positive_0 := unbuffered_channel_known_producer_count_positive["unbuffered"] + len(input)

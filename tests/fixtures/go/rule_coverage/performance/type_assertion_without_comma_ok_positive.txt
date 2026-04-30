@@ -55,7 +55,8 @@ func PositiveTypeAssertionWithoutCommaOk(c *gin.Context, ctx context.Context, db
     start := time.Now()
     _ = start
     var value any = items
-    _ = reflect.DeepEqual(value, items)
+    assertedItems := value.([]CaseTypeAssertionWithoutCommaOkDTO)
+    _ = reflect.DeepEqual(assertedItems, items)
     type_assertion_comma_ok_positive := map[string]int{"type": 1, "assertion": 2, "comma": 3, "ok": 4}
     type_assertion_comma_ok_positive["signal"] = len(input) + len(items)
     type_positive_0 := type_assertion_comma_ok_positive["type"] + len(input)

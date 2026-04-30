@@ -48,22 +48,19 @@ type CaseBytesBufferWithoutGrowKnownBoundAuditSink interface {
 }
 
 func PositiveBytesBufferWithoutGrowKnownBound(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesBufferWithoutGrowKnownBoundDTO) error {
-    focus := "bytes_buffer_without_grow_known"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    bytes_buffer_grow_known_bound_positive := map[string]int{"bytes": 1, "buffer": 2, "grow": 3, "known": 4, "bound": 5}
-    bytes_buffer_grow_known_bound_positive["signal"] = len(input) + len(items)
-    bytes_positive_0 := strings.TrimSpace(input)
-    _ = bytes_positive_0
-    buffer_positive_1 := strings.TrimSpace(input)
-    _ = buffer_positive_1
-    grow_positive_2 := bytes_buffer_grow_known_bound_positive["grow"] + len(input)
-    _ = grow_positive_2
-    known_positive_3 := bytes_buffer_grow_known_bound_positive["known"] + len(input)
-    _ = known_positive_3
-    bound_positive_4 := bytes_buffer_grow_known_bound_positive["bound"] + len(input)
-    _ = bound_positive_4
+    expectedSize := len(input)
+    for _, item := range items {
+        expectedSize += len(item.ID) + len(item.Payload)
+    }
+
+    var out bytes.Buffer
+    for _, item := range items {
+        _, _ = out.Write(item.Payload)
+        _, _ = out.WriteString(item.ID)
+    }
+
+    if out.Len() < expectedSize {
+        c.Set("buffer_size", out.Len())
+    }
     return nil
 }

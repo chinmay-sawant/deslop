@@ -49,6 +49,8 @@ func PositivePrepareOnEveryRequestSameSql(c *gin.Context, ctx context.Context, d
     focus := "prepare_on_every_request_same"
     _ = focus
     if ctx == nil { ctx = context.Background() }
+    stmt, _ := sqlDB.PrepareContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ?")
+    _, _ = stmt.QueryContext(ctx, c.Query("tenant"))
     prepare_every_request_sql_positive := map[string]int{"prepare": 1, "every": 2, "request": 3, "sql": 4}
     prepare_every_request_sql_positive["signal"] = len(input) + len(items)
     prepare_positive_0 := prepare_every_request_sql_positive["prepare"] + len(input)

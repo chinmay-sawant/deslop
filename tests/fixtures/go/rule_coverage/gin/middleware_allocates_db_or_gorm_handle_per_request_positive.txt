@@ -46,21 +46,20 @@ type CaseMiddlewareAllocatesDbOrGormHandlePerRequestAuditSink interface {
 }
 
 func PositiveMiddlewareAllocatesDbOrGormHandlePerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareAllocatesDbOrGormHandlePerRequestDTO) error {
-    focus := "middleware_allocates_db_or_gorm"
-    _ = focus
-    for _, item := range items { db.Create(&item) }
-    middleware_allocates_db_gorm_handle_positive := map[string]int{"middleware": 1, "allocates": 2, "db": 3, "gorm": 4, "handle": 5, "per": 6}
-    middleware_allocates_db_gorm_handle_positive["signal"] = len(input) + len(items)
-    middleware_positive_0 := c.FullPath() + ":" + input
-    _ = middleware_positive_0
-    allocates_positive_1 := middleware_allocates_db_gorm_handle_positive["allocates"] + len(input)
-    _ = allocates_positive_1
-    db_positive_2 := db.Where("db_id = ?", input)
-    _ = db_positive_2
-    gorm_positive_3 := db.Where("gorm_id = ?", input)
-    _ = gorm_positive_3
-    handle_positive_4 := middleware_allocates_db_gorm_handle_positive["handle"] + len(input)
-    _ = handle_positive_4
-    for per_positive_5Index, item := range items { middleware_allocates_db_gorm_handle_positive[item.ID] = per_positive_5Index }
+    tenantDSN := c.GetHeader("X-Tenant-DSN")
+    if tenantDSN == "" {
+        tenantDSN = input
+    }
+
+    requestSQLDB, _ := sql.Open("postgres", tenantDSN)
+    defer requestSQLDB.Close()
+
+    requestGormHandle := db.Session(&gorm.Session{NewDB: true})
+    c.Set("tenant_sql_db", requestSQLDB)
+    c.Set("tenant_gorm_db", requestGormHandle)
+
+    if len(items) > 0 {
+        _, _ = requestSQLDB.ExecContext(ctx, "select 1")
+    }
     return nil
 }

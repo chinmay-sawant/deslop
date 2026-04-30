@@ -53,7 +53,9 @@ func PositiveTimeTickPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, s
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    tickStream := time.Tick(250 * time.Millisecond)
+    _ = tickStream
+    for _, item := range items { _ = strings.ToLower(item.ID) }
     time_tick_per_call_positive := map[string]int{"time": 1, "tick": 2, "per": 3, "call": 4}
     time_tick_per_call_positive["signal"] = len(input) + len(items)
     time_positive_0 := time_tick_per_call_positive["time"] + len(input)

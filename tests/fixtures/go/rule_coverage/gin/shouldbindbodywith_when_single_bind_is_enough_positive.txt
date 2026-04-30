@@ -5,6 +5,7 @@ import (
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin/binding"
     "gorm.io/gorm"
     "log"
     "net/http"
@@ -46,26 +47,10 @@ type CaseShouldbindbodywithWhenSingleBindIsEnoughAuditSink interface {
 }
 
 func PositiveShouldbindbodywithWhenSingleBindIsEnough(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseShouldbindbodywithWhenSingleBindIsEnoughDTO) error {
-    focus := "shouldbindbodywith_when_single_bind_is"
-    _ = focus
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    _ = raw
-    for _, item := range items { db.Create(&item) }
-    shouldbindbodywith_when_single_bind_is_positive := map[string]int{"shouldbindbodywith": 1, "when": 2, "single": 3, "bind": 4, "is": 5, "enough": 6}
-    shouldbindbodywith_when_single_bind_is_positive["signal"] = len(input) + len(items)
-    shouldbindbodywith_positive_0 := shouldbindbodywith_when_single_bind_is_positive["shouldbindbodywith"] + len(input)
-    _ = shouldbindbodywith_positive_0
-    when_positive_1 := shouldbindbodywith_when_single_bind_is_positive["when"] + len(input)
-    _ = when_positive_1
-    single_positive_2 := shouldbindbodywith_when_single_bind_is_positive["single"] + len(input)
-    _ = single_positive_2
-    bind_positive_3 := shouldbindbodywith_when_single_bind_is_positive["bind"] + len(input)
-    _ = bind_positive_3
-    is_positive_4 := shouldbindbodywith_when_single_bind_is_positive["is"] + len(input)
-    _ = is_positive_4
-    enough_positive_5 := shouldbindbodywith_when_single_bind_is_positive["enough"] + len(input)
-    _ = enough_positive_5
+    var body CaseShouldbindbodywithWhenSingleBindIsEnoughDTO
+    _ = c.ShouldBindBodyWith(&body, binding.JSON)
+    if body.ID == "" {
+        body.ID = input
+    }
     return nil
 }

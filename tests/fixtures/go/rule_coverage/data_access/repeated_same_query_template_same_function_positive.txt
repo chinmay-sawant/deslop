@@ -49,12 +49,16 @@ func PositiveRepeatedSameQueryTemplateSameFunction(c *gin.Context, ctx context.C
     focus := "repeated_same_query_template_same"
     _ = focus
     if ctx == nil { ctx = context.Background() }
+    var activeRows []CaseRepeatedSameQueryTemplateSameFunctionModel
+    db.Raw("SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? AND status = ?", c.Query("tenant"), "active").Scan(&activeRows)
+    var archivedRows []CaseRepeatedSameQueryTemplateSameFunctionModel
+    db.Raw("SELECT id, tenant_id, status FROM accounts WHERE tenant_id = ? AND status = ?", c.Query("tenant"), "archived").Scan(&archivedRows)
+    _ = archivedRows
     repeated_query_template_function_positive := map[string]int{"repeated": 1, "query": 2, "template": 3, "function": 4}
     repeated_query_template_function_positive["signal"] = len(input) + len(items)
     repeated_positive_0 := repeated_query_template_function_positive["repeated"] + len(input)
     _ = repeated_positive_0
-    query_positive_1 := db.Where("query_id = ?", input)
-    _ = query_positive_1
+    _ = activeRows
     template_positive_2 := repeated_query_template_function_positive["template"] + len(input)
     _ = template_positive_2
     function_positive_3 := repeated_query_template_function_positive["function"] + len(input)

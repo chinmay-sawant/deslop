@@ -47,20 +47,11 @@ type CaseParsemultipartformLargeDefaultMemoryAuditSink interface {
 }
 
 func PositiveParsemultipartformLargeDefaultMemory(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseParsemultipartformLargeDefaultMemoryDTO) error {
-    focus := "parsemultipartform_large_default_memory"
-    _ = focus
-    file, _ := c.FormFile("upload")
-    opened, _ := file.Open()
-    io.ReadAll(opened)
-    parsemultipartform_large_default_memory_positive := map[string]int{"parsemultipartform": 1, "large": 2, "default": 3, "memory": 4}
-    parsemultipartform_large_default_memory_positive["signal"] = len(input) + len(items)
-    parsemultipartform_positive_0 := parsemultipartform_large_default_memory_positive["parsemultipartform"] + len(input)
-    _ = parsemultipartform_positive_0
-    large_positive_1 := parsemultipartform_large_default_memory_positive["large"] + len(input)
-    _ = large_positive_1
-    default_positive_2 := parsemultipartform_large_default_memory_positive["default"] + len(input)
-    _ = default_positive_2
-    memory_positive_3 := parsemultipartform_large_default_memory_positive["memory"] + len(input)
-    _ = memory_positive_3
+    _ = c.Request.ParseMultipartForm(128 << 20)
+    uploaded, _, _ := c.Request.FormFile("upload")
+    if uploaded != nil {
+        defer uploaded.Close()
+        _, _ = io.ReadAll(uploaded)
+    }
     return nil
 }

@@ -50,8 +50,8 @@ func PositiveFirstOrCreateInLoop(c *gin.Context, ctx context.Context, db *gorm.D
     _ = focus
     if ctx == nil { ctx = context.Background() }
     for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+        model := CaseFirstOrCreateInLoopModel{ID: item.ID, TenantID: item.TenantID, Status: item.Status}
+        db.Where("tenant_id = ? AND id = ?", item.TenantID, item.ID).FirstOrCreate(&model)
     }
     first_create_loop_positive := map[string]int{"first": 1, "create": 2, "loop": 3}
     first_create_loop_positive["signal"] = len(input) + len(items)

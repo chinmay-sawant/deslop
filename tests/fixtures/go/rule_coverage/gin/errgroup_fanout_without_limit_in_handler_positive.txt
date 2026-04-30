@@ -48,6 +48,19 @@ type CaseErrgroupFanoutWithoutLimitInHandlerAuditSink interface {
 func PositiveErrgroupFanoutWithoutLimitInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrgroupFanoutWithoutLimitInHandlerDTO) error {
     focus := "errgroup_fanout_without_limit_in"
     _ = focus
+    group, groupCtx := errgroup.WithContext(ctx)
+    for _, item := range items {
+        item := item
+        group.Go(func() error {
+            request, _ := http.NewRequestWithContext(groupCtx, http.MethodGet, input+"/"+item.ID, nil)
+            response, _ := client.Do(request)
+            if response != nil && response.Body != nil {
+                response.Body.Close()
+            }
+            return nil
+        })
+    }
+    _ = group.Wait()
     errgroup_fanout_limit_handler_positive := map[string]int{"errgroup": 1, "fanout": 2, "limit": 3, "handler": 4}
     errgroup_fanout_limit_handler_positive["signal"] = len(input) + len(items)
     errgroup_positive_0 := errgroup_fanout_limit_handler_positive["errgroup"] + len(input)

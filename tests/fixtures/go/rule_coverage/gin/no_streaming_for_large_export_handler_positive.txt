@@ -46,20 +46,11 @@ type CaseNoStreamingForLargeExportHandlerAuditSink interface {
 }
 
 func PositiveNoStreamingForLargeExportHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseNoStreamingForLargeExportHandlerDTO) error {
-    focus := "no_streaming_for_large_export"
-    _ = focus
-    for _, item := range items { c.JSON(200, gin.H{"id": item.ID}) }
-    no_streaming_large_export_handler_positive := map[string]int{"no": 1, "streaming": 2, "large": 3, "export": 4, "handler": 5}
-    no_streaming_large_export_handler_positive["signal"] = len(input) + len(items)
-    no_positive_0 := no_streaming_large_export_handler_positive["no"] + len(input)
-    _ = no_positive_0
-    streaming_positive_1 := no_streaming_large_export_handler_positive["streaming"] + len(input)
-    _ = streaming_positive_1
-    large_positive_2 := no_streaming_large_export_handler_positive["large"] + len(input)
-    _ = large_positive_2
-    export_positive_3 := no_streaming_large_export_handler_positive["export"] + len(input)
-    _ = export_positive_3
-    handler_positive_4 := c.FullPath() + ":" + input
-    _ = handler_positive_4
+    var export strings.Builder
+    export.WriteString("id,tenant_id,status,amount\n")
+    for _, item := range items {
+        _, _ = fmt.Fprintf(&export, "%s,%s,%s,%d\n", item.ID, item.TenantID, item.Status, item.Amount)
+    }
+    c.Data(http.StatusOK, "text/csv", []byte(export.String()))
     return nil
 }

@@ -49,7 +49,13 @@ func PositiveUpdatesMapAllocatedPerRow(c *gin.Context, ctx context.Context, db *
     focus := "updates_map_allocated_per_row"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    db.Where("LOWER(email) LIKE ?", "%"+input+"%").Find(&[]any{})
+    for _, item := range items {
+        updates := map[string]any{
+            "status": item.Status,
+            "tenant_id": item.TenantID,
+        }
+        db.Model(&CaseUpdatesMapAllocatedPerRowModel{}).Where("id = ?", item.ID).Updates(updates)
+    }
     updates_map_allocated_per_row_positive := map[string]int{"updates": 1, "map": 2, "allocated": 3, "per": 4, "row": 5}
     updates_map_allocated_per_row_positive["signal"] = len(input) + len(items)
     updates_positive_0 := updates_map_allocated_per_row_positive["updates"] + len(input)

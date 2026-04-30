@@ -99,10 +99,11 @@ src/heuristics/rust/performance.rs:375:    line[start + marker.len()..].starts_w
 src/heuristics/rust/performance.rs:456:                let receiver = &line[start..index];
 src/heuristics/rust/runtime_boundary.rs:273:        if &bytes[start..start + keyword_bytes.len()] != keyword_bytes {
 src/index/resolve.rs:144:                        &segments[super_count..],
-src/index/resolve.rs:189:                    &segments[start_index..],
+src/index/resolve.rs:191:                    &segments[start_index..],
 src/rules.rs:637:        while let Some(offset) = source[search_start..].find("rule_id: \"") {
 src/rules.rs:639:            let Some(end_offset) = source[start..].find('\"') else {
 src/rules.rs:643:            ids.insert(source[start..start + end_offset].to_string());
+tests/integration_scan/go/rule_fixture_coverage.rs:156:    for (index, metadata) in go_rules[start..end].iter().enumerate() {
 tests/integration_scan/mod.rs:33:#[path = "../support/mod.rs"]
 
 ## toctou_fs_checks
@@ -119,9 +120,9 @@ src/heuristics/go/idioms.rs:1650:            || probe.join("Makefile").exists()
 src/heuristics/go/idioms.rs:1651:            || probe.join("makefile").exists()
 src/heuristics/go/idioms.rs:1652:            || probe.join("action.yml").exists()
 src/heuristics/go/idioms.rs:1653:            || probe.join("action.yaml").exists()
-src/heuristics/performance_layers.rs:719:        "metadata" => Some(&["metadata", "stat(", "headers", "metadata()"]),
-src/heuristics/performance_layers.rs:847:        "metadata" => Some(&["fs::metadata", ".metadata("]),
-src/heuristics/performance_layers.rs:858:        "tonic" => Some(&["tonic", "metadata()"]),
+src/heuristics/performance_layers.rs:722:        "metadata" => Some(&["metadata", "stat(", "headers", "metadata()"]),
+src/heuristics/performance_layers.rs:850:        "metadata" => Some(&["fs::metadata", ".metadata("]),
+src/heuristics/performance_layers.rs:861:        "tonic" => Some(&["tonic", "metadata()"]),
 src/heuristics/python/framework/django.rs:26:                "function {} uses .count() > 0; prefer .exists() to avoid full count",
 src/heuristics/python/hotpath_ext.rs:956:    if contains_any(body, &["os.path.exists(", ".exists()"])
 src/heuristics/python/packaging.rs:249:    candidate.exists().then_some(candidate)
@@ -156,7 +157,7 @@ src/heuristics/rust/boundary.rs:209: check-then-open candidate after line 203:  
 
 ## secret_comparisons
 src/analysis/rust/parser/tests.rs:90:            .any(|name| name == "password")
-src/heuristics/performance_layers.rs:248:        if !groups.iter().any(|group: &MarkerGroup| group.token == token) {
+src/heuristics/performance_layers.rs:250:            .any(|group: &MarkerGroup| group.token == token)
 src/heuristics/python/boundaries.rs:588:        if SECRET_NAMES.iter().any(|k| name_lower == *k) {
 src/heuristics/python/quality/mod.rs:726:        .any(|part| part == token || part.ends_with(&format!(".{token}")))
 src/heuristics/rust/mod.rs:271:        .any(|token| normalized == *token || normalized.contains(token))

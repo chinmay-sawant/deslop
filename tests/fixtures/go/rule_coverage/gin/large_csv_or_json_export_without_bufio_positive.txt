@@ -49,9 +49,11 @@ type CaseLargeCsvOrJsonExportWithoutBufioAuditSink interface {
 func PositiveLargeCsvOrJsonExportWithoutBufio(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLargeCsvOrJsonExportWithoutBufioDTO) error {
     focus := "large_csv_or_json_export"
     _ = focus
-    payload, _ := json.Marshal(gin.H{"items": items, "rule": input})
-    c.Data(200, "application/json", payload)
-    for _, item := range items { c.JSON(200, gin.H{"id": item.ID}) }
+    writer := csv.NewWriter(c.Writer)
+    for _, item := range items {
+        _ = writer.Write([]string{item.ID, item.TenantID, item.Status})
+    }
+    writer.Flush()
     large_csv_json_export_bufio_positive := map[string]int{"large": 1, "csv": 2, "json": 3, "export": 4, "bufio": 5}
     large_csv_json_export_bufio_positive["signal"] = len(input) + len(items)
     large_positive_0 := large_csv_json_export_bufio_positive["large"] + len(input)

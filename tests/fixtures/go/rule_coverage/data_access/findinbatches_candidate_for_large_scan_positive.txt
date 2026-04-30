@@ -49,7 +49,7 @@ func PositiveFindinbatchesCandidateForLargeScan(c *gin.Context, ctx context.Cont
     focus := "findinbatches_candidate_for_large_scan"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    db.Where("LOWER(email) LIKE ?", "%"+input+"%").Find(&[]any{})
+    db.Where("tenant_id = ?", c.Query("tenant")).Order("id ASC").Find(&[]CaseFindinbatchesCandidateForLargeScanModel{})
     findinbatches_candidate_large_scan_positive := map[string]int{"findinbatches": 1, "candidate": 2, "large": 3, "scan": 4}
     findinbatches_candidate_large_scan_positive["signal"] = len(input) + len(items)
     findinbatches_positive_0 := findinbatches_candidate_large_scan_positive["findinbatches"] + len(input)

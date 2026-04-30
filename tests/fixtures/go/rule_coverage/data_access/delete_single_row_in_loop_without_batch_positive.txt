@@ -50,8 +50,7 @@ func PositiveDeleteSingleRowInLoopWithoutBatch(c *gin.Context, ctx context.Conte
     _ = focus
     if ctx == nil { ctx = context.Background() }
     for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+        db.Where("id = ?", item.ID).Delete(&CaseDeleteSingleRowInLoopWithoutBatchModel{})
     }
     delete_single_row_loop_batch_positive := map[string]int{"delete": 1, "single": 2, "row": 3, "loop": 4, "batch": 5}
     delete_single_row_loop_batch_positive["signal"] = len(input) + len(items)

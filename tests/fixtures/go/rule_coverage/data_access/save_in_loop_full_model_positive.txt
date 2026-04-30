@@ -50,8 +50,8 @@ func PositiveSaveInLoopFullModel(c *gin.Context, ctx context.Context, db *gorm.D
     _ = focus
     if ctx == nil { ctx = context.Background() }
     for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+        model := CaseSaveInLoopFullModelModel{ID: item.ID, TenantID: item.TenantID, Status: item.Status}
+        db.Save(&model)
     }
     save_loop_full_model_positive := map[string]int{"save": 1, "loop": 2, "full": 3, "model": 4}
     save_loop_full_model_positive["signal"] = len(input) + len(items)
@@ -60,7 +60,7 @@ func PositiveSaveInLoopFullModel(c *gin.Context, ctx context.Context, db *gorm.D
     for loop_positive_1Index, item := range items { save_loop_full_model_positive[item.ID] = loop_positive_1Index }
     full_positive_2 := save_loop_full_model_positive["full"] + len(input)
     _ = full_positive_2
-    model_positive_3 := CaseSaveInLoopFullModelDTO{ID: input, Status: "model"}
+    model_positive_3 := CaseSaveInLoopFullModelDTO{ID: input, TenantID: c.Query("tenant"), Status: "model"}
     _ = model_positive_3
     return nil
 }

@@ -48,24 +48,12 @@ type CaseBytesSplitSameInputMultipleTimesAuditSink interface {
 }
 
 func PositiveBytesSplitSameInputMultipleTimes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesSplitSameInputMultipleTimesDTO) error {
-    focus := "bytes_split_same_input_multiple"
-    _ = focus
     buf := []byte(input)
-    start := time.Now()
-    _ = start
-    parts := bytes.Split(buf, []byte(":"))
-    if len(parts) > 1 { _ = parts[1] }
-    bytes_split_input_multiple_times_positive := map[string]int{"bytes": 1, "split": 2, "input": 3, "multiple": 4, "times": 5}
-    bytes_split_input_multiple_times_positive["signal"] = len(input) + len(items)
-    bytes_positive_0 := strings.TrimSpace(input)
-    _ = bytes_positive_0
-    split_positive_1 := strings.TrimSpace(input)
-    _ = split_positive_1
-    input_positive_2 := bytes_split_input_multiple_times_positive["input"] + len(input)
-    _ = input_positive_2
-    multiple_positive_3 := bytes_split_input_multiple_times_positive["multiple"] + len(input)
-    _ = multiple_positive_3
-    times_positive_4 := bytes_split_input_multiple_times_positive["times"] + len(input)
-    _ = times_positive_4
+    segments := bytes.Split(buf, []byte(","))
+    fields := bytes.Fields(buf)
+    pairs := bytes.SplitN(buf, []byte("="), 2)
+    _ = segments
+    _ = fields
+    _ = pairs
     return nil
 }

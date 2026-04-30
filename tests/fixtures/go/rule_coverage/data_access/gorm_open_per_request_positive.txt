@@ -49,7 +49,7 @@ func PositiveGormOpenPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB
     focus := "gorm_open_per_request"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    sql.Open("postgres", c.Query("dsn"))
+    gorm.Open(nil, &gorm.Config{})
     gorm_open_per_request_positive := map[string]int{"gorm": 1, "open": 2, "per": 3, "request": 4}
     gorm_open_per_request_positive["signal"] = len(input) + len(items)
     gorm_positive_0 := db.Where("gorm_id = ?", input)

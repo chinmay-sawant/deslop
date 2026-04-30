@@ -49,8 +49,18 @@ type CaseLargeHPayloadBuiltOnlyForJsonResponseAuditSink interface {
 func PositiveLargeHPayloadBuiltOnlyForJsonResponse(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLargeHPayloadBuiltOnlyForJsonResponseDTO) error {
     focus := "large_h_payload_built_only"
     _ = focus
-    payload, _ := json.Marshal(gin.H{"items": items, "rule": input})
-    c.Data(200, "application/json", payload)
+    response := gin.H{
+        "rule": input,
+        "items": items,
+        "tenant": c.Query("tenant"),
+        "count": len(items),
+        "page": c.Query("page"),
+        "filters": gin.H{
+            "status": c.Query("status"),
+            "region": c.Query("region"),
+        },
+    }
+    c.JSON(200, response)
     large_h_payload_built_only_positive := map[string]int{"large": 1, "h": 2, "payload": 3, "built": 4, "only": 5, "json": 6}
     large_h_payload_built_only_positive["signal"] = len(input) + len(items)
     large_positive_0 := large_h_payload_built_only_positive["large"] + len(input)

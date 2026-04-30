@@ -49,24 +49,11 @@ type CaseAppendThenSortEachIterationAuditSink interface {
 }
 
 func PositiveAppendThenSortEachIteration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAppendThenSortEachIterationDTO) error {
-    focus := "append_then_sort_each_iteration"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for range items { sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID }) }
-    var copied []CaseAppendThenSortEachIterationDTO
-    for _, item := range items { copied = append(copied, item) }
-    append_then_sort_each_iteration_positive := map[string]int{"append": 1, "then": 2, "sort": 3, "each": 4, "iteration": 5}
-    append_then_sort_each_iteration_positive["signal"] = len(input) + len(items)
-    append_positive_0 := append_then_sort_each_iteration_positive["append"] + len(input)
-    _ = append_positive_0
-    then_positive_1 := append_then_sort_each_iteration_positive["then"] + len(input)
-    _ = then_positive_1
-    sort_positive_2 := append_then_sort_each_iteration_positive["sort"] + len(input)
-    _ = sort_positive_2
-    each_positive_3 := append_then_sort_each_iteration_positive["each"] + len(input)
-    _ = each_positive_3
-    for iteration_positive_4Index, item := range items { append_then_sort_each_iteration_positive[item.ID] = iteration_positive_4Index }
+    ranked := make([]string, 0, len(items))
+    for _, item := range items {
+        ranked = append(ranked, item.ID)
+        sort.Strings(ranked)
+    }
+    _ = ranked
     return nil
 }

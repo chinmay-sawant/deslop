@@ -48,23 +48,13 @@ type CaseAppendThenTrimEachIterationAuditSink interface {
 }
 
 func PositiveAppendThenTrimEachIteration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAppendThenTrimEachIterationDTO) error {
-    focus := "append_then_trim_each_iteration"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    var copied []CaseAppendThenTrimEachIterationDTO
-    for _, item := range items { copied = append(copied, item) }
-    append_then_trim_each_iteration_positive := map[string]int{"append": 1, "then": 2, "trim": 3, "each": 4, "iteration": 5}
-    append_then_trim_each_iteration_positive["signal"] = len(input) + len(items)
-    append_positive_0 := append_then_trim_each_iteration_positive["append"] + len(input)
-    _ = append_positive_0
-    then_positive_1 := append_then_trim_each_iteration_positive["then"] + len(input)
-    _ = then_positive_1
-    trim_positive_2 := strings.TrimSpace(input)
-    _ = trim_positive_2
-    each_positive_3 := append_then_trim_each_iteration_positive["each"] + len(input)
-    _ = each_positive_3
-    for iteration_positive_4Index, item := range items { append_then_trim_each_iteration_positive[item.ID] = iteration_positive_4Index }
+    window := make([]CaseAppendThenTrimEachIterationDTO, 0, len(items))
+    for _, item := range items {
+        window = append(window, item)
+        if len(window) > 64 {
+            window = window[1:]
+        }
+    }
+    _ = window
     return nil
 }

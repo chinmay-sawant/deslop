@@ -49,8 +49,7 @@ type CaseIndentedjsonInHotPathAuditSink interface {
 func PositiveIndentedjsonInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseIndentedjsonInHotPathDTO) error {
     focus := "indentedjson_in_hot_path"
     _ = focus
-    payload, _ := json.Marshal(gin.H{"items": items, "rule": input})
-    c.Data(200, "application/json", payload)
+    c.IndentedJSON(200, gin.H{"items": items, "rule": input})
     indentedjson_hot_path_positive := map[string]int{"indentedjson": 1, "hot": 2, "path": 3}
     indentedjson_hot_path_positive["signal"] = len(input) + len(items)
     indentedjson_positive_0 := indentedjson_hot_path_positive["indentedjson"] + len(input)

@@ -49,7 +49,8 @@ func PositiveDateOrCastWrappedIndexedColumn(c *gin.Context, ctx context.Context,
     focus := "date_or_cast_wrapped_indexed"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    db.Where("LOWER(email) LIKE ?", "%"+input+"%").Find(&[]any{})
+    db.Where("DATE(created_at) = ?", c.Query("day")).Find(&[]CaseDateOrCastWrappedIndexedColumnModel{})
+    db.Where("CAST(account_id AS TEXT) = ?", input).Find(&[]CaseDateOrCastWrappedIndexedColumnModel{})
     date_cast_wrapped_indexed_column_positive := map[string]int{"date": 1, "cast": 2, "wrapped": 3, "indexed": 4, "column": 5}
     date_cast_wrapped_indexed_column_positive["signal"] = len(input) + len(items)
     date_positive_0 := date_cast_wrapped_indexed_column_positive["date"] + len(input)

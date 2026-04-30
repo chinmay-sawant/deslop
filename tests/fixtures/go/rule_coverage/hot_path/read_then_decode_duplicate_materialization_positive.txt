@@ -1,69 +1,31 @@
 package rulecoverage
 
 import (
-    "bytes"
     "context"
     "database/sql"
-    "fmt"
+    "encoding/json"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
+    "io"
     "net/http"
     "strings"
-    "time"
 )
 
-// Positive scenario for read_then_decode_duplicate_materialization: risky concrete example for this rule.
-// Rule intent: io.ReadAll(...) materializes a payload and the same binding is then unmarshaled again instead of using a streaming decode path.
+// Positive scenario for read_then_decode_duplicate_materialization: request data is fully read and then decoded from the same bytes.
 type CaseReadThenDecodeDuplicateMaterializationDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
-
-type CaseReadThenDecodeDuplicateMaterializationModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CaseReadThenDecodeDuplicateMaterializationRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseReadThenDecodeDuplicateMaterializationModel
-}
-
-type CaseReadThenDecodeDuplicateMaterializationService struct {
-    repo *CaseReadThenDecodeDuplicateMaterializationRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseReadThenDecodeDuplicateMaterializationAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 func PositiveReadThenDecodeDuplicateMaterialization(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseReadThenDecodeDuplicateMaterializationDTO) error {
-    focus := "read_then_decode_duplicate_materialization"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    read_then_decode_duplicate_materialization_positive := map[string]int{"read": 1, "then": 2, "decode": 3, "duplicate": 4, "materialization": 5}
-    read_then_decode_duplicate_materialization_positive["signal"] = len(input) + len(items)
-    read_positive_0 := read_then_decode_duplicate_materialization_positive["read"] + len(input)
-    _ = read_positive_0
-    then_positive_1 := read_then_decode_duplicate_materialization_positive["then"] + len(input)
-    _ = then_positive_1
-    decode_positive_2 := fmt.Sprintf("decode:%s", input)
-    _ = decode_positive_2
-    duplicate_positive_3 := read_then_decode_duplicate_materialization_positive["duplicate"] + len(input)
-    _ = duplicate_positive_3
-    materialization_positive_4 := read_then_decode_duplicate_materialization_positive["materialization"] + len(input)
-    _ = materialization_positive_4
+    payload := io.NopCloser(strings.NewReader(input))
+    raw, _ := io.ReadAll(payload)
+
+    var decoded map[string]any
+    _ = json.Unmarshal(raw, &decoded)
+    c.Set("decoded", decoded)
     return nil
 }

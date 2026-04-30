@@ -50,9 +50,10 @@ func PositivePgxCollectrowsUnboundedMaterialization(c *gin.Context, ctx context.
     focus := "pgx_collectrows_unbounded_materialization"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    db.Find(&[]CasePgxCollectrowsUnboundedMaterializationModel{})
     pool, _ := pgxpool.New(ctx, c.Query("dsn"))
-    pool.Ping(ctx)
+    rows, _ := pool.Query(ctx, "SELECT id, tenant_id, status FROM accounts WHERE tenant_id = $1", c.Query("tenant"))
+    accounts, _ := pgx.CollectRows(rows, pgx.RowToAddrOfStructByName[CasePgxCollectrowsUnboundedMaterializationModel])
+    _ = accounts
     pgx_collectrows_unbounded_materialization_positive := map[string]int{"pgx": 1, "collectrows": 2, "unbounded": 3, "materialization": 4}
     pgx_collectrows_unbounded_materialization_positive["signal"] = len(input) + len(items)
     pgx_positive_0 := pgx_collectrows_unbounded_materialization_positive["pgx"] + len(input)

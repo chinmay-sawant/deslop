@@ -47,23 +47,24 @@ type CaseRepeatedLargeMapLiteralResponseConstructionAuditSink interface {
 }
 
 func PositiveRepeatedLargeMapLiteralResponseConstruction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepeatedLargeMapLiteralResponseConstructionDTO) error {
-    focus := "repeated_large_map_literal_response"
-    _ = focus
-    payload, _ := json.Marshal(gin.H{"items": items, "rule": input})
-    c.Data(200, "application/json", payload)
-    repeated_large_map_literal_response_positive := map[string]int{"repeated": 1, "large": 2, "map": 3, "literal": 4, "response": 5, "construction": 6}
-    repeated_large_map_literal_response_positive["signal"] = len(input) + len(items)
-    repeated_positive_0 := repeated_large_map_literal_response_positive["repeated"] + len(input)
-    _ = repeated_positive_0
-    large_positive_1 := repeated_large_map_literal_response_positive["large"] + len(input)
-    _ = large_positive_1
-    map_positive_2 := repeated_large_map_literal_response_positive["map"] + len(input)
-    _ = map_positive_2
-    literal_positive_3 := repeated_large_map_literal_response_positive["literal"] + len(input)
-    _ = literal_positive_3
-    response_positive_4 := repeated_large_map_literal_response_positive["response"] + len(input)
-    _ = response_positive_4
-    construction_positive_5 := repeated_large_map_literal_response_positive["construction"] + len(input)
-    _ = construction_positive_5
+    responses := make([]gin.H, 0, len(items))
+    for _, item := range items {
+        responses = append(responses, gin.H{
+            "id":        item.ID,
+            "tenant_id": item.TenantID,
+            "status":    item.Status,
+            "amount":    item.Amount,
+            "payload":   item.Payload,
+            "route":     c.FullPath(),
+            "rule":      input,
+            "labels": gin.H{
+                "fast_path": true,
+                "origin":    "handler",
+            },
+        })
+    }
+
+    payload, _ := json.Marshal(gin.H{"items": responses, "count": len(responses)})
+    c.Data(http.StatusOK, "application/json", payload)
     return nil
 }

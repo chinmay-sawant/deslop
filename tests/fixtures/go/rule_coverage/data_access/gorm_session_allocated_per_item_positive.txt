@@ -50,8 +50,8 @@ func PositiveGormSessionAllocatedPerItem(c *gin.Context, ctx context.Context, db
     _ = focus
     if ctx == nil { ctx = context.Background() }
     for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+        session := db.Session(&gorm.Session{})
+        session.Where("id = ?", item.ID).Find(&[]CaseGormSessionAllocatedPerItemModel{})
     }
     gorm_session_allocated_per_item_positive := map[string]int{"gorm": 1, "session": 2, "allocated": 3, "per": 4, "item": 5}
     gorm_session_allocated_per_item_positive["signal"] = len(input) + len(items)

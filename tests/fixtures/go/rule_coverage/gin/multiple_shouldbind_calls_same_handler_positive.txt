@@ -46,22 +46,14 @@ type CaseMultipleShouldbindCallsSameHandlerAuditSink interface {
 }
 
 func PositiveMultipleShouldbindCallsSameHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMultipleShouldbindCallsSameHandlerDTO) error {
-    focus := "multiple_shouldbind_calls_same_handler"
-    _ = focus
-    raw, _ := c.GetRawData()
-    var body map[string]any
-    c.ShouldBindJSON(&body)
-    _ = raw
-    for _, item := range items { db.Create(&item) }
-    multiple_shouldbind_calls_handler_positive := map[string]int{"multiple": 1, "shouldbind": 2, "calls": 3, "handler": 4}
-    multiple_shouldbind_calls_handler_positive["signal"] = len(input) + len(items)
-    multiple_positive_0 := multiple_shouldbind_calls_handler_positive["multiple"] + len(input)
-    _ = multiple_positive_0
-    shouldbind_positive_1 := multiple_shouldbind_calls_handler_positive["shouldbind"] + len(input)
-    _ = shouldbind_positive_1
-    calls_positive_2 := multiple_shouldbind_calls_handler_positive["calls"] + len(input)
-    _ = calls_positive_2
-    handler_positive_3 := c.FullPath() + ":" + input
-    _ = handler_positive_3
+    var firstPass map[string]any
+    _ = c.ShouldBindJSON(&firstPass)
+
+    var secondPass CaseMultipleShouldbindCallsSameHandlerDTO
+    _ = c.ShouldBindJSON(&secondPass)
+
+    if id, ok := firstPass["id"].(string); ok {
+        c.Set("bound_id", id)
+    }
     return nil
 }

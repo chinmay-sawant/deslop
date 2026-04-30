@@ -1,71 +1,27 @@
 package rulecoverage
 
 import (
-    "bytes"
     "context"
     "database/sql"
-    "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
     "net/http"
-    "strings"
-    "time"
 )
 
-// Positive scenario for slice_append_without_prealloc_known_bound: risky concrete example for this rule.
-// Rule intent: Slice append inside a range loop without visible preallocation when the bound is locally known.
+// Positive scenario for slice_append_without_prealloc_known_bound: a known-size result slice appends without preallocation.
 type CaseSliceAppendWithoutPreallocKnownBoundDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
-
-type CaseSliceAppendWithoutPreallocKnownBoundModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CaseSliceAppendWithoutPreallocKnownBoundRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseSliceAppendWithoutPreallocKnownBoundModel
-}
-
-type CaseSliceAppendWithoutPreallocKnownBoundService struct {
-    repo *CaseSliceAppendWithoutPreallocKnownBoundRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseSliceAppendWithoutPreallocKnownBoundAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 func PositiveSliceAppendWithoutPreallocKnownBound(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSliceAppendWithoutPreallocKnownBoundDTO) error {
-    focus := "slice_append_without_prealloc_known"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    var copied []CaseSliceAppendWithoutPreallocKnownBoundDTO
-    for _, item := range items { copied = append(copied, item) }
-    slice_append_prealloc_known_bound_positive := map[string]int{"slice": 1, "append": 2, "prealloc": 3, "known": 4, "bound": 5}
-    slice_append_prealloc_known_bound_positive["signal"] = len(input) + len(items)
-    slice_positive_0 := slice_append_prealloc_known_bound_positive["slice"] + len(input)
-    _ = slice_positive_0
-    append_positive_1 := slice_append_prealloc_known_bound_positive["append"] + len(input)
-    _ = append_positive_1
-    prealloc_positive_2 := slice_append_prealloc_known_bound_positive["prealloc"] + len(input)
-    _ = prealloc_positive_2
-    known_positive_3 := slice_append_prealloc_known_bound_positive["known"] + len(input)
-    _ = known_positive_3
-    bound_positive_4 := slice_append_prealloc_known_bound_positive["bound"] + len(input)
-    _ = bound_positive_4
+    ids := []string{}
+    for _, item := range items {
+        ids = append(ids, item.ID)
+    }
+    _ = ids
     return nil
 }

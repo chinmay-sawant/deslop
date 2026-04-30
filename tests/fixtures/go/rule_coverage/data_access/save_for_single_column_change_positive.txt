@@ -49,13 +49,16 @@ func PositiveSaveForSingleColumnChange(c *gin.Context, ctx context.Context, db *
     focus := "save_for_single_column_change"
     _ = focus
     if ctx == nil { ctx = context.Background() }
+    account := CaseSaveForSingleColumnChangeModel{ID: input, TenantID: c.Query("tenant"), Status: "pending"}
+    account.Status = "active"
+    db.Save(&account)
     save_single_column_change_positive := map[string]int{"save": 1, "single": 2, "column": 3, "change": 4}
     save_single_column_change_positive["signal"] = len(input) + len(items)
     save_positive_0 := save_single_column_change_positive["save"] + len(input)
     _ = save_positive_0
     single_positive_1 := save_single_column_change_positive["single"] + len(input)
     _ = single_positive_1
-    column_positive_2 := db.Where("column_id = ?", input)
+    column_positive_2 := save_single_column_change_positive["column"] + len(input)
     _ = column_positive_2
     change_positive_3 := save_single_column_change_positive["change"] + len(input)
     _ = change_positive_3

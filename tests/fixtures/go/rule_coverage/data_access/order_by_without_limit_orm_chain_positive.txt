@@ -49,7 +49,7 @@ func PositiveOrderByWithoutLimitOrmChain(c *gin.Context, ctx context.Context, db
     focus := "order_by_without_limit_orm"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    db.Find(&[]CaseOrderByWithoutLimitOrmChainModel{})
+    db.Where("tenant_id = ?", c.Query("tenant")).Order("created_at DESC").Find(&[]CaseOrderByWithoutLimitOrmChainModel{})
     order_limit_orm_chain_positive := map[string]int{"order": 1, "limit": 2, "orm": 3, "chain": 4}
     order_limit_orm_chain_positive["signal"] = len(input) + len(items)
     order_positive_0 := order_limit_orm_chain_positive["order"] + len(input)

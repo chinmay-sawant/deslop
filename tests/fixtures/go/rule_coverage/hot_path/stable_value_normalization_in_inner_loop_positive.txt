@@ -1,69 +1,31 @@
 package repository
 
 import (
-    "bytes"
     "context"
     "database/sql"
-    "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
     "net/http"
     "strings"
-    "time"
 )
 
-// Positive scenario for stable_value_normalization_in_inner_loop: risky concrete example for this rule.
-// Rule intent: Stable value normalization (ToLower, TrimSpace, etc.) repeated inside inner loops.
+// Positive scenario for stable_value_normalization_in_inner_loop: the same stable input is normalized inside an inner loop.
 type CaseStableValueNormalizationInInnerLoopDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
-
-type CaseStableValueNormalizationInInnerLoopModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CaseStableValueNormalizationInInnerLoopRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseStableValueNormalizationInInnerLoopModel
-}
-
-type CaseStableValueNormalizationInInnerLoopService struct {
-    repo *CaseStableValueNormalizationInInnerLoopRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CaseStableValueNormalizationInInnerLoopAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 func PositiveStableValueNormalizationInInnerLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStableValueNormalizationInInnerLoopDTO) error {
-    focus := "stable_value_normalization_in_inner"
-    _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    stable_value_normalization_inner_loop_positive := map[string]int{"stable": 1, "value": 2, "normalization": 3, "inner": 4, "loop": 5}
-    stable_value_normalization_inner_loop_positive["signal"] = len(input) + len(items)
-    stable_positive_0 := stable_value_normalization_inner_loop_positive["stable"] + len(input)
-    _ = stable_positive_0
-    value_positive_1 := stable_value_normalization_inner_loop_positive["value"] + len(input)
-    _ = value_positive_1
-    normalization_positive_2 := stable_value_normalization_inner_loop_positive["normalization"] + len(input)
-    _ = normalization_positive_2
-    inner_positive_3 := stable_value_normalization_inner_loop_positive["inner"] + len(input)
-    _ = inner_positive_3
-    for loop_positive_4Index, item := range items { stable_value_normalization_inner_loop_positive[item.ID] = loop_positive_4Index }
+    for _, left := range items {
+        for _, right := range items {
+            normalizedTenant := strings.ToLower(strings.TrimSpace(input))
+            if normalizedTenant == right.TenantID && left.ID != "" {
+                c.Set(left.ID, right.Status)
+            }
+        }
+    }
     return nil
 }

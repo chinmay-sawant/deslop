@@ -49,7 +49,7 @@ func PositiveGormSelectMissingProjectionOnWideModel(c *gin.Context, ctx context.
     focus := "gorm_select_missing_projection_on"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    db.Find(&[]CaseGormSelectMissingProjectionOnWideModelModel{})
+    db.Model(&CaseGormSelectMissingProjectionOnWideModelModel{}).Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormSelectMissingProjectionOnWideModelModel{})
     gorm_select_missing_projection_wide_positive := map[string]int{"gorm": 1, "select": 2, "missing": 3, "projection": 4, "wide": 5, "model": 6}
     gorm_select_missing_projection_wide_positive["signal"] = len(input) + len(items)
     gorm_positive_0 := db.Where("gorm_id = ?", input)

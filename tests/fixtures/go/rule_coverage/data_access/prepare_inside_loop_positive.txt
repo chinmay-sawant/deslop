@@ -50,8 +50,8 @@ func PositivePrepareInsideLoop(c *gin.Context, ctx context.Context, db *gorm.DB,
     _ = focus
     if ctx == nil { ctx = context.Background() }
     for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+        stmt, _ := sqlDB.PrepareContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?")
+        _, _ = stmt.QueryContext(ctx, item.ID)
     }
     prepare_inside_loop_positive := map[string]int{"prepare": 1, "inside": 2, "loop": 3}
     prepare_inside_loop_positive["signal"] = len(input) + len(items)

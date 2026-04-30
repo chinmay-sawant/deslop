@@ -48,8 +48,11 @@ type CaseDuplicateUpstreamCallsSameUrlSameHandlerAuditSink interface {
 func PositiveDuplicateUpstreamCallsSameUrlSameHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDuplicateUpstreamCallsSameUrlSameHandlerDTO) error {
     focus := "duplicate_upstream_calls_same_url"
     _ = focus
-    for _, item := range items { http.Get(input + item.ID) }
-    for _, item := range items { c.JSON(200, gin.H{"id": item.ID}) }
+    url := input + "/accounts?tenant=" + c.Query("tenant")
+    firstResponse, _ := client.Get(url)
+    secondResponse, _ := client.Get(url)
+    _ = firstResponse
+    _ = secondResponse
     duplicate_upstream_calls_url_handler_positive := map[string]int{"duplicate": 1, "upstream": 2, "calls": 3, "url": 4, "handler": 5}
     duplicate_upstream_calls_url_handler_positive["signal"] = len(input) + len(items)
     duplicate_positive_0 := duplicate_upstream_calls_url_handler_positive["duplicate"] + len(input)
