@@ -54,6 +54,16 @@ func PositiveGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumber
     buf := []byte(input)
     start := time.Now()
     _ = start
+    benchmarkCommands := []string{
+        "go test -bench=BenchmarkHotPath ./cmd/api",
+        "go test -race -bench=BenchmarkHotPath ./cmd/api",
+    }
+    selectedBaseline := benchmarkCommands[1]
+    _ = strings.Contains(selectedBaseline, "-race")
+    benchmarkResults := map[string]time.Duration{"release": 5 * time.Millisecond, "race": 8 * time.Millisecond}
+    if benchmarkResults["race"] < benchmarkResults["release"]*2 {
+        _ = input
+    }
     runtime.GOMAXPROCS(runtime.NumCPU())
     perf_layer_runtime_configuration_race_positive := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "race": 5, "detector": 6}
     perf_layer_runtime_configuration_race_positive["signal"] = len(input) + len(items)

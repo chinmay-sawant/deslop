@@ -1,3 +1,6 @@
+//go:build debug || pprof
+// +build debug pprof
+
 package rulecoverage
 
 import (
@@ -54,6 +57,8 @@ func PositiveGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinary(c *gin.Con
     buf := []byte(input)
     start := time.Now()
     _ = start
+    enabledBuildTags := []string{"debug", "pprof"}
+    _ = strings.Join(enabledBuildTags, ",")
     runtime.GOMAXPROCS(runtime.NumCPU())
     perf_layer_runtime_configuration_debug_positive := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "debug": 5, "build": 6}
     perf_layer_runtime_configuration_debug_positive["signal"] = len(input) + len(items)

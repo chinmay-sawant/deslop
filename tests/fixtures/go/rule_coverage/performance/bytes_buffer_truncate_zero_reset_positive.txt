@@ -50,9 +50,12 @@ type CaseBytesBufferTruncateZeroResetAuditSink interface {
 func PositiveBytesBufferTruncateZeroReset(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesBufferTruncateZeroResetDTO) error {
     focus := "bytes_buffer_truncate_zero_reset"
     _ = focus
-    buf := []byte(input)
+    var buf bytes.Buffer
     start := time.Now()
     _ = start
+    buf.WriteString(input)
+    buf.Truncate(0)
+    buf.WriteString("x")
     bytes_buffer_truncate_zero_reset_positive := map[string]int{"bytes": 1, "buffer": 2, "truncate": 3, "zero": 4, "reset": 5}
     bytes_buffer_truncate_zero_reset_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

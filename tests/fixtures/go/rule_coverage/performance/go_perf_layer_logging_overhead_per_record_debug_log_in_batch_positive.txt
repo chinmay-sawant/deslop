@@ -53,7 +53,11 @@ func PositiveGoPerfLayerLoggingOverheadPerRecordDebugLogInBatch(c *gin.Context, 
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    for _, item := range items {
+        if logger != nil {
+            logger.Printf("debug record tenant=%s id=%s payload=%d", item.TenantID, item.ID, len(item.Payload))
+        }
+    }
     perf_layer_logging_overhead_per_positive := map[string]int{"perf": 1, "layer": 2, "logging": 3, "overhead": 4, "per": 5, "record": 6}
     perf_layer_logging_overhead_per_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_logging_overhead_per_positive["perf"] + len(input)

@@ -53,6 +53,17 @@ func PositiveGoPerfLayerLazyLoadingEagerMetricLabelCardinalityBuild(c *gin.Conte
     buf := []byte(input)
     start := time.Now()
     _ = start
+    for _, item := range items {
+        labels := map[string]string{
+            "tenant_id": item.TenantID,
+            "item_id": item.ID,
+            "status": item.Status,
+        }
+        emitMetric := item.Amount > 1000
+        if emitMetric {
+            _ = labels
+        }
+    }
     perf_layer_lazy_loading_eager_positive := map[string]int{"perf": 1, "layer": 2, "lazy": 3, "loading": 4, "eager": 5, "metric": 6}
     perf_layer_lazy_loading_eager_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_lazy_loading_eager_positive["perf"] + len(input)

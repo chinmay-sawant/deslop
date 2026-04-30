@@ -53,6 +53,9 @@ func PositiveBuilderWriteStringSingleByteLiteral(c *gin.Context, ctx context.Con
     buf := []byte(input)
     start := time.Now()
     _ = start
+    var builder strings.Builder
+    builder.WriteString("x")
+    buf = append(buf[:0], builder.String()...)
     builder_write_string_single_byte_positive := map[string]int{"builder": 1, "write": 2, "string": 3, "single": 4, "byte": 5, "literal": 6}
     builder_write_string_single_byte_positive["signal"] = len(input) + len(items)
     builder_positive_0 := strings.TrimSpace(input)

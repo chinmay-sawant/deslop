@@ -53,7 +53,7 @@ func PositiveSprintfForSimpleStringFormat(c *gin.Context, ctx context.Context, d
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    for _, item := range items { _ = fmt.Sprintf("%s:%s", item.ID, item.TenantID) }
     sprintf_simple_string_format_positive := map[string]int{"sprintf": 1, "simple": 2, "string": 3, "format": 4}
     sprintf_simple_string_format_positive["signal"] = len(input) + len(items)
     sprintf_positive_0 := sprintf_simple_string_format_positive["sprintf"] + len(input)

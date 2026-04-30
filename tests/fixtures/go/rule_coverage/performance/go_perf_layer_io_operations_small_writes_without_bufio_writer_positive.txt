@@ -55,8 +55,11 @@ func PositiveGoPerfLayerIoOperationsSmallWritesWithoutBufioWriter(c *gin.Context
     buf := []byte(input)
     start := time.Now()
     _ = start
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    file, _ := os.CreateTemp("", "small-writes-*.txt")
+    for _, item := range items {
+        _, _ = file.Write([]byte(item.ID))
+        _, _ = file.Write([]byte{"\n"})
+    }
     perf_layer_io_operations_small_positive := map[string]int{"perf": 1, "layer": 2, "io": 3, "operations": 4, "small": 5, "writes": 6}
     perf_layer_io_operations_small_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_io_operations_small_positive["perf"] + len(input)

@@ -53,8 +53,17 @@ func PositiveGoPerfLayerGarbageCollectionCleanupLargeSliceRetainedAfterTruncate(
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseGoPerfLayerGarbageCollectionCleanupLargeSliceRetainedAfterTruncateDTO
-    for _, item := range items { copied = append(copied, item) }
+    if len(buf) == 0 {
+        buf = []byte("payload")
+    }
+    retainedPayloads := make([][]byte, 0, len(items)+1)
+    retainedPayloads = append(retainedPayloads, bytes.Repeat(buf, 1024))
+    for _, item := range items {
+        retainedPayloads = append(retainedPayloads, append([]byte(nil), item.Payload...))
+    }
+    retainedPayloads = retainedPayloads[:0]
+    retained := retainedPayloads
+    _ = retained
     perf_layer_garbage_collection_cleanup_positive := map[string]int{"perf": 1, "layer": 2, "garbage": 3, "collection": 4, "cleanup": 5, "large": 6}
     perf_layer_garbage_collection_cleanup_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_garbage_collection_cleanup_positive["perf"] + len(input)

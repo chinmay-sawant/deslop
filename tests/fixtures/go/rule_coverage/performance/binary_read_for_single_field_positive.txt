@@ -4,6 +4,7 @@ import (
     "bytes"
     "context"
     "database/sql"
+    "encoding/binary"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
@@ -53,6 +54,16 @@ func PositiveBinaryReadForSingleField(c *gin.Context, ctx context.Context, db *g
     buf := []byte(input)
     start := time.Now()
     _ = start
+    for _, item := range items {
+        if len(item.Payload) < 8 {
+            continue
+        }
+        reader := bytes.NewReader(item.Payload[:8])
+        var value uint64
+        if err := binary.Read(reader, binary.LittleEndian, &value); err == nil {
+            buf = append(buf[:0], byte(value))
+        }
+    }
     binary_read_single_field_positive := map[string]int{"binary": 1, "read": 2, "single": 3, "field": 4}
     binary_read_single_field_positive["signal"] = len(input) + len(items)
     binary_positive_0 := binary_read_single_field_positive["binary"] + len(input)

@@ -47,6 +47,8 @@ type CaseGoPerfLayerProfilingBenchmarkingOptimizationCommentWithoutBenchmarkAudi
     Record(context.Context, string, map[string]string) error
 }
 
+// Optimized to be 3x faster on production traffic.
+
 func PositiveGoPerfLayerProfilingBenchmarkingOptimizationCommentWithoutBenchmark(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerProfilingBenchmarkingOptimizationCommentWithoutBenchmarkDTO) error {
     focus := "go_perf_layer_profiling_benchmarking"
     _ = focus

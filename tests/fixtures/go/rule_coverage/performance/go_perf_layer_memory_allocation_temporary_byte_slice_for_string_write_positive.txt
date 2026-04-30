@@ -53,8 +53,10 @@ func PositiveGoPerfLayerMemoryAllocationTemporaryByteSliceForStringWrite(c *gin.
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseGoPerfLayerMemoryAllocationTemporaryByteSliceForStringWriteDTO
-    for _, item := range items { copied = append(copied, item) }
+    var sink bytes.Buffer
+    for _, item := range items {
+        _, _ = sink.Write([]byte(item.ID))
+    }
     perf_layer_memory_allocation_temporary_positive := map[string]int{"perf": 1, "layer": 2, "memory": 3, "allocation": 4, "temporary": 5, "byte": 6}
     perf_layer_memory_allocation_temporary_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_memory_allocation_temporary_positive["perf"] + len(input)

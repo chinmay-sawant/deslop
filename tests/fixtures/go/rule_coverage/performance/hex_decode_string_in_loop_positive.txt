@@ -54,7 +54,12 @@ func PositiveHexDecodeStringInLoop(c *gin.Context, ctx context.Context, db *gorm
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { hex.EncodeToString(item.Payload) }
+    encodedPayloads := make([]string, 0, len(items))
+    for _, item := range items { encodedPayloads = append(encodedPayloads, hex.EncodeToString(item.Payload)) }
+    for _, encoded := range encodedPayloads {
+        decoded, err := hex.DecodeString(encoded)
+        if err == nil { buf = append(buf[:0], decoded...) }
+    }
     for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
     hex_decode_string_loop_positive := map[string]int{"hex": 1, "decode": 2, "string": 3, "loop": 4}
     hex_decode_string_loop_positive["signal"] = len(input) + len(items)

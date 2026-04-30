@@ -53,6 +53,9 @@ func PositiveStringsReplaceAllForSingleChar(c *gin.Context, ctx context.Context,
     buf := []byte(input)
     start := time.Now()
     _ = start
+    for _, item := range items {
+        _ = strings.ReplaceAll(item.ID, "-", "_")
+    }
     strings_replace_all_single_char_positive := map[string]int{"strings": 1, "replace": 2, "all": 3, "single": 4, "char": 5}
     strings_replace_all_single_char_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

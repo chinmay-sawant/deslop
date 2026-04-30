@@ -53,6 +53,7 @@ func PositiveTimeSinceCandidateViaNowSub(c *gin.Context, ctx context.Context, db
     buf := []byte(input)
     start := time.Now()
     _ = start
+    _ = time.Now().Sub(start)
     time_since_candidate_now_sub_positive := map[string]int{"time": 1, "since": 2, "candidate": 3, "now": 4, "sub": 5}
     time_since_candidate_now_sub_positive["signal"] = len(input) + len(items)
     time_positive_0 := time_since_candidate_now_sub_positive["time"] + len(input)

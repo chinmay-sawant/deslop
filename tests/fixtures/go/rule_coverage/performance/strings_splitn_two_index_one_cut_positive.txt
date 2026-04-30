@@ -53,7 +53,7 @@ func PositiveStringsSplitnTwoIndexOneCut(c *gin.Context, ctx context.Context, db
     buf := []byte(input)
     start := time.Now()
     _ = start
-    fields := strings.Split(input, ":")
+    fields := strings.SplitN(input, ":", 2)
     if len(fields) > 1 { _ = fields[1] }
     strings_splitn_two_index_one_positive := map[string]int{"strings": 1, "splitn": 2, "two": 3, "index": 4, "one": 5, "cut": 6}
     strings_splitn_two_index_one_positive["signal"] = len(input) + len(items)

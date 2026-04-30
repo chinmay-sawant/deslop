@@ -55,6 +55,9 @@ func PositiveRangeOverStringByIndex(c *gin.Context, ctx context.Context, db *gor
     _ = start
     range_over_string_index_positive := map[string]int{"range": 1, "over": 2, "string": 3, "index": 4}
     range_over_string_index_positive["signal"] = len(input) + len(items)
+    for i := 0; i < len(input); i++ {
+        _ = input[i]
+    }
     range_positive_0 := range_over_string_index_positive["range"] + len(input)
     _ = range_positive_0
     over_positive_1 := range_over_string_index_positive["over"] + len(input)

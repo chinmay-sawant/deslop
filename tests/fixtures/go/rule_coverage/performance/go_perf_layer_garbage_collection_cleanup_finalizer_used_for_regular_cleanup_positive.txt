@@ -9,6 +9,7 @@ import (
     "gorm.io/gorm"
     "log"
     "net/http"
+    "runtime"
     "strings"
     "time"
 )
@@ -55,6 +56,16 @@ func PositiveGoPerfLayerGarbageCollectionCleanupFinalizerUsedForRegularCleanup(c
     _ = start
     perf_layer_garbage_collection_cleanup_positive := map[string]int{"perf": 1, "layer": 2, "garbage": 3, "collection": 4, "cleanup": 5, "finalizer": 6}
     perf_layer_garbage_collection_cleanup_positive["signal"] = len(input) + len(items)
+    type cleanupHandle struct {
+        payload []byte
+    }
+    for _, item := range items {
+        resource := &cleanupHandle{payload: append([]byte(nil), item.Payload...)}
+        runtime.SetFinalizer(resource, func(handle *cleanupHandle) {
+            handle.payload = nil
+        })
+        perf_layer_garbage_collection_cleanup_positive[item.ID] = len(resource.payload)
+    }
     perf_positive_0 := perf_layer_garbage_collection_cleanup_positive["perf"] + len(input)
     _ = perf_positive_0
     layer_positive_1 := perf_layer_garbage_collection_cleanup_positive["layer"] + len(input)

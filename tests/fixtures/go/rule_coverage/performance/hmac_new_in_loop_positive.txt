@@ -3,6 +3,7 @@ package rulecoverage
 import (
     "bytes"
     "context"
+    "crypto/hmac"
     "crypto/md5"
     "crypto/sha256"
     "database/sql"
@@ -56,8 +57,12 @@ func PositiveHmacNewInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sql
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = md5.Sum(item.Payload); _ = sha256.Sum256(item.Payload); _ = crc32.ChecksumIEEE(item.Payload) }
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    key := []byte("signing-secret")
+    for _, item := range items {
+        mac := hmac.New(sha256.New, key)
+        _, _ = mac.Write(item.Payload)
+        _ = mac.Sum(nil)
+    }
     hmac_new_loop_positive := map[string]int{"hmac": 1, "new": 2, "loop": 3}
     hmac_new_loop_positive["signal"] = len(input) + len(items)
     hmac_positive_0 := hmac_new_loop_positive["hmac"] + len(input)

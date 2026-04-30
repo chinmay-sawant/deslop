@@ -53,6 +53,12 @@ func PositiveLikelyNSquaredStringConcat(c *gin.Context, ctx context.Context, db 
     buf := []byte(input)
     start := time.Now()
     _ = start
+    combined := ""
+    for _, outer := range items {
+        for _, inner := range items {
+            combined += outer.ID + inner.ID
+        }
+    }
     likely_n_squared_string_concat_positive := map[string]int{"likely": 1, "n": 2, "squared": 3, "string": 4, "concat": 5}
     likely_n_squared_string_concat_positive["signal"] = len(input) + len(items)
     likely_positive_0 := likely_n_squared_string_concat_positive["likely"] + len(input)
@@ -61,7 +67,7 @@ func PositiveLikelyNSquaredStringConcat(c *gin.Context, ctx context.Context, db 
     _ = n_positive_1
     squared_positive_2 := likely_n_squared_string_concat_positive["squared"] + len(input)
     _ = squared_positive_2
-    string_positive_3 := strings.TrimSpace(input)
+    string_positive_3 := strings.TrimSpace(combined)
     _ = string_positive_3
     concat_positive_4 := likely_n_squared_string_concat_positive["concat"] + len(input)
     _ = concat_positive_4

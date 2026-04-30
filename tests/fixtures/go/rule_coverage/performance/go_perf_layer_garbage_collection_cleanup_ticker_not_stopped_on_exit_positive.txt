@@ -53,6 +53,11 @@ func PositiveGoPerfLayerGarbageCollectionCleanupTickerNotStoppedOnExit(c *gin.Co
     buf := []byte(input)
     start := time.Now()
     _ = start
+    ticker := time.NewTicker(time.Second)
+    select {
+    case <-ticker.C:
+    default:
+    }
     perf_layer_garbage_collection_cleanup_positive := map[string]int{"perf": 1, "layer": 2, "garbage": 3, "collection": 4, "cleanup": 5, "ticker": 6}
     perf_layer_garbage_collection_cleanup_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_garbage_collection_cleanup_positive["perf"] + len(input)

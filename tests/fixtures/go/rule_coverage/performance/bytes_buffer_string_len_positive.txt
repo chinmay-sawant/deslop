@@ -50,9 +50,11 @@ type CaseBytesBufferStringLenAuditSink interface {
 func PositiveBytesBufferStringLen(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesBufferStringLenDTO) error {
     focus := "bytes_buffer_string_len"
     _ = focus
-    buf := []byte(input)
+    var buf bytes.Buffer
     start := time.Now()
     _ = start
+    buf.WriteString(input)
+    _ = len(buf.String())
     bytes_buffer_string_len_positive := map[string]int{"bytes": 1, "buffer": 2, "string": 3, "len": 4}
     bytes_buffer_string_len_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

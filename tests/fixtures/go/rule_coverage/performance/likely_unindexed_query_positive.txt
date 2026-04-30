@@ -53,7 +53,9 @@ func PositiveLikelyUnindexedQuery(c *gin.Context, ctx context.Context, db *gorm.
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { db.Where("id = ?", item.ID).Find(&[]any{}) }
+    for _, item := range items {
+        db.Where("tenant_id LIKE ?", "%"+item.TenantID).Find(&[]CaseLikelyUnindexedQueryModel{})
+    }
     likely_unindexed_query_positive := map[string]int{"likely": 1, "unindexed": 2, "query": 3}
     likely_unindexed_query_positive["signal"] = len(input) + len(items)
     likely_positive_0 := likely_unindexed_query_positive["likely"] + len(input)

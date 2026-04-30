@@ -54,8 +54,11 @@ func PositiveJsonIndentInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, 
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { json.Marshal(item) }
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    for _, item := range items {
+        payload, _ := json.Marshal(item)
+        var formatted bytes.Buffer
+        _ = json.Indent(&formatted, payload, "", "  ")
+    }
     json_indent_loop_positive := map[string]int{"json": 1, "indent": 2, "loop": 3}
     json_indent_loop_positive["signal"] = len(input) + len(items)
     json_positive_0 := fmt.Sprintf("json:%s", input)

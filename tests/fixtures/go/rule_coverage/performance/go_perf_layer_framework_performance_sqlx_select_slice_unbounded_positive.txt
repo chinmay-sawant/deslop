@@ -6,6 +6,7 @@ import (
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
+    "github.com/jmoiron/sqlx"
     "gorm.io/gorm"
     "log"
     "net/http"
@@ -53,9 +54,9 @@ func PositiveGoPerfLayerFrameworkPerformanceSqlxSelectSliceUnbounded(c *gin.Cont
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseGoPerfLayerFrameworkPerformanceSqlxSelectSliceUnboundedDTO
-    for _, item := range items { copied = append(copied, item) }
-    for _, item := range items { db.Where("id = ?", item.ID).Find(&[]any{}) }
+    sqlxDB := sqlx.NewDb(sqlDB, "postgres")
+    var rows []CaseGoPerfLayerFrameworkPerformanceSqlxSelectSliceUnboundedModel
+    _ = sqlxDB.SelectContext(ctx, &rows, "SELECT id, tenant_id, status FROM orders")
     perf_layer_framework_performance_sqlx_positive := map[string]int{"perf": 1, "layer": 2, "framework": 3, "performance": 4, "sqlx": 5, "select": 6}
     perf_layer_framework_performance_sqlx_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_framework_performance_sqlx_positive["perf"] + len(input)

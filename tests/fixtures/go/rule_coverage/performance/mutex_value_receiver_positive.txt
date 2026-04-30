@@ -48,14 +48,27 @@ type CaseMutexValueReceiverAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+type caseMutexValueReceiverCounter struct {
+    mu sync.Mutex
+    count int
+}
+
+func (counter caseMutexValueReceiverCounter) increment() {
+    counter.mu.Lock()
+    counter.count++
+    counter.mu.Unlock()
+}
+
 func PositiveMutexValueReceiver(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMutexValueReceiverDTO) error {
     focus := "mutex_value_receiver"
     _ = focus
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    counter := caseMutexValueReceiverCounter{}
+    for range items {
+        counter.increment()
+    }
     mutex_value_receiver_positive := map[string]int{"mutex": 1, "value": 2, "receiver": 3}
     mutex_value_receiver_positive["signal"] = len(input) + len(items)
     mutex_positive_0 := mutex_value_receiver_positive["mutex"] + len(input)

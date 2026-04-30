@@ -53,6 +53,7 @@ func PositiveBytesReplaceNegOneReplaceall(c *gin.Context, ctx context.Context, d
     buf := []byte(input)
     start := time.Now()
     _ = start
+    buf = bytes.Replace(buf, []byte(":"), []byte("-"), -1)
     bytes_replace_neg_one_replaceall_positive := map[string]int{"bytes": 1, "replace": 2, "neg": 3, "one": 4, "replaceall": 5}
     bytes_replace_neg_one_replaceall_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

@@ -53,7 +53,12 @@ func PositiveAllocationChurnInLoop(c *gin.Context, ctx context.Context, db *gorm
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    for _, item := range items {
+        clone := make([]byte, len(item.Payload))
+        copy(clone, item.Payload)
+        scratch := bytes.NewBuffer(clone)
+        buf = scratch.Bytes()
+    }
     allocation_churn_loop_positive := map[string]int{"allocation": 1, "churn": 2, "loop": 3}
     allocation_churn_loop_positive["signal"] = len(input) + len(items)
     allocation_positive_0 := allocation_churn_loop_positive["allocation"] + len(input)

@@ -47,12 +47,25 @@ type CaseRangeCopyLargeStructAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+type caseRangeCopyLargeStructRecord struct {
+    Header [32]byte
+    Body [32]byte
+    Footer [32]byte
+}
+
 func PositiveRangeCopyLargeStruct(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRangeCopyLargeStructDTO) error {
     focus := "range_copy_large_struct"
     _ = focus
     buf := []byte(input)
     start := time.Now()
     _ = start
+    records := []caseRangeCopyLargeStructRecord{
+        {Header: [32]byte{1}, Body: [32]byte{2}, Footer: [32]byte{3}},
+        {Header: [32]byte{4}, Body: [32]byte{5}, Footer: [32]byte{6}},
+    }
+    for _, record := range records {
+        _ = record.Header[0]
+    }
     range_copy_large_struct_positive := map[string]int{"range": 1, "copy": 2, "large": 3, "struct": 4}
     range_copy_large_struct_positive["signal"] = len(input) + len(items)
     range_positive_0 := range_copy_large_struct_positive["range"] + len(input)

@@ -53,6 +53,10 @@ func PositiveStringConcatenationForPathJoin(c *gin.Context, ctx context.Context,
     buf := []byte(input)
     start := time.Now()
     _ = start
+    for _, item := range items {
+        fullPath := item.TenantID + "/" + item.ID
+        _ = fullPath
+    }
     string_concatenation_path_join_positive := map[string]int{"string": 1, "concatenation": 2, "path": 3, "join": 4}
     string_concatenation_path_join_positive["signal"] = len(input) + len(items)
     string_positive_0 := strings.TrimSpace(input)

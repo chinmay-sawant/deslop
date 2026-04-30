@@ -54,8 +54,11 @@ func PositiveSyncPoolIgnoredForFrequentSmallAllocs(c *gin.Context, ctx context.C
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    for _, item := range items {
+        scratch := make([]byte, 256)
+        copy(scratch, item.Payload)
+        _ = scratch
+    }
     sync_pool_ignored_frequent_small_positive := map[string]int{"sync": 1, "pool": 2, "ignored": 3, "frequent": 4, "small": 5, "allocs": 6}
     sync_pool_ignored_frequent_small_positive["signal"] = len(input) + len(items)
     sync_positive_0 := sync_pool_ignored_frequent_small_positive["sync"] + len(input)

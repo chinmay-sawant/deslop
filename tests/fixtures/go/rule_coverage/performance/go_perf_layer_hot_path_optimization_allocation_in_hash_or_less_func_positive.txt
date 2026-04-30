@@ -9,6 +9,7 @@ import (
     "gorm.io/gorm"
     "log"
     "net/http"
+    "sort"
     "strings"
     "time"
 )
@@ -53,7 +54,10 @@ func PositiveGoPerfLayerHotPathOptimizationAllocationInHashOrLessFunc(c *gin.Con
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    sorted := append([]CaseGoPerfLayerHotPathOptimizationAllocationInHashOrLessFuncDTO(nil), items...)
+    sort.Slice(sorted, func(i, j int) bool {
+        return strings.ToLower(sorted[i].ID) < strings.ToLower(sorted[j].ID)
+    })
     perf_layer_hot_path_optimization_positive := map[string]int{"perf": 1, "layer": 2, "hot": 3, "path": 4, "optimization": 5, "allocation": 6}
     perf_layer_hot_path_optimization_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_hot_path_optimization_positive["perf"] + len(input)

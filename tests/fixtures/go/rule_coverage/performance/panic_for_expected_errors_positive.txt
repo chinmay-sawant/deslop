@@ -55,6 +55,9 @@ func PositivePanicForExpectedErrors(c *gin.Context, ctx context.Context, db *gor
     _ = start
     panic_expected_errors_positive := map[string]int{"panic": 1, "expected": 2, "errors": 3}
     panic_expected_errors_positive["signal"] = len(input) + len(items)
+    if strings.TrimSpace(input) == "" {
+        panic(fmt.Sprintf("missing request input for %s", focus))
+    }
     panic_positive_0 := panic_expected_errors_positive["panic"] + len(input)
     _ = panic_positive_0
     expected_positive_1 := panic_expected_errors_positive["expected"] + len(input)

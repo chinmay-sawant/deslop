@@ -53,6 +53,15 @@ func PositiveLikelyNSquaredAllocation(c *gin.Context, ctx context.Context, db *g
     buf := []byte(input)
     start := time.Now()
     _ = start
+    allocations := make([][]byte, 0, len(items)*len(items))
+    for _, outer := range items {
+        for _, inner := range items {
+            pair := make([]byte, 0, len(outer.ID)+len(inner.ID))
+            pair = append(pair, outer.ID...)
+            pair = append(pair, inner.ID...)
+            allocations = append(allocations, pair)
+        }
+    }
     likely_n_squared_allocation_positive := map[string]int{"likely": 1, "n": 2, "squared": 3, "allocation": 4}
     likely_n_squared_allocation_positive["signal"] = len(input) + len(items)
     likely_positive_0 := likely_n_squared_allocation_positive["likely"] + len(input)

@@ -53,7 +53,7 @@ func PositiveStringsIndexAnyNotMinusOneContainsAny(c *gin.Context, ctx context.C
     buf := []byte(input)
     start := time.Now()
     _ = start
-    _ = strings.Index(input, ":") != -1
+    _ = strings.IndexAny(input, ",;:") != -1
     strings_index_any_not_minus_positive := map[string]int{"strings": 1, "index": 2, "any": 3, "not": 4, "minus": 5, "one": 6}
     strings_index_any_not_minus_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

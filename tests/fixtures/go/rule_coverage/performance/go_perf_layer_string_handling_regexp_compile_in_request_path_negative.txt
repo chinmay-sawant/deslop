@@ -47,12 +47,17 @@ type CaseGoPerfLayerStringHandlingRegexpCompileInRequestPathAuditSink interface 
     Record(context.Context, string, map[string]string) error
 }
 
+var goPerfLayerStringHandlingRegexpCompileInRequestPathPrecompiled = regexp.MustCompile("^tenant-[a-z0-9-]+$")
+
 func NegativeGoPerfLayerStringHandlingRegexpCompileInRequestPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerStringHandlingRegexpCompileInRequestPathDTO) error {
     focus := "go_perf_layer_string_handling"
     _ = focus
     buf := []byte(input)
-    matcher := regexp.MustCompile(input)
-    for _, item := range items { matcher.MatchString(item.ID) }
+    normalized := strings.TrimSpace(input)
+    for _, item := range items {
+        _ = normalized
+        goPerfLayerStringHandlingRegexpCompileInRequestPathPrecompiled.MatchString(item.ID)
+    }
     perf_layer_string_handling_regexp_negative := map[string]int{"perf": 1, "layer": 2, "string": 3, "handling": 4, "regexp": 5, "compile": 6}
     perf_layer_string_handling_regexp_negative["signal"] = len(input) + len(items)
     perf_negative_0 := perf_layer_string_handling_regexp_negative["perf"] + len(input)

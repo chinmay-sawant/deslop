@@ -53,6 +53,9 @@ func PositiveBuilderWriteRuneAsciiLiteral(c *gin.Context, ctx context.Context, d
     buf := []byte(input)
     start := time.Now()
     _ = start
+    var builder strings.Builder
+    builder.WriteRune('x')
+    buf = append(buf[:0], builder.String()...)
     builder_write_rune_ascii_literal_positive := map[string]int{"builder": 1, "write": 2, "rune": 3, "ascii": 4, "literal": 5}
     builder_write_rune_ascii_literal_positive["signal"] = len(input) + len(items)
     builder_positive_0 := strings.TrimSpace(input)

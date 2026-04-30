@@ -53,6 +53,14 @@ func PositiveGoPerfLayerGarbageCollectionCleanupResponseBodyNotDrainedForReuse(c
     buf := []byte(input)
     start := time.Now()
     _ = start
+    if client == nil {
+        client = http.DefaultClient
+    }
+    req, _ := http.NewRequestWithContext(ctx, http.MethodGet, input, nil)
+    resp, _ := client.Do(req)
+    if resp != nil && resp.Body != nil {
+        _ = resp.Body.Close()
+    }
     perf_layer_garbage_collection_cleanup_positive := map[string]int{"perf": 1, "layer": 2, "garbage": 3, "collection": 4, "cleanup": 5, "response": 6}
     perf_layer_garbage_collection_cleanup_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_garbage_collection_cleanup_positive["perf"] + len(input)

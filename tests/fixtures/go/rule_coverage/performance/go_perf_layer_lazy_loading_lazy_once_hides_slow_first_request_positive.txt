@@ -10,6 +10,7 @@ import (
     "log"
     "net/http"
     "strings"
+    "sync"
     "time"
 )
 
@@ -47,6 +48,8 @@ type CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestAuditSink interface 
     Record(context.Context, string, map[string]string) error
 }
 
+var goPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestOnce sync.Once
+
 func PositiveGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestDTO) error {
     focus := "go_perf_layer_lazy_loading"
     _ = focus
@@ -55,6 +58,10 @@ func PositiveGoPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequest(c *gin.Context,
     _ = start
     perf_layer_lazy_loading_once_positive := map[string]int{"perf": 1, "layer": 2, "lazy": 3, "loading": 4, "once": 5, "hides": 6}
     perf_layer_lazy_loading_once_positive["signal"] = len(input) + len(items)
+    goPerfLayerLazyLoadingLazyOnceHidesSlowFirstRequestOnce.Do(func() {
+        time.Sleep(25 * time.Millisecond)
+        perf_layer_lazy_loading_once_positive["warmup"] = len(strings.ToUpper(input))
+    })
     perf_positive_0 := perf_layer_lazy_loading_once_positive["perf"] + len(input)
     _ = perf_positive_0
     layer_positive_1 := perf_layer_lazy_loading_once_positive["layer"] + len(input)

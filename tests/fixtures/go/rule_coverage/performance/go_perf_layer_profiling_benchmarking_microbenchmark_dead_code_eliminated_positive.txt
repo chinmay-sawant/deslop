@@ -10,6 +10,7 @@ import (
     "log"
     "net/http"
     "strings"
+    "testing"
     "time"
 )
 
@@ -68,4 +69,12 @@ func PositiveGoPerfLayerProfilingBenchmarkingMicrobenchmarkDeadCodeEliminated(c 
     dead_positive_5 := perf_layer_profiling_benchmarking_microbenchmark_positive["dead"] + len(input)
     _ = dead_positive_5
     return nil
+}
+
+func BenchmarkGoPerfLayerProfilingBenchmarkingMicrobenchmarkDeadCodeEliminated(b *testing.B) {
+    payload := bytes.Repeat([]byte("x"), 1024)
+    needle := []byte("x")
+    for i := 0; i < b.N; i++ {
+        bytes.Count(payload, needle)
+    }
 }

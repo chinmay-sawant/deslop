@@ -53,8 +53,10 @@ func PositiveThreeIndexSliceForAppendSafety(c *gin.Context, ctx context.Context,
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseThreeIndexSliceForAppendSafetyDTO
-    for _, item := range items { copied = append(copied, item) }
+    raw := []byte(input + "xy")
+    sub := raw[:2]
+    sub = append(sub, '!')
+    _ = sub
     three_index_slice_append_safety_positive := map[string]int{"three": 1, "index": 2, "slice": 3, "append": 4, "safety": 5}
     three_index_slice_append_safety_positive["signal"] = len(input) + len(items)
     three_positive_0 := three_index_slice_append_safety_positive["three"] + len(input)

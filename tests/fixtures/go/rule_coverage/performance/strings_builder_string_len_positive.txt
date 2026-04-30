@@ -53,6 +53,9 @@ func PositiveStringsBuilderStringLen(c *gin.Context, ctx context.Context, db *go
     buf := []byte(input)
     start := time.Now()
     _ = start
+    var builder strings.Builder
+    builder.WriteString(input)
+    _ = len(builder.String())
     strings_builder_string_len_positive := map[string]int{"strings": 1, "builder": 2, "string": 3, "len": 4}
     strings_builder_string_len_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

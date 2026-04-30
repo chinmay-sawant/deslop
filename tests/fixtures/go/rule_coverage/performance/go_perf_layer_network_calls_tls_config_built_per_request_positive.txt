@@ -3,6 +3,7 @@ package rulecoverage
 import (
     "bytes"
     "context"
+    "crypto/tls"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
@@ -53,8 +54,10 @@ func PositiveGoPerfLayerNetworkCallsTlsConfigBuiltPerRequest(c *gin.Context, ctx
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    http.Get(input)
+    requestTLSConfig := &tls.Config{MinVersion: tls.VersionTLS12}
+    requestTransport := &http.Transport{TLSClientConfig: requestTLSConfig}
+    requestClient := &http.Client{Transport: requestTransport}
+    _, _ = requestClient.Get(input)
     perf_layer_network_calls_tls_positive := map[string]int{"perf": 1, "layer": 2, "network": 3, "calls": 4, "tls": 5, "config": 6}
     perf_layer_network_calls_tls_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_network_calls_tls_positive["perf"] + len(input)

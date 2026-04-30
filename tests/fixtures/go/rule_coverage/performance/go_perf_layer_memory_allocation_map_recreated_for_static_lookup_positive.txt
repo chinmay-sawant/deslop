@@ -53,7 +53,10 @@ func PositiveGoPerfLayerMemoryAllocationMapRecreatedForStaticLookup(c *gin.Conte
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
+    statusToPriority := map[string]int{"queued": 1, "running": 2, "done": 3, "failed": 4}
+    for _, item := range items {
+        _ = statusToPriority[item.Status]
+    }
     perf_layer_memory_allocation_map_positive := map[string]int{"perf": 1, "layer": 2, "memory": 3, "allocation": 4, "map": 5, "recreated": 6}
     perf_layer_memory_allocation_map_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_memory_allocation_map_positive["perf"] + len(input)

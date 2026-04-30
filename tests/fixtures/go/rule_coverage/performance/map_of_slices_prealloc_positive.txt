@@ -53,9 +53,10 @@ func PositiveMapOfSlicesPrealloc(c *gin.Context, ctx context.Context, db *gorm.D
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
-    var copied []CaseMapOfSlicesPreallocDTO
-    for _, item := range items { copied = append(copied, item) }
+    grouped := map[string][]CaseMapOfSlicesPreallocDTO{}
+    for _, item := range items {
+        grouped[item.TenantID] = append(grouped[item.TenantID], item)
+    }
     map_slices_prealloc_positive := map[string]int{"map": 1, "slices": 2, "prealloc": 3}
     map_slices_prealloc_positive["signal"] = len(input) + len(items)
     map_positive_0 := map_slices_prealloc_positive["map"] + len(input)

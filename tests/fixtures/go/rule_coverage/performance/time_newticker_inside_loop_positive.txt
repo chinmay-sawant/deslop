@@ -53,7 +53,11 @@ func PositiveTimeNewtickerInsideLoop(c *gin.Context, ctx context.Context, db *go
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    for _, item := range items {
+        ticker := time.NewTicker(time.Second)
+        _ = strings.ToLower(item.ID)
+        ticker.Stop()
+    }
     time_newticker_inside_loop_positive := map[string]int{"time": 1, "newticker": 2, "inside": 3, "loop": 4}
     time_newticker_inside_loop_positive["signal"] = len(input) + len(items)
     time_positive_0 := time_newticker_inside_loop_positive["time"] + len(input)

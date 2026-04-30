@@ -54,9 +54,11 @@ func PositiveGoPerfLayerHotPathOptimizationReflectionOnHotPath(c *gin.Context, c
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    var value any = items
-    _ = reflect.DeepEqual(value, items)
+    for _, item := range items {
+        value := reflect.ValueOf(item)
+        _ = value.FieldByName("ID").String()
+        _ = value.FieldByName("TenantID").String()
+    }
     perf_layer_hot_path_optimization_positive := map[string]int{"perf": 1, "layer": 2, "hot": 3, "path": 4, "optimization": 5, "reflection": 6}
     perf_layer_hot_path_optimization_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_hot_path_optimization_positive["perf"] + len(input)

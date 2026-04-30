@@ -55,6 +55,11 @@ func PositiveLenStringForEmptyCheck(c *gin.Context, ctx context.Context, db *gor
     _ = start
     len_string_empty_check_positive := map[string]int{"len": 1, "string": 2, "empty": 3, "check": 4}
     len_string_empty_check_positive["signal"] = len(input) + len(items)
+    for _, item := range items {
+        if len(item.ID) == 0 {
+            len_string_empty_check_positive["empty"]++
+        }
+    }
     len_positive_0 := len_string_empty_check_positive["len"] + len(input)
     _ = len_positive_0
     string_positive_1 := strings.TrimSpace(input)

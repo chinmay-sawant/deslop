@@ -53,6 +53,9 @@ func PositiveStringsTolowerEqualfold(c *gin.Context, ctx context.Context, db *go
     buf := []byte(input)
     start := time.Now()
     _ = start
+    for _, item := range items {
+        _ = strings.ToLower(item.ID) == strings.ToLower(item.TenantID)
+    }
     strings_tolower_equalfold_positive := map[string]int{"strings": 1, "tolower": 2, "equalfold": 3}
     strings_tolower_equalfold_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

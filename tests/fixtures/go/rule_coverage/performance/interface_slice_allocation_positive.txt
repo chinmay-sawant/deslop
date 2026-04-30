@@ -54,10 +54,11 @@ func PositiveInterfaceSliceAllocation(c *gin.Context, ctx context.Context, db *g
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseInterfaceSliceAllocationDTO
-    for _, item := range items { copied = append(copied, item) }
-    var value any = items
-    _ = reflect.DeepEqual(value, items)
+    values := make([]any, 0, len(items))
+    for _, item := range items {
+        values = append(values, item)
+    }
+    _ = reflect.TypeOf(values)
     interface_slice_allocation_positive := map[string]int{"interface": 1, "slice": 2, "allocation": 3}
     interface_slice_allocation_positive["signal"] = len(input) + len(items)
     interface_positive_0 := interface_slice_allocation_positive["interface"] + len(input)

@@ -54,7 +54,12 @@ func PositiveGoPerfLayerSerializationJsonDecoderWithoutReuseForStream(c *gin.Con
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { json.Marshal(item) }
+    for _, item := range items {
+        payload, _ := json.Marshal(item)
+        decoder := json.NewDecoder(bytes.NewReader(payload))
+        var decoded CaseGoPerfLayerSerializationJsonDecoderWithoutReuseForStreamDTO
+        _ = decoder.Decode(&decoded)
+    }
     perf_layer_serialization_json_decoder_positive := map[string]int{"perf": 1, "layer": 2, "serialization": 3, "json": 4, "decoder": 5, "reuse": 6}
     perf_layer_serialization_json_decoder_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_serialization_json_decoder_positive["perf"] + len(input)

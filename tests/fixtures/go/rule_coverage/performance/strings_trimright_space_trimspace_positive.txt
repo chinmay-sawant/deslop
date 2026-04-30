@@ -53,7 +53,7 @@ func PositiveStringsTrimrightSpaceTrimspace(c *gin.Context, ctx context.Context,
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.TrimSpace(item.ID) }
+    for _, item := range items { _ = strings.TrimRight(item.ID, " \t\r\n") }
     strings_trimright_space_trimspace_positive := map[string]int{"strings": 1, "trimright": 2, "space": 3, "trimspace": 4}
     strings_trimright_space_trimspace_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

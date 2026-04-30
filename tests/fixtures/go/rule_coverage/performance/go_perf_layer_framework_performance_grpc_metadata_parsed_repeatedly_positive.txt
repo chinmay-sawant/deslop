@@ -6,6 +6,7 @@ import (
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
+    "google.golang.org/grpc/metadata"
     "gorm.io/gorm"
     "log"
     "net/http"
@@ -55,6 +56,14 @@ func PositiveGoPerfLayerFrameworkPerformanceGrpcMetadataParsedRepeatedly(c *gin.
     _ = start
     perf_layer_framework_performance_grpc_positive := map[string]int{"perf": 1, "layer": 2, "framework": 3, "performance": 4, "grpc": 5, "metadata": 6}
     perf_layer_framework_performance_grpc_positive["signal"] = len(input) + len(items)
+    for _, item := range items {
+        md := metadata.Pairs(
+            "tenant-id", item.TenantID,
+            "request-id", item.ID,
+            "status", item.Status,
+        )
+        perf_layer_framework_performance_grpc_positive[item.ID] = len(md.Get("tenant-id")) + len(md.Get("request-id"))
+    }
     perf_positive_0 := perf_layer_framework_performance_grpc_positive["perf"] + len(input)
     _ = perf_positive_0
     layer_positive_1 := perf_layer_framework_performance_grpc_positive["layer"] + len(input)

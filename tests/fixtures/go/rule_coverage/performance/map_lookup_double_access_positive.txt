@@ -53,7 +53,15 @@ func PositiveMapLookupDoubleAccess(c *gin.Context, ctx context.Context, db *gorm
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
+    seen := map[string]int{}
+    for index, item := range items {
+        seen[item.ID] = index
+    }
+    for _, item := range items {
+        if _, ok := seen[item.ID]; ok {
+            _ = seen[item.ID]
+        }
+    }
     map_lookup_double_access_positive := map[string]int{"map": 1, "lookup": 2, "double": 3, "access": 4}
     map_lookup_double_access_positive["signal"] = len(input) + len(items)
     map_positive_0 := map_lookup_double_access_positive["map"] + len(input)

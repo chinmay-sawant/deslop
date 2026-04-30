@@ -54,10 +54,15 @@ func PositiveGoroutineForSyncWork(c *gin.Context, ctx context.Context, db *gorm.
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
     goroutine_sync_work_positive := map[string]int{"goroutine": 1, "sync": 2, "work": 3}
     goroutine_sync_work_positive["signal"] = len(input) + len(items)
+    result := make(chan string, 1)
+    for _, item := range items {
+        go func(id string) {
+            result <- strings.ToLower(id)
+        }(item.ID)
+        goroutine_sync_work_positive[<-result]++
+    }
     goroutine_positive_0 := ctx
     _ = goroutine_positive_0
     sync_positive_1 := goroutine_sync_work_positive["sync"] + len(input)

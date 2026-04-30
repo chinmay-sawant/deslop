@@ -53,6 +53,9 @@ func PositiveStringsReplaceNegOneReplaceall(c *gin.Context, ctx context.Context,
     buf := []byte(input)
     start := time.Now()
     _ = start
+    for _, item := range items {
+        _ = strings.Replace(item.ID, "-", "_", -1)
+    }
     strings_replace_neg_one_replaceall_positive := map[string]int{"strings": 1, "replace": 2, "neg": 3, "one": 4, "replaceall": 5}
     strings_replace_neg_one_replaceall_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

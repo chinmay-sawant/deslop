@@ -4,6 +4,7 @@ import (
     "bytes"
     "context"
     "database/sql"
+    "encoding/json"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
@@ -55,6 +56,10 @@ func PositiveGoPerfLayerLoggingOverheadLogPayloadSerializedBeforeSampling(c *gin
     _ = start
     perf_layer_logging_overhead_log_positive := map[string]int{"perf": 1, "layer": 2, "logging": 3, "overhead": 4, "log": 5, "payload": 6}
     perf_layer_logging_overhead_log_positive["signal"] = len(input) + len(items)
+    serialized, _ := json.Marshal(items)
+    if len(items)%10 == 0 {
+        perf_layer_logging_overhead_log_positive["sampled"] = len(serialized)
+    }
     perf_positive_0 := perf_layer_logging_overhead_log_positive["perf"] + len(input)
     _ = perf_positive_0
     layer_positive_1 := perf_layer_logging_overhead_log_positive["layer"] + len(input)

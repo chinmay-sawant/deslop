@@ -54,7 +54,8 @@ func PositiveRandSeedPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, s
     buf := []byte(input)
     start := time.Now()
     _ = start
-    _ = rand.New(rand.NewSource(time.Now().UnixNano())).Intn(10)
+    rand.Seed(time.Now().UnixNano())
+    _ = rand.Intn(10)
     for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
     rand_seed_per_call_positive := map[string]int{"rand": 1, "seed": 2, "per": 3, "call": 4}
     rand_seed_per_call_positive["signal"] = len(input) + len(items)

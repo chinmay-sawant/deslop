@@ -7,6 +7,7 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
+    "html/template"
     "log"
     "net/http"
     "strings"
@@ -55,6 +56,14 @@ func PositiveGoPerfLayerFrameworkPerformanceTemplateExecuteToStringThenWrite(c *
     _ = start
     perf_layer_framework_performance_template_positive := map[string]int{"perf": 1, "layer": 2, "framework": 3, "performance": 4, "template": 5, "execute": 6}
     perf_layer_framework_performance_template_positive["signal"] = len(input) + len(items)
+    tpl := template.Must(template.New("card").Parse("<div>{{.ID}}:{{.TenantID}}</div>"))
+    for _, item := range items {
+        var rendered bytes.Buffer
+        _ = tpl.Execute(&rendered, item)
+        if c != nil && c.Writer != nil {
+            _, _ = c.Writer.Write(rendered.Bytes())
+        }
+    }
     perf_positive_0 := perf_layer_framework_performance_template_positive["perf"] + len(input)
     _ = perf_positive_0
     layer_positive_1 := perf_layer_framework_performance_template_positive["layer"] + len(input)

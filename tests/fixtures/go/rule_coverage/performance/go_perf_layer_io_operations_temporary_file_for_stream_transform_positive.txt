@@ -55,8 +55,11 @@ func PositiveGoPerfLayerIoOperationsTemporaryFileForStreamTransform(c *gin.Conte
     buf := []byte(input)
     start := time.Now()
     _ = start
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    tempFile, _ := os.CreateTemp("", "stream-transform-*.txt")
+    _, _ = tempFile.Write(bytes.ToUpper(buf))
+    _, _ = tempFile.Seek(0, 0)
+    transformed, _ := io.ReadAll(tempFile)
+    _ = transformed
     perf_layer_io_operations_temporary_positive := map[string]int{"perf": 1, "layer": 2, "io": 3, "operations": 4, "temporary": 5, "file": 6}
     perf_layer_io_operations_temporary_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_io_operations_temporary_positive["perf"] + len(input)

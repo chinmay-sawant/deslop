@@ -3,13 +3,11 @@ package rulecoverage
 import (
     "bytes"
     "context"
-    "crypto/md5"
-    "crypto/sha256"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "hash/crc32"
+    "hash/crc64"
     "log"
     "net/http"
     "strings"
@@ -56,7 +54,11 @@ func PositiveCrc64ChecksumInLoop(c *gin.Context, ctx context.Context, db *gorm.D
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = md5.Sum(item.Payload); _ = sha256.Sum256(item.Payload); _ = crc32.ChecksumIEEE(item.Payload) }
+    table := crc64.MakeTable(crc64.ISO)
+    for _, item := range items {
+        buf = append(buf[:0], item.Payload...)
+        _ = crc64.Checksum(buf, table)
+    }
     for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
     crc64_checksum_loop_positive := map[string]int{"crc64": 1, "checksum": 2, "loop": 3}
     crc64_checksum_loop_positive["signal"] = len(input) + len(items)

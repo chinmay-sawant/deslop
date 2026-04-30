@@ -3,6 +3,7 @@ package rulecoverage
 import (
     "bytes"
     "context"
+    "crypto/sha1"
     "crypto/md5"
     "crypto/sha256"
     "database/sql"
@@ -56,8 +57,9 @@ func PositiveSha1SumInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sql
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = md5.Sum(item.Payload); _ = sha256.Sum256(item.Payload); _ = crc32.ChecksumIEEE(item.Payload) }
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    for _, item := range items {
+        _ = sha1.Sum(item.Payload)
+    }
     sha1_sum_loop_positive := map[string]int{"sha1": 1, "sum": 2, "loop": 3}
     sha1_sum_loop_positive["signal"] = len(input) + len(items)
     sha1_positive_0 := sha1_sum_loop_positive["sha1"] + len(input)

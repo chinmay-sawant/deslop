@@ -53,7 +53,11 @@ func PositiveStringConcatInLoop(c *gin.Context, ctx context.Context, db *gorm.DB
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    joined := ""
+    for _, item := range items {
+        joined += item.ID
+    }
+    _ = joined
     string_concat_loop_positive := map[string]int{"string": 1, "concat": 2, "loop": 3}
     string_concat_loop_positive["signal"] = len(input) + len(items)
     string_positive_0 := strings.TrimSpace(input)

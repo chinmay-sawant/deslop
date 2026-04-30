@@ -53,8 +53,8 @@ func PositiveCopyAppendIdiomWaste(c *gin.Context, ctx context.Context, db *gorm.
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseCopyAppendIdiomWasteDTO
-    for _, item := range items { copied = append(copied, item) }
+    copied := append([]CaseCopyAppendIdiomWasteDTO{}, items...)
+    _ = copied
     copy_append_idiom_waste_positive := map[string]int{"copy": 1, "append": 2, "idiom": 3, "waste": 4}
     copy_append_idiom_waste_positive["signal"] = len(input) + len(items)
     copy_positive_0 := copy_append_idiom_waste_positive["copy"] + len(input)

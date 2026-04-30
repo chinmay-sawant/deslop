@@ -54,8 +54,14 @@ func PositiveGoPerfLayerGarbageCollectionCleanupSyncPoolStoresLargeUnboundedBuff
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    pool := sync.Pool{New: func() any { return &bytes.Buffer{} }}
+    for _, item := range items {
+        pooled := pool.Get().(*bytes.Buffer)
+        pooled.Reset()
+        pooled.Grow(len(item.Payload) * 256)
+        _, _ = pooled.Write(bytes.Repeat(item.Payload, 4))
+        pool.Put(pooled)
+    }
     perf_layer_garbage_collection_cleanup_positive := map[string]int{"perf": 1, "layer": 2, "garbage": 3, "collection": 4, "cleanup": 5, "sync": 6}
     perf_layer_garbage_collection_cleanup_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_garbage_collection_cleanup_positive["perf"] + len(input)

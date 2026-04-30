@@ -10,6 +10,7 @@ import (
     "log"
     "net/http"
     "strings"
+    "testing"
     "time"
 )
 
@@ -45,6 +46,13 @@ type CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopService str
 
 type CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopAuditSink interface {
     Record(context.Context, string, map[string]string) error
+}
+
+func BenchmarkGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoop(b *testing.B) {
+    for index := 0; index < b.N; index++ {
+        payload := bytes.Repeat([]byte("payload:"), 128)
+        _ = strings.ToUpper(string(payload))
+    }
 }
 
 func PositiveGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerProfilingBenchmarkingBenchmarkIncludesSetupInLoopDTO) error {

@@ -54,9 +54,11 @@ func PositiveReflectionHotPath(c *gin.Context, ctx context.Context, db *gorm.DB,
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    var value any = items
-    _ = reflect.DeepEqual(value, items)
+    for _, item := range items {
+        value := reflect.ValueOf(item)
+        _ = reflect.TypeOf(item)
+        _ = value.FieldByName("ID")
+    }
     reflection_hot_path_positive := map[string]int{"reflection": 1, "hot": 2, "path": 3}
     reflection_hot_path_positive["signal"] = len(input) + len(items)
     reflection_positive_0 := reflection_hot_path_positive["reflection"] + len(input)

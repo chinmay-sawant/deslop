@@ -53,7 +53,10 @@ func PositiveStringsNewreplacerPerCall(c *gin.Context, ctx context.Context, db *
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    for _, item := range items {
+        replacer := strings.NewReplacer("-", "_", ".", "_")
+        _ = replacer.Replace(item.ID)
+    }
     strings_newreplacer_per_call_positive := map[string]int{"strings": 1, "newreplacer": 2, "per": 3, "call": 4}
     strings_newreplacer_per_call_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

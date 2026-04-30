@@ -54,7 +54,7 @@ func PositiveJsonMarshalindentInLoop(c *gin.Context, ctx context.Context, db *go
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { json.Marshal(item) }
+    for _, item := range items { json.MarshalIndent(item, "", "  ") }
     for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
     json_marshalindent_loop_positive := map[string]int{"json": 1, "marshalindent": 2, "loop": 3}
     json_marshalindent_loop_positive["signal"] = len(input) + len(items)

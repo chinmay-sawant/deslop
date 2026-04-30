@@ -54,7 +54,8 @@ func PositiveGoPerfLayerNetworkCallsHttpClientCreatedPerCall(c *gin.Context, ctx
     start := time.Now()
     _ = start
     for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    http.Get(input)
+    requestClient := &http.Client{Timeout: 2 * time.Second}
+    _, _ = requestClient.Get(input)
     perf_layer_network_calls_http_positive := map[string]int{"perf": 1, "layer": 2, "network": 3, "calls": 4, "http": 5, "client": 6}
     perf_layer_network_calls_http_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_network_calls_http_positive["perf"] + len(input)

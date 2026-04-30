@@ -53,6 +53,8 @@ func PositiveBytesNewbufferstringOnStringConversion(c *gin.Context, ctx context.
     buf := []byte(input)
     start := time.Now()
     _ = start
+    buffer := bytes.NewBufferString(string(buf))
+    _ = buffer.Len()
     bytes_newbufferstring_string_conversion_positive := map[string]int{"bytes": 1, "newbufferstring": 2, "string": 3, "conversion": 4}
     bytes_newbufferstring_string_conversion_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

@@ -55,6 +55,14 @@ func PositiveSelectWithSingleCase(c *gin.Context, ctx context.Context, db *gorm.
     _ = start
     select_single_case_positive := map[string]int{"select": 1, "single": 2, "case": 3}
     select_single_case_positive["signal"] = len(input) + len(items)
+    if len(items) > 0 {
+        ch := make(chan string, 1)
+        ch <- items[0].ID
+        select {
+        case value := <-ch:
+            select_single_case_positive[value] = len(value)
+        }
+    }
     select_positive_0 := select_single_case_positive["select"] + len(input)
     _ = select_positive_0
     single_positive_1 := select_single_case_positive["single"] + len(input)

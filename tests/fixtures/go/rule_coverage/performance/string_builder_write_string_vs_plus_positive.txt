@@ -53,6 +53,10 @@ func PositiveStringBuilderWriteStringVsPlus(c *gin.Context, ctx context.Context,
     buf := []byte(input)
     start := time.Now()
     _ = start
+    var builder strings.Builder
+    for _, item := range items {
+        builder.WriteString(item.ID + ":" + item.TenantID)
+    }
     string_builder_write_vs_plus_positive := map[string]int{"string": 1, "builder": 2, "write": 3, "vs": 4, "plus": 5}
     string_builder_write_vs_plus_positive["signal"] = len(input) + len(items)
     string_positive_0 := strings.TrimSpace(input)

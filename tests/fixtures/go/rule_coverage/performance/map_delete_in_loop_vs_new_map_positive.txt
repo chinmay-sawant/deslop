@@ -53,8 +53,13 @@ func PositiveMapDeleteInLoopVsNewMap(c *gin.Context, ctx context.Context, db *go
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    seen := map[string]bool{}
+    for _, item := range items {
+        seen[item.ID] = true
+    }
+    for key := range seen {
+        delete(seen, key)
+    }
     map_delete_loop_vs_new_positive := map[string]int{"map": 1, "delete": 2, "loop": 3, "vs": 4, "new": 5}
     map_delete_loop_vs_new_positive["signal"] = len(input) + len(items)
     map_positive_0 := map_delete_loop_vs_new_positive["map"] + len(input)

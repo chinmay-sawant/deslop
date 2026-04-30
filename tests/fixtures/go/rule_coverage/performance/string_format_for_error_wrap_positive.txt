@@ -53,7 +53,10 @@ func PositiveStringFormatForErrorWrap(c *gin.Context, ctx context.Context, db *g
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    for _, item := range items {
+        baseErr := fmt.Errorf("tenant %s missing", item.TenantID)
+        _ = fmt.Errorf("save failed: %s", baseErr.Error())
+    }
     string_format_error_wrap_positive := map[string]int{"string": 1, "format": 2, "error": 3, "wrap": 4}
     string_format_error_wrap_positive["signal"] = len(input) + len(items)
     string_positive_0 := strings.TrimSpace(input)

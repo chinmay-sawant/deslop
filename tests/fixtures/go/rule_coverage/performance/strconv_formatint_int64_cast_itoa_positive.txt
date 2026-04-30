@@ -9,6 +9,7 @@ import (
     "gorm.io/gorm"
     "log"
     "net/http"
+    "strconv"
     "strings"
     "time"
 )
@@ -53,7 +54,7 @@ func PositiveStrconvFormatintInt64CastItoa(c *gin.Context, ctx context.Context, 
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    for _, item := range items { _ = strconv.FormatInt(int64(item.Amount), 10) }
     strconv_formatint_int64_cast_itoa_positive := map[string]int{"strconv": 1, "formatint": 2, "int64": 3, "cast": 4, "itoa": 5}
     strconv_formatint_int64_cast_itoa_positive["signal"] = len(input) + len(items)
     strconv_positive_0 := strconv_formatint_int64_cast_itoa_positive["strconv"] + len(input)

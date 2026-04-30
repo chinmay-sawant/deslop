@@ -53,7 +53,7 @@ func PositiveBytesIndexAnyNotMinusOneContainsAny(c *gin.Context, ctx context.Con
     buf := []byte(input)
     start := time.Now()
     _ = start
-    _ = bytes.Index(buf, []byte(":")) != -1
+    _ = bytes.IndexAny(buf, ":") != -1
     bytes_index_any_not_minus_positive := map[string]int{"bytes": 1, "index": 2, "any": 3, "not": 4, "minus": 5, "one": 6}
     bytes_index_any_not_minus_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

@@ -53,6 +53,9 @@ func PositiveBufferWriteStringSingleByteLiteral(c *gin.Context, ctx context.Cont
     buf := []byte(input)
     start := time.Now()
     _ = start
+    var output bytes.Buffer
+    output.WriteString("x")
+    buf = output.Bytes()
     buffer_write_string_single_byte_positive := map[string]int{"buffer": 1, "write": 2, "string": 3, "single": 4, "byte": 5, "literal": 6}
     buffer_write_string_single_byte_positive["signal"] = len(input) + len(items)
     buffer_positive_0 := strings.TrimSpace(input)

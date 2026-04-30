@@ -53,8 +53,8 @@ func PositiveStringsSplitafterTwoIndexZeroCut(c *gin.Context, ctx context.Contex
     buf := []byte(input)
     start := time.Now()
     _ = start
-    fields := strings.Split(input, ":")
-    if len(fields) > 1 { _ = fields[1] }
+    fields := strings.SplitAfter(input, ":")
+    if len(fields) > 0 { _ = fields[0] }
     strings_splitafter_two_index_zero_positive := map[string]int{"strings": 1, "splitafter": 2, "two": 3, "index": 4, "zero": 5, "cut": 6}
     strings_splitafter_two_index_zero_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

@@ -6,6 +6,7 @@ import (
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
+    "golang.org/x/time/rate"
     "gorm.io/gorm"
     "log"
     "net/http"
@@ -53,7 +54,11 @@ func PositiveGoPerfLayerResourcePoolingRateLimiterPerRequest(c *gin.Context, ctx
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    requestLimiter := rate.NewLimiter(rate.Every(time.Second), 5)
+    for _, item := range items {
+        _ = requestLimiter.Allow()
+        _ = strings.ToLower(item.ID)
+    }
     perf_layer_resource_pooling_rate_positive := map[string]int{"perf": 1, "layer": 2, "resource": 3, "pooling": 4, "rate": 5, "limiter": 6}
     perf_layer_resource_pooling_rate_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_resource_pooling_rate_positive["perf"] + len(input)

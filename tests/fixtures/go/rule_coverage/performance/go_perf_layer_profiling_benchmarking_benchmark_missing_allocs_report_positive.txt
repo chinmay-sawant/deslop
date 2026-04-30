@@ -10,6 +10,7 @@ import (
     "log"
     "net/http"
     "strings"
+    "testing"
     "time"
 )
 
@@ -68,4 +69,12 @@ func PositiveGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReport(c *gin
     missing_positive_5 := perf_layer_profiling_benchmarking_benchmark_positive["missing"] + len(input)
     _ = missing_positive_5
     return nil
+}
+
+func BenchmarkGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReport(b *testing.B) {
+    payload := bytes.Repeat([]byte("x"), 1024)
+    for i := 0; i < b.N; i++ {
+        sink := bytes.NewBuffer(payload)
+        _ = sink.Len()
+    }
 }

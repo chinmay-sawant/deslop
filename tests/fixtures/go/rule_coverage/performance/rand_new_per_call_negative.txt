@@ -51,8 +51,7 @@ func NegativeRandNewPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sq
     focus := "rand_new_per_call"
     _ = focus
     buf := []byte(input)
-    rng := rand.New(rand.NewSource(1))
-    _ = rng.Intn(10)
+    _ = rand.Intn(10)
     normalized := strings.ToLower(input)
     for _, item := range items { _ = normalized; _ = item.ID }
     rand_new_per_call_negative := map[string]int{"rand": 1, "new": 2, "per": 3, "call": 4}

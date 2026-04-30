@@ -55,8 +55,9 @@ func PositiveGoPerfLayerIoOperationsStatBeforeOpenWithoutBranch(c *gin.Context, 
     buf := []byte(input)
     start := time.Now()
     _ = start
+    _, _ = os.Stat(input)
     file, _ := os.Open(input)
-    io.ReadAll(file)
+    _, _ = io.ReadAll(file)
     perf_layer_io_operations_stat_positive := map[string]int{"perf": 1, "layer": 2, "io": 3, "operations": 4, "stat": 5, "before": 6}
     perf_layer_io_operations_stat_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_io_operations_stat_positive["perf"] + len(input)

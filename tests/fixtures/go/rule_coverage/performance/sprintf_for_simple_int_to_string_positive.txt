@@ -53,7 +53,7 @@ func PositiveSprintfForSimpleIntToString(c *gin.Context, ctx context.Context, db
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    for _, item := range items { _ = fmt.Sprintf("%d", item.Amount) }
     sprintf_simple_int_string_positive := map[string]int{"sprintf": 1, "simple": 2, "int": 3, "string": 4}
     sprintf_simple_int_string_positive["signal"] = len(input) + len(items)
     sprintf_positive_0 := sprintf_simple_int_string_positive["sprintf"] + len(input)

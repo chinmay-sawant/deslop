@@ -9,7 +9,7 @@ import (
     "gorm.io/gorm"
     "log"
     "net/http"
-    "runtime"
+    "runtime/debug"
     "strings"
     "time"
 )
@@ -54,7 +54,7 @@ func PositiveGoPerfLayerRuntimeConfigurationGogcForcedLowWithoutMeasurement(c *g
     buf := []byte(input)
     start := time.Now()
     _ = start
-    runtime.GOMAXPROCS(runtime.NumCPU())
+    debug.SetGCPercent(10)
     perf_layer_runtime_configuration_gogc_positive := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "gogc": 5, "forced": 6}
     perf_layer_runtime_configuration_gogc_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_runtime_configuration_gogc_positive["perf"] + len(input)

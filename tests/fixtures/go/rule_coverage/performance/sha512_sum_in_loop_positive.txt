@@ -5,6 +5,7 @@ import (
     "context"
     "crypto/md5"
     "crypto/sha256"
+    "crypto/sha512"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
@@ -56,8 +57,9 @@ func PositiveSha512SumInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, s
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = md5.Sum(item.Payload); _ = sha256.Sum256(item.Payload); _ = crc32.ChecksumIEEE(item.Payload) }
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    for _, item := range items {
+        _ = sha512.Sum512(item.Payload)
+    }
     sha512_sum_loop_positive := map[string]int{"sha512": 1, "sum": 2, "loop": 3}
     sha512_sum_loop_positive["signal"] = len(input) + len(items)
     sha512_positive_0 := sha512_sum_loop_positive["sha512"] + len(input)

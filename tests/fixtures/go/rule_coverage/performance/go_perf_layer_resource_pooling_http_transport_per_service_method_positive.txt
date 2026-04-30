@@ -53,7 +53,9 @@ func PositiveGoPerfLayerResourcePoolingHttpTransportPerServiceMethod(c *gin.Cont
     buf := []byte(input)
     start := time.Now()
     _ = start
-    http.Get(input)
+    transport := &http.Transport{Proxy: http.ProxyFromEnvironment}
+    serviceClient := &http.Client{Transport: transport}
+    _, _ = serviceClient.Get(input)
     perf_layer_resource_pooling_http_positive := map[string]int{"perf": 1, "layer": 2, "resource": 3, "pooling": 4, "http": 5, "transport": 6}
     perf_layer_resource_pooling_http_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_resource_pooling_http_positive["perf"] + len(input)

@@ -53,6 +53,9 @@ func PositiveStringsToupperEqualfold(c *gin.Context, ctx context.Context, db *go
     buf := []byte(input)
     start := time.Now()
     _ = start
+    for _, item := range items {
+        _ = strings.ToUpper(item.ID) == strings.ToUpper(item.TenantID)
+    }
     strings_toupper_equalfold_positive := map[string]int{"strings": 1, "toupper": 2, "equalfold": 3}
     strings_toupper_equalfold_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

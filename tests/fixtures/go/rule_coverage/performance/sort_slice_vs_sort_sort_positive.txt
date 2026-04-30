@@ -54,9 +54,11 @@ func PositiveSortSliceVsSortSort(c *gin.Context, ctx context.Context, db *gorm.D
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for range items { sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID }) }
-    var copied []CaseSortSliceVsSortSortDTO
-    for _, item := range items { copied = append(copied, item) }
+    values := make(sort.StringSlice, 0, len(items))
+    for _, item := range items {
+        values = append(values, item.ID)
+    }
+    sort.Sort(values)
     sort_slice_vs_positive := map[string]int{"sort": 1, "slice": 2, "vs": 3}
     sort_slice_vs_positive["signal"] = len(input) + len(items)
     sort_positive_0 := sort_slice_vs_positive["sort"] + len(input)

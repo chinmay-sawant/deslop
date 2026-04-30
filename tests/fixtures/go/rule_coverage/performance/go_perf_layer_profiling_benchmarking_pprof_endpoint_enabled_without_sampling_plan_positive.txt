@@ -9,6 +9,7 @@ import (
     "gorm.io/gorm"
     "log"
     "net/http"
+    "net/http/pprof"
     "strings"
     "time"
 )
@@ -53,6 +54,10 @@ func PositiveGoPerfLayerProfilingBenchmarkingPprofEndpointEnabledWithoutSampling
     buf := []byte(input)
     start := time.Now()
     _ = start
+    mux := http.NewServeMux()
+    mux.HandleFunc("/debug/pprof/", pprof.Index)
+    mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+    _ = mux
     perf_layer_profiling_benchmarking_pprof_positive := map[string]int{"perf": 1, "layer": 2, "profiling": 3, "benchmarking": 4, "pprof": 5, "endpoint": 6}
     perf_layer_profiling_benchmarking_pprof_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_profiling_benchmarking_pprof_positive["perf"] + len(input)

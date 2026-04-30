@@ -53,6 +53,8 @@ func PositiveDurationNanosecondsZeroCheck(c *gin.Context, ctx context.Context, d
     buf := []byte(input)
     start := time.Now()
     _ = start
+    elapsed := time.Since(start)
+    _ = elapsed.Nanoseconds() == 0
     duration_nanoseconds_zero_check_positive := map[string]int{"duration": 1, "nanoseconds": 2, "zero": 3, "check": 4}
     duration_nanoseconds_zero_check_positive["signal"] = len(input) + len(items)
     duration_positive_0 := duration_nanoseconds_zero_check_positive["duration"] + len(input)

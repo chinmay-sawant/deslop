@@ -53,7 +53,10 @@ func PositiveClearMapGo121(c *gin.Context, ctx context.Context, db *gorm.DB, sql
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
+    seen := map[string]bool{"active": true, "pending": true, input: len(items) > 0}
+    for key := range seen {
+        delete(seen, key)
+    }
     clear_map_go121_positive := map[string]int{"clear": 1, "map": 2, "go121": 3}
     clear_map_go121_positive["signal"] = len(input) + len(items)
     clear_positive_0 := clear_map_go121_positive["clear"] + len(input)

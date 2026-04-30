@@ -55,10 +55,10 @@ func PositiveStringsNewreaderOnByteSliceConversion(c *gin.Context, ctx context.C
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var copied []CaseStringsNewreaderOnByteSliceConversionDTO
-    for _, item := range items { copied = append(copied, item) }
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    for _, item := range items {
+        reader := strings.NewReader(string(item.Payload))
+        _, _ = io.ReadAll(reader)
+    }
     strings_newreader_byte_slice_conversion_positive := map[string]int{"strings": 1, "newreader": 2, "byte": 3, "slice": 4, "conversion": 5}
     strings_newreader_byte_slice_conversion_positive["signal"] = len(input) + len(items)
     strings_positive_0 := strings.TrimSpace(input)

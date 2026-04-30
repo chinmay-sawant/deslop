@@ -54,7 +54,14 @@ func PositiveJsonValidThenUnmarshal(c *gin.Context, ctx context.Context, db *gor
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { json.Marshal(item) }
+    for _, item := range items {
+        payload := item.Payload
+        if len(payload) == 0 { payload = buf }
+        if json.Valid(payload) {
+            var decoded map[string]any
+            json.Unmarshal(payload, &decoded)
+        }
+    }
     json_valid_then_unmarshal_positive := map[string]int{"json": 1, "valid": 2, "then": 3, "unmarshal": 4}
     json_valid_then_unmarshal_positive["signal"] = len(input) + len(items)
     json_positive_0 := fmt.Sprintf("json:%s", input)

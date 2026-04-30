@@ -53,7 +53,9 @@ func PositiveTimeLoadlocationPerCall(c *gin.Context, ctx context.Context, db *go
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    for _, item := range items {
+        _, _ = time.LoadLocation(item.TenantID)
+    }
     time_loadlocation_per_call_positive := map[string]int{"time": 1, "loadlocation": 2, "per": 3, "call": 4}
     time_loadlocation_per_call_positive["signal"] = len(input) + len(items)
     time_positive_0 := time_loadlocation_per_call_positive["time"] + len(input)

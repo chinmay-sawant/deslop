@@ -54,7 +54,12 @@ func PositiveJsonMarshalThenWrite(c *gin.Context, ctx context.Context, db *gorm.
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { json.Marshal(item) }
+    for _, item := range items {
+        data, _ := json.Marshal(item)
+        if c != nil && c.Writer != nil {
+            _, _ = c.Writer.Write(data)
+        }
+    }
     json_marshal_then_write_positive := map[string]int{"json": 1, "marshal": 2, "then": 3, "write": 4}
     json_marshal_then_write_positive["signal"] = len(input) + len(items)
     json_positive_0 := fmt.Sprintf("json:%s", input)

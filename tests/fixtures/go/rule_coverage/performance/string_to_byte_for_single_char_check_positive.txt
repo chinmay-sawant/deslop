@@ -53,6 +53,9 @@ func PositiveStringToByteForSingleCharCheck(c *gin.Context, ctx context.Context,
     buf := []byte(input)
     start := time.Now()
     _ = start
+    if len(input) > 0 && []byte(input)[0] == 'x' {
+        _ = input
+    }
     string_byte_single_char_check_positive := map[string]int{"string": 1, "byte": 2, "single": 3, "char": 4, "check": 5}
     string_byte_single_char_check_positive["signal"] = len(input) + len(items)
     string_positive_0 := strings.TrimSpace(input)

@@ -1,6 +1,7 @@
 package rulecoverage
 
 import (
+    "bufio"
     "bytes"
     "context"
     "database/sql"
@@ -56,7 +57,10 @@ func PositiveGoPerfLayerIoOperationsScannerUsedForLargeTokenStream(c *gin.Contex
     start := time.Now()
     _ = start
     file, _ := os.Open(input)
-    io.ReadAll(file)
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        _ = scanner.Text()
+    }
     perf_layer_io_operations_scanner_positive := map[string]int{"perf": 1, "layer": 2, "io": 3, "operations": 4, "scanner": 5, "used": 6}
     perf_layer_io_operations_scanner_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_io_operations_scanner_positive["perf"] + len(input)

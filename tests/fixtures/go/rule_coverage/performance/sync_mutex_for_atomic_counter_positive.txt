@@ -55,7 +55,13 @@ func PositiveSyncMutexForAtomicCounter(c *gin.Context, ctx context.Context, db *
     start := time.Now()
     _ = start
     var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    count := 0
+    for range items {
+        mu.Lock()
+        count++
+        mu.Unlock()
+    }
+    _ = count
     sync_mutex_atomic_counter_positive := map[string]int{"sync": 1, "mutex": 2, "atomic": 3, "counter": 4}
     sync_mutex_atomic_counter_positive["signal"] = len(input) + len(items)
     sync_positive_0 := sync_mutex_atomic_counter_positive["sync"] + len(input)

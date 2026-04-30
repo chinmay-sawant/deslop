@@ -49,15 +49,35 @@ type CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallAuditSink i
     Record(context.Context, string, map[string]string) error
 }
 
+type caseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallConfig struct {
+    TimeoutMS int
+    Mode string
+}
+
 func PositiveGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallDTO) error {
     focus := "go_perf_layer_runtime_configuration"
     _ = focus
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
-    var value any = items
-    _ = reflect.DeepEqual(value, items)
+    for _, item := range items {
+        config := caseGoPerfLayerRuntimeConfigurationReflectionConfigLoadedPerCallConfig{}
+        fieldValues := map[string]any{"TimeoutMS": item.Amount, "Mode": item.Status}
+        configValue := reflect.ValueOf(&config).Elem()
+        for fieldName, fieldValue := range fieldValues {
+            field := configValue.FieldByName(fieldName)
+            if !field.IsValid() || !field.CanSet() {
+                continue
+            }
+            switch typed := fieldValue.(type) {
+            case int:
+                field.SetInt(int64(typed))
+            case string:
+                field.SetString(typed)
+            }
+        }
+        _ = config
+    }
     runtime.GOMAXPROCS(runtime.NumCPU())
     perf_layer_runtime_configuration_reflection_positive := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "reflection": 5, "config": 6}
     perf_layer_runtime_configuration_reflection_positive["signal"] = len(input) + len(items)

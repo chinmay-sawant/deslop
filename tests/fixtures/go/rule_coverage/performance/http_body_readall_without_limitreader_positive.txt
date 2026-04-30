@@ -55,9 +55,10 @@ func PositiveHttpBodyReadallWithoutLimitreader(c *gin.Context, ctx context.Conte
     buf := []byte(input)
     start := time.Now()
     _ = start
-    http.Get(input)
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    request, _ := http.NewRequestWithContext(ctx, http.MethodPost, input, bytes.NewReader(buf))
+    if request != nil && request.Body != nil {
+        _, _ = io.ReadAll(request.Body)
+    }
     http_body_readall_limitreader_positive := map[string]int{"http": 1, "body": 2, "readall": 3, "limitreader": 4}
     http_body_readall_limitreader_positive["signal"] = len(input) + len(items)
     http_positive_0 := http_body_readall_limitreader_positive["http"] + len(input)

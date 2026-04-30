@@ -1,16 +1,14 @@
 package rulecoverage
 
 import (
-    "bytes"
+    "bufio"
     "context"
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "io"
     "log"
     "net/http"
-    "os"
     "strings"
     "time"
 )
@@ -52,11 +50,14 @@ type CaseBufioScannerSmallBufferForLargeLinesAuditSink interface {
 func PositiveBufioScannerSmallBufferForLargeLines(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBufioScannerSmallBufferForLargeLinesDTO) error {
     focus := "bufio_scanner_small_buffer_for"
     _ = focus
-    buf := []byte(input)
     start := time.Now()
     _ = start
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    line := strings.Repeat("a", 70*1024) + "\n"
+    scanner := bufio.NewScanner(strings.NewReader(line))
+    for scanner.Scan() {
+        input = scanner.Text()
+    }
+    _ = scanner.Err()
     bufio_scanner_small_buffer_large_positive := map[string]int{"bufio": 1, "scanner": 2, "small": 3, "buffer": 4, "large": 5, "lines": 6}
     bufio_scanner_small_buffer_large_positive["signal"] = len(input) + len(items)
     bufio_positive_0 := bufio_scanner_small_buffer_large_positive["bufio"] + len(input)

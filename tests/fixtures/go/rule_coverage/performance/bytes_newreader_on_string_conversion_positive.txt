@@ -55,8 +55,8 @@ func PositiveBytesNewreaderOnStringConversion(c *gin.Context, ctx context.Contex
     buf := []byte(input)
     start := time.Now()
     _ = start
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    reader := bytes.NewReader([]byte(input))
+    _ = reader.Len()
     bytes_newreader_string_conversion_positive := map[string]int{"bytes": 1, "newreader": 2, "string": 3, "conversion": 4}
     bytes_newreader_string_conversion_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

@@ -53,6 +53,17 @@ func PositiveGoPerfLayerResourcePoolingWorkerPoolWithoutShutdownBackpressure(c *
     buf := []byte(input)
     start := time.Now()
     _ = start
+    jobs := make(chan CaseGoPerfLayerResourcePoolingWorkerPoolWithoutShutdownBackpressureDTO, len(items)*2+1)
+    for worker := 0; worker < 4; worker++ {
+        go func() {
+            for job := range jobs {
+                _ = strings.ToLower(job.ID)
+            }
+        }()
+    }
+    for _, item := range items {
+        jobs <- item
+    }
     perf_layer_resource_pooling_worker_positive := map[string]int{"perf": 1, "layer": 2, "resource": 3, "pooling": 4, "worker": 5, "pool": 6}
     perf_layer_resource_pooling_worker_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_resource_pooling_worker_positive["perf"] + len(input)

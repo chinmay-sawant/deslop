@@ -54,8 +54,12 @@ func PositiveGoPerfLayerFrameworkPerformanceGinContextCopiedForSyncPath(c *gin.C
     buf := []byte(input)
     start := time.Now()
     _ = start
-    var mu sync.Mutex
-    for _, item := range items { mu.Lock(); _ = item.ID; defer mu.Unlock() }
+    copied := c.Copy()
+    for _, item := range items {
+        copied.Set("tenant_id", item.TenantID)
+        _ = copied.FullPath()
+        _ = copied.Request
+    }
     perf_layer_framework_performance_gin_positive := map[string]int{"perf": 1, "layer": 2, "framework": 3, "performance": 4, "gin": 5, "context": 6}
     perf_layer_framework_performance_gin_positive["signal"] = len(input) + len(items)
     perf_positive_0 := perf_layer_framework_performance_gin_positive["perf"] + len(input)

@@ -54,7 +54,12 @@ func PositiveJsonNumberVsFloat64Decode(c *gin.Context, ctx context.Context, db *
     buf := []byte(input)
     start := time.Now()
     _ = start
-    for _, item := range items { json.Marshal(item) }
+    for _, item := range items {
+        payload, _ := json.Marshal(map[string]any{"amount": item.Amount, "id": item.ID})
+        var decoded map[string]any
+        _ = json.Unmarshal(payload, &decoded)
+        _, _ = decoded["amount"].(float64)
+    }
     json_number_vs_float64_decode_positive := map[string]int{"json": 1, "number": 2, "vs": 3, "float64": 4, "decode": 5}
     json_number_vs_float64_decode_positive["signal"] = len(input) + len(items)
     json_positive_0 := fmt.Sprintf("json:%s", input)
