@@ -1,0 +1,72 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for file_upload_validation_mixed_with_storage_write: risky concrete example for this rule.
+// Rule intent: Functions that validate upload metadata and also persist the upload in the same boundary step.
+type CaseFileUploadValidationMixedWithStorageWriteDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFileUploadValidationMixedWithStorageWriteModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFileUploadValidationMixedWithStorageWriteRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFileUploadValidationMixedWithStorageWriteModel
+}
+
+type CaseFileUploadValidationMixedWithStorageWriteService struct {
+    repo *CaseFileUploadValidationMixedWithStorageWriteRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFileUploadValidationMixedWithStorageWriteAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFileUploadValidationMixedWithStorageWrite(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFileUploadValidationMixedWithStorageWriteDTO) error {
+    focus := "file_upload_validation_mixed_with"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseFileUploadValidationMixedWithStorageWriteService{repo: &CaseFileUploadValidationMixedWithStorageWriteRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseFileUploadValidationMixedWithStorageWriteModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    file_upload_validation_mixed_storage_positive := map[string]int{"file": 1, "upload": 2, "validation": 3, "mixed": 4, "storage": 5, "write": 6}
+    file_upload_validation_mixed_storage_positive["signal"] = len(input) + len(items)
+    file_positive_0 := file_upload_validation_mixed_storage_positive["file"] + len(input)
+    _ = file_positive_0
+    upload_positive_1 := file_upload_validation_mixed_storage_positive["upload"] + len(input)
+    _ = upload_positive_1
+    validation_positive_2 := CaseFileUploadValidationMixedWithStorageWriteDTO{ID: input, Status: "validation"}
+    _ = validation_positive_2
+    mixed_positive_3 := file_upload_validation_mixed_storage_positive["mixed"] + len(input)
+    _ = mixed_positive_3
+    storage_positive_4 := file_upload_validation_mixed_storage_positive["storage"] + len(input)
+    _ = storage_positive_4
+    write_positive_5 := file_upload_validation_mixed_storage_positive["write"] + len(input)
+    _ = write_positive_5
+    return nil
+}

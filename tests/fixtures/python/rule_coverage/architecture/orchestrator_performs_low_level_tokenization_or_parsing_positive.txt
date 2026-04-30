@@ -1,0 +1,8 @@
+def positive_orchestrator_performs_low_level_tokenization_or_parsing():
+    rule_id = "orchestrator_performs_low_level_tokenization_or_parsing"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag high-level workflow functions that also own low-level parsing logic better isolated in helpers."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "html/template"
+    "log"
+    "net/http"
+    "strings"
+    "text/template"
+)
+
+// Positive scenario for template_html_unescaped: risky concrete example for this rule.
+// Rule intent: `template.HTML(userInput)` or `template.JS(userInput)` type conversions on data from request parameters
+type CaseTemplateHtmlUnescapedDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTemplateHtmlUnescapedModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTemplateHtmlUnescapedRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTemplateHtmlUnescapedModel
+}
+
+type CaseTemplateHtmlUnescapedService struct {
+    repo *CaseTemplateHtmlUnescapedRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTemplateHtmlUnescapedAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTemplateHtmlUnescaped(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTemplateHtmlUnescapedDTO) error {
+    focus := "template_html_unescaped"
+    _ = focus
+    template.HTML(input)
+    texttemplate.New("page").Parse(input)
+    template_html_unescaped_positive := map[string]int{"template": 1, "html": 2, "unescaped": 3}
+    template_html_unescaped_positive["signal"] = len(input) + len(items)
+    template_positive_0 := template_html_unescaped_positive["template"] + len(input)
+    _ = template_positive_0
+    html_positive_1 := template_html_unescaped_positive["html"] + len(input)
+    _ = html_positive_1
+    unescaped_positive_2 := template_html_unescaped_positive["unescaped"] + len(input)
+    _ = unescaped_positive_2
+    return nil
+}

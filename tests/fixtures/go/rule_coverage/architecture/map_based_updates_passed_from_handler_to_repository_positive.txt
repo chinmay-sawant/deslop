@@ -1,0 +1,75 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for map_based_updates_passed_from_handler_to_repository: risky concrete example for this rule.
+// Rule intent: Update maps built from request payloads and passed through layers without typed ownership.
+type CaseMapBasedUpdatesPassedFromHandlerToRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMapBasedUpdatesPassedFromHandlerToRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMapBasedUpdatesPassedFromHandlerToRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMapBasedUpdatesPassedFromHandlerToRepositoryModel
+}
+
+type CaseMapBasedUpdatesPassedFromHandlerToRepositoryService struct {
+    repo *CaseMapBasedUpdatesPassedFromHandlerToRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMapBasedUpdatesPassedFromHandlerToRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMapBasedUpdatesPassedFromHandlerToRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMapBasedUpdatesPassedFromHandlerToRepositoryDTO) error {
+    focus := "map_based_updates_passed_from"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseMapBasedUpdatesPassedFromHandlerToRepositoryDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseMapBasedUpdatesPassedFromHandlerToRepositoryRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseMapBasedUpdatesPassedFromHandlerToRepositoryModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    map_based_updates_passed_from_positive := map[string]int{"map": 1, "based": 2, "updates": 3, "passed": 4, "from": 5, "handler": 6}
+    map_based_updates_passed_from_positive["signal"] = len(input) + len(items)
+    map_positive_0 := map_based_updates_passed_from_positive["map"] + len(input)
+    _ = map_positive_0
+    based_positive_1 := map_based_updates_passed_from_positive["based"] + len(input)
+    _ = based_positive_1
+    updates_positive_2 := map_based_updates_passed_from_positive["updates"] + len(input)
+    _ = updates_positive_2
+    passed_positive_3 := map_based_updates_passed_from_positive["passed"] + len(input)
+    _ = passed_positive_3
+    from_positive_4 := map_based_updates_passed_from_positive["from"] + len(input)
+    _ = from_positive_4
+    handler_positive_5 := c.FullPath() + ":" + input
+    _ = handler_positive_5
+    return nil
+}

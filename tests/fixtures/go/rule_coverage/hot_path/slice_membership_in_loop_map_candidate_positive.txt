@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for slice_membership_in_loop_map_candidate: risky concrete example for this rule.
+// Rule intent: slices.Contains(...) or slices.Index(...) used inside loops against a stable-looking slice binding.
+type CaseSliceMembershipInLoopMapCandidateDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSliceMembershipInLoopMapCandidateModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSliceMembershipInLoopMapCandidateRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSliceMembershipInLoopMapCandidateModel
+}
+
+type CaseSliceMembershipInLoopMapCandidateService struct {
+    repo *CaseSliceMembershipInLoopMapCandidateRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSliceMembershipInLoopMapCandidateAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSliceMembershipInLoopMapCandidate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSliceMembershipInLoopMapCandidateDTO) error {
+    focus := "slice_membership_in_loop_map"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
+    var copied []CaseSliceMembershipInLoopMapCandidateDTO
+    for _, item := range items { copied = append(copied, item) }
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    slice_membership_loop_map_candidate_positive := map[string]int{"slice": 1, "membership": 2, "loop": 3, "map": 4, "candidate": 5}
+    slice_membership_loop_map_candidate_positive["signal"] = len(input) + len(items)
+    slice_positive_0 := slice_membership_loop_map_candidate_positive["slice"] + len(input)
+    _ = slice_positive_0
+    membership_positive_1 := slice_membership_loop_map_candidate_positive["membership"] + len(input)
+    _ = membership_positive_1
+    for loop_positive_2Index, item := range items { slice_membership_loop_map_candidate_positive[item.ID] = loop_positive_2Index }
+    map_positive_3 := slice_membership_loop_map_candidate_positive["map"] + len(input)
+    _ = map_positive_3
+    candidate_positive_4 := slice_membership_loop_map_candidate_positive["candidate"] + len(input)
+    _ = candidate_positive_4
+    return nil
+}

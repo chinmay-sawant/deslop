@@ -1,0 +1,77 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for validation_error_response_shape_inconsistent: risky concrete example for this rule.
+// Rule intent: Handlers in the same API module that emit different validation error contracts.
+type CaseValidationErrorResponseShapeInconsistentDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseValidationErrorResponseShapeInconsistentModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseValidationErrorResponseShapeInconsistentRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseValidationErrorResponseShapeInconsistentModel
+}
+
+type CaseValidationErrorResponseShapeInconsistentService struct {
+    repo *CaseValidationErrorResponseShapeInconsistentRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseValidationErrorResponseShapeInconsistentAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveValidationErrorResponseShapeInconsistent(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseValidationErrorResponseShapeInconsistentDTO) error {
+    focus := "validation_error_response_shape_inconsistent"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseValidationErrorResponseShapeInconsistentDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    service := &CaseValidationErrorResponseShapeInconsistentService{repo: &CaseValidationErrorResponseShapeInconsistentRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseValidationErrorResponseShapeInconsistentModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    err := errors.New("sql: no rows in result set for " + input)
+    if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
+    validation_error_response_shape_inconsistent_positive := map[string]int{"validation": 1, "error": 2, "response": 3, "shape": 4, "inconsistent": 5}
+    validation_error_response_shape_inconsistent_positive["signal"] = len(input) + len(items)
+    validation_positive_0 := CaseValidationErrorResponseShapeInconsistentDTO{ID: input, Status: "validation"}
+    _ = validation_positive_0
+    error_positive_1 := validation_error_response_shape_inconsistent_positive["error"] + len(input)
+    _ = error_positive_1
+    response_positive_2 := validation_error_response_shape_inconsistent_positive["response"] + len(input)
+    _ = response_positive_2
+    shape_positive_3 := validation_error_response_shape_inconsistent_positive["shape"] + len(input)
+    _ = shape_positive_3
+    inconsistent_positive_4 := validation_error_response_shape_inconsistent_positive["inconsistent"] + len(input)
+    _ = inconsistent_positive_4
+    return nil
+}

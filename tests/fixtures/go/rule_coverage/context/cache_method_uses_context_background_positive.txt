@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for cache_method_uses_context_background: risky concrete example for this rule.
+// Rule intent: Cache implementations that call context.Background() or context.TODO() instead of propagating caller context.
+type CaseCacheMethodUsesContextBackgroundDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCacheMethodUsesContextBackgroundModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCacheMethodUsesContextBackgroundRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCacheMethodUsesContextBackgroundModel
+}
+
+type CaseCacheMethodUsesContextBackgroundService struct {
+    repo *CaseCacheMethodUsesContextBackgroundRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCacheMethodUsesContextBackgroundAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCacheMethodUsesContextBackground(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCacheMethodUsesContextBackgroundDTO) error {
+    focus := "cache_method_uses_context_background"
+    _ = focus
+    go func() { http.Get(input) }()
+    lookup := func(key string) { _ = context.Background(); _ = key }
+    lookup(input)
+    cache_method_uses_context_background_positive := map[string]int{"cache": 1, "method": 2, "uses": 3, "context": 4, "background": 5}
+    cache_method_uses_context_background_positive["signal"] = len(input) + len(items)
+    cache_positive_0 := cache_method_uses_context_background_positive["cache"] + len(input)
+    _ = cache_positive_0
+    method_positive_1 := cache_method_uses_context_background_positive["method"] + len(input)
+    _ = method_positive_1
+    uses_positive_2 := cache_method_uses_context_background_positive["uses"] + len(input)
+    _ = uses_positive_2
+    context_positive_3 := ctx
+    _ = context_positive_3
+    background_positive_4 := ctx
+    _ = background_positive_4
+    return nil
+}

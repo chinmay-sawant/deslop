@@ -1,0 +1,8 @@
+def negative_import_time_config_load():
+    rule_id = "import_time_config_load"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Module-scope configuration or secret loading that runs during import instead of an explicit startup path."
+    return rule_id, family, severity, status, intent, description

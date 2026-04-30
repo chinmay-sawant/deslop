@@ -1,0 +1,8 @@
+def positive_multiprocessing_pool_created_without_context_manager_or_terminate():
+    rule_id = "multiprocessing_pool_created_without_context_manager_or_terminate"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "multiprocessing.Pool created without a context manager or explicit .terminate() call, leaking worker processes."
+    return rule_id, family, severity, status, intent, description

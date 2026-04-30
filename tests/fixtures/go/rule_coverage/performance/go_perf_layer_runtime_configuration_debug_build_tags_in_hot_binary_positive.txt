@@ -1,0 +1,78 @@
+//go:build debug || pprof
+// +build debug pprof
+
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "runtime"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_runtime_configuration_debug_build_tags_in_hot_binary: risky concrete example for this rule.
+// Rule intent: Layer: Build and runtime configuration. Flag performance-sensitive binaries that keep debug/profiling build tags enabled by default.
+type CaseGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinaryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinaryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinaryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinaryModel
+}
+
+type CaseGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinaryService struct {
+    repo *CaseGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinaryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinaryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerRuntimeConfigurationDebugBuildTagsInHotBinaryDTO) error {
+    focus := "go_perf_layer_runtime_configuration"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    enabledBuildTags := []string{"debug", "pprof"}
+    _ = strings.Join(enabledBuildTags, ",")
+    runtime.GOMAXPROCS(runtime.NumCPU())
+    perf_layer_runtime_configuration_debug_positive := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "debug": 5, "build": 6}
+    perf_layer_runtime_configuration_debug_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_runtime_configuration_debug_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_runtime_configuration_debug_positive["layer"] + len(input)
+    _ = layer_positive_1
+    runtime_positive_2 := perf_layer_runtime_configuration_debug_positive["runtime"] + len(input)
+    _ = runtime_positive_2
+    configuration_positive_3 := perf_layer_runtime_configuration_debug_positive["configuration"] + len(input)
+    _ = configuration_positive_3
+    debug_positive_4 := perf_layer_runtime_configuration_debug_positive["debug"] + len(input)
+    _ = debug_positive_4
+    build_positive_5 := perf_layer_runtime_configuration_debug_positive["build"] + len(input)
+    _ = build_positive_5
+    return nil
+}

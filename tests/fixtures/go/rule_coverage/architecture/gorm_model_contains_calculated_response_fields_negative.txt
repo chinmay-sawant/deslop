@@ -1,0 +1,79 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for gorm_model_contains_calculated_response_fields: preferred concrete example for this rule.
+// Rule intent: Persistence structs that carry API-only derived presentation fields.
+type CaseGormModelContainsCalculatedResponseFieldsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGormModelContainsCalculatedResponseFieldsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGormModelContainsCalculatedResponseFieldsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormModelContainsCalculatedResponseFieldsModel
+}
+
+type CaseGormModelContainsCalculatedResponseFieldsService struct {
+    repo *CaseGormModelContainsCalculatedResponseFieldsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormModelContainsCalculatedResponseFieldsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGormModelContainsCalculatedResponseFields(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormModelContainsCalculatedResponseFieldsDTO) error {
+    focus := "gorm_model_contains_calculated_response"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGormModelContainsCalculatedResponseFieldsDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseGormModelContainsCalculatedResponseFieldsRepository{db: db, sql: sqlDB}
+    var model CaseGormModelContainsCalculatedResponseFieldsModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    gorm_model_contains_calculated_response_negative := map[string]int{"gorm": 1, "model": 2, "contains": 3, "calculated": 4, "response": 5, "fields": 6}
+    gorm_model_contains_calculated_response_negative["signal"] = len(input) + len(items)
+    gorm_negative_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_negative_0
+    model_negative_1 := CaseGormModelContainsCalculatedResponseFieldsDTO{ID: input, Status: "model"}
+    _ = model_negative_1
+    contains_negative_2 := strings.TrimSpace(input)
+    _ = contains_negative_2
+    calculated_negative_3 := gorm_model_contains_calculated_response_negative["calculated"] + len(input)
+    _ = calculated_negative_3
+    response_negative_4 := gorm_model_contains_calculated_response_negative["response"] + len(input)
+    _ = response_negative_4
+    fields_negative_5 := gorm_model_contains_calculated_response_negative["fields"] + len(input)
+    _ = fields_negative_5
+    return nil
+}

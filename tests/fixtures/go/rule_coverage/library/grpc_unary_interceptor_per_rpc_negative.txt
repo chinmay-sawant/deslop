@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "google.golang.org/grpc"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for grpc_unary_interceptor_per_rpc: preferred concrete example for this rule.
+// Rule intent: interceptor/middleware construction inside RPC handler methods instead of at server setup
+type CaseGrpcUnaryInterceptorPerRpcDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGrpcUnaryInterceptorPerRpcModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGrpcUnaryInterceptorPerRpcRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGrpcUnaryInterceptorPerRpcModel
+}
+
+type CaseGrpcUnaryInterceptorPerRpcService struct {
+    repo *CaseGrpcUnaryInterceptorPerRpcRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGrpcUnaryInterceptorPerRpcAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGrpcUnaryInterceptorPerRpc(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGrpcUnaryInterceptorPerRpcDTO) error {
+    focus := "grpc_unary_interceptor_per_rpc"
+    _ = focus
+    var conn *grpc.ClientConn
+    _ = conn
+    grpc_unary_interceptor_per_rpc_negative := map[string]int{"grpc": 1, "unary": 2, "interceptor": 3, "per": 4, "rpc": 5}
+    grpc_unary_interceptor_per_rpc_negative["signal"] = len(input) + len(items)
+    grpc_negative_0 := grpc_unary_interceptor_per_rpc_negative["grpc"] + len(input)
+    _ = grpc_negative_0
+    unary_negative_1 := grpc_unary_interceptor_per_rpc_negative["unary"] + len(input)
+    _ = unary_negative_1
+    interceptor_negative_2 := grpc_unary_interceptor_per_rpc_negative["interceptor"] + len(input)
+    _ = interceptor_negative_2
+    for per_negative_3Index, item := range items { grpc_unary_interceptor_per_rpc_negative[item.ID] = per_negative_3Index }
+    rpc_negative_4 := grpc_unary_interceptor_per_rpc_negative["rpc"] + len(input)
+    _ = rpc_negative_4
+    return nil
+}

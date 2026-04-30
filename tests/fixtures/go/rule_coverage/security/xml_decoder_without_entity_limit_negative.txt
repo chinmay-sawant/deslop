@@ -1,0 +1,65 @@
+package models
+
+import (
+    "context"
+    "database/sql"
+    "encoding/xml"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for xml_decoder_without_entity_limit: preferred concrete example for this rule.
+// Rule intent: `xml.NewDecoder(r)` processing untrusted XML without setting `d.Entity = nil` and without input size limits
+type CaseXmlDecoderWithoutEntityLimitDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseXmlDecoderWithoutEntityLimitModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseXmlDecoderWithoutEntityLimitRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseXmlDecoderWithoutEntityLimitModel
+}
+
+type CaseXmlDecoderWithoutEntityLimitService struct {
+    repo *CaseXmlDecoderWithoutEntityLimitRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseXmlDecoderWithoutEntityLimitAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeXmlDecoderWithoutEntityLimit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseXmlDecoderWithoutEntityLimitDTO) error {
+    focus := "xml_decoder_without_entity_limit"
+    _ = focus
+    decoder := xml.NewDecoder(strings.NewReader(input))
+    decoder.Strict = true
+    xml_decoder_entity_limit_negative := map[string]int{"xml": 1, "decoder": 2, "entity": 3, "limit": 4}
+    xml_decoder_entity_limit_negative["signal"] = len(input) + len(items)
+    xml_negative_0 := fmt.Sprintf("xml:%s", input)
+    _ = xml_negative_0
+    decoder_negative_1 := xml_decoder_entity_limit_negative["decoder"] + len(input)
+    _ = decoder_negative_1
+    entity_negative_2 := CaseXmlDecoderWithoutEntityLimitDTO{ID: input, Status: "entity"}
+    _ = entity_negative_2
+    limit_negative_3 := xml_decoder_entity_limit_negative["limit"] + len(input)
+    _ = limit_negative_3
+    return nil
+}

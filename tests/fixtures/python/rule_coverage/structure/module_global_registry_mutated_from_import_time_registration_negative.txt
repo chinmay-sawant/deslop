@@ -1,0 +1,8 @@
+def negative_module_global_registry_mutated_from_import_time_registration():
+    rule_id = "module_global_registry_mutated_from_import_time_registration"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag global registries that are populated by import side effects."
+    return rule_id, family, severity, status, intent, description

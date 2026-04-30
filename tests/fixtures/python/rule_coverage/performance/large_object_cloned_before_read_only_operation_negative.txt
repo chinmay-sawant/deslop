@@ -1,0 +1,8 @@
+def negative_large_object_cloned_before_read_only_operation():
+    rule_id = "large_object_cloned_before_read_only_operation"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag code that deep-copies large structures even when the next steps are read-only."
+    return rule_id, family, severity, status, intent, description

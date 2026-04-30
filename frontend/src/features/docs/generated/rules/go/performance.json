@@ -887,6 +887,1406 @@
       "fix": "For Full Dataset Load in Go, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
     },
     {
+      "id": "go_perf_layer_algorithmic_complexity_per_request_topk_full_sort",
+      "label": "Go Perf Layer Algorithmic Complexity Per Request Topk Full Sort",
+      "description": "Layer: Algorithmic complexity. Flag request paths that sort all candidates when heap-based top-k selection would bound work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Algorithmic Complexity Per Request Topk Full Sort matters because the pattern here, Layer: Algorithmic complexity. Flag request paths that sort all candidates when heap-based top-k selection would bound work, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Algorithmic Complexity Per Request Topk Full Sort in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline",
+      "label": "Go Perf Layer Algorithmic Complexity Quadratic Append Filter Pipeline",
+      "description": "Layer: Algorithmic complexity. Flag append-based filter pipelines that rescan accumulated results for every input item.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Algorithmic Complexity Quadratic Append Filter Pipeline matters because the pattern here, Layer: Algorithmic complexity. Flag append-based filter pipelines that rescan accumulated results for every input item, pushes data or model work into a shape that is harder to scale, cache, or reproduce.",
+      "fix": "For Go Perf Layer Algorithmic Complexity Quadratic Append Filter Pipeline in Go, move expensive data or model work to the right pipeline stage, cache stable results, and keep the runtime path lean."
+    },
+    {
+      "id": "go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set",
+      "label": "Go Perf Layer Algorithmic Complexity Recursive Graph Walk without Seen Set",
+      "description": "Layer: Algorithmic complexity. Flag recursive graph or tree walks that do not track visited nodes for cyclic or shared inputs.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Algorithmic Complexity Recursive Graph Walk without Seen Set matters because the pattern here, Layer: Algorithmic complexity. Flag recursive graph or tree walks that do not track visited nodes for cyclic or shared inputs, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Algorithmic Complexity Recursive Graph Walk without Seen Set in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans",
+      "label": "Go Perf Layer Algorithmic Complexity Repeated Nested Slice Scans",
+      "description": "Layer: Algorithmic complexity. Flag nested slice scans that should be indexed or mapped before joining large collections.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Algorithmic Complexity Repeated Nested Slice Scans matters because the pattern here, Layer: Algorithmic complexity. Flag nested slice scans that should be indexed or mapped before joining large collections, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Algorithmic Complexity Repeated Nested Slice Scans in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_algorithmic_complexity_sort_before_linear_dedup",
+      "label": "Go Perf Layer Algorithmic Complexity Sort Before Linear Dedup",
+      "description": "Layer: Algorithmic complexity. Flag full sorts used only to remove duplicates where map-backed membership would scale better.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Algorithmic Complexity Sort Before Linear Dedup matters because the pattern here, Layer: Algorithmic complexity. Flag full sorts used only to remove duplicates where map-backed membership would scale better, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Algorithmic Complexity Sort Before Linear Dedup in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_async_concurrency_channel_buffer_too_small_for_known_burst",
+      "label": "Go Perf Layer Async Concurrency Channel Buffer Too Small for Known Burst",
+      "description": "Layer: Async and concurrency. Flag channels created with no or tiny buffer despite a known burst size.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Async Concurrency Channel Buffer Too Small for Known Burst matters because the pattern here, Layer: Async and concurrency. Flag channels created with no or tiny buffer despite a known burst size, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Go Perf Layer Async Concurrency Channel Buffer Too Small for Known Burst in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call",
+      "label": "Go Perf Layer Async Concurrency Context Timeout Allocated Per Inner Call",
+      "description": "Layer: Async and concurrency. Flag context.WithTimeout creation inside tight retry loops when an outer deadline would suffice.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Async Concurrency Context Timeout Allocated Per Inner Call matters because the pattern here, Layer: Async and concurrency. Flag context.WithTimeout creation inside tight retry loops when an outer deadline would suffice, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Async Concurrency Context Timeout Allocated Per Inner Call in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit",
+      "label": "Go Perf Layer Async Concurrency Goroutine Per Item without Worker Limit",
+      "description": "Layer: Async and concurrency. Flag unbounded goroutine-per-item fanout without a semaphore or worker pool.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Async Concurrency Goroutine Per Item without Worker Limit matters because the pattern here, Layer: Async and concurrency. Flag unbounded goroutine-per-item fanout without a semaphore or worker pool, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Async Concurrency Goroutine Per Item without Worker Limit in Go, add a semaphore or worker pool or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_async_concurrency_mutex_held_during_slow_call",
+      "label": "Go Perf Layer Async Concurrency Mutex Held During Slow Call",
+      "description": "Layer: Async and concurrency. Flag mutex-protected regions that include network, disk, or database calls.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Async Concurrency Mutex Held During Slow Call matters because the pattern here, Layer: Async and concurrency. Flag mutex-protected regions that include network, disk, or database calls, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Go Perf Layer Async Concurrency Mutex Held During Slow Call in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "go_perf_layer_async_concurrency_select_default_busy_poll",
+      "label": "Go Perf Layer Async Concurrency Select Default Busy Poll",
+      "description": "Layer: Async and concurrency. Flag select loops with default branches that spin instead of blocking or using timers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Async Concurrency Select Default Busy Poll matters because the pattern here, Layer: Async and concurrency. Flag select loops with default branches that spin instead of blocking or using timers, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Go Perf Layer Async Concurrency Select Default Busy Poll in Go, prefer blocking or using timers when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "go_perf_layer_caching_cache_key_built_with_fmt",
+      "label": "Go Perf Layer Caching Cache Key Built with Fmt",
+      "description": "Layer: Caching. Flag cache keys built with fmt.Sprintf in hot paths where append/Builder or structured keys are cheaper.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Caching Cache Key Built with Fmt matters because the pattern here, Layer: Caching. Flag cache keys built with fmt.Sprintf in hot paths where append/Builder or structured keys are cheaper, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Caching Cache Key Built with Fmt in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_caching_cache_miss_does_duplicate_work",
+      "label": "Go Perf Layer Caching Cache Miss Does Duplicate Work",
+      "description": "Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Caching Cache Miss Does Duplicate Work matters because the pattern here, Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Caching Cache Miss Does Duplicate Work in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_caching_json_cache_value_stored_as_string",
+      "label": "Go Perf Layer Caching JSON Cache Value Stored as String",
+      "description": "Layer: Caching. Flag caches that store JSON strings only to unmarshal them again before every use.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Caching JSON Cache Value Stored as String matters because the pattern here, Layer: Caching. Flag caches that store JSON strings only to unmarshal them again before every use, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Caching JSON Cache Value Stored as String in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_caching_per_request_config_cache_rebuild",
+      "label": "Go Perf Layer Caching Per Request Config Cache Rebuild",
+      "description": "Layer: Caching. Flag request-scoped caches rebuilt from config or environment on every call.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Caching Per Request Config Cache Rebuild matters because the pattern here, Layer: Caching. Flag request-scoped caches rebuilt from config or environment on every call, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Go Perf Layer Caching Per Request Config Cache Rebuild in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "go_perf_layer_caching_unbounded_cache_map",
+      "label": "Go Perf Layer Caching Unbounded Cache Map",
+      "description": "Layer: Caching. Flag package-level cache maps without size, TTL, or eviction policy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Caching Unbounded Cache Map matters because the pattern here, Layer: Caching. Flag package-level cache maps without size, TTL, or eviction policy, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Go Perf Layer Caching Unbounded Cache Map in Go, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "go_perf_layer_collection_iteration_copy_slice_before_readonly_range",
+      "label": "Go Perf Layer Collection Iteration Copy Slice Before Readonly Range",
+      "description": "Layer: Collection iteration. Flag slice copies made immediately before read-only range loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Collection Iteration Copy Slice Before Readonly Range matters because the pattern here, Layer: Collection iteration. Flag slice copies made immediately before read-only range loops, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Collection Iteration Copy Slice Before Readonly Range in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_collection_iteration_len_called_after_materializing_channel",
+      "label": "Go Perf Layer Collection Iteration Len Called After Materializing Channel",
+      "description": "Layer: Collection iteration. Flag channel streams collected into slices only to measure length or emptiness.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Collection Iteration Len Called After Materializing Channel matters because the pattern here, Layer: Collection iteration. Flag channel streams collected into slices only to measure length or emptiness, creates lifecycle behavior that is easy to miss until the system is under load or shutting down.",
+      "fix": "For Go Perf Layer Collection Iteration Len Called After Materializing Channel in Go, give the work an explicit owner, pass the right context or handle, and make cancellation or shutdown visible in the API."
+    },
+    {
+      "id": "go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need",
+      "label": "Go Perf Layer Collection Iteration Manual Index Loop without Bounds Need",
+      "description": "Layer: Collection iteration. Flag manual index loops over slices where range would avoid repeated bounds-sensitive indexing.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Collection Iteration Manual Index Loop without Bounds Need matters because the pattern here, Layer: Collection iteration. Flag manual index loops over slices where range would avoid repeated bounds-sensitive indexing, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Collection Iteration Manual Index Loop without Bounds Need in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_collection_iteration_multiple_passes_for_independent_counts",
+      "label": "Go Perf Layer Collection Iteration Multiple Passes for Independent Counts",
+      "description": "Layer: Collection iteration. Flag multiple full passes over the same slice for independent counters that can be combined.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Collection Iteration Multiple Passes for Independent Counts matters because the pattern here, Layer: Collection iteration. Flag multiple full passes over the same slice for independent counters that can be combined, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Collection Iteration Multiple Passes for Independent Counts in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_collection_iteration_range_over_map_for_deterministic_first",
+      "label": "Go Perf Layer Collection Iteration Range Over Map for Deterministic First",
+      "description": "Layer: Collection iteration. Flag map iteration used to pick a deterministic first value, causing unstable work and extra sorting later.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Collection Iteration Range Over Map for Deterministic First matters because the pattern here, Layer: Collection iteration. Flag map iteration used to pick a deterministic first value, causing unstable work and extra sorting later, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Collection Iteration Range Over Map for Deterministic First in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_data_structure_choice_interface_map_for_typed_values",
+      "label": "Go Perf Layer Data Structure Choice Interface Map for Typed Values",
+      "description": "Layer: Data structure choice. Flag map[string]any used for homogeneous hot-path values where typed structs avoid assertions.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Data Structure Choice Interface Map for Typed Values matters because the pattern here, Layer: Data structure choice. Flag map[string]any used for homogeneous hot-path values where typed structs avoid assertions, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Data Structure Choice Interface Map for Typed Values in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_data_structure_choice_linked_list_for_cache_iteration",
+      "label": "Go Perf Layer Data Structure Choice Linked List for Cache Iteration",
+      "description": "Layer: Data structure choice. Flag container/list use in cache iteration paths where slices or maps would improve locality.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Data Structure Choice Linked List for Cache Iteration matters because the pattern here, Layer: Data structure choice. Flag container/list use in cache iteration paths where slices or maps would improve locality, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Data Structure Choice Linked List for Cache Iteration in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_data_structure_choice_map_string_bool_for_membership",
+      "label": "Go Perf Layer Data Structure Choice Map String Bool for Membership",
+      "description": "Layer: Data structure choice. Flag map[string]bool membership sets where map[string]struct{} avoids unnecessary value storage.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Data Structure Choice Map String Bool for Membership matters because the pattern here, Layer: Data structure choice. Flag map[string]bool membership sets where map[string]struct{} avoids unnecessary value storage, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Data Structure Choice Map String Bool for Membership in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_data_structure_choice_slice_queue_pop_front",
+      "label": "Go Perf Layer Data Structure Choice Slice Queue Pop Front",
+      "description": "Layer: Data structure choice. Flag queue-style slice reslicing from the front that can retain backing arrays or shift too much data.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Data Structure Choice Slice Queue Pop Front matters because the pattern here, Layer: Data structure choice. Flag queue-style slice reslicing from the front that can retain backing arrays or shift too much data, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Data Structure Choice Slice Queue Pop Front in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_data_structure_choice_small_enum_string_switch_map",
+      "label": "Go Perf Layer Data Structure Choice Small Enum String Switch Map",
+      "description": "Layer: Data structure choice. Flag map lookups for tiny static enum-like string sets where switch can avoid allocation and hashing.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Data Structure Choice Small Enum String Switch Map matters because the pattern here, Layer: Data structure choice. Flag map lookups for tiny static enum-like string sets where switch can avoid allocation and hashing, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Data Structure Choice Small Enum String Switch Map in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_database_access_count_query_before_paged_fetch",
+      "label": "Go Perf Layer Database Access Count Query Before Paged Fetch",
+      "description": "Layer: Database access. Flag count queries paired with page fetches on every request without cache or user-visible need.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Database Access Count Query Before Paged Fetch matters because the pattern here, Layer: Database access. Flag count queries paired with page fetches on every request without cache or user-visible need, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Database Access Count Query Before Paged Fetch in Go, add cache or user-visible need or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_database_access_query_inside_loop_without_batching",
+      "label": "Go Perf Layer Database Access Query Inside Loop without Batching",
+      "description": "Layer: Database access. Flag SQL queries issued inside loops where batching or IN queries can bound round trips.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Database Access Query Inside Loop without Batching matters because the pattern here, Layer: Database access. Flag SQL queries issued inside loops where batching or IN queries can bound round trips, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Go Perf Layer Database Access Query Inside Loop without Batching in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "go_perf_layer_database_access_rows_scan_into_map_per_row",
+      "label": "Go Perf Layer Database Access Rows Scan Into Map Per Row",
+      "description": "Layer: Database access. Flag row scans into map[string]any where typed structs or column slices would reduce allocation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Database Access Rows Scan Into Map Per Row matters because the pattern here, Layer: Database access. Flag row scans into map[string]any where typed structs or column slices would reduce allocation, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Database Access Rows Scan Into Map Per Row in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_database_access_select_star_on_hot_query",
+      "label": "Go Perf Layer Database Access Select Star on Hot Query",
+      "description": "Layer: Database access. Flag SELECT * in hot queries where narrow projections reduce scan and decode cost.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Database Access Select Star on Hot Query matters because the pattern here, Layer: Database access. Flag SELECT * in hot queries where narrow projections reduce scan and decode cost, hides a sensitive edge where convenience shortcuts can become security or data-handling incidents.",
+      "fix": "For Go Perf Layer Database Access Select Star on Hot Query in Go, switch to parameterized access, validated input, or a reviewed helper so the data boundary stays explicit and safe."
+    },
+    {
+      "id": "go_perf_layer_database_access_transaction_per_row_bulk_write",
+      "label": "Go Perf Layer Database Access Transaction Per Row Bulk Write",
+      "description": "Layer: Database access. Flag bulk writes that open and commit one transaction per row.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Database Access Transaction Per Row Bulk Write matters because the pattern here, Layer: Database access. Flag bulk writes that open and commit one transaction per row, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Go Perf Layer Database Access Transaction Per Row Bulk Write in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "go_perf_layer_error_handling_cost_error_string_built_before_error_needed",
+      "label": "Go Perf Layer Error Handling Cost Error String Built Before Error Needed",
+      "description": "Layer: Error handling cost. Flag error message formatting before the code knows an error will be returned.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Error Handling Cost Error String Built Before Error Needed matters because the pattern here, Layer: Error handling cost. Flag error message formatting before the code knows an error will be returned, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Error Handling Cost Error String Built Before Error Needed in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_error_handling_cost_errors_wrap_in_tight_loop",
+      "label": "Go Perf Layer Error Handling Cost Errors Wrap in Tight Loop",
+      "description": "Layer: Error handling cost. Flag repeated error wrapping inside loops where one aggregated context would be cheaper.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Error Handling Cost Errors Wrap in Tight Loop matters because the pattern here, Layer: Error handling cost. Flag repeated error wrapping inside loops where one aggregated context would be cheaper, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Go Perf Layer Error Handling Cost Errors Wrap in Tight Loop in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "go_perf_layer_error_handling_cost_multierror_append_for_success_path",
+      "label": "Go Perf Layer Error Handling Cost Multierror Append for Success Path",
+      "description": "Layer: Error handling cost. Flag multi-error aggregators allocated on success-heavy paths before any error exists.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Error Handling Cost Multierror Append for Success Path matters because the pattern here, Layer: Error handling cost. Flag multi-error aggregators allocated on success-heavy paths before any error exists, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Error Handling Cost Multierror Append for Success Path in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_error_handling_cost_panic_recover_for_control_flow",
+      "label": "Go Perf Layer Error Handling Cost Panic Recover for Control Flow",
+      "description": "Layer: Error handling cost. Flag panic/recover used for expected branch control in performance-sensitive code.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Error Handling Cost Panic Recover for Control Flow matters because the pattern here, Layer: Error handling cost. Flag panic/recover used for expected branch control in performance-sensitive code, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Error Handling Cost Panic Recover for Control Flow in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_error_handling_cost_sentinel_error_allocated_per_call",
+      "label": "Go Perf Layer Error Handling Cost Sentinel Error Allocated Per Call",
+      "description": "Layer: Error handling cost. Flag identical sentinel errors allocated inside functions instead of package-level variables.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Error Handling Cost Sentinel Error Allocated Per Call matters because the pattern here, Layer: Error handling cost. Flag identical sentinel errors allocated inside functions instead of package-level variables, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Go Perf Layer Error Handling Cost Sentinel Error Allocated Per Call in Go, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "go_perf_layer_framework_performance_gin_context_copied_for_sync_path",
+      "label": "Go Perf Layer Framework Performance Gin Context Copied for Sync Path",
+      "description": "Layer: Framework-specific performance. Flag Gin context Copy calls where work remains synchronous and request-scoped.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Framework Performance Gin Context Copied for Sync Path matters because the pattern here, Layer: Framework-specific performance. Flag Gin context Copy calls where work remains synchronous and request-scoped, blurs the boundary between request plumbing and the rest of the application.",
+      "fix": "For Go Perf Layer Framework Performance Gin Context Copied for Sync Path in Go, move the non-transport work into middleware, services, bootstrap code, or shared helpers so the request edge stays narrow."
+    },
+    {
+      "id": "go_perf_layer_framework_performance_gorm_preload_all_associations",
+      "label": "Go Perf Layer Framework Performance GORM Preload All Associations",
+      "description": "Layer: Framework-specific performance. Flag GORM Preload of broad association sets on list endpoints.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Framework Performance GORM Preload All Associations matters because the pattern here, Layer: Framework-specific performance. Flag GORM Preload of broad association sets on list endpoints, stretches the write boundary and makes failure ownership harder to reason about.",
+      "fix": "For Go Perf Layer Framework Performance GORM Preload All Associations in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_framework_performance_grpc_metadata_parsed_repeatedly",
+      "label": "Go Perf Layer Framework Performance gRPC Metadata Parsed Repeatedly",
+      "description": "Layer: Framework-specific performance. Flag repeated metadata extraction/parsing in gRPC interceptors and handlers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Framework Performance gRPC Metadata Parsed Repeatedly matters because the pattern here, Layer: Framework-specific performance. Flag repeated metadata extraction/parsing in gRPC interceptors and handlers, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Framework Performance gRPC Metadata Parsed Repeatedly in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_framework_performance_sqlx_select_slice_unbounded",
+      "label": "Go Perf Layer Framework Performance sqlx Select Slice Unbounded",
+      "description": "Layer: Framework-specific performance. Flag sqlx Select into slices without LIMIT or streaming for large tables.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Framework Performance sqlx Select Slice Unbounded matters because the pattern here, Layer: Framework-specific performance. Flag sqlx Select into slices without LIMIT or streaming for large tables, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Framework Performance sqlx Select Slice Unbounded in Go, add LIMIT or streaming for large tables or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_framework_performance_template_execute_to_string_then_write",
+      "label": "Go Perf Layer Framework Performance Template Execute to String Then Write",
+      "description": "Layer: Framework-specific performance. Flag template rendering to strings before writing to the response writer.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Framework Performance Template Execute to String Then Write matters because the pattern here, Layer: Framework-specific performance. Flag template rendering to strings before writing to the response writer, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Framework Performance Template Execute to String Then Write in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_garbage_collection_cleanup_finalizer_used_for_regular_cleanup",
+      "label": "Go Perf Layer Garbage Collection Cleanup Finalizer Used for Regular Cleanup",
+      "description": "Layer: Garbage collection and cleanup. Flag runtime.SetFinalizer use for ordinary resource cleanup instead of explicit Close ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Garbage Collection Cleanup Finalizer Used for Regular Cleanup matters because the pattern here, Layer: Garbage collection and cleanup. Flag runtime.SetFinalizer use for ordinary resource cleanup instead of explicit Close ownership, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Go Perf Layer Garbage Collection Cleanup Finalizer Used for Regular Cleanup in Go, prefer explicit Close ownership when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate",
+      "label": "Go Perf Layer Garbage Collection Cleanup Large Slice Retained After Truncate",
+      "description": "Layer: Garbage collection and cleanup. Flag long-lived slices truncated to zero that still retain large backing arrays.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Garbage Collection Cleanup Large Slice Retained After Truncate matters because the pattern here, Layer: Garbage collection and cleanup. Flag long-lived slices truncated to zero that still retain large backing arrays, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Garbage Collection Cleanup Large Slice Retained After Truncate in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse",
+      "label": "Go Perf Layer Garbage Collection Cleanup Response Body Not Drained for Reuse",
+      "description": "Layer: Garbage collection and cleanup. Flag HTTP response handling that closes bodies without draining when connection reuse matters.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Garbage Collection Cleanup Response Body Not Drained for Reuse matters because the pattern here, Layer: Garbage collection and cleanup. Flag HTTP response handling that closes bodies without draining when connection reuse matters, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Garbage Collection Cleanup Response Body Not Drained for Reuse in Go, add draining when connection reuse matters or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers",
+      "label": "Go Perf Layer Garbage Collection Cleanup Sync Pool Stores Large Unbounded Buffers",
+      "description": "Layer: Garbage collection and cleanup. Flag sync.Pool usage that stores large buffers without a cap before putting them back.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Garbage Collection Cleanup Sync Pool Stores Large Unbounded Buffers matters because the pattern here, Layer: Garbage collection and cleanup. Flag sync.Pool usage that stores large buffers without a cap before putting them back, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Garbage Collection Cleanup Sync Pool Stores Large Unbounded Buffers in Go, add a cap before putting them back or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_garbage_collection_cleanup_ticker_not_stopped_on_exit",
+      "label": "Go Perf Layer Garbage Collection Cleanup Ticker Not Stopped on Exit",
+      "description": "Layer: Garbage collection and cleanup. Flag time.Ticker creation without a visible Stop path in services or workers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Garbage Collection Cleanup Ticker Not Stopped on Exit matters because the pattern here, Layer: Garbage collection and cleanup. Flag time.Ticker creation without a visible Stop path in services or workers, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Garbage Collection Cleanup Ticker Not Stopped on Exit in Go, add a visible Stop path in services or workers or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_hot_path_optimization_allocation_in_hash_or_less_func",
+      "label": "Go Perf Layer Hot Path Optimization Allocation in Hash or Less Func",
+      "description": "Layer: Hot path optimization. Flag allocations inside sort comparison or hashing callbacks.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Hot Path Optimization Allocation in Hash or Less Func matters because the pattern here, Layer: Hot path optimization. Flag allocations inside sort comparison or hashing callbacks, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Hot Path Optimization Allocation in Hash or Less Func in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_hot_path_optimization_defer_for_simple_unlock_in_hot_loop",
+      "label": "Go Perf Layer Hot Path Optimization Defer for Simple Unlock in Hot Loop",
+      "description": "Layer: Hot path optimization. Flag defer used for simple unlock/close work inside very hot loops.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Hot Path Optimization Defer for Simple Unlock in Hot Loop matters because the pattern here, Layer: Hot path optimization. Flag defer used for simple unlock/close work inside very hot loops, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Hot Path Optimization Defer for Simple Unlock in Hot Loop in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_hot_path_optimization_invariant_parse_inside_handler",
+      "label": "Go Perf Layer Hot Path Optimization Invariant Parse Inside Handler",
+      "description": "Layer: Hot path optimization. Flag handlers that parse invariant templates, schemas, or expressions per request.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Hot Path Optimization Invariant Parse Inside Handler matters because the pattern here, Layer: Hot path optimization. Flag handlers that parse invariant templates, schemas, or expressions per request, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Go Perf Layer Hot Path Optimization Invariant Parse Inside Handler in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "go_perf_layer_hot_path_optimization_reflection_on_hot_path",
+      "label": "Go Perf Layer Hot Path Optimization Reflection on Hot Path",
+      "description": "Layer: Hot path optimization. Flag reflect-based field access in hot loops where typed access is available.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Hot Path Optimization Reflection on Hot Path matters because the pattern here, Layer: Hot path optimization. Flag reflect-based field access in hot loops where typed access is available, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Hot Path Optimization Reflection on Hot Path in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_hot_path_optimization_time_now_called_many_times_per_item",
+      "label": "Go Perf Layer Hot Path Optimization Time Now Called Many Times Per Item",
+      "description": "Layer: Hot path optimization. Flag repeated time.Now calls inside per-item loops where one timestamp would suffice.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Hot Path Optimization Time Now Called Many Times Per Item matters because the pattern here, Layer: Hot path optimization. Flag repeated time.Now calls inside per-item loops where one timestamp would suffice, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Hot Path Optimization Time Now Called Many Times Per Item in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_io_operations_readall_on_known_large_file",
+      "label": "Go Perf Layer I/O Operations Readall on Known Large File",
+      "description": "Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer I/O Operations Readall on Known Large File matters because the pattern here, Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer I/O Operations Readall on Known Large File in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_io_operations_scanner_used_for_large_token_stream",
+      "label": "Go Perf Layer I/O Operations Scanner Used for Large Token Stream",
+      "description": "Layer: I/O operations. Flag bufio.Scanner on potentially large tokens without Buffer sizing or Reader alternatives.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer I/O Operations Scanner Used for Large Token Stream matters because the pattern here, Layer: I/O operations. Flag bufio.Scanner on potentially large tokens without Buffer sizing or Reader alternatives, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer I/O Operations Scanner Used for Large Token Stream in Go, add Buffer sizing or Reader alternatives or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_io_operations_small_writes_without_bufio_writer",
+      "label": "Go Perf Layer I/O Operations Small Writes without Bufio Writer",
+      "description": "Layer: I/O operations. Flag many Write calls to files or network connections without bufio buffering.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer I/O Operations Small Writes without Bufio Writer matters because the pattern here, Layer: I/O operations. Flag many Write calls to files or network connections without bufio buffering, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer I/O Operations Small Writes without Bufio Writer in Go, add bufio buffering or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_io_operations_stat_before_open_without_branch",
+      "label": "Go Perf Layer I/O Operations Stat Before Open without Branch",
+      "description": "Layer: I/O operations. Flag os.Stat checks immediately followed by open/read operations without using the stat result meaningfully.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer I/O Operations Stat Before Open without Branch matters because the pattern here, Layer: I/O operations. Flag os.Stat checks immediately followed by open/read operations without using the stat result meaningfully, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer I/O Operations Stat Before Open without Branch in Go, add using the stat result meaningfully or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_io_operations_temporary_file_for_stream_transform",
+      "label": "Go Perf Layer I/O Operations Temporary File for Stream Transform",
+      "description": "Layer: I/O operations. Flag temporary files used only to bridge streaming transformations.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer I/O Operations Temporary File for Stream Transform matters because the pattern here, Layer: I/O operations. Flag temporary files used only to bridge streaming transformations, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer I/O Operations Temporary File for Stream Transform in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_lazy_loading_eager_connect_to_all_backends",
+      "label": "Go Perf Layer Lazy Loading Eager Connect to All Backends",
+      "description": "Layer: Lazy loading. Flag services connecting to every optional backend at startup instead of lazy initialization.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Lazy Loading Eager Connect to All Backends matters because the pattern here, Layer: Lazy loading. Flag services connecting to every optional backend at startup instead of lazy initialization, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Go Perf Layer Lazy Loading Eager Connect to All Backends in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "go_perf_layer_lazy_loading_eager_load_optional_config",
+      "label": "Go Perf Layer Lazy Loading Eager Load Optional Config",
+      "description": "Layer: Lazy loading. Flag optional configuration or metadata loaded at startup before any feature uses it.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Lazy Loading Eager Load Optional Config matters because the pattern here, Layer: Lazy loading. Flag optional configuration or metadata loaded at startup before any feature uses it, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Go Perf Layer Lazy Loading Eager Load Optional Config in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "go_perf_layer_lazy_loading_eager_metric_label_cardinality_build",
+      "label": "Go Perf Layer Lazy Loading Eager Metric Label Cardinality Build",
+      "description": "Layer: Lazy loading. Flag eager construction of high-cardinality metric labels before the metric is emitted.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Lazy Loading Eager Metric Label Cardinality Build matters because the pattern here, Layer: Lazy loading. Flag eager construction of high-cardinality metric labels before the metric is emitted, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Lazy Loading Eager Metric Label Cardinality Build in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes",
+      "label": "Go Perf Layer Lazy Loading Eager Template Parse for Unused Routes",
+      "description": "Layer: Lazy loading. Flag parsing templates for routes that may never be served in the current process mode.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Lazy Loading Eager Template Parse for Unused Routes matters because the pattern here, Layer: Lazy loading. Flag parsing templates for routes that may never be served in the current process mode, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Lazy Loading Eager Template Parse for Unused Routes in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_lazy_loading_lazy_once_hides_slow_first_request",
+      "label": "Go Perf Layer Lazy Loading Lazy Once Hides Slow First Request",
+      "description": "Layer: Lazy loading. Flag sync.Once lazy initialization on request paths without warmup or latency accounting.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Lazy Loading Lazy Once Hides Slow First Request matters because the pattern here, Layer: Lazy loading. Flag sync.Once lazy initialization on request paths without warmup or latency accounting, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Lazy Loading Lazy Once Hides Slow First Request in Go, add warmup or latency accounting or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_logging_overhead_fmt_log_message_in_loop",
+      "label": "Go Perf Layer Logging Overhead Fmt Log Message in Loop",
+      "description": "Layer: Logging overhead. Flag formatted log strings built inside loops instead of structured lazy fields.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Logging Overhead Fmt Log Message in Loop matters because the pattern here, Layer: Logging overhead. Flag formatted log strings built inside loops instead of structured lazy fields, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Go Perf Layer Logging Overhead Fmt Log Message in Loop in Go, prefer structured lazy fields when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "go_perf_layer_logging_overhead_log_fields_built_before_level_check",
+      "label": "Go Perf Layer Logging Overhead Log Fields Built Before Level Check",
+      "description": "Layer: Logging overhead. Flag expensive log field construction before checking whether the level is enabled.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Logging Overhead Log Fields Built Before Level Check matters because the pattern here, Layer: Logging overhead. Flag expensive log field construction before checking whether the level is enabled, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Logging Overhead Log Fields Built Before Level Check in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_logging_overhead_log_payload_serialized_before_sampling",
+      "label": "Go Perf Layer Logging Overhead Log Payload Serialized Before Sampling",
+      "description": "Layer: Logging overhead. Flag payload serialization for logs before sampling or level filters run.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Logging Overhead Log Payload Serialized Before Sampling matters because the pattern here, Layer: Logging overhead. Flag payload serialization for logs before sampling or level filters run, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Logging Overhead Log Payload Serialized Before Sampling in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_logging_overhead_logger_with_fields_per_request",
+      "label": "Go Perf Layer Logging Overhead Logger with Fields Per Request",
+      "description": "Layer: Logging overhead. Flag derived logger construction per request when stable fields can be attached once.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Logging Overhead Logger with Fields Per Request matters because the pattern here, Layer: Logging overhead. Flag derived logger construction per request when stable fields can be attached once, pushes avoidable work into a repeated path where the cost compounds quickly.",
+      "fix": "For Go Perf Layer Logging Overhead Logger with Fields Per Request in Go, move the one-time work out of the repeated path, cache reusable state, or batch the operation so the loop only does per-item work."
+    },
+    {
+      "id": "go_perf_layer_logging_overhead_per_record_debug_log_in_batch",
+      "label": "Go Perf Layer Logging Overhead Per Record Debug Log in Batch",
+      "description": "Layer: Logging overhead. Flag debug logging per batch record on hot ingestion paths.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Logging Overhead Per Record Debug Log in Batch matters because the pattern here, Layer: Logging overhead. Flag debug logging per batch record on hot ingestion paths, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Logging Overhead Per Record Debug Log in Batch in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_memory_allocation_append_without_known_capacity",
+      "label": "Go Perf Layer Memory Allocation Append without Known Capacity",
+      "description": "Layer: Memory allocation. Flag slice appends in builders where an obvious count is available for make capacity.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Memory Allocation Append without Known Capacity matters because the pattern here, Layer: Memory allocation. Flag slice appends in builders where an obvious count is available for make capacity, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Memory Allocation Append without Known Capacity in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_memory_allocation_bytes_buffer_allocated_per_record",
+      "label": "Go Perf Layer Memory Allocation Bytes Buffer Allocated Per Record",
+      "description": "Layer: Memory allocation. Flag bytes.Buffer construction per record when a reusable buffer can be reset safely.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Memory Allocation Bytes Buffer Allocated Per Record matters because the pattern here, Layer: Memory allocation. Flag bytes.Buffer construction per record when a reusable buffer can be reset safely, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Memory Allocation Bytes Buffer Allocated Per Record in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_memory_allocation_closure_capture_allocates_in_loop",
+      "label": "Go Perf Layer Memory Allocation Closure Capture Allocates in Loop",
+      "description": "Layer: Memory allocation. Flag loop-local closures that capture variables in high-frequency paths and may force heap allocation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Memory Allocation Closure Capture Allocates in Loop matters because the pattern here, Layer: Memory allocation. Flag loop-local closures that capture variables in high-frequency paths and may force heap allocation, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Memory Allocation Closure Capture Allocates in Loop in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_memory_allocation_map_recreated_for_static_lookup",
+      "label": "Go Perf Layer Memory Allocation Map Recreated for Static Lookup",
+      "description": "Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Memory Allocation Map Recreated for Static Lookup matters because the pattern here, Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Go Perf Layer Memory Allocation Map Recreated for Static Lookup in Go, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write",
+      "label": "Go Perf Layer Memory Allocation Temporary Byte Slice for String Write",
+      "description": "Layer: Memory allocation. Flag []byte(string) conversions used only to write strings to writers.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Memory Allocation Temporary Byte Slice for String Write matters because the pattern here, Layer: Memory allocation. Flag []byte(string) conversions used only to write strings to writers, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Memory Allocation Temporary Byte Slice for String Write in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_network_calls_dns_lookup_per_request_path",
+      "label": "Go Perf Layer Network Calls Dns Lookup Per Request Path",
+      "description": "Layer: Network calls. Flag net.Lookup* calls in request paths without caching or resolver ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Network Calls Dns Lookup Per Request Path matters because the pattern here, Layer: Network calls. Flag net.Lookup* calls in request paths without caching or resolver ownership, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Network Calls Dns Lookup Per Request Path in Go, add caching or resolver ownership or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_network_calls_http_client_created_per_call",
+      "label": "Go Perf Layer Network Calls HTTP Client Created Per Call",
+      "description": "Layer: Network calls. Flag http.Client construction per call instead of reusing clients and transports.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Network Calls HTTP Client Created Per Call matters because the pattern here, Layer: Network calls. Flag http.Client construction per call instead of reusing clients and transports, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Go Perf Layer Network Calls HTTP Client Created Per Call in Go, prefer reusing clients and transports when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "go_perf_layer_network_calls_retry_loop_without_backoff",
+      "label": "Go Perf Layer Network Calls Retry Loop without Backoff",
+      "description": "Layer: Network calls. Flag network retry loops that immediately retry and amplify load.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Network Calls Retry Loop without Backoff matters because the pattern here, Layer: Network calls. Flag network retry loops that immediately retry and amplify load, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer Network Calls Retry Loop without Backoff in Go, move one-time initialization, parsing, or allocation outside the loop when the per-iteration state does not actually change."
+    },
+    {
+      "id": "go_perf_layer_network_calls_tls_config_built_per_request",
+      "label": "Go Perf Layer Network Calls Tls Config Built Per Request",
+      "description": "Layer: Network calls. Flag TLS configuration construction per request instead of reusing immutable configs.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Network Calls Tls Config Built Per Request matters because the pattern here, Layer: Network calls. Flag TLS configuration construction per request instead of reusing immutable configs, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Go Perf Layer Network Calls Tls Config Built Per Request in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "go_perf_layer_network_calls_transport_without_connection_limits",
+      "label": "Go Perf Layer Network Calls Transport without Connection Limits",
+      "description": "Layer: Network calls. Flag custom http.Transport values missing MaxIdleConns or MaxIdleConnsPerHost for service clients.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Network Calls Transport without Connection Limits matters because the pattern here, Layer: Network calls. Flag custom http.Transport values missing MaxIdleConns or MaxIdleConnsPerHost for service clients, lets layer-specific contracts leak into places that should stay simpler and easier to test.",
+      "fix": "For Go Perf Layer Network Calls Transport without Connection Limits in Go, choose one layer to own the contract shape and perform the mapping there instead of passing boundary-specific types through the stack."
+    },
+    {
+      "id": "go_perf_layer_profiling_benchmarking_benchmark_includes_setup_in_loop",
+      "label": "Go Perf Layer Profiling Benchmarking Benchmark Includes Setup in Loop",
+      "description": "Layer: Profiling and benchmarking. Flag Go benchmarks that perform setup inside the timed loop without ResetTimer.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Profiling Benchmarking Benchmark Includes Setup in Loop matters because the pattern here, Layer: Profiling and benchmarking. Flag Go benchmarks that perform setup inside the timed loop without ResetTimer, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Profiling Benchmarking Benchmark Includes Setup in Loop in Go, add ResetTimer or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report",
+      "label": "Go Perf Layer Profiling Benchmarking Benchmark Missing Allocs Report",
+      "description": "Layer: Profiling and benchmarking. Flag benchmarks for allocation-sensitive code that omit b.ReportAllocs.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Profiling Benchmarking Benchmark Missing Allocs Report matters because the pattern here, Layer: Profiling and benchmarking. Flag benchmarks for allocation-sensitive code that omit b.ReportAllocs, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Profiling Benchmarking Benchmark Missing Allocs Report in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_profiling_benchmarking_microbenchmark_dead_code_eliminated",
+      "label": "Go Perf Layer Profiling Benchmarking Microbenchmark Dead Code Eliminated",
+      "description": "Layer: Profiling and benchmarking. Flag benchmarks that do not consume results and may let the compiler remove work.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Profiling Benchmarking Microbenchmark Dead Code Eliminated matters because the pattern here, Layer: Profiling and benchmarking. Flag benchmarks that do not consume results and may let the compiler remove work, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Profiling Benchmarking Microbenchmark Dead Code Eliminated in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_profiling_benchmarking_optimization_comment_without_benchmark",
+      "label": "Go Perf Layer Profiling Benchmarking Optimization Comment without Benchmark",
+      "description": "Layer: Profiling and benchmarking. Flag performance-claim comments that lack benchmark, profile, or trace evidence.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Profiling Benchmarking Optimization Comment without Benchmark matters because the pattern here, Layer: Profiling and benchmarking. Flag performance-claim comments that lack benchmark, profile, or trace evidence, turns documentation into noise instead of preserving the intent a maintainer actually needs.",
+      "fix": "For Go Perf Layer Profiling Benchmarking Optimization Comment without Benchmark in Go, rewrite or delete the comment so it captures intent, invariants, or tradeoffs instead of narrating obvious steps."
+    },
+    {
+      "id": "go_perf_layer_profiling_benchmarking_pprof_endpoint_enabled_without_sampling_plan",
+      "label": "Go Perf Layer Profiling Benchmarking Pprof Endpoint Enabled without Sampling Plan",
+      "description": "Layer: Profiling and benchmarking. Flag always-on profiling endpoints in production services without access or sampling controls.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Profiling Benchmarking Pprof Endpoint Enabled without Sampling Plan matters because the pattern here, Layer: Profiling and benchmarking. Flag always-on profiling endpoints in production services without access or sampling controls, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Profiling Benchmarking Pprof Endpoint Enabled without Sampling Plan in Go, add access or sampling controls or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_resource_pooling_buffer_pool_without_max_capacity",
+      "label": "Go Perf Layer Resource Pooling Buffer Pool without Max Capacity",
+      "description": "Layer: Resource pooling. Flag buffer pools that return arbitrarily large buffers and retain memory after spikes.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Resource Pooling Buffer Pool without Max Capacity matters because the pattern here, Layer: Resource pooling. Flag buffer pools that return arbitrarily large buffers and retain memory after spikes, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Resource Pooling Buffer Pool without Max Capacity in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_resource_pooling_db_pool_created_per_repository",
+      "label": "Go Perf Layer Resource Pooling DB Pool Created Per Repository",
+      "description": "Layer: Resource pooling. Flag database pools constructed per repository instance instead of shared process ownership.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Resource Pooling DB Pool Created Per Repository matters because the pattern here, Layer: Resource pooling. Flag database pools constructed per repository instance instead of shared process ownership, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Go Perf Layer Resource Pooling DB Pool Created Per Repository in Go, prefer shared process ownership when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "go_perf_layer_resource_pooling_http_transport_per_service_method",
+      "label": "Go Perf Layer Resource Pooling HTTP Transport Per Service Method",
+      "description": "Layer: Resource pooling. Flag new transports per service method instead of shared clients per upstream.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Resource Pooling HTTP Transport Per Service Method matters because the pattern here, Layer: Resource pooling. Flag new transports per service method instead of shared clients per upstream, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Go Perf Layer Resource Pooling HTTP Transport Per Service Method in Go, prefer shared clients per upstream when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "go_perf_layer_resource_pooling_rate_limiter_per_request",
+      "label": "Go Perf Layer Resource Pooling Rate Limiter Per Request",
+      "description": "Layer: Resource pooling. Flag rate limiter construction inside request handlers instead of per identity or dependency.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Resource Pooling Rate Limiter Per Request matters because the pattern here, Layer: Resource pooling. Flag rate limiter construction inside request handlers instead of per identity or dependency, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Go Perf Layer Resource Pooling Rate Limiter Per Request in Go, prefer per identity or dependency when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "go_perf_layer_resource_pooling_worker_pool_without_shutdown_backpressure",
+      "label": "Go Perf Layer Resource Pooling Worker Pool without Shutdown Backpressure",
+      "description": "Layer: Resource pooling. Flag worker pools that accept unlimited jobs without bounded queues or shutdown draining.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Resource Pooling Worker Pool without Shutdown Backpressure matters because the pattern here, Layer: Resource pooling. Flag worker pools that accept unlimited jobs without bounded queues or shutdown draining, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Resource Pooling Worker Pool without Shutdown Backpressure in Go, add bounded queues or shutdown draining or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_runtime_configuration_debug_build_tags_in_hot_binary",
+      "label": "Go Perf Layer Runtime Configuration Debug Build Tags in Hot Binary",
+      "description": "Layer: Build and runtime configuration. Flag performance-sensitive binaries that keep debug/profiling build tags enabled by default.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Runtime Configuration Debug Build Tags in Hot Binary matters because the pattern here, Layer: Build and runtime configuration. Flag performance-sensitive binaries that keep debug/profiling build tags enabled by default, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Runtime Configuration Debug Build Tags in Hot Binary in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_runtime_configuration_gogc_forced_low_without_measurement",
+      "label": "Go Perf Layer Runtime Configuration Gogc Forced Low without Measurement",
+      "description": "Layer: Build and runtime configuration. Flag runtime/debug GC tuning in application code without benchmark notes.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Runtime Configuration Gogc Forced Low without Measurement matters because the pattern here, Layer: Build and runtime configuration. Flag runtime/debug GC tuning in application code without benchmark notes, removes a guardrail or signal that reviewers expect before trusting the surrounding code.",
+      "fix": "For Go Perf Layer Runtime Configuration Gogc Forced Low without Measurement in Go, add benchmark notes or move the code to a path where that safeguard is guaranteed before the risky work happens."
+    },
+    {
+      "id": "go_perf_layer_runtime_configuration_gomaxprocs_set_in_library",
+      "label": "Go Perf Layer Runtime Configuration Gomaxprocs Set in Library",
+      "description": "Layer: Build and runtime configuration. Flag libraries setting GOMAXPROCS and overriding host runtime policy.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Runtime Configuration Gomaxprocs Set in Library matters because the pattern here, Layer: Build and runtime configuration. Flag libraries setting GOMAXPROCS and overriding host runtime policy, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Runtime Configuration Gomaxprocs Set in Library in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_runtime_configuration_race_detector_assumed_in_benchmark_numbers",
+      "label": "Go Perf Layer Runtime Configuration Race Detector Assumed in Benchmark Numbers",
+      "description": "Layer: Build and runtime configuration. Flag benchmark guidance or scripts that compare race-enabled and normal builds directly.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Runtime Configuration Race Detector Assumed in Benchmark Numbers matters because the pattern here, Layer: Build and runtime configuration. Flag benchmark guidance or scripts that compare race-enabled and normal builds directly, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Runtime Configuration Race Detector Assumed in Benchmark Numbers in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_runtime_configuration_reflection_config_loaded_per_call",
+      "label": "Go Perf Layer Runtime Configuration Reflection Config Loaded Per Call",
+      "description": "Layer: Build and runtime configuration. Flag reflection-based config decoding performed per operation instead of at startup.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Runtime Configuration Reflection Config Loaded Per Call matters because the pattern here, Layer: Build and runtime configuration. Flag reflection-based config decoding performed per operation instead of at startup, pushes configuration or startup ownership into the wrong phase of the program.",
+      "fix": "For Go Perf Layer Runtime Configuration Reflection Config Loaded Per Call in Go, load, validate, and wire this configuration at startup so request paths and imports only consume already-owned state."
+    },
+    {
+      "id": "go_perf_layer_serialization_base64_roundtrip_for_binary_transport",
+      "label": "Go Perf Layer Serialization Base64 Roundtrip for Binary Transport",
+      "description": "Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside a single process boundary.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Serialization Base64 Roundtrip for Binary Transport matters because the pattern here, Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside a single process boundary, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Serialization Base64 Roundtrip for Binary Transport in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_serialization_gzip_writer_created_per_small_payload",
+      "label": "Go Perf Layer Serialization Gzip Writer Created Per Small Payload",
+      "description": "Layer: Serialization and deserialization. Flag gzip writers created for tiny payloads where compression overhead can dominate.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Serialization Gzip Writer Created Per Small Payload matters because the pattern here, Layer: Serialization and deserialization. Flag gzip writers created for tiny payloads where compression overhead can dominate, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Serialization Gzip Writer Created Per Small Payload in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_serialization_json_decoder_without_reuse_for_stream",
+      "label": "Go Perf Layer Serialization JSON Decoder without Reuse for Stream",
+      "description": "Layer: Serialization and deserialization. Flag JSON decoders created for each element of a stream instead of decoding the stream once.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Serialization JSON Decoder without Reuse for Stream matters because the pattern here, Layer: Serialization and deserialization. Flag JSON decoders created for each element of a stream instead of decoding the stream once, shows that the code is bypassing a clearer or safer default that readers usually expect to see.",
+      "fix": "For Go Perf Layer Serialization JSON Decoder without Reuse for Stream in Go, prefer decoding the stream once when the semantics match, and keep the expected or cheaper API choice as the default."
+    },
+    {
+      "id": "go_perf_layer_serialization_json_marshal_for_deep_equal",
+      "label": "Go Perf Layer Serialization JSON Marshal for Deep Equal",
+      "description": "Layer: Serialization and deserialization. Flag json.Marshal used only to compare structures or build equality keys.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Serialization JSON Marshal for Deep Equal matters because the pattern here, Layer: Serialization and deserialization. Flag json.Marshal used only to compare structures or build equality keys, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Serialization JSON Marshal for Deep Equal in Go, hoist invariant work, reuse allocations, and choose data movement patterns that scale linearly instead of paying the same cost again and again."
+    },
+    {
+      "id": "go_perf_layer_serialization_map_any_json_decode_in_hot_path",
+      "label": "Go Perf Layer Serialization Map Any JSON Decode in Hot Path",
+      "description": "Layer: Serialization and deserialization. Flag JSON decoding into map[string]any in hot paths where typed structs avoid reflection churn.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer Serialization Map Any JSON Decode in Hot Path matters because the pattern here, Layer: Serialization and deserialization. Flag JSON decoding into map[string]any in hot paths where typed structs avoid reflection churn, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer Serialization Map Any JSON Decode in Hot Path in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_string_handling_byte_string_roundtrip_for_contains",
+      "label": "Go Perf Layer String Handling Byte String Roundtrip for Contains",
+      "description": "Layer: String handling. Flag string/[]byte roundtrips around Contains/Index checks that have native package variants.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer String Handling Byte String Roundtrip for Contains matters because the pattern here, Layer: String handling. Flag string/[]byte roundtrips around Contains/Index checks that have native package variants, makes ownership and navigation harder when someone has to trace behavior across modules or services.",
+      "fix": "For Go Perf Layer String Handling Byte String Roundtrip for Contains in Go, move the code to the package, module, router, or entrypoint layer that already owns this boundary so navigation and responsibility stay aligned."
+    },
+    {
+      "id": "go_perf_layer_string_handling_fmt_sprintf_for_simple_concat",
+      "label": "Go Perf Layer String Handling Fmt Sprintf for Simple Concat",
+      "description": "Layer: String handling. Flag fmt.Sprintf used for simple string concatenation on hot or repeated paths.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer String Handling Fmt Sprintf for Simple Concat matters because the pattern here, Layer: String handling. Flag fmt.Sprintf used for simple string concatenation on hot or repeated paths, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer String Handling Fmt Sprintf for Simple Concat in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_string_handling_regexp_compile_in_request_path",
+      "label": "Go Perf Layer String Handling Regexp Compile in Request Path",
+      "description": "Layer: String handling. Flag regexp.Compile or MustCompile inside handlers, loops, or repeated functions.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer String Handling Regexp Compile in Request Path matters because the pattern here, Layer: String handling. Flag regexp.Compile or MustCompile inside handlers, loops, or repeated functions, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer String Handling Regexp Compile in Request Path in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_string_handling_string_lower_for_case_insensitive_compare",
+      "label": "Go Perf Layer String Handling String Lower for Case Insensitive Compare",
+      "description": "Layer: String handling. Flag strings.ToLower comparisons where EqualFold avoids extra allocation.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer String Handling String Lower for Case Insensitive Compare matters because the pattern here, Layer: String handling. Flag strings.ToLower comparisons where EqualFold avoids extra allocation, is worth review because repeated work inside loops and request paths compounds quickly, even when the local code change looks harmless.",
+      "fix": "For Go Perf Layer String Handling String Lower for Case Insensitive Compare in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
+      "id": "go_perf_layer_string_handling_strings_join_single_element_loop",
+      "label": "Go Perf Layer String Handling Strings Join Single Element Loop",
+      "description": "Layer: String handling. Flag repeated strings.Join calls in loops where one builder outside the loop would do.",
+      "defaultSeverity": "contextual",
+      "status": "stable",
+      "configurability": [
+        "disable",
+        "ignore",
+        "severity_override"
+      ],
+      "explanation": "In Go, Go Perf Layer String Handling Strings Join Single Element Loop matters because the pattern here, Layer: String handling. Flag repeated strings.Join calls in loops where one builder outside the loop would do, turns local work into repeated cost that spreads with traffic or input size.",
+      "fix": "For Go Perf Layer String Handling Strings Join Single Element Loop in Go, prefer a builder, buffer, or one-time composition step instead of growing the same value incrementally."
+    },
+    {
       "id": "goroutine_for_sync_work",
       "label": "Goroutine for Sync Work",
       "description": "`go func() { result <- compute() }()` followed by `<-result` where the goroutine is immediately awaited",

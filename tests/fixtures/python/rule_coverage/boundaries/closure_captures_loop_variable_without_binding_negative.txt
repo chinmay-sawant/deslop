@@ -1,0 +1,8 @@
+def negative_closure_captures_loop_variable_without_binding():
+    rule_id = "closure_captures_loop_variable_without_binding"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag closures created in loops that capture the loop variable without binding the current value."
+    return rule_id, family, severity, status, intent, description

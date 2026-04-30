@@ -1,0 +1,73 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for metrics_labels_built_inline_in_handlers: preferred concrete example for this rule.
+// Rule intent: Handlers that hand-build metric labels repeatedly instead of using focused observation helpers.
+type CaseMetricsLabelsBuiltInlineInHandlersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMetricsLabelsBuiltInlineInHandlersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMetricsLabelsBuiltInlineInHandlersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMetricsLabelsBuiltInlineInHandlersModel
+}
+
+type CaseMetricsLabelsBuiltInlineInHandlersService struct {
+    repo *CaseMetricsLabelsBuiltInlineInHandlersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMetricsLabelsBuiltInlineInHandlersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMetricsLabelsBuiltInlineInHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMetricsLabelsBuiltInlineInHandlersDTO) error {
+    focus := "metrics_labels_built_inline_in"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseMetricsLabelsBuiltInlineInHandlersDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    slog.InfoContext(ctx, "metrics_labels_built_inline_in_handlers", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    metrics_labels_built_inline_handlers_negative := map[string]int{"metrics": 1, "labels": 2, "built": 3, "inline": 4, "handlers": 5}
+    metrics_labels_built_inline_handlers_negative["signal"] = len(input) + len(items)
+    metrics_negative_0 := fmt.Sprintf("metrics=%s", input)
+    _ = metrics_negative_0
+    labels_negative_1 := metrics_labels_built_inline_handlers_negative["labels"] + len(input)
+    _ = labels_negative_1
+    built_negative_2 := metrics_labels_built_inline_handlers_negative["built"] + len(input)
+    _ = built_negative_2
+    inline_negative_3 := metrics_labels_built_inline_handlers_negative["inline"] + len(input)
+    _ = inline_negative_3
+    handlers_negative_4 := c.FullPath() + ":" + input
+    _ = handlers_negative_4
+    return nil
+}

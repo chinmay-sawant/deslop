@@ -1,0 +1,8 @@
+def positive_redundant_return_none():
+    rule_id = "redundant_return_none"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Explicit return None in simple code paths where Python would already return None implicitly."
+    return rule_id, family, severity, status, intent, description

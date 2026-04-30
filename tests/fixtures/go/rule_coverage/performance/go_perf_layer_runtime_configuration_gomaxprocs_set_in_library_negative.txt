@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_runtime_configuration_gomaxprocs_set_in_library: preferred concrete example for this rule.
+// Rule intent: Layer: Build and runtime configuration. Flag libraries setting GOMAXPROCS and overriding host runtime policy.
+type CaseGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibraryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibraryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibraryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibraryModel
+}
+
+type CaseGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibraryService struct {
+    repo *CaseGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibraryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibraryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibrary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerRuntimeConfigurationGomaxprocsSetInLibraryDTO) error {
+    focus := "go_perf_layer_runtime_configuration"
+    _ = focus
+    buf := []byte(input)
+    workers := 4
+    _ = workers
+    perf_layer_runtime_configuration_gomaxprocs_negative := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "gomaxprocs": 5, "set": 6}
+    perf_layer_runtime_configuration_gomaxprocs_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_runtime_configuration_gomaxprocs_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_runtime_configuration_gomaxprocs_negative["layer"] + len(input)
+    _ = layer_negative_1
+    runtime_negative_2 := perf_layer_runtime_configuration_gomaxprocs_negative["runtime"] + len(input)
+    _ = runtime_negative_2
+    configuration_negative_3 := perf_layer_runtime_configuration_gomaxprocs_negative["configuration"] + len(input)
+    _ = configuration_negative_3
+    gomaxprocs_negative_4 := perf_layer_runtime_configuration_gomaxprocs_negative["gomaxprocs"] + len(input)
+    _ = gomaxprocs_negative_4
+    set_negative_5 := perf_layer_runtime_configuration_gomaxprocs_negative["set"] + len(input)
+    _ = set_negative_5
+    return nil
+}

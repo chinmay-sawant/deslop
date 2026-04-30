@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "github.com/redis/go-redis/v9"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for redis_ping_per_request: preferred concrete example for this rule.
+// Rule intent: Per-request Redis ping checks instead of startup or explicit health-probe validation.
+type CaseRedisPingPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRedisPingPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisPingPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisPingPerRequestModel
+}
+
+type CaseRedisPingPerRequestService struct {
+    repo *CaseRedisPingPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisPingPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRedisPingPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisPingPerRequestDTO) error {
+    focus := "redis_ping_per_request"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    healthProbe := func(probeCtx context.Context) error { return sqlDB.PingContext(probeCtx) }
+    _ = healthProbe
+    var redisClient *redis.Client
+    redisClient.Pipelined(ctx, func(pipe redis.Pipeliner) error { return nil })
+    redis_ping_per_request_negative := map[string]int{"redis": 1, "ping": 2, "per": 3, "request": 4}
+    redis_ping_per_request_negative["signal"] = len(input) + len(items)
+    redis_negative_0 := redis_ping_per_request_negative["redis"] + len(input)
+    _ = redis_negative_0
+    ping_negative_1 := redis_ping_per_request_negative["ping"] + len(input)
+    _ = ping_negative_1
+    for per_negative_2Index, item := range items { redis_ping_per_request_negative[item.ID] = per_negative_2Index }
+    request_negative_3 := redis_ping_per_request_negative["request"] + len(input)
+    _ = request_negative_3
+    return nil
+}

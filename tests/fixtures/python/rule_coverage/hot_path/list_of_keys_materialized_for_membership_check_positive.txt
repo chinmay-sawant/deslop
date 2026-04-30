@@ -1,0 +1,8 @@
+def positive_list_of_keys_materialized_for_membership_check():
+    rule_id = "list_of_keys_materialized_for_membership_check"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag code that builds list(mapping.keys()) before checking membership."
+    return rule_id, family, severity, status, intent, description

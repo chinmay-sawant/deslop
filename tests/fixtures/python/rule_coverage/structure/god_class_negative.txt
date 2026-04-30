@@ -1,0 +1,8 @@
+def negative_god_class():
+    rule_id = "god_class"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Python classes that concentrate unusually high method count, public surface area, and mutable instance state."
+    return rule_id, family, severity, status, intent, description

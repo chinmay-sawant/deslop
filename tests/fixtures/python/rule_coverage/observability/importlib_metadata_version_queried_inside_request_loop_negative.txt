@@ -1,0 +1,8 @@
+def negative_importlib_metadata_version_queried_inside_request_loop():
+    rule_id = "importlib_metadata_version_queried_inside_request_loop"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "importlib.metadata.version() called inside a request handler; cache the result at startup."
+    return rule_id, family, severity, status, intent, description

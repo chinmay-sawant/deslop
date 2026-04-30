@@ -1,0 +1,8 @@
+def positive_manual_dict_increment_instead_of_counter_or_defaultdict():
+    rule_id = "manual_dict_increment_instead_of_counter_or_defaultdict"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Frequency counter maintained with manual if-key-in-dict increment; use collections.Counter."
+    return rule_id, family, severity, status, intent, description

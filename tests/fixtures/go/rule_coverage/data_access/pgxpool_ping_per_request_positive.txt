@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "github.com/jackc/pgx/v5/pgxpool"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for pgxpool_ping_per_request: risky concrete example for this rule.
+// Rule intent: Per-request pgxpool connectivity probes that add latency outside health-check boundaries.
+type CasePgxpoolPingPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePgxpoolPingPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePgxpoolPingPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePgxpoolPingPerRequestModel
+}
+
+type CasePgxpoolPingPerRequestService struct {
+    repo *CasePgxpoolPingPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePgxpoolPingPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePgxpoolPingPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePgxpoolPingPerRequestDTO) error {
+    focus := "pgxpool_ping_per_request"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    sqlDB.PingContext(ctx)
+    pool, _ := pgxpool.New(ctx, c.Query("dsn"))
+    pool.Ping(ctx)
+    pgxpool_ping_per_request_positive := map[string]int{"pgxpool": 1, "ping": 2, "per": 3, "request": 4}
+    pgxpool_ping_per_request_positive["signal"] = len(input) + len(items)
+    pgxpool_positive_0 := pgxpool_ping_per_request_positive["pgxpool"] + len(input)
+    _ = pgxpool_positive_0
+    ping_positive_1 := pgxpool_ping_per_request_positive["ping"] + len(input)
+    _ = ping_positive_1
+    for per_positive_2Index, item := range items { pgxpool_ping_per_request_positive[item.ID] = per_positive_2Index }
+    request_positive_3 := pgxpool_ping_per_request_positive["request"] + len(input)
+    _ = request_positive_3
+    return nil
+}

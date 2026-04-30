@@ -1,0 +1,8 @@
+def negative_numpy_dtype_mismatch_implicit_cast():
+    rule_id = "numpy_dtype_mismatch_implicit_cast"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Arrays are constructed and immediately cast, implying a missing upfront dtype choice."
+    return rule_id, family, severity, status, intent, description

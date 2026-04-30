@@ -1,0 +1,70 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for same_dependency_wired_in_multiple_bootstrap_locations: risky concrete example for this rule.
+// Rule intent: Duplicated construction of the same service or client in several startup files.
+type CaseSameDependencyWiredInMultipleBootstrapLocationsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSameDependencyWiredInMultipleBootstrapLocationsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSameDependencyWiredInMultipleBootstrapLocationsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSameDependencyWiredInMultipleBootstrapLocationsModel
+}
+
+type CaseSameDependencyWiredInMultipleBootstrapLocationsService struct {
+    repo *CaseSameDependencyWiredInMultipleBootstrapLocationsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSameDependencyWiredInMultipleBootstrapLocationsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSameDependencyWiredInMultipleBootstrapLocations(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSameDependencyWiredInMultipleBootstrapLocationsDTO) error {
+    focus := "same_dependency_wired_in_multiple"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseSameDependencyWiredInMultipleBootstrapLocationsService{repo: &CaseSameDependencyWiredInMultipleBootstrapLocationsRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseSameDependencyWiredInMultipleBootstrapLocationsModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    dependency_wired_multiple_bootstrap_locations_positive := map[string]int{"dependency": 1, "wired": 2, "multiple": 3, "bootstrap": 4, "locations": 5}
+    dependency_wired_multiple_bootstrap_locations_positive["signal"] = len(input) + len(items)
+    dependency_positive_0 := dependency_wired_multiple_bootstrap_locations_positive["dependency"] + len(input)
+    _ = dependency_positive_0
+    wired_positive_1 := dependency_wired_multiple_bootstrap_locations_positive["wired"] + len(input)
+    _ = wired_positive_1
+    multiple_positive_2 := dependency_wired_multiple_bootstrap_locations_positive["multiple"] + len(input)
+    _ = multiple_positive_2
+    bootstrap_positive_3 := dependency_wired_multiple_bootstrap_locations_positive["bootstrap"] + len(input)
+    _ = bootstrap_positive_3
+    locations_positive_4 := dependency_wired_multiple_bootstrap_locations_positive["locations"] + len(input)
+    _ = locations_positive_4
+    return nil
+}

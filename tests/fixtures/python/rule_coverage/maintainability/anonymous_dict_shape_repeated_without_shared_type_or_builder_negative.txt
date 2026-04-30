@@ -1,0 +1,8 @@
+def negative_anonymous_dict_shape_repeated_without_shared_type_or_builder():
+    rule_id = "anonymous_dict_shape_repeated_without_shared_type_or_builder"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag repeated ad hoc dict payload shapes with no shared type or builder."
+    return rule_id, family, severity, status, intent, description

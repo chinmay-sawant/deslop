@@ -1,0 +1,8 @@
+def positive_lambda_or_closure_allocated_per_item_when_static_helper_suffices():
+    rule_id = "lambda_or_closure_allocated_per_item_when_static_helper_suffices"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag per-item closure allocation in hot loops when a stable helper would work."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,76 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for sync_mutex_for_atomic_counter: risky concrete example for this rule.
+// Rule intent: `mu.Lock(); count++; mu.Unlock()` for simple integer counters
+type CaseSyncMutexForAtomicCounterDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSyncMutexForAtomicCounterModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSyncMutexForAtomicCounterRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSyncMutexForAtomicCounterModel
+}
+
+type CaseSyncMutexForAtomicCounterService struct {
+    repo *CaseSyncMutexForAtomicCounterRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSyncMutexForAtomicCounterAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSyncMutexForAtomicCounter(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSyncMutexForAtomicCounterDTO) error {
+    focus := "sync_mutex_for_atomic_counter"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    var mu sync.Mutex
+    count := 0
+    for range items {
+        mu.Lock()
+        count++
+        mu.Unlock()
+    }
+    _ = count
+    sync_mutex_atomic_counter_positive := map[string]int{"sync": 1, "mutex": 2, "atomic": 3, "counter": 4}
+    sync_mutex_atomic_counter_positive["signal"] = len(input) + len(items)
+    sync_positive_0 := sync_mutex_atomic_counter_positive["sync"] + len(input)
+    _ = sync_positive_0
+    mutex_positive_1 := sync_mutex_atomic_counter_positive["mutex"] + len(input)
+    _ = mutex_positive_1
+    atomic_positive_2 := sync_mutex_atomic_counter_positive["atomic"] + len(input)
+    _ = atomic_positive_2
+    counter_positive_3 := sync_mutex_atomic_counter_positive["counter"] + len(input)
+    _ = counter_positive_3
+    return nil
+}

@@ -1,0 +1,8 @@
+def negative_helper_requires_caller_to_know_hidden_ordering_constraints():
+    rule_id = "helper_requires_caller_to_know_hidden_ordering_constraints"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag helpers whose correctness depends on the caller invoking them in a specific undocumented order."
+    return rule_id, family, severity, status, intent, description

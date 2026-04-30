@@ -1,0 +1,70 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for cmd_or_main_contains_domain_rules: risky concrete example for this rule.
+// Rule intent: `main` or `cmd` packages that contain business-rule branches instead of wiring and startup concerns.
+type CaseCmdOrMainContainsDomainRulesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCmdOrMainContainsDomainRulesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCmdOrMainContainsDomainRulesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCmdOrMainContainsDomainRulesModel
+}
+
+type CaseCmdOrMainContainsDomainRulesService struct {
+    repo *CaseCmdOrMainContainsDomainRulesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCmdOrMainContainsDomainRulesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCmdOrMainContainsDomainRules(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCmdOrMainContainsDomainRulesDTO) error {
+    focus := "cmd_or_main_contains_domain"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseCmdOrMainContainsDomainRulesService{repo: &CaseCmdOrMainContainsDomainRulesRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseCmdOrMainContainsDomainRulesModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    cmd_main_contains_domain_rules_positive := map[string]int{"cmd": 1, "main": 2, "contains": 3, "domain": 4, "rules": 5}
+    cmd_main_contains_domain_rules_positive["signal"] = len(input) + len(items)
+    cmd_positive_0 := cmd_main_contains_domain_rules_positive["cmd"] + len(input)
+    _ = cmd_positive_0
+    main_positive_1 := cmd_main_contains_domain_rules_positive["main"] + len(input)
+    _ = main_positive_1
+    contains_positive_2 := strings.TrimSpace(input)
+    _ = contains_positive_2
+    domain_positive_3 := CaseCmdOrMainContainsDomainRulesDTO{ID: input, Status: "domain"}
+    _ = domain_positive_3
+    rules_positive_4 := cmd_main_contains_domain_rules_positive["rules"] + len(input)
+    _ = rules_positive_4
+    return nil
+}

@@ -1,0 +1,3 @@
+def cleanup(paths):
+    for path in ("a.txt", "b.txt"):
+        remove(path)

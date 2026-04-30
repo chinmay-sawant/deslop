@@ -1,0 +1,8 @@
+def negative_test_depends_on_sibling_test_side_effects():
+    rule_id = "test_depends_on_sibling_test_side_effects"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Test function depends on state left behind by a sibling test in the same module."
+    return rule_id, family, severity, status, intent, description

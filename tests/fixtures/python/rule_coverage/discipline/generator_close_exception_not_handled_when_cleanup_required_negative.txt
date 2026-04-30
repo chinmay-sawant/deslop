@@ -1,0 +1,8 @@
+def negative_generator_close_exception_not_handled_when_cleanup_required():
+    rule_id = "generator_close_exception_not_handled_when_cleanup_required"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Generator or context manager performs resource acquisition in a finally block without a try/finally guard."
+    return rule_id, family, severity, status, intent, description

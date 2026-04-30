@@ -1,0 +1,8 @@
+def positive_type_branch_and_mode_branch_compounded_in_same_function():
+    rule_id = "type_branch_and_mode_branch_compounded_in_same_function"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag functions that branch on both runtime type and mode string in the same decision tree."
+    return rule_id, family, severity, status, intent, description

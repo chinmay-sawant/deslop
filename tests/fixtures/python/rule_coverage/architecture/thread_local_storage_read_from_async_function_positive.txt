@@ -1,0 +1,8 @@
+def positive_thread_local_storage_read_from_async_function():
+    rule_id = "thread_local_storage_read_from_async_function"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Async function reads from threading.local() storage, which is per-thread not per-coroutine."
+    return rule_id, family, severity, status, intent, description

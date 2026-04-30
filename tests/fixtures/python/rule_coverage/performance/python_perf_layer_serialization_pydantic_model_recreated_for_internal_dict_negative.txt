@@ -1,0 +1,8 @@
+def negative_python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict():
+    rule_id = "python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Serialization and deserialization. Flag Pydantic model construction around trusted internal dicts in tight loops."
+    return rule_id, family, severity, status, intent, description

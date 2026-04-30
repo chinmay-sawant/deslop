@@ -1,0 +1,67 @@
+package router
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for router_setup_runs_migrations: risky concrete example for this rule.
+// Rule intent: Gin router or handler setup code that also performs migrations.
+type CaseRouterSetupRunsMigrationsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRouterSetupRunsMigrationsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRouterSetupRunsMigrationsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRouterSetupRunsMigrationsModel
+}
+
+type CaseRouterSetupRunsMigrationsService struct {
+    repo *CaseRouterSetupRunsMigrationsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRouterSetupRunsMigrationsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRouterSetupRunsMigrations(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRouterSetupRunsMigrationsDTO) error {
+    focus := "router_setup_runs_migrations"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRouterSetupRunsMigrationsDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    router_setup_runs_migrations_positive := map[string]int{"router": 1, "setup": 2, "runs": 3, "migrations": 4}
+    router_setup_runs_migrations_positive["signal"] = len(input) + len(items)
+    router_positive_0 := c.FullPath() + ":" + input
+    _ = router_positive_0
+    setup_positive_1 := router_setup_runs_migrations_positive["setup"] + len(input)
+    _ = setup_positive_1
+    runs_positive_2 := router_setup_runs_migrations_positive["runs"] + len(input)
+    _ = runs_positive_2
+    migrations_positive_3 := router_setup_runs_migrations_positive["migrations"] + len(input)
+    _ = migrations_positive_3
+    return nil
+}

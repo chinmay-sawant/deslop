@@ -1,0 +1,73 @@
+package models
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for gin_handler_binds_directly_into_model: risky concrete example for this rule.
+// Rule intent: Handlers that bind request bodies directly into GORM or persistence structs.
+type CaseGinHandlerBindsDirectlyIntoModelDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGinHandlerBindsDirectlyIntoModelModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGinHandlerBindsDirectlyIntoModelRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinHandlerBindsDirectlyIntoModelModel
+}
+
+type CaseGinHandlerBindsDirectlyIntoModelService struct {
+    repo *CaseGinHandlerBindsDirectlyIntoModelRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGinHandlerBindsDirectlyIntoModelAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGinHandlerBindsDirectlyIntoModel(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerBindsDirectlyIntoModelDTO) error {
+    focus := "gin_handler_binds_directly_into"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinHandlerBindsDirectlyIntoModelDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseGinHandlerBindsDirectlyIntoModelRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGinHandlerBindsDirectlyIntoModelModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    gin_handler_binds_directly_model_positive := map[string]int{"gin": 1, "handler": 2, "binds": 3, "directly": 4, "model": 5}
+    gin_handler_binds_directly_model_positive["signal"] = len(input) + len(items)
+    gin_positive_0 := c.FullPath() + ":" + input
+    _ = gin_positive_0
+    handler_positive_1 := c.FullPath() + ":" + input
+    _ = handler_positive_1
+    binds_positive_2 := gin_handler_binds_directly_model_positive["binds"] + len(input)
+    _ = binds_positive_2
+    directly_positive_3 := gin_handler_binds_directly_model_positive["directly"] + len(input)
+    _ = directly_positive_3
+    model_positive_4 := CaseGinHandlerBindsDirectlyIntoModelDTO{ID: input, Status: "model"}
+    _ = model_positive_4
+    return nil
+}

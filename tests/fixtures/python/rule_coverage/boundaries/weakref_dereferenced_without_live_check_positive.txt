@@ -1,0 +1,8 @@
+def positive_weakref_dereferenced_without_live_check():
+    rule_id = "weakref_dereferenced_without_live_check"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "weakref.ref() called and result used without checking for None, potential AttributeError."
+    return rule_id, family, severity, status, intent, description

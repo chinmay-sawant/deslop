@@ -1,0 +1,8 @@
+def positive_cross_file_copy_paste_function():
+    rule_id = "cross_file_copy_paste_function"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Highly similar non-test function bodies repeated across multiple Python files."
+    return rule_id, family, severity, status, intent, description

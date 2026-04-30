@@ -1,0 +1,8 @@
+def positive_api_versioning_in_url_without_matching_router_group():
+    rule_id = "api_versioning_in_url_without_matching_router_group"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "URL path contains a version segment (/v1/) without a corresponding versioned router or blueprint."
+    return rule_id, family, severity, status, intent, description

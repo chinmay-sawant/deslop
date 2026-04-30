@@ -1,0 +1,62 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for redis_connection_per_request: preferred concrete example for this rule.
+// Rule intent: `redis.NewClient(&redis.Options{...})` inside handler/request functions
+type CaseRedisConnectionPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRedisConnectionPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisConnectionPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisConnectionPerRequestModel
+}
+
+type CaseRedisConnectionPerRequestService struct {
+    repo *CaseRedisConnectionPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisConnectionPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRedisConnectionPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisConnectionPerRequestDTO) error {
+    focus := "redis_connection_per_request"
+    _ = focus
+    db.CreateInBatches(items, 100)
+    redis_connection_per_request_negative := map[string]int{"redis": 1, "connection": 2, "per": 3, "request": 4}
+    redis_connection_per_request_negative["signal"] = len(input) + len(items)
+    redis_negative_0 := redis_connection_per_request_negative["redis"] + len(input)
+    _ = redis_negative_0
+    connection_negative_1 := redis_connection_per_request_negative["connection"] + len(input)
+    _ = connection_negative_1
+    for per_negative_2Index, item := range items { redis_connection_per_request_negative[item.ID] = per_negative_2Index }
+    request_negative_3 := redis_connection_per_request_negative["request"] + len(input)
+    _ = request_negative_3
+    return nil
+}

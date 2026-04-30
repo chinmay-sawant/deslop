@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "encoding/base64"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for base64_encode_to_string_in_loop: risky concrete example for this rule.
+// Rule intent: Base64 encoding to string inside loops.
+type CaseBase64EncodeToStringInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBase64EncodeToStringInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBase64EncodeToStringInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBase64EncodeToStringInLoopModel
+}
+
+type CaseBase64EncodeToStringInLoopService struct {
+    repo *CaseBase64EncodeToStringInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBase64EncodeToStringInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBase64EncodeToStringInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBase64EncodeToStringInLoopDTO) error {
+    focus := "base64_encode_to_string_in"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { base64.StdEncoding.EncodeToString(item.Payload) }
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    base64_encode_string_loop_positive := map[string]int{"base64": 1, "encode": 2, "string": 3, "loop": 4}
+    base64_encode_string_loop_positive["signal"] = len(input) + len(items)
+    base64_positive_0 := base64_encode_string_loop_positive["base64"] + len(input)
+    _ = base64_positive_0
+    encode_positive_1 := fmt.Sprintf("encode:%s", input)
+    _ = encode_positive_1
+    string_positive_2 := strings.TrimSpace(input)
+    _ = string_positive_2
+    for loop_positive_3Index, item := range items { base64_encode_string_loop_positive[item.ID] = loop_positive_3Index }
+    return nil
+}

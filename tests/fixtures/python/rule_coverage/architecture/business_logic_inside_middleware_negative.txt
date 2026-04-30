@@ -1,0 +1,8 @@
+def negative_business_logic_inside_middleware():
+    rule_id = "business_logic_inside_middleware"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Middleware component encodes domain decision logic beyond cross-cutting concerns such as auth and logging."
+    return rule_id, family, severity, status, intent, description

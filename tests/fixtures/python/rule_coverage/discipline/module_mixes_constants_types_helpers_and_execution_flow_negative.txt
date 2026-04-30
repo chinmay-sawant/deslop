@@ -1,0 +1,8 @@
+def negative_module_mixes_constants_types_helpers_and_execution_flow():
+    rule_id = "module_mixes_constants_types_helpers_and_execution_flow"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag modules that combine unrelated responsibilities and become hard to scan."
+    return rule_id, family, severity, status, intent, description

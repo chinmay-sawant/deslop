@@ -1,0 +1,8 @@
+def negative_validation_only_happens_after_expensive_side_effect_has_started():
+    rule_id = "validation_only_happens_after_expensive_side_effect_has_started"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag flows where validation happens only after I/O or irreversible work has begun."
+    return rule_id, family, severity, status, intent, description

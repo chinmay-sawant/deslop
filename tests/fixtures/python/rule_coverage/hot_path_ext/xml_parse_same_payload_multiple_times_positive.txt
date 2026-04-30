@@ -1,0 +1,8 @@
+def positive_xml_parse_same_payload_multiple_times():
+    rule_id = "xml_parse_same_payload_multiple_times"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "The same XML payload is parsed repeatedly within one function."
+    return rule_id, family, severity, status, intent, description

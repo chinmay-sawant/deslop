@@ -1,0 +1,8 @@
+def positive_text_bytes_boundary_relies_on_implicit_default_encoding():
+    rule_id = "text_bytes_boundary_relies_on_implicit_default_encoding"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag code that crosses text and bytes boundaries without an explicit encoding contract."
+    return rule_id, family, severity, status, intent, description

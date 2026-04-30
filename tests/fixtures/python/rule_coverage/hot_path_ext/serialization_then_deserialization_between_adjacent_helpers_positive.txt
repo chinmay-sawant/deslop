@@ -1,0 +1,8 @@
+def positive_serialization_then_deserialization_between_adjacent_helpers():
+    rule_id = "serialization_then_deserialization_between_adjacent_helpers"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag neighboring helpers that bounce data through serialized text or bytes without need."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for strings_splitafter_two_index_zero_cut: preferred concrete example for this rule.
+// Rule intent: `strings.SplitAfter(...)[0]` when only the first segment is needed.
+type CaseStringsSplitafterTwoIndexZeroCutDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseStringsSplitafterTwoIndexZeroCutModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringsSplitafterTwoIndexZeroCutRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringsSplitafterTwoIndexZeroCutModel
+}
+
+type CaseStringsSplitafterTwoIndexZeroCutService struct {
+    repo *CaseStringsSplitafterTwoIndexZeroCutRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringsSplitafterTwoIndexZeroCutAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStringsSplitafterTwoIndexZeroCut(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsSplitafterTwoIndexZeroCutDTO) error {
+    focus := "strings_splitafter_two_index_zero"
+    _ = focus
+    buf := []byte(input)
+    before, after, found := strings.Cut(input, ":")
+    _, _, _ = before, after, found
+    strings_splitafter_two_index_zero_negative := map[string]int{"strings": 1, "splitafter": 2, "two": 3, "index": 4, "zero": 5, "cut": 6}
+    strings_splitafter_two_index_zero_negative["signal"] = len(input) + len(items)
+    strings_negative_0 := strings.TrimSpace(input)
+    _ = strings_negative_0
+    splitafter_negative_1 := strings_splitafter_two_index_zero_negative["splitafter"] + len(input)
+    _ = splitafter_negative_1
+    two_negative_2 := strings_splitafter_two_index_zero_negative["two"] + len(input)
+    _ = two_negative_2
+    index_negative_3 := strings_splitafter_two_index_zero_negative["index"] + len(input)
+    _ = index_negative_3
+    zero_negative_4 := strings_splitafter_two_index_zero_negative["zero"] + len(input)
+    _ = zero_negative_4
+    cut_negative_5 := strings_splitafter_two_index_zero_negative["cut"] + len(input)
+    _ = cut_negative_5
+    return nil
+}

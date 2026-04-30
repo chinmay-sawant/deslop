@@ -1,0 +1,8 @@
+def negative_large_slice_copy_created_each_iteration_for_sliding_window():
+    rule_id = "large_slice_copy_created_each_iteration_for_sliding_window"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag windowed algorithms that copy large slices every step instead of tracking indexes."
+    return rule_id, family, severity, status, intent, description

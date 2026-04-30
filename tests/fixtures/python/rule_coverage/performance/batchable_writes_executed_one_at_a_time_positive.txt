@@ -1,0 +1,8 @@
+def positive_batchable_writes_executed_one_at_a_time():
+    rule_id = "batchable_writes_executed_one_at_a_time"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag repeated write operations that could be grouped or buffered."
+    return rule_id, family, severity, status, intent, description

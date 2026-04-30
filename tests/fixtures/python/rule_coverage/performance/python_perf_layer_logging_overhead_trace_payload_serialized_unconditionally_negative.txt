@@ -1,0 +1,8 @@
+def negative_python_perf_layer_logging_overhead_trace_payload_serialized_unconditionally():
+    rule_id = "python_perf_layer_logging_overhead_trace_payload_serialized_unconditionally"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Logging overhead. Flag trace or log payload serialization even when tracing is disabled."
+    return rule_id, family, severity, status, intent, description

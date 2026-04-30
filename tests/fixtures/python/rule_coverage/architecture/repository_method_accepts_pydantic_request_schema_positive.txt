@@ -1,0 +1,8 @@
+def positive_repository_method_accepts_pydantic_request_schema():
+    rule_id = "repository_method_accepts_pydantic_request_schema"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Repository method parameter type is a Pydantic request schema that belongs to the presentation layer."
+    return rule_id, family, severity, status, intent, description

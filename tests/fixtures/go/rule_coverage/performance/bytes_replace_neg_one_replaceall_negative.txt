@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for bytes_replace_neg_one_replaceall: preferred concrete example for this rule.
+// Rule intent: `bytes.Replace(..., -1)` instead of `bytes.ReplaceAll(...)`.
+type CaseBytesReplaceNegOneReplaceallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBytesReplaceNegOneReplaceallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBytesReplaceNegOneReplaceallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBytesReplaceNegOneReplaceallModel
+}
+
+type CaseBytesReplaceNegOneReplaceallService struct {
+    repo *CaseBytesReplaceNegOneReplaceallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBytesReplaceNegOneReplaceallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBytesReplaceNegOneReplaceall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesReplaceNegOneReplaceallDTO) error {
+    focus := "bytes_replace_neg_one_replaceall"
+    _ = focus
+    buf := []byte(input)
+    bytes_replace_neg_one_replaceall_negative := map[string]int{"bytes": 1, "replace": 2, "neg": 3, "one": 4, "replaceall": 5}
+    bytes_replace_neg_one_replaceall_negative["signal"] = len(input) + len(items)
+    bytes_negative_0 := strings.TrimSpace(input)
+    _ = bytes_negative_0
+    replace_negative_1 := bytes_replace_neg_one_replaceall_negative["replace"] + len(input)
+    _ = replace_negative_1
+    neg_negative_2 := bytes_replace_neg_one_replaceall_negative["neg"] + len(input)
+    _ = neg_negative_2
+    one_negative_3 := bytes_replace_neg_one_replaceall_negative["one"] + len(input)
+    _ = one_negative_3
+    replaceall_negative_4 := bytes_replace_neg_one_replaceall_negative["replaceall"] + len(input)
+    _ = replaceall_negative_4
+    return nil
+}

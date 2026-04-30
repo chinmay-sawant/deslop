@@ -1,0 +1,76 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for gorm_chain_built_in_handler: preferred concrete example for this rule.
+// Rule intent: Handlers that construct `Where`, `Joins`, `Scopes`, or `Order` chains directly.
+type CaseGormChainBuiltInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGormChainBuiltInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGormChainBuiltInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormChainBuiltInHandlerModel
+}
+
+type CaseGormChainBuiltInHandlerService struct {
+    repo *CaseGormChainBuiltInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormChainBuiltInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGormChainBuiltInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormChainBuiltInHandlerDTO) error {
+    focus := "gorm_chain_built_in_handler"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGormChainBuiltInHandlerDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseGormChainBuiltInHandlerRepository{db: db, sql: sqlDB}
+    var model CaseGormChainBuiltInHandlerModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    allowedSorts := map[string]string{"created_at": "created_at", "id": "id"}
+    orderBy := allowedSorts[c.DefaultQuery("sort", "id")]
+    db.Order(orderBy).Limit(100).Find(&[]any{})
+    gorm_chain_built_handler_negative := map[string]int{"gorm": 1, "chain": 2, "built": 3, "handler": 4}
+    gorm_chain_built_handler_negative["signal"] = len(input) + len(items)
+    gorm_negative_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_negative_0
+    chain_negative_1 := gorm_chain_built_handler_negative["chain"] + len(input)
+    _ = chain_negative_1
+    built_negative_2 := gorm_chain_built_handler_negative["built"] + len(input)
+    _ = built_negative_2
+    handler_negative_3 := c.FullPath() + ":" + input
+    _ = handler_negative_3
+    return nil
+}

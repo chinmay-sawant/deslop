@@ -1,0 +1,69 @@
+package router
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for router_constructor_builds_concrete_dependencies: risky concrete example for this rule.
+// Rule intent: Router setup that creates DB clients, external clients, or repositories directly instead of receiving prebuilt dependencies.
+type CaseRouterConstructorBuildsConcreteDependenciesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRouterConstructorBuildsConcreteDependenciesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRouterConstructorBuildsConcreteDependenciesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRouterConstructorBuildsConcreteDependenciesModel
+}
+
+type CaseRouterConstructorBuildsConcreteDependenciesService struct {
+    repo *CaseRouterConstructorBuildsConcreteDependenciesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRouterConstructorBuildsConcreteDependenciesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRouterConstructorBuildsConcreteDependencies(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRouterConstructorBuildsConcreteDependenciesDTO) error {
+    focus := "router_constructor_builds_concrete_dependencies"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRouterConstructorBuildsConcreteDependenciesDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    router_constructor_builds_concrete_dependencies_positive := map[string]int{"router": 1, "constructor": 2, "builds": 3, "concrete": 4, "dependencies": 5}
+    router_constructor_builds_concrete_dependencies_positive["signal"] = len(input) + len(items)
+    router_positive_0 := c.FullPath() + ":" + input
+    _ = router_positive_0
+    constructor_positive_1 := router_constructor_builds_concrete_dependencies_positive["constructor"] + len(input)
+    _ = constructor_positive_1
+    builds_positive_2 := router_constructor_builds_concrete_dependencies_positive["builds"] + len(input)
+    _ = builds_positive_2
+    concrete_positive_3 := router_constructor_builds_concrete_dependencies_positive["concrete"] + len(input)
+    _ = concrete_positive_3
+    dependencies_positive_4 := router_constructor_builds_concrete_dependencies_positive["dependencies"] + len(input)
+    _ = dependencies_positive_4
+    return nil
+}

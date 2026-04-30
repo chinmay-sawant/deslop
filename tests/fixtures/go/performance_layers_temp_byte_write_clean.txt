@@ -1,0 +1,10 @@
+package perflayers
+
+import (
+    "bytes"
+    "io"
+)
+
+func TempByteWriteClean(buf *bytes.Buffer, value string) {
+    _, _ = io.WriteString(buf, value)
+}

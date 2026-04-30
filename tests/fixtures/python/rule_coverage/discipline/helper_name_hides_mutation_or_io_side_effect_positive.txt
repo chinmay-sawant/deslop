@@ -1,0 +1,8 @@
+def positive_helper_name_hides_mutation_or_io_side_effect():
+    rule_id = "helper_name_hides_mutation_or_io_side_effect"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag helpers whose names sound pure but actually mutate state or perform I/O."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_python_perf_layer_network_calls_retry_without_backoff_or_jitter():
+    rule_id = "python_perf_layer_network_calls_retry_without_backoff_or_jitter"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Network calls. Flag network retries without backoff and jitter, which amplifies latency and load."
+    return rule_id, family, severity, status, intent, description

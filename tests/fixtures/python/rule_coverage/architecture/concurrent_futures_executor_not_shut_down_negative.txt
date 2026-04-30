@@ -1,0 +1,8 @@
+def negative_concurrent_futures_executor_not_shut_down():
+    rule_id = "concurrent_futures_executor_not_shut_down"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "ThreadPoolExecutor or ProcessPoolExecutor created without shutdown() or a context manager, leaking threads."
+    return rule_id, family, severity, status, intent, description

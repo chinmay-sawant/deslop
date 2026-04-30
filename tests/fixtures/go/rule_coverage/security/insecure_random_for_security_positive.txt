@@ -1,0 +1,63 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "math/rand"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for insecure_random_for_security: risky concrete example for this rule.
+// Rule intent: `math/rand` usage (any of `rand.Int`, `rand.Intn`, `rand.Read`, `rand.New`) in functions whose names suggest security use (token generation, key generation, password, nonce, salt, session)
+type CaseInsecureRandomForSecurityDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseInsecureRandomForSecurityModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseInsecureRandomForSecurityRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseInsecureRandomForSecurityModel
+}
+
+type CaseInsecureRandomForSecurityService struct {
+    repo *CaseInsecureRandomForSecurityRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseInsecureRandomForSecurityAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveInsecureRandomForSecurity(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseInsecureRandomForSecurityDTO) error {
+    focus := "insecure_random_for_security"
+    _ = focus
+    token := rand.Int63()
+    _ = token
+    insecure_random_security_positive := map[string]int{"insecure": 1, "random": 2, "security": 3}
+    insecure_random_security_positive["signal"] = len(input) + len(items)
+    insecure_positive_0 := insecure_random_security_positive["insecure"] + len(input)
+    _ = insecure_positive_0
+    random_positive_1 := insecure_random_security_positive["random"] + len(input)
+    _ = random_positive_1
+    security_positive_2 := map[string]string{"security": input}
+    _ = security_positive_2
+    return nil
+}

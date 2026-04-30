@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for order_by_without_limit_orm_chain: risky concrete example for this rule.
+// Rule intent: ORM chains that order results without a Limit on request paths.
+type CaseOrderByWithoutLimitOrmChainDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseOrderByWithoutLimitOrmChainModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseOrderByWithoutLimitOrmChainRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseOrderByWithoutLimitOrmChainModel
+}
+
+type CaseOrderByWithoutLimitOrmChainService struct {
+    repo *CaseOrderByWithoutLimitOrmChainRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseOrderByWithoutLimitOrmChainAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveOrderByWithoutLimitOrmChain(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseOrderByWithoutLimitOrmChainDTO) error {
+    focus := "order_by_without_limit_orm"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Find(&[]CaseOrderByWithoutLimitOrmChainModel{})
+    order_limit_orm_chain_positive := map[string]int{"order": 1, "limit": 2, "orm": 3, "chain": 4}
+    order_limit_orm_chain_positive["signal"] = len(input) + len(items)
+    order_positive_0 := order_limit_orm_chain_positive["order"] + len(input)
+    _ = order_positive_0
+    limit_positive_1 := order_limit_orm_chain_positive["limit"] + len(input)
+    _ = limit_positive_1
+    orm_positive_2 := order_limit_orm_chain_positive["orm"] + len(input)
+    _ = orm_positive_2
+    chain_positive_3 := order_limit_orm_chain_positive["chain"] + len(input)
+    _ = chain_positive_3
+    return nil
+}

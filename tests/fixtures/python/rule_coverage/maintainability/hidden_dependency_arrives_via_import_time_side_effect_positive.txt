@@ -1,0 +1,8 @@
+def positive_hidden_dependency_arrives_via_import_time_side_effect():
+    rule_id = "hidden_dependency_arrives_via_import_time_side_effect"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag code that becomes initialized only because another import happened first."
+    return rule_id, family, severity, status, intent, description

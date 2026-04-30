@@ -1,0 +1,8 @@
+def positive_namedtuple_fields_accessed_by_integer_index():
+    rule_id = "namedtuple_fields_accessed_by_integer_index"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "namedtuple fields accessed by integer index instead of by named attribute."
+    return rule_id, family, severity, status, intent, description

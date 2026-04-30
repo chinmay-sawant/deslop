@@ -1,0 +1,8 @@
+def positive_python_perf_layer_error_handling_cost_multi_error_list_allocated_before_failure():
+    rule_id = "python_perf_layer_error_handling_cost_multi_error_list_allocated_before_failure"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Error handling cost. Flag error accumulation lists allocated on success-heavy paths before any error occurs."
+    return rule_id, family, severity, status, intent, description

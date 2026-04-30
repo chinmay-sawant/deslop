@@ -1,0 +1,8 @@
+def negative_expensive_sort_key_recomputed_without_preprojection():
+    rule_id = "expensive_sort_key_recomputed_without_preprojection"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag repeated expensive key computation during sorting when values could be precomputed once."
+    return rule_id, family, severity, status, intent, description

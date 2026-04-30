@@ -1,0 +1,71 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for migration_runner_and_api_server_bootstrap_coupled: risky concrete example for this rule.
+// Rule intent: One startup path that always runs migrations and serves traffic together.
+type CaseMigrationRunnerAndApiServerBootstrapCoupledDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMigrationRunnerAndApiServerBootstrapCoupledModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMigrationRunnerAndApiServerBootstrapCoupledRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMigrationRunnerAndApiServerBootstrapCoupledModel
+}
+
+type CaseMigrationRunnerAndApiServerBootstrapCoupledService struct {
+    repo *CaseMigrationRunnerAndApiServerBootstrapCoupledRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMigrationRunnerAndApiServerBootstrapCoupledAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMigrationRunnerAndApiServerBootstrapCoupled(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMigrationRunnerAndApiServerBootstrapCoupledDTO) error {
+    focus := "migration_runner_and_api_server"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseMigrationRunnerAndApiServerBootstrapCoupledDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    migration_runner_api_server_bootstrap_positive := map[string]int{"migration": 1, "runner": 2, "api": 3, "server": 4, "bootstrap": 5, "coupled": 6}
+    migration_runner_api_server_bootstrap_positive["signal"] = len(input) + len(items)
+    migration_positive_0 := migration_runner_api_server_bootstrap_positive["migration"] + len(input)
+    _ = migration_positive_0
+    runner_positive_1 := migration_runner_api_server_bootstrap_positive["runner"] + len(input)
+    _ = runner_positive_1
+    api_positive_2 := c.FullPath() + ":" + input
+    _ = api_positive_2
+    server_positive_3 := migration_runner_api_server_bootstrap_positive["server"] + len(input)
+    _ = server_positive_3
+    bootstrap_positive_4 := migration_runner_api_server_bootstrap_positive["bootstrap"] + len(input)
+    _ = bootstrap_positive_4
+    coupled_positive_5 := migration_runner_api_server_bootstrap_positive["coupled"] + len(input)
+    _ = coupled_positive_5
+    return nil
+}

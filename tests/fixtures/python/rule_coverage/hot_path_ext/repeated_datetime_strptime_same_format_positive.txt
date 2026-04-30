@@ -1,0 +1,8 @@
+def positive_repeated_datetime_strptime_same_format():
+    rule_id = "repeated_datetime_strptime_same_format"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "datetime.strptime(...) is repeated with the same format string instead of reusing a parsed shape or preprocessing once."
+    return rule_id, family, severity, status, intent, description

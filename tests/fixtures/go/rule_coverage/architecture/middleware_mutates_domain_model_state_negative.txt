@@ -1,0 +1,79 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for middleware_mutates_domain_model_state: preferred concrete example for this rule.
+// Rule intent: Middleware that writes business entities or persistence models as a side effect of request plumbing.
+type CaseMiddlewareMutatesDomainModelStateDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMiddlewareMutatesDomainModelStateModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMiddlewareMutatesDomainModelStateRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMiddlewareMutatesDomainModelStateModel
+}
+
+type CaseMiddlewareMutatesDomainModelStateService struct {
+    repo *CaseMiddlewareMutatesDomainModelStateRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMiddlewareMutatesDomainModelStateAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMiddlewareMutatesDomainModelState(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareMutatesDomainModelStateDTO) error {
+    focus := "middleware_mutates_domain_model_state"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseMiddlewareMutatesDomainModelStateRepository{db: db, sql: sqlDB}
+    var model CaseMiddlewareMutatesDomainModelStateModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseMiddlewareMutatesDomainModelStateDTO{ID: input, Status: "active"}
+    model := CaseMiddlewareMutatesDomainModelStateModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    middleware := func(next gin.HandlerFunc) gin.HandlerFunc {
+        return func(inner *gin.Context) {
+            inner.Set("principal", inner.GetHeader("Authorization"))
+            next(inner)
+        }
+    }
+    _ = middleware
+    middleware_mutates_domain_model_state_negative := map[string]int{"middleware": 1, "mutates": 2, "domain": 3, "model": 4, "state": 5}
+    middleware_mutates_domain_model_state_negative["signal"] = len(input) + len(items)
+    middleware_negative_0 := c.FullPath() + ":" + input
+    _ = middleware_negative_0
+    mutates_negative_1 := middleware_mutates_domain_model_state_negative["mutates"] + len(input)
+    _ = mutates_negative_1
+    domain_negative_2 := CaseMiddlewareMutatesDomainModelStateDTO{ID: input, Status: "domain"}
+    _ = domain_negative_2
+    model_negative_3 := CaseMiddlewareMutatesDomainModelStateDTO{ID: input, Status: "model"}
+    _ = model_negative_3
+    state_negative_4 := middleware_mutates_domain_model_state_negative["state"] + len(input)
+    _ = state_negative_4
+    return nil
+}

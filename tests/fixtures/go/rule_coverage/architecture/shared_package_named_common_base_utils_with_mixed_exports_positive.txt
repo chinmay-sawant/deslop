@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for shared_package_named_common_base_utils_with_mixed_exports: risky concrete example for this rule.
+// Rule intent: Generic packages that mix services, models, DTOs, validators, and queries behind one broad shared namespace.
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsModel
+}
+
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsService struct {
+    repo *CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSharedPackageNamedCommonBaseUtilsWithMixedExports(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsDTO) error {
+    focus := "shared_package_named_common_base"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsService{repo: &CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseSharedPackageNamedCommonBaseUtilsWithMixedExportsModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    shared_package_named_common_base_positive := map[string]int{"shared": 1, "package": 2, "named": 3, "common": 4, "base": 5, "utils": 6}
+    shared_package_named_common_base_positive["signal"] = len(input) + len(items)
+    shared_positive_0 := shared_package_named_common_base_positive["shared"] + len(input)
+    _ = shared_positive_0
+    package_positive_1 := shared_package_named_common_base_positive["package"] + len(input)
+    _ = package_positive_1
+    named_positive_2 := shared_package_named_common_base_positive["named"] + len(input)
+    _ = named_positive_2
+    common_positive_3 := shared_package_named_common_base_positive["common"] + len(input)
+    _ = common_positive_3
+    base_positive_4 := shared_package_named_common_base_positive["base"] + len(input)
+    _ = base_positive_4
+    utils_positive_5 := shared_package_named_common_base_positive["utils"] + len(input)
+    _ = utils_positive_5
+    return nil
+}

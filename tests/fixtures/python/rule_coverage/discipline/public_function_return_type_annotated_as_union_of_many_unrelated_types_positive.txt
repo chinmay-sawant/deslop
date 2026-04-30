@@ -1,0 +1,8 @@
+def positive_public_function_return_type_annotated_as_union_of_many_unrelated_types():
+    rule_id = "public_function_return_type_annotated_as_union_of_many_unrelated_types"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Public function return annotation is Union of four or more unrelated types, indicating mixed concerns."
+    return rule_id, family, severity, status, intent, description

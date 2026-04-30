@@ -1,0 +1,8 @@
+def negative_default_timeout_missing_on_external_boundary_wrapper():
+    rule_id = "default_timeout_missing_on_external_boundary_wrapper"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag wrappers around external boundaries that omit a timeout policy."
+    return rule_id, family, severity, status, intent, description

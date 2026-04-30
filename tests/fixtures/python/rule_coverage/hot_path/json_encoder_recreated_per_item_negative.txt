@@ -1,0 +1,8 @@
+def negative_json_encoder_recreated_per_item():
+    rule_id = "json_encoder_recreated_per_item"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "A JSON encoder object is recreated per item instead of being reused for the stream."
+    return rule_id, family, severity, status, intent, description

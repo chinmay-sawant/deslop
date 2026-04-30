@@ -1,0 +1,62 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for passthrough_wrapper_interface: risky concrete example for this rule.
+// Rule intent: Wrapper structs that mostly forward one-to-one through an interface field with little added policy.
+type CasePassthroughWrapperInterfaceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePassthroughWrapperInterfaceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePassthroughWrapperInterfaceRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePassthroughWrapperInterfaceModel
+}
+
+type CasePassthroughWrapperInterfaceService struct {
+    repo *CasePassthroughWrapperInterfaceRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePassthroughWrapperInterfaceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePassthroughWrapperInterface(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePassthroughWrapperInterfaceDTO) error {
+    focus := "passthrough_wrapper_interface"
+    _ = focus
+    doWork := func(enabled bool) interface{} { return enabled }
+    _ = doWork(true)
+    passthrough_wrapper_interface_positive := map[string]int{"passthrough": 1, "wrapper": 2, "interface": 3}
+    passthrough_wrapper_interface_positive["signal"] = len(input) + len(items)
+    passthrough_positive_0 := passthrough_wrapper_interface_positive["passthrough"] + len(input)
+    _ = passthrough_positive_0
+    wrapper_positive_1 := passthrough_wrapper_interface_positive["wrapper"] + len(input)
+    _ = wrapper_positive_1
+    interface_positive_2 := passthrough_wrapper_interface_positive["interface"] + len(input)
+    _ = interface_positive_2
+    return nil
+}

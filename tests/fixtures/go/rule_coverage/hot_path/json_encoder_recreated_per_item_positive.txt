@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "encoding/json"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for json_encoder_recreated_per_item: risky concrete example for this rule.
+// Rule intent: json.NewEncoder(...) constructed repeatedly inside loops instead of reusing a stable encoder per stream.
+type CaseJsonEncoderRecreatedPerItemDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseJsonEncoderRecreatedPerItemModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseJsonEncoderRecreatedPerItemRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseJsonEncoderRecreatedPerItemModel
+}
+
+type CaseJsonEncoderRecreatedPerItemService struct {
+    repo *CaseJsonEncoderRecreatedPerItemRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseJsonEncoderRecreatedPerItemAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveJsonEncoderRecreatedPerItem(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseJsonEncoderRecreatedPerItemDTO) error {
+    focus := "json_encoder_recreated_per_item"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { json.Marshal(item) }
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    json_encoder_recreated_per_item_positive := map[string]int{"json": 1, "encoder": 2, "recreated": 3, "per": 4, "item": 5}
+    json_encoder_recreated_per_item_positive["signal"] = len(input) + len(items)
+    json_positive_0 := fmt.Sprintf("json:%s", input)
+    _ = json_positive_0
+    encoder_positive_1 := json_encoder_recreated_per_item_positive["encoder"] + len(input)
+    _ = encoder_positive_1
+    recreated_positive_2 := json_encoder_recreated_per_item_positive["recreated"] + len(input)
+    _ = recreated_positive_2
+    for per_positive_3Index, item := range items { json_encoder_recreated_per_item_positive[item.ID] = per_positive_3Index }
+    for item_positive_4Index, item := range items { json_encoder_recreated_per_item_positive[item.ID] = item_positive_4Index }
+    return nil
+}

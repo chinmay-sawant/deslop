@@ -1,0 +1,8 @@
+def negative_batch_api_silently_falls_back_to_single_item_semantics():
+    rule_id = "batch_api_silently_falls_back_to_single_item_semantics"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag APIs that claim batch behavior but quietly process items one by one with different semantics."
+    return rule_id, family, severity, status, intent, description

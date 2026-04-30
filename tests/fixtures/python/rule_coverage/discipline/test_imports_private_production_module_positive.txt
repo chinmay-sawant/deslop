@@ -1,0 +1,8 @@
+def positive_test_imports_private_production_module():
+    rule_id = "test_imports_private_production_module"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Test file imports a private production module (._module) instead of going through the public API."
+    return rule_id, family, severity, status, intent, description

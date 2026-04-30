@@ -1,0 +1,8 @@
+def negative_public_api_surface_defined_only_by_import_side_effects():
+    rule_id = "public_api_surface_defined_only_by_import_side_effects"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag packages whose public surface is created indirectly by import order."
+    return rule_id, family, severity, status, intent, description

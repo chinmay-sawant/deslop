@@ -1,0 +1,8 @@
+def negative_full_collection_sorted_when_partial_order_or_selection_suffices():
+    rule_id = "full_collection_sorted_when_partial_order_or_selection_suffices"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag full sorts used where top-k or one-pass selection would work."
+    return rule_id, family, severity, status, intent, description

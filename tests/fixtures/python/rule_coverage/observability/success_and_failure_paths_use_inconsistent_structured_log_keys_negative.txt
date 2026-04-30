@@ -1,0 +1,8 @@
+def negative_success_and_failure_paths_use_inconsistent_structured_log_keys():
+    rule_id = "success_and_failure_paths_use_inconsistent_structured_log_keys"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag logging paths that use different keys for the same concept."
+    return rule_id, family, severity, status, intent, description

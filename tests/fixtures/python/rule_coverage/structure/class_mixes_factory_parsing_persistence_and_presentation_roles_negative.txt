@@ -1,0 +1,8 @@
+def negative_class_mixes_factory_parsing_persistence_and_presentation_roles():
+    rule_id = "class_mixes_factory_parsing_persistence_and_presentation_roles"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag classes that combine unrelated lifecycle roles."
+    return rule_id, family, severity, status, intent, description

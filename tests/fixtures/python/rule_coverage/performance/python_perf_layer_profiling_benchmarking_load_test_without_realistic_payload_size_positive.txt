@@ -1,0 +1,8 @@
+def positive_python_perf_layer_profiling_benchmarking_load_test_without_realistic_payload_size():
+    rule_id = "python_perf_layer_profiling_benchmarking_load_test_without_realistic_payload_size"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Profiling and benchmarking. Flag performance tests that use tiny payloads despite rules targeting large-input behavior."
+    return rule_id, family, severity, status, intent, description

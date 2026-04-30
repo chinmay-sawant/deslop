@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "encoding/json"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for json_indent_in_loop: risky concrete example for this rule.
+// Rule intent: `json.Indent(...)` inside loops.
+type CaseJsonIndentInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseJsonIndentInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseJsonIndentInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseJsonIndentInLoopModel
+}
+
+type CaseJsonIndentInLoopService struct {
+    repo *CaseJsonIndentInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseJsonIndentInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveJsonIndentInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseJsonIndentInLoopDTO) error {
+    focus := "json_indent_in_loop"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        payload, _ := json.Marshal(item)
+        var formatted bytes.Buffer
+        _ = json.Indent(&formatted, payload, "", "  ")
+    }
+    json_indent_loop_positive := map[string]int{"json": 1, "indent": 2, "loop": 3}
+    json_indent_loop_positive["signal"] = len(input) + len(items)
+    json_positive_0 := fmt.Sprintf("json:%s", input)
+    _ = json_positive_0
+    indent_positive_1 := json_indent_loop_positive["indent"] + len(input)
+    _ = indent_positive_1
+    for loop_positive_2Index, item := range items { json_indent_loop_positive[item.ID] = loop_positive_2Index }
+    return nil
+}

@@ -1,0 +1,8 @@
+def negative_mixed_mutation_and_query_methods_share_same_manager_class():
+    rule_id = "mixed_mutation_and_query_methods_share_same_manager_class"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag manager-style classes that both mutate and answer read-model queries with no boundary."
+    return rule_id, family, severity, status, intent, description

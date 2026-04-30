@@ -1,0 +1,8 @@
+def positive_large_response_body_fully_buffered_in_memory_before_send():
+    rule_id = "large_response_body_fully_buffered_in_memory_before_send"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Large response body buffered completely in memory before writing; use StreamingResponse."
+    return rule_id, family, severity, status, intent, description

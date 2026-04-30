@@ -1,0 +1,8 @@
+def positive_loop_run_until_complete_inside_running_loop():
+    rule_id = "loop_run_until_complete_inside_running_loop"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "loop.run_until_complete called from within a running event loop, which raises RuntimeError."
+    return rule_id, family, severity, status, intent, description

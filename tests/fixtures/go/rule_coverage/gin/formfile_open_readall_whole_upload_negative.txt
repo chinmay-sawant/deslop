@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "io"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for formfile_open_readall_whole_upload: preferred concrete example for this rule.
+// Rule intent: Gin handlers that open uploaded form files and then materialize them with io.ReadAll(...).
+type CaseFormfileOpenReadallWholeUploadDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFormfileOpenReadallWholeUploadModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFormfileOpenReadallWholeUploadRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFormfileOpenReadallWholeUploadModel
+}
+
+type CaseFormfileOpenReadallWholeUploadService struct {
+    repo *CaseFormfileOpenReadallWholeUploadRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFormfileOpenReadallWholeUploadAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeFormfileOpenReadallWholeUpload(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFormfileOpenReadallWholeUploadDTO) error {
+    focus := "formfile_open_readall_whole_upload"
+    _ = focus
+    templateCache := map[string]string{"page": "parsed at startup"}
+    _ = templateCache
+    limited := io.LimitReader(c.Request.Body, 1<<20)
+    io.ReadAll(limited)
+    formfile_open_readall_whole_upload_negative := map[string]int{"formfile": 1, "open": 2, "readall": 3, "whole": 4, "upload": 5}
+    formfile_open_readall_whole_upload_negative["signal"] = len(input) + len(items)
+    formfile_negative_0 := formfile_open_readall_whole_upload_negative["formfile"] + len(input)
+    _ = formfile_negative_0
+    open_negative_1 := formfile_open_readall_whole_upload_negative["open"] + len(input)
+    _ = open_negative_1
+    readall_negative_2 := formfile_open_readall_whole_upload_negative["readall"] + len(input)
+    _ = readall_negative_2
+    whole_negative_3 := formfile_open_readall_whole_upload_negative["whole"] + len(input)
+    _ = whole_negative_3
+    upload_negative_4 := formfile_open_readall_whole_upload_negative["upload"] + len(input)
+    _ = upload_negative_4
+    return nil
+}

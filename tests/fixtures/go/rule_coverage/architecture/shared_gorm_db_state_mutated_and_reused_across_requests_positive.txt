@@ -1,0 +1,73 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for shared_gorm_db_state_mutated_and_reused_across_requests: risky concrete example for this rule.
+// Rule intent: Code that mutates shared `*gorm.DB` state and reuses it as if it were immutable configuration.
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSharedGormDbStateMutatedAndReusedAcrossRequestsModel
+}
+
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsService struct {
+    repo *CaseSharedGormDbStateMutatedAndReusedAcrossRequestsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSharedGormDbStateMutatedAndReusedAcrossRequestsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSharedGormDbStateMutatedAndReusedAcrossRequests(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSharedGormDbStateMutatedAndReusedAcrossRequestsDTO) error {
+    focus := "shared_gorm_db_state_mutated"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseSharedGormDbStateMutatedAndReusedAcrossRequestsRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseSharedGormDbStateMutatedAndReusedAcrossRequestsModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
+    shared_gorm_db_state_mutated_positive := map[string]int{"shared": 1, "gorm": 2, "db": 3, "state": 4, "mutated": 5, "reused": 6}
+    shared_gorm_db_state_mutated_positive["signal"] = len(input) + len(items)
+    shared_positive_0 := shared_gorm_db_state_mutated_positive["shared"] + len(input)
+    _ = shared_positive_0
+    gorm_positive_1 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_1
+    db_positive_2 := db.Where("db_id = ?", input)
+    _ = db_positive_2
+    state_positive_3 := shared_gorm_db_state_mutated_positive["state"] + len(input)
+    _ = state_positive_3
+    mutated_positive_4 := shared_gorm_db_state_mutated_positive["mutated"] + len(input)
+    _ = mutated_positive_4
+    reused_positive_5 := shared_gorm_db_state_mutated_positive["reused"] + len(input)
+    _ = reused_positive_5
+    return nil
+}

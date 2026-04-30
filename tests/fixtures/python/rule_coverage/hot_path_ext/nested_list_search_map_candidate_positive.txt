@@ -1,0 +1,8 @@
+def positive_nested_list_search_map_candidate():
+    rule_id = "nested_list_search_map_candidate"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Nested linear list searches that look like they want a temporary map or set index."
+    return rule_id, family, severity, status, intent, description

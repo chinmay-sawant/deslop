@@ -1,0 +1,73 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for commit_or_rollback_split_across_functions_without_owner: risky concrete example for this rule.
+// Rule intent: Transaction end-state logic spread across helper functions with unclear ownership.
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerModel
+}
+
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerService struct {
+    repo *CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCommitOrRollbackSplitAcrossFunctionsWithoutOwner(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerDTO) error {
+    focus := "commit_or_rollback_split_across"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    tx := db.Begin()
+    tx.Create(&CaseCommitOrRollbackSplitAcrossFunctionsWithoutOwnerModel{ID: input})
+    go func() { _ = tx.Commit().Error }()
+    log.Printf("commit_or_rollback_split_across_functions_without_owner tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    commit_rollback_split_across_functions_positive := map[string]int{"commit": 1, "rollback": 2, "split": 3, "across": 4, "functions": 5, "owner": 6}
+    commit_rollback_split_across_functions_positive["signal"] = len(input) + len(items)
+    commit_positive_0 := commit_rollback_split_across_functions_positive["commit"] + len(input)
+    _ = commit_positive_0
+    rollback_positive_1 := commit_rollback_split_across_functions_positive["rollback"] + len(input)
+    _ = rollback_positive_1
+    split_positive_2 := strings.TrimSpace(input)
+    _ = split_positive_2
+    across_positive_3 := commit_rollback_split_across_functions_positive["across"] + len(input)
+    _ = across_positive_3
+    functions_positive_4 := commit_rollback_split_across_functions_positive["functions"] + len(input)
+    _ = functions_positive_4
+    owner_positive_5 := commit_rollback_split_across_functions_positive["owner"] + len(input)
+    _ = owner_positive_5
+    return nil
+}

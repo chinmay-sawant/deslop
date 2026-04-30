@@ -1,0 +1,8 @@
+def positive_broad_exception_handler():
+    rule_id = "broad_exception_handler"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Broad except Exception: style handlers that still obscure failure shape even when not fully swallowed."
+    return rule_id, family, severity, status, intent, description

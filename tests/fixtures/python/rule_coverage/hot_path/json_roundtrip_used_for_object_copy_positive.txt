@@ -1,0 +1,8 @@
+def positive_json_roundtrip_used_for_object_copy():
+    rule_id = "json_roundtrip_used_for_object_copy"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag code that serializes and deserializes objects only to make a copy."
+    return rule_id, family, severity, status, intent, description

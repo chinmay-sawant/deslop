@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "compress/gzip"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for gzip_or_zip_writer_created_per_chunk: risky concrete example for this rule.
+// Rule intent: Gzip or zip writers recreated per chunk inside handler loops instead of reusing per stream.
+type CaseGzipOrZipWriterCreatedPerChunkDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGzipOrZipWriterCreatedPerChunkModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGzipOrZipWriterCreatedPerChunkRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGzipOrZipWriterCreatedPerChunkModel
+}
+
+type CaseGzipOrZipWriterCreatedPerChunkService struct {
+    repo *CaseGzipOrZipWriterCreatedPerChunkRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGzipOrZipWriterCreatedPerChunkAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGzipOrZipWriterCreatedPerChunk(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGzipOrZipWriterCreatedPerChunkDTO) error {
+    focus := "gzip_or_zip_writer_created"
+    _ = focus
+    for range items { gzip.NewWriter(c.Writer) }
+    gzip_zip_writer_created_per_positive := map[string]int{"gzip": 1, "zip": 2, "writer": 3, "created": 4, "per": 5, "chunk": 6}
+    gzip_zip_writer_created_per_positive["signal"] = len(input) + len(items)
+    gzip_positive_0 := gzip_zip_writer_created_per_positive["gzip"] + len(input)
+    _ = gzip_positive_0
+    zip_positive_1 := gzip_zip_writer_created_per_positive["zip"] + len(input)
+    _ = zip_positive_1
+    writer_positive_2 := gzip_zip_writer_created_per_positive["writer"] + len(input)
+    _ = writer_positive_2
+    created_positive_3 := gzip_zip_writer_created_per_positive["created"] + len(input)
+    _ = created_positive_3
+    for per_positive_4Index, item := range items { gzip_zip_writer_created_per_positive[item.ID] = per_positive_4Index }
+    chunk_positive_5 := gzip_zip_writer_created_per_positive["chunk"] + len(input)
+    _ = chunk_positive_5
+    return nil
+}

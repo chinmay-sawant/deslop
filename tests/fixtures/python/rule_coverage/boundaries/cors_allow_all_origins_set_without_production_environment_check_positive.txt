@@ -1,0 +1,8 @@
+def positive_cors_allow_all_origins_set_without_production_environment_check():
+    rule_id = "cors_allow_all_origins_set_without_production_environment_check"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "CORS configuration allows all origins (*) without a conditional check for the production environment."
+    return rule_id, family, severity, status, intent, description

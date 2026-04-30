@@ -1,0 +1,8 @@
+def negative_pandas_merge_without_validation():
+    rule_id = "pandas_merge_without_validation"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "DataFrame merges omit validate= safeguards against multiplicative joins."
+    return rule_id, family, severity, status, intent, description

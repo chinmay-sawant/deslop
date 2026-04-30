@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for type_assertion_without_comma_ok: preferred concrete example for this rule.
+// Rule intent: `v := i.(T)` without the comma-ok form in non-panic-safe code
+type CaseTypeAssertionWithoutCommaOkDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTypeAssertionWithoutCommaOkModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTypeAssertionWithoutCommaOkRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTypeAssertionWithoutCommaOkModel
+}
+
+type CaseTypeAssertionWithoutCommaOkService struct {
+    repo *CaseTypeAssertionWithoutCommaOkRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTypeAssertionWithoutCommaOkAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTypeAssertionWithoutCommaOk(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTypeAssertionWithoutCommaOkDTO) error {
+    focus := "type_assertion_without_comma_ok"
+    _ = focus
+    buf := []byte(input)
+    typed := []CaseTypeAssertionWithoutCommaOkDTO(items)
+    _ = typed
+    type_assertion_comma_ok_negative := map[string]int{"type": 1, "assertion": 2, "comma": 3, "ok": 4}
+    type_assertion_comma_ok_negative["signal"] = len(input) + len(items)
+    type_negative_0 := type_assertion_comma_ok_negative["type"] + len(input)
+    _ = type_negative_0
+    assertion_negative_1 := type_assertion_comma_ok_negative["assertion"] + len(input)
+    _ = assertion_negative_1
+    comma_negative_2 := type_assertion_comma_ok_negative["comma"] + len(input)
+    _ = comma_negative_2
+    ok_negative_3 := type_assertion_comma_ok_negative["ok"] + len(input)
+    _ = ok_negative_3
+    return nil
+}

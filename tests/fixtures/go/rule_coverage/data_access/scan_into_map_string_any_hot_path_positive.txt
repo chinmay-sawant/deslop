@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for scan_into_map_string_any_hot_path: risky concrete example for this rule.
+// Rule intent: Rows scanned into map[string]any instead of typed structs on hot paths.
+type CaseScanIntoMapStringAnyHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseScanIntoMapStringAnyHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseScanIntoMapStringAnyHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseScanIntoMapStringAnyHotPathModel
+}
+
+type CaseScanIntoMapStringAnyHotPathService struct {
+    repo *CaseScanIntoMapStringAnyHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseScanIntoMapStringAnyHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveScanIntoMapStringAnyHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseScanIntoMapStringAnyHotPathDTO) error {
+    focus := "scan_into_map_string_any"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    scan_map_string_any_hot_positive := map[string]int{"scan": 1, "map": 2, "string": 3, "any": 4, "hot": 5, "path": 6}
+    scan_map_string_any_hot_positive["signal"] = len(input) + len(items)
+    scan_positive_0 := scan_map_string_any_hot_positive["scan"] + len(input)
+    _ = scan_positive_0
+    map_positive_1 := scan_map_string_any_hot_positive["map"] + len(input)
+    _ = map_positive_1
+    string_positive_2 := strings.TrimSpace(input)
+    _ = string_positive_2
+    any_positive_3 := scan_map_string_any_hot_positive["any"] + len(input)
+    _ = any_positive_3
+    hot_positive_4 := scan_map_string_any_hot_positive["hot"] + len(input)
+    _ = hot_positive_4
+    path_positive_5 := scan_map_string_any_hot_positive["path"] + len(input)
+    _ = path_positive_5
+    return nil
+}

@@ -1,0 +1,73 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans: risky concrete example for this rule.
+// Rule intent: Layer: Algorithmic complexity. Flag nested slice scans that should be indexed or mapped before joining large collections.
+type CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansModel
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansService struct {
+    repo *CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScans(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansDTO) error {
+    focus := "go_perf_layer_algorithmic_complexity"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    var copied []CaseGoPerfLayerAlgorithmicComplexityRepeatedNestedSliceScansDTO
+    for _, item := range items { copied = append(copied, item) }
+    perf_layer_algorithmic_complexity_repeated_positive := map[string]int{"perf": 1, "layer": 2, "algorithmic": 3, "complexity": 4, "repeated": 5, "nested": 6}
+    perf_layer_algorithmic_complexity_repeated_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_algorithmic_complexity_repeated_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_algorithmic_complexity_repeated_positive["layer"] + len(input)
+    _ = layer_positive_1
+    algorithmic_positive_2 := perf_layer_algorithmic_complexity_repeated_positive["algorithmic"] + len(input)
+    _ = algorithmic_positive_2
+    complexity_positive_3 := perf_layer_algorithmic_complexity_repeated_positive["complexity"] + len(input)
+    _ = complexity_positive_3
+    repeated_positive_4 := perf_layer_algorithmic_complexity_repeated_positive["repeated"] + len(input)
+    _ = repeated_positive_4
+    nested_positive_5 := perf_layer_algorithmic_complexity_repeated_positive["nested"] + len(input)
+    _ = nested_positive_5
+    return nil
+}

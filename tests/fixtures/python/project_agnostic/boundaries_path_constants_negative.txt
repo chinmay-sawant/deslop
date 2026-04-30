@@ -1,0 +1,5 @@
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+SAMPLE_RATE = 16000
+WS_URL = f"wss://example.invalid/ws?sample_rate={SAMPLE_RATE}"

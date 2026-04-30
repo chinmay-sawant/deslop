@@ -1,0 +1,8 @@
+def negative_same_buffer_or_prefix_reencoded_each_iteration():
+    rule_id = "same_buffer_or_prefix_reencoded_each_iteration"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag loops that re-encode identical prefixes or headers on each iteration."
+    return rule_id, family, severity, status, intent, description

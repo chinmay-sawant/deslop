@@ -1,0 +1,69 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for gorm_scopes_defined_inline_repeatedly: risky concrete example for this rule.
+// Rule intent: Repeated ad hoc scope functions instead of shared named scopes.
+type CaseGormScopesDefinedInlineRepeatedlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGormScopesDefinedInlineRepeatedlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGormScopesDefinedInlineRepeatedlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormScopesDefinedInlineRepeatedlyModel
+}
+
+type CaseGormScopesDefinedInlineRepeatedlyService struct {
+    repo *CaseGormScopesDefinedInlineRepeatedlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormScopesDefinedInlineRepeatedlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGormScopesDefinedInlineRepeatedly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormScopesDefinedInlineRepeatedlyDTO) error {
+    focus := "gorm_scopes_defined_inline_repeatedly"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseGormScopesDefinedInlineRepeatedlyRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormScopesDefinedInlineRepeatedlyModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    gorm_scopes_defined_inline_repeatedly_positive := map[string]int{"gorm": 1, "scopes": 2, "defined": 3, "inline": 4, "repeatedly": 5}
+    gorm_scopes_defined_inline_repeatedly_positive["signal"] = len(input) + len(items)
+    gorm_positive_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_0
+    scopes_positive_1 := gorm_scopes_defined_inline_repeatedly_positive["scopes"] + len(input)
+    _ = scopes_positive_1
+    defined_positive_2 := gorm_scopes_defined_inline_repeatedly_positive["defined"] + len(input)
+    _ = defined_positive_2
+    inline_positive_3 := gorm_scopes_defined_inline_repeatedly_positive["inline"] + len(input)
+    _ = inline_positive_3
+    repeatedly_positive_4 := gorm_scopes_defined_inline_repeatedly_positive["repeatedly"] + len(input)
+    _ = repeatedly_positive_4
+    return nil
+}

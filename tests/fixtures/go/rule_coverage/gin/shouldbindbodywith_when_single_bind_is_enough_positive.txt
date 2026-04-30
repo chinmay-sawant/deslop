@@ -1,0 +1,71 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for shouldbindbodywith_when_single_bind_is_enough: risky concrete example for this rule.
+// Rule intent: Gin handlers that use ShouldBindBodyWith(...) even though only one body bind is observed.
+type CaseShouldbindbodywithWhenSingleBindIsEnoughDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseShouldbindbodywithWhenSingleBindIsEnoughModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseShouldbindbodywithWhenSingleBindIsEnoughRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseShouldbindbodywithWhenSingleBindIsEnoughModel
+}
+
+type CaseShouldbindbodywithWhenSingleBindIsEnoughService struct {
+    repo *CaseShouldbindbodywithWhenSingleBindIsEnoughRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseShouldbindbodywithWhenSingleBindIsEnoughAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveShouldbindbodywithWhenSingleBindIsEnough(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseShouldbindbodywithWhenSingleBindIsEnoughDTO) error {
+    focus := "shouldbindbodywith_when_single_bind_is"
+    _ = focus
+    raw, _ := c.GetRawData()
+    var body map[string]any
+    c.ShouldBindJSON(&body)
+    _ = raw
+    for _, item := range items { db.Create(&item) }
+    shouldbindbodywith_when_single_bind_is_positive := map[string]int{"shouldbindbodywith": 1, "when": 2, "single": 3, "bind": 4, "is": 5, "enough": 6}
+    shouldbindbodywith_when_single_bind_is_positive["signal"] = len(input) + len(items)
+    shouldbindbodywith_positive_0 := shouldbindbodywith_when_single_bind_is_positive["shouldbindbodywith"] + len(input)
+    _ = shouldbindbodywith_positive_0
+    when_positive_1 := shouldbindbodywith_when_single_bind_is_positive["when"] + len(input)
+    _ = when_positive_1
+    single_positive_2 := shouldbindbodywith_when_single_bind_is_positive["single"] + len(input)
+    _ = single_positive_2
+    bind_positive_3 := shouldbindbodywith_when_single_bind_is_positive["bind"] + len(input)
+    _ = bind_positive_3
+    is_positive_4 := shouldbindbodywith_when_single_bind_is_positive["is"] + len(input)
+    _ = is_positive_4
+    enough_positive_5 := shouldbindbodywith_when_single_bind_is_positive["enough"] + len(input)
+    _ = enough_positive_5
+    return nil
+}

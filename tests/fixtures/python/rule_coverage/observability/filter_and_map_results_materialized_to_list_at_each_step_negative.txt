@@ -1,0 +1,8 @@
+def negative_filter_and_map_results_materialized_to_list_at_each_step():
+    rule_id = "filter_and_map_results_materialized_to_list_at_each_step"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "list(filter(...)) followed by list(map(...)), materializing intermediate collections; use a generator pipeline."
+    return rule_id, family, severity, status, intent, description

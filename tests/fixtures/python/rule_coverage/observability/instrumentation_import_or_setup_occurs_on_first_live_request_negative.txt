@@ -1,0 +1,8 @@
+def negative_instrumentation_import_or_setup_occurs_on_first_live_request():
+    rule_id = "instrumentation_import_or_setup_occurs_on_first_live_request"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag observability setup that waits until the first request or task instead of initializing predictably."
+    return rule_id, family, severity, status, intent, description

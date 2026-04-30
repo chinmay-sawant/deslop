@@ -1,0 +1,8 @@
+def negative_module_singleton_client_side_effect():
+    rule_id = "module_singleton_client_side_effect"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Eagerly constructed network, database, or cloud clients bound at module scope."
+    return rule_id, family, severity, status, intent, description

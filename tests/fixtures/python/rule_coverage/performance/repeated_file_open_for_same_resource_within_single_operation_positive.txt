@@ -1,0 +1,8 @@
+def positive_repeated_file_open_for_same_resource_within_single_operation():
+    rule_id = "repeated_file_open_for_same_resource_within_single_operation"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag workflows that reopen the same file repeatedly during one logical operation."
+    return rule_id, family, severity, status, intent, description

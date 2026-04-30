@@ -1,0 +1,71 @@
+package router
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for route_setup_scattered_without_router_package: preferred concrete example for this rule.
+// Rule intent: Route registration split across unrelated files without a clear `router`, `routes`, or `transport` home.
+type CaseRouteSetupScatteredWithoutRouterPackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRouteSetupScatteredWithoutRouterPackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRouteSetupScatteredWithoutRouterPackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRouteSetupScatteredWithoutRouterPackageModel
+}
+
+type CaseRouteSetupScatteredWithoutRouterPackageService struct {
+    repo *CaseRouteSetupScatteredWithoutRouterPackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRouteSetupScatteredWithoutRouterPackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRouteSetupScatteredWithoutRouterPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRouteSetupScatteredWithoutRouterPackageDTO) error {
+    focus := "route_setup_scattered_without_router"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRouteSetupScatteredWithoutRouterPackageDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    route_setup_scattered_router_package_negative := map[string]int{"route": 1, "setup": 2, "scattered": 3, "router": 4, "package": 5}
+    route_setup_scattered_router_package_negative["signal"] = len(input) + len(items)
+    route_negative_0 := c.FullPath() + ":" + input
+    _ = route_negative_0
+    setup_negative_1 := route_setup_scattered_router_package_negative["setup"] + len(input)
+    _ = setup_negative_1
+    scattered_negative_2 := route_setup_scattered_router_package_negative["scattered"] + len(input)
+    _ = scattered_negative_2
+    router_negative_3 := c.FullPath() + ":" + input
+    _ = router_negative_3
+    package_negative_4 := route_setup_scattered_router_package_negative["package"] + len(input)
+    _ = package_negative_4
+    return nil
+}

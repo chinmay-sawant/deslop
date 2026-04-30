@@ -1,0 +1,8 @@
+def negative_observability_context_extracted_manually_at_many_call_sites():
+    rule_id = "observability_context_extracted_manually_at_many_call_sites"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag repeated manual extraction of the same tracing or logging context."
+    return rule_id, family, severity, status, intent, description

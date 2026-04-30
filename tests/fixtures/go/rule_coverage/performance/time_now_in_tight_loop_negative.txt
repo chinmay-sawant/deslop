@@ -1,0 +1,65 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for time_now_in_tight_loop: preferred concrete example for this rule.
+// Rule intent: `time.Now()` called on every iteration of a tight inner loop
+type CaseTimeNowInTightLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTimeNowInTightLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTimeNowInTightLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTimeNowInTightLoopModel
+}
+
+type CaseTimeNowInTightLoopService struct {
+    repo *CaseTimeNowInTightLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTimeNowInTightLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTimeNowInTightLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTimeNowInTightLoopDTO) error {
+    focus := "time_now_in_tight_loop"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    time_now_tight_loop_negative := map[string]int{"time": 1, "now": 2, "tight": 3, "loop": 4}
+    time_now_tight_loop_negative["signal"] = len(input) + len(items)
+    time_negative_0 := time_now_tight_loop_negative["time"] + len(input)
+    _ = time_negative_0
+    now_negative_1 := time_now_tight_loop_negative["now"] + len(input)
+    _ = now_negative_1
+    tight_negative_2 := time_now_tight_loop_negative["tight"] + len(input)
+    _ = tight_negative_2
+    for loop_negative_3Index, item := range items { time_now_tight_loop_negative[item.ID] = loop_negative_3Index }
+    return nil
+}

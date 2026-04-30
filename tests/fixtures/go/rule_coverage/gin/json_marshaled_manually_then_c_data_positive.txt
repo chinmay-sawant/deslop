@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "encoding/json"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for json_marshaled_manually_then_c_data: risky concrete example for this rule.
+// Rule intent: Handlers that manually marshal JSON and then write it through gin.Context.Data(...).
+type CaseJsonMarshaledManuallyThenCDataDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseJsonMarshaledManuallyThenCDataModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseJsonMarshaledManuallyThenCDataRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseJsonMarshaledManuallyThenCDataModel
+}
+
+type CaseJsonMarshaledManuallyThenCDataService struct {
+    repo *CaseJsonMarshaledManuallyThenCDataRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseJsonMarshaledManuallyThenCDataAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveJsonMarshaledManuallyThenCData(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseJsonMarshaledManuallyThenCDataDTO) error {
+    focus := "json_marshaled_manually_then_c"
+    _ = focus
+    payload, _ := json.Marshal(gin.H{"items": items, "rule": input})
+    c.Data(200, "application/json", payload)
+    json_marshaled_manually_then_c_positive := map[string]int{"json": 1, "marshaled": 2, "manually": 3, "then": 4, "c": 5, "data": 6}
+    json_marshaled_manually_then_c_positive["signal"] = len(input) + len(items)
+    json_positive_0 := fmt.Sprintf("json:%s", input)
+    _ = json_positive_0
+    marshaled_positive_1 := json_marshaled_manually_then_c_positive["marshaled"] + len(input)
+    _ = marshaled_positive_1
+    manually_positive_2 := json_marshaled_manually_then_c_positive["manually"] + len(input)
+    _ = manually_positive_2
+    then_positive_3 := json_marshaled_manually_then_c_positive["then"] + len(input)
+    _ = then_positive_3
+    c_positive_4 := json_marshaled_manually_then_c_positive["c"] + len(input)
+    _ = c_positive_4
+    data_positive_5 := json_marshaled_manually_then_c_positive["data"] + len(input)
+    _ = data_positive_5
+    return nil
+}

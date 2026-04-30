@@ -1,0 +1,8 @@
+def negative_template_render_in_loop():
+    rule_id = "template_render_in_loop"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Template rendering appears inside loops instead of rendering once over prepared data."
+    return rule_id, family, severity, status, intent, description

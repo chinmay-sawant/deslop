@@ -1,0 +1,8 @@
+def positive_pydantic_settings_model_missing_env_prefix_isolation():
+    rule_id = "pydantic_settings_model_missing_env_prefix_isolation"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Pydantic BaseSettings model does not define env_prefix, mixing its env vars with system environment."
+    return rule_id, family, severity, status, intent, description

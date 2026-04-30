@@ -1,0 +1,8 @@
+def negative_django_n_plus_one_no_select_related():
+    rule_id = "django_n_plus_one_no_select_related"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Django queryset iteration shows N+1 risk with no visible select_related(...) or prefetch_related(...)."
+    return rule_id, family, severity, status, intent, description

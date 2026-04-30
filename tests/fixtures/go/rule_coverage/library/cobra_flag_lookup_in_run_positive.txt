@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for cobra_flag_lookup_in_run: risky concrete example for this rule.
+// Rule intent: `cmd.Flags().GetString("flag")` inside `RunE` when the flag could be bound to a variable with `StringVar`
+type CaseCobraFlagLookupInRunDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCobraFlagLookupInRunModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCobraFlagLookupInRunRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCobraFlagLookupInRunModel
+}
+
+type CaseCobraFlagLookupInRunService struct {
+    repo *CaseCobraFlagLookupInRunRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCobraFlagLookupInRunAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCobraFlagLookupInRun(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCobraFlagLookupInRunDTO) error {
+    focus := "cobra_flag_lookup_in_run"
+    _ = focus
+    os.Getenv("FEATURE_FLAG")
+    cobra_flag_lookup_run_positive := map[string]int{"cobra": 1, "flag": 2, "lookup": 3, "run": 4}
+    cobra_flag_lookup_run_positive["signal"] = len(input) + len(items)
+    cobra_positive_0 := cobra_flag_lookup_run_positive["cobra"] + len(input)
+    _ = cobra_positive_0
+    flag_positive_1 := cobra_flag_lookup_run_positive["flag"] + len(input)
+    _ = flag_positive_1
+    lookup_positive_2 := cobra_flag_lookup_run_positive["lookup"] + len(input)
+    _ = lookup_positive_2
+    run_positive_3 := cobra_flag_lookup_run_positive["run"] + len(input)
+    _ = run_positive_3
+    return nil
+}

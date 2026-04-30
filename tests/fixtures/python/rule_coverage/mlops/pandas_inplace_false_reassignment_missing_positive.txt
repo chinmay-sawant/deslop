@@ -1,0 +1,8 @@
+def positive_pandas_inplace_false_reassignment_missing():
+    rule_id = "pandas_inplace_false_reassignment_missing"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "DataFrame-transform methods are called without reassignment or inplace=True, silently discarding results."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_thread_pool_or_process_pool_created_and_destroyed_per_call():
+    rule_id = "thread_pool_or_process_pool_created_and_destroyed_per_call"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag per-call executor allocation for repeatable work."
+    return rule_id, family, severity, status, intent, description

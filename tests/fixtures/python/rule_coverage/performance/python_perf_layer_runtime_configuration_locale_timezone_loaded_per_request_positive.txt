@@ -1,0 +1,8 @@
+def positive_python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request():
+    rule_id = "python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Build and runtime configuration. Flag locale or timezone data loaded for every request instead of cached process state."
+    return rule_id, family, severity, status, intent, description

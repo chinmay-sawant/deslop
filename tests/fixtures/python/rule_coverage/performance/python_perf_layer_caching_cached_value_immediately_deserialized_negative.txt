@@ -1,0 +1,8 @@
+def negative_python_perf_layer_caching_cached_value_immediately_deserialized():
+    rule_id = "python_perf_layer_caching_cached_value_immediately_deserialized"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Caching. Flag caches storing serialized data only to deserialize before every use."
+    return rule_id, family, severity, status, intent, description

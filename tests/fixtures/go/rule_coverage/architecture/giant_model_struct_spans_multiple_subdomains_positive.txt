@@ -1,0 +1,79 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for giant_model_struct_spans_multiple_subdomains: risky concrete example for this rule.
+// Rule intent: Oversized model structs that appear to merge multiple bounded contexts into one persistence shape.
+type CaseGiantModelStructSpansMultipleSubdomainsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGiantModelStructSpansMultipleSubdomainsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGiantModelStructSpansMultipleSubdomainsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGiantModelStructSpansMultipleSubdomainsModel
+}
+
+type CaseGiantModelStructSpansMultipleSubdomainsService struct {
+    repo *CaseGiantModelStructSpansMultipleSubdomainsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGiantModelStructSpansMultipleSubdomainsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGiantModelStructSpansMultipleSubdomains(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGiantModelStructSpansMultipleSubdomainsDTO) error {
+    focus := "giant_model_struct_spans_multiple"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseGiantModelStructSpansMultipleSubdomainsRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGiantModelStructSpansMultipleSubdomainsModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseGiantModelStructSpansMultipleSubdomainsService{repo: &CaseGiantModelStructSpansMultipleSubdomainsRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseGiantModelStructSpansMultipleSubdomainsModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    log.Printf("giant_model_struct_spans_multiple_subdomains tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    giant_model_struct_spans_multiple_positive := map[string]int{"giant": 1, "model": 2, "struct": 3, "spans": 4, "multiple": 5, "subdomains": 6}
+    giant_model_struct_spans_multiple_positive["signal"] = len(input) + len(items)
+    giant_positive_0 := giant_model_struct_spans_multiple_positive["giant"] + len(input)
+    _ = giant_positive_0
+    model_positive_1 := CaseGiantModelStructSpansMultipleSubdomainsDTO{ID: input, Status: "model"}
+    _ = model_positive_1
+    struct_positive_2 := giant_model_struct_spans_multiple_positive["struct"] + len(input)
+    _ = struct_positive_2
+    spans_positive_3 := giant_model_struct_spans_multiple_positive["spans"] + len(input)
+    _ = spans_positive_3
+    multiple_positive_4 := giant_model_struct_spans_multiple_positive["multiple"] + len(input)
+    _ = multiple_positive_4
+    subdomains_positive_5 := giant_model_struct_spans_multiple_positive["subdomains"] + len(input)
+    _ = subdomains_positive_5
+    return nil
+}

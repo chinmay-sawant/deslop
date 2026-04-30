@@ -1,0 +1,8 @@
+def positive_test_function_covers_multiple_unrelated_scenarios():
+    rule_id = "test_function_covers_multiple_unrelated_scenarios"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Integration or unit test body covers multiple unrelated scenarios without parameterization."
+    return rule_id, family, severity, status, intent, description

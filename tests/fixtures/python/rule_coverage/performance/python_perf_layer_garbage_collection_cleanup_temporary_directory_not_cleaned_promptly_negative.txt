@@ -1,0 +1,8 @@
+def negative_python_perf_layer_garbage_collection_cleanup_temporary_directory_not_cleaned_promptly():
+    rule_id = "python_perf_layer_garbage_collection_cleanup_temporary_directory_not_cleaned_promptly"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Garbage collection and cleanup. Flag TemporaryDirectory or temp files held across long workflows after their last use."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_function_body_contains_setup_validation_execution_and_formatting_all_at_once():
+    rule_id = "function_body_contains_setup_validation_execution_and_formatting_all_at_once"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag functions that pack too many lifecycle phases into one body."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_python_perf_layer_async_concurrency_asyncio_task_per_item_unbounded():
+    rule_id = "python_perf_layer_async_concurrency_asyncio_task_per_item_unbounded"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Async and concurrency. Flag unbounded create_task fanout without a semaphore, queue, or batch limit."
+    return rule_id, family, severity, status, intent, description

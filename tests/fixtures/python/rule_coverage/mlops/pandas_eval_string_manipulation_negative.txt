@@ -1,0 +1,8 @@
+def negative_pandas_eval_string_manipulation():
+    rule_id = "pandas_eval_string_manipulation"
+    family = "mlops"
+    severity = "warning"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Dynamic string building is fed into pandas eval/query calls, increasing injection and correctness risk."
+    return rule_id, family, severity, status, intent, description

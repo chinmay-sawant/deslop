@@ -1,0 +1,8 @@
+def negative_python_perf_layer_resource_pooling_db_engine_created_per_repository():
+    rule_id = "python_perf_layer_resource_pooling_db_engine_created_per_repository"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Resource pooling. Flag database engine/session factory construction per repository instance."
+    return rule_id, family, severity, status, intent, description

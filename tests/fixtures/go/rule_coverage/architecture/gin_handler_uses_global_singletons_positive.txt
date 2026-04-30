@@ -1,0 +1,77 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for gin_handler_uses_global_singletons: risky concrete example for this rule.
+// Rule intent: Handlers that reach for global DB, logger, cache, or config variables instead of injected dependencies.
+type CaseGinHandlerUsesGlobalSingletonsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGinHandlerUsesGlobalSingletonsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGinHandlerUsesGlobalSingletonsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinHandlerUsesGlobalSingletonsModel
+}
+
+type CaseGinHandlerUsesGlobalSingletonsService struct {
+    repo *CaseGinHandlerUsesGlobalSingletonsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGinHandlerUsesGlobalSingletonsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGinHandlerUsesGlobalSingletons(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerUsesGlobalSingletonsDTO) error {
+    focus := "gin_handler_uses_global_singletons"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinHandlerUsesGlobalSingletonsDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
+    log.Printf("gin_handler_uses_global_singletons tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    cacheKey := "account:" + input
+    db.Exec("UPDATE cache_events SET payload = ?", cacheKey)
+    _ = cacheKey
+    gin_handler_uses_global_singletons_positive := map[string]int{"gin": 1, "handler": 2, "uses": 3, "global": 4, "singletons": 5}
+    gin_handler_uses_global_singletons_positive["signal"] = len(input) + len(items)
+    gin_positive_0 := c.FullPath() + ":" + input
+    _ = gin_positive_0
+    handler_positive_1 := c.FullPath() + ":" + input
+    _ = handler_positive_1
+    uses_positive_2 := gin_handler_uses_global_singletons_positive["uses"] + len(input)
+    _ = uses_positive_2
+    global_positive_3 := gin_handler_uses_global_singletons_positive["global"] + len(input)
+    _ = global_positive_3
+    singletons_positive_4 := gin_handler_uses_global_singletons_positive["singletons"] + len(input)
+    _ = singletons_positive_4
+    return nil
+}

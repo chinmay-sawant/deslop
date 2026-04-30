@@ -1,0 +1,8 @@
+def positive_too_many_instance_attributes():
+    rule_id = "too_many_instance_attributes"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Classes that assign an unusually large number of instance attributes across their methods."
+    return rule_id, family, severity, status, intent, description

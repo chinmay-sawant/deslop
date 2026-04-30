@@ -1,0 +1,8 @@
+def positive_public_api_returns_none_or_value_without_explicit_optional_contract():
+    rule_id = "public_api_returns_none_or_value_without_explicit_optional_contract"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag public APIs that sometimes return None and sometimes a value without an explicit contract."
+    return rule_id, family, severity, status, intent, description

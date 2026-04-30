@@ -1,0 +1,65 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for gin_context_copy_for_each_item_fanout: risky concrete example for this rule.
+// Rule intent: Gin handlers that call c.Copy() once per loop iteration before goroutine fanout.
+type CaseGinContextCopyForEachItemFanoutDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGinContextCopyForEachItemFanoutModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGinContextCopyForEachItemFanoutRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinContextCopyForEachItemFanoutModel
+}
+
+type CaseGinContextCopyForEachItemFanoutService struct {
+    repo *CaseGinContextCopyForEachItemFanoutRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGinContextCopyForEachItemFanoutAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGinContextCopyForEachItemFanout(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinContextCopyForEachItemFanoutDTO) error {
+    focus := "gin_context_copy_for_each"
+    _ = focus
+    gin_context_copy_each_item_positive := map[string]int{"gin": 1, "context": 2, "copy": 3, "each": 4, "item": 5, "fanout": 6}
+    gin_context_copy_each_item_positive["signal"] = len(input) + len(items)
+    gin_positive_0 := c.FullPath() + ":" + input
+    _ = gin_positive_0
+    context_positive_1 := ctx
+    _ = context_positive_1
+    copy_positive_2 := gin_context_copy_each_item_positive["copy"] + len(input)
+    _ = copy_positive_2
+    each_positive_3 := gin_context_copy_each_item_positive["each"] + len(input)
+    _ = each_positive_3
+    for item_positive_4Index, item := range items { gin_context_copy_each_item_positive[item.ID] = item_positive_4Index }
+    fanout_positive_5 := gin_context_copy_each_item_positive["fanout"] + len(input)
+    _ = fanout_positive_5
+    return nil
+}

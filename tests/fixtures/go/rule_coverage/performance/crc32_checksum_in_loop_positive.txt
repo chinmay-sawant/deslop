@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "crypto/md5"
+    "crypto/sha256"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "hash/crc32"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for crc32_checksum_in_loop: risky concrete example for this rule.
+// Rule intent: `crc32.Checksum...` inside loops.
+type CaseCrc32ChecksumInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCrc32ChecksumInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCrc32ChecksumInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCrc32ChecksumInLoopModel
+}
+
+type CaseCrc32ChecksumInLoopService struct {
+    repo *CaseCrc32ChecksumInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCrc32ChecksumInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCrc32ChecksumInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCrc32ChecksumInLoopDTO) error {
+    focus := "crc32_checksum_in_loop"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = md5.Sum(item.Payload); _ = sha256.Sum256(item.Payload); _ = crc32.ChecksumIEEE(item.Payload) }
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    crc32_checksum_loop_positive := map[string]int{"crc32": 1, "checksum": 2, "loop": 3}
+    crc32_checksum_loop_positive["signal"] = len(input) + len(items)
+    crc32_positive_0 := crc32_checksum_loop_positive["crc32"] + len(input)
+    _ = crc32_positive_0
+    checksum_positive_1 := crc32_checksum_loop_positive["checksum"] + len(input)
+    _ = checksum_positive_1
+    for loop_positive_2Index, item := range items { crc32_checksum_loop_positive[item.ID] = loop_positive_2Index }
+    return nil
+}

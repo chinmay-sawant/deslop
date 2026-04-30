@@ -1,0 +1,79 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "testing"
+)
+
+// Positive scenario for tests_assert_raw_json_strings_without_response_dto: risky concrete example for this rule.
+// Rule intent: Brittle raw-JSON string assertions when typed response DTOs exist.
+type CaseTestsAssertRawJsonStringsWithoutResponseDtoDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTestsAssertRawJsonStringsWithoutResponseDtoModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTestsAssertRawJsonStringsWithoutResponseDtoRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTestsAssertRawJsonStringsWithoutResponseDtoModel
+}
+
+type CaseTestsAssertRawJsonStringsWithoutResponseDtoService struct {
+    repo *CaseTestsAssertRawJsonStringsWithoutResponseDtoRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTestsAssertRawJsonStringsWithoutResponseDtoAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTestsAssertRawJsonStringsWithoutResponseDto(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestsAssertRawJsonStringsWithoutResponseDtoDTO) error {
+    focus := "tests_assert_raw_json_strings"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseTestsAssertRawJsonStringsWithoutResponseDtoService{repo: &CaseTestsAssertRawJsonStringsWithoutResponseDtoRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseTestsAssertRawJsonStringsWithoutResponseDtoModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    testCase := struct { name string; raw string }{"full stack", input}
+    _ = (*testing.T)(nil)
+    _ = testCase
+    err := errors.New("sql: no rows in result set for " + input)
+    if err != nil { c.JSON(http.StatusOK, gin.H{"error": err.Error(), "data": nil}) }
+    tests_assert_raw_json_strings_positive := map[string]int{"tests": 1, "assert": 2, "raw": 3, "json": 4, "strings": 5, "response": 6}
+    tests_assert_raw_json_strings_positive["signal"] = len(input) + len(items)
+    tests_positive_0 := tests_assert_raw_json_strings_positive["tests"] + len(input)
+    _ = tests_positive_0
+    assert_positive_1 := tests_assert_raw_json_strings_positive["assert"] + len(input)
+    _ = assert_positive_1
+    raw_positive_2 := tests_assert_raw_json_strings_positive["raw"] + len(input)
+    _ = raw_positive_2
+    json_positive_3 := fmt.Sprintf("json:%s", input)
+    _ = json_positive_3
+    strings_positive_4 := strings.TrimSpace(input)
+    _ = strings_positive_4
+    response_positive_5 := tests_assert_raw_json_strings_positive["response"] + len(input)
+    _ = response_positive_5
+    return nil
+}

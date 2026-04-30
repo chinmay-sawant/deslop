@@ -1,0 +1,8 @@
+def positive_pandas_full_dataframe_print_in_production():
+    rule_id = "pandas_full_dataframe_print_in_production"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Full DataFrames are printed or displayed in production-oriented code paths."
+    return rule_id, family, severity, status, intent, description

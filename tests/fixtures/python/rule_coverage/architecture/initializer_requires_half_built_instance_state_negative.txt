@@ -1,0 +1,8 @@
+def negative_initializer_requires_half_built_instance_state():
+    rule_id = "initializer_requires_half_built_instance_state"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag methods that depend on object fields being patched in after construction before the object becomes usable."
+    return rule_id, family, severity, status, intent, description

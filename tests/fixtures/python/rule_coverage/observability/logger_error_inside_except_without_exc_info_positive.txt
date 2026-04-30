@@ -1,0 +1,8 @@
+def positive_logger_error_inside_except_without_exc_info():
+    rule_id = "logger_error_inside_except_without_exc_info"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "logger.error or logger.critical called inside an except block without exc_info=True, discarding the stack trace."
+    return rule_id, family, severity, status, intent, description

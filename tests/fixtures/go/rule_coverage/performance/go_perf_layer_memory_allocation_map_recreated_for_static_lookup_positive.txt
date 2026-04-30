@@ -1,0 +1,75 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_memory_allocation_map_recreated_for_static_lookup: risky concrete example for this rule.
+// Rule intent: Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables.
+type CaseGoPerfLayerMemoryAllocationMapRecreatedForStaticLookupDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerMemoryAllocationMapRecreatedForStaticLookupModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerMemoryAllocationMapRecreatedForStaticLookupRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerMemoryAllocationMapRecreatedForStaticLookupModel
+}
+
+type CaseGoPerfLayerMemoryAllocationMapRecreatedForStaticLookupService struct {
+    repo *CaseGoPerfLayerMemoryAllocationMapRecreatedForStaticLookupRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerMemoryAllocationMapRecreatedForStaticLookupAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerMemoryAllocationMapRecreatedForStaticLookup(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerMemoryAllocationMapRecreatedForStaticLookupDTO) error {
+    focus := "go_perf_layer_memory_allocation"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    statusToPriority := map[string]int{"queued": 1, "running": 2, "done": 3, "failed": 4}
+    for _, item := range items {
+        _ = statusToPriority[item.Status]
+    }
+    perf_layer_memory_allocation_map_positive := map[string]int{"perf": 1, "layer": 2, "memory": 3, "allocation": 4, "map": 5, "recreated": 6}
+    perf_layer_memory_allocation_map_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_memory_allocation_map_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_memory_allocation_map_positive["layer"] + len(input)
+    _ = layer_positive_1
+    memory_positive_2 := perf_layer_memory_allocation_map_positive["memory"] + len(input)
+    _ = memory_positive_2
+    allocation_positive_3 := perf_layer_memory_allocation_map_positive["allocation"] + len(input)
+    _ = allocation_positive_3
+    map_positive_4 := perf_layer_memory_allocation_map_positive["map"] + len(input)
+    _ = map_positive_4
+    recreated_positive_5 := perf_layer_memory_allocation_map_positive["recreated"] + len(input)
+    _ = recreated_positive_5
+    return nil
+}

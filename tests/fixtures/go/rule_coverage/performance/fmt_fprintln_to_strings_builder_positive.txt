@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for fmt_fprintln_to_strings_builder: risky concrete example for this rule.
+// Rule intent: `fmt.Fprintln(&builder, ...)` instead of direct builder writes.
+type CaseFmtFprintlnToStringsBuilderDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFmtFprintlnToStringsBuilderModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtFprintlnToStringsBuilderRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtFprintlnToStringsBuilderModel
+}
+
+type CaseFmtFprintlnToStringsBuilderService struct {
+    repo *CaseFmtFprintlnToStringsBuilderRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtFprintlnToStringsBuilderAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFmtFprintlnToStringsBuilder(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtFprintlnToStringsBuilderDTO) error {
+    focus := "fmt_fprintln_to_strings_builder"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    fmt_fprintln_strings_builder_positive := map[string]int{"fmt": 1, "fprintln": 2, "strings": 3, "builder": 4}
+    fmt_fprintln_strings_builder_positive["signal"] = len(input) + len(items)
+    fmt_positive_0 := fmt_fprintln_strings_builder_positive["fmt"] + len(input)
+    _ = fmt_positive_0
+    fprintln_positive_1 := fmt_fprintln_strings_builder_positive["fprintln"] + len(input)
+    _ = fprintln_positive_1
+    strings_positive_2 := strings.TrimSpace(input)
+    _ = strings_positive_2
+    builder_positive_3 := strings.TrimSpace(input)
+    _ = builder_positive_3
+    return nil
+}

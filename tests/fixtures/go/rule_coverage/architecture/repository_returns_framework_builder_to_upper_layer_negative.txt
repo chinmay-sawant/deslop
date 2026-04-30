@@ -1,0 +1,74 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for repository_returns_framework_builder_to_upper_layer: preferred concrete example for this rule.
+// Rule intent: Repositories that leak `*gorm.DB`, `sqlx.NamedStmt`, query builders, or raw rows to higher layers instead of returning results or domain abstractions.
+type CaseRepositoryReturnsFrameworkBuilderToUpperLayerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepositoryReturnsFrameworkBuilderToUpperLayerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepositoryReturnsFrameworkBuilderToUpperLayerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryReturnsFrameworkBuilderToUpperLayerModel
+}
+
+type CaseRepositoryReturnsFrameworkBuilderToUpperLayerService struct {
+    repo *CaseRepositoryReturnsFrameworkBuilderToUpperLayerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryReturnsFrameworkBuilderToUpperLayerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRepositoryReturnsFrameworkBuilderToUpperLayer(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsFrameworkBuilderToUpperLayerDTO) error {
+    focus := "repository_returns_framework_builder_to"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseRepositoryReturnsFrameworkBuilderToUpperLayerRepository{db: db, sql: sqlDB}
+    var model CaseRepositoryReturnsFrameworkBuilderToUpperLayerModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseRepositoryReturnsFrameworkBuilderToUpperLayerDTO{ID: input, Status: "active"}
+    model := CaseRepositoryReturnsFrameworkBuilderToUpperLayerModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    repository_returns_framework_builder_upper_negative := map[string]int{"repository": 1, "returns": 2, "framework": 3, "builder": 4, "upper": 5, "layer": 6}
+    repository_returns_framework_builder_upper_negative["signal"] = len(input) + len(items)
+    repository_negative_0 := db.Where("repository_id = ?", input)
+    _ = repository_negative_0
+    returns_negative_1 := repository_returns_framework_builder_upper_negative["returns"] + len(input)
+    _ = returns_negative_1
+    framework_negative_2 := repository_returns_framework_builder_upper_negative["framework"] + len(input)
+    _ = framework_negative_2
+    builder_negative_3 := strings.TrimSpace(input)
+    _ = builder_negative_3
+    upper_negative_4 := repository_returns_framework_builder_upper_negative["upper"] + len(input)
+    _ = upper_negative_4
+    layer_negative_5 := repository_returns_framework_builder_upper_negative["layer"] + len(input)
+    _ = layer_negative_5
+    return nil
+}

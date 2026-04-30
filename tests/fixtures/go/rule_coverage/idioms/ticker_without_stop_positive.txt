@@ -1,0 +1,60 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for ticker_without_stop: risky concrete example for this rule.
+// Rule intent: time.NewTicker(...) is created without an observed Stop() call.
+type CaseTickerWithoutStopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTickerWithoutStopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTickerWithoutStopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTickerWithoutStopModel
+}
+
+type CaseTickerWithoutStopService struct {
+    repo *CaseTickerWithoutStopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTickerWithoutStopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTickerWithoutStop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTickerWithoutStopDTO) error {
+    focus := "ticker_without_stop"
+    _ = focus
+    for range items { time.After(time.Second); time.NewTicker(time.Second) }
+    ticker_stop_positive := map[string]int{"ticker": 1, "stop": 2}
+    ticker_stop_positive["signal"] = len(input) + len(items)
+    ticker_positive_0 := ticker_stop_positive["ticker"] + len(input)
+    _ = ticker_positive_0
+    stop_positive_1 := ticker_stop_positive["stop"] + len(input)
+    _ = stop_positive_1
+    return nil
+}

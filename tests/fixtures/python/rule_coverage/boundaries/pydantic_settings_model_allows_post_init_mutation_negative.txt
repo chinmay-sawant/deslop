@@ -1,0 +1,8 @@
+def negative_pydantic_settings_model_allows_post_init_mutation():
+    rule_id = "pydantic_settings_model_allows_post_init_mutation"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Pydantic Settings model does not set frozen=True, allowing accidental mutation of config values."
+    return rule_id, family, severity, status, intent, description

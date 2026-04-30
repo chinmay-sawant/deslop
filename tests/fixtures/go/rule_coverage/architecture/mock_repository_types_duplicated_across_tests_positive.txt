@@ -1,0 +1,75 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "testing"
+)
+
+// Positive scenario for mock_repository_types_duplicated_across_tests: risky concrete example for this rule.
+// Rule intent: Many copy-pasted mock repository structs with the same method sets.
+type CaseMockRepositoryTypesDuplicatedAcrossTestsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMockRepositoryTypesDuplicatedAcrossTestsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMockRepositoryTypesDuplicatedAcrossTestsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMockRepositoryTypesDuplicatedAcrossTestsModel
+}
+
+type CaseMockRepositoryTypesDuplicatedAcrossTestsService struct {
+    repo *CaseMockRepositoryTypesDuplicatedAcrossTestsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMockRepositoryTypesDuplicatedAcrossTestsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMockRepositoryTypesDuplicatedAcrossTests(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMockRepositoryTypesDuplicatedAcrossTestsDTO) error {
+    focus := "mock_repository_types_duplicated_across"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseMockRepositoryTypesDuplicatedAcrossTestsRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseMockRepositoryTypesDuplicatedAcrossTestsModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    testCase := struct { name string; raw string }{"full stack", input}
+    _ = (*testing.T)(nil)
+    _ = testCase
+    mock_repository_types_duplicated_across_positive := map[string]int{"mock": 1, "repository": 2, "types": 3, "duplicated": 4, "across": 5, "tests": 6}
+    mock_repository_types_duplicated_across_positive["signal"] = len(input) + len(items)
+    mock_positive_0 := mock_repository_types_duplicated_across_positive["mock"] + len(input)
+    _ = mock_positive_0
+    repository_positive_1 := db.Where("repository_id = ?", input)
+    _ = repository_positive_1
+    types_positive_2 := mock_repository_types_duplicated_across_positive["types"] + len(input)
+    _ = types_positive_2
+    duplicated_positive_3 := mock_repository_types_duplicated_across_positive["duplicated"] + len(input)
+    _ = duplicated_positive_3
+    across_positive_4 := mock_repository_types_duplicated_across_positive["across"] + len(input)
+    _ = across_positive_4
+    tests_positive_5 := mock_repository_types_duplicated_across_positive["tests"] + len(input)
+    _ = tests_positive_5
+    return nil
+}

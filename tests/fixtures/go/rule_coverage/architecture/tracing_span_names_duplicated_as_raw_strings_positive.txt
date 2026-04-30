@@ -1,0 +1,79 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for tracing_span_names_duplicated_as_raw_strings: risky concrete example for this rule.
+// Rule intent: Repeated raw span-name literals across handlers and services.
+type CaseTracingSpanNamesDuplicatedAsRawStringsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTracingSpanNamesDuplicatedAsRawStringsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTracingSpanNamesDuplicatedAsRawStringsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTracingSpanNamesDuplicatedAsRawStringsModel
+}
+
+type CaseTracingSpanNamesDuplicatedAsRawStringsService struct {
+    repo *CaseTracingSpanNamesDuplicatedAsRawStringsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTracingSpanNamesDuplicatedAsRawStringsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTracingSpanNamesDuplicatedAsRawStrings(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTracingSpanNamesDuplicatedAsRawStringsDTO) error {
+    focus := "tracing_span_names_duplicated_as"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseTracingSpanNamesDuplicatedAsRawStringsDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    service := &CaseTracingSpanNamesDuplicatedAsRawStringsService{repo: &CaseTracingSpanNamesDuplicatedAsRawStringsRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseTracingSpanNamesDuplicatedAsRawStringsModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    log.Printf("tracing_span_names_duplicated_as_raw_strings tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    tracing_span_names_duplicated_raw_positive := map[string]int{"tracing": 1, "span": 2, "names": 3, "duplicated": 4, "raw": 5, "strings": 6}
+    tracing_span_names_duplicated_raw_positive["signal"] = len(input) + len(items)
+    tracing_positive_0 := fmt.Sprintf("tracing=%s", input)
+    _ = tracing_positive_0
+    span_positive_1 := fmt.Sprintf("span=%s", input)
+    _ = span_positive_1
+    names_positive_2 := tracing_span_names_duplicated_raw_positive["names"] + len(input)
+    _ = names_positive_2
+    duplicated_positive_3 := tracing_span_names_duplicated_raw_positive["duplicated"] + len(input)
+    _ = duplicated_positive_3
+    raw_positive_4 := tracing_span_names_duplicated_raw_positive["raw"] + len(input)
+    _ = raw_positive_4
+    strings_positive_5 := strings.TrimSpace(input)
+    _ = strings_positive_5
+    return nil
+}

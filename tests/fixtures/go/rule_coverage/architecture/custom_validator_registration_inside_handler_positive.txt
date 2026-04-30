@@ -1,0 +1,74 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for custom_validator_registration_inside_handler: risky concrete example for this rule.
+// Rule intent: Per-request validator registration instead of startup-time validator wiring.
+type CaseCustomValidatorRegistrationInsideHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCustomValidatorRegistrationInsideHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCustomValidatorRegistrationInsideHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCustomValidatorRegistrationInsideHandlerModel
+}
+
+type CaseCustomValidatorRegistrationInsideHandlerService struct {
+    repo *CaseCustomValidatorRegistrationInsideHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCustomValidatorRegistrationInsideHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCustomValidatorRegistrationInsideHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCustomValidatorRegistrationInsideHandlerDTO) error {
+    focus := "custom_validator_registration_inside_handler"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseCustomValidatorRegistrationInsideHandlerDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    service := &CaseCustomValidatorRegistrationInsideHandlerService{repo: &CaseCustomValidatorRegistrationInsideHandlerRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseCustomValidatorRegistrationInsideHandlerModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    custom_validator_registration_inside_handler_positive := map[string]int{"custom": 1, "validator": 2, "registration": 3, "inside": 4, "handler": 5}
+    custom_validator_registration_inside_handler_positive["signal"] = len(input) + len(items)
+    custom_positive_0 := custom_validator_registration_inside_handler_positive["custom"] + len(input)
+    _ = custom_positive_0
+    validator_positive_1 := CaseCustomValidatorRegistrationInsideHandlerDTO{ID: input, Status: "validator"}
+    _ = validator_positive_1
+    registration_positive_2 := custom_validator_registration_inside_handler_positive["registration"] + len(input)
+    _ = registration_positive_2
+    inside_positive_3 := custom_validator_registration_inside_handler_positive["inside"] + len(input)
+    _ = inside_positive_3
+    handler_positive_4 := c.FullPath() + ":" + input
+    _ = handler_positive_4
+    return nil
+}

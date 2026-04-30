@@ -1,0 +1,8 @@
+def negative_debug_log_serializes_full_large_object_graph():
+    rule_id = "debug_log_serializes_full_large_object_graph"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag debug logging that walks and serializes large object graphs."
+    return rule_id, family, severity, status, intent, description

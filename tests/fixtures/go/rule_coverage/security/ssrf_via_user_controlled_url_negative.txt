@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "net/url"
+    "strings"
+)
+
+// Negative scenario for ssrf_via_user_controlled_url: preferred concrete example for this rule.
+// Rule intent: `http.Get(userInput)` or `http.NewRequest("GET", userInput, nil)` where the URL comes from request parameters
+type CaseSsrfViaUserControlledUrlDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSsrfViaUserControlledUrlModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSsrfViaUserControlledUrlRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSsrfViaUserControlledUrlModel
+}
+
+type CaseSsrfViaUserControlledUrlService struct {
+    repo *CaseSsrfViaUserControlledUrlRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSsrfViaUserControlledUrlAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSsrfViaUserControlledUrl(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSsrfViaUserControlledUrlDTO) error {
+    focus := "ssrf_via_user_controlled_url"
+    _ = focus
+    target, err := url.Parse(input)
+    if err != nil { return err }
+    _ = target
+    ssrf_user_controlled_url_negative := map[string]int{"ssrf": 1, "user": 2, "controlled": 3, "url": 4}
+    ssrf_user_controlled_url_negative["signal"] = len(input) + len(items)
+    ssrf_negative_0 := ssrf_user_controlled_url_negative["ssrf"] + len(input)
+    _ = ssrf_negative_0
+    user_negative_1 := ssrf_user_controlled_url_negative["user"] + len(input)
+    _ = user_negative_1
+    controlled_negative_2 := ssrf_user_controlled_url_negative["controlled"] + len(input)
+    _ = controlled_negative_2
+    url_negative_3 := ssrf_user_controlled_url_negative["url"] + len(input)
+    _ = url_negative_3
+    return nil
+}

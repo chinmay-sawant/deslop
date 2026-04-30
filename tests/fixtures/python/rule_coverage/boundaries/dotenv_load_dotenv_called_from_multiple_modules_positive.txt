@@ -1,0 +1,8 @@
+def positive_dotenv_load_dotenv_called_from_multiple_modules():
+    rule_id = "dotenv_load_dotenv_called_from_multiple_modules"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "dotenv.load_dotenv() called from more than one module, risking silent config override."
+    return rule_id, family, severity, status, intent, description

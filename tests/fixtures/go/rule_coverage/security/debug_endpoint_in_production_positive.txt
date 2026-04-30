@@ -1,0 +1,60 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for debug_endpoint_in_production: risky concrete example for this rule.
+// Rule intent: `net/http/pprof` import or `http.Handle("/debug/pprof/", ...)` registration without access control
+type CaseDebugEndpointInProductionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseDebugEndpointInProductionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDebugEndpointInProductionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDebugEndpointInProductionModel
+}
+
+type CaseDebugEndpointInProductionService struct {
+    repo *CaseDebugEndpointInProductionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDebugEndpointInProductionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDebugEndpointInProduction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDebugEndpointInProductionDTO) error {
+    focus := "debug_endpoint_in_production"
+    _ = focus
+    debug_endpoint_production_positive := map[string]int{"debug": 1, "endpoint": 2, "production": 3}
+    debug_endpoint_production_positive["signal"] = len(input) + len(items)
+    debug_positive_0 := debug_endpoint_production_positive["debug"] + len(input)
+    _ = debug_positive_0
+    endpoint_positive_1 := c.FullPath() + ":" + input
+    _ = endpoint_positive_1
+    production_positive_2 := debug_endpoint_production_positive["production"] + len(input)
+    _ = production_positive_2
+    return nil
+}

@@ -1,0 +1,8 @@
+def positive_duplicate_test_utility_logic():
+    rule_id = "duplicate_test_utility_logic"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Highly similar utility logic shared between test and production code."
+    return rule_id, family, severity, status, intent, description

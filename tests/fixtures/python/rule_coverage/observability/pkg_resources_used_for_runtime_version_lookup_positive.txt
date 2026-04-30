@@ -1,0 +1,8 @@
+def positive_pkg_resources_used_for_runtime_version_lookup():
+    rule_id = "pkg_resources_used_for_runtime_version_lookup"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "pkg_resources.get_distribution used at runtime; use importlib.metadata.version() instead."
+    return rule_id, family, severity, status, intent, description

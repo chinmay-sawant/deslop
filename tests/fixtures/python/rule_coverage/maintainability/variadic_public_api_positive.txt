@@ -1,0 +1,8 @@
+def positive_variadic_public_api():
+    rule_id = "variadic_public_api"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Public Python functions that expose *args or **kwargs instead of a clearer interface."
+    return rule_id, family, severity, status, intent, description

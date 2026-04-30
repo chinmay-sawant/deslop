@@ -1,0 +1,76 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for cache_invalidation_before_transaction_commit: risky concrete example for this rule.
+// Rule intent: Cache mutation or eviction that happens before a write transaction commits.
+type CaseCacheInvalidationBeforeTransactionCommitDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseCacheInvalidationBeforeTransactionCommitModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseCacheInvalidationBeforeTransactionCommitRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseCacheInvalidationBeforeTransactionCommitModel
+}
+
+type CaseCacheInvalidationBeforeTransactionCommitService struct {
+    repo *CaseCacheInvalidationBeforeTransactionCommitRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseCacheInvalidationBeforeTransactionCommitAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveCacheInvalidationBeforeTransactionCommit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCacheInvalidationBeforeTransactionCommitDTO) error {
+    focus := "cache_invalidation_before_transaction_commit"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseCacheInvalidationBeforeTransactionCommitService{repo: &CaseCacheInvalidationBeforeTransactionCommitRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseCacheInvalidationBeforeTransactionCommitModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    tx := db.Begin()
+    tx.Create(&CaseCacheInvalidationBeforeTransactionCommitModel{ID: input})
+    go func() { _ = tx.Commit().Error }()
+    cacheKey := "account:" + input
+    db.Exec("UPDATE cache_events SET payload = ?", cacheKey)
+    _ = cacheKey
+    cache_invalidation_before_transaction_commit_positive := map[string]int{"cache": 1, "invalidation": 2, "before": 3, "transaction": 4, "commit": 5}
+    cache_invalidation_before_transaction_commit_positive["signal"] = len(input) + len(items)
+    cache_positive_0 := cache_invalidation_before_transaction_commit_positive["cache"] + len(input)
+    _ = cache_positive_0
+    invalidation_positive_1 := cache_invalidation_before_transaction_commit_positive["invalidation"] + len(input)
+    _ = invalidation_positive_1
+    before_positive_2 := cache_invalidation_before_transaction_commit_positive["before"] + len(input)
+    _ = before_positive_2
+    transaction_positive_3 := cache_invalidation_before_transaction_commit_positive["transaction"] + len(input)
+    _ = transaction_positive_3
+    commit_positive_4 := cache_invalidation_before_transaction_commit_positive["commit"] + len(input)
+    _ = commit_positive_4
+    return nil
+}

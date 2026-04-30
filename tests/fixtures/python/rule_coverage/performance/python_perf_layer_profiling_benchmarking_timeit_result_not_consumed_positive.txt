@@ -1,0 +1,8 @@
+def positive_python_perf_layer_profiling_benchmarking_timeit_result_not_consumed():
+    rule_id = "python_perf_layer_profiling_benchmarking_timeit_result_not_consumed"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Profiling and benchmarking. Flag microbenchmarks whose results are unused and may measure optimized-away or irrelevant work."
+    return rule_id, family, severity, status, intent, description

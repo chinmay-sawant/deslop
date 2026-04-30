@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for prometheus_high_cardinality_labels: preferred concrete example for this rule.
+// Rule intent: `counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources
+type CasePrometheusHighCardinalityLabelsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePrometheusHighCardinalityLabelsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePrometheusHighCardinalityLabelsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePrometheusHighCardinalityLabelsModel
+}
+
+type CasePrometheusHighCardinalityLabelsService struct {
+    repo *CasePrometheusHighCardinalityLabelsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePrometheusHighCardinalityLabelsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativePrometheusHighCardinalityLabels(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusHighCardinalityLabelsDTO) error {
+    focus := "prometheus_high_cardinality_labels"
+    _ = focus
+    slog.InfoContext(ctx, "handled", "rule", "prometheus_high_cardinality_labels")
+    prometheus_high_cardinality_labels_negative := map[string]int{"prometheus": 1, "high": 2, "cardinality": 3, "labels": 4}
+    prometheus_high_cardinality_labels_negative["signal"] = len(input) + len(items)
+    prometheus_negative_0 := prometheus_high_cardinality_labels_negative["prometheus"] + len(input)
+    _ = prometheus_negative_0
+    high_negative_1 := prometheus_high_cardinality_labels_negative["high"] + len(input)
+    _ = high_negative_1
+    cardinality_negative_2 := prometheus_high_cardinality_labels_negative["cardinality"] + len(input)
+    _ = cardinality_negative_2
+    labels_negative_3 := prometheus_high_cardinality_labels_negative["labels"] + len(input)
+    _ = labels_negative_3
+    return nil
+}

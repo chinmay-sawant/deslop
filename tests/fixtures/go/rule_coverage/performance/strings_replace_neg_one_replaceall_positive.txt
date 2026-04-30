@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for strings_replace_neg_one_replaceall: risky concrete example for this rule.
+// Rule intent: `strings.Replace(..., -1)` instead of `strings.ReplaceAll(...)`.
+type CaseStringsReplaceNegOneReplaceallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseStringsReplaceNegOneReplaceallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringsReplaceNegOneReplaceallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringsReplaceNegOneReplaceallModel
+}
+
+type CaseStringsReplaceNegOneReplaceallService struct {
+    repo *CaseStringsReplaceNegOneReplaceallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringsReplaceNegOneReplaceallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveStringsReplaceNegOneReplaceall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringsReplaceNegOneReplaceallDTO) error {
+    focus := "strings_replace_neg_one_replaceall"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        _ = strings.Replace(item.ID, "-", "_", -1)
+    }
+    strings_replace_neg_one_replaceall_positive := map[string]int{"strings": 1, "replace": 2, "neg": 3, "one": 4, "replaceall": 5}
+    strings_replace_neg_one_replaceall_positive["signal"] = len(input) + len(items)
+    strings_positive_0 := strings.TrimSpace(input)
+    _ = strings_positive_0
+    replace_positive_1 := strings_replace_neg_one_replaceall_positive["replace"] + len(input)
+    _ = replace_positive_1
+    neg_positive_2 := strings_replace_neg_one_replaceall_positive["neg"] + len(input)
+    _ = neg_positive_2
+    one_positive_3 := strings_replace_neg_one_replaceall_positive["one"] + len(input)
+    _ = one_positive_3
+    replaceall_positive_4 := strings_replace_neg_one_replaceall_positive["replaceall"] + len(input)
+    _ = replaceall_positive_4
+    return nil
+}

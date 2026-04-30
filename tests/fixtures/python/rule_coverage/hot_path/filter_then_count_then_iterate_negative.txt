@@ -1,0 +1,8 @@
+def negative_filter_then_count_then_iterate():
+    rule_id = "filter_then_count_then_iterate"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "The same collection is traversed repeatedly for filtering, counting, and later iteration."
+    return rule_id, family, severity, status, intent, description

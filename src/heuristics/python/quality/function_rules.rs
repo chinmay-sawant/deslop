@@ -386,9 +386,15 @@ fn is_trivial_wide_contract_wrapper(function: &ParsedFunction) -> bool {
     };
     let returned = returned.trim();
 
-    if ["json.dumps(", ".dict()", ".model_dump(", ".to_dict(", "serialize("]
-        .iter()
-        .any(|marker| returned.contains(marker))
+    if [
+        "json.dumps(",
+        ".dict()",
+        ".model_dump(",
+        ".to_dict(",
+        "serialize(",
+    ]
+    .iter()
+    .any(|marker| returned.contains(marker))
     {
         return true;
     }

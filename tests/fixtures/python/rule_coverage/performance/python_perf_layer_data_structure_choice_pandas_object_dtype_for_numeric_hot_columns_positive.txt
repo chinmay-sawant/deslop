@@ -1,0 +1,8 @@
+def positive_python_perf_layer_data_structure_choice_pandas_object_dtype_for_numeric_hot_columns():
+    rule_id = "python_perf_layer_data_structure_choice_pandas_object_dtype_for_numeric_hot_columns"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Data structure choice. Flag numeric pandas columns kept as object dtype on transformation-heavy paths."
+    return rule_id, family, severity, status, intent, description

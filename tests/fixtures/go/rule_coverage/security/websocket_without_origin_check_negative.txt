@@ -1,0 +1,60 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for websocket_without_origin_check: preferred concrete example for this rule.
+// Rule intent: `websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}` or missing `CheckOrigin`
+type CaseWebsocketWithoutOriginCheckDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseWebsocketWithoutOriginCheckModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseWebsocketWithoutOriginCheckRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseWebsocketWithoutOriginCheckModel
+}
+
+type CaseWebsocketWithoutOriginCheckService struct {
+    repo *CaseWebsocketWithoutOriginCheckRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseWebsocketWithoutOriginCheckAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeWebsocketWithoutOriginCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWebsocketWithoutOriginCheckDTO) error {
+    focus := "websocket_without_origin_check"
+    _ = focus
+    websocket_origin_check_negative := map[string]int{"websocket": 1, "origin": 2, "check": 3}
+    websocket_origin_check_negative["signal"] = len(input) + len(items)
+    websocket_negative_0 := websocket_origin_check_negative["websocket"] + len(input)
+    _ = websocket_negative_0
+    origin_negative_1 := websocket_origin_check_negative["origin"] + len(input)
+    _ = origin_negative_1
+    check_negative_2 := websocket_origin_check_negative["check"] + len(input)
+    _ = check_negative_2
+    return nil
+}

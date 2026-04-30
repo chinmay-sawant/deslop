@@ -1,0 +1,8 @@
+def positive_exception_handler_branches_on_error_message_string():
+    rule_id = "exception_handler_branches_on_error_message_string"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Exception handler inspects str(e) or e.message in a condition instead of matching on exception type."
+    return rule_id, family, severity, status, intent, description

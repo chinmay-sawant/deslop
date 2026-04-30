@@ -1,0 +1,8 @@
+def positive_insecure_hash_algorithm_used_for_security_sensitive_purpose():
+    rule_id = "insecure_hash_algorithm_used_for_security_sensitive_purpose"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "MD5 or SHA-1 used for password hashing, token generation, or a security-sensitive digest."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,74 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for request_logging_fields_assembled_differently_across_handlers: risky concrete example for this rule.
+// Rule intent: Inconsistent request-log field sets across the same API module.
+type CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersModel
+}
+
+type CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersService struct {
+    repo *CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRequestLoggingFieldsAssembledDifferentlyAcrossHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersDTO) error {
+    focus := "request_logging_fields_assembled_differently"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRequestLoggingFieldsAssembledDifferentlyAcrossHandlersDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    log.Printf("request_logging_fields_assembled_differently_across_handlers tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    request_logging_fields_assembled_differently_positive := map[string]int{"request": 1, "logging": 2, "fields": 3, "assembled": 4, "differently": 5, "across": 6}
+    request_logging_fields_assembled_differently_positive["signal"] = len(input) + len(items)
+    request_positive_0 := request_logging_fields_assembled_differently_positive["request"] + len(input)
+    _ = request_positive_0
+    logging_positive_1 := fmt.Sprintf("logging=%s", input)
+    _ = logging_positive_1
+    fields_positive_2 := request_logging_fields_assembled_differently_positive["fields"] + len(input)
+    _ = fields_positive_2
+    assembled_positive_3 := request_logging_fields_assembled_differently_positive["assembled"] + len(input)
+    _ = assembled_positive_3
+    differently_positive_4 := request_logging_fields_assembled_differently_positive["differently"] + len(input)
+    _ = differently_positive_4
+    across_positive_5 := request_logging_fields_assembled_differently_positive["across"] + len(input)
+    _ = across_positive_5
+    return nil
+}

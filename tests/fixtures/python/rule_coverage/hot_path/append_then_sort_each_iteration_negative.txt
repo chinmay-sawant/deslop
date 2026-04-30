@@ -1,0 +1,8 @@
+def negative_append_then_sort_each_iteration():
+    rule_id = "append_then_sort_each_iteration"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "A collection is appended to and then sorted on each iteration instead of sorting once after accumulation."
+    return rule_id, family, severity, status, intent, description

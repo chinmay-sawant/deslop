@@ -1,0 +1,8 @@
+def negative_orm_model_mixes_domain_logic_and_persistence_mapping():
+    rule_id = "orm_model_mixes_domain_logic_and_persistence_mapping"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "ORM model class contains domain business logic methods alongside column mapping, coupling persistence and domain concerns."
+    return rule_id, family, severity, status, intent, description

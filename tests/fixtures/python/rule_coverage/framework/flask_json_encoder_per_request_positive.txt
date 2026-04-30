@@ -1,0 +1,8 @@
+def positive_flask_json_encoder_per_request():
+    rule_id = "flask_json_encoder_per_request"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flask views instantiate JSON encoders per request instead of reusing app-level serialization setup."
+    return rule_id, family, severity, status, intent, description

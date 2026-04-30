@@ -1,0 +1,72 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for domain_identifiers_logged_under_inconsistent_field_keys: preferred concrete example for this rule.
+// Rule intent: The same entity ID being logged under many different keys across packages.
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysModel
+}
+
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysService struct {
+    repo *CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeDomainIdentifiersLoggedUnderInconsistentFieldKeys(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysDTO) error {
+    focus := "domain_identifiers_logged_under_inconsistent"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    dto := CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysDTO{ID: input, Status: "active"}
+    model := CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    slog.InfoContext(ctx, "domain_identifiers_logged_under_inconsistent_field_keys", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    domain_identifiers_logged_under_inconsistent_negative := map[string]int{"domain": 1, "identifiers": 2, "logged": 3, "under": 4, "inconsistent": 5, "field": 6}
+    domain_identifiers_logged_under_inconsistent_negative["signal"] = len(input) + len(items)
+    domain_negative_0 := CaseDomainIdentifiersLoggedUnderInconsistentFieldKeysDTO{ID: input, Status: "domain"}
+    _ = domain_negative_0
+    identifiers_negative_1 := domain_identifiers_logged_under_inconsistent_negative["identifiers"] + len(input)
+    _ = identifiers_negative_1
+    logged_negative_2 := domain_identifiers_logged_under_inconsistent_negative["logged"] + len(input)
+    _ = logged_negative_2
+    under_negative_3 := domain_identifiers_logged_under_inconsistent_negative["under"] + len(input)
+    _ = under_negative_3
+    inconsistent_negative_4 := domain_identifiers_logged_under_inconsistent_negative["inconsistent"] + len(input)
+    _ = inconsistent_negative_4
+    field_negative_5 := domain_identifiers_logged_under_inconsistent_negative["field"] + len(input)
+    _ = field_negative_5
+    return nil
+}

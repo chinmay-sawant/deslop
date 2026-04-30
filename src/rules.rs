@@ -2,6 +2,8 @@ use std::sync::OnceLock;
 
 use serde::{Deserialize, Serialize};
 
+use crate::model::Severity;
+
 pub(crate) mod catalog;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -90,6 +92,20 @@ pub fn rule_binding_location(rule_id: &str, language: RuleLanguage) -> Option<&'
 }
 
 #[must_use]
+pub fn default_finding_severity(rule_id: &str, language: RuleLanguage) -> Option<Severity> {
+    rule_metadata(rule_id, language).and_then(|metadata| {
+        match metadata.default_severity {
+            RuleDefaultSeverity::Info => Some(Severity::Info),
+            RuleDefaultSeverity::Warning => Some(Severity::Warning),
+            RuleDefaultSeverity::Error => Some(Severity::Error),
+            // Contextual rules intentionally keep the detector-selected runtime
+            // severity because the catalog says the surrounding code decides.
+            RuleDefaultSeverity::Contextual => None,
+        }
+    })
+}
+
+#[must_use]
 pub fn is_detail_only_rule(rule_id: &str, language: RuleLanguage) -> bool {
     rule_metadata(rule_id, language).is_some_and(|metadata| {
         metadata
@@ -127,9 +143,9 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     use super::{
-        RuleConfigurability, RuleLanguage, RuleStatus, catalog, is_async_rollout_rule,
-        is_detail_only_rule, rule_binding_location, rule_metadata, rule_metadata_variants,
-        rule_registry,
+        RuleConfigurability, RuleDefaultSeverity, RuleLanguage, RuleStatus, catalog,
+        default_finding_severity, is_async_rollout_rule, is_detail_only_rule,
+        rule_binding_location, rule_metadata, rule_metadata_variants, rule_registry,
     };
     use crate::analysis::Language;
     use crate::heuristics::registry::{language_rule_specs, shared_rule_specs};
@@ -137,12 +153,12 @@ mod tests {
 
     // Intentional maintenance guard. If this changes, review the source rule-id diff and
     // update [guides/inventory-regression-guards.md] in the same change.
-    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 543;
+    const EXPECTED_SOURCE_RULE_ID_COUNT: usize = 546;
     const EXPECTED_RULE_COUNTS_BY_LANGUAGE: &[(RuleLanguage, usize)] = &[
         (RuleLanguage::Common, 11),
-        (RuleLanguage::Go, 653),
-        (RuleLanguage::Python, 591),
-        (RuleLanguage::Rust, 250),
+        (RuleLanguage::Go, 753),
+        (RuleLanguage::Python, 691),
+        (RuleLanguage::Rust, 350),
     ];
 
     #[test]
@@ -422,6 +438,59 @@ mod tests {
     }
 
     #[test]
+    fn non_contextual_catalog_severity_maps_to_runtime_severity() {
+        for metadata in rule_registry() {
+            match metadata.default_severity {
+                RuleDefaultSeverity::Info
+                | RuleDefaultSeverity::Warning
+                | RuleDefaultSeverity::Error => assert!(
+                    default_finding_severity(metadata.id, metadata.language).is_some(),
+                    "non-contextual rule should map to a runtime severity: {} ({:?})",
+                    metadata.id,
+                    metadata.language
+                ),
+                RuleDefaultSeverity::Contextual => assert!(
+                    default_finding_severity(metadata.id, metadata.language).is_none(),
+                    "contextual rule should keep detector-selected runtime severity: {} ({:?})",
+                    metadata.id,
+                    metadata.language
+                ),
+            }
+        }
+    }
+
+    #[test]
+    fn execution_spec_families_are_represented_in_catalog() {
+        let mut catalog_families = BTreeSet::new();
+        for definition in catalog::rule_catalog() {
+            catalog_families.insert((definition.language, definition.family));
+        }
+
+        for spec in shared_rule_specs() {
+            assert!(
+                catalog_families.contains(&(RuleLanguage::Common, spec.family)),
+                "shared execution family should have common catalog entries: {}",
+                spec.family
+            );
+        }
+
+        for (language, analysis_language) in [
+            (RuleLanguage::Go, Language::Go),
+            (RuleLanguage::Python, Language::Python),
+            (RuleLanguage::Rust, Language::Rust),
+        ] {
+            for spec in language_rule_specs(analysis_language) {
+                assert!(
+                    catalog_families.contains(&(language, spec.family))
+                        || known_grouped_execution_family(language, spec.family),
+                    "{language:?} execution family should be represented in the catalog: {}",
+                    spec.family
+                );
+            }
+        }
+    }
+
+    #[test]
     fn python_hot_path_binding_locations_match_implementations() {
         let expected = [
             (
@@ -517,6 +586,16 @@ mod tests {
         let mut ids = BTreeSet::new();
         collect_rule_ids_from_dir(&root, &mut ids);
         ids
+    }
+
+    fn known_grouped_execution_family(language: RuleLanguage, family: &str) -> bool {
+        matches!(
+            (language, family),
+            (RuleLanguage::Go, "framework_patterns")
+                | (RuleLanguage::Go, "library_misuse")
+                | (RuleLanguage::Python, "python_specs")
+                | (RuleLanguage::Rust, "resolution")
+        )
     }
 
     fn collect_rule_ids_from_dir(dir: &Path, ids: &mut BTreeSet<String>) {

@@ -1,0 +1,65 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for prometheus_counter_created_per_request: risky concrete example for this rule.
+// Rule intent: `prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions
+type CasePrometheusCounterCreatedPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePrometheusCounterCreatedPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePrometheusCounterCreatedPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePrometheusCounterCreatedPerRequestModel
+}
+
+type CasePrometheusCounterCreatedPerRequestService struct {
+    repo *CasePrometheusCounterCreatedPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePrometheusCounterCreatedPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePrometheusCounterCreatedPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusCounterCreatedPerRequestDTO) error {
+    focus := "prometheus_counter_created_per_request"
+    _ = focus
+    msg := fmt.Sprintf("rule=%s input=%s", "prometheus_counter_created_per_request", input)
+    log.Print(msg)
+    prometheus_counter_created_per_request_positive := map[string]int{"prometheus": 1, "counter": 2, "created": 3, "per": 4, "request": 5}
+    prometheus_counter_created_per_request_positive["signal"] = len(input) + len(items)
+    prometheus_positive_0 := prometheus_counter_created_per_request_positive["prometheus"] + len(input)
+    _ = prometheus_positive_0
+    counter_positive_1 := prometheus_counter_created_per_request_positive["counter"] + len(input)
+    _ = counter_positive_1
+    created_positive_2 := prometheus_counter_created_per_request_positive["created"] + len(input)
+    _ = created_positive_2
+    for per_positive_3Index, item := range items { prometheus_counter_created_per_request_positive[item.ID] = per_positive_3Index }
+    request_positive_4 := prometheus_counter_created_per_request_positive["request"] + len(input)
+    _ = request_positive_4
+    return nil
+}

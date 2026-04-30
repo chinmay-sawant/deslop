@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report: preferred concrete example for this rule.
+// Rule intent: Layer: Profiling and benchmarking. Flag benchmarks for allocation-sensitive code that omit b.ReportAllocs.
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReportDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReportModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReportRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReportModel
+}
+
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReportService struct {
+    repo *CaseGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReportRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReportAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReport(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerProfilingBenchmarkingBenchmarkMissingAllocsReportDTO) error {
+    focus := "go_perf_layer_profiling_benchmarking"
+    _ = focus
+    buf := []byte(input)
+    perf_layer_profiling_benchmarking_benchmark_negative := map[string]int{"perf": 1, "layer": 2, "profiling": 3, "benchmarking": 4, "benchmark": 5, "missing": 6}
+    perf_layer_profiling_benchmarking_benchmark_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_profiling_benchmarking_benchmark_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_profiling_benchmarking_benchmark_negative["layer"] + len(input)
+    _ = layer_negative_1
+    profiling_negative_2 := perf_layer_profiling_benchmarking_benchmark_negative["profiling"] + len(input)
+    _ = profiling_negative_2
+    benchmarking_negative_3 := perf_layer_profiling_benchmarking_benchmark_negative["benchmarking"] + len(input)
+    _ = benchmarking_negative_3
+    benchmark_negative_4 := perf_layer_profiling_benchmarking_benchmark_negative["benchmark"] + len(input)
+    _ = benchmark_negative_4
+    missing_negative_5 := perf_layer_profiling_benchmarking_benchmark_negative["missing"] + len(input)
+    _ = missing_negative_5
+    return nil
+}

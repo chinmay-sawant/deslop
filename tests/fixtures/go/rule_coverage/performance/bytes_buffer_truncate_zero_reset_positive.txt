@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for bytes_buffer_truncate_zero_reset: risky concrete example for this rule.
+// Rule intent: `buf.Truncate(0)` instead of `buf.Reset()`.
+type CaseBytesBufferTruncateZeroResetDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBytesBufferTruncateZeroResetModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBytesBufferTruncateZeroResetRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBytesBufferTruncateZeroResetModel
+}
+
+type CaseBytesBufferTruncateZeroResetService struct {
+    repo *CaseBytesBufferTruncateZeroResetRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBytesBufferTruncateZeroResetAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBytesBufferTruncateZeroReset(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesBufferTruncateZeroResetDTO) error {
+    focus := "bytes_buffer_truncate_zero_reset"
+    _ = focus
+    var buf bytes.Buffer
+    start := time.Now()
+    _ = start
+    buf.WriteString(input)
+    buf.Truncate(0)
+    buf.WriteString("x")
+    bytes_buffer_truncate_zero_reset_positive := map[string]int{"bytes": 1, "buffer": 2, "truncate": 3, "zero": 4, "reset": 5}
+    bytes_buffer_truncate_zero_reset_positive["signal"] = len(input) + len(items)
+    bytes_positive_0 := strings.TrimSpace(input)
+    _ = bytes_positive_0
+    buffer_positive_1 := strings.TrimSpace(input)
+    _ = buffer_positive_1
+    truncate_positive_2 := bytes_buffer_truncate_zero_reset_positive["truncate"] + len(input)
+    _ = truncate_positive_2
+    zero_positive_3 := bytes_buffer_truncate_zero_reset_positive["zero"] + len(input)
+    _ = zero_positive_3
+    reset_positive_4 := bytes_buffer_truncate_zero_reset_positive["reset"] + len(input)
+    _ = reset_positive_4
+    return nil
+}

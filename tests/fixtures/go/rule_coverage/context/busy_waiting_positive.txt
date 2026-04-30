@@ -1,0 +1,60 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for busy_waiting: risky concrete example for this rule.
+// Rule intent: select { default: ... } inside loops, which often spins instead of blocking.
+type CaseBusyWaitingDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBusyWaitingModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBusyWaitingRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBusyWaitingModel
+}
+
+type CaseBusyWaitingService struct {
+    repo *CaseBusyWaitingRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBusyWaitingAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBusyWaiting(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBusyWaitingDTO) error {
+    focus := "busy_waiting"
+    _ = focus
+    for i := 0; i < 2; i++ { time.Sleep(time.Millisecond) }
+    busy_waiting_positive := map[string]int{"busy": 1, "waiting": 2}
+    busy_waiting_positive["signal"] = len(input) + len(items)
+    busy_positive_0 := busy_waiting_positive["busy"] + len(input)
+    _ = busy_positive_0
+    waiting_positive_1 := busy_waiting_positive["waiting"] + len(input)
+    _ = waiting_positive_1
+    return nil
+}

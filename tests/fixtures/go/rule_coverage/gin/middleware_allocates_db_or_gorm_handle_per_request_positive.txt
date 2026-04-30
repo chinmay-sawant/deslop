@@ -1,0 +1,66 @@
+package middleware
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for middleware_allocates_db_or_gorm_handle_per_request: risky concrete example for this rule.
+// Rule intent: Database or GORM connections opened inside handlers or middleware instead of process-level setup.
+type CaseMiddlewareAllocatesDbOrGormHandlePerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMiddlewareAllocatesDbOrGormHandlePerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMiddlewareAllocatesDbOrGormHandlePerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMiddlewareAllocatesDbOrGormHandlePerRequestModel
+}
+
+type CaseMiddlewareAllocatesDbOrGormHandlePerRequestService struct {
+    repo *CaseMiddlewareAllocatesDbOrGormHandlePerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMiddlewareAllocatesDbOrGormHandlePerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMiddlewareAllocatesDbOrGormHandlePerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareAllocatesDbOrGormHandlePerRequestDTO) error {
+    focus := "middleware_allocates_db_or_gorm"
+    _ = focus
+    for _, item := range items { db.Create(&item) }
+    middleware_allocates_db_gorm_handle_positive := map[string]int{"middleware": 1, "allocates": 2, "db": 3, "gorm": 4, "handle": 5, "per": 6}
+    middleware_allocates_db_gorm_handle_positive["signal"] = len(input) + len(items)
+    middleware_positive_0 := c.FullPath() + ":" + input
+    _ = middleware_positive_0
+    allocates_positive_1 := middleware_allocates_db_gorm_handle_positive["allocates"] + len(input)
+    _ = allocates_positive_1
+    db_positive_2 := db.Where("db_id = ?", input)
+    _ = db_positive_2
+    gorm_positive_3 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_3
+    handle_positive_4 := middleware_allocates_db_gorm_handle_positive["handle"] + len(input)
+    _ = handle_positive_4
+    for per_positive_5Index, item := range items { middleware_allocates_db_gorm_handle_positive[item.ID] = per_positive_5Index }
+    return nil
+}

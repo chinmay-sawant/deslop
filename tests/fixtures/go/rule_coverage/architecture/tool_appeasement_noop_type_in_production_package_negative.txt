@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for tool_appeasement_noop_type_in_production_package: preferred concrete example for this rule.
+// Rule intent: Production no-op or dummy types that appear to exist mainly to satisfy tooling instead of runtime behavior.
+type CaseToolAppeasementNoopTypeInProductionPackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseToolAppeasementNoopTypeInProductionPackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseToolAppeasementNoopTypeInProductionPackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseToolAppeasementNoopTypeInProductionPackageModel
+}
+
+type CaseToolAppeasementNoopTypeInProductionPackageService struct {
+    repo *CaseToolAppeasementNoopTypeInProductionPackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseToolAppeasementNoopTypeInProductionPackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeToolAppeasementNoopTypeInProductionPackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseToolAppeasementNoopTypeInProductionPackageDTO) error {
+    focus := "tool_appeasement_noop_type_in"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    tool_appeasement_noop_type_production_negative := map[string]int{"tool": 1, "appeasement": 2, "noop": 3, "type": 4, "production": 5, "package": 6}
+    tool_appeasement_noop_type_production_negative["signal"] = len(input) + len(items)
+    tool_negative_0 := tool_appeasement_noop_type_production_negative["tool"] + len(input)
+    _ = tool_negative_0
+    appeasement_negative_1 := tool_appeasement_noop_type_production_negative["appeasement"] + len(input)
+    _ = appeasement_negative_1
+    noop_negative_2 := tool_appeasement_noop_type_production_negative["noop"] + len(input)
+    _ = noop_negative_2
+    type_negative_3 := tool_appeasement_noop_type_production_negative["type"] + len(input)
+    _ = type_negative_3
+    production_negative_4 := tool_appeasement_noop_type_production_negative["production"] + len(input)
+    _ = production_negative_4
+    package_negative_5 := tool_appeasement_noop_type_production_negative["package"] + len(input)
+    _ = package_negative_5
+    return nil
+}

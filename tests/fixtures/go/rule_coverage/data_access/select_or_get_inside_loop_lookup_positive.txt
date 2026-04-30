@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for select_or_get_inside_loop_lookup: risky concrete example for this rule.
+// Rule intent: ORM lookups (Select, Get, First, etc.) executed inside loops.
+type CaseSelectOrGetInsideLoopLookupDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSelectOrGetInsideLoopLookupModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSelectOrGetInsideLoopLookupRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSelectOrGetInsideLoopLookupModel
+}
+
+type CaseSelectOrGetInsideLoopLookupService struct {
+    repo *CaseSelectOrGetInsideLoopLookupRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSelectOrGetInsideLoopLookupAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSelectOrGetInsideLoopLookup(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSelectOrGetInsideLoopLookupDTO) error {
+    focus := "select_or_get_inside_loop"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    for _, item := range items {
+        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
+        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+    }
+    select_get_inside_loop_lookup_positive := map[string]int{"select": 1, "get": 2, "inside": 3, "loop": 4, "lookup": 5}
+    select_get_inside_loop_lookup_positive["signal"] = len(input) + len(items)
+    select_positive_0 := select_get_inside_loop_lookup_positive["select"] + len(input)
+    _ = select_positive_0
+    get_positive_1 := select_get_inside_loop_lookup_positive["get"] + len(input)
+    _ = get_positive_1
+    inside_positive_2 := select_get_inside_loop_lookup_positive["inside"] + len(input)
+    _ = inside_positive_2
+    for loop_positive_3Index, item := range items { select_get_inside_loop_lookup_positive[item.ID] = loop_positive_3Index }
+    lookup_positive_4 := select_get_inside_loop_lookup_positive["lookup"] + len(input)
+    _ = lookup_positive_4
+    return nil
+}

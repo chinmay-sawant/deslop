@@ -1,0 +1,8 @@
+def negative_python_perf_layer_logging_overhead_logger_created_per_request():
+    rule_id = "python_perf_layer_logging_overhead_logger_created_per_request"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Logging overhead. Flag getLogger or adapter construction per request when stable module loggers are enough."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_python_perf_layer_resource_pooling_http_pool_not_reused():
+    rule_id = "python_perf_layer_resource_pooling_http_pool_not_reused"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Resource pooling. Flag HTTP connection pools that are recreated rather than shared per upstream."
+    return rule_id, family, severity, status, intent, description

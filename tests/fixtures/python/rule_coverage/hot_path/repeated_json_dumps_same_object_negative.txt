@@ -1,0 +1,8 @@
+def negative_repeated_json_dumps_same_object():
+    rule_id = "repeated_json_dumps_same_object"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "json.dumps(...) is repeated for the same object instead of caching the serialized value."
+    return rule_id, family, severity, status, intent, description

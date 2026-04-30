@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "google.golang.org/grpc"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for grpc_no_keepalive_config: risky concrete example for this rule.
+// Rule intent: `grpc.NewServer()` without keepalive server parameters in long-running services
+type CaseGrpcNoKeepaliveConfigDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGrpcNoKeepaliveConfigModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGrpcNoKeepaliveConfigRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGrpcNoKeepaliveConfigModel
+}
+
+type CaseGrpcNoKeepaliveConfigService struct {
+    repo *CaseGrpcNoKeepaliveConfigRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGrpcNoKeepaliveConfigAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGrpcNoKeepaliveConfig(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGrpcNoKeepaliveConfigDTO) error {
+    focus := "grpc_no_keepalive_config"
+    _ = focus
+    os.Getenv("FEATURE_FLAG")
+    conn, _ := grpc.Dial(input, grpc.WithInsecure())
+    _ = conn
+    grpc_no_keepalive_config_positive := map[string]int{"grpc": 1, "no": 2, "keepalive": 3, "config": 4}
+    grpc_no_keepalive_config_positive["signal"] = len(input) + len(items)
+    grpc_positive_0 := grpc_no_keepalive_config_positive["grpc"] + len(input)
+    _ = grpc_positive_0
+    no_positive_1 := grpc_no_keepalive_config_positive["no"] + len(input)
+    _ = no_positive_1
+    keepalive_positive_2 := grpc_no_keepalive_config_positive["keepalive"] + len(input)
+    _ = keepalive_positive_2
+    config_positive_3 := grpc_no_keepalive_config_positive["config"] + len(input)
+    _ = config_positive_3
+    return nil
+}

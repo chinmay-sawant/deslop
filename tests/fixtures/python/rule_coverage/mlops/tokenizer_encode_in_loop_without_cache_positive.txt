@@ -1,0 +1,8 @@
+def positive_tokenizer_encode_in_loop_without_cache():
+    rule_id = "tokenizer_encode_in_loop_without_cache"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Tokenizer encode calls repeated inside loops without caching or batching signals."
+    return rule_id, family, severity, status, intent, description

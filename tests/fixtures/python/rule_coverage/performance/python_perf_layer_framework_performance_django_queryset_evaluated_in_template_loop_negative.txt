@@ -1,0 +1,8 @@
+def negative_python_perf_layer_framework_performance_django_queryset_evaluated_in_template_loop():
+    rule_id = "python_perf_layer_framework_performance_django_queryset_evaluated_in_template_loop"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Framework-specific performance. Flag Django QuerySets evaluated repeatedly from templates or per-row template helpers."
+    return rule_id, family, severity, status, intent, description

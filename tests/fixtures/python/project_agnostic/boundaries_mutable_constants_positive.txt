@@ -1,0 +1,4 @@
+ALERT_PHRASES = [
+    "important",
+    "remember this",
+]

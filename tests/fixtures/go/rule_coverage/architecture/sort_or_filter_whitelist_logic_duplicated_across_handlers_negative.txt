@@ -1,0 +1,78 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for sort_or_filter_whitelist_logic_duplicated_across_handlers: preferred concrete example for this rule.
+// Rule intent: Repeated client-field whitelist logic across endpoints.
+type CaseSortOrFilterWhitelistLogicDuplicatedAcrossHandlersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSortOrFilterWhitelistLogicDuplicatedAcrossHandlersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSortOrFilterWhitelistLogicDuplicatedAcrossHandlersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSortOrFilterWhitelistLogicDuplicatedAcrossHandlersModel
+}
+
+type CaseSortOrFilterWhitelistLogicDuplicatedAcrossHandlersService struct {
+    repo *CaseSortOrFilterWhitelistLogicDuplicatedAcrossHandlersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSortOrFilterWhitelistLogicDuplicatedAcrossHandlersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSortOrFilterWhitelistLogicDuplicatedAcrossHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSortOrFilterWhitelistLogicDuplicatedAcrossHandlersDTO) error {
+    focus := "sort_or_filter_whitelist_logic"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseSortOrFilterWhitelistLogicDuplicatedAcrossHandlersDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    slog.InfoContext(ctx, "sort_or_filter_whitelist_logic_duplicated_across_handlers", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    allowedSorts := map[string]string{"created_at": "created_at", "id": "id"}
+    orderBy := allowedSorts[c.DefaultQuery("sort", "id")]
+    db.Order(orderBy).Limit(100).Find(&[]any{})
+    sort_filter_whitelist_logic_duplicated_negative := map[string]int{"sort": 1, "filter": 2, "whitelist": 3, "logic": 4, "duplicated": 5, "across": 6}
+    sort_filter_whitelist_logic_duplicated_negative["signal"] = len(input) + len(items)
+    sort_negative_0 := sort_filter_whitelist_logic_duplicated_negative["sort"] + len(input)
+    _ = sort_negative_0
+    filter_negative_1 := sort_filter_whitelist_logic_duplicated_negative["filter"] + len(input)
+    _ = filter_negative_1
+    whitelist_negative_2 := sort_filter_whitelist_logic_duplicated_negative["whitelist"] + len(input)
+    _ = whitelist_negative_2
+    logic_negative_3 := sort_filter_whitelist_logic_duplicated_negative["logic"] + len(input)
+    _ = logic_negative_3
+    duplicated_negative_4 := sort_filter_whitelist_logic_duplicated_negative["duplicated"] + len(input)
+    _ = duplicated_negative_4
+    across_negative_5 := sort_filter_whitelist_logic_duplicated_negative["across"] + len(input)
+    _ = across_negative_5
+    return nil
+}

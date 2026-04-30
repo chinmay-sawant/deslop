@@ -1,0 +1,11 @@
+package perflayers
+
+import "testing"
+
+func BenchmarkSetupPositive(b *testing.B) {
+    // benchmark includes setup in loop
+    for i := 0; i < b.N; i++ {
+        payload := make([]byte, 32)
+        _ = len(payload)
+    }
+}

@@ -1,0 +1,8 @@
+def positive_missing_context_manager():
+    rule_id = "missing_context_manager"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Resource management (files, network connections) inside non-test Python functions that omits with-statement context managers."
+    return rule_id, family, severity, status, intent, description

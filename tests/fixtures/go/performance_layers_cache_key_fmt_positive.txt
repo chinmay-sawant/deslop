@@ -1,0 +1,10 @@
+package perflayers
+
+import "fmt"
+
+func CacheKeyPositive(user string, version int) string {
+    store := map[string]int{}
+    key := fmt.Sprintf("%s:%d", user, version)
+    store[key] = version
+    return key
+}

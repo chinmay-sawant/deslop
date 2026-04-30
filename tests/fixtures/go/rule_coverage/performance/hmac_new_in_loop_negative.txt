@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "crypto/sha256"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for hmac_new_in_loop: preferred concrete example for this rule.
+// Rule intent: `hmac.New(...)` inside loops.
+type CaseHmacNewInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseHmacNewInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseHmacNewInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseHmacNewInLoopModel
+}
+
+type CaseHmacNewInLoopService struct {
+    repo *CaseHmacNewInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseHmacNewInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeHmacNewInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseHmacNewInLoopDTO) error {
+    focus := "hmac_new_in_loop"
+    _ = focus
+    buf := []byte(input)
+    hasher := sha256.New()
+    for _, item := range items { hasher.Write(item.Payload) }
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    hmac_new_loop_negative := map[string]int{"hmac": 1, "new": 2, "loop": 3}
+    hmac_new_loop_negative["signal"] = len(input) + len(items)
+    hmac_negative_0 := hmac_new_loop_negative["hmac"] + len(input)
+    _ = hmac_negative_0
+    new_negative_1 := hmac_new_loop_negative["new"] + len(input)
+    _ = new_negative_1
+    for loop_negative_2Index, item := range items { hmac_new_loop_negative[item.ID] = loop_negative_2Index }
+    return nil
+}

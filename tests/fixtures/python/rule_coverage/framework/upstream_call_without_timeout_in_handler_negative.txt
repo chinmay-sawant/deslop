@@ -1,0 +1,8 @@
+def negative_upstream_call_without_timeout_in_handler():
+    rule_id = "upstream_call_without_timeout_in_handler"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Request handlers issue upstream HTTP calls without visible timeout configuration."
+    return rule_id, family, severity, status, intent, description

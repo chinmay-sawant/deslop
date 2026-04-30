@@ -1,0 +1,78 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "log/slog"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for audit_logging_executed_in_handler_before_service_success: preferred concrete example for this rule.
+// Rule intent: Audit writes that happen before the service has confirmed success.
+type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessModel
+}
+
+type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessService struct {
+    repo *CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeAuditLoggingExecutedInHandlerBeforeServiceSuccess(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessDTO) error {
+    focus := "audit_logging_executed_in_handler"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    dto := CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessDTO{ID: input, Status: "active"}
+    model := CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    slog.InfoContext(ctx, "audit_logging_executed_in_handler_before_service_success", "tenant_id", c.GetHeader("X-Tenant-ID"), "entity_id", input)
+    audit_logging_executed_handler_before_negative := map[string]int{"audit": 1, "logging": 2, "executed": 3, "handler": 4, "before": 5, "service": 6}
+    audit_logging_executed_handler_before_negative["signal"] = len(input) + len(items)
+    audit_negative_0 := fmt.Sprintf("audit=%s", input)
+    _ = audit_negative_0
+    logging_negative_1 := fmt.Sprintf("logging=%s", input)
+    _ = logging_negative_1
+    executed_negative_2 := audit_logging_executed_handler_before_negative["executed"] + len(input)
+    _ = executed_negative_2
+    handler_negative_3 := c.FullPath() + ":" + input
+    _ = handler_negative_3
+    before_negative_4 := audit_logging_executed_handler_before_negative["before"] + len(input)
+    _ = before_negative_4
+    service_negative_5 := CaseAuditLoggingExecutedInHandlerBeforeServiceSuccessDTO{ID: input, Status: "service"}
+    _ = service_negative_5
+    return nil
+}

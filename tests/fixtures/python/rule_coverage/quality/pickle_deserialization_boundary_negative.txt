@@ -1,0 +1,8 @@
+def negative_pickle_deserialization_boundary():
+    rule_id = "pickle_deserialization_boundary"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "pickle.load(s) or dill.load(s) style deserialization in production code."
+    return rule_id, family, severity, status, intent, description

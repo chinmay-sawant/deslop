@@ -1,0 +1,74 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for request_context_value_extraction_duplicated_across_handlers: risky concrete example for this rule.
+// Rule intent: Repeated current-user, tenant, locale, or auth extraction logic.
+type CaseRequestContextValueExtractionDuplicatedAcrossHandlersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRequestContextValueExtractionDuplicatedAcrossHandlersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRequestContextValueExtractionDuplicatedAcrossHandlersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRequestContextValueExtractionDuplicatedAcrossHandlersModel
+}
+
+type CaseRequestContextValueExtractionDuplicatedAcrossHandlersService struct {
+    repo *CaseRequestContextValueExtractionDuplicatedAcrossHandlersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRequestContextValueExtractionDuplicatedAcrossHandlersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRequestContextValueExtractionDuplicatedAcrossHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRequestContextValueExtractionDuplicatedAcrossHandlersDTO) error {
+    focus := "request_context_value_extraction_duplicated"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRequestContextValueExtractionDuplicatedAcrossHandlersDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    log.Printf("request_context_value_extraction_duplicated_across_handlers tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    request_context_value_extraction_duplicated_positive := map[string]int{"request": 1, "context": 2, "value": 3, "extraction": 4, "duplicated": 5, "across": 6}
+    request_context_value_extraction_duplicated_positive["signal"] = len(input) + len(items)
+    request_positive_0 := request_context_value_extraction_duplicated_positive["request"] + len(input)
+    _ = request_positive_0
+    context_positive_1 := ctx
+    _ = context_positive_1
+    value_positive_2 := request_context_value_extraction_duplicated_positive["value"] + len(input)
+    _ = value_positive_2
+    extraction_positive_3 := request_context_value_extraction_duplicated_positive["extraction"] + len(input)
+    _ = extraction_positive_3
+    duplicated_positive_4 := request_context_value_extraction_duplicated_positive["duplicated"] + len(input)
+    _ = duplicated_positive_4
+    across_positive_5 := request_context_value_extraction_duplicated_positive["across"] + len(input)
+    _ = across_positive_5
+    return nil
+}

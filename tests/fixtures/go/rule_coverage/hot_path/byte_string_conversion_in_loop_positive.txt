@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for byte_string_conversion_in_loop: risky concrete example for this rule.
+// Rule intent: Byte-to-string or string-to-byte conversion observed inside loops in short-lived lookup or append paths.
+type CaseByteStringConversionInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseByteStringConversionInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseByteStringConversionInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseByteStringConversionInLoopModel
+}
+
+type CaseByteStringConversionInLoopService struct {
+    repo *CaseByteStringConversionInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseByteStringConversionInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveByteStringConversionInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseByteStringConversionInLoopDTO) error {
+    focus := "byte_string_conversion_in_loop"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    byte_string_conversion_loop_positive := map[string]int{"byte": 1, "string": 2, "conversion": 3, "loop": 4}
+    byte_string_conversion_loop_positive["signal"] = len(input) + len(items)
+    byte_positive_0 := byte_string_conversion_loop_positive["byte"] + len(input)
+    _ = byte_positive_0
+    string_positive_1 := strings.TrimSpace(input)
+    _ = string_positive_1
+    conversion_positive_2 := byte_string_conversion_loop_positive["conversion"] + len(input)
+    _ = conversion_positive_2
+    for loop_positive_3Index, item := range items { byte_string_conversion_loop_positive[item.ID] = loop_positive_3Index }
+    return nil
+}

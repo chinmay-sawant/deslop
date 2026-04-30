@@ -1,0 +1,8 @@
+def positive_repeated_small_writes_without_buffering_or_join():
+    rule_id = "repeated_small_writes_without_buffering_or_join"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag code that emits many tiny writes instead of buffering."
+    return rule_id, family, severity, status, intent, description

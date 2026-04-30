@@ -1,0 +1,8 @@
+def negative_python_perf_layer_lazy_loading_lazy_init_on_first_user_request():
+    rule_id = "python_perf_layer_lazy_loading_lazy_init_on_first_user_request"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Lazy loading. Flag lazy initialization that shifts a large one-time cost onto the first user request without warmup."
+    return rule_id, family, severity, status, intent, description

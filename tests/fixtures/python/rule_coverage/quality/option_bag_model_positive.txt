@@ -1,0 +1,8 @@
+def positive_option_bag_model():
+    rule_id = "option_bag_model"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Dataclass or TypedDict models that accumulate many optional fields and boolean switches."
+    return rule_id, family, severity, status, intent, description

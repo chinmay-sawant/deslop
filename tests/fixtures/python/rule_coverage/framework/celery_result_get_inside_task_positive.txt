@@ -1,0 +1,8 @@
+def positive_celery_result_get_inside_task():
+    rule_id = "celery_result_get_inside_task"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Celery tasks synchronously wait on AsyncResult.get(...) instead of handing work off asynchronously."
+    return rule_id, family, severity, status, intent, description

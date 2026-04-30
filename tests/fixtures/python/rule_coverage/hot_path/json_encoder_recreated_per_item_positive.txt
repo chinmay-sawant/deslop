@@ -1,0 +1,8 @@
+def positive_json_encoder_recreated_per_item():
+    rule_id = "json_encoder_recreated_per_item"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "A JSON encoder object is recreated per item instead of being reused for the stream."
+    return rule_id, family, severity, status, intent, description

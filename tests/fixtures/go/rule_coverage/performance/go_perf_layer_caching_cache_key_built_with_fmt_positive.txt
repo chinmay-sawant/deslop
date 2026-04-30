@@ -1,0 +1,71 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_caching_cache_key_built_with_fmt: risky concrete example for this rule.
+// Rule intent: Layer: Caching. Flag cache keys built with fmt.Sprintf in hot paths where append/Builder or structured keys are cheaper.
+type CaseGoPerfLayerCachingCacheKeyBuiltWithFmtDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerCachingCacheKeyBuiltWithFmtModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerCachingCacheKeyBuiltWithFmtRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerCachingCacheKeyBuiltWithFmtModel
+}
+
+type CaseGoPerfLayerCachingCacheKeyBuiltWithFmtService struct {
+    repo *CaseGoPerfLayerCachingCacheKeyBuiltWithFmtRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerCachingCacheKeyBuiltWithFmtAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerCachingCacheKeyBuiltWithFmt(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerCachingCacheKeyBuiltWithFmtDTO) error {
+    focus := "go_perf_layer_caching_cache"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    perf_layer_caching_cache_key_positive := map[string]int{"perf": 1, "layer": 2, "caching": 3, "cache": 4, "key": 5, "built": 6}
+    perf_layer_caching_cache_key_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_caching_cache_key_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_caching_cache_key_positive["layer"] + len(input)
+    _ = layer_positive_1
+    caching_positive_2 := perf_layer_caching_cache_key_positive["caching"] + len(input)
+    _ = caching_positive_2
+    cache_positive_3 := perf_layer_caching_cache_key_positive["cache"] + len(input)
+    _ = cache_positive_3
+    key_positive_4 := perf_layer_caching_cache_key_positive["key"] + len(input)
+    _ = key_positive_4
+    built_positive_5 := perf_layer_caching_cache_key_positive["built"] + len(input)
+    _ = built_positive_5
+    return nil
+}

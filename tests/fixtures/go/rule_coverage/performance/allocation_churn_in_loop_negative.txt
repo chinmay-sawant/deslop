@@ -1,0 +1,63 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for allocation_churn_in_loop: preferred concrete example for this rule.
+// Rule intent: Obvious make, new, or buffer-construction calls inside loops.
+type CaseAllocationChurnInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseAllocationChurnInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseAllocationChurnInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseAllocationChurnInLoopModel
+}
+
+type CaseAllocationChurnInLoopService struct {
+    repo *CaseAllocationChurnInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseAllocationChurnInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeAllocationChurnInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAllocationChurnInLoopDTO) error {
+    focus := "allocation_churn_in_loop"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    allocation_churn_loop_negative := map[string]int{"allocation": 1, "churn": 2, "loop": 3}
+    allocation_churn_loop_negative["signal"] = len(input) + len(items)
+    allocation_negative_0 := allocation_churn_loop_negative["allocation"] + len(input)
+    _ = allocation_negative_0
+    churn_negative_1 := allocation_churn_loop_negative["churn"] + len(input)
+    _ = churn_negative_1
+    for loop_negative_2Index, item := range items { allocation_churn_loop_negative[item.ID] = loop_negative_2Index }
+    return nil
+}

@@ -1,0 +1,8 @@
+def positive_typeddict_unchecked_access():
+    rule_id = "typeddict_unchecked_access"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Direct indexing of optional TypedDict keys without an obvious guard path."
+    return rule_id, family, severity, status, intent, description

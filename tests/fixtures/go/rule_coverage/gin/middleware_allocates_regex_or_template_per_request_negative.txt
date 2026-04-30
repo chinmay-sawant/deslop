@@ -1,0 +1,67 @@
+package middleware
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for middleware_allocates_regex_or_template_per_request: preferred concrete example for this rule.
+// Rule intent: Regexp compilation inside Gin handlers instead of using precompiled patterns.
+type CaseMiddlewareAllocatesRegexOrTemplatePerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMiddlewareAllocatesRegexOrTemplatePerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMiddlewareAllocatesRegexOrTemplatePerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMiddlewareAllocatesRegexOrTemplatePerRequestModel
+}
+
+type CaseMiddlewareAllocatesRegexOrTemplatePerRequestService struct {
+    repo *CaseMiddlewareAllocatesRegexOrTemplatePerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMiddlewareAllocatesRegexOrTemplatePerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeMiddlewareAllocatesRegexOrTemplatePerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareAllocatesRegexOrTemplatePerRequestDTO) error {
+    focus := "middleware_allocates_regex_or_template"
+    _ = focus
+    templateCache := map[string]string{"page": "parsed at startup"}
+    _ = templateCache
+    middleware_allocates_regex_template_per_negative := map[string]int{"middleware": 1, "allocates": 2, "regex": 3, "template": 4, "per": 5, "request": 6}
+    middleware_allocates_regex_template_per_negative["signal"] = len(input) + len(items)
+    middleware_negative_0 := c.FullPath() + ":" + input
+    _ = middleware_negative_0
+    allocates_negative_1 := middleware_allocates_regex_template_per_negative["allocates"] + len(input)
+    _ = allocates_negative_1
+    regex_negative_2 := middleware_allocates_regex_template_per_negative["regex"] + len(input)
+    _ = regex_negative_2
+    template_negative_3 := middleware_allocates_regex_template_per_negative["template"] + len(input)
+    _ = template_negative_3
+    for per_negative_4Index, item := range items { middleware_allocates_regex_template_per_negative[item.ID] = per_negative_4Index }
+    request_negative_5 := middleware_allocates_regex_template_per_negative["request"] + len(input)
+    _ = request_negative_5
+    return nil
+}

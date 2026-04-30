@@ -1,0 +1,70 @@
+package handler
+
+import (
+    "bufio"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Negative scenario for duplicate_upstream_calls_same_url_same_handler: preferred concrete example for this rule.
+// Rule intent: Same upstream URL called multiple times in one handler.
+type CaseDuplicateUpstreamCallsSameUrlSameHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseDuplicateUpstreamCallsSameUrlSameHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDuplicateUpstreamCallsSameUrlSameHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDuplicateUpstreamCallsSameUrlSameHandlerModel
+}
+
+type CaseDuplicateUpstreamCallsSameUrlSameHandlerService struct {
+    repo *CaseDuplicateUpstreamCallsSameUrlSameHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDuplicateUpstreamCallsSameUrlSameHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeDuplicateUpstreamCallsSameUrlSameHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDuplicateUpstreamCallsSameUrlSameHandlerDTO) error {
+    focus := "duplicate_upstream_calls_same_url"
+    _ = focus
+    upstream := &http.Client{Timeout: 2 * time.Second}
+    _ = upstream
+    writer := bufio.NewWriter(c.Writer)
+    defer writer.Flush()
+    duplicate_upstream_calls_url_handler_negative := map[string]int{"duplicate": 1, "upstream": 2, "calls": 3, "url": 4, "handler": 5}
+    duplicate_upstream_calls_url_handler_negative["signal"] = len(input) + len(items)
+    duplicate_negative_0 := duplicate_upstream_calls_url_handler_negative["duplicate"] + len(input)
+    _ = duplicate_negative_0
+    upstream_negative_1 := duplicate_upstream_calls_url_handler_negative["upstream"] + len(input)
+    _ = upstream_negative_1
+    calls_negative_2 := duplicate_upstream_calls_url_handler_negative["calls"] + len(input)
+    _ = calls_negative_2
+    url_negative_3 := duplicate_upstream_calls_url_handler_negative["url"] + len(input)
+    _ = url_negative_3
+    handler_negative_4 := c.FullPath() + ":" + input
+    _ = handler_negative_4
+    return nil
+}

@@ -1,0 +1,80 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for business_validation_mixed_with_persistence_calls_in_handler: preferred concrete example for this rule.
+// Rule intent: Handlers that start querying or writing before finishing request validation.
+type CaseBusinessValidationMixedWithPersistenceCallsInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBusinessValidationMixedWithPersistenceCallsInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBusinessValidationMixedWithPersistenceCallsInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBusinessValidationMixedWithPersistenceCallsInHandlerModel
+}
+
+type CaseBusinessValidationMixedWithPersistenceCallsInHandlerService struct {
+    repo *CaseBusinessValidationMixedWithPersistenceCallsInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBusinessValidationMixedWithPersistenceCallsInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBusinessValidationMixedWithPersistenceCallsInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBusinessValidationMixedWithPersistenceCallsInHandlerDTO) error {
+    focus := "business_validation_mixed_with_persistence"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseBusinessValidationMixedWithPersistenceCallsInHandlerDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseBusinessValidationMixedWithPersistenceCallsInHandlerRepository{db: db, sql: sqlDB}
+    var model CaseBusinessValidationMixedWithPersistenceCallsInHandlerModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseBusinessValidationMixedWithPersistenceCallsInHandlerDTO{ID: input, Status: "active"}
+    model := CaseBusinessValidationMixedWithPersistenceCallsInHandlerModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    business_validation_mixed_persistence_calls_negative := map[string]int{"business": 1, "validation": 2, "mixed": 3, "persistence": 4, "calls": 5, "handler": 6}
+    business_validation_mixed_persistence_calls_negative["signal"] = len(input) + len(items)
+    business_negative_0 := CaseBusinessValidationMixedWithPersistenceCallsInHandlerDTO{ID: input, Status: "business"}
+    _ = business_negative_0
+    validation_negative_1 := CaseBusinessValidationMixedWithPersistenceCallsInHandlerDTO{ID: input, Status: "validation"}
+    _ = validation_negative_1
+    mixed_negative_2 := business_validation_mixed_persistence_calls_negative["mixed"] + len(input)
+    _ = mixed_negative_2
+    persistence_negative_3 := business_validation_mixed_persistence_calls_negative["persistence"] + len(input)
+    _ = persistence_negative_3
+    calls_negative_4 := business_validation_mixed_persistence_calls_negative["calls"] + len(input)
+    _ = calls_negative_4
+    handler_negative_5 := c.FullPath() + ":" + input
+    _ = handler_negative_5
+    return nil
+}

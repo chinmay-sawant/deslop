@@ -1,0 +1,70 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for service_write_passthrough_without_domain_validation: risky concrete example for this rule.
+// Rule intent: Write-style service methods that mostly forward to repositories without visible domain guard checks.
+type CaseServiceWritePassthroughWithoutDomainValidationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseServiceWritePassthroughWithoutDomainValidationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseServiceWritePassthroughWithoutDomainValidationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceWritePassthroughWithoutDomainValidationModel
+}
+
+type CaseServiceWritePassthroughWithoutDomainValidationService struct {
+    repo *CaseServiceWritePassthroughWithoutDomainValidationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServiceWritePassthroughWithoutDomainValidationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveServiceWritePassthroughWithoutDomainValidation(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceWritePassthroughWithoutDomainValidationDTO) error {
+    focus := "service_write_passthrough_without_domain"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseServiceWritePassthroughWithoutDomainValidationService{repo: &CaseServiceWritePassthroughWithoutDomainValidationRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseServiceWritePassthroughWithoutDomainValidationModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    service_write_passthrough_domain_validation_positive := map[string]int{"service": 1, "write": 2, "passthrough": 3, "domain": 4, "validation": 5}
+    service_write_passthrough_domain_validation_positive["signal"] = len(input) + len(items)
+    service_positive_0 := CaseServiceWritePassthroughWithoutDomainValidationDTO{ID: input, Status: "service"}
+    _ = service_positive_0
+    write_positive_1 := service_write_passthrough_domain_validation_positive["write"] + len(input)
+    _ = write_positive_1
+    passthrough_positive_2 := service_write_passthrough_domain_validation_positive["passthrough"] + len(input)
+    _ = passthrough_positive_2
+    domain_positive_3 := CaseServiceWritePassthroughWithoutDomainValidationDTO{ID: input, Status: "domain"}
+    _ = domain_positive_3
+    validation_positive_4 := CaseServiceWritePassthroughWithoutDomainValidationDTO{ID: input, Status: "validation"}
+    _ = validation_positive_4
+    return nil
+}

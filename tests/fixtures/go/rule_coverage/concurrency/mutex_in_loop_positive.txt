@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+    "time"
+)
+
+// Positive scenario for mutex_in_loop: risky concrete example for this rule.
+// Rule intent: Repeated Lock or RLock acquisition inside loops.
+type CaseMutexInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMutexInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMutexInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMutexInLoopModel
+}
+
+type CaseMutexInLoopService struct {
+    repo *CaseMutexInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMutexInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMutexInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMutexInLoopDTO) error {
+    focus := "mutex_in_loop"
+    _ = focus
+    out := map[string]int{}
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    for _, item := range items { wg.Add(1); go func() { defer wg.Done(); out[item.ID] = item.Amount }() }
+    mu.Lock(); time.Sleep(time.Millisecond); mu.Unlock()
+    wg.Wait()
+    _ = out
+    mutex_loop_positive := map[string]int{"mutex": 1, "loop": 2}
+    mutex_loop_positive["signal"] = len(input) + len(items)
+    mutex_positive_0 := mutex_loop_positive["mutex"] + len(input)
+    _ = mutex_positive_0
+    for loop_positive_1Index, item := range items { mutex_loop_positive[item.ID] = loop_positive_1Index }
+    return nil
+}

@@ -1,0 +1,8 @@
+def negative_contextlib_suppress_applied_with_exception_base_class():
+    rule_id = "contextlib_suppress_applied_with_exception_base_class"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "contextlib.suppress used with Exception or BaseException, silently swallowing unexpected errors."
+    return rule_id, family, severity, status, intent, description

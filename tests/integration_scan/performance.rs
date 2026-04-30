@@ -146,14 +146,14 @@ fn test_streaming_ok() {
 }
 
 #[test]
-fn test_semantic_n_squared_rules_are_enabled_by_default() {
+fn test_semantic_n_squared_rules_are_disabled_by_default() {
     let workspace = FixtureWorkspace::new();
     workspace.write_file("alloc.go", go_fixture!("n_squared_alloc_slop.txt"));
     workspace.write_file("concat.go", go_fixture!("n_squared_concat_slop.txt"));
 
     let report = workspace.scan();
 
-    assert!(report.findings.iter().any(|finding| {
+    assert!(!report.findings.iter().any(|finding| {
         matches!(
             finding.rule_id.as_str(),
             "likely_n_squared_allocation" | "likely_n_squared_string_concat"
@@ -208,6 +208,10 @@ fn test_semantic_nested_query_escalation() {
     assert!(report.findings.iter().any(|finding| {
         finding.rule_id == "n_plus_one_query"
             && matches!(finding.severity, deslop::Severity::Error)
+            && finding.function_name.as_deref() == Some("Load")
+    }));
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id == "go_perf_layer_database_access_query_inside_loop_without_batching"
             && finding.function_name.as_deref() == Some("Load")
     }));
 }
@@ -341,6 +345,11 @@ fn test_extra_go_performance_pack_positive() {
 
     let report = workspace.scan();
     assert_rules_present(&report, EXTRA_GO_PERFORMANCE_RULES);
+    assert!(report.findings.iter().any(|finding| {
+        finding.rule_id
+            == "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call"
+            && finding.function_name.as_deref() == Some("ContextTimeoutLoop")
+    }));
 }
 
 #[test]
@@ -350,4 +359,8 @@ fn test_extra_go_performance_pack_clean() {
 
     let report = workspace.scan();
     assert_rules_absent(&report, EXTRA_GO_PERFORMANCE_RULES);
+    assert!(!report.findings.iter().any(|finding| {
+        finding.rule_id
+            == "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call"
+    }));
 }

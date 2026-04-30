@@ -28,6 +28,7 @@ fn test_rust_domain_modeling_rules() {
 #[test]
 fn test_rust_async_and_performance_rules() {
     let workspace = FixtureWorkspace::new();
+    workspace.write_file(".deslop.toml", "rust_async_experimental = true\n");
     workspace.write_file("src/lib.rs", rust_fixture!("async/positive.txt"));
 
     let report = workspace.scan();

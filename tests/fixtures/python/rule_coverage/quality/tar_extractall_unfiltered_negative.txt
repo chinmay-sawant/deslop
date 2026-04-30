@@ -1,0 +1,8 @@
+def negative_tar_extractall_unfiltered():
+    rule_id = "tar_extractall_unfiltered"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "tarfile.extractall(...) without an obvious filter, members list, or path-validation helper."
+    return rule_id, family, severity, status, intent, description

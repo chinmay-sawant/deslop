@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for clear_map_go121: preferred concrete example for this rule.
+// Rule intent: `for k := range m { delete(m, k) }` in Go 1.21+ codebases
+type CaseClearMapGo121DTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseClearMapGo121Model struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseClearMapGo121Repository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseClearMapGo121Model
+}
+
+type CaseClearMapGo121Service struct {
+    repo *CaseClearMapGo121Repository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseClearMapGo121AuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeClearMapGo121(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseClearMapGo121DTO) error {
+    focus := "clear_map_go121"
+    _ = focus
+    buf := []byte(input)
+    seen := make(map[string]bool, len(items))
+    for _, item := range items { seen[item.ID] = true }
+    clear_map_go121_negative := map[string]int{"clear": 1, "map": 2, "go121": 3}
+    clear_map_go121_negative["signal"] = len(input) + len(items)
+    clear_negative_0 := clear_map_go121_negative["clear"] + len(input)
+    _ = clear_negative_0
+    map_negative_1 := clear_map_go121_negative["map"] + len(input)
+    _ = map_negative_1
+    go121_negative_2 := clear_map_go121_negative["go121"] + len(input)
+    _ = go121_negative_2
+    return nil
+}

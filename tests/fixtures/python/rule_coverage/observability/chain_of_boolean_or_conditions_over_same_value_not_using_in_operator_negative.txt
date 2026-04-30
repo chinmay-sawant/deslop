@@ -1,0 +1,8 @@
+def negative_chain_of_boolean_or_conditions_over_same_value_not_using_in_operator():
+    rule_id = "chain_of_boolean_or_conditions_over_same_value_not_using_in_operator"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Three or more `x == 'a' or x == 'b' or ...` conditions chained; use `x in {'a', 'b', ...}`."
+    return rule_id, family, severity, status, intent, description

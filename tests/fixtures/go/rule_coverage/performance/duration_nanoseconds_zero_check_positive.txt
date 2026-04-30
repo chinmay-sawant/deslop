@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for duration_nanoseconds_zero_check: risky concrete example for this rule.
+// Rule intent: Duration zero checks written as `d.Nanoseconds() == 0` instead of `d == 0`.
+type CaseDurationNanosecondsZeroCheckDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseDurationNanosecondsZeroCheckModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDurationNanosecondsZeroCheckRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDurationNanosecondsZeroCheckModel
+}
+
+type CaseDurationNanosecondsZeroCheckService struct {
+    repo *CaseDurationNanosecondsZeroCheckRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDurationNanosecondsZeroCheckAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDurationNanosecondsZeroCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDurationNanosecondsZeroCheckDTO) error {
+    focus := "duration_nanoseconds_zero_check"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    elapsed := time.Since(start)
+    _ = elapsed.Nanoseconds() == 0
+    duration_nanoseconds_zero_check_positive := map[string]int{"duration": 1, "nanoseconds": 2, "zero": 3, "check": 4}
+    duration_nanoseconds_zero_check_positive["signal"] = len(input) + len(items)
+    duration_positive_0 := duration_nanoseconds_zero_check_positive["duration"] + len(input)
+    _ = duration_positive_0
+    nanoseconds_positive_1 := duration_nanoseconds_zero_check_positive["nanoseconds"] + len(input)
+    _ = nanoseconds_positive_1
+    zero_positive_2 := duration_nanoseconds_zero_check_positive["zero"] + len(input)
+    _ = zero_positive_2
+    check_positive_3 := duration_nanoseconds_zero_check_positive["check"] + len(input)
+    _ = check_positive_3
+    return nil
+}

@@ -1,0 +1,8 @@
+def negative_asyncio_gather_without_return_exceptions_on_partial_failure_path():
+    rule_id = "asyncio_gather_without_return_exceptions_on_partial_failure_path"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "asyncio.gather called without return_exceptions=True on a code path where partial failure should be recoverable."
+    return rule_id, family, severity, status, intent, description

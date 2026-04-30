@@ -1,0 +1,75 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for repository_method_returns_partially_built_scopes_for_caller_chaining: risky concrete example for this rule.
+// Rule intent: Repositories that expose scope-building fragments instead of complete query APIs.
+type CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingModel
+}
+
+type CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingService struct {
+    repo *CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepositoryMethodReturnsPartiallyBuiltScopesForCallerChaining(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingDTO) error {
+    focus := "repository_method_returns_partially_built"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryMethodReturnsPartiallyBuiltScopesForCallerChainingModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    repository_method_returns_partially_built_positive := map[string]int{"repository": 1, "method": 2, "returns": 3, "partially": 4, "built": 5, "scopes": 6}
+    repository_method_returns_partially_built_positive["signal"] = len(input) + len(items)
+    repository_positive_0 := db.Where("repository_id = ?", input)
+    _ = repository_positive_0
+    method_positive_1 := repository_method_returns_partially_built_positive["method"] + len(input)
+    _ = method_positive_1
+    returns_positive_2 := repository_method_returns_partially_built_positive["returns"] + len(input)
+    _ = returns_positive_2
+    partially_positive_3 := repository_method_returns_partially_built_positive["partially"] + len(input)
+    _ = partially_positive_3
+    built_positive_4 := repository_method_returns_partially_built_positive["built"] + len(input)
+    _ = built_positive_4
+    scopes_positive_5 := repository_method_returns_partially_built_positive["scopes"] + len(input)
+    _ = scopes_positive_5
+    return nil
+}

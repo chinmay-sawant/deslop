@@ -1,0 +1,8 @@
+def negative_pyproject_missing_requires_python():
+    rule_id = "pyproject_missing_requires_python"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "pyproject metadata missing an explicit Python runtime requirement."
+    return rule_id, family, severity, status, intent, description

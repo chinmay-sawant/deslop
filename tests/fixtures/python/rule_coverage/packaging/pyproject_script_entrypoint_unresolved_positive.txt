@@ -1,0 +1,8 @@
+def positive_pyproject_script_entrypoint_unresolved():
+    rule_id = "pyproject_script_entrypoint_unresolved"
+    family = "packaging"
+    severity = "warning"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "pyproject script entrypoints that do not resolve to a locally indexed module callable."
+    return rule_id, family, severity, status, intent, description

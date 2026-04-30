@@ -1,0 +1,8 @@
+def negative_django_queryset_evaluated_multiple_times():
+    rule_id = "django_queryset_evaluated_multiple_times"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "The same Django queryset appears to be evaluated multiple times in one function."
+    return rule_id, family, severity, status, intent, description

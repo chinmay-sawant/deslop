@@ -1,0 +1,8 @@
+def positive_python_perf_layer_caching_cache_miss_duplicate_concurrent_work():
+    rule_id = "python_perf_layer_caching_cache_miss_duplicate_concurrent_work"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Caching. Flag async or threaded cache miss paths that recompute the same key concurrently."
+    return rule_id, family, severity, status, intent, description

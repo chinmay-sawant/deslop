@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for time_fixedzone_per_call: risky concrete example for this rule.
+// Rule intent: `time.FixedZone(...)` inside request or loop paths instead of reusing the location.
+type CaseTimeFixedzonePerCallDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTimeFixedzonePerCallModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTimeFixedzonePerCallRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTimeFixedzonePerCallModel
+}
+
+type CaseTimeFixedzonePerCallService struct {
+    repo *CaseTimeFixedzonePerCallRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTimeFixedzonePerCallAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTimeFixedzonePerCall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTimeFixedzonePerCallDTO) error {
+    focus := "time_fixedzone_per_call"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        zone := time.FixedZone(item.TenantID, 3600)
+        _ = zone
+    }
+    time_fixedzone_per_call_positive := map[string]int{"time": 1, "fixedzone": 2, "per": 3, "call": 4}
+    time_fixedzone_per_call_positive["signal"] = len(input) + len(items)
+    time_positive_0 := time_fixedzone_per_call_positive["time"] + len(input)
+    _ = time_positive_0
+    fixedzone_positive_1 := time_fixedzone_per_call_positive["fixedzone"] + len(input)
+    _ = fixedzone_positive_1
+    for per_positive_2Index, item := range items { time_fixedzone_per_call_positive[item.ID] = per_positive_2Index }
+    call_positive_3 := time_fixedzone_per_call_positive["call"] + len(input)
+    _ = call_positive_3
+    return nil
+}

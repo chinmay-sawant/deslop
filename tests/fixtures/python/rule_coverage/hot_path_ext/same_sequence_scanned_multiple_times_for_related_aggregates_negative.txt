@@ -1,0 +1,8 @@
+def negative_same_sequence_scanned_multiple_times_for_related_aggregates():
+    rule_id = "same_sequence_scanned_multiple_times_for_related_aggregates"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag code that makes several full passes over the same data for related summaries."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_service_method_returns_http_response_object():
+    rule_id = "service_method_returns_http_response_object"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Service-layer method returns an HTTP response object that belongs to the transport layer."
+    return rule_id, family, severity, status, intent, description

@@ -1,9 +1,10 @@
 use crate::analysis::{ParsedFile, ParsedFunction};
 use crate::model::{Finding, Severity};
 
-pub(crate) const BINDING_LOCATION: &str = file!();
-
 use super::super::common::import_alias_lookup;
+use super::super::performance_layers::{PerfLayerLanguage, performance_layer_findings};
+
+pub(crate) const BINDING_LOCATION: &str = file!();
 
 pub(crate) fn alloc_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec<Finding> {
     let go = function.go_evidence();
@@ -163,6 +164,24 @@ pub(crate) fn db_findings(
                     },
                 ],
             });
+            findings.push(Finding {
+                rule_id: "go_perf_layer_database_access_query_inside_loop_without_batching"
+                    .to_string(),
+                severity: Severity::Warning,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: query_call.line,
+                end_line: query_call.line,
+                message: format!(
+                    "function {} issues SQL-style queries inside a loop without batching",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("looped query method: {receiver}.{}", query_call.method_name),
+                    "existing Go data-access analysis observed a database query on an iterative path"
+                        .to_string(),
+                ],
+            });
         }
 
         let Some(query_text) = &query_call.query_text else {
@@ -183,6 +202,23 @@ pub(crate) fn db_findings(
                     function.fingerprint.name
                 ),
                 evidence: vec![format!("query text: {query_text}")],
+            });
+            findings.push(Finding {
+                rule_id: "go_perf_layer_database_access_select_star_on_hot_query".to_string(),
+                severity: Severity::Info,
+                path: file.path.clone(),
+                function_name: Some(function.fingerprint.name.clone()),
+                start_line: query_call.line,
+                end_line: query_call.line,
+                message: format!(
+                    "function {} uses SELECT * on a hot query path",
+                    function.fingerprint.name
+                ),
+                evidence: vec![
+                    format!("query text: {query_text}"),
+                    "existing Go query-shape analysis observed a wide projection that can over-fetch"
+                        .to_string(),
+                ],
             });
         }
 
@@ -393,6 +429,13 @@ pub(crate) fn load_findings(file: &ParsedFile, function: &ParsedFunction) -> Vec
             })
         })
         .collect()
+}
+
+pub(crate) fn performance_layer_rule_findings(
+    file: &ParsedFile,
+    function: &ParsedFunction,
+) -> Vec<Finding> {
+    performance_layer_findings(PerfLayerLanguage::Go, file, function)
 }
 
 #[cfg(test)]

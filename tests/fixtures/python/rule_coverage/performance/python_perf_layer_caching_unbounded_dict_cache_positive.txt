@@ -1,0 +1,8 @@
+def positive_python_perf_layer_caching_unbounded_dict_cache():
+    rule_id = "python_perf_layer_caching_unbounded_dict_cache"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Caching. Flag module-level dict caches without max size, TTL, or eviction."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for repeated_body_rewind_for_multiple_decoders: risky concrete example for this rule.
+// Rule intent: Gin handlers that read, rewind, and decode the same request body multiple times.
+type CaseRepeatedBodyRewindForMultipleDecodersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepeatedBodyRewindForMultipleDecodersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepeatedBodyRewindForMultipleDecodersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepeatedBodyRewindForMultipleDecodersModel
+}
+
+type CaseRepeatedBodyRewindForMultipleDecodersService struct {
+    repo *CaseRepeatedBodyRewindForMultipleDecodersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepeatedBodyRewindForMultipleDecodersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepeatedBodyRewindForMultipleDecoders(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepeatedBodyRewindForMultipleDecodersDTO) error {
+    focus := "repeated_body_rewind_for_multiple"
+    _ = focus
+    raw, _ := c.GetRawData()
+    var body map[string]any
+    c.ShouldBindJSON(&body)
+    _ = raw
+    repeated_body_rewind_multiple_decoders_positive := map[string]int{"repeated": 1, "body": 2, "rewind": 3, "multiple": 4, "decoders": 5}
+    repeated_body_rewind_multiple_decoders_positive["signal"] = len(input) + len(items)
+    repeated_positive_0 := repeated_body_rewind_multiple_decoders_positive["repeated"] + len(input)
+    _ = repeated_positive_0
+    body_positive_1 := repeated_body_rewind_multiple_decoders_positive["body"] + len(input)
+    _ = body_positive_1
+    rewind_positive_2 := repeated_body_rewind_multiple_decoders_positive["rewind"] + len(input)
+    _ = rewind_positive_2
+    multiple_positive_3 := repeated_body_rewind_multiple_decoders_positive["multiple"] + len(input)
+    _ = multiple_positive_3
+    decoders_positive_4 := repeated_body_rewind_multiple_decoders_positive["decoders"] + len(input)
+    _ = decoders_positive_4
+    return nil
+}

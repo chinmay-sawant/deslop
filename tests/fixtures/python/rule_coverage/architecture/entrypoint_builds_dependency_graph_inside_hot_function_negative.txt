@@ -1,0 +1,8 @@
+def negative_entrypoint_builds_dependency_graph_inside_hot_function():
+    rule_id = "entrypoint_builds_dependency_graph_inside_hot_function"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag request, batch, or loop entrypoints that reconstruct clients, caches, or providers on each call instead of wiring them once."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_repeated_string_literal():
+    rule_id = "repeated_string_literal"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Project repeats the same long string literal multiple times in one file."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,65 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for jwt_none_algorithm_risk: risky concrete example for this rule.
+// Rule intent: JWT verification code that accepts `"none"` or `alg: ""` as valid signing methods, or uses `jwt.Parse` without `WithValidMethods`
+type CaseJwtNoneAlgorithmRiskDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseJwtNoneAlgorithmRiskModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseJwtNoneAlgorithmRiskRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseJwtNoneAlgorithmRiskModel
+}
+
+type CaseJwtNoneAlgorithmRiskService struct {
+    repo *CaseJwtNoneAlgorithmRiskRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseJwtNoneAlgorithmRiskAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveJwtNoneAlgorithmRisk(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseJwtNoneAlgorithmRiskDTO) error {
+    focus := "jwt_none_algorithm_risk"
+    _ = focus
+    secret := "hardcoded-development-secret"
+    password := input
+    _, _ = secret, password
+    jwt_none_algorithm_risk_positive := map[string]int{"jwt": 1, "none": 2, "algorithm": 3, "risk": 4}
+    jwt_none_algorithm_risk_positive["signal"] = len(input) + len(items)
+    jwt_positive_0 := map[string]string{"jwt": input}
+    _ = jwt_positive_0
+    none_positive_1 := jwt_none_algorithm_risk_positive["none"] + len(input)
+    _ = none_positive_1
+    algorithm_positive_2 := jwt_none_algorithm_risk_positive["algorithm"] + len(input)
+    _ = algorithm_positive_2
+    risk_positive_3 := jwt_none_algorithm_risk_positive["risk"] + len(input)
+    _ = risk_positive_3
+    return nil
+}

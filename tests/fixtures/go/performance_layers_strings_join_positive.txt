@@ -1,0 +1,11 @@
+package perflayers
+
+import "strings"
+
+func JoinSingleElementPositive(parts []string) string {
+    var out string
+    for _, part := range parts {
+        out += strings.Join([]string{part}, "")
+    }
+    return out
+}

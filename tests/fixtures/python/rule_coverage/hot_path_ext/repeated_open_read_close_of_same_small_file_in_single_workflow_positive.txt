@@ -1,0 +1,8 @@
+def positive_repeated_open_read_close_of_same_small_file_in_single_workflow():
+    rule_id = "repeated_open_read_close_of_same_small_file_in_single_workflow"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag workflows that reopen the same file many times instead of caching its contents or handle."
+    return rule_id, family, severity, status, intent, description

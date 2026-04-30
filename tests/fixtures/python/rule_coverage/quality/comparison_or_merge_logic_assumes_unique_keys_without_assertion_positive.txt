@@ -1,0 +1,8 @@
+def positive_comparison_or_merge_logic_assumes_unique_keys_without_assertion():
+    rule_id = "comparison_or_merge_logic_assumes_unique_keys_without_assertion"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag merge logic that silently assumes uniqueness of keys or identifiers."
+    return rule_id, family, severity, status, intent, description

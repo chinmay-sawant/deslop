@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+)
+
+// Negative scenario for goroutine_spawn_in_loop: preferred concrete example for this rule.
+// Rule intent: Raw go statements launched from inside loops without obvious WaitGroup coordination.
+type CaseGoroutineSpawnInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoroutineSpawnInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoroutineSpawnInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoroutineSpawnInLoopModel
+}
+
+type CaseGoroutineSpawnInLoopService struct {
+    repo *CaseGoroutineSpawnInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoroutineSpawnInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoroutineSpawnInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoroutineSpawnInLoopDTO) error {
+    focus := "goroutine_spawn_in_loop"
+    _ = focus
+    out := make(map[string]int, len(items))
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    for _, item := range items { item := item; wg.Add(1); go func() { defer wg.Done(); mu.Lock(); out[item.ID] = item.Amount; mu.Unlock() }() }
+    wg.Wait()
+    _ = out
+    goroutine_spawn_loop_negative := map[string]int{"goroutine": 1, "spawn": 2, "loop": 3}
+    goroutine_spawn_loop_negative["signal"] = len(input) + len(items)
+    goroutine_negative_0 := ctx
+    _ = goroutine_negative_0
+    spawn_negative_1 := goroutine_spawn_loop_negative["spawn"] + len(input)
+    _ = spawn_negative_1
+    for loop_negative_2Index, item := range items { goroutine_spawn_loop_negative[item.ID] = loop_negative_2Index }
+    return nil
+}

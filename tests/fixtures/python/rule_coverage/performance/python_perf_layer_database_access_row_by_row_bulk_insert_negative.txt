@@ -1,0 +1,8 @@
+def negative_python_perf_layer_database_access_row_by_row_bulk_insert():
+    rule_id = "python_perf_layer_database_access_row_by_row_bulk_insert"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Database access. Flag bulk inserts implemented one row at a time instead of executemany or ORM bulk APIs."
+    return rule_id, family, severity, status, intent, description

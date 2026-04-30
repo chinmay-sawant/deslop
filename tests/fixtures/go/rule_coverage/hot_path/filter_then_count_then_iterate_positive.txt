@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for filter_then_count_then_iterate: risky concrete example for this rule.
+// Rule intent: Same collection traversed multiple times for filter, count, and process steps.
+type CaseFilterThenCountThenIterateDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFilterThenCountThenIterateModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFilterThenCountThenIterateRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFilterThenCountThenIterateModel
+}
+
+type CaseFilterThenCountThenIterateService struct {
+    repo *CaseFilterThenCountThenIterateRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFilterThenCountThenIterateAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFilterThenCountThenIterate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFilterThenCountThenIterateDTO) error {
+    focus := "filter_then_count_then_iterate"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    filter_then_count_iterate_positive := map[string]int{"filter": 1, "then": 2, "count": 3, "iterate": 4}
+    filter_then_count_iterate_positive["signal"] = len(input) + len(items)
+    filter_positive_0 := filter_then_count_iterate_positive["filter"] + len(input)
+    _ = filter_positive_0
+    then_positive_1 := filter_then_count_iterate_positive["then"] + len(input)
+    _ = then_positive_1
+    count_positive_2 := filter_then_count_iterate_positive["count"] + len(input)
+    _ = count_positive_2
+    iterate_positive_3 := filter_then_count_iterate_positive["iterate"] + len(input)
+    _ = iterate_positive_3
+    return nil
+}

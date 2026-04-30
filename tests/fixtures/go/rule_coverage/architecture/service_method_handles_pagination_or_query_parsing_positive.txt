@@ -1,0 +1,84 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strconv"
+    "strings"
+)
+
+// Positive scenario for service_method_handles_pagination_or_query_parsing: risky concrete example for this rule.
+// Rule intent: Services that parse page, sort, filter, or URL values that should already be normalized at the transport boundary.
+type CaseServiceMethodHandlesPaginationOrQueryParsingDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseServiceMethodHandlesPaginationOrQueryParsingModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseServiceMethodHandlesPaginationOrQueryParsingRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceMethodHandlesPaginationOrQueryParsingModel
+}
+
+type CaseServiceMethodHandlesPaginationOrQueryParsingService struct {
+    repo *CaseServiceMethodHandlesPaginationOrQueryParsingRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServiceMethodHandlesPaginationOrQueryParsingAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveServiceMethodHandlesPaginationOrQueryParsing(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodHandlesPaginationOrQueryParsingDTO) error {
+    focus := "service_method_handles_pagination_or"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseServiceMethodHandlesPaginationOrQueryParsingDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseServiceMethodHandlesPaginationOrQueryParsingRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseServiceMethodHandlesPaginationOrQueryParsingModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseServiceMethodHandlesPaginationOrQueryParsingService{repo: &CaseServiceMethodHandlesPaginationOrQueryParsingRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseServiceMethodHandlesPaginationOrQueryParsingModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    page, _ := strconv.Atoi(c.Query("page"))
+    size, _ := strconv.Atoi(c.Query("size"))
+    db.Order(c.Query("sort")).Offset((page - 1) * size).Limit(size).Find(&[]any{})
+    service_method_handles_pagination_query_positive := map[string]int{"service": 1, "method": 2, "handles": 3, "pagination": 4, "query": 5, "parsing": 6}
+    service_method_handles_pagination_query_positive["signal"] = len(input) + len(items)
+    service_positive_0 := CaseServiceMethodHandlesPaginationOrQueryParsingDTO{ID: input, Status: "service"}
+    _ = service_positive_0
+    method_positive_1 := service_method_handles_pagination_query_positive["method"] + len(input)
+    _ = method_positive_1
+    handles_positive_2 := service_method_handles_pagination_query_positive["handles"] + len(input)
+    _ = handles_positive_2
+    pagination_positive_3 := service_method_handles_pagination_query_positive["pagination"] + len(input)
+    _ = pagination_positive_3
+    query_positive_4 := db.Where("query_id = ?", input)
+    _ = query_positive_4
+    parsing_positive_5 := service_method_handles_pagination_query_positive["parsing"] + len(input)
+    _ = parsing_positive_5
+    return nil
+}

@@ -1,0 +1,62 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for redis_connection_per_request: risky concrete example for this rule.
+// Rule intent: `redis.NewClient(&redis.Options{...})` inside handler/request functions
+type CaseRedisConnectionPerRequestDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRedisConnectionPerRequestModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisConnectionPerRequestRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisConnectionPerRequestModel
+}
+
+type CaseRedisConnectionPerRequestService struct {
+    repo *CaseRedisConnectionPerRequestRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisConnectionPerRequestAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRedisConnectionPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisConnectionPerRequestDTO) error {
+    focus := "redis_connection_per_request"
+    _ = focus
+    for _, item := range items { db.Create(&item) }
+    redis_connection_per_request_positive := map[string]int{"redis": 1, "connection": 2, "per": 3, "request": 4}
+    redis_connection_per_request_positive["signal"] = len(input) + len(items)
+    redis_positive_0 := redis_connection_per_request_positive["redis"] + len(input)
+    _ = redis_positive_0
+    connection_positive_1 := redis_connection_per_request_positive["connection"] + len(input)
+    _ = connection_positive_1
+    for per_positive_2Index, item := range items { redis_connection_per_request_positive[item.ID] = per_positive_2Index }
+    request_positive_3 := redis_connection_per_request_positive["request"] + len(input)
+    _ = request_positive_3
+    return nil
+}

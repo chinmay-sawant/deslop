@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "testing"
+)
+
+// Positive scenario for test_helpers_duplicated_across_packages: risky concrete example for this rule.
+// Rule intent: Near-identical helper builders or setup code duplicated across test packages.
+type CaseTestHelpersDuplicatedAcrossPackagesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTestHelpersDuplicatedAcrossPackagesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTestHelpersDuplicatedAcrossPackagesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTestHelpersDuplicatedAcrossPackagesModel
+}
+
+type CaseTestHelpersDuplicatedAcrossPackagesService struct {
+    repo *CaseTestHelpersDuplicatedAcrossPackagesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTestHelpersDuplicatedAcrossPackagesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTestHelpersDuplicatedAcrossPackages(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestHelpersDuplicatedAcrossPackagesDTO) error {
+    focus := "test_helpers_duplicated_across_packages"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    testCase := struct { name string; raw string }{"full stack", input}
+    _ = (*testing.T)(nil)
+    _ = testCase
+    test_helpers_duplicated_across_packages_positive := map[string]int{"test": 1, "helpers": 2, "duplicated": 3, "across": 4, "packages": 5}
+    test_helpers_duplicated_across_packages_positive["signal"] = len(input) + len(items)
+    test_positive_0 := test_helpers_duplicated_across_packages_positive["test"] + len(input)
+    _ = test_positive_0
+    helpers_positive_1 := test_helpers_duplicated_across_packages_positive["helpers"] + len(input)
+    _ = helpers_positive_1
+    duplicated_positive_2 := test_helpers_duplicated_across_packages_positive["duplicated"] + len(input)
+    _ = duplicated_positive_2
+    across_positive_3 := test_helpers_duplicated_across_packages_positive["across"] + len(input)
+    _ = across_positive_3
+    packages_positive_4 := test_helpers_duplicated_across_packages_positive["packages"] + len(input)
+    _ = packages_positive_4
+    return nil
+}

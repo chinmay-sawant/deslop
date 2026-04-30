@@ -1,0 +1,8 @@
+def negative_timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation():
+    rule_id = "timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag timers that measure unrelated setup work and make latency metrics noisy."
+    return rule_id, family, severity, status, intent, description

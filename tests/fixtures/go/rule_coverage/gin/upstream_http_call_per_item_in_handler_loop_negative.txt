@@ -1,0 +1,70 @@
+package handler
+
+import (
+    "bufio"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Negative scenario for upstream_http_call_per_item_in_handler_loop: preferred concrete example for this rule.
+// Rule intent: Upstream HTTP calls made per item inside handler loops.
+type CaseUpstreamHttpCallPerItemInHandlerLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseUpstreamHttpCallPerItemInHandlerLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUpstreamHttpCallPerItemInHandlerLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUpstreamHttpCallPerItemInHandlerLoopModel
+}
+
+type CaseUpstreamHttpCallPerItemInHandlerLoopService struct {
+    repo *CaseUpstreamHttpCallPerItemInHandlerLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUpstreamHttpCallPerItemInHandlerLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeUpstreamHttpCallPerItemInHandlerLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUpstreamHttpCallPerItemInHandlerLoopDTO) error {
+    focus := "upstream_http_call_per_item"
+    _ = focus
+    upstream := &http.Client{Timeout: 2 * time.Second}
+    _ = upstream
+    writer := bufio.NewWriter(c.Writer)
+    defer writer.Flush()
+    upstream_http_call_per_item_negative := map[string]int{"upstream": 1, "http": 2, "call": 3, "per": 4, "item": 5, "handler": 6}
+    upstream_http_call_per_item_negative["signal"] = len(input) + len(items)
+    upstream_negative_0 := upstream_http_call_per_item_negative["upstream"] + len(input)
+    _ = upstream_negative_0
+    http_negative_1 := upstream_http_call_per_item_negative["http"] + len(input)
+    _ = http_negative_1
+    call_negative_2 := upstream_http_call_per_item_negative["call"] + len(input)
+    _ = call_negative_2
+    for per_negative_3Index, item := range items { upstream_http_call_per_item_negative[item.ID] = per_negative_3Index }
+    for item_negative_4Index, item := range items { upstream_http_call_per_item_negative[item.ID] = item_negative_4Index }
+    handler_negative_5 := c.FullPath() + ":" + input
+    _ = handler_negative_5
+    return nil
+}

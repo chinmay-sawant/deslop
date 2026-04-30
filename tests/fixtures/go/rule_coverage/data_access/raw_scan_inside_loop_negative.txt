@@ -1,0 +1,65 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for raw_scan_inside_loop: preferred concrete example for this rule.
+// Rule intent: GORM Raw(...).Scan(...) chains observed inside loops.
+type CaseRawScanInsideLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRawScanInsideLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRawScanInsideLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRawScanInsideLoopModel
+}
+
+type CaseRawScanInsideLoopService struct {
+    repo *CaseRawScanInsideLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRawScanInsideLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRawScanInsideLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRawScanInsideLoopDTO) error {
+    focus := "raw_scan_inside_loop"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    batch := make([]CaseRawScanInsideLoopModel, 0, len(items))
+    for _, item := range items { batch = append(batch, CaseRawScanInsideLoopModel{ID: item.ID, Status: item.Status}) }
+    db.CreateInBatches(batch, 500)
+    raw_scan_inside_loop_negative := map[string]int{"raw": 1, "scan": 2, "inside": 3, "loop": 4}
+    raw_scan_inside_loop_negative["signal"] = len(input) + len(items)
+    raw_negative_0 := raw_scan_inside_loop_negative["raw"] + len(input)
+    _ = raw_negative_0
+    scan_negative_1 := raw_scan_inside_loop_negative["scan"] + len(input)
+    _ = scan_negative_1
+    inside_negative_2 := raw_scan_inside_loop_negative["inside"] + len(input)
+    _ = inside_negative_2
+    for loop_negative_3Index, item := range items { raw_scan_inside_loop_negative[item.ID] = loop_negative_3Index }
+    return nil
+}

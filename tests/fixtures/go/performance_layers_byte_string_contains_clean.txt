@@ -1,0 +1,7 @@
+package perflayers
+
+import "bytes"
+
+func ByteStringContainsClean(data []byte) bool {
+    return bytes.IndexByte(data, 'x') >= 0
+}

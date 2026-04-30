@@ -1,0 +1,8 @@
+def positive_full_sort_performed_inside_outer_iteration():
+    rule_id = "full_sort_performed_inside_outer_iteration"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag outer loops that sort a full collection during each iteration."
+    return rule_id, family, severity, status, intent, description

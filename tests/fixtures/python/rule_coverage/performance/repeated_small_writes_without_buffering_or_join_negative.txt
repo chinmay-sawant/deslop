@@ -1,0 +1,8 @@
+def negative_repeated_small_writes_without_buffering_or_join():
+    rule_id = "repeated_small_writes_without_buffering_or_join"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag code that emits many tiny writes instead of buffering."
+    return rule_id, family, severity, status, intent, description

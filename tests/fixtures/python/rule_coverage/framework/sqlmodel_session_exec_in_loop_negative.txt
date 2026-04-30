@@ -1,0 +1,8 @@
+def negative_sqlmodel_session_exec_in_loop():
+    rule_id = "sqlmodel_session_exec_in_loop"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "SQLModel Session.exec(...) is called inside loops instead of combining the query shape."
+    return rule_id, family, severity, status, intent, description

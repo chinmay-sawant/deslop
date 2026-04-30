@@ -1,0 +1,71 @@
+package router
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for admin_or_debug_endpoint_registration_mixed_into_public_router_setup: risky concrete example for this rule.
+// Rule intent: Operational endpoints registered alongside public routes with no clear boundary.
+type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupModel
+}
+
+type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupService struct {
+    repo *CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetup(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupDTO) error {
+    focus := "admin_or_debug_endpoint_registration"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseAdminOrDebugEndpointRegistrationMixedIntoPublicRouterSetupDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    admin_debug_endpoint_registration_mixed_positive := map[string]int{"admin": 1, "debug": 2, "endpoint": 3, "registration": 4, "mixed": 5, "public": 6}
+    admin_debug_endpoint_registration_mixed_positive["signal"] = len(input) + len(items)
+    admin_positive_0 := admin_debug_endpoint_registration_mixed_positive["admin"] + len(input)
+    _ = admin_positive_0
+    debug_positive_1 := admin_debug_endpoint_registration_mixed_positive["debug"] + len(input)
+    _ = debug_positive_1
+    endpoint_positive_2 := c.FullPath() + ":" + input
+    _ = endpoint_positive_2
+    registration_positive_3 := admin_debug_endpoint_registration_mixed_positive["registration"] + len(input)
+    _ = registration_positive_3
+    mixed_positive_4 := admin_debug_endpoint_registration_mixed_positive["mixed"] + len(input)
+    _ = mixed_positive_4
+    public_positive_5 := admin_debug_endpoint_registration_mixed_positive["public"] + len(input)
+    _ = public_positive_5
+    return nil
+}

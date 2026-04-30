@@ -1,0 +1,70 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for same_domain_error_mapped_to_multiple_statuses: preferred concrete example for this rule.
+// Rule intent: The same error type being converted to different HTTP status codes in the same module.
+type CaseSameDomainErrorMappedToMultipleStatusesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSameDomainErrorMappedToMultipleStatusesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSameDomainErrorMappedToMultipleStatusesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSameDomainErrorMappedToMultipleStatusesModel
+}
+
+type CaseSameDomainErrorMappedToMultipleStatusesService struct {
+    repo *CaseSameDomainErrorMappedToMultipleStatusesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSameDomainErrorMappedToMultipleStatusesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSameDomainErrorMappedToMultipleStatuses(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSameDomainErrorMappedToMultipleStatusesDTO) error {
+    focus := "same_domain_error_mapped_to"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    dto := CaseSameDomainErrorMappedToMultipleStatusesDTO{ID: input, Status: "active"}
+    model := CaseSameDomainErrorMappedToMultipleStatusesModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    domain_error_mapped_multiple_statuses_negative := map[string]int{"domain": 1, "error": 2, "mapped": 3, "multiple": 4, "statuses": 5}
+    domain_error_mapped_multiple_statuses_negative["signal"] = len(input) + len(items)
+    domain_negative_0 := CaseSameDomainErrorMappedToMultipleStatusesDTO{ID: input, Status: "domain"}
+    _ = domain_negative_0
+    error_negative_1 := domain_error_mapped_multiple_statuses_negative["error"] + len(input)
+    _ = error_negative_1
+    mapped_negative_2 := domain_error_mapped_multiple_statuses_negative["mapped"] + len(input)
+    _ = mapped_negative_2
+    multiple_negative_3 := domain_error_mapped_multiple_statuses_negative["multiple"] + len(input)
+    _ = multiple_negative_3
+    statuses_negative_4 := domain_error_mapped_multiple_statuses_negative["statuses"] + len(input)
+    _ = statuses_negative_4
+    return nil
+}

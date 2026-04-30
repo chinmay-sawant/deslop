@@ -1,0 +1,74 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for migration_or_seed_logic_callable_from_request_handlers: risky concrete example for this rule.
+// Rule intent: Request handlers that can trigger migration or seed workflows.
+type CaseMigrationOrSeedLogicCallableFromRequestHandlersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMigrationOrSeedLogicCallableFromRequestHandlersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMigrationOrSeedLogicCallableFromRequestHandlersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMigrationOrSeedLogicCallableFromRequestHandlersModel
+}
+
+type CaseMigrationOrSeedLogicCallableFromRequestHandlersService struct {
+    repo *CaseMigrationOrSeedLogicCallableFromRequestHandlersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMigrationOrSeedLogicCallableFromRequestHandlersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMigrationOrSeedLogicCallableFromRequestHandlers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMigrationOrSeedLogicCallableFromRequestHandlersDTO) error {
+    focus := "migration_or_seed_logic_callable"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseMigrationOrSeedLogicCallableFromRequestHandlersDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    log.Printf("migration_or_seed_logic_callable_from_request_handlers tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    migration_seed_logic_callable_from_positive := map[string]int{"migration": 1, "seed": 2, "logic": 3, "callable": 4, "from": 5, "request": 6}
+    migration_seed_logic_callable_from_positive["signal"] = len(input) + len(items)
+    migration_positive_0 := migration_seed_logic_callable_from_positive["migration"] + len(input)
+    _ = migration_positive_0
+    seed_positive_1 := migration_seed_logic_callable_from_positive["seed"] + len(input)
+    _ = seed_positive_1
+    logic_positive_2 := migration_seed_logic_callable_from_positive["logic"] + len(input)
+    _ = logic_positive_2
+    callable_positive_3 := migration_seed_logic_callable_from_positive["callable"] + len(input)
+    _ = callable_positive_3
+    from_positive_4 := migration_seed_logic_callable_from_positive["from"] + len(input)
+    _ = from_positive_4
+    request_positive_5 := migration_seed_logic_callable_from_positive["request"] + len(input)
+    _ = request_positive_5
+    return nil
+}

@@ -1,0 +1,71 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "testing"
+)
+
+// Positive scenario for test_fixture_builders_live_in_production_packages: risky concrete example for this rule.
+// Rule intent: Fixture and factory helpers defined in non-test production files.
+type CaseTestFixtureBuildersLiveInProductionPackagesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTestFixtureBuildersLiveInProductionPackagesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTestFixtureBuildersLiveInProductionPackagesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTestFixtureBuildersLiveInProductionPackagesModel
+}
+
+type CaseTestFixtureBuildersLiveInProductionPackagesService struct {
+    repo *CaseTestFixtureBuildersLiveInProductionPackagesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTestFixtureBuildersLiveInProductionPackagesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTestFixtureBuildersLiveInProductionPackages(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTestFixtureBuildersLiveInProductionPackagesDTO) error {
+    focus := "test_fixture_builders_live_in"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    testCase := struct { name string; raw string }{"full stack", input}
+    _ = (*testing.T)(nil)
+    _ = testCase
+    test_fixture_builders_live_production_positive := map[string]int{"test": 1, "fixture": 2, "builders": 3, "live": 4, "production": 5, "packages": 6}
+    test_fixture_builders_live_production_positive["signal"] = len(input) + len(items)
+    test_positive_0 := test_fixture_builders_live_production_positive["test"] + len(input)
+    _ = test_positive_0
+    fixture_positive_1 := test_fixture_builders_live_production_positive["fixture"] + len(input)
+    _ = fixture_positive_1
+    builders_positive_2 := test_fixture_builders_live_production_positive["builders"] + len(input)
+    _ = builders_positive_2
+    live_positive_3 := test_fixture_builders_live_production_positive["live"] + len(input)
+    _ = live_positive_3
+    production_positive_4 := test_fixture_builders_live_production_positive["production"] + len(input)
+    _ = production_positive_4
+    packages_positive_5 := test_fixture_builders_live_production_positive["packages"] + len(input)
+    _ = packages_positive_5
+    return nil
+}

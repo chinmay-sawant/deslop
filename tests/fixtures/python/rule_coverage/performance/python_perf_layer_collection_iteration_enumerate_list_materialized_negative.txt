@@ -1,0 +1,8 @@
+def negative_python_perf_layer_collection_iteration_enumerate_list_materialized():
+    rule_id = "python_perf_layer_collection_iteration_enumerate_list_materialized"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Collection iteration. Flag list(enumerate(...)) materialization before immediate iteration."
+    return rule_id, family, severity, status, intent, description

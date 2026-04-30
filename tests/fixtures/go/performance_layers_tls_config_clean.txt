@@ -1,0 +1,9 @@
+package perflayers
+
+import "crypto/tls"
+
+var shared = &tls.Config{MinVersion: tls.VersionTLS12}
+
+func ReuseSecureTransport() *tls.Config {
+    return shared
+}

@@ -1,0 +1,8 @@
+def negative_multiple_regex_passes_over_same_text_without_precompiled_plan():
+    rule_id = "multiple_regex_passes_over_same_text_without_precompiled_plan"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag code that re-runs several overlapping regex passes on the same text."
+    return rule_id, family, severity, status, intent, description

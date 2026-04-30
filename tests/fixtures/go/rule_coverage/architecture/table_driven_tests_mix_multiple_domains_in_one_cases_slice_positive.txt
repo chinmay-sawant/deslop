@@ -1,0 +1,80 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "testing"
+)
+
+// Positive scenario for table_driven_tests_mix_multiple_domains_in_one_cases_slice: risky concrete example for this rule.
+// Rule intent: Oversized case tables that mix unrelated behaviors into one monolithic test.
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel
+}
+
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceService struct {
+    repo *CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTableDrivenTestsMixMultipleDomainsInOneCasesSlice(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceDTO) error {
+    focus := "table_driven_tests_mix_multiple"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceService{repo: &CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseTableDrivenTestsMixMultipleDomainsInOneCasesSliceModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    testCase := struct { name string; raw string }{"full stack", input}
+    _ = (*testing.T)(nil)
+    _ = testCase
+    table_driven_tests_mix_multiple_positive := map[string]int{"table": 1, "driven": 2, "tests": 3, "mix": 4, "multiple": 5, "domains": 6}
+    table_driven_tests_mix_multiple_positive["signal"] = len(input) + len(items)
+    table_positive_0 := db.Where("table_id = ?", input)
+    _ = table_positive_0
+    driven_positive_1 := table_driven_tests_mix_multiple_positive["driven"] + len(input)
+    _ = driven_positive_1
+    tests_positive_2 := table_driven_tests_mix_multiple_positive["tests"] + len(input)
+    _ = tests_positive_2
+    mix_positive_3 := table_driven_tests_mix_multiple_positive["mix"] + len(input)
+    _ = mix_positive_3
+    multiple_positive_4 := table_driven_tests_mix_multiple_positive["multiple"] + len(input)
+    _ = multiple_positive_4
+    domains_positive_5 := table_driven_tests_mix_multiple_positive["domains"] + len(input)
+    _ = domains_positive_5
+    return nil
+}

@@ -1,0 +1,63 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for constant_encryption_key: risky concrete example for this rule.
+// Rule intent: `[]byte("...")` used directly as arguments to `cipher.NewGCM`, `aes.NewCipher`, or similar encryption constructor calls
+type CaseConstantEncryptionKeyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseConstantEncryptionKeyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseConstantEncryptionKeyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseConstantEncryptionKeyModel
+}
+
+type CaseConstantEncryptionKeyService struct {
+    repo *CaseConstantEncryptionKeyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseConstantEncryptionKeyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveConstantEncryptionKey(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseConstantEncryptionKeyDTO) error {
+    focus := "constant_encryption_key"
+    _ = focus
+    secret := "hardcoded-development-secret"
+    password := input
+    _, _ = secret, password
+    constant_encryption_key_positive := map[string]int{"constant": 1, "encryption": 2, "key": 3}
+    constant_encryption_key_positive["signal"] = len(input) + len(items)
+    constant_positive_0 := constant_encryption_key_positive["constant"] + len(input)
+    _ = constant_positive_0
+    encryption_positive_1 := constant_encryption_key_positive["encryption"] + len(input)
+    _ = encryption_positive_1
+    key_positive_2 := constant_encryption_key_positive["key"] + len(input)
+    _ = key_positive_2
+    return nil
+}

@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "sort"
+    "strings"
+)
+
+// Negative scenario for sort_before_first_or_membership_only: preferred concrete example for this rule.
+// Rule intent: Sorting a collection when only the first element or min/max is needed.
+type CaseSortBeforeFirstOrMembershipOnlyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSortBeforeFirstOrMembershipOnlyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSortBeforeFirstOrMembershipOnlyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSortBeforeFirstOrMembershipOnlyModel
+}
+
+type CaseSortBeforeFirstOrMembershipOnlyService struct {
+    repo *CaseSortBeforeFirstOrMembershipOnlyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSortBeforeFirstOrMembershipOnlyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeSortBeforeFirstOrMembershipOnly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSortBeforeFirstOrMembershipOnlyDTO) error {
+    focus := "sort_before_first_or_membership"
+    _ = focus
+    buf := []byte(input)
+    sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
+    sort_before_first_membership_only_negative := map[string]int{"sort": 1, "before": 2, "first": 3, "membership": 4, "only": 5}
+    sort_before_first_membership_only_negative["signal"] = len(input) + len(items)
+    sort_negative_0 := sort_before_first_membership_only_negative["sort"] + len(input)
+    _ = sort_negative_0
+    before_negative_1 := sort_before_first_membership_only_negative["before"] + len(input)
+    _ = before_negative_1
+    first_negative_2 := sort_before_first_membership_only_negative["first"] + len(input)
+    _ = first_negative_2
+    membership_negative_3 := sort_before_first_membership_only_negative["membership"] + len(input)
+    _ = membership_negative_3
+    only_negative_4 := sort_before_first_membership_only_negative["only"] + len(input)
+    _ = only_negative_4
+    return nil
+}

@@ -1,0 +1,8 @@
+def positive_shared_mutable_collection_mutated_across_threads_without_lock():
+    rule_id = "shared_mutable_collection_mutated_across_threads_without_lock"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Shared mutable collection such as a list or dict is mutated from multiple threads without a lock."
+    return rule_id, family, severity, status, intent, description

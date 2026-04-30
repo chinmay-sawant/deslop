@@ -1,0 +1,8 @@
+def negative_transaction_block_missing_rollback_on_exception():
+    rule_id = "transaction_block_missing_rollback_on_exception"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Database transaction started manually without a corresponding rollback in an except or finally clause."
+    return rule_id, family, severity, status, intent, description

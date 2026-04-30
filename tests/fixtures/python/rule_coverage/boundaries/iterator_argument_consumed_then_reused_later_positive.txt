@@ -1,0 +1,8 @@
+def positive_iterator_argument_consumed_then_reused_later():
+    rule_id = "iterator_argument_consumed_then_reused_later"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag functions that exhaust an iterator and later treat it as if it were reusable data."
+    return rule_id, family, severity, status, intent, description

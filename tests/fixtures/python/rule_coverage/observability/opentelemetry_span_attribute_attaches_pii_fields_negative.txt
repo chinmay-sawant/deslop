@@ -1,0 +1,8 @@
+def negative_opentelemetry_span_attribute_attaches_pii_fields():
+    rule_id = "opentelemetry_span_attribute_attaches_pii_fields"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "OpenTelemetry span attribute set to a key that likely carries PII such as email, phone, or IP address."
+    return rule_id, family, severity, status, intent, description

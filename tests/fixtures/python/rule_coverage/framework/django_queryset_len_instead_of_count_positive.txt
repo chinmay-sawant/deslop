@@ -1,0 +1,8 @@
+def positive_django_queryset_len_instead_of_count():
+    rule_id = "django_queryset_len_instead_of_count"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "len(queryset) is used where queryset.count() would avoid loading every row."
+    return rule_id, family, severity, status, intent, description

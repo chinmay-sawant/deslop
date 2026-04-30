@@ -1,0 +1,8 @@
+def positive_heavy_optional_dependency_imported_by_package_root():
+    rule_id = "heavy_optional_dependency_imported_by_package_root"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag package roots that import heavy optional dependencies by default."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_observability_context_extracted_manually_at_many_call_sites():
+    rule_id = "observability_context_extracted_manually_at_many_call_sites"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag repeated manual extraction of the same tracing or logging context."
+    return rule_id, family, severity, status, intent, description

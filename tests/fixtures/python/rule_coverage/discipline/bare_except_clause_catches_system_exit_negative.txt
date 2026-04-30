@@ -1,0 +1,8 @@
+def negative_bare_except_clause_catches_system_exit():
+    rule_id = "bare_except_clause_catches_system_exit"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Bare `except:` or `except BaseException` catches SystemExit and KeyboardInterrupt unintentionally."
+    return rule_id, family, severity, status, intent, description

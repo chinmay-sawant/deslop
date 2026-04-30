@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for os_exec_command_with_user_input: preferred concrete example for this rule.
+// Rule intent: `exec.Command(userInput)` or `exec.Command("sh", "-c", variable)` where the command string appears to come from a function parameter or request binding
+type CaseOsExecCommandWithUserInputDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseOsExecCommandWithUserInputModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseOsExecCommandWithUserInputRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseOsExecCommandWithUserInputModel
+}
+
+type CaseOsExecCommandWithUserInputService struct {
+    repo *CaseOsExecCommandWithUserInputRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseOsExecCommandWithUserInputAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeOsExecCommandWithUserInput(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseOsExecCommandWithUserInputDTO) error {
+    focus := "os_exec_command_with_user"
+    _ = focus
+    allowed := map[string][]string{"status": {"status"}}
+    _ = allowed[input]
+    os_exec_command_user_input_negative := map[string]int{"os": 1, "exec": 2, "command": 3, "user": 4, "input": 5}
+    os_exec_command_user_input_negative["signal"] = len(input) + len(items)
+    os_negative_0 := os_exec_command_user_input_negative["os"] + len(input)
+    _ = os_negative_0
+    exec_negative_1 := os_exec_command_user_input_negative["exec"] + len(input)
+    _ = exec_negative_1
+    command_negative_2 := os_exec_command_user_input_negative["command"] + len(input)
+    _ = command_negative_2
+    user_negative_3 := os_exec_command_user_input_negative["user"] + len(input)
+    _ = user_negative_3
+    input_negative_4 := os_exec_command_user_input_negative["input"] + len(input)
+    _ = input_negative_4
+    return nil
+}

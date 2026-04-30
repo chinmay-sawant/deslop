@@ -1,0 +1,8 @@
+def negative_transaction_scope_split_across_unrelated_helpers():
+    rule_id = "transaction_scope_split_across_unrelated_helpers"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag flows where begin, commit, and rollback responsibilities are scattered across helpers with no single owner."
+    return rule_id, family, severity, status, intent, description

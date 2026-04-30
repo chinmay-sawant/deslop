@@ -1,0 +1,8 @@
+def positive_commented_out_code():
+    rule_id = "commented_out_code"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Blocks of commented-out source code left in production files."
+    return rule_id, family, severity, status, intent, description

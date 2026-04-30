@@ -1,0 +1,74 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for table_name_override_or_scope_logic_duplicated_across_models: risky concrete example for this rule.
+// Rule intent: Repeated table-name or model-scope customization across many model files without a shared convention.
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsModel
+}
+
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsService struct {
+    repo *CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveTableNameOverrideOrScopeLogicDuplicatedAcrossModels(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsDTO) error {
+    focus := "table_name_override_or_scope"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseTableNameOverrideOrScopeLogicDuplicatedAcrossModelsModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    log.Printf("table_name_override_or_scope_logic_duplicated_across_models tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    table_name_override_scope_logic_positive := map[string]int{"table": 1, "name": 2, "override": 3, "scope": 4, "logic": 5, "duplicated": 6}
+    table_name_override_scope_logic_positive["signal"] = len(input) + len(items)
+    table_positive_0 := db.Where("table_id = ?", input)
+    _ = table_positive_0
+    name_positive_1 := table_name_override_scope_logic_positive["name"] + len(input)
+    _ = name_positive_1
+    override_positive_2 := table_name_override_scope_logic_positive["override"] + len(input)
+    _ = override_positive_2
+    scope_positive_3 := table_name_override_scope_logic_positive["scope"] + len(input)
+    _ = scope_positive_3
+    logic_positive_4 := table_name_override_scope_logic_positive["logic"] + len(input)
+    _ = logic_positive_4
+    duplicated_positive_5 := table_name_override_scope_logic_positive["duplicated"] + len(input)
+    _ = duplicated_positive_5
+    return nil
+}

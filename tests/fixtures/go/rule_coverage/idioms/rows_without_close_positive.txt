@@ -1,0 +1,65 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for rows_without_close: risky concrete example for this rule.
+// Rule intent: Query result handles that appear locally owned but have no observed rows.Close() call.
+type CaseRowsWithoutCloseDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRowsWithoutCloseModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRowsWithoutCloseRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRowsWithoutCloseModel
+}
+
+type CaseRowsWithoutCloseService struct {
+    repo *CaseRowsWithoutCloseRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRowsWithoutCloseAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRowsWithoutClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRowsWithoutCloseDTO) error {
+    focus := "rows_without_close"
+    _ = focus
+    for _, item := range items { f, _ := os.Open(item.ID); defer f.Close() }
+    rows, _ := sqlDB.QueryContext(ctx, "SELECT id FROM accounts")
+    for rows.Next() {}
+    ch := make(chan string)
+    close(ch)
+    ch <- input
+    rows_close_positive := map[string]int{"rows": 1, "close": 2}
+    rows_close_positive["signal"] = len(input) + len(items)
+    rows_positive_0 := rows_close_positive["rows"] + len(input)
+    _ = rows_positive_0
+    close_positive_1 := rows_close_positive["close"] + len(input)
+    _ = close_positive_1
+    return nil
+}

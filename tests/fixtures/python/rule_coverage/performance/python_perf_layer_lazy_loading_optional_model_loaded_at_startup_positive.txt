@@ -1,0 +1,8 @@
+def positive_python_perf_layer_lazy_loading_optional_model_loaded_at_startup():
+    rule_id = "python_perf_layer_lazy_loading_optional_model_loaded_at_startup"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Lazy loading. Flag optional ML/model assets loaded at startup before any route or job needs them."
+    return rule_id, family, severity, status, intent, description

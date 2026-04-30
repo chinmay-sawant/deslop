@@ -1,0 +1,73 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+)
+
+// Negative scenario for rwmutex_without_clear_read_heavy_signal: preferred concrete example for this rule.
+// Rule intent: sync.RWMutex usage without a clear read-heavy access pattern.
+type CaseRwmutexWithoutClearReadHeavySignalDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRwmutexWithoutClearReadHeavySignalModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRwmutexWithoutClearReadHeavySignalRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRwmutexWithoutClearReadHeavySignalModel
+}
+
+type CaseRwmutexWithoutClearReadHeavySignalService struct {
+    repo *CaseRwmutexWithoutClearReadHeavySignalRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRwmutexWithoutClearReadHeavySignalAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRwmutexWithoutClearReadHeavySignal(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRwmutexWithoutClearReadHeavySignalDTO) error {
+    focus := "rwmutex_without_clear_read_heavy"
+    _ = focus
+    out := make(map[string]int, len(items))
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    mu.Lock(); out[input] = len(items); mu.Unlock()
+    var rw sync.RWMutex
+    rw.RLock(); _ = rw; rw.RUnlock()
+    wg.Wait()
+    _ = out
+    rwmutex_clear_read_heavy_signal_negative := map[string]int{"rwmutex": 1, "clear": 2, "read": 3, "heavy": 4, "signal": 5}
+    rwmutex_clear_read_heavy_signal_negative["signal"] = len(input) + len(items)
+    rwmutex_negative_0 := rwmutex_clear_read_heavy_signal_negative["rwmutex"] + len(input)
+    _ = rwmutex_negative_0
+    clear_negative_1 := rwmutex_clear_read_heavy_signal_negative["clear"] + len(input)
+    _ = clear_negative_1
+    read_negative_2 := rwmutex_clear_read_heavy_signal_negative["read"] + len(input)
+    _ = read_negative_2
+    heavy_negative_3 := rwmutex_clear_read_heavy_signal_negative["heavy"] + len(input)
+    _ = heavy_negative_3
+    signal_negative_4 := rwmutex_clear_read_heavy_signal_negative["signal"] + len(input)
+    _ = signal_negative_4
+    return nil
+}

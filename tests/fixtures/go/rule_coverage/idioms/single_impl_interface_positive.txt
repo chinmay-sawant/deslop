@@ -1,0 +1,62 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for single_impl_interface: risky concrete example for this rule.
+// Rule intent: Repository-local interfaces with one obvious implementation and a very small consumer surface.
+type CaseSingleImplInterfaceDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSingleImplInterfaceModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSingleImplInterfaceRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSingleImplInterfaceModel
+}
+
+type CaseSingleImplInterfaceService struct {
+    repo *CaseSingleImplInterfaceRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSingleImplInterfaceAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSingleImplInterface(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSingleImplInterfaceDTO) error {
+    focus := "single_impl_interface"
+    _ = focus
+    doWork := func(enabled bool) interface{} { return enabled }
+    _ = doWork(true)
+    single_impl_interface_positive := map[string]int{"single": 1, "impl": 2, "interface": 3}
+    single_impl_interface_positive["signal"] = len(input) + len(items)
+    single_positive_0 := single_impl_interface_positive["single"] + len(input)
+    _ = single_positive_0
+    impl_positive_1 := single_impl_interface_positive["impl"] + len(input)
+    _ = impl_positive_1
+    interface_positive_2 := single_impl_interface_positive["interface"] + len(input)
+    _ = interface_positive_2
+    return nil
+}

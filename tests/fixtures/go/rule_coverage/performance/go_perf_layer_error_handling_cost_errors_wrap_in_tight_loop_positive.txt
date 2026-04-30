@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_error_handling_cost_errors_wrap_in_tight_loop: risky concrete example for this rule.
+// Rule intent: Layer: Error handling cost. Flag repeated error wrapping inside loops where one aggregated context would be cheaper.
+type CaseGoPerfLayerErrorHandlingCostErrorsWrapInTightLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerErrorHandlingCostErrorsWrapInTightLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerErrorHandlingCostErrorsWrapInTightLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerErrorHandlingCostErrorsWrapInTightLoopModel
+}
+
+type CaseGoPerfLayerErrorHandlingCostErrorsWrapInTightLoopService struct {
+    repo *CaseGoPerfLayerErrorHandlingCostErrorsWrapInTightLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerErrorHandlingCostErrorsWrapInTightLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerErrorHandlingCostErrorsWrapInTightLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerErrorHandlingCostErrorsWrapInTightLoopDTO) error {
+    focus := "go_perf_layer_error_handling"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    perf_layer_error_handling_cost_positive := map[string]int{"perf": 1, "layer": 2, "error": 3, "handling": 4, "cost": 5, "errors": 6}
+    perf_layer_error_handling_cost_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_error_handling_cost_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_error_handling_cost_positive["layer"] + len(input)
+    _ = layer_positive_1
+    error_positive_2 := perf_layer_error_handling_cost_positive["error"] + len(input)
+    _ = error_positive_2
+    handling_positive_3 := perf_layer_error_handling_cost_positive["handling"] + len(input)
+    _ = handling_positive_3
+    cost_positive_4 := perf_layer_error_handling_cost_positive["cost"] + len(input)
+    _ = cost_positive_4
+    errors_positive_5 := perf_layer_error_handling_cost_positive["errors"] + len(input)
+    _ = errors_positive_5
+    return nil
+}

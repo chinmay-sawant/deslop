@@ -1,0 +1,76 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for service_method_returns_gorm_db_or_sql_rows: risky concrete example for this rule.
+// Rule intent: Services that leak ORM or driver primitives upward instead of returning business results.
+type CaseServiceMethodReturnsGormDbOrSqlRowsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseServiceMethodReturnsGormDbOrSqlRowsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseServiceMethodReturnsGormDbOrSqlRowsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceMethodReturnsGormDbOrSqlRowsModel
+}
+
+type CaseServiceMethodReturnsGormDbOrSqlRowsService struct {
+    repo *CaseServiceMethodReturnsGormDbOrSqlRowsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServiceMethodReturnsGormDbOrSqlRowsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveServiceMethodReturnsGormDbOrSqlRows(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodReturnsGormDbOrSqlRowsDTO) error {
+    focus := "service_method_returns_gorm_db"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseServiceMethodReturnsGormDbOrSqlRowsRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseServiceMethodReturnsGormDbOrSqlRowsModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseServiceMethodReturnsGormDbOrSqlRowsService{repo: &CaseServiceMethodReturnsGormDbOrSqlRowsRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseServiceMethodReturnsGormDbOrSqlRowsModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    service_method_returns_gorm_db_positive := map[string]int{"service": 1, "method": 2, "returns": 3, "gorm": 4, "db": 5, "sql": 6}
+    service_method_returns_gorm_db_positive["signal"] = len(input) + len(items)
+    service_positive_0 := CaseServiceMethodReturnsGormDbOrSqlRowsDTO{ID: input, Status: "service"}
+    _ = service_positive_0
+    method_positive_1 := service_method_returns_gorm_db_positive["method"] + len(input)
+    _ = method_positive_1
+    returns_positive_2 := service_method_returns_gorm_db_positive["returns"] + len(input)
+    _ = returns_positive_2
+    gorm_positive_3 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_3
+    db_positive_4 := db.Where("db_id = ?", input)
+    _ = db_positive_4
+    sql_positive_5 := db.Where("sql_id = ?", input)
+    _ = sql_positive_5
+    return nil
+}

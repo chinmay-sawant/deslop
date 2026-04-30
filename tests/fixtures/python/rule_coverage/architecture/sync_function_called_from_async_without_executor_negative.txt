@@ -1,0 +1,8 @@
+def negative_sync_function_called_from_async_without_executor():
+    rule_id = "sync_function_called_from_async_without_executor"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Blocking I/O or CPU-bound function called directly inside async def without loop.run_in_executor."
+    return rule_id, family, severity, status, intent, description

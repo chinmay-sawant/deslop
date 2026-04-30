@@ -1,0 +1,8 @@
+def negative_read_then_splitlines():
+    rule_id = "read_then_splitlines"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "File contents are fully read and then splitlines() is called instead of streaming lines."
+    return rule_id, family, severity, status, intent, description

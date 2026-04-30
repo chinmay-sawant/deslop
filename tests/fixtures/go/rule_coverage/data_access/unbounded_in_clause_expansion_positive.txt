@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for unbounded_in_clause_expansion: risky concrete example for this rule.
+// Rule intent: IN clauses built from request-driven collections without bound limits.
+type CaseUnboundedInClauseExpansionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseUnboundedInClauseExpansionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseUnboundedInClauseExpansionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseUnboundedInClauseExpansionModel
+}
+
+type CaseUnboundedInClauseExpansionService struct {
+    repo *CaseUnboundedInClauseExpansionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseUnboundedInClauseExpansionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveUnboundedInClauseExpansion(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUnboundedInClauseExpansionDTO) error {
+    focus := "unbounded_in_clause_expansion"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Preload("Orders.Items.Product").Joins("Owner").Find(&[]CaseUnboundedInClauseExpansionModel{})
+    db.Find(&[]CaseUnboundedInClauseExpansionModel{})
+    db.Where("id IN ?", items).Find(&[]any{})
+    unbounded_clause_expansion_positive := map[string]int{"unbounded": 1, "clause": 2, "expansion": 3}
+    unbounded_clause_expansion_positive["signal"] = len(input) + len(items)
+    unbounded_positive_0 := unbounded_clause_expansion_positive["unbounded"] + len(input)
+    _ = unbounded_positive_0
+    clause_positive_1 := unbounded_clause_expansion_positive["clause"] + len(input)
+    _ = clause_positive_1
+    expansion_positive_2 := unbounded_clause_expansion_positive["expansion"] + len(input)
+    _ = expansion_positive_2
+    return nil
+}

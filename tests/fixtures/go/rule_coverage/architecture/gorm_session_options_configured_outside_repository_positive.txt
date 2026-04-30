@@ -1,0 +1,76 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for gorm_session_options_configured_outside_repository: risky concrete example for this rule.
+// Rule intent: Code above the repository layer that changes `Session`, `Clauses`, or transaction options directly.
+type CaseGormSessionOptionsConfiguredOutsideRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGormSessionOptionsConfiguredOutsideRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGormSessionOptionsConfiguredOutsideRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormSessionOptionsConfiguredOutsideRepositoryModel
+}
+
+type CaseGormSessionOptionsConfiguredOutsideRepositoryService struct {
+    repo *CaseGormSessionOptionsConfiguredOutsideRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormSessionOptionsConfiguredOutsideRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGormSessionOptionsConfiguredOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormSessionOptionsConfiguredOutsideRepositoryDTO) error {
+    focus := "gorm_session_options_configured_outside"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseGormSessionOptionsConfiguredOutsideRepositoryRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormSessionOptionsConfiguredOutsideRepositoryModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    tx := db.Begin()
+    tx.Create(&CaseGormSessionOptionsConfiguredOutsideRepositoryModel{ID: input})
+    go func() { _ = tx.Commit().Error }()
+    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
+    gorm_session_options_configured_outside_positive := map[string]int{"gorm": 1, "session": 2, "options": 3, "configured": 4, "outside": 5, "repository": 6}
+    gorm_session_options_configured_outside_positive["signal"] = len(input) + len(items)
+    gorm_positive_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_0
+    session_positive_1 := gorm_session_options_configured_outside_positive["session"] + len(input)
+    _ = session_positive_1
+    options_positive_2 := gorm_session_options_configured_outside_positive["options"] + len(input)
+    _ = options_positive_2
+    configured_positive_3 := gorm_session_options_configured_outside_positive["configured"] + len(input)
+    _ = configured_positive_3
+    outside_positive_4 := gorm_session_options_configured_outside_positive["outside"] + len(input)
+    _ = outside_positive_4
+    repository_positive_5 := db.Where("repository_id = ?", input)
+    _ = repository_positive_5
+    return nil
+}

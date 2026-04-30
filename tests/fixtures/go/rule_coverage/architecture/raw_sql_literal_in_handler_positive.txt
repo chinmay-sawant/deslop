@@ -1,0 +1,71 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for raw_sql_literal_in_handler: risky concrete example for this rule.
+// Rule intent: Literal SQL strings declared and executed from handlers.
+type CaseRawSqlLiteralInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRawSqlLiteralInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRawSqlLiteralInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRawSqlLiteralInHandlerModel
+}
+
+type CaseRawSqlLiteralInHandlerService struct {
+    repo *CaseRawSqlLiteralInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRawSqlLiteralInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRawSqlLiteralInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRawSqlLiteralInHandlerDTO) error {
+    focus := "raw_sql_literal_in_handler"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRawSqlLiteralInHandlerDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseRawSqlLiteralInHandlerRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRawSqlLiteralInHandlerModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    raw_sql_literal_handler_positive := map[string]int{"raw": 1, "sql": 2, "literal": 3, "handler": 4}
+    raw_sql_literal_handler_positive["signal"] = len(input) + len(items)
+    raw_positive_0 := raw_sql_literal_handler_positive["raw"] + len(input)
+    _ = raw_positive_0
+    sql_positive_1 := db.Where("sql_id = ?", input)
+    _ = sql_positive_1
+    literal_positive_2 := raw_sql_literal_handler_positive["literal"] + len(input)
+    _ = literal_positive_2
+    handler_positive_3 := c.FullPath() + ":" + input
+    _ = handler_positive_3
+    return nil
+}

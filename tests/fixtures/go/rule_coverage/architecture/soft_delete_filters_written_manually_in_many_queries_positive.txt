@@ -1,0 +1,75 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strconv"
+    "strings"
+)
+
+// Positive scenario for soft_delete_filters_written_manually_in_many_queries: risky concrete example for this rule.
+// Rule intent: Repeated `deleted_at IS NULL` style filters rather than a shared repository or scope policy.
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSoftDeleteFiltersWrittenManuallyInManyQueriesModel
+}
+
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesService struct {
+    repo *CaseSoftDeleteFiltersWrittenManuallyInManyQueriesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSoftDeleteFiltersWrittenManuallyInManyQueriesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSoftDeleteFiltersWrittenManuallyInManyQueries(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSoftDeleteFiltersWrittenManuallyInManyQueriesDTO) error {
+    focus := "soft_delete_filters_written_manually"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseSoftDeleteFiltersWrittenManuallyInManyQueriesRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseSoftDeleteFiltersWrittenManuallyInManyQueriesModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    page, _ := strconv.Atoi(c.Query("page"))
+    size, _ := strconv.Atoi(c.Query("size"))
+    db.Order(c.Query("sort")).Offset((page - 1) * size).Limit(size).Find(&[]any{})
+    soft_delete_filters_written_manually_positive := map[string]int{"soft": 1, "delete": 2, "filters": 3, "written": 4, "manually": 5, "many": 6}
+    soft_delete_filters_written_manually_positive["signal"] = len(input) + len(items)
+    soft_positive_0 := soft_delete_filters_written_manually_positive["soft"] + len(input)
+    _ = soft_positive_0
+    delete_positive_1 := soft_delete_filters_written_manually_positive["delete"] + len(input)
+    _ = delete_positive_1
+    filters_positive_2 := soft_delete_filters_written_manually_positive["filters"] + len(input)
+    _ = filters_positive_2
+    written_positive_3 := soft_delete_filters_written_manually_positive["written"] + len(input)
+    _ = written_positive_3
+    manually_positive_4 := soft_delete_filters_written_manually_positive["manually"] + len(input)
+    _ = manually_positive_4
+    many_positive_5 := soft_delete_filters_written_manually_positive["many"] + len(input)
+    _ = many_positive_5
+    return nil
+}

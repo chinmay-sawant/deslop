@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for fmt_fprintf_single_string_to_strings_builder: risky concrete example for this rule.
+// Rule intent: `fmt.Fprintf(&builder, "%s", s)` instead of `WriteString(s)`.
+type CaseFmtFprintfSingleStringToStringsBuilderDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFmtFprintfSingleStringToStringsBuilderModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtFprintfSingleStringToStringsBuilderRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtFprintfSingleStringToStringsBuilderModel
+}
+
+type CaseFmtFprintfSingleStringToStringsBuilderService struct {
+    repo *CaseFmtFprintfSingleStringToStringsBuilderRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtFprintfSingleStringToStringsBuilderAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFmtFprintfSingleStringToStringsBuilder(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtFprintfSingleStringToStringsBuilderDTO) error {
+    focus := "fmt_fprintf_single_string_to"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    fmt_fprintf_single_string_strings_positive := map[string]int{"fmt": 1, "fprintf": 2, "single": 3, "string": 4, "strings": 5, "builder": 6}
+    fmt_fprintf_single_string_strings_positive["signal"] = len(input) + len(items)
+    fmt_positive_0 := fmt_fprintf_single_string_strings_positive["fmt"] + len(input)
+    _ = fmt_positive_0
+    fprintf_positive_1 := fmt_fprintf_single_string_strings_positive["fprintf"] + len(input)
+    _ = fprintf_positive_1
+    single_positive_2 := fmt_fprintf_single_string_strings_positive["single"] + len(input)
+    _ = single_positive_2
+    string_positive_3 := strings.TrimSpace(input)
+    _ = string_positive_3
+    strings_positive_4 := strings.TrimSpace(input)
+    _ = strings_positive_4
+    builder_positive_5 := strings.TrimSpace(input)
+    _ = builder_positive_5
+    return nil
+}

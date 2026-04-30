@@ -1,0 +1,8 @@
+def positive_instrumentation_helper_mutates_business_return_shape():
+    rule_id = "instrumentation_helper_mutates_business_return_shape"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag instrumentation wrappers that alter the shape of business return values."
+    return rule_id, family, severity, status, intent, description

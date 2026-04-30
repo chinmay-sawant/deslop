@@ -1,0 +1,8 @@
+def positive_repeated_casefold_or_lower_calls_before_multiple_comparisons():
+    rule_id = "repeated_casefold_or_lower_calls_before_multiple_comparisons"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag code that normalizes the same candidate repeatedly before several comparisons."
+    return rule_id, family, severity, status, intent, description

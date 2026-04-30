@@ -1,0 +1,73 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for gin_handler_parses_config_or_feature_flags_inline: risky concrete example for this rule.
+// Rule intent: Handlers that read feature flags, tenant configuration, or rollout toggles directly instead of using injected policy/config abstractions.
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinHandlerParsesConfigOrFeatureFlagsInlineModel
+}
+
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineService struct {
+    repo *CaseGinHandlerParsesConfigOrFeatureFlagsInlineRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGinHandlerParsesConfigOrFeatureFlagsInlineAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGinHandlerParsesConfigOrFeatureFlagsInline(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinHandlerParsesConfigOrFeatureFlagsInlineDTO) error {
+    focus := "gin_handler_parses_config_or"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinHandlerParsesConfigOrFeatureFlagsInlineDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
+    gin_handler_parses_config_feature_positive := map[string]int{"gin": 1, "handler": 2, "parses": 3, "config": 4, "feature": 5, "flags": 6}
+    gin_handler_parses_config_feature_positive["signal"] = len(input) + len(items)
+    gin_positive_0 := c.FullPath() + ":" + input
+    _ = gin_positive_0
+    handler_positive_1 := c.FullPath() + ":" + input
+    _ = handler_positive_1
+    parses_positive_2 := gin_handler_parses_config_feature_positive["parses"] + len(input)
+    _ = parses_positive_2
+    config_positive_3 := gin_handler_parses_config_feature_positive["config"] + len(input)
+    _ = config_positive_3
+    feature_positive_4 := gin_handler_parses_config_feature_positive["feature"] + len(input)
+    _ = feature_positive_4
+    flags_positive_5 := gin_handler_parses_config_feature_positive["flags"] + len(input)
+    _ = flags_positive_5
+    return nil
+}

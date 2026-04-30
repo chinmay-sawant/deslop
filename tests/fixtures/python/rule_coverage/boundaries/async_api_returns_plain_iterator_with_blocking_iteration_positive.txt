@@ -1,0 +1,8 @@
+def positive_async_api_returns_plain_iterator_with_blocking_iteration():
+    rule_id = "async_api_returns_plain_iterator_with_blocking_iteration"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag async-facing APIs that return plain iterators whose consumption can still block."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_pandas_copy_in_loop():
+    rule_id = "pandas_copy_in_loop"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "DataFrames are copied inside loops, amplifying memory churn."
+    return rule_id, family, severity, status, intent, description

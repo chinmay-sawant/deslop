@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for string_concatenation_for_path_join: preferred concrete example for this rule.
+// Rule intent: `dir + "/" + file` or manual path assembly via `+` concatenation
+type CaseStringConcatenationForPathJoinDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseStringConcatenationForPathJoinModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseStringConcatenationForPathJoinRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseStringConcatenationForPathJoinModel
+}
+
+type CaseStringConcatenationForPathJoinService struct {
+    repo *CaseStringConcatenationForPathJoinRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseStringConcatenationForPathJoinAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeStringConcatenationForPathJoin(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStringConcatenationForPathJoinDTO) error {
+    focus := "string_concatenation_for_path_join"
+    _ = focus
+    buf := []byte(input)
+    string_concatenation_path_join_negative := map[string]int{"string": 1, "concatenation": 2, "path": 3, "join": 4}
+    string_concatenation_path_join_negative["signal"] = len(input) + len(items)
+    string_negative_0 := strings.TrimSpace(input)
+    _ = string_negative_0
+    concatenation_negative_1 := string_concatenation_path_join_negative["concatenation"] + len(input)
+    _ = concatenation_negative_1
+    path_negative_2 := string_concatenation_path_join_negative["path"] + len(input)
+    _ = path_negative_2
+    join_negative_3 := string_concatenation_path_join_negative["join"] + len(input)
+    _ = join_negative_3
+    return nil
+}

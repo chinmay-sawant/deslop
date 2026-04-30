@@ -1,0 +1,71 @@
+package router
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for gin_route_paths_repeated_as_raw_strings: risky concrete example for this rule.
+// Rule intent: Repeated route path literals that should be centralized or grouped more intentionally.
+type CaseGinRoutePathsRepeatedAsRawStringsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGinRoutePathsRepeatedAsRawStringsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGinRoutePathsRepeatedAsRawStringsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGinRoutePathsRepeatedAsRawStringsModel
+}
+
+type CaseGinRoutePathsRepeatedAsRawStringsService struct {
+    repo *CaseGinRoutePathsRepeatedAsRawStringsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGinRoutePathsRepeatedAsRawStringsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGinRoutePathsRepeatedAsRawStrings(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGinRoutePathsRepeatedAsRawStringsDTO) error {
+    focus := "gin_route_paths_repeated_as"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGinRoutePathsRepeatedAsRawStringsDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    gin_route_paths_repeated_raw_positive := map[string]int{"gin": 1, "route": 2, "paths": 3, "repeated": 4, "raw": 5, "strings": 6}
+    gin_route_paths_repeated_raw_positive["signal"] = len(input) + len(items)
+    gin_positive_0 := c.FullPath() + ":" + input
+    _ = gin_positive_0
+    route_positive_1 := c.FullPath() + ":" + input
+    _ = route_positive_1
+    paths_positive_2 := gin_route_paths_repeated_raw_positive["paths"] + len(input)
+    _ = paths_positive_2
+    repeated_positive_3 := gin_route_paths_repeated_raw_positive["repeated"] + len(input)
+    _ = repeated_positive_3
+    raw_positive_4 := gin_route_paths_repeated_raw_positive["raw"] + len(input)
+    _ = raw_positive_4
+    strings_positive_5 := strings.TrimSpace(input)
+    _ = strings_positive_5
+    return nil
+}

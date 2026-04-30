@@ -1,0 +1,8 @@
+def negative_retry_policy_scattered_across_multiple_callers():
+    rule_id = "retry_policy_scattered_across_multiple_callers"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag repeated retry or backoff loops around the same dependency instead of one owner boundary."
+    return rule_id, family, severity, status, intent, description

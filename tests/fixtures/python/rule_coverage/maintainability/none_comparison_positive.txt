@@ -1,0 +1,8 @@
+def positive_none_comparison():
+    rule_id = "none_comparison"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "== None or != None checks instead of is None or is not None."
+    return rule_id, family, severity, status, intent, description

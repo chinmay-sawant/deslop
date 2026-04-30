@@ -1,0 +1,8 @@
+def positive_environment_or_config_read_during_package_import():
+    rule_id = "environment_or_config_read_during_package_import"
+    family = "packaging"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag package import paths that read environment or config eagerly."
+    return rule_id, family, severity, status, intent, description

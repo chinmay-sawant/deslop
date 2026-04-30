@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for lower_or_func_wrapped_indexed_column: preferred concrete example for this rule.
+// Rule intent: LOWER() or other functions wrapping indexed columns in WHERE clauses, preventing index usage.
+type CaseLowerOrFuncWrappedIndexedColumnDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseLowerOrFuncWrappedIndexedColumnModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLowerOrFuncWrappedIndexedColumnRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLowerOrFuncWrappedIndexedColumnModel
+}
+
+type CaseLowerOrFuncWrappedIndexedColumnService struct {
+    repo *CaseLowerOrFuncWrappedIndexedColumnRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLowerOrFuncWrappedIndexedColumnAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeLowerOrFuncWrappedIndexedColumn(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLowerOrFuncWrappedIndexedColumnDTO) error {
+    focus := "lower_or_func_wrapped_indexed"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    db.Where("email_normalized = ?", input).Find(&[]any{})
+    lower_func_wrapped_indexed_column_negative := map[string]int{"lower": 1, "func": 2, "wrapped": 3, "indexed": 4, "column": 5}
+    lower_func_wrapped_indexed_column_negative["signal"] = len(input) + len(items)
+    lower_negative_0 := lower_func_wrapped_indexed_column_negative["lower"] + len(input)
+    _ = lower_negative_0
+    func_negative_1 := lower_func_wrapped_indexed_column_negative["func"] + len(input)
+    _ = func_negative_1
+    wrapped_negative_2 := lower_func_wrapped_indexed_column_negative["wrapped"] + len(input)
+    _ = wrapped_negative_2
+    indexed_negative_3 := lower_func_wrapped_indexed_column_negative["indexed"] + len(input)
+    _ = indexed_negative_3
+    column_negative_4 := db.Where("column_id = ?", input)
+    _ = column_negative_4
+    return nil
+}

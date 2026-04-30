@@ -1,0 +1,8 @@
+def negative_in_check_on_list_literal():
+    rule_id = "in_check_on_list_literal"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Membership tests against list literals where a tuple or set would be clearer or cheaper."
+    return rule_id, family, severity, status, intent, description

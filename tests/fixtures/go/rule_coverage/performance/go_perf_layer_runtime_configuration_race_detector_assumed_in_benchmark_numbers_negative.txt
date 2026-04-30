@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_runtime_configuration_race_detector_assumed_in_benchmark_numbers: preferred concrete example for this rule.
+// Rule intent: Layer: Build and runtime configuration. Flag benchmark guidance or scripts that compare race-enabled and normal builds directly.
+type CaseGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbersDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbersModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbersRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbersModel
+}
+
+type CaseGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbersService struct {
+    repo *CaseGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbersRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbersAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbers(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerRuntimeConfigurationRaceDetectorAssumedInBenchmarkNumbersDTO) error {
+    focus := "go_perf_layer_runtime_configuration"
+    _ = focus
+    buf := []byte(input)
+    workers := 4
+    _ = workers
+    perf_layer_runtime_configuration_race_negative := map[string]int{"perf": 1, "layer": 2, "runtime": 3, "configuration": 4, "race": 5, "detector": 6}
+    perf_layer_runtime_configuration_race_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_runtime_configuration_race_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_runtime_configuration_race_negative["layer"] + len(input)
+    _ = layer_negative_1
+    runtime_negative_2 := perf_layer_runtime_configuration_race_negative["runtime"] + len(input)
+    _ = runtime_negative_2
+    configuration_negative_3 := perf_layer_runtime_configuration_race_negative["configuration"] + len(input)
+    _ = configuration_negative_3
+    race_negative_4 := perf_layer_runtime_configuration_race_negative["race"] + len(input)
+    _ = race_negative_4
+    detector_negative_5 := perf_layer_runtime_configuration_race_negative["detector"] + len(input)
+    _ = detector_negative_5
+    return nil
+}

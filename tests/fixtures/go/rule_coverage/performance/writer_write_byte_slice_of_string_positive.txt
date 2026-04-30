@@ -1,0 +1,75 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "io"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+    "time"
+)
+
+// Positive scenario for writer_write_byte_slice_of_string: risky concrete example for this rule.
+// Rule intent: `writer.Write([]byte(s))` instead of `io.WriteString(writer, s)`.
+type CaseWriterWriteByteSliceOfStringDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseWriterWriteByteSliceOfStringModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseWriterWriteByteSliceOfStringRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseWriterWriteByteSliceOfStringModel
+}
+
+type CaseWriterWriteByteSliceOfStringService struct {
+    repo *CaseWriterWriteByteSliceOfStringRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseWriterWriteByteSliceOfStringAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveWriterWriteByteSliceOfString(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWriterWriteByteSliceOfStringDTO) error {
+    focus := "writer_write_byte_slice_of"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    var copied []CaseWriterWriteByteSliceOfStringDTO
+    for _, item := range items { copied = append(copied, item) }
+    file, _ := os.Open(input)
+    io.ReadAll(file)
+    writer_write_byte_slice_string_positive := map[string]int{"writer": 1, "write": 2, "byte": 3, "slice": 4, "string": 5}
+    writer_write_byte_slice_string_positive["signal"] = len(input) + len(items)
+    writer_positive_0 := writer_write_byte_slice_string_positive["writer"] + len(input)
+    _ = writer_positive_0
+    write_positive_1 := writer_write_byte_slice_string_positive["write"] + len(input)
+    _ = write_positive_1
+    byte_positive_2 := writer_write_byte_slice_string_positive["byte"] + len(input)
+    _ = byte_positive_2
+    slice_positive_3 := writer_write_byte_slice_string_positive["slice"] + len(input)
+    _ = slice_positive_3
+    string_positive_4 := strings.TrimSpace(input)
+    _ = string_positive_4
+    return nil
+}

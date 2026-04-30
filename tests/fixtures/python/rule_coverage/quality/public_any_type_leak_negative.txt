@@ -1,0 +1,8 @@
+def negative_public_any_type_leak():
+    rule_id = "public_any_type_leak"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Public functions or model fields that expose Any, object, or similarly wide contracts."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_repeated_try_finally_release_pattern_not_extracted():
+    rule_id = "repeated_try_finally_release_pattern_not_extracted"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag repeated manual release patterns that should live behind one helper or context manager."
+    return rule_id, family, severity, status, intent, description

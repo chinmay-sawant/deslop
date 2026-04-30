@@ -1,0 +1,8 @@
+def positive_repeated_stat_or_exists_calls_before_single_followup_operation():
+    rule_id = "repeated_stat_or_exists_calls_before_single_followup_operation"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag paths that perform duplicate filesystem checks before one operation."
+    return rule_id, family, severity, status, intent, description

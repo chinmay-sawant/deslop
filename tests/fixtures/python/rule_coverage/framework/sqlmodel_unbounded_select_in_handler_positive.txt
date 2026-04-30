@@ -1,0 +1,8 @@
+def positive_sqlmodel_unbounded_select_in_handler():
+    rule_id = "sqlmodel_unbounded_select_in_handler"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Handlers execute SQLModel select().all() paths without visible limits or pagination."
+    return rule_id, family, severity, status, intent, description

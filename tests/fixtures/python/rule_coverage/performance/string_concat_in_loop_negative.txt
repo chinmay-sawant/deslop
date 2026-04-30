@@ -1,0 +1,8 @@
+def negative_string_concat_in_loop():
+    rule_id = "string_concat_in_loop"
+    family = "performance"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Repeated string concatenation inside loops can create O(n^2) growth and extra allocations."
+    return rule_id, family, severity, status, intent, description

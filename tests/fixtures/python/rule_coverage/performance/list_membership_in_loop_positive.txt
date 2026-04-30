@@ -1,0 +1,8 @@
+def positive_list_membership_in_loop():
+    rule_id = "list_membership_in_loop"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Repeated membership checks against obviously list-like containers inside loops."
+    return rule_id, family, severity, status, intent, description

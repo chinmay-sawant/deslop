@@ -1,0 +1,73 @@
+package rulecoverage
+
+import (
+    "bufio"
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_serialization_gzip_writer_created_per_small_payload: preferred concrete example for this rule.
+// Rule intent: Layer: Serialization and deserialization. Flag gzip writers created for tiny payloads where compression overhead can dominate.
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadModel
+}
+
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadService struct {
+    repo *CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerSerializationGzipWriterCreatedPerSmallPayload(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerSerializationGzipWriterCreatedPerSmallPayloadDTO) error {
+    focus := "go_perf_layer_serialization_gzip"
+    _ = focus
+    buf := []byte(input)
+    file, _ := os.Open(input)
+    reader := bufio.NewReader(file)
+    _ = reader
+    perf_layer_serialization_gzip_writer_negative := map[string]int{"perf": 1, "layer": 2, "serialization": 3, "gzip": 4, "writer": 5, "created": 6}
+    perf_layer_serialization_gzip_writer_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_serialization_gzip_writer_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_serialization_gzip_writer_negative["layer"] + len(input)
+    _ = layer_negative_1
+    serialization_negative_2 := perf_layer_serialization_gzip_writer_negative["serialization"] + len(input)
+    _ = serialization_negative_2
+    gzip_negative_3 := perf_layer_serialization_gzip_writer_negative["gzip"] + len(input)
+    _ = gzip_negative_3
+    writer_negative_4 := perf_layer_serialization_gzip_writer_negative["writer"] + len(input)
+    _ = writer_negative_4
+    created_negative_5 := perf_layer_serialization_gzip_writer_negative["created"] + len(input)
+    _ = created_negative_5
+    return nil
+}

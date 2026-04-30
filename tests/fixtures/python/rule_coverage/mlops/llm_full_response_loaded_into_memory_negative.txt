@@ -1,0 +1,8 @@
+def negative_llm_full_response_loaded_into_memory():
+    rule_id = "llm_full_response_loaded_into_memory"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Large LLM responses are loaded fully into memory instead of streamed or incrementally consumed."
+    return rule_id, family, severity, status, intent, description

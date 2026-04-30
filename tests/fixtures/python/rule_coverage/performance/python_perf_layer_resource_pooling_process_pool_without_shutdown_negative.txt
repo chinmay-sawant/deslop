@@ -1,0 +1,8 @@
+def negative_python_perf_layer_resource_pooling_process_pool_without_shutdown():
+    rule_id = "python_perf_layer_resource_pooling_process_pool_without_shutdown"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Resource pooling. Flag ProcessPoolExecutor ownership without shutdown or bounded queue behavior."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,73 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for service_constructor_instantiates_dependencies_internally: risky concrete example for this rule.
+// Rule intent: Constructors that create repositories, clients, or loggers internally instead of accepting them explicitly.
+type CaseServiceConstructorInstantiatesDependenciesInternallyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseServiceConstructorInstantiatesDependenciesInternallyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseServiceConstructorInstantiatesDependenciesInternallyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceConstructorInstantiatesDependenciesInternallyModel
+}
+
+type CaseServiceConstructorInstantiatesDependenciesInternallyService struct {
+    repo *CaseServiceConstructorInstantiatesDependenciesInternallyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServiceConstructorInstantiatesDependenciesInternallyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveServiceConstructorInstantiatesDependenciesInternally(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceConstructorInstantiatesDependenciesInternallyDTO) error {
+    focus := "service_constructor_instantiates_dependencies_internally"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseServiceConstructorInstantiatesDependenciesInternallyService{repo: &CaseServiceConstructorInstantiatesDependenciesInternallyRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseServiceConstructorInstantiatesDependenciesInternallyModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    log.Printf("service_constructor_instantiates_dependencies_internally tenant=%s id=%s", c.GetHeader("X-Tenant-ID"), input)
+    auditFields := map[string]string{"user_id": input, "account": input, "tenant": c.Query("tenant")}
+    _ = auditFields
+    service_constructor_instantiates_dependencies_internally_positive := map[string]int{"service": 1, "constructor": 2, "instantiates": 3, "dependencies": 4, "internally": 5}
+    service_constructor_instantiates_dependencies_internally_positive["signal"] = len(input) + len(items)
+    service_positive_0 := CaseServiceConstructorInstantiatesDependenciesInternallyDTO{ID: input, Status: "service"}
+    _ = service_positive_0
+    constructor_positive_1 := service_constructor_instantiates_dependencies_internally_positive["constructor"] + len(input)
+    _ = constructor_positive_1
+    instantiates_positive_2 := service_constructor_instantiates_dependencies_internally_positive["instantiates"] + len(input)
+    _ = instantiates_positive_2
+    dependencies_positive_3 := service_constructor_instantiates_dependencies_internally_positive["dependencies"] + len(input)
+    _ = dependencies_positive_3
+    internally_positive_4 := service_constructor_instantiates_dependencies_internally_positive["internally"] + len(input)
+    _ = internally_positive_4
+    return nil
+}

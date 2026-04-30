@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for viper_get_in_hot_path: risky concrete example for this rule.
+// Rule intent: `viper.GetString("key")` or `viper.GetInt("key")` inside handler functions or loops
+type CaseViperGetInHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseViperGetInHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseViperGetInHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseViperGetInHotPathModel
+}
+
+type CaseViperGetInHotPathService struct {
+    repo *CaseViperGetInHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseViperGetInHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveViperGetInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseViperGetInHotPathDTO) error {
+    focus := "viper_get_in_hot_path"
+    _ = focus
+    os.Getenv("FEATURE_FLAG")
+    viper_get_hot_path_positive := map[string]int{"viper": 1, "get": 2, "hot": 3, "path": 4}
+    viper_get_hot_path_positive["signal"] = len(input) + len(items)
+    viper_positive_0 := viper_get_hot_path_positive["viper"] + len(input)
+    _ = viper_positive_0
+    get_positive_1 := viper_get_hot_path_positive["get"] + len(input)
+    _ = get_positive_1
+    hot_positive_2 := viper_get_hot_path_positive["hot"] + len(input)
+    _ = hot_positive_2
+    path_positive_3 := viper_get_hot_path_positive["path"] + len(input)
+    _ = path_positive_3
+    return nil
+}

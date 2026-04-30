@@ -1,0 +1,74 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for main_or_cmd_mixes_cli_parsing_server_bootstrap_and_business_config: risky concrete example for this rule.
+// Rule intent: Entrypoints that do too much without startup composition helpers.
+type CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigModel
+}
+
+type CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigService struct {
+    repo *CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfig(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigDTO) error {
+    focus := "main_or_cmd_mixes_cli"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigService{repo: &CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseMainOrCmdMixesCliParsingServerBootstrapAndBusinessConfigModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    if os.Getenv("FEATURE_FLAG") == "enabled" { input = input + ":flag" }
+    main_cmd_mixes_cli_parsing_positive := map[string]int{"main": 1, "cmd": 2, "mixes": 3, "cli": 4, "parsing": 5, "server": 6}
+    main_cmd_mixes_cli_parsing_positive["signal"] = len(input) + len(items)
+    main_positive_0 := main_cmd_mixes_cli_parsing_positive["main"] + len(input)
+    _ = main_positive_0
+    cmd_positive_1 := main_cmd_mixes_cli_parsing_positive["cmd"] + len(input)
+    _ = cmd_positive_1
+    mixes_positive_2 := main_cmd_mixes_cli_parsing_positive["mixes"] + len(input)
+    _ = mixes_positive_2
+    cli_positive_3 := main_cmd_mixes_cli_parsing_positive["cli"] + len(input)
+    _ = cli_positive_3
+    parsing_positive_4 := main_cmd_mixes_cli_parsing_positive["parsing"] + len(input)
+    _ = parsing_positive_4
+    server_positive_5 := main_cmd_mixes_cli_parsing_positive["server"] + len(input)
+    _ = server_positive_5
+    return nil
+}

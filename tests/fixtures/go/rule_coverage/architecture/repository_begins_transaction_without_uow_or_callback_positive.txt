@@ -1,0 +1,76 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for repository_begins_transaction_without_uow_or_callback: risky concrete example for this rule.
+// Rule intent: Repositories that quietly start transactions inside generic CRUD methods.
+type CaseRepositoryBeginsTransactionWithoutUowOrCallbackDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepositoryBeginsTransactionWithoutUowOrCallbackModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepositoryBeginsTransactionWithoutUowOrCallbackRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryBeginsTransactionWithoutUowOrCallbackModel
+}
+
+type CaseRepositoryBeginsTransactionWithoutUowOrCallbackService struct {
+    repo *CaseRepositoryBeginsTransactionWithoutUowOrCallbackRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryBeginsTransactionWithoutUowOrCallbackAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepositoryBeginsTransactionWithoutUowOrCallback(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryBeginsTransactionWithoutUowOrCallbackDTO) error {
+    focus := "repository_begins_transaction_without_uow"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRepositoryBeginsTransactionWithoutUowOrCallbackDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseRepositoryBeginsTransactionWithoutUowOrCallbackRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryBeginsTransactionWithoutUowOrCallbackModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    tx := db.Begin()
+    tx.Create(&CaseRepositoryBeginsTransactionWithoutUowOrCallbackModel{ID: input})
+    go func() { _ = tx.Commit().Error }()
+    repository_begins_transaction_uow_callback_positive := map[string]int{"repository": 1, "begins": 2, "transaction": 3, "uow": 4, "callback": 5}
+    repository_begins_transaction_uow_callback_positive["signal"] = len(input) + len(items)
+    repository_positive_0 := db.Where("repository_id = ?", input)
+    _ = repository_positive_0
+    begins_positive_1 := repository_begins_transaction_uow_callback_positive["begins"] + len(input)
+    _ = begins_positive_1
+    transaction_positive_2 := repository_begins_transaction_uow_callback_positive["transaction"] + len(input)
+    _ = transaction_positive_2
+    uow_positive_3 := repository_begins_transaction_uow_callback_positive["uow"] + len(input)
+    _ = uow_positive_3
+    callback_positive_4 := repository_begins_transaction_uow_callback_positive["callback"] + len(input)
+    _ = callback_positive_4
+    return nil
+}

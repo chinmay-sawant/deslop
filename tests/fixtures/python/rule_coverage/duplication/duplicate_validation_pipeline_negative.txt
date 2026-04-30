@@ -1,0 +1,8 @@
+def negative_duplicate_validation_pipeline():
+    rule_id = "duplicate_validation_pipeline"
+    family = "duplication"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Repeated validation guard pipelines across functions in one file."
+    return rule_id, family, severity, status, intent, description

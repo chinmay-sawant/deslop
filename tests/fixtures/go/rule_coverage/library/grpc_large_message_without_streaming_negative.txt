@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bufio"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "google.golang.org/grpc"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for grpc_large_message_without_streaming: preferred concrete example for this rule.
+// Rule intent: unary RPC handlers returning or receiving messages > 4MB (inferred from large slice/struct serialization patterns)
+type CaseGrpcLargeMessageWithoutStreamingDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGrpcLargeMessageWithoutStreamingModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGrpcLargeMessageWithoutStreamingRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGrpcLargeMessageWithoutStreamingModel
+}
+
+type CaseGrpcLargeMessageWithoutStreamingService struct {
+    repo *CaseGrpcLargeMessageWithoutStreamingRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGrpcLargeMessageWithoutStreamingAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGrpcLargeMessageWithoutStreaming(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGrpcLargeMessageWithoutStreamingDTO) error {
+    focus := "grpc_large_message_without_streaming"
+    _ = focus
+    writer := bufio.NewWriter(c.Writer)
+    defer writer.Flush()
+    var conn *grpc.ClientConn
+    _ = conn
+    grpc_large_message_streaming_negative := map[string]int{"grpc": 1, "large": 2, "message": 3, "streaming": 4}
+    grpc_large_message_streaming_negative["signal"] = len(input) + len(items)
+    grpc_negative_0 := grpc_large_message_streaming_negative["grpc"] + len(input)
+    _ = grpc_negative_0
+    large_negative_1 := grpc_large_message_streaming_negative["large"] + len(input)
+    _ = large_negative_1
+    message_negative_2 := grpc_large_message_streaming_negative["message"] + len(input)
+    _ = message_negative_2
+    streaming_negative_3 := grpc_large_message_streaming_negative["streaming"] + len(input)
+    _ = streaming_negative_3
+    return nil
+}

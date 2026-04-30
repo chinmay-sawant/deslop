@@ -1,0 +1,8 @@
+def negative_overloaded_dispatch_without_typing_overload_decorator():
+    rule_id = "overloaded_dispatch_without_typing_overload_decorator"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Function branches on isinstance to dispatch overloads but does not use @typing.overload decorators."
+    return rule_id, family, severity, status, intent, description

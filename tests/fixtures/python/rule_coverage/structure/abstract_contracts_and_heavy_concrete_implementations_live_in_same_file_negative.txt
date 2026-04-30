@@ -1,0 +1,8 @@
+def negative_abstract_contracts_and_heavy_concrete_implementations_live_in_same_file():
+    rule_id = "abstract_contracts_and_heavy_concrete_implementations_live_in_same_file"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag files that mix contracts with large concrete implementations and grow unstable dependencies."
+    return rule_id, family, severity, status, intent, description

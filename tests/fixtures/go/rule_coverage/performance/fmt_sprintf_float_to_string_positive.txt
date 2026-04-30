@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for fmt_sprintf_float_to_string: risky concrete example for this rule.
+// Rule intent: `fmt.Sprintf("%f", ...)` instead of `strconv.FormatFloat(...)` when only a float string is needed.
+type CaseFmtSprintfFloatToStringDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFmtSprintfFloatToStringModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtSprintfFloatToStringRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtSprintfFloatToStringModel
+}
+
+type CaseFmtSprintfFloatToStringService struct {
+    repo *CaseFmtSprintfFloatToStringRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtSprintfFloatToStringAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveFmtSprintfFloatToString(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtSprintfFloatToStringDTO) error {
+    focus := "fmt_sprintf_float_to_string"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    fmt_sprintf_float_string_positive := map[string]int{"fmt": 1, "sprintf": 2, "float": 3, "string": 4}
+    fmt_sprintf_float_string_positive["signal"] = len(input) + len(items)
+    fmt_positive_0 := fmt_sprintf_float_string_positive["fmt"] + len(input)
+    _ = fmt_positive_0
+    sprintf_positive_1 := fmt_sprintf_float_string_positive["sprintf"] + len(input)
+    _ = sprintf_positive_1
+    float_positive_2 := fmt_sprintf_float_string_positive["float"] + len(input)
+    _ = float_positive_2
+    string_positive_3 := strings.TrimSpace(input)
+    _ = string_positive_3
+    return nil
+}

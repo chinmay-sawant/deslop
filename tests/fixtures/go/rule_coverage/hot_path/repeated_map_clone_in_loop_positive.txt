@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for repeated_map_clone_in_loop: risky concrete example for this rule.
+// Rule intent: maps.Clone or equivalent map-copy calls observed inside loops.
+type CaseRepeatedMapCloneInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepeatedMapCloneInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepeatedMapCloneInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepeatedMapCloneInLoopModel
+}
+
+type CaseRepeatedMapCloneInLoopService struct {
+    repo *CaseRepeatedMapCloneInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepeatedMapCloneInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepeatedMapCloneInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepeatedMapCloneInLoopDTO) error {
+    focus := "repeated_map_clone_in_loop"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    repeated_map_clone_loop_positive := map[string]int{"repeated": 1, "map": 2, "clone": 3, "loop": 4}
+    repeated_map_clone_loop_positive["signal"] = len(input) + len(items)
+    repeated_positive_0 := repeated_map_clone_loop_positive["repeated"] + len(input)
+    _ = repeated_positive_0
+    map_positive_1 := repeated_map_clone_loop_positive["map"] + len(input)
+    _ = map_positive_1
+    clone_positive_2 := repeated_map_clone_loop_positive["clone"] + len(input)
+    _ = clone_positive_2
+    for loop_positive_3Index, item := range items { repeated_map_clone_loop_positive[item.ID] = loop_positive_3Index }
+    return nil
+}

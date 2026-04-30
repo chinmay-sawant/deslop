@@ -1,0 +1,8 @@
+def positive_module_constant_rebound_after_public_import():
+    rule_id = "module_constant_rebound_after_public_import"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag modules that expose apparent constants and later rebind them during normal runtime flow."
+    return rule_id, family, severity, status, intent, description

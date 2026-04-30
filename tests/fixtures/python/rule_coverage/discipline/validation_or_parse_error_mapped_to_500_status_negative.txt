@@ -1,0 +1,8 @@
+def negative_validation_or_parse_error_mapped_to_500_status():
+    rule_id = "validation_or_parse_error_mapped_to_500_status"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "ValueError or ValidationError caught and mapped to HTTP 500 instead of a 4xx client-error status."
+    return rule_id, family, severity, status, intent, description

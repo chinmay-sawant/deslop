@@ -1,0 +1,71 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "encoding/hex"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strconv"
+    "strings"
+)
+
+// Negative scenario for fmt_sprintf_hex_to_string: preferred concrete example for this rule.
+// Rule intent: `fmt.Sprintf("%x", ...)` instead of a direct hex formatter when only the string is needed.
+type CaseFmtSprintfHexToStringDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseFmtSprintfHexToStringModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseFmtSprintfHexToStringRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseFmtSprintfHexToStringModel
+}
+
+type CaseFmtSprintfHexToStringService struct {
+    repo *CaseFmtSprintfHexToStringRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseFmtSprintfHexToStringAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeFmtSprintfHexToString(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtSprintfHexToStringDTO) error {
+    focus := "fmt_sprintf_hex_to_string"
+    _ = focus
+    buf := []byte(input)
+    var b strings.Builder
+    b.WriteString(input)
+    b.WriteString(strconv.Itoa(len(items)))
+    dst := make([]byte, hex.EncodedLen(len(buf)))
+    hex.Encode(dst, buf)
+    fmt_sprintf_hex_string_negative := map[string]int{"fmt": 1, "sprintf": 2, "hex": 3, "string": 4}
+    fmt_sprintf_hex_string_negative["signal"] = len(input) + len(items)
+    fmt_negative_0 := fmt_sprintf_hex_string_negative["fmt"] + len(input)
+    _ = fmt_negative_0
+    sprintf_negative_1 := fmt_sprintf_hex_string_negative["sprintf"] + len(input)
+    _ = sprintf_negative_1
+    hex_negative_2 := fmt_sprintf_hex_string_negative["hex"] + len(input)
+    _ = hex_negative_2
+    string_negative_3 := strings.TrimSpace(input)
+    _ = string_negative_3
+    return nil
+}

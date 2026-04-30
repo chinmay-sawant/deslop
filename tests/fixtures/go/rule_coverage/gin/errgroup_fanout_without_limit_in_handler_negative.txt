@@ -1,0 +1,62 @@
+package handler
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for errgroup_fanout_without_limit_in_handler: preferred concrete example for this rule.
+// Rule intent: errgroup goroutine fanout without a visible concurrency limit in handlers.
+type CaseErrgroupFanoutWithoutLimitInHandlerDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseErrgroupFanoutWithoutLimitInHandlerModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseErrgroupFanoutWithoutLimitInHandlerRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseErrgroupFanoutWithoutLimitInHandlerModel
+}
+
+type CaseErrgroupFanoutWithoutLimitInHandlerService struct {
+    repo *CaseErrgroupFanoutWithoutLimitInHandlerRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseErrgroupFanoutWithoutLimitInHandlerAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeErrgroupFanoutWithoutLimitInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrgroupFanoutWithoutLimitInHandlerDTO) error {
+    focus := "errgroup_fanout_without_limit_in"
+    _ = focus
+    errgroup_fanout_limit_handler_negative := map[string]int{"errgroup": 1, "fanout": 2, "limit": 3, "handler": 4}
+    errgroup_fanout_limit_handler_negative["signal"] = len(input) + len(items)
+    errgroup_negative_0 := errgroup_fanout_limit_handler_negative["errgroup"] + len(input)
+    _ = errgroup_negative_0
+    fanout_negative_1 := errgroup_fanout_limit_handler_negative["fanout"] + len(input)
+    _ = fanout_negative_1
+    limit_negative_2 := errgroup_fanout_limit_handler_negative["limit"] + len(input)
+    _ = limit_negative_2
+    handler_negative_3 := c.FullPath() + ":" + input
+    _ = handler_negative_3
+    return nil
+}

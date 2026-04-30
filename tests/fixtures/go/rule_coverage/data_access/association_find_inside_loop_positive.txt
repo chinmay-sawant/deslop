@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for association_find_inside_loop: risky concrete example for this rule.
+// Rule intent: GORM Association(...).Find(...) loaders observed inside loops.
+type CaseAssociationFindInsideLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseAssociationFindInsideLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseAssociationFindInsideLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseAssociationFindInsideLoopModel
+}
+
+type CaseAssociationFindInsideLoopService struct {
+    repo *CaseAssociationFindInsideLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseAssociationFindInsideLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveAssociationFindInsideLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAssociationFindInsideLoopDTO) error {
+    focus := "association_find_inside_loop"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    for _, item := range items {
+        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
+        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+    }
+    db.Preload("Orders.Items.Product").Joins("Owner").Find(&[]CaseAssociationFindInsideLoopModel{})
+    association_find_inside_loop_positive := map[string]int{"association": 1, "find": 2, "inside": 3, "loop": 4}
+    association_find_inside_loop_positive["signal"] = len(input) + len(items)
+    association_positive_0 := association_find_inside_loop_positive["association"] + len(input)
+    _ = association_positive_0
+    find_positive_1 := association_find_inside_loop_positive["find"] + len(input)
+    _ = find_positive_1
+    inside_positive_2 := association_find_inside_loop_positive["inside"] + len(input)
+    _ = inside_positive_2
+    for loop_positive_3Index, item := range items { association_find_inside_loop_positive[item.ID] = loop_positive_3Index }
+    return nil
+}

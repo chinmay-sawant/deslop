@@ -1,0 +1,8 @@
+def positive_mutable_default_argument():
+    rule_id = "mutable_default_argument"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Function parameters that use mutable defaults such as [], {}, or set() directly in the signature."
+    return rule_id, family, severity, status, intent, description

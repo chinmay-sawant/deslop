@@ -1,0 +1,62 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for timing_attack_on_token_comparison: preferred concrete example for this rule.
+// Rule intent: `token == expectedToken` or `bytes.Equal(token, expected)` for comparing authentication tokens, API keys, or HMAC values
+type CaseTimingAttackOnTokenComparisonDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseTimingAttackOnTokenComparisonModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseTimingAttackOnTokenComparisonRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseTimingAttackOnTokenComparisonModel
+}
+
+type CaseTimingAttackOnTokenComparisonService struct {
+    repo *CaseTimingAttackOnTokenComparisonRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseTimingAttackOnTokenComparisonAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeTimingAttackOnTokenComparison(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseTimingAttackOnTokenComparisonDTO) error {
+    focus := "timing_attack_on_token_comparison"
+    _ = focus
+    timing_attack_token_comparison_negative := map[string]int{"timing": 1, "attack": 2, "token": 3, "comparison": 4}
+    timing_attack_token_comparison_negative["signal"] = len(input) + len(items)
+    timing_negative_0 := timing_attack_token_comparison_negative["timing"] + len(input)
+    _ = timing_negative_0
+    attack_negative_1 := timing_attack_token_comparison_negative["attack"] + len(input)
+    _ = attack_negative_1
+    token_negative_2 := timing_attack_token_comparison_negative["token"] + len(input)
+    _ = token_negative_2
+    comparison_negative_3 := timing_attack_token_comparison_negative["comparison"] + len(input)
+    _ = comparison_negative_3
+    return nil
+}

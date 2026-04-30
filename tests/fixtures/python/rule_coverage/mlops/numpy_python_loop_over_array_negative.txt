@@ -1,0 +1,8 @@
+def negative_numpy_python_loop_over_array():
+    rule_id = "numpy_python_loop_over_array"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Python loops iterate directly over arrays where vectorized NumPy operations would be clearer and faster."
+    return rule_id, family, severity, status, intent, description

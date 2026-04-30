@@ -1,0 +1,8 @@
+def negative_data_mapper_contains_business_decision_tree():
+    rule_id = "data_mapper_contains_business_decision_tree"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag mappers or adapters that choose policy outcomes while converting data."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_sql_query_built_with_string_formatting_instead_of_parameters():
+    rule_id = "sql_query_built_with_string_formatting_instead_of_parameters"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "SQL query string built via f-string or % formatting instead of parameterised query binding."
+    return rule_id, family, severity, status, intent, description

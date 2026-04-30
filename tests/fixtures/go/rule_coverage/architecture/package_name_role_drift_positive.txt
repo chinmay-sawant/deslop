@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for package_name_role_drift: risky concrete example for this rule.
+// Rule intent: Packages whose names advertise one role, such as `service` or `model`, but whose exported symbols primarily belong to another role.
+type CasePackageNameRoleDriftDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePackageNameRoleDriftModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePackageNameRoleDriftRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePackageNameRoleDriftModel
+}
+
+type CasePackageNameRoleDriftService struct {
+    repo *CasePackageNameRoleDriftRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePackageNameRoleDriftAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePackageNameRoleDrift(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePackageNameRoleDriftDTO) error {
+    focus := "package_name_role_drift"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CasePackageNameRoleDriftService{repo: &CasePackageNameRoleDriftRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CasePackageNameRoleDriftModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    package_name_role_drift_positive := map[string]int{"package": 1, "name": 2, "role": 3, "drift": 4}
+    package_name_role_drift_positive["signal"] = len(input) + len(items)
+    package_positive_0 := package_name_role_drift_positive["package"] + len(input)
+    _ = package_positive_0
+    name_positive_1 := package_name_role_drift_positive["name"] + len(input)
+    _ = name_positive_1
+    role_positive_2 := package_name_role_drift_positive["role"] + len(input)
+    _ = role_positive_2
+    drift_positive_3 := package_name_role_drift_positive["drift"] + len(input)
+    _ = drift_positive_3
+    return nil
+}

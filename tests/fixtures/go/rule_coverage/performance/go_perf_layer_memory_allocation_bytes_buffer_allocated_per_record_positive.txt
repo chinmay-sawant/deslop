@@ -1,0 +1,76 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for go_perf_layer_memory_allocation_bytes_buffer_allocated_per_record: risky concrete example for this rule.
+// Rule intent: Layer: Memory allocation. Flag bytes.Buffer construction per record when a reusable buffer can be reset safely.
+type CaseGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecordDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecordModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecordRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecordModel
+}
+
+type CaseGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecordService struct {
+    repo *CaseGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecordRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecordAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecord(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerMemoryAllocationBytesBufferAllocatedPerRecordDTO) error {
+    focus := "go_perf_layer_memory_allocation"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        recordBuffer := &bytes.Buffer{}
+        _, _ = recordBuffer.Write(item.Payload)
+        _, _ = recordBuffer.WriteString(strings.ToLower(item.ID))
+    }
+    perf_layer_memory_allocation_bytes_positive := map[string]int{"perf": 1, "layer": 2, "memory": 3, "allocation": 4, "bytes": 5, "buffer": 6}
+    perf_layer_memory_allocation_bytes_positive["signal"] = len(input) + len(items)
+    perf_positive_0 := perf_layer_memory_allocation_bytes_positive["perf"] + len(input)
+    _ = perf_positive_0
+    layer_positive_1 := perf_layer_memory_allocation_bytes_positive["layer"] + len(input)
+    _ = layer_positive_1
+    memory_positive_2 := perf_layer_memory_allocation_bytes_positive["memory"] + len(input)
+    _ = memory_positive_2
+    allocation_positive_3 := perf_layer_memory_allocation_bytes_positive["allocation"] + len(input)
+    _ = allocation_positive_3
+    bytes_positive_4 := strings.TrimSpace(input)
+    _ = bytes_positive_4
+    buffer_positive_5 := strings.TrimSpace(input)
+    _ = buffer_positive_5
+    return nil
+}

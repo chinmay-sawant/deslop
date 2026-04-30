@@ -1,0 +1,8 @@
+def positive_repeated_pure_helper_call_on_same_input_without_local_cache():
+    rule_id = "repeated_pure_helper_call_on_same_input_without_local_cache"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag hot loops that recompute the same pure helper result for identical inputs in one scope."
+    return rule_id, family, severity, status, intent, description

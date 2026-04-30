@@ -1,0 +1,8 @@
+def negative_python_perf_layer_async_concurrency_busy_async_poll_sleep_zero():
+    rule_id = "python_perf_layer_async_concurrency_busy_async_poll_sleep_zero"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Async and concurrency. Flag async polling loops that sleep(0) or spin instead of awaiting a real event."
+    return rule_id, family, severity, status, intent, description

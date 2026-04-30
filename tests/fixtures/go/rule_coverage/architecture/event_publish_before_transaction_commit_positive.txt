@@ -1,0 +1,71 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for event_publish_before_transaction_commit: risky concrete example for this rule.
+// Rule intent: Event or message publication before durable commit is confirmed.
+type CaseEventPublishBeforeTransactionCommitDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseEventPublishBeforeTransactionCommitModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseEventPublishBeforeTransactionCommitRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseEventPublishBeforeTransactionCommitModel
+}
+
+type CaseEventPublishBeforeTransactionCommitService struct {
+    repo *CaseEventPublishBeforeTransactionCommitRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseEventPublishBeforeTransactionCommitAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveEventPublishBeforeTransactionCommit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEventPublishBeforeTransactionCommitDTO) error {
+    focus := "event_publish_before_transaction_commit"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    tx := db.Begin()
+    tx.Create(&CaseEventPublishBeforeTransactionCommitModel{ID: input})
+    go func() { _ = tx.Commit().Error }()
+    cacheKey := "account:" + input
+    db.Exec("UPDATE cache_events SET payload = ?", cacheKey)
+    _ = cacheKey
+    event_publish_before_transaction_commit_positive := map[string]int{"event": 1, "publish": 2, "before": 3, "transaction": 4, "commit": 5}
+    event_publish_before_transaction_commit_positive["signal"] = len(input) + len(items)
+    event_positive_0 := event_publish_before_transaction_commit_positive["event"] + len(input)
+    _ = event_positive_0
+    publish_positive_1 := event_publish_before_transaction_commit_positive["publish"] + len(input)
+    _ = publish_positive_1
+    before_positive_2 := event_publish_before_transaction_commit_positive["before"] + len(input)
+    _ = before_positive_2
+    transaction_positive_3 := event_publish_before_transaction_commit_positive["transaction"] + len(input)
+    _ = transaction_positive_3
+    commit_positive_4 := event_publish_before_transaction_commit_positive["commit"] + len(input)
+    _ = commit_positive_4
+    return nil
+}

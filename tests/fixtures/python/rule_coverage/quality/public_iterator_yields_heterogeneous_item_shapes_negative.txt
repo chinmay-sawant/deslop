@@ -1,0 +1,8 @@
+def negative_public_iterator_yields_heterogeneous_item_shapes():
+    rule_id = "public_iterator_yields_heterogeneous_item_shapes"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag iterators that yield different shapes or types without an explicit sum-type contract."
+    return rule_id, family, severity, status, intent, description

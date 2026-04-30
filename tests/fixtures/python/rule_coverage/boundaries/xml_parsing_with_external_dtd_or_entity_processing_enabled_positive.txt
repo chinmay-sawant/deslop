@@ -1,0 +1,8 @@
+def positive_xml_parsing_with_external_dtd_or_entity_processing_enabled():
+    rule_id = "xml_parsing_with_external_dtd_or_entity_processing_enabled"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "XML parsed with a parser that processes external DTDs or entities, enabling XXE attacks."
+    return rule_id, family, severity, status, intent, description

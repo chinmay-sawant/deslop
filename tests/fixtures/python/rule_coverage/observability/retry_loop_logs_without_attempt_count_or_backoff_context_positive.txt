@@ -1,0 +1,8 @@
+def positive_retry_loop_logs_without_attempt_count_or_backoff_context():
+    rule_id = "retry_loop_logs_without_attempt_count_or_backoff_context"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag retry logging that omits attempt number, delay, or terminal outcome."
+    return rule_id, family, severity, status, intent, description

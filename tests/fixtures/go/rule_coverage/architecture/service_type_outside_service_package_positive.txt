@@ -1,0 +1,68 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for service_type_outside_service_package: risky concrete example for this rule.
+// Rule intent: Concrete use-case services declared outside `service` or `services` packages in layered web-service repos.
+type CaseServiceTypeOutsideServicePackageDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseServiceTypeOutsideServicePackageModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseServiceTypeOutsideServicePackageRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceTypeOutsideServicePackageModel
+}
+
+type CaseServiceTypeOutsideServicePackageService struct {
+    repo *CaseServiceTypeOutsideServicePackageRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServiceTypeOutsideServicePackageAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveServiceTypeOutsideServicePackage(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceTypeOutsideServicePackageDTO) error {
+    focus := "service_type_outside_service_package"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseServiceTypeOutsideServicePackageService{repo: &CaseServiceTypeOutsideServicePackageRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseServiceTypeOutsideServicePackageModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    service_type_outside_package_positive := map[string]int{"service": 1, "type": 2, "outside": 3, "package": 4}
+    service_type_outside_package_positive["signal"] = len(input) + len(items)
+    service_positive_0 := CaseServiceTypeOutsideServicePackageDTO{ID: input, Status: "service"}
+    _ = service_positive_0
+    type_positive_1 := service_type_outside_package_positive["type"] + len(input)
+    _ = type_positive_1
+    outside_positive_2 := service_type_outside_package_positive["outside"] + len(input)
+    _ = outside_positive_2
+    package_positive_3 := service_type_outside_package_positive["package"] + len(input)
+    _ = package_positive_3
+    return nil
+}

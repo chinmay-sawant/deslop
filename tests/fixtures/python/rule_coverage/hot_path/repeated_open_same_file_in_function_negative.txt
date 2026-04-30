@@ -1,0 +1,8 @@
+def negative_repeated_open_same_file_in_function():
+    rule_id = "repeated_open_same_file_in_function"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "The same file appears to be opened multiple times within one function."
+    return rule_id, family, severity, status, intent, description

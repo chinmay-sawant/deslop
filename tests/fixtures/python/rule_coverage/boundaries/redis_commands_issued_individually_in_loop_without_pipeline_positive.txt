@@ -1,0 +1,8 @@
+def positive_redis_commands_issued_individually_in_loop_without_pipeline():
+    rule_id = "redis_commands_issued_individually_in_loop_without_pipeline"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Redis SETEX/HSET/GET commands issued one per loop iteration without using a pipeline."
+    return rule_id, family, severity, status, intent, description

@@ -13,28 +13,11 @@ fn test_project_agnostic_architecture_rules_positive() {
     let report = scan(&[
         (
             "app/service_layer.py",
-            r#"
-import os
-
-GLOBAL_CLIENT = Client()
-app.run()
-
-class ServiceConfig:
-    def __init__(self):
-        self.token = os.getenv("API_TOKEN")
-"#,
+            python_fixture!("project_agnostic/architecture_service_layer_positive.txt"),
         ),
         (
             "app/main.py",
-            r#"
-def main(customer):
-    repo = Repository()
-    cache = Cache()
-    client = Client()
-    if customer.is_premium:
-        return {"data": customer, "status": 200}
-    return {"data": customer, "status": 202}
-"#,
+            python_fixture!("project_agnostic/architecture_main_positive.txt"),
         ),
     ]);
 
@@ -54,14 +37,7 @@ def main(customer):
 fn test_project_agnostic_architecture_rules_negative() {
     let report = scan(&[(
         "app/main.py",
-        r#"
-class ServiceConfig:
-    def __init__(self, token):
-        self.token = token
-
-def main(customer, repo, cache, client):
-    return customer
-"#,
+        python_fixture!("project_agnostic/architecture_main_negative.txt"),
     )]);
 
     assert_rules_absent(
@@ -78,15 +54,7 @@ def main(customer, repo, cache, client):
 fn test_project_agnostic_architecture_rule_skips_http_exception_status_code() {
     let report = scan(&[(
         "app/api.py",
-        r#"
-from fastapi import HTTPException
-
-def ingest_chunk(payload):
-    chunk = {"id": 1}
-    if not payload:
-        raise HTTPException(status_code=404, detail="missing")
-    return {"chunk": chunk}
-"#,
+        python_fixture!("project_agnostic/architecture_http_exception_negative.txt"),
     )]);
 
     assert_rules_absent(
@@ -99,49 +67,27 @@ def ingest_chunk(payload):
 fn test_project_agnostic_boundaries_rule_skips_path_and_fstring_constants() {
     let report = scan(&[(
         "app/config.py",
-        r#"
-from pathlib import Path
-
-ROOT_DIR = Path(__file__).resolve().parents[2]
-SAMPLE_RATE = 16000
-WS_URL = f"wss://example.invalid/ws?sample_rate={SAMPLE_RATE}"
-"#,
+        python_fixture!("project_agnostic/boundaries_path_constants_negative.txt"),
     )]);
 
-    assert_rules_absent(
-        &report,
-        &["module_constant_rebound_after_public_import"],
-    );
+    assert_rules_absent(&report, &["module_constant_rebound_after_public_import"]);
 }
 
 #[test]
 fn test_project_agnostic_boundaries_rule_still_flags_mutable_constants() {
     let report = scan(&[(
         "app/detector.py",
-        r#"
-ALERT_PHRASES = [
-    "important",
-    "remember this",
-]
-"#,
+        python_fixture!("project_agnostic/boundaries_mutable_constants_positive.txt"),
     )]);
 
-    assert_rules_present(
-        &report,
-        &["module_constant_rebound_after_public_import"],
-    );
+    assert_rules_present(&report, &["module_constant_rebound_after_public_import"]);
 }
 
 #[test]
 fn test_project_agnostic_quality_rule_skips_passthrough_any_wrapper() {
     let report = scan(&[(
         "app/contracts.py",
-        r#"
-from typing import Any
-
-def passthrough(value: Any) -> Any:
-    return value
-"#,
+        python_fixture!("project_agnostic/quality_passthrough_any_negative.txt"),
     )]);
 
     assert_rules_absent(&report, &["public_any_type_leak"]);
@@ -151,14 +97,7 @@ def passthrough(value: Any) -> Any:
 fn test_project_agnostic_boundaries_rule_requires_mutation_evidence() {
     let report = scan(&[(
         "app/cache.py",
-        r#"
-class Catalog:
-    def __init__(self, items):
-        self._items = tuple(items)
-
-    def items(self):
-        return self._items
-"#,
+        python_fixture!("project_agnostic/boundaries_live_collection_negative.txt"),
     )]);
 
     assert_rules_absent(
@@ -171,17 +110,7 @@ class Catalog:
 fn test_project_agnostic_boundaries_rule_flags_mutated_live_collection() {
     let report = scan(&[(
         "app/cache.py",
-        r#"
-class Catalog:
-    def __init__(self):
-        self._items = []
-
-    def add(self, value):
-        self._items.append(value)
-
-    def items(self):
-        return self._items
-"#,
+        python_fixture!("project_agnostic/boundaries_live_collection_positive.txt"),
     )]);
 
     assert_rules_present(
@@ -194,16 +123,7 @@ class Catalog:
 fn test_project_agnostic_performance_rule_requires_same_dataset() {
     let report = scan(&[(
         "app/perf.py",
-        r#"
-def normalize(items, others):
-    left = []
-    right = []
-    for item in items:
-        left.append(item.strip())
-    for other in others:
-        right.append(other.lower())
-    return left, right
-"#,
+        python_fixture!("project_agnostic/performance_same_dataset_negative.txt"),
     )]);
 
     assert_rules_absent(
@@ -216,15 +136,7 @@ def normalize(items, others):
 fn test_project_agnostic_discipline_rule_requires_loop_local_recovery_logging() {
     let report = scan(&[(
         "app/worker.py",
-        r#"
-import logging
-
-def run(items):
-    logger = logging.getLogger(__name__)
-    for item in items:
-        process(item)
-    logger.error("failed run")
-"#,
+        python_fixture!("project_agnostic/discipline_loop_recovery_negative.txt"),
     )]);
 
     assert_rules_absent(
@@ -237,18 +149,7 @@ def run(items):
 fn test_project_agnostic_discipline_rule_flags_loop_local_recovery_logging() {
     let report = scan(&[(
         "app/worker.py",
-        r#"
-import logging
-
-def run(items):
-    logger = logging.getLogger(__name__)
-    for item in items:
-        try:
-            process(item)
-        except Exception:
-            logger.exception("failed item")
-            continue
-"#,
+        python_fixture!("project_agnostic/discipline_loop_recovery_positive.txt"),
     )]);
 
     assert_rules_present(
@@ -258,14 +159,48 @@ def run(items):
 }
 
 #[test]
+fn test_project_agnostic_discipline_rules_positive_batch_one() {
+    let report = scan(&[(
+        "app/discipline_batch_one.py",
+        python_fixture!("project_agnostic/discipline_batch_one_positive.txt"),
+    )]);
+
+    assert_rules_present(
+        &report,
+        &[
+            "boolean_flag_parameter_controls_unrelated_behaviors",
+            "condition_tree_nests_past_two_business_decision_levels",
+            "function_body_contains_setup_validation_execution_and_formatting_all_at_once",
+            "expensive_work_starts_before_input_validation",
+            "duplicated_cleanup_paths_instead_of_context_manager",
+        ],
+    );
+}
+
+#[test]
+fn test_project_agnostic_discipline_rules_negative_batch_one() {
+    let report = scan(&[(
+        "app/discipline_batch_one.py",
+        python_fixture!("project_agnostic/discipline_batch_one_negative.txt"),
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &[
+            "boolean_flag_parameter_controls_unrelated_behaviors",
+            "condition_tree_nests_past_two_business_decision_levels",
+            "function_body_contains_setup_validation_execution_and_formatting_all_at_once",
+            "expensive_work_starts_before_input_validation",
+            "duplicated_cleanup_paths_instead_of_context_manager",
+        ],
+    );
+}
+
+#[test]
 fn test_project_agnostic_hotpath_rule_skips_tuple_iteration_false_match() {
     let report = scan(&[(
         "app/io.py",
-        r#"
-def cleanup(paths):
-    for path in ("a.txt", "b.txt"):
-        remove(path)
-"#,
+        python_fixture!("project_agnostic/hotpath_tuple_membership_negative.txt"),
     )]);
 
     assert_rules_absent(
@@ -278,18 +213,7 @@ def cleanup(paths):
 fn test_project_agnostic_hotpath_ext_rule_skips_data_dependent_fstrings() {
     let report = scan(&[(
         "app/export.py",
-        r#"
-def render(rows):
-    output = []
-    for row in rows:
-        output.append(f"row:{row}")
-        output.append(f"row2:{row}")
-        output.append(f"row3:{row}")
-        output.append(f"row4:{row}")
-        output.append(f"row5:{row}")
-        output.append(f"row6:{row}")
-    return output
-"#,
+        python_fixture!("project_agnostic/hotpath_ext_data_dependent_fstrings_negative.txt"),
     )]);
 
     assert_rules_absent(
@@ -302,30 +226,7 @@ def render(rows):
 fn test_project_agnostic_boundary_and_discipline_rules_positive() {
     let report = scan(&[(
         "app/api.py",
-        r#"
-from typing import Mapping
-
-def mutate(items=[], path="tmp.txt", metadata: Mapping[str, int] = {}):
-    callbacks = []
-    for value in items:
-        callbacks.append(lambda: value)
-    payload = open(path).read()
-    if not items:
-        raise ValueError("missing items")
-    if metadata:
-        metadata.update({"loaded": True})
-    return payload
-
-def process(data, strict: bool = False, mode: str = "fast", retries: int = 0, timeout: int = 1, limit: int = 10):
-    response = open("data.txt").read()
-    if not data:
-        raise ValueError("bad")
-    if strict:
-        return {"kind": "strict"}
-    if mode == "fast":
-        return {"kind": "fast"}
-    return {"kind": "slow"}
-"#,
+        python_fixture!("project_agnostic/boundary_and_discipline_positive.txt"),
     )]);
 
     assert_rules_present(
@@ -346,38 +247,7 @@ def process(data, strict: bool = False, mode: str = "fast", retries: int = 0, ti
 fn test_project_agnostic_hotpath_and_performance_rules_positive() {
     let report = scan(&[(
         "app/processor.py",
-        r#"
-import json
-import re
-import subprocess
-
-def crunch(values, mapping, raw):
-    text = ""
-    if list(values):
-        pass
-    for value in values:
-        matcher = re.compile(r"\d+")
-        text += "," + value
-        if value in ["a", "b", "c"]:
-            pass
-        if value in list(mapping.keys()):
-            pass
-        subprocess.run(["echo", value])
-        json.loads(json.dumps({"value": value, "copy": True}))
-    return text
-
-def export_payload(path):
-    data = open(path).read()
-    more = open(path).read()
-    blob = data.encode().decode()
-    values = list(item for item in data)
-    if len(values):
-        return blob + more
-    return ""
-
-def summarize(items):
-    return any([item.strip().lower() for item in items])
-"#,
+        python_fixture!("project_agnostic/hotpath_and_performance_positive.txt"),
     )]);
 
     assert_rules_present(
@@ -402,61 +272,11 @@ fn test_project_agnostic_quality_maintainability_observability_structure_rules_p
     let report = scan(&[
         (
             "pkg/helpers.py",
-            r#"
-import logging
-from uuid import uuid4
-
-def build_report(mode: str, first: str, second: str, third: int, fourth: bool, fifth: float) -> dict[str, bool]:
-    logger = logging.getLogger(__name__)
-    request_id = uuid4()
-    request_id = uuid4()
-    ids = []
-    names = []
-    for record in [1, 2, 3]:
-        ids.append(record)
-        names.append(str(record))
-        logger.debug(",".join([str(record), mode]))
-    try:
-        return None
-    except Exception:
-        logger.error("payload=%s", {"value": mode})
-        return {"ok": True}
-
-def summarize_payload(first, second, third, fourth):
-    return (first, second, third, fourth)
-"#,
+            python_fixture!("project_agnostic/quality_helpers_positive.txt"),
         ),
         (
             "pkg/common_manager.py",
-            r#"
-REGISTRY = {}
-register("default", REGISTRY)
-
-class BaseRecord:
-    id = 0
-    name = ""
-
-class DataProcessor(BaseRecord):
-    def __init__(self):
-        self.client = Client()
-        self.repo = Repo()
-        self.cache = Cache()
-
-    async def run(self):
-        return self.render()
-
-    def create(self):
-        return {}
-
-    def parse(self):
-        return {}
-
-    def save(self):
-        return {}
-
-    def render(self):
-        return {}
-"#,
+            python_fixture!("project_agnostic/quality_common_manager_positive.txt"),
         ),
     ]);
 
@@ -481,13 +301,7 @@ class DataProcessor(BaseRecord):
 fn test_project_agnostic_quality_rule_skips_reraise_handlers() {
     let report = scan(&[(
         "app/api.py",
-        r#"
-def ingest_audio(payload):
-    try:
-        return decode(payload)
-    except Exception as error:
-        raise HTTPException(status_code=400, detail=str(error)) from error
-"#,
+        python_fixture!("project_agnostic/quality_reraise_negative.txt"),
     )]);
 
     assert_rules_absent(
@@ -500,14 +314,7 @@ def ingest_audio(payload):
 fn test_project_agnostic_observability_rule_skips_cheap_fstring_logging() {
     let report = scan(&[(
         "app/logging_example.py",
-        r#"
-import logging
-
-def process(records):
-    logger = logging.getLogger(__name__)
-    for record in records:
-        logger.debug(f"payload {record}")
-"#,
+        python_fixture!("project_agnostic/observability_cheap_fstring_negative.txt"),
     )]);
 
     assert_rules_absent(
@@ -517,55 +324,121 @@ def process(records):
 }
 
 #[test]
+fn test_project_agnostic_observability_rules_positive_batch_one() {
+    let report = scan(&[(
+        "app/observability_batch_one.py",
+        python_fixture!("project_agnostic/observability_batch_one_positive.txt"),
+    )]);
+
+    assert_rules_present(
+        &report,
+        &[
+            "metric_name_contains_dynamic_user_or_data_values",
+            "metric_or_span_labels_use_high_cardinality_raw_inputs",
+            "metric_emission_occurs_per_item_inside_inner_loop",
+            "health_probe_executes_full_dependency_workflow",
+            "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+        ],
+    );
+}
+
+#[test]
+fn test_project_agnostic_observability_rules_negative_batch_one() {
+    let report = scan(&[(
+        "app/observability_batch_one.py",
+        python_fixture!("project_agnostic/observability_batch_one_negative.txt"),
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &[
+            "metric_name_contains_dynamic_user_or_data_values",
+            "metric_or_span_labels_use_high_cardinality_raw_inputs",
+            "metric_emission_occurs_per_item_inside_inner_loop",
+            "health_probe_executes_full_dependency_workflow",
+            "operation_lacks_single_stable_name_across_logs_metrics_and_traces",
+        ],
+    );
+}
+
+#[test]
+fn test_project_agnostic_observability_rules_positive_batch_two() {
+    let report = scan(&[(
+        "app/observability_batch_two.py",
+        python_fixture!("project_agnostic/observability_batch_two_positive.txt"),
+    )]);
+
+    assert_rules_present(
+        &report,
+        &[
+            "retry_loop_logs_without_attempt_count_or_backoff_context",
+            "exception_log_omits_operation_identifier_or_input_summary",
+            "debug_log_serializes_full_large_object_graph",
+            "success_and_failure_paths_use_inconsistent_structured_log_keys",
+            "timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation",
+        ],
+    );
+}
+
+#[test]
+fn test_project_agnostic_observability_rules_negative_batch_two() {
+    let report = scan(&[(
+        "app/observability_batch_two.py",
+        python_fixture!("project_agnostic/observability_batch_two_negative.txt"),
+    )]);
+
+    assert_rules_absent(
+        &report,
+        &[
+            "retry_loop_logs_without_attempt_count_or_backoff_context",
+            "exception_log_omits_operation_identifier_or_input_summary",
+            "debug_log_serializes_full_large_object_graph",
+            "success_and_failure_paths_use_inconsistent_structured_log_keys",
+            "timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation",
+        ],
+    );
+}
+
+#[test]
 fn test_project_agnostic_packaging_rules_positive() {
     let workspace = FixtureWorkspace::new();
     workspace.write_files(&[
         (
             "pkg/__init__.py",
-            r#"
-import pandas
-import click
-from importlib.metadata import version
-from .alpha import Tool
-from .beta import Tool
-from .gamma import Helper
-from .delta import Extra
-
-PACKAGE_VERSION = version("pkg")
-"#,
+            python_fixture!("project_agnostic/packaging_init_positive.txt"),
         ),
         (
             "pkg/core.py",
-            r#"
-def run_plugins(items):
-    import pkg.alpha
-    plugin_names = []
-    for item in items:
-        for name in pkgutil.iter_modules():
-            plugin_names.append(name)
-            print(name)
-    return items
-"#,
+            python_fixture!("project_agnostic/packaging_core_positive.txt"),
         ),
         (
             "pkg/alpha.py",
-            "from common.helpers import helper\nfrom common.config import setting\n",
+            python_fixture!("project_agnostic/packaging_alpha_positive.txt"),
         ),
         (
             "pkg/beta.py",
-            "from common.helpers import helper\nfrom common.config import setting\n",
+            python_fixture!("project_agnostic/packaging_beta_positive.txt"),
         ),
         (
             "pkg/gamma.py",
-            "from common.helpers import helper\nfrom common.config import setting\n",
+            python_fixture!("project_agnostic/packaging_gamma_positive.txt"),
         ),
         (
             "pkg/delta.py",
-            "from common.helpers import helper\nfrom common.config import setting\n",
+            python_fixture!("project_agnostic/packaging_delta_positive.txt"),
         ),
-        ("pkg/fake_client.py", "VALUE = 1\n"),
-        ("common/helpers.py", "def helper():\n    return 1\n"),
-        ("common/config.py", "setting = 1\n"),
+        (
+            "pkg/fake_client.py",
+            python_fixture!("project_agnostic/packaging_fake_client_positive.txt"),
+        ),
+        (
+            "common/helpers.py",
+            python_fixture!("project_agnostic/packaging_common_helpers_positive.txt"),
+        ),
+        (
+            "common/config.py",
+            python_fixture!("project_agnostic/packaging_common_config_positive.txt"),
+        ),
     ]);
 
     let report = workspace.scan();

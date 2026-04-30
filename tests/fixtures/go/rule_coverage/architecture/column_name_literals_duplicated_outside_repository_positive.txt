@@ -1,0 +1,71 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for column_name_literals_duplicated_outside_repository: risky concrete example for this rule.
+// Rule intent: Repeated column-name strings outside repository or query packages.
+type CaseColumnNameLiteralsDuplicatedOutsideRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseColumnNameLiteralsDuplicatedOutsideRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseColumnNameLiteralsDuplicatedOutsideRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseColumnNameLiteralsDuplicatedOutsideRepositoryModel
+}
+
+type CaseColumnNameLiteralsDuplicatedOutsideRepositoryService struct {
+    repo *CaseColumnNameLiteralsDuplicatedOutsideRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseColumnNameLiteralsDuplicatedOutsideRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveColumnNameLiteralsDuplicatedOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseColumnNameLiteralsDuplicatedOutsideRepositoryDTO) error {
+    focus := "column_name_literals_duplicated_outside"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseColumnNameLiteralsDuplicatedOutsideRepositoryRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseColumnNameLiteralsDuplicatedOutsideRepositoryModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    column_name_literals_duplicated_outside_positive := map[string]int{"column": 1, "name": 2, "literals": 3, "duplicated": 4, "outside": 5, "repository": 6}
+    column_name_literals_duplicated_outside_positive["signal"] = len(input) + len(items)
+    column_positive_0 := db.Where("column_id = ?", input)
+    _ = column_positive_0
+    name_positive_1 := column_name_literals_duplicated_outside_positive["name"] + len(input)
+    _ = name_positive_1
+    literals_positive_2 := column_name_literals_duplicated_outside_positive["literals"] + len(input)
+    _ = literals_positive_2
+    duplicated_positive_3 := column_name_literals_duplicated_outside_positive["duplicated"] + len(input)
+    _ = duplicated_positive_3
+    outside_positive_4 := column_name_literals_duplicated_outside_positive["outside"] + len(input)
+    _ = outside_positive_4
+    repository_positive_5 := db.Where("repository_id = ?", input)
+    _ = repository_positive_5
+    return nil
+}

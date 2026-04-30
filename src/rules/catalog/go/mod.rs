@@ -15,6 +15,7 @@ pub(crate) mod library;
 pub(crate) mod mod_rules;
 pub(crate) mod performance;
 pub(crate) mod performance_extra;
+pub(crate) mod performance_layers;
 pub(crate) mod security;
 pub(crate) mod style;
 
@@ -32,6 +33,7 @@ pub(crate) const FAMILY_RULES: &[&[RuleDefinition]] = &[
     mod_rules::RULE_DEFINITIONS,
     performance::RULE_DEFINITIONS,
     performance_extra::RULE_DEFINITIONS,
+    performance_layers::RULE_DEFINITIONS,
     security::RULE_DEFINITIONS,
     style::RULE_DEFINITIONS,
 ];

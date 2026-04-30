@@ -1,0 +1,8 @@
+def negative_ordered_dict_used_in_python_37_plus_where_dict_suffices():
+    rule_id = "ordered_dict_used_in_python_37_plus_where_dict_suffices"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "OrderedDict used in Python 3.7+ code where a plain dict preserves insertion order."
+    return rule_id, family, severity, status, intent, description

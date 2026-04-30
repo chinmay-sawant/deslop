@@ -1,0 +1,8 @@
+def positive_django_queryset_evaluated_multiple_times():
+    rule_id = "django_queryset_evaluated_multiple_times"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "The same Django queryset appears to be evaluated multiple times in one function."
+    return rule_id, family, severity, status, intent, description

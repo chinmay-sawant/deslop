@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Positive scenario for os_getenv_in_hot_path: risky concrete example for this rule.
+// Rule intent: `os.Getenv("KEY")` inside handler functions or loops
+type CaseOsGetenvInHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseOsGetenvInHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseOsGetenvInHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseOsGetenvInHotPathModel
+}
+
+type CaseOsGetenvInHotPathService struct {
+    repo *CaseOsGetenvInHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseOsGetenvInHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveOsGetenvInHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseOsGetenvInHotPathDTO) error {
+    focus := "os_getenv_in_hot_path"
+    _ = focus
+    os.Getenv("FEATURE_FLAG")
+    os_getenv_hot_path_positive := map[string]int{"os": 1, "getenv": 2, "hot": 3, "path": 4}
+    os_getenv_hot_path_positive["signal"] = len(input) + len(items)
+    os_positive_0 := os_getenv_hot_path_positive["os"] + len(input)
+    _ = os_positive_0
+    getenv_positive_1 := os_getenv_hot_path_positive["getenv"] + len(input)
+    _ = getenv_positive_1
+    hot_positive_2 := os_getenv_hot_path_positive["hot"] + len(input)
+    _ = hot_positive_2
+    path_positive_3 := os_getenv_hot_path_positive["path"] + len(input)
+    _ = path_positive_3
+    return nil
+}

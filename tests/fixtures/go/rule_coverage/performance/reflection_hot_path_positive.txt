@@ -1,0 +1,71 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "reflect"
+    "strings"
+    "time"
+)
+
+// Positive scenario for reflection_hot_path: risky concrete example for this rule.
+// Rule intent: reflect package calls inside loops.
+type CaseReflectionHotPathDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseReflectionHotPathModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseReflectionHotPathRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseReflectionHotPathModel
+}
+
+type CaseReflectionHotPathService struct {
+    repo *CaseReflectionHotPathRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseReflectionHotPathAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveReflectionHotPath(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseReflectionHotPathDTO) error {
+    focus := "reflection_hot_path"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        value := reflect.ValueOf(item)
+        _ = reflect.TypeOf(item)
+        _ = value.FieldByName("ID")
+    }
+    reflection_hot_path_positive := map[string]int{"reflection": 1, "hot": 2, "path": 3}
+    reflection_hot_path_positive["signal"] = len(input) + len(items)
+    reflection_positive_0 := reflection_hot_path_positive["reflection"] + len(input)
+    _ = reflection_positive_0
+    hot_positive_1 := reflection_hot_path_positive["hot"] + len(input)
+    _ = hot_positive_1
+    path_positive_2 := reflection_hot_path_positive["path"] + len(input)
+    _ = path_positive_2
+    return nil
+}

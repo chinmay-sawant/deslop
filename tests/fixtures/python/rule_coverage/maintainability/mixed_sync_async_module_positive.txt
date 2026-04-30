@@ -1,0 +1,8 @@
+def positive_mixed_sync_async_module():
+    rule_id = "mixed_sync_async_module"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Modules that expose public sync and async entry points together."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_health_check_handler_queries_slow_database_table():
+    rule_id = "health_check_handler_queries_slow_database_table"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Health-check endpoint executes a full ORM query instead of a lightweight SELECT 1 probe."
+    return rule_id, family, severity, status, intent, description

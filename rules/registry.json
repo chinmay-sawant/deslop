@@ -7140,6 +7140,1406 @@
     "binding_location": "src/heuristics/go/performance.rs"
   },
   {
+    "id": "go_perf_layer_algorithmic_complexity_per_request_topk_full_sort",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag request paths that sort all candidates when heap-based top-k selection would bound work.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_algorithmic_complexity_quadratic_append_filter_pipeline",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag append-based filter pipelines that rescan accumulated results for every input item.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen_set",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag recursive graph or tree walks that do not track visited nodes for cyclic or shared inputs.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_algorithmic_complexity_repeated_nested_slice_scans",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag nested slice scans that should be indexed or mapped before joining large collections.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_algorithmic_complexity_sort_before_linear_dedup",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag full sorts used only to remove duplicates where map-backed membership would scale better.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_async_concurrency_channel_buffer_too_small_for_known_burst",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag channels created with no or tiny buffer despite a known burst size.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_async_concurrency_context_timeout_allocated_per_inner_call",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag context.WithTimeout creation inside tight retry loops when an outer deadline would suffice.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_async_concurrency_goroutine_per_item_without_worker_limit",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag unbounded goroutine-per-item fanout without a semaphore or worker pool.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_async_concurrency_mutex_held_during_slow_call",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag mutex-protected regions that include network, disk, or database calls.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_async_concurrency_select_default_busy_poll",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag select loops with default branches that spin instead of blocking or using timers.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_caching_cache_key_built_with_fmt",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag cache keys built with fmt.Sprintf in hot paths where append/Builder or structured keys are cheaper.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_caching_cache_miss_does_duplicate_work",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_caching_json_cache_value_stored_as_string",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag caches that store JSON strings only to unmarshal them again before every use.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_caching_per_request_config_cache_rebuild",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag request-scoped caches rebuilt from config or environment on every call.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_caching_unbounded_cache_map",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag package-level cache maps without size, TTL, or eviction policy.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_collection_iteration_copy_slice_before_readonly_range",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag slice copies made immediately before read-only range loops.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_collection_iteration_len_called_after_materializing_channel",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag channel streams collected into slices only to measure length or emptiness.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_collection_iteration_manual_index_loop_without_bounds_need",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag manual index loops over slices where range would avoid repeated bounds-sensitive indexing.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_collection_iteration_multiple_passes_for_independent_counts",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag multiple full passes over the same slice for independent counters that can be combined.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_collection_iteration_range_over_map_for_deterministic_first",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag map iteration used to pick a deterministic first value, causing unstable work and extra sorting later.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_data_structure_choice_interface_map_for_typed_values",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag map[string]any used for homogeneous hot-path values where typed structs avoid assertions.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_data_structure_choice_linked_list_for_cache_iteration",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag container/list use in cache iteration paths where slices or maps would improve locality.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_data_structure_choice_map_string_bool_for_membership",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag map[string]bool membership sets where map[string]struct{} avoids unnecessary value storage.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_data_structure_choice_slice_queue_pop_front",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag queue-style slice reslicing from the front that can retain backing arrays or shift too much data.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_data_structure_choice_small_enum_string_switch_map",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag map lookups for tiny static enum-like string sets where switch can avoid allocation and hashing.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_database_access_count_query_before_paged_fetch",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag count queries paired with page fetches on every request without cache or user-visible need.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_database_access_query_inside_loop_without_batching",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag SQL queries issued inside loops where batching or IN queries can bound round trips.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_database_access_rows_scan_into_map_per_row",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag row scans into map[string]any where typed structs or column slices would reduce allocation.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_database_access_select_star_on_hot_query",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag SELECT * in hot queries where narrow projections reduce scan and decode cost.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_database_access_transaction_per_row_bulk_write",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag bulk writes that open and commit one transaction per row.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_error_handling_cost_error_string_built_before_error_needed",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag error message formatting before the code knows an error will be returned.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_error_handling_cost_errors_wrap_in_tight_loop",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag repeated error wrapping inside loops where one aggregated context would be cheaper.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_error_handling_cost_multierror_append_for_success_path",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag multi-error aggregators allocated on success-heavy paths before any error exists.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_error_handling_cost_panic_recover_for_control_flow",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag panic/recover used for expected branch control in performance-sensitive code.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_error_handling_cost_sentinel_error_allocated_per_call",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag identical sentinel errors allocated inside functions instead of package-level variables.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_framework_performance_gin_context_copied_for_sync_path",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag Gin context Copy calls where work remains synchronous and request-scoped.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_framework_performance_gorm_preload_all_associations",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag GORM Preload of broad association sets on list endpoints.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_framework_performance_grpc_metadata_parsed_repeatedly",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag repeated metadata extraction/parsing in gRPC interceptors and handlers.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_framework_performance_sqlx_select_slice_unbounded",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag sqlx Select into slices without LIMIT or streaming for large tables.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_framework_performance_template_execute_to_string_then_write",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag template rendering to strings before writing to the response writer.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_garbage_collection_cleanup_finalizer_used_for_regular_cleanup",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag runtime.SetFinalizer use for ordinary resource cleanup instead of explicit Close ownership.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_garbage_collection_cleanup_large_slice_retained_after_truncate",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag long-lived slices truncated to zero that still retain large backing arrays.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_garbage_collection_cleanup_response_body_not_drained_for_reuse",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag HTTP response handling that closes bodies without draining when connection reuse matters.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_garbage_collection_cleanup_sync_pool_stores_large_unbounded_buffers",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag sync.Pool usage that stores large buffers without a cap before putting them back.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_garbage_collection_cleanup_ticker_not_stopped_on_exit",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag time.Ticker creation without a visible Stop path in services or workers.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_hot_path_optimization_allocation_in_hash_or_less_func",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag allocations inside sort comparison or hashing callbacks.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_hot_path_optimization_defer_for_simple_unlock_in_hot_loop",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag defer used for simple unlock/close work inside very hot loops.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_hot_path_optimization_invariant_parse_inside_handler",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag handlers that parse invariant templates, schemas, or expressions per request.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_hot_path_optimization_reflection_on_hot_path",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag reflect-based field access in hot loops where typed access is available.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_hot_path_optimization_time_now_called_many_times_per_item",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag repeated time.Now calls inside per-item loops where one timestamp would suffice.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_io_operations_readall_on_known_large_file",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_io_operations_scanner_used_for_large_token_stream",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag bufio.Scanner on potentially large tokens without Buffer sizing or Reader alternatives.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_io_operations_small_writes_without_bufio_writer",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag many Write calls to files or network connections without bufio buffering.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_io_operations_stat_before_open_without_branch",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag os.Stat checks immediately followed by open/read operations without using the stat result meaningfully.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_io_operations_temporary_file_for_stream_transform",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag temporary files used only to bridge streaming transformations.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_lazy_loading_eager_connect_to_all_backends",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag services connecting to every optional backend at startup instead of lazy initialization.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_lazy_loading_eager_load_optional_config",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag optional configuration or metadata loaded at startup before any feature uses it.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_lazy_loading_eager_metric_label_cardinality_build",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag eager construction of high-cardinality metric labels before the metric is emitted.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_lazy_loading_eager_template_parse_for_unused_routes",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag parsing templates for routes that may never be served in the current process mode.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_lazy_loading_lazy_once_hides_slow_first_request",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag sync.Once lazy initialization on request paths without warmup or latency accounting.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_logging_overhead_fmt_log_message_in_loop",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag formatted log strings built inside loops instead of structured lazy fields.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_logging_overhead_log_fields_built_before_level_check",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag expensive log field construction before checking whether the level is enabled.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_logging_overhead_log_payload_serialized_before_sampling",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag payload serialization for logs before sampling or level filters run.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_logging_overhead_logger_with_fields_per_request",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag derived logger construction per request when stable fields can be attached once.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_logging_overhead_per_record_debug_log_in_batch",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag debug logging per batch record on hot ingestion paths.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_memory_allocation_append_without_known_capacity",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag slice appends in builders where an obvious count is available for make capacity.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_memory_allocation_bytes_buffer_allocated_per_record",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag bytes.Buffer construction per record when a reusable buffer can be reset safely.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_memory_allocation_closure_capture_allocates_in_loop",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag loop-local closures that capture variables in high-frequency paths and may force heap allocation.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_memory_allocation_map_recreated_for_static_lookup",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag static lookup maps rebuilt inside functions instead of package-level immutable tables.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_memory_allocation_temporary_byte_slice_for_string_write",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag []byte(string) conversions used only to write strings to writers.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_network_calls_dns_lookup_per_request_path",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag net.Lookup* calls in request paths without caching or resolver ownership.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_network_calls_http_client_created_per_call",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag http.Client construction per call instead of reusing clients and transports.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_network_calls_retry_loop_without_backoff",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag network retry loops that immediately retry and amplify load.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_network_calls_tls_config_built_per_request",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag TLS configuration construction per request instead of reusing immutable configs.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_network_calls_transport_without_connection_limits",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag custom http.Transport values missing MaxIdleConns or MaxIdleConnsPerHost for service clients.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_profiling_benchmarking_benchmark_includes_setup_in_loop",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag Go benchmarks that perform setup inside the timed loop without ResetTimer.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_profiling_benchmarking_benchmark_missing_allocs_report",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag benchmarks for allocation-sensitive code that omit b.ReportAllocs.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_profiling_benchmarking_microbenchmark_dead_code_eliminated",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag benchmarks that do not consume results and may let the compiler remove work.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_profiling_benchmarking_optimization_comment_without_benchmark",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag performance-claim comments that lack benchmark, profile, or trace evidence.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_profiling_benchmarking_pprof_endpoint_enabled_without_sampling_plan",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag always-on profiling endpoints in production services without access or sampling controls.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_resource_pooling_buffer_pool_without_max_capacity",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag buffer pools that return arbitrarily large buffers and retain memory after spikes.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_resource_pooling_db_pool_created_per_repository",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag database pools constructed per repository instance instead of shared process ownership.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_resource_pooling_http_transport_per_service_method",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag new transports per service method instead of shared clients per upstream.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_resource_pooling_rate_limiter_per_request",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag rate limiter construction inside request handlers instead of per identity or dependency.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_resource_pooling_worker_pool_without_shutdown_backpressure",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag worker pools that accept unlimited jobs without bounded queues or shutdown draining.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_runtime_configuration_debug_build_tags_in_hot_binary",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag performance-sensitive binaries that keep debug/profiling build tags enabled by default.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_runtime_configuration_gogc_forced_low_without_measurement",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag runtime/debug GC tuning in application code without benchmark notes.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_runtime_configuration_gomaxprocs_set_in_library",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag libraries setting GOMAXPROCS and overriding host runtime policy.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_runtime_configuration_race_detector_assumed_in_benchmark_numbers",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag benchmark guidance or scripts that compare race-enabled and normal builds directly.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_runtime_configuration_reflection_config_loaded_per_call",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag reflection-based config decoding performed per operation instead of at startup.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_serialization_base64_roundtrip_for_binary_transport",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside a single process boundary.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_serialization_gzip_writer_created_per_small_payload",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag gzip writers created for tiny payloads where compression overhead can dominate.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_serialization_json_decoder_without_reuse_for_stream",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag JSON decoders created for each element of a stream instead of decoding the stream once.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_serialization_json_marshal_for_deep_equal",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag json.Marshal used only to compare structures or build equality keys.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_serialization_map_any_json_decode_in_hot_path",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag JSON decoding into map[string]any in hot paths where typed structs avoid reflection churn.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_string_handling_byte_string_roundtrip_for_contains",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag string/[]byte roundtrips around Contains/Index checks that have native package variants.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_string_handling_fmt_sprintf_for_simple_concat",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag fmt.Sprintf used for simple string concatenation on hot or repeated paths.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_string_handling_regexp_compile_in_request_path",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag regexp.Compile or MustCompile inside handlers, loops, or repeated functions.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_string_handling_string_lower_for_case_insensitive_compare",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag strings.ToLower comparisons where EqualFold avoids extra allocation.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
+    "id": "go_perf_layer_string_handling_strings_join_single_element_loop",
+    "language": "go",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag repeated strings.Join calls in loops where one builder outside the loop would do.",
+    "binding_location": "src/heuristics/go/performance.rs"
+  },
+  {
     "id": "goroutine_for_sync_work",
     "language": "go",
     "family": "performance",
@@ -16480,6 +17880,1406 @@
     "binding_location": "src/heuristics/python/performance.rs"
   },
   {
+    "id": "python_perf_layer_algorithmic_complexity_cartesian_product_materialized_before_filter",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag itertools product or nested loops materialized before cheap filters narrow the pairs.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_algorithmic_complexity_full_sort_for_top_n",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag sorted(...)[0:n] or DataFrame sort_values().head() where nlargest/nsmallest or heap selection would bound work.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_algorithmic_complexity_nested_membership_scan_without_set",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag nested membership checks over lists where a set or dict index should be built once.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_algorithmic_complexity_recursive_walk_without_iterative_guard",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag recursive traversals over untrusted depth without iterative fallback or visited tracking.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_algorithmic_complexity_repeated_dataframe_filter_chain",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag repeated pandas filters over the same frame where one boolean mask can combine predicates.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_async_concurrency_asyncio_task_per_item_unbounded",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag unbounded create_task fanout without a semaphore, queue, or batch limit.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_async_concurrency_blocking_requests_in_async_route",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag requests.* calls inside async routes or coroutines instead of async clients or executor boundaries.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_async_concurrency_busy_async_poll_sleep_zero",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag async polling loops that sleep(0) or spin instead of awaiting a real event.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_async_concurrency_lock_held_during_await_or_io",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag locks held while awaiting, doing network I/O, or touching disk.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_async_concurrency_threadpool_created_per_request",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag ThreadPoolExecutor or ProcessPoolExecutor construction per request or call.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_caching_cache_key_uses_json_dumps_in_hot_path",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag cache keys built with json.dumps in hot paths when tuple or stable string keys would work.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_caching_cache_miss_duplicate_concurrent_work",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag async or threaded cache miss paths that recompute the same key concurrently.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_caching_cached_value_immediately_deserialized",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag caches storing serialized data only to deserialize before every use.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_caching_per_request_settings_cache_rebuilt",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag settings or feature-flag caches rebuilt for each request.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_caching_unbounded_dict_cache",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag module-level dict caches without max size, TTL, or eviction.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_collection_iteration_enumerate_list_materialized",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag list(enumerate(...)) materialization before immediate iteration.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_collection_iteration_generator_materialized_for_truthiness",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag list(generator) or tuple(generator) used only for truthiness checks.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_collection_iteration_list_comprehension_only_for_side_effect",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag list comprehensions used only for side effects, forcing unnecessary list allocation.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_collection_iteration_multiple_passes_over_same_iterable",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag independent loops over the same collection where aggregation can be fused.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_collection_iteration_pandas_iterrows_for_numeric_transform",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag pandas iterrows loops for numeric transformations that can be vectorized or applied in batches.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag dict-of-dicts records in hot loops where dataclass, tuple, or typed containers reduce lookup cost.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_data_structure_choice_heapq_reimplemented_with_sorted_list",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag sorted-list priority queues where heapq avoids repeated full ordering.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_data_structure_choice_list_as_fifo_queue",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag list pop(0) or insert(0, ...) queue usage where collections.deque fits the access pattern.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_data_structure_choice_pandas_object_dtype_for_numeric_hot_columns",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag numeric pandas columns kept as object dtype on transformation-heavy paths.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_data_structure_choice_set_rebuilt_for_each_lookup_batch",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag sets rebuilt inside loops instead of once per lookup batch.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_database_access_count_then_fetch_every_page",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag count queries paired with every paginated fetch without product need or caching.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_database_access_dataframe_to_sql_row_loop",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag DataFrame writes to SQL through row loops instead of chunked to_sql or bulk copy.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_database_access_orm_query_inside_loop",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag ORM queries inside loops where select_related, prefetch_related, or bulk queries can collapse round trips.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_database_access_row_by_row_bulk_insert",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag bulk inserts implemented one row at a time instead of executemany or ORM bulk APIs.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_database_access_select_all_columns_for_serializer_subset",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag ORM or SQL queries loading all columns when serializers use a small subset.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_error_handling_cost_broad_except_retries_cpu_work",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag broad except retry loops that repeat CPU-heavy work instead of isolating the failing call.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_error_handling_cost_error_message_formatted_on_success_path",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag expensive error messages built before checking whether an error exists.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_error_handling_cost_exception_used_for_loop_control",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag exceptions used for ordinary loop control in hot paths.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_error_handling_cost_multi_error_list_allocated_before_failure",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag error accumulation lists allocated on success-heavy paths before any error occurs.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_error_handling_cost_raise_from_none_hides_retriable_error_context",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag error translation that drops cause context needed to avoid repeated failed retries.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_framework_performance_celery_task_loads_config_each_run",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag Celery tasks loading settings, models, or clients on every invocation without reuse.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_framework_performance_django_queryset_evaluated_in_template_loop",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag Django QuerySets evaluated repeatedly from templates or per-row template helpers.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_framework_performance_fastapi_dependency_builds_client_per_request",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag FastAPI dependencies that build heavy clients for every request.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_framework_performance_pandas_apply_for_vectorizable_operation",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag pandas apply calls for operations that have vectorized Series/DataFrame equivalents.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_framework_performance_sqlalchemy_lazy_load_in_serializer",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag SQLAlchemy lazy loads triggered from serializers or response mapping loops.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag cyclic object graphs that keep large buffers alive after request or batch completion.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_garbage_collection_cleanup_file_handle_closed_by_gc",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag file or socket resources relying on garbage collection instead of context-managed close.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_garbage_collection_cleanup_large_list_cleared_but_retained",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag long-lived lists cleared after spikes while still retaining oversized capacity-sensitive state.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_garbage_collection_cleanup_lru_cache_on_unbounded_argument_space",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag lru_cache usage without maxsize on functions fed user-controlled or high-cardinality inputs.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_garbage_collection_cleanup_temporary_directory_not_cleaned_promptly",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag TemporaryDirectory or temp files held across long workflows after their last use.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_hot_path_optimization_attribute_lookup_in_deep_inner_loop",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag repeated dynamic getattr or attribute lookup in deep loops where local binding helps.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_hot_path_optimization_datetime_now_called_per_field",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag repeated datetime.now calls per record when one timestamp can be reused.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_hot_path_optimization_numpy_python_loop_over_array",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag Python loops over large NumPy arrays where vectorized operations fit the computation.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag inspect/signature/reflection work in hot paths.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_hot_path_optimization_schema_parsed_inside_handler",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag schemas, templates, or expressions parsed per request instead of precompiled once.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_io_operations_path_exists_before_open_race",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag exists/stat checks immediately followed by open when exception handling can avoid duplicate syscalls.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_io_operations_read_entire_file_for_line_processing",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag read()/readlines() on files that are processed line by line.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_io_operations_small_file_writes_without_buffer",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag many tiny writes where writelines, join, or buffering would reduce syscalls.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_io_operations_subprocess_per_item",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag subprocess launches inside item loops where batching or a long-lived worker should be considered.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_io_operations_temporary_file_for_bytes_transform",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag temporary files used only for pure bytes transformations that can stream in memory.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_lazy_loading_eager_import_heavy_optional_dependency",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag heavy optional dependencies imported at module import time for rarely used features.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_lazy_loading_eager_template_compile_for_unused_views",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag compiling templates for disabled or rarely used views during startup.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_lazy_loading_feature_flag_data_loaded_before_needed",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag feature-specific lookup data loaded before the feature is enabled or requested.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_lazy_loading_lazy_init_on_first_user_request",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag lazy initialization that shifts a large one-time cost onto the first user request without warmup.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_lazy_loading_optional_model_loaded_at_startup",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag optional ML/model assets loaded at startup before any route or job needs them.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_logging_overhead_extra_fields_computed_before_sampling",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag expensive log extra fields computed before sampling or level filters.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_logging_overhead_log_message_formatted_before_level_check",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag f-string or format log messages built before logger level checks can skip them.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_logging_overhead_logger_created_per_request",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag getLogger or adapter construction per request when stable module loggers are enough.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_logging_overhead_per_item_info_log_in_batch",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag info/debug logging per record in large batch processing loops.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_logging_overhead_trace_payload_serialized_unconditionally",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag trace or log payload serialization even when tracing is disabled.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_memory_allocation_closure_or_lambda_allocated_in_inner_loop",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag lambdas or closures allocated inside tight loops when a named function or hoisted callable works.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_memory_allocation_dataclass_asdict_in_hot_path",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag dataclasses.asdict calls in hot paths when shallow field access would suffice.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_memory_allocation_deepcopy_before_readonly_transform",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag copy.deepcopy of large objects before operations that only read them.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_memory_allocation_list_append_without_generator_stream",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag large intermediate lists built only to feed another iterator-compatible consumer.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_memory_allocation_temporary_dataframe_created_per_row",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag DataFrame construction per row or per record instead of vectorized batch construction.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_network_calls_dns_or_url_parse_repeated_per_request",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag repeated DNS, URL parsing, or endpoint normalization for stable upstreams.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_network_calls_http_session_created_per_call",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag requests.Session or client objects created per call instead of reused per upstream.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_network_calls_large_response_downloaded_before_status_check",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag response bodies read before checking status, headers, or content length guards.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_network_calls_retry_without_backoff_or_jitter",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag network retries without backoff and jitter, which amplifies latency and load.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_network_calls_tls_context_built_per_request",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag SSLContext or certificate bundle loading per request instead of process-level reuse.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_profiling_benchmarking_benchmark_allocations_not_tracked",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag memory-sensitive benchmarks that omit tracemalloc, memory_profiler, or allocation accounting.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_profiling_benchmarking_benchmark_missing_warmup",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag benchmarks that time import/setup/warmup along with the operation under test.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_profiling_benchmarking_load_test_without_realistic_payload_size",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag performance tests that use tiny payloads despite rules targeting large-input behavior.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag optimization comments or docs without profile, benchmark, or trace evidence.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_profiling_benchmarking_timeit_result_not_consumed",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag microbenchmarks whose results are unused and may measure optimized-away or irrelevant work.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_resource_pooling_db_engine_created_per_repository",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag database engine/session factory construction per repository instance.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_resource_pooling_http_pool_not_reused",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag HTTP connection pools that are recreated rather than shared per upstream.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_resource_pooling_large_buffer_pool_without_cap",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag reusable buffer pools that keep oversized buffers after traffic spikes.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_resource_pooling_process_pool_without_shutdown",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag ProcessPoolExecutor ownership without shutdown or bounded queue behavior.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_resource_pooling_rate_limiter_created_per_request",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag rate limiter construction per request instead of per identity or dependency.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_runtime_configuration_debug_mode_enabled_in_perf_sensitive_path",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag framework debug or reload mode enabled in performance-sensitive runtime config.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_runtime_configuration_env_parsed_per_operation",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag environment parsing and type conversion per operation instead of startup settings load.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag locale or timezone data loaded for every request instead of cached process state.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_runtime_configuration_profiling_hooks_enabled_by_default",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag cProfile, tracing, or coverage hooks enabled in default runtime paths.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_runtime_configuration_pythonpath_mutated_per_call",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag sys.path or import path mutation inside functions instead of startup configuration.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_serialization_base64_roundtrip_same_process",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside one process boundary.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_serialization_gzip_compress_tiny_payloads",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag gzip compression of tiny payloads where CPU overhead can exceed transfer savings.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_serialization_json_dumps_for_equality_or_hash",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag json.dumps used only for equality checks, hashing, or dedup keys.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_serialization_pickle_in_request_hot_path",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag pickle serialization in request paths where structured fields or lighter codecs would suffice.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag Pydantic model construction around trusted internal dicts in tight loops.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_string_handling_bytes_decode_encode_roundtrip",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag bytes-to-text-to-bytes roundtrips without transformation.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_string_handling_json_string_concat_manual_build",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag manual JSON string assembly in loops instead of streaming encoders or structured dumps.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_string_handling_lowercase_compare_allocates",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag lower()/upper() equality checks where casefold once or normalized keys avoid repeated allocation.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_string_handling_plus_equals_string_in_loop",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag repeated += string growth in loops where join or StringIO avoids quadratic copying.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
+    "id": "python_perf_layer_string_handling_regex_compiled_per_call",
+    "language": "python",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag re.compile calls in repeated functions, handlers, or loops instead of module-level compiled patterns.",
+    "binding_location": "src/heuristics/python/performance.rs"
+  },
+  {
     "id": "quadratic_string_building_via_plus_equals",
     "language": "python",
     "family": "performance",
@@ -20660,6 +23460,1406 @@
       "severity_override"
     ],
     "description": "Path::join used with an absolute segment that discards the existing base path.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_algorithmic_complexity_iterator_chain_recomputes_expensive_predicate",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag iterator chains that recompute an expensive predicate instead of caching per item.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_algorithmic_complexity_nested_vec_scan_without_index",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag nested Vec scans that should build a HashMap, BTreeMap, or index before joining large collections.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_algorithmic_complexity_quadratic_string_or_vec_growth",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag algorithms that repeatedly grow and rescan accumulated String or Vec state.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_algorithmic_complexity_recursive_graph_walk_without_seen",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag recursive graph walks that do not track visited nodes for cyclic or shared inputs.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_algorithmic_complexity_sort_for_top_k",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Algorithmic complexity. Flag full Vec sorts used only to keep top-k elements where BinaryHeap or select_nth_unstable would bound work.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_async_concurrency_blocking_mutex_in_async_path",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag std::sync::Mutex use in async paths where blocking can stall executor workers.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_async_concurrency_busy_poll_future_loop",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag async loops that poll with try_recv or zero sleeps instead of awaiting notifications.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_async_concurrency_lock_guard_held_across_slow_call",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag lock guards held during network, disk, database, or expensive compute work.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_async_concurrency_timeout_created_for_inner_retry",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag timeout futures created inside tight retry loops where an outer deadline would bound the operation.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_async_concurrency_tokio_spawn_per_item_unbounded",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Async and concurrency. Flag unbounded tokio::spawn per item without JoinSet, semaphore, or bounded queue ownership.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_caching_cache_key_allocates_string_hot_path",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag cache keys built as allocated Strings in hot paths where borrowed or structured keys fit.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_caching_cache_miss_duplicate_async_work",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag cache miss paths that allow concurrent duplicate recomputation for the same key.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_caching_cached_json_string_deserialized_each_use",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag caches storing JSON strings only to deserialize before every read.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_caching_once_lock_lazy_cost_on_first_request",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag OnceLock/LazyLock initialization that puts large first-use cost on a user request without warmup.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_caching_unbounded_hashmap_cache",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Caching. Flag process-level HashMap caches without size, TTL, or eviction policy.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_collection_iteration_collect_for_len_or_is_empty",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag iterator collection used only to call len or check emptiness.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_collection_iteration_hashset_rebuilt_per_lookup_batch",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag HashSet rebuilt inside loops instead of once per batch.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_collection_iteration_iter_cloned_before_filter",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag iter().cloned() before filters that could borrow until ownership is needed.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_collection_iteration_manual_index_loop_over_slice",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag manual index loops over slices where iterators or chunks avoid repeated indexing.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_collection_iteration_multiple_passes_over_same_slice",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Collection iteration. Flag independent passes over the same slice where aggregation can be fused.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_data_structure_choice_boxed_trait_objects_in_hot_collection",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag Vec<Box<dyn Trait>> in hot homogeneous collections where enums or generics can avoid dispatch and pointer chasing.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_data_structure_choice_btreemap_for_unordered_hot_lookup",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag BTreeMap lookups in unordered hot paths where HashMap or indexed Vec may be cheaper.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_data_structure_choice_hashmap_for_tiny_static_set",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag HashMap use for tiny static sets where match, arrays, or phf-like tables may avoid hashing cost.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_data_structure_choice_string_keys_for_enum_domain",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag String keys for finite domains where enums or interned IDs avoid allocation and hashing.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_data_structure_choice_vec_remove_zero_queue",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Data structure choice. Flag Vec::remove(0) queue behavior where VecDeque fits front removal.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_database_access_count_before_page_fetch_each_request",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag count queries paired with every paginated fetch without caching or product need.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_database_access_row_to_hashmap_decode_hot_path",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag database row decoding into HashMap<String, Value> on hot typed paths.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_database_access_select_star_for_typed_projection",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag SELECT * when typed row mapping uses only a subset of columns.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_database_access_sql_query_inside_loop",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag SQL queries inside loops where batching or joins can collapse round trips.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_database_access_transaction_per_row_bulk_insert",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Database access. Flag bulk inserts that begin and commit a transaction for every row.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_error_handling_cost_anyhow_context_in_hot_loop",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag anyhow/context formatting inside hot loops where one boundary context would suffice.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_error_handling_cost_clone_error_context_large_payload",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag error context cloning large payloads only for diagnostic strings.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_error_handling_cost_error_enum_allocates_string_success_path",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag error strings built before the failing branch is known.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_error_handling_cost_panic_catch_unwind_for_control_flow",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag catch_unwind used for expected branch control in performance-sensitive code.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_error_handling_cost_vec_errors_allocated_before_error",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Error handling cost. Flag error aggregation Vec allocated on success-heavy paths before any error exists.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_framework_performance_actix_blocking_pool_for_light_work",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag actix web::block for light synchronous work where scheduling overhead can dominate.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_framework_performance_askama_render_to_string_then_body",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag template rendering to String before writing to streaming response bodies.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_framework_performance_axum_extension_clones_heavy_state",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag Axum handler state extraction that clones heavy state instead of cheap Arc handles.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_framework_performance_sqlx_fetch_all_unbounded",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag sqlx fetch_all on unbounded queries where streaming or limits would control memory.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_framework_performance_tonic_metadata_parsed_repeatedly",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Framework-specific performance. Flag repeated tonic metadata parsing across interceptors and handlers.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_garbage_collection_cleanup_arc_cycle_without_weak_break",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag Arc graphs that appear cyclic without Weak ownership edges.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_garbage_collection_cleanup_bufwriter_not_flushed_at_owner_boundary",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag buffered writers whose flush ownership is unclear at the boundary.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_garbage_collection_cleanup_drop_impl_does_io_or_blocking_work",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag Drop implementations that perform I/O, locking, or other blocking cleanup.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_garbage_collection_cleanup_large_vec_clear_retains_spike_capacity",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag long-lived Vec buffers cleared after spikes without capacity trimming or replacement policy.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_garbage_collection_cleanup_leaked_box_for_runtime_singleton",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Garbage collection and cleanup. Flag Box::leak used for runtime singletons where OnceLock or LazyLock would express ownership better.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_hot_path_optimization_allocation_inside_sort_comparator",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag allocation, parsing, or formatting inside sort comparator closures.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_hot_path_optimization_bounds_checks_from_repeated_indexing",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag repeated indexed access patterns where iterators, windows, or chunks can reduce bounds-check pressure.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_hot_path_optimization_dynamic_dispatch_in_deep_loop",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag trait-object dynamic dispatch inside deep loops where generics or enum dispatch may fit.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_hot_path_optimization_instant_now_called_many_times_per_item",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag repeated Instant::now calls per item where one timestamp or measurement scope would suffice.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_hot_path_optimization_schema_parsed_inside_handler",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Hot path optimization. Flag schemas, templates, regex sets, or expressions parsed per request.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_io_operations_command_spawn_per_item",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag process spawning inside item loops where batching or long-lived workers may fit.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_io_operations_metadata_before_open_without_need",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag fs::metadata calls immediately followed by open/read without using metadata meaningfully.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_io_operations_read_to_string_for_line_processing",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag read_to_string/read_to_end before sequential line or chunk processing.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_io_operations_tempfile_for_stream_transform",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag temporary files used only to pass data between streaming transformations.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_io_operations_unbuffered_writes_in_loop",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: I/O operations. Flag repeated file or socket writes without BufWriter or batching.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_lazy_loading_eager_compile_unused_templates",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag compiling templates or route metadata for disabled features.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_lazy_loading_eager_connect_all_upstreams",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag connecting to every optional upstream during startup instead of lazy or feature-gated initialization.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_lazy_loading_eager_load_optional_assets",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag optional assets, dictionaries, or models loaded at startup before any feature uses them.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_lazy_loading_lazy_static_hides_tail_latency",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag lazy statics initialized on first request without warmup or latency accounting.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_lazy_loading_optional_crate_init_on_default_path",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Lazy loading. Flag optional crate initialization on the default path when feature-gated initialization would avoid cost.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_logging_overhead_debug_format_large_value_unconditional",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag debug formatting before log level checks.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_logging_overhead_log_fields_allocated_before_enabled",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag expensive tracing/log fields allocated before level or subscriber filters can skip them.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_logging_overhead_payload_serialized_for_disabled_trace",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag payload serialization for tracing even when tracing is disabled.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_logging_overhead_per_item_info_span_in_batch",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag tracing spans or info logs emitted per record in large batch loops.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_logging_overhead_span_created_inside_tight_loop",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Logging overhead. Flag tracing span construction in very tight loops without sampling or aggregation.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_memory_allocation_clone_large_value_for_readonly_use",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag Clone of large values immediately before read-only operations.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_memory_allocation_collect_vec_only_to_iterate_once",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag collect::<Vec<_>>() used only to iterate once into another consumer.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_memory_allocation_format_allocates_for_writer",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag format! used before write!/push_str where direct writing avoids temporary allocation.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_memory_allocation_string_reallocated_per_record",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag String allocation per record where a reusable buffer can be cleared safely.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_memory_allocation_vec_push_without_capacity",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Memory allocation. Flag Vec pushes in builders where an obvious capacity is known.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_network_calls_dns_resolution_in_request_path",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag DNS or endpoint resolution in request paths without cache or resolver ownership.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_network_calls_hyper_connector_rebuilt_per_request",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag HTTP connector or TLS connector construction per request.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_network_calls_reqwest_client_created_per_call",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag reqwest::Client construction per call instead of reuse per upstream.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_network_calls_retry_without_backoff_jitter",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag network retry loops without backoff and jitter.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_network_calls_tls_config_loaded_per_request",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Network calls. Flag rustls/native-tls configuration loading per request instead of shared immutable state.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_profiling_benchmarking_alloc_sensitive_benchmark_without_alloc_counts",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag allocation-sensitive benchmarks that omit allocation counting or heap profiling.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_profiling_benchmarking_benchmark_missing_black_box",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag microbenchmarks that do not use black_box or otherwise consume results.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_profiling_benchmarking_criterion_benchmark_includes_setup",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag Criterion benchmarks that include setup in the measured closure instead of setup/measurement separation.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_profiling_benchmarking_load_test_payload_too_small",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag performance tests using tiny payloads despite targeting large-input behavior.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_profiling_benchmarking_optimization_comment_without_measurement",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Profiling and benchmarking. Flag optimization comments without benchmark, profile, or trace evidence.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_resource_pooling_buffer_pool_returns_oversized_vec",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag reusable Vec/String pools that retain oversized buffers after spikes.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_resource_pooling_connection_pool_without_limits",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag connection pools missing max size, idle, or timeout controls.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_resource_pooling_pool_created_per_request",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag database, HTTP, or worker pools created per request instead of process or dependency ownership.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_resource_pooling_semaphore_created_per_operation",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag Semaphore or rate limiter construction per operation instead of shared dependency ownership.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_resource_pooling_threadpool_without_shutdown_owner",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Resource pooling. Flag custom thread pools without explicit shutdown/drain ownership.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_runtime_configuration_debug_assertions_expected_in_bench",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag benchmark or performance docs that mix debug-assertion builds with release numbers.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_runtime_configuration_env_parsed_per_operation",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag environment parsing and type conversion per operation instead of startup config load.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_runtime_configuration_feature_flags_loaded_per_request",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag feature flag or config files loaded in request paths.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_runtime_configuration_lto_codegen_claim_without_profile",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag Cargo profile performance claims without benchmark notes or profile evidence.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_runtime_configuration_rayon_threads_set_in_library",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Build and runtime configuration. Flag library code configuring global Rayon thread pools and overriding host policy.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_serialization_base64_roundtrip_same_process",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag base64 encode/decode roundtrips inside one process boundary.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_serialization_bincode_or_postcard_for_tiny_messages",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag binary serialization setup for tiny in-process messages where direct structs or slices would do.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_serialization_gzip_encoder_per_tiny_payload",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag compression writers created for tiny payloads where CPU overhead dominates.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_serialization_serde_json_to_value_hot_path",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag serde_json::Value decoding in hot typed paths where concrete structs avoid dynamic lookup.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_serialization_serialize_for_hash_or_eq",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: Serialization and deserialization. Flag serialization used only to hash, compare, or deduplicate values.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_string_handling_format_in_loop_for_simple_append",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag format! in loops for simple string appends where write! or push_str can reuse buffers.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_string_handling_regex_new_in_function_path",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag Regex::new in repeated functions or loops instead of LazyLock or once_cell.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_string_handling_split_collect_for_first_segment",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag split().collect::<Vec<_>>() used only to access one segment.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_string_handling_string_from_utf8_roundtrip",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag String/Vec<u8> roundtrips without transformation.",
+    "binding_location": "src/heuristics/rust/performance.rs"
+  },
+  {
+    "id": "rust_perf_layer_string_handling_to_lowercase_compare",
+    "language": "rust",
+    "family": "performance",
+    "default_severity": "contextual",
+    "status": "stable",
+    "configurability": [
+      "disable",
+      "ignore",
+      "severity_override"
+    ],
+    "description": "Layer: String handling. Flag to_lowercase/to_uppercase comparisons where eq_ignore_ascii_case or normalized keys avoid allocation.",
     "binding_location": "src/heuristics/rust/performance.rs"
   },
   {

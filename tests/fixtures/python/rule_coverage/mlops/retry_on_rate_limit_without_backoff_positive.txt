@@ -1,0 +1,8 @@
+def positive_retry_on_rate_limit_without_backoff():
+    rule_id = "retry_on_rate_limit_without_backoff"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Rate-limit retries appear without visible backoff or Retry-After handling."
+    return rule_id, family, severity, status, intent, description

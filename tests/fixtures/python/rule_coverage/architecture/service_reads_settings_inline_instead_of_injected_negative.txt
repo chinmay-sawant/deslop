@@ -1,0 +1,8 @@
+def negative_service_reads_settings_inline_instead_of_injected():
+    rule_id = "service_reads_settings_inline_instead_of_injected"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Service reads configuration from os.getenv or settings module inline rather than receiving it via injection."
+    return rule_id, family, severity, status, intent, description

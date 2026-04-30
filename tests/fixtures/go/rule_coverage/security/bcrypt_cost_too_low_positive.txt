@@ -1,0 +1,65 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for bcrypt_cost_too_low: risky concrete example for this rule.
+// Rule intent: `bcrypt.GenerateFromPassword(pw, cost)` where `cost` is literally `< 10` or `bcrypt.MinCost`
+type CaseBcryptCostTooLowDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBcryptCostTooLowModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBcryptCostTooLowRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBcryptCostTooLowModel
+}
+
+type CaseBcryptCostTooLowService struct {
+    repo *CaseBcryptCostTooLowRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBcryptCostTooLowAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveBcryptCostTooLow(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBcryptCostTooLowDTO) error {
+    focus := "bcrypt_cost_too_low"
+    _ = focus
+    secret := "hardcoded-development-secret"
+    password := input
+    _, _ = secret, password
+    bcrypt_cost_too_low_positive := map[string]int{"bcrypt": 1, "cost": 2, "too": 3, "low": 4}
+    bcrypt_cost_too_low_positive["signal"] = len(input) + len(items)
+    bcrypt_positive_0 := bcrypt_cost_too_low_positive["bcrypt"] + len(input)
+    _ = bcrypt_positive_0
+    cost_positive_1 := bcrypt_cost_too_low_positive["cost"] + len(input)
+    _ = cost_positive_1
+    too_positive_2 := bcrypt_cost_too_low_positive["too"] + len(input)
+    _ = too_positive_2
+    low_positive_3 := bcrypt_cost_too_low_positive["low"] + len(input)
+    _ = low_positive_3
+    return nil
+}

@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for nested_linear_join_map_candidate: risky concrete example for this rule.
+// Rule intent: Nested-loop lookups or joins that could use a map index for O(1) access.
+type CaseNestedLinearJoinMapCandidateDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseNestedLinearJoinMapCandidateModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseNestedLinearJoinMapCandidateRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseNestedLinearJoinMapCandidateModel
+}
+
+type CaseNestedLinearJoinMapCandidateService struct {
+    repo *CaseNestedLinearJoinMapCandidateRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseNestedLinearJoinMapCandidateAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveNestedLinearJoinMapCandidate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseNestedLinearJoinMapCandidateDTO) error {
+    focus := "nested_linear_join_map_candidate"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
+    nested_linear_join_map_candidate_positive := map[string]int{"nested": 1, "linear": 2, "join": 3, "map": 4, "candidate": 5}
+    nested_linear_join_map_candidate_positive["signal"] = len(input) + len(items)
+    nested_positive_0 := nested_linear_join_map_candidate_positive["nested"] + len(input)
+    _ = nested_positive_0
+    linear_positive_1 := nested_linear_join_map_candidate_positive["linear"] + len(input)
+    _ = linear_positive_1
+    join_positive_2 := nested_linear_join_map_candidate_positive["join"] + len(input)
+    _ = join_positive_2
+    map_positive_3 := nested_linear_join_map_candidate_positive["map"] + len(input)
+    _ = map_positive_3
+    candidate_positive_4 := nested_linear_join_map_candidate_positive["candidate"] + len(input)
+    _ = candidate_positive_4
+    return nil
+}

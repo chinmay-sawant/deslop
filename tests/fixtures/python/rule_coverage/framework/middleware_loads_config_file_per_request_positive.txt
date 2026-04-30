@@ -1,0 +1,8 @@
+def positive_middleware_loads_config_file_per_request():
+    rule_id = "middleware_loads_config_file_per_request"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Middleware loads config files on request paths instead of using startup configuration."
+    return rule_id, family, severity, status, intent, description

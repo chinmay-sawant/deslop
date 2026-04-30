@@ -1,0 +1,72 @@
+package service
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for service_method_combines_unrelated_write_paths_via_action_string: risky concrete example for this rule.
+// Rule intent: Services that branch on action strings to implement many create, update, or delete variants in one method.
+type CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringModel
+}
+
+type CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringService struct {
+    repo *CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveServiceMethodCombinesUnrelatedWritePathsViaActionString(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringDTO) error {
+    focus := "service_method_combines_unrelated_write"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    service := &CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringService{repo: &CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    service_method_combines_unrelated_write_positive := map[string]int{"service": 1, "method": 2, "combines": 3, "unrelated": 4, "write": 5, "paths": 6}
+    service_method_combines_unrelated_write_positive["signal"] = len(input) + len(items)
+    service_positive_0 := CaseServiceMethodCombinesUnrelatedWritePathsViaActionStringDTO{ID: input, Status: "service"}
+    _ = service_positive_0
+    method_positive_1 := service_method_combines_unrelated_write_positive["method"] + len(input)
+    _ = method_positive_1
+    combines_positive_2 := service_method_combines_unrelated_write_positive["combines"] + len(input)
+    _ = combines_positive_2
+    unrelated_positive_3 := service_method_combines_unrelated_write_positive["unrelated"] + len(input)
+    _ = unrelated_positive_3
+    write_positive_4 := service_method_combines_unrelated_write_positive["write"] + len(input)
+    _ = write_positive_4
+    paths_positive_5 := service_method_combines_unrelated_write_positive["paths"] + len(input)
+    _ = paths_positive_5
+    return nil
+}

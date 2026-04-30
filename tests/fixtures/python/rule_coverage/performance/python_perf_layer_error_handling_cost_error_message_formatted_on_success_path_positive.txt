@@ -1,0 +1,8 @@
+def positive_python_perf_layer_error_handling_cost_error_message_formatted_on_success_path():
+    rule_id = "python_perf_layer_error_handling_cost_error_message_formatted_on_success_path"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Error handling cost. Flag expensive error messages built before checking whether an error exists."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_python_perf_layer_io_operations_path_exists_before_open_race():
+    rule_id = "python_perf_layer_io_operations_path_exists_before_open_race"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: I/O operations. Flag exists/stat checks immediately followed by open when exception handling can avoid duplicate syscalls."
+    return rule_id, family, severity, status, intent, description

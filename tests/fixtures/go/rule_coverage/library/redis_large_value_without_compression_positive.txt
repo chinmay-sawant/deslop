@@ -1,0 +1,63 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for redis_large_value_without_compression: risky concrete example for this rule.
+// Rule intent: `rdb.Set(ctx, key, largePayload, ...)` where `largePayload` is the result of `json.Marshal` on a large struct or slice, without visible compression
+type CaseRedisLargeValueWithoutCompressionDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRedisLargeValueWithoutCompressionModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRedisLargeValueWithoutCompressionRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRedisLargeValueWithoutCompressionModel
+}
+
+type CaseRedisLargeValueWithoutCompressionService struct {
+    repo *CaseRedisLargeValueWithoutCompressionRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRedisLargeValueWithoutCompressionAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRedisLargeValueWithoutCompression(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisLargeValueWithoutCompressionDTO) error {
+    focus := "redis_large_value_without_compression"
+    _ = focus
+    for _, item := range items { db.Create(&item) }
+    redis_large_value_compression_positive := map[string]int{"redis": 1, "large": 2, "value": 3, "compression": 4}
+    redis_large_value_compression_positive["signal"] = len(input) + len(items)
+    redis_positive_0 := redis_large_value_compression_positive["redis"] + len(input)
+    _ = redis_positive_0
+    large_positive_1 := redis_large_value_compression_positive["large"] + len(input)
+    _ = large_positive_1
+    value_positive_2 := redis_large_value_compression_positive["value"] + len(input)
+    _ = value_positive_2
+    compression_positive_3 := redis_large_value_compression_positive["compression"] + len(input)
+    _ = compression_positive_3
+    return nil
+}

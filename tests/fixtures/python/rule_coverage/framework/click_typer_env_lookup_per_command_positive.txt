@@ -1,0 +1,8 @@
+def positive_click_typer_env_lookup_per_command():
+    rule_id = "click_typer_env_lookup_per_command"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "click or typer commands scatter repeated environment lookups through the command body."
+    return rule_id, family, severity, status, intent, description

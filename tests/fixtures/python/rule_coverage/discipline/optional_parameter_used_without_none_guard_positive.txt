@@ -1,0 +1,8 @@
+def positive_optional_parameter_used_without_none_guard():
+    rule_id = "optional_parameter_used_without_none_guard"
+    family = "discipline"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Optional[T] parameter accessed via attribute or subscript without a preceding None guard."
+    return rule_id, family, severity, status, intent, description

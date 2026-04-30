@@ -1,0 +1,8 @@
+def positive_pickle_dumps_in_loop_same_structure():
+    rule_id = "pickle_dumps_in_loop_same_structure"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "pickle.dumps(...) is called repeatedly for the same structural shape in a loop."
+    return rule_id, family, severity, status, intent, description

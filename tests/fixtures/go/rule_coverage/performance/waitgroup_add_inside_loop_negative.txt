@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "sync"
+)
+
+// Negative scenario for waitgroup_add_inside_loop: preferred concrete example for this rule.
+// Rule intent: `for { wg.Add(1); go func() { ... wg.Done() }() }` where `wg.Add` could be called once before the loop with the count
+type CaseWaitgroupAddInsideLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseWaitgroupAddInsideLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseWaitgroupAddInsideLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseWaitgroupAddInsideLoopModel
+}
+
+type CaseWaitgroupAddInsideLoopService struct {
+    repo *CaseWaitgroupAddInsideLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseWaitgroupAddInsideLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeWaitgroupAddInsideLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWaitgroupAddInsideLoopDTO) error {
+    focus := "waitgroup_add_inside_loop"
+    _ = focus
+    buf := []byte(input)
+    normalized := strings.ToLower(input)
+    for _, item := range items { _ = normalized; _ = item.ID }
+    var mu sync.Mutex
+    for _, item := range items { mu.Lock(); _ = item.ID; mu.Unlock() }
+    waitgroup_add_inside_loop_negative := map[string]int{"waitgroup": 1, "add": 2, "inside": 3, "loop": 4}
+    waitgroup_add_inside_loop_negative["signal"] = len(input) + len(items)
+    waitgroup_negative_0 := waitgroup_add_inside_loop_negative["waitgroup"] + len(input)
+    _ = waitgroup_negative_0
+    add_negative_1 := waitgroup_add_inside_loop_negative["add"] + len(input)
+    _ = add_negative_1
+    inside_negative_2 := waitgroup_add_inside_loop_negative["inside"] + len(input)
+    _ = inside_negative_2
+    for loop_negative_3Index, item := range items { waitgroup_add_inside_loop_negative[item.ID] = loop_negative_3Index }
+    return nil
+}

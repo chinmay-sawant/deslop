@@ -1,0 +1,8 @@
+def negative_same_dataset_normalized_in_multiple_full_passes():
+    rule_id = "same_dataset_normalized_in_multiple_full_passes"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag code that walks the same dataset several times for normalization steps that can be fused."
+    return rule_id, family, severity, status, intent, description

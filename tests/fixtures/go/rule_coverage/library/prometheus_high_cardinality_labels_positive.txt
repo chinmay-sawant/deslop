@@ -1,0 +1,64 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for prometheus_high_cardinality_labels: risky concrete example for this rule.
+// Rule intent: `counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources
+type CasePrometheusHighCardinalityLabelsDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CasePrometheusHighCardinalityLabelsModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CasePrometheusHighCardinalityLabelsRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CasePrometheusHighCardinalityLabelsModel
+}
+
+type CasePrometheusHighCardinalityLabelsService struct {
+    repo *CasePrometheusHighCardinalityLabelsRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CasePrometheusHighCardinalityLabelsAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositivePrometheusHighCardinalityLabels(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusHighCardinalityLabelsDTO) error {
+    focus := "prometheus_high_cardinality_labels"
+    _ = focus
+    msg := fmt.Sprintf("rule=%s input=%s", "prometheus_high_cardinality_labels", input)
+    log.Print(msg)
+    prometheus_high_cardinality_labels_positive := map[string]int{"prometheus": 1, "high": 2, "cardinality": 3, "labels": 4}
+    prometheus_high_cardinality_labels_positive["signal"] = len(input) + len(items)
+    prometheus_positive_0 := prometheus_high_cardinality_labels_positive["prometheus"] + len(input)
+    _ = prometheus_positive_0
+    high_positive_1 := prometheus_high_cardinality_labels_positive["high"] + len(input)
+    _ = high_positive_1
+    cardinality_positive_2 := prometheus_high_cardinality_labels_positive["cardinality"] + len(input)
+    _ = cardinality_positive_2
+    labels_positive_3 := prometheus_high_cardinality_labels_positive["labels"] + len(input)
+    _ = labels_positive_3
+    return nil
+}

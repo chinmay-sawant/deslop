@@ -1,0 +1,8 @@
+def negative_dict_items_or_keys_materialized_in_loop():
+    rule_id = "dict_items_or_keys_materialized_in_loop"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "dict.items(), keys(), or values() are repeatedly materialized inside loops."
+    return rule_id, family, severity, status, intent, description

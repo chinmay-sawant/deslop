@@ -1,0 +1,8 @@
+def negative_python_perf_layer_serialization_pickle_in_request_hot_path():
+    rule_id = "python_perf_layer_serialization_pickle_in_request_hot_path"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Serialization and deserialization. Flag pickle serialization in request paths where structured fields or lighter codecs would suffice."
+    return rule_id, family, severity, status, intent, description

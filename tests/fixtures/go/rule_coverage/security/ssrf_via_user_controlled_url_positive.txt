@@ -1,0 +1,66 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for ssrf_via_user_controlled_url: risky concrete example for this rule.
+// Rule intent: `http.Get(userInput)` or `http.NewRequest("GET", userInput, nil)` where the URL comes from request parameters
+type CaseSsrfViaUserControlledUrlDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseSsrfViaUserControlledUrlModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseSsrfViaUserControlledUrlRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseSsrfViaUserControlledUrlModel
+}
+
+type CaseSsrfViaUserControlledUrlService struct {
+    repo *CaseSsrfViaUserControlledUrlRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseSsrfViaUserControlledUrlAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveSsrfViaUserControlledUrl(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSsrfViaUserControlledUrlDTO) error {
+    focus := "ssrf_via_user_controlled_url"
+    _ = focus
+    net.LookupHost(input)
+    http.Get(input)
+    c.Redirect(http.StatusFound, input)
+    ssrf_user_controlled_url_positive := map[string]int{"ssrf": 1, "user": 2, "controlled": 3, "url": 4}
+    ssrf_user_controlled_url_positive["signal"] = len(input) + len(items)
+    ssrf_positive_0 := ssrf_user_controlled_url_positive["ssrf"] + len(input)
+    _ = ssrf_positive_0
+    user_positive_1 := ssrf_user_controlled_url_positive["user"] + len(input)
+    _ = user_positive_1
+    controlled_positive_2 := ssrf_user_controlled_url_positive["controlled"] + len(input)
+    _ = controlled_positive_2
+    url_positive_3 := ssrf_user_controlled_url_positive["url"] + len(input)
+    _ = url_positive_3
+    return nil
+}

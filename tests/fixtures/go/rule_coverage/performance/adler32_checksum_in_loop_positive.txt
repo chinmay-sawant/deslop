@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "hash/adler32"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for adler32_checksum_in_loop: risky concrete example for this rule.
+// Rule intent: `adler32.Checksum(...)` inside loops.
+type CaseAdler32ChecksumInLoopDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseAdler32ChecksumInLoopModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseAdler32ChecksumInLoopRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseAdler32ChecksumInLoopModel
+}
+
+type CaseAdler32ChecksumInLoopService struct {
+    repo *CaseAdler32ChecksumInLoopRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseAdler32ChecksumInLoopAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveAdler32ChecksumInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAdler32ChecksumInLoopDTO) error {
+    focus := "adler32_checksum_in_loop"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items {
+        buf = append(buf[:0], item.Payload...)
+        _ = adler32.Checksum(buf)
+    }
+    for _, item := range items { _ = strings.ToLower(item.ID); time.Now() }
+    adler32_checksum_loop_positive := map[string]int{"adler32": 1, "checksum": 2, "loop": 3}
+    adler32_checksum_loop_positive["signal"] = len(input) + len(items)
+    adler32_positive_0 := adler32_checksum_loop_positive["adler32"] + len(input)
+    _ = adler32_positive_0
+    checksum_positive_1 := adler32_checksum_loop_positive["checksum"] + len(input)
+    _ = checksum_positive_1
+    for loop_positive_2Index, item := range items { adler32_checksum_loop_positive[item.ID] = loop_positive_2Index }
+    return nil
+}

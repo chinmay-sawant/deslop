@@ -1,0 +1,70 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for append_then_trim_each_iteration: risky concrete example for this rule.
+// Rule intent: Slice append followed by reslice each iteration instead of batching.
+type CaseAppendThenTrimEachIterationDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseAppendThenTrimEachIterationModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseAppendThenTrimEachIterationRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseAppendThenTrimEachIterationModel
+}
+
+type CaseAppendThenTrimEachIterationService struct {
+    repo *CaseAppendThenTrimEachIterationRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseAppendThenTrimEachIterationAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveAppendThenTrimEachIteration(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseAppendThenTrimEachIterationDTO) error {
+    focus := "append_then_trim_each_iteration"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    var copied []CaseAppendThenTrimEachIterationDTO
+    for _, item := range items { copied = append(copied, item) }
+    append_then_trim_each_iteration_positive := map[string]int{"append": 1, "then": 2, "trim": 3, "each": 4, "iteration": 5}
+    append_then_trim_each_iteration_positive["signal"] = len(input) + len(items)
+    append_positive_0 := append_then_trim_each_iteration_positive["append"] + len(input)
+    _ = append_positive_0
+    then_positive_1 := append_then_trim_each_iteration_positive["then"] + len(input)
+    _ = then_positive_1
+    trim_positive_2 := strings.TrimSpace(input)
+    _ = trim_positive_2
+    each_positive_3 := append_then_trim_each_iteration_positive["each"] + len(input)
+    _ = each_positive_3
+    for iteration_positive_4Index, item := range items { append_then_trim_each_iteration_positive[item.ID] = iteration_positive_4Index }
+    return nil
+}

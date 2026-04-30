@@ -1,0 +1,8 @@
+def negative_import_time_file_io():
+    rule_id = "import_time_file_io"
+    family = "quality"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Module-scope file reads, writes, or directory scans that happen during import."
+    return rule_id, family, severity, status, intent, description

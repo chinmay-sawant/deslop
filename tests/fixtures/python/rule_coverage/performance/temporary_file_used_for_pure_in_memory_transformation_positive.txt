@@ -1,0 +1,8 @@
+def positive_temporary_file_used_for_pure_in_memory_transformation():
+    rule_id = "temporary_file_used_for_pure_in_memory_transformation"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag workflows that spill to disk despite an in-memory transform being sufficient."
+    return rule_id, family, severity, status, intent, description

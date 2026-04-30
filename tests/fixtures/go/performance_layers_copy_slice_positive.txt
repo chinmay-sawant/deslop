@@ -1,0 +1,10 @@
+package perflayers
+
+func CopySlicePositive(values []int) int {
+    copied := append([]int(nil), values...)
+    total := 0
+    for _, value := range copied {
+        total += value
+    }
+    return total
+}

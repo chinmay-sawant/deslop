@@ -1,0 +1,8 @@
+def negative_dynamic_plugin_loaded_from_config_without_registry_allowlist():
+    rule_id = "dynamic_plugin_loaded_from_config_without_registry_allowlist"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Plugin loaded via importlib.import_module from config without validating against an allowlist."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_generator_consumed_twice_without_recreation():
+    rule_id = "generator_consumed_twice_without_recreation"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Same generator object iterated a second time after it has already been exhausted."
+    return rule_id, family, severity, status, intent, description

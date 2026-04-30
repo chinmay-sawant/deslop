@@ -1,0 +1,8 @@
+def positive_zip_range_len_used_instead_of_enumerate():
+    rule_id = "zip_range_len_used_instead_of_enumerate"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "zip(range(len(x)), x) pattern used; replace with enumerate(x)."
+    return rule_id, family, severity, status, intent, description

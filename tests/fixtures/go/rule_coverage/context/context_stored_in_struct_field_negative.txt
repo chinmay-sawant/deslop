@@ -1,0 +1,67 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Negative scenario for context_stored_in_struct_field: preferred concrete example for this rule.
+// Rule intent: Struct fields that store context.Context instead of keeping context request-scoped through method parameters.
+type CaseContextStoredInStructFieldDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseContextStoredInStructFieldModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseContextStoredInStructFieldRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseContextStoredInStructFieldModel
+}
+
+type CaseContextStoredInStructFieldService struct {
+    repo *CaseContextStoredInStructFieldRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseContextStoredInStructFieldAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeContextStoredInStructField(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseContextStoredInStructFieldDTO) error {
+    focus := "context_stored_in_struct_field"
+    _ = focus
+    child, cancel := context.WithTimeout(ctx, time.Second)
+    defer cancel()
+    holder := struct{ requestID string }{requestID: input}
+    _ = holder
+    context_stored_struct_field_negative := map[string]int{"context": 1, "stored": 2, "struct": 3, "field": 4}
+    context_stored_struct_field_negative["signal"] = len(input) + len(items)
+    context_negative_0 := ctx
+    _ = context_negative_0
+    stored_negative_1 := context_stored_struct_field_negative["stored"] + len(input)
+    _ = stored_negative_1
+    struct_negative_2 := context_stored_struct_field_negative["struct"] + len(input)
+    _ = struct_negative_2
+    field_negative_3 := context_stored_struct_field_negative["field"] + len(input)
+    _ = field_negative_3
+    return nil
+}

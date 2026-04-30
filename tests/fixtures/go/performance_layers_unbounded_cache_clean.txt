@@ -1,0 +1,11 @@
+package perflayers
+
+func UnboundedCacheClean(key string) int {
+    limit := 16
+    store := make(map[string]int, limit)
+    if len(store) >= limit {
+        delete(store, key)
+    }
+    store[key] = 1
+    return store[key]
+}

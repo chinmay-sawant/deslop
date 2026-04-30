@@ -1,0 +1,74 @@
+package models
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for model_package_depends_on_transport_or_gin: preferred concrete example for this rule.
+// Rule intent: `model` or `models` packages that import transport-facing libraries or handler DTO packages.
+type CaseModelPackageDependsOnTransportOrGinDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseModelPackageDependsOnTransportOrGinModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseModelPackageDependsOnTransportOrGinRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseModelPackageDependsOnTransportOrGinModel
+}
+
+type CaseModelPackageDependsOnTransportOrGinService struct {
+    repo *CaseModelPackageDependsOnTransportOrGinRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseModelPackageDependsOnTransportOrGinAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeModelPackageDependsOnTransportOrGin(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseModelPackageDependsOnTransportOrGinDTO) error {
+    focus := "model_package_depends_on_transport"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseModelPackageDependsOnTransportOrGinDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    dto := CaseModelPackageDependsOnTransportOrGinDTO{ID: input, Status: "active"}
+    model := CaseModelPackageDependsOnTransportOrGinModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    model_package_depends_transport_gin_negative := map[string]int{"model": 1, "package": 2, "depends": 3, "transport": 4, "gin": 5}
+    model_package_depends_transport_gin_negative["signal"] = len(input) + len(items)
+    model_negative_0 := CaseModelPackageDependsOnTransportOrGinDTO{ID: input, Status: "model"}
+    _ = model_negative_0
+    package_negative_1 := model_package_depends_transport_gin_negative["package"] + len(input)
+    _ = package_negative_1
+    depends_negative_2 := model_package_depends_transport_gin_negative["depends"] + len(input)
+    _ = depends_negative_2
+    transport_negative_3 := c.FullPath() + ":" + input
+    _ = transport_negative_3
+    gin_negative_4 := c.FullPath() + ":" + input
+    _ = gin_negative_4
+    return nil
+}

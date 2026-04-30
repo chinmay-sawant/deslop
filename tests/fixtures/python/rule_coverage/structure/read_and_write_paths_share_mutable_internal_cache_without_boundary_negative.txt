@@ -1,0 +1,8 @@
+def negative_read_and_write_paths_share_mutable_internal_cache_without_boundary():
+    rule_id = "read_and_write_paths_share_mutable_internal_cache_without_boundary"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag read and write paths that couple through one mutable cache object."
+    return rule_id, family, severity, status, intent, description

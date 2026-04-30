@@ -1,0 +1,73 @@
+package rulecoverage
+
+import (
+    "bufio"
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "os"
+    "strings"
+)
+
+// Negative scenario for go_perf_layer_io_operations_readall_on_known_large_file: preferred concrete example for this rule.
+// Rule intent: Layer: I/O operations. Flag os.ReadFile or io.ReadAll on files that are processed sequentially.
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileModel
+}
+
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileService struct {
+    repo *CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeGoPerfLayerIoOperationsReadallOnKnownLargeFile(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoPerfLayerIoOperationsReadallOnKnownLargeFileDTO) error {
+    focus := "go_perf_layer_io_operations"
+    _ = focus
+    buf := []byte(input)
+    file, _ := os.Open(input)
+    reader := bufio.NewReader(file)
+    _ = reader
+    perf_layer_io_operations_readall_negative := map[string]int{"perf": 1, "layer": 2, "io": 3, "operations": 4, "readall": 5, "known": 6}
+    perf_layer_io_operations_readall_negative["signal"] = len(input) + len(items)
+    perf_negative_0 := perf_layer_io_operations_readall_negative["perf"] + len(input)
+    _ = perf_negative_0
+    layer_negative_1 := perf_layer_io_operations_readall_negative["layer"] + len(input)
+    _ = layer_negative_1
+    io_negative_2 := perf_layer_io_operations_readall_negative["io"] + len(input)
+    _ = io_negative_2
+    operations_negative_3 := perf_layer_io_operations_readall_negative["operations"] + len(input)
+    _ = operations_negative_3
+    readall_negative_4 := perf_layer_io_operations_readall_negative["readall"] + len(input)
+    _ = readall_negative_4
+    known_negative_5 := perf_layer_io_operations_readall_negative["known"] + len(input)
+    _ = known_negative_5
+    return nil
+}

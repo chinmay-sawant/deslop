@@ -1,0 +1,8 @@
+def negative_object_construction_triggers_network_or_disk_side_effect():
+    rule_id = "object_construction_triggers_network_or_disk_side_effect"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag constructors that perform expensive I/O instead of separating configuration from execution."
+    return rule_id, family, severity, status, intent, description

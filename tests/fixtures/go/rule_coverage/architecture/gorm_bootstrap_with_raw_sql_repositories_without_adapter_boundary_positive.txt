@@ -1,0 +1,71 @@
+package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for gorm_bootstrap_with_raw_sql_repositories_without_adapter_boundary: risky concrete example for this rule.
+// Rule intent: Codebases that bootstrap persistence with GORM but run repository queries through raw SQL without a clear adapter boundary.
+type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryModel
+}
+
+type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryService struct {
+    repo *CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundary(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryDTO) error {
+    focus := "gorm_bootstrap_with_raw_sql"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormBootstrapWithRawSqlRepositoriesWithoutAdapterBoundaryModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    gorm_bootstrap_raw_sql_repositories_positive := map[string]int{"gorm": 1, "bootstrap": 2, "raw": 3, "sql": 4, "repositories": 5, "adapter": 6}
+    gorm_bootstrap_raw_sql_repositories_positive["signal"] = len(input) + len(items)
+    gorm_positive_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_0
+    bootstrap_positive_1 := gorm_bootstrap_raw_sql_repositories_positive["bootstrap"] + len(input)
+    _ = bootstrap_positive_1
+    raw_positive_2 := gorm_bootstrap_raw_sql_repositories_positive["raw"] + len(input)
+    _ = raw_positive_2
+    sql_positive_3 := db.Where("sql_id = ?", input)
+    _ = sql_positive_3
+    repositories_positive_4 := db.Where("repositories_id = ?", input)
+    _ = repositories_positive_4
+    adapter_positive_5 := gorm_bootstrap_raw_sql_repositories_positive["adapter"] + len(input)
+    _ = adapter_positive_5
+    return nil
+}

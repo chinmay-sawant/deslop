@@ -1,0 +1,8 @@
+def positive_cursor_based_pagination_missing_stable_sort_tiebreaker():
+    rule_id = "cursor_based_pagination_missing_stable_sort_tiebreaker"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Cursor-based pagination implemented without a stable unique sort key tiebreaker."
+    return rule_id, family, severity, status, intent, description

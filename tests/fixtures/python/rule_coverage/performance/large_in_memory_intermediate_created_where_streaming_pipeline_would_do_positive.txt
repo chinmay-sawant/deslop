@@ -1,0 +1,8 @@
+def positive_large_in_memory_intermediate_created_where_streaming_pipeline_would_do():
+    rule_id = "large_in_memory_intermediate_created_where_streaming_pipeline_would_do"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag workflows that build large temporary structures where streaming would suffice."
+    return rule_id, family, severity, status, intent, description

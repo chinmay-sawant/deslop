@@ -1,0 +1,8 @@
+def positive_debug_log_serializes_full_large_object_graph():
+    rule_id = "debug_log_serializes_full_large_object_graph"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag debug logging that walks and serializes large object graphs."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_python_perf_layer_runtime_configuration_env_parsed_per_operation():
+    rule_id = "python_perf_layer_runtime_configuration_env_parsed_per_operation"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Build and runtime configuration. Flag environment parsing and type conversion per operation instead of startup settings load."
+    return rule_id, family, severity, status, intent, description

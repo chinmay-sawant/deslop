@@ -1,0 +1,80 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for gorm_locking_clauses_built_outside_repository: risky concrete example for this rule.
+// Rule intent: `FOR UPDATE` or similar locking behavior built in handlers or services instead of repository-owned methods.
+type CaseGormLockingClausesBuiltOutsideRepositoryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseGormLockingClausesBuiltOutsideRepositoryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseGormLockingClausesBuiltOutsideRepositoryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseGormLockingClausesBuiltOutsideRepositoryModel
+}
+
+type CaseGormLockingClausesBuiltOutsideRepositoryService struct {
+    repo *CaseGormLockingClausesBuiltOutsideRepositoryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseGormLockingClausesBuiltOutsideRepositoryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveGormLockingClausesBuiltOutsideRepository(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGormLockingClausesBuiltOutsideRepositoryDTO) error {
+    focus := "gorm_locking_clauses_built_outside"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseGormLockingClausesBuiltOutsideRepositoryDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseGormLockingClausesBuiltOutsideRepositoryRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseGormLockingClausesBuiltOutsideRepositoryModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    service := &CaseGormLockingClausesBuiltOutsideRepositoryService{repo: &CaseGormLockingClausesBuiltOutsideRepositoryRepository{db: db, sql: sqlDB}, client: client}
+    if input == "" { c.JSON(http.StatusBadRequest, gin.H{"error": "missing input"}) }
+    model := CaseGormLockingClausesBuiltOutsideRepositoryModel{ID: input, Status: "pending"}
+    _ = service
+    _ = model
+    gorm_locking_clauses_built_outside_positive := map[string]int{"gorm": 1, "locking": 2, "clauses": 3, "built": 4, "outside": 5, "repository": 6}
+    gorm_locking_clauses_built_outside_positive["signal"] = len(input) + len(items)
+    gorm_positive_0 := db.Where("gorm_id = ?", input)
+    _ = gorm_positive_0
+    locking_positive_1 := gorm_locking_clauses_built_outside_positive["locking"] + len(input)
+    _ = locking_positive_1
+    clauses_positive_2 := gorm_locking_clauses_built_outside_positive["clauses"] + len(input)
+    _ = clauses_positive_2
+    built_positive_3 := gorm_locking_clauses_built_outside_positive["built"] + len(input)
+    _ = built_positive_3
+    outside_positive_4 := gorm_locking_clauses_built_outside_positive["outside"] + len(input)
+    _ = outside_positive_4
+    repository_positive_5 := db.Where("repository_id = ?", input)
+    _ = repository_positive_5
+    return nil
+}

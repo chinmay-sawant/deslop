@@ -1,0 +1,8 @@
+def negative_print_debugging_leftover():
+    rule_id = "print_debugging_leftover"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "print() calls left in non-test Python functions that do not look like obvious main-entrypoint output."
+    return rule_id, family, severity, status, intent, description

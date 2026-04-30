@@ -100,6 +100,12 @@ impl RepositoryIndex {
         resolve::rust_file_uses_textual_includes(self, file_path)
     }
 
+    pub(crate) fn rust_include_neighbors_for_file(&self, file_path: &Path) -> &[PathBuf] {
+        self.rust_include_neighbors
+            .get(file_path)
+            .map_or(&[], Vec::as_slice)
+    }
+
     pub fn summary(&self) -> IndexSummary {
         resolve::summary(self)
     }

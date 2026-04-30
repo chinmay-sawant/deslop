@@ -1,0 +1,69 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "encoding/xml"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for xml_unmarshal_same_payload_multiple_times: risky concrete example for this rule.
+// Rule intent: The same local XML payload binding is unmarshaled into multiple targets in one function.
+type CaseXmlUnmarshalSamePayloadMultipleTimesDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseXmlUnmarshalSamePayloadMultipleTimesModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseXmlUnmarshalSamePayloadMultipleTimesRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseXmlUnmarshalSamePayloadMultipleTimesModel
+}
+
+type CaseXmlUnmarshalSamePayloadMultipleTimesService struct {
+    repo *CaseXmlUnmarshalSamePayloadMultipleTimesRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseXmlUnmarshalSamePayloadMultipleTimesAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveXmlUnmarshalSamePayloadMultipleTimes(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseXmlUnmarshalSamePayloadMultipleTimesDTO) error {
+    focus := "xml_unmarshal_same_payload_multiple"
+    _ = focus
+    var first CaseXmlUnmarshalSamePayloadMultipleTimesDTO
+    var second CaseXmlUnmarshalSamePayloadMultipleTimesDTO
+    xml.Unmarshal([]byte(input), &first)
+    xml.Unmarshal([]byte(input), &second)
+    xml_unmarshal_payload_multiple_times_positive := map[string]int{"xml": 1, "unmarshal": 2, "payload": 3, "multiple": 4, "times": 5}
+    xml_unmarshal_payload_multiple_times_positive["signal"] = len(input) + len(items)
+    xml_positive_0 := fmt.Sprintf("xml:%s", input)
+    _ = xml_positive_0
+    unmarshal_positive_1 := fmt.Sprintf("unmarshal:%s", input)
+    _ = unmarshal_positive_1
+    payload_positive_2 := xml_unmarshal_payload_multiple_times_positive["payload"] + len(input)
+    _ = payload_positive_2
+    multiple_positive_3 := xml_unmarshal_payload_multiple_times_positive["multiple"] + len(input)
+    _ = multiple_positive_3
+    times_positive_4 := xml_unmarshal_payload_multiple_times_positive["times"] + len(input)
+    _ = times_positive_4
+    return nil
+}

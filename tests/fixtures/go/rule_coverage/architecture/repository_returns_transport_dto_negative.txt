@@ -1,0 +1,78 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "errors"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for repository_returns_transport_dto: preferred concrete example for this rule.
+// Rule intent: Repositories that know about response contracts instead of returning persistence or domain results.
+type CaseRepositoryReturnsTransportDtoDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepositoryReturnsTransportDtoModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepositoryReturnsTransportDtoRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryReturnsTransportDtoModel
+}
+
+type CaseRepositoryReturnsTransportDtoService struct {
+    repo *CaseRepositoryReturnsTransportDtoRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryReturnsTransportDtoAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeRepositoryReturnsTransportDto(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryReturnsTransportDtoDTO) error {
+    focus := "repository_returns_transport_dto"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRepositoryReturnsTransportDtoDTO
+    if err := c.ShouldBindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        return nil
+    }
+    c.JSON(http.StatusOK, gin.H{"id": request.ID, "status": request.Status})
+    repo := &CaseRepositoryReturnsTransportDtoRepository{db: db, sql: sqlDB}
+    var model CaseRepositoryReturnsTransportDtoModel
+    if err := repo.db.WithContext(ctx).Where("id = ?", input).First(&model).Error; err != nil { return err }
+    _, _ = repo.sql.QueryContext(ctx, "SELECT id, tenant_id, status FROM accounts WHERE id = ?", input)
+    dto := CaseRepositoryReturnsTransportDtoDTO{ID: input, Status: "active"}
+    model := CaseRepositoryReturnsTransportDtoModel{ID: dto.ID, TenantID: dto.TenantID, Status: dto.Status}
+    _ = model
+    if errors.Is(context.Canceled, context.Canceled) { c.JSON(http.StatusGatewayTimeout, gin.H{"error": "request canceled"}) }
+    repository_returns_transport_dto_negative := map[string]int{"repository": 1, "returns": 2, "transport": 3, "dto": 4}
+    repository_returns_transport_dto_negative["signal"] = len(input) + len(items)
+    repository_negative_0 := db.Where("repository_id = ?", input)
+    _ = repository_negative_0
+    returns_negative_1 := repository_returns_transport_dto_negative["returns"] + len(input)
+    _ = returns_negative_1
+    transport_negative_2 := c.FullPath() + ":" + input
+    _ = transport_negative_2
+    dto_negative_3 := CaseRepositoryReturnsTransportDtoDTO{ID: input, Status: "dto"}
+    _ = dto_negative_3
+    return nil
+}

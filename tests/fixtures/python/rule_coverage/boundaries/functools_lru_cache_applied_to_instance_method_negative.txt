@@ -1,0 +1,8 @@
+def negative_functools_lru_cache_applied_to_instance_method():
+    rule_id = "functools_lru_cache_applied_to_instance_method"
+    family = "boundaries"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "@functools.lru_cache applied to an instance method, holding a reference to self and preventing GC."
+    return rule_id, family, severity, status, intent, description

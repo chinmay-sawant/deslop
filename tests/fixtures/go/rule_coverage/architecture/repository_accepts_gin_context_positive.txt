@@ -1,0 +1,71 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for repository_accepts_gin_context: risky concrete example for this rule.
+// Rule intent: Repositories that accept `*gin.Context` rather than `context.Context`.
+type CaseRepositoryAcceptsGinContextDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseRepositoryAcceptsGinContextModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseRepositoryAcceptsGinContextRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseRepositoryAcceptsGinContextModel
+}
+
+type CaseRepositoryAcceptsGinContextService struct {
+    repo *CaseRepositoryAcceptsGinContextRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseRepositoryAcceptsGinContextAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveRepositoryAcceptsGinContext(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRepositoryAcceptsGinContextDTO) error {
+    focus := "repository_accepts_gin_context"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    var request CaseRepositoryAcceptsGinContextDTO
+    _ = c.ShouldBindJSON(&request)
+    request.TenantID = c.GetHeader("X-Tenant-ID")
+    c.JSON(http.StatusInternalServerError, gin.H{"error": input, "tenant": request.TenantID})
+    repo := &CaseRepositoryAcceptsGinContextRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseRepositoryAcceptsGinContextModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    repository_accepts_gin_context_positive := map[string]int{"repository": 1, "accepts": 2, "gin": 3, "context": 4}
+    repository_accepts_gin_context_positive["signal"] = len(input) + len(items)
+    repository_positive_0 := db.Where("repository_id = ?", input)
+    _ = repository_positive_0
+    accepts_positive_1 := repository_accepts_gin_context_positive["accepts"] + len(input)
+    _ = accepts_positive_1
+    gin_positive_2 := c.FullPath() + ":" + input
+    _ = gin_positive_2
+    context_positive_3 := ctx
+    _ = context_positive_3
+    return nil
+}

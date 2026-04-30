@@ -1,0 +1,8 @@
+def positive_numpy_append_in_loop():
+    rule_id = "numpy_append_in_loop"
+    family = "mlops"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "np.append(...) is used inside loops, forcing repeated reallocations."
+    return rule_id, family, severity, status, intent, description

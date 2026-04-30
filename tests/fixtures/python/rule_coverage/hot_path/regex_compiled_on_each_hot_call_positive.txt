@@ -1,0 +1,8 @@
+def positive_regex_compiled_on_each_hot_call():
+    rule_id = "regex_compiled_on_each_hot_call"
+    family = "hot_path"
+    severity = "info"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag hot functions that compile the same regular expression repeatedly instead of reusing a compiled pattern."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def negative_repeated_string_format_invariant_template():
+    rule_id = "repeated_string_format_invariant_template"
+    family = "hot_path_ext"
+    severity = "info"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "An invariant string template is formatted repeatedly in a loop instead of being partially precomputed."
+    return rule_id, family, severity, status, intent, description

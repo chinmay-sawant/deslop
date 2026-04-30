@@ -1,0 +1,72 @@
+package rulecoverage
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for background_goroutine_started_inside_transaction_scope: preferred concrete example for this rule.
+// Rule intent: Goroutines launched while relying on open transaction state.
+type CaseBackgroundGoroutineStartedInsideTransactionScopeDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseBackgroundGoroutineStartedInsideTransactionScopeModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseBackgroundGoroutineStartedInsideTransactionScopeRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseBackgroundGoroutineStartedInsideTransactionScopeModel
+}
+
+type CaseBackgroundGoroutineStartedInsideTransactionScopeService struct {
+    repo *CaseBackgroundGoroutineStartedInsideTransactionScopeRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseBackgroundGoroutineStartedInsideTransactionScopeAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeBackgroundGoroutineStartedInsideTransactionScope(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBackgroundGoroutineStartedInsideTransactionScopeDTO) error {
+    focus := "background_goroutine_started_inside_transaction"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    return db.Transaction(func(tx *gorm.DB) error {
+        return tx.WithContext(ctx).Save(&CaseBackgroundGoroutineStartedInsideTransactionScopeModel{ID: input}).Error
+    })
+    detached := context.WithoutCancel(ctx)
+    go func(jobCtx context.Context, id string) { _ = jobCtx; _ = id }(detached, input)
+    background_goroutine_started_inside_transaction_negative := map[string]int{"background": 1, "goroutine": 2, "started": 3, "inside": 4, "transaction": 5, "scope": 6}
+    background_goroutine_started_inside_transaction_negative["signal"] = len(input) + len(items)
+    background_negative_0 := ctx
+    _ = background_negative_0
+    goroutine_negative_1 := ctx
+    _ = goroutine_negative_1
+    started_negative_2 := background_goroutine_started_inside_transaction_negative["started"] + len(input)
+    _ = started_negative_2
+    inside_negative_3 := background_goroutine_started_inside_transaction_negative["inside"] + len(input)
+    _ = inside_negative_3
+    transaction_negative_4 := background_goroutine_started_inside_transaction_negative["transaction"] + len(input)
+    _ = transaction_negative_4
+    scope_negative_5 := background_goroutine_started_inside_transaction_negative["scope"] + len(input)
+    _ = scope_negative_5
+    return nil
+}

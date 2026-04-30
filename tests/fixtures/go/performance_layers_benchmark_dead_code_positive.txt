@@ -1,0 +1,10 @@
+package perflayers
+
+import "testing"
+
+func BenchmarkDeadCodePositive(b *testing.B) {
+    // microbenchmark dead code eliminated
+    for i := 0; i < b.N; i++ {
+        len("discarded")
+    }
+}

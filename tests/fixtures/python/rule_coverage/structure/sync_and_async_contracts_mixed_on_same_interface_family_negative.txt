@@ -1,0 +1,8 @@
+def negative_sync_and_async_contracts_mixed_on_same_interface_family():
+    rule_id = "sync_and_async_contracts_mixed_on_same_interface_family"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag interface families that mix sync and async methods without a clear separation."
+    return rule_id, family, severity, status, intent, description

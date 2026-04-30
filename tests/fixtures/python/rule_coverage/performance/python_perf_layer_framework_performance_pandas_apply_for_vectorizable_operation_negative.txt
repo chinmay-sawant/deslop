@@ -1,0 +1,8 @@
+def negative_python_perf_layer_framework_performance_pandas_apply_for_vectorizable_operation():
+    rule_id = "python_perf_layer_framework_performance_pandas_apply_for_vectorizable_operation"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Layer: Framework-specific performance. Flag pandas apply calls for operations that have vectorized Series/DataFrame equivalents."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_python_perf_layer_memory_allocation_temporary_dataframe_created_per_row():
+    rule_id = "python_perf_layer_memory_allocation_temporary_dataframe_created_per_row"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Memory allocation. Flag DataFrame construction per row or per record instead of vectorized batch construction."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_python_perf_layer_resource_pooling_rate_limiter_created_per_request():
+    rule_id = "python_perf_layer_resource_pooling_rate_limiter_created_per_request"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Resource pooling. Flag rate limiter construction per request instead of per identity or dependency."
+    return rule_id, family, severity, status, intent, description

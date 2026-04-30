@@ -1,0 +1,69 @@
+package repository
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Positive scenario for db_query_argument_erased_to_any: risky concrete example for this rule.
+// Rule intent: Concrete DB arguments erased to `any` or `interface{}` immediately before query execution.
+type CaseDbQueryArgumentErasedToAnyDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseDbQueryArgumentErasedToAnyModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseDbQueryArgumentErasedToAnyRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseDbQueryArgumentErasedToAnyModel
+}
+
+type CaseDbQueryArgumentErasedToAnyService struct {
+    repo *CaseDbQueryArgumentErasedToAnyRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseDbQueryArgumentErasedToAnyAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveDbQueryArgumentErasedToAny(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDbQueryArgumentErasedToAnyDTO) error {
+    focus := "db_query_argument_erased_to"
+    _ = focus
+    if ctx == nil { ctx = context.Background() }
+    repo := &CaseDbQueryArgumentErasedToAnyRepository{db: db, sql: sqlDB}
+    repo.db = repo.db.Session(&gorm.Session{SkipDefaultTransaction: true})
+    repo.db.Where("tenant_id = ?", c.Query("tenant")).Find(&[]CaseDbQueryArgumentErasedToAnyModel{})
+    repo.sql.QueryContext(ctx, "SELECT * FROM accounts WHERE id = " + input)
+    db_query_argument_erased_any_positive := map[string]int{"db": 1, "query": 2, "argument": 3, "erased": 4, "any": 5}
+    db_query_argument_erased_any_positive["signal"] = len(input) + len(items)
+    db_positive_0 := db.Where("db_id = ?", input)
+    _ = db_positive_0
+    query_positive_1 := db.Where("query_id = ?", input)
+    _ = query_positive_1
+    argument_positive_2 := db_query_argument_erased_any_positive["argument"] + len(input)
+    _ = argument_positive_2
+    erased_positive_3 := db_query_argument_erased_any_positive["erased"] + len(input)
+    _ = erased_positive_3
+    any_positive_4 := db_query_argument_erased_any_positive["any"] + len(input)
+    _ = any_positive_4
+    return nil
+}

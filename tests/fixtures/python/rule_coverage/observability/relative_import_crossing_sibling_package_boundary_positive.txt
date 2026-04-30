@@ -1,0 +1,8 @@
+def positive_relative_import_crossing_sibling_package_boundary():
+    rule_id = "relative_import_crossing_sibling_package_boundary"
+    family = "observability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Relative import uses three or more dots, crossing into a sibling package boundary."
+    return rule_id, family, severity, status, intent, description

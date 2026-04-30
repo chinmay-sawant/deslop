@@ -1,0 +1,8 @@
+def positive_full_response_or_export_buffered_before_incremental_consumer_use():
+    rule_id = "full_response_or_export_buffered_before_incremental_consumer_use"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag producers that fully buffer large outputs before handing them to a consumer."
+    return rule_id, family, severity, status, intent, description

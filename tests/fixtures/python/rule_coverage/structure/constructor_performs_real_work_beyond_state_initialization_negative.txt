@@ -1,0 +1,8 @@
+def negative_constructor_performs_real_work_beyond_state_initialization():
+    rule_id = "constructor_performs_real_work_beyond_state_initialization"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Flag constructors that do heavy work instead of leaving execution to explicit methods."
+    return rule_id, family, severity, status, intent, description

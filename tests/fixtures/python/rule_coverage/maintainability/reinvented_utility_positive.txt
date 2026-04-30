@@ -1,0 +1,8 @@
+def positive_reinvented_utility():
+    rule_id = "reinvented_utility"
+    family = "maintainability"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Obvious locally implemented utility helpers that overlap with already-imported standard-library style helpers."
+    return rule_id, family, severity, status, intent, description

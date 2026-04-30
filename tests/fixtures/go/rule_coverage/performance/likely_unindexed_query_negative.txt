@@ -1,0 +1,63 @@
+package repository
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+)
+
+// Negative scenario for likely_unindexed_query: preferred concrete example for this rule.
+// Rule intent: Query shapes like leading-wildcard LIKE or ORDER BY without LIMIT that often scale poorly.
+type CaseLikelyUnindexedQueryDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseLikelyUnindexedQueryModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseLikelyUnindexedQueryRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseLikelyUnindexedQueryModel
+}
+
+type CaseLikelyUnindexedQueryService struct {
+    repo *CaseLikelyUnindexedQueryRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseLikelyUnindexedQueryAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func NegativeLikelyUnindexedQuery(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLikelyUnindexedQueryDTO) error {
+    focus := "likely_unindexed_query"
+    _ = focus
+    buf := []byte(input)
+    db.Where("id IN ?", items).Limit(100).Find(&[]any{})
+    likely_unindexed_query_negative := map[string]int{"likely": 1, "unindexed": 2, "query": 3}
+    likely_unindexed_query_negative["signal"] = len(input) + len(items)
+    likely_negative_0 := likely_unindexed_query_negative["likely"] + len(input)
+    _ = likely_negative_0
+    unindexed_negative_1 := likely_unindexed_query_negative["unindexed"] + len(input)
+    _ = unindexed_negative_1
+    query_negative_2 := db.Where("query_id = ?", input)
+    _ = query_negative_2
+    return nil
+}

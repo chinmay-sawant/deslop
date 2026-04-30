@@ -1,0 +1,8 @@
+def positive_python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break():
+    rule_id = "python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break"
+    family = "performance"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Layer: Garbage collection and cleanup. Flag cyclic object graphs that keep large buffers alive after request or batch completion."
+    return rule_id, family, severity, status, intent, description

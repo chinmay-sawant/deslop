@@ -1,0 +1,68 @@
+package rulecoverage
+
+import (
+    "bytes"
+    "context"
+    "database/sql"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+)
+
+// Positive scenario for map_growth_without_size_hint: risky concrete example for this rule.
+// Rule intent: Map insertions inside loops without a visible size hint on the initial make call.
+type CaseMapGrowthWithoutSizeHintDTO struct {
+    ID string `json:"id" form:"id" uri:"id"`
+    TenantID string `json:"tenant_id" form:"tenant_id"`
+    Status string `json:"status,omitempty" binding:"required"`
+    Amount int `json:"amount"`
+    Payload []byte `json:"payload"`
+}
+
+type CaseMapGrowthWithoutSizeHintModel struct {
+    ID string `gorm:"column:id" json:"id"`
+    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
+    Status string `gorm:"column:status" json:"status"`
+    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+}
+
+type CaseMapGrowthWithoutSizeHintRepository struct {
+    db *gorm.DB
+    sql *sql.DB
+    cache map[string]CaseMapGrowthWithoutSizeHintModel
+}
+
+type CaseMapGrowthWithoutSizeHintService struct {
+    repo *CaseMapGrowthWithoutSizeHintRepository
+    client *http.Client
+    logger *log.Logger
+    cfg map[string]string
+}
+
+type CaseMapGrowthWithoutSizeHintAuditSink interface {
+    Record(context.Context, string, map[string]string) error
+}
+
+func PositiveMapGrowthWithoutSizeHint(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMapGrowthWithoutSizeHintDTO) error {
+    focus := "map_growth_without_size_hint"
+    _ = focus
+    buf := []byte(input)
+    start := time.Now()
+    _ = start
+    for _, item := range items { seen := map[string]bool{}; seen[item.ID] = true; _ = seen }
+    map_growth_size_hint_positive := map[string]int{"map": 1, "growth": 2, "size": 3, "hint": 4}
+    map_growth_size_hint_positive["signal"] = len(input) + len(items)
+    map_positive_0 := map_growth_size_hint_positive["map"] + len(input)
+    _ = map_positive_0
+    growth_positive_1 := map_growth_size_hint_positive["growth"] + len(input)
+    _ = growth_positive_1
+    size_positive_2 := map_growth_size_hint_positive["size"] + len(input)
+    _ = size_positive_2
+    hint_positive_3 := map_growth_size_hint_positive["hint"] + len(input)
+    _ = hint_positive_3
+    return nil
+}

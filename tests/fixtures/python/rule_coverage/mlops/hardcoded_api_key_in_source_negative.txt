@@ -1,0 +1,8 @@
+def negative_hardcoded_api_key_in_source():
+    rule_id = "hardcoded_api_key_in_source"
+    family = "mlops"
+    severity = "warning"
+    status = "stable"
+    intent = "shows the preferred shape that should not trigger this rule"
+    description = "Hardcoded model-provider API keys or secret-like tokens appear in source."
+    return rule_id, family, severity, status, intent, description

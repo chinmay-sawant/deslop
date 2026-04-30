@@ -1,0 +1,8 @@
+def positive_service_method_returns_http_response_object():
+    rule_id = "service_method_returns_http_response_object"
+    family = "architecture"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Service-layer method returns an HTTP response object that belongs to the transport layer."
+    return rule_id, family, severity, status, intent, description

@@ -1,0 +1,8 @@
+def positive_abstractions_named_utils_helpers_common_or_manager_hide_true_ownership():
+    rule_id = "abstractions_named_utils_helpers_common_or_manager_hide_true_ownership"
+    family = "structure"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "Flag vague abstractions whose names obscure actual ownership and responsibility."
+    return rule_id, family, severity, status, intent, description

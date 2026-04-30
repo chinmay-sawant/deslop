@@ -1,0 +1,8 @@
+def positive_fastapi_background_task_exception_silent():
+    rule_id = "fastapi_background_task_exception_silent"
+    family = "framework"
+    severity = "contextual"
+    status = "stable"
+    intent = "captures the smell described by this rule"
+    description = "FastAPI background task dispatches appear to rely on default exception behavior without visible error handling."
+    return rule_id, family, severity, status, intent, description
