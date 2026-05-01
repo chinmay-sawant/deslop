@@ -1,8 +1,6 @@
-def positive_read_then_splitlines():
-    rule_id = "read_then_splitlines"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "File contents are fully read and then splitlines() is called instead of streaming lines."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def read_then_splitlines_positive():
+    with open("events.log", "r", encoding="utf-8") as fh:
+        lines = fh.read().splitlines()
+    return [line for line in lines if line]

@@ -1,8 +1,7 @@
-def negative_concurrent_futures_executor_not_shut_down():
-    rule_id = "concurrent_futures_executor_not_shut_down"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "ThreadPoolExecutor or ProcessPoolExecutor created without shutdown() or a context manager, leaking threads."
-    return rule_id, family, severity, status, intent, description
+from concurrent.futures import ProcessPoolExecutor
+
+def run_jobs(data):
+    # Correct: executor managed via context manager
+    with ProcessPoolExecutor(max_workers=4) as executor:
+        results = list(executor.map(expensive_work, data))
+    return results

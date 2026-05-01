@@ -1,8 +1,7 @@
-def positive_django_queryset_evaluated_multiple_times():
-    rule_id = "django_queryset_evaluated_multiple_times"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "The same Django queryset appears to be evaluated multiple times in one function."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_queryset_evaluated_multiple_times_positive():
+    queryset = Ticket.objects.filter(priority="high")
+    first_pass = list(queryset)
+    second_pass_ids = [ticket.id for ticket in queryset]
+    return len(first_pass), second_pass_ids

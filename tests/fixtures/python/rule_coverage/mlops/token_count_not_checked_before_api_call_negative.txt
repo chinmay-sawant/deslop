@@ -1,8 +1,16 @@
-def negative_token_count_not_checked_before_api_call():
-    rule_id = "token_count_not_checked_before_api_call"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "LLM requests are sent without visible token counting or context-window checks."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Client:
+    def complete(self, prompt: str) -> str:
+        return prompt[:10]
+
+
+def count_tokens(text: str) -> int:
+    return len(text.split())
+
+
+def ask(client: Client, prompt: str, max_tokens: int = 128) -> str:
+    if count_tokens(prompt) > max_tokens:
+        raise ValueError("prompt too long")
+    return client.complete(prompt)

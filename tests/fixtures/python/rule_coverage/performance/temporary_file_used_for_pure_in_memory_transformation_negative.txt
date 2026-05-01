@@ -1,8 +1,4 @@
-def negative_temporary_file_used_for_pure_in_memory_transformation():
-    rule_id = "temporary_file_used_for_pure_in_memory_transformation"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag workflows that spill to disk despite an in-memory transform being sufficient."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def temporary_file_used_for_pure_in_memory_transformation_negative(text):
+    return text.upper()

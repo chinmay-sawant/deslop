@@ -1,8 +1,12 @@
-def negative_dataclass_heavy_post_init():
-    rule_id = "dataclass_heavy_post_init"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Dataclass __post_init__ methods that perform I/O, subprocess, network, or heavyweight client setup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass
+class DataclassHeavyPostInitNegative:
+    port: int
+
+    def __post_init__(self) -> None:
+        if not (1 <= self.port <= 65535):
+            raise ValueError("invalid port")

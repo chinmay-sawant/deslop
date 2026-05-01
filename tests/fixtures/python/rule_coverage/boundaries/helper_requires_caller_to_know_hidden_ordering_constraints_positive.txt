@@ -1,8 +1,12 @@
-def positive_helper_requires_caller_to_know_hidden_ordering_constraints():
-    rule_id = "helper_requires_caller_to_know_hidden_ordering_constraints"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag helpers whose correctness depends on the caller invoking them in a specific undocumented order."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class SessionClient:
+    def __init__(self) -> None:
+        self._token: str | None = None
+
+    def authenticate(self, token: str) -> None:
+        self._token = token
+
+    def fetch_profile(self) -> str:
+        return "profile-for:" + self._token

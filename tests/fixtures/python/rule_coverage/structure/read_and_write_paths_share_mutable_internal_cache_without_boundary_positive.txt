@@ -1,8 +1,12 @@
-def positive_read_and_write_paths_share_mutable_internal_cache_without_boundary():
-    rule_id = "read_and_write_paths_share_mutable_internal_cache_without_boundary"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag read and write paths that couple through one mutable cache object."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class SharedCacheStorePositive:
+    def __init__(self) -> None:
+        self.cache: dict[str, str] = {}
+
+    def read(self, key: str) -> str:
+        return self.cache.get(key, "")
+
+    def write(self, key: str, value: str) -> None:
+        self.cache[key] = value

@@ -1,8 +1,11 @@
-def negative_public_package_missing_all_list():
-    rule_id = "public_package_missing_all_list"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Non-trivial package __init__.py defines public symbols without an __all__ list."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+__all__ = ["transform_event", "normalize_event"]
+
+
+def transform_event(event: dict[str, str]) -> dict[str, str]:
+    return {"name": event["name"].lower()}
+
+
+def normalize_event(event: dict[str, str]) -> dict[str, str]:
+    return {"name": event["name"].strip()}

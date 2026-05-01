@@ -1,8 +1,7 @@
-def negative_asyncio_sleep_zero_busy_wait_pattern():
-    rule_id = "asyncio_sleep_zero_busy_wait_pattern"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "asyncio.sleep(0) used in a tight loop as a busy-wait yield pattern instead of a proper event-driven wait."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+async def worker():
+    while True:
+        # Non-busy wait with a small delay or event notification
+        await asyncio.sleep(0.1)
+        process_next_batch()

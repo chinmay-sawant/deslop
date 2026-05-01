@@ -1,8 +1,11 @@
-def negative_business_rule_mixed_with_serialization_mapping():
-    rule_id = "business_rule_mixed_with_serialization_mapping"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag functions that both enforce domain rules and convert to wire or storage payloads in the same block."
-    return rule_id, family, severity, status, intent, description
+class Order:
+    def get_total_with_tax(self):
+        # Business rule in a dedicated domain method
+        return self.amount * 1.15
+
+def order_to_json(order: Order):
+    # Pure serialization mapping
+    return {
+        "amount": order.amount,
+        "total": order.get_total_with_tax()
+    }

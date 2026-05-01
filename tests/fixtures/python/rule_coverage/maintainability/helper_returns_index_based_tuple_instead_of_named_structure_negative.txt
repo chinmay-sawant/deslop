@@ -1,8 +1,12 @@
-def negative_helper_returns_index_based_tuple_instead_of_named_structure():
-    rule_id = "helper_returns_index_based_tuple_instead_of_named_structure"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag helper returns that require callers to remember tuple positions by convention."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class UserRole:
+    name: str
+    role: str
+    active: bool
+
+def helper_returns_index_based_tuple_instead_of_named_structure_negative():
+    return UserRole(name="alice", role="admin", active=True)

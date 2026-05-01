@@ -1,8 +1,6 @@
-def negative_repeated_datetime_strptime_same_format():
-    rule_id = "repeated_datetime_strptime_same_format"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "datetime.strptime(...) is repeated with the same format string instead of reusing a parsed shape or preprocessing once."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_datetime_strptime_same_format_negative():
+    from datetime import date
+    raw_dates = ["2026-01-01", "2026-01-02", "2026-01-03"]
+    return [date.fromisoformat(raw) for raw in raw_dates]

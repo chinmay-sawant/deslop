@@ -1,8 +1,13 @@
-def positive_python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict():
-    rule_id = "python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Serialization and deserialization. Flag Pydantic model construction around trusted internal dicts in tight loops."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+class ItemModel:
+    def __init__(self, item_id, score):
+        self.item_id = item_id
+        self.score = score
+
+    def model_dump(self):
+        return {"item_id": self.item_id, "score": self.score}
+
+
+def python_perf_layer_serialization_pydantic_model_recreated_for_internal_dict_positive(rows):
+    return [ItemModel(row["item_id"], row["score"]).model_dump() for row in rows]

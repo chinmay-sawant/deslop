@@ -1,8 +1,8 @@
-def positive_file_path_from_user_input_without_normalization_or_anchor_check():
-    rule_id = "file_path_from_user_input_without_normalization_or_anchor_check"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "File path derived from user input without Path.resolve() or anchor containment check."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from pathlib import Path
+
+
+def read_user_file(data_root: str, user_path: str) -> str:
+    full_path = Path(data_root) / user_path
+    return full_path.read_text(encoding="utf-8")

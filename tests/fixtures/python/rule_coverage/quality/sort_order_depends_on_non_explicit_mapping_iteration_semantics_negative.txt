@@ -1,8 +1,5 @@
-def negative_sort_order_depends_on_non_explicit_mapping_iteration_semantics():
-    rule_id = "sort_order_depends_on_non_explicit_mapping_iteration_semantics"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag ordering logic that depends on implicit mapping iteration instead of explicit keys."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def sort_order_depends_on_non_explicit_mapping_iteration_semantics_negative(mapping: dict[str, int]) -> list[str]:
+    return [f"{key}:{mapping[key]}" for key in sorted(mapping)]

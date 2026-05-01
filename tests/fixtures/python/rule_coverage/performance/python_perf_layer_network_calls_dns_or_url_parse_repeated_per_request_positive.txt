@@ -1,8 +1,11 @@
-def positive_python_perf_layer_network_calls_dns_or_url_parse_repeated_per_request():
-    rule_id = "python_perf_layer_network_calls_dns_or_url_parse_repeated_per_request"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Network calls. Flag repeated DNS, URL parsing, or endpoint normalization for stable upstreams."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from urllib.parse import urlsplit
+
+
+def python_perf_layer_network_calls_dns_or_url_parse_repeated_per_request_positive(base_url, paths):
+    hosts = []
+    for path in paths:
+        parsed = urlsplit(base_url + path)
+        hosts.append(parsed.netloc)
+    return hosts

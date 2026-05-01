@@ -1,8 +1,5 @@
-def negative_concatenation_in_comprehension_body():
-    rule_id = "concatenation_in_comprehension_body"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "String or collection concatenation happens inside a comprehension body, creating avoidable churn."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def concatenation_in_comprehension_body_negative():
+    tags = ["alpha", "beta", "gamma"]
+    return [f"{tag}:{len(tag)}" for tag in tags]

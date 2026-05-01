@@ -1,8 +1,10 @@
-def positive_monolithic_module_owns_parsing_validation_execution_and_rendering():
-    rule_id = "monolithic_module_owns_parsing_validation_execution_and_rendering"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag modules that contain the whole pipeline and become hard to reason about."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def monolithic_module_owns_parsing_validation_execution_and_rendering_positive(raw: str) -> str:
+    key, value = raw.split("=", 1)
+    data = {key: value}
+    if "id" not in data:
+        raise ValueError("missing id")
+    result = f"done:{data}"
+    return f"<p>{result}</p>"

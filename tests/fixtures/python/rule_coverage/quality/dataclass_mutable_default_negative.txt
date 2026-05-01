@@ -1,8 +1,8 @@
-def negative_dataclass_mutable_default():
-    rule_id = "dataclass_mutable_default"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Dataclass fields that use mutable defaults instead of default_factory."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+
+@dataclass
+class DataclassMutableDefaultNegative:
+    tags: list[str] = field(default_factory=list)

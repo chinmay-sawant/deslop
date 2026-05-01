@@ -1,0 +1,5 @@
+import redis
+
+# Correct: core infrastructure dependency is a standard import
+def save_session(session):
+    redis.set(session.id, session.data)

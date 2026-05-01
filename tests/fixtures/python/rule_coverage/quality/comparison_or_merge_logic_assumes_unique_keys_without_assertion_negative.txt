@@ -1,8 +1,8 @@
-def negative_comparison_or_merge_logic_assumes_unique_keys_without_assertion():
-    rule_id = "comparison_or_merge_logic_assumes_unique_keys_without_assertion"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag merge logic that silently assumes uniqueness of keys or identifiers."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def comparison_or_merge_logic_assumes_unique_keys_without_assertion_negative(rows: list[tuple[str, int]]) -> dict[str, int]:
+    keys = [key for key, _ in rows]
+    if len(keys) != len(set(keys)):
+        raise ValueError("duplicate keys are not allowed")
+    return {key: value for key, value in rows}

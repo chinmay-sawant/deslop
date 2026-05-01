@@ -1,8 +1,6 @@
-def positive_assert_used_for_runtime_input_validation_in_production():
-    rule_id = "assert_used_for_runtime_input_validation_in_production"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "assert statement used to validate user-provided input or production logic, which is stripped by -O."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def parse_quantity(raw: str) -> int:
+    assert raw.isdigit(), "quantity must be digits"
+    return int(raw)

@@ -1,8 +1,7 @@
-def negative_temporary_collection_in_loop():
-    rule_id = "temporary_collection_in_loop"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Loop-local list, dict, or set construction that likely adds avoidable allocation churn."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def temporary_collection_in_loop_negative(values):
+    total = 0
+    for value in values:
+        total += value * 3
+    return total

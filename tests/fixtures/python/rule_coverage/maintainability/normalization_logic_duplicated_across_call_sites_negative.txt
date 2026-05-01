@@ -1,8 +1,14 @@
-def negative_normalization_logic_duplicated_across_call_sites():
-    rule_id = "normalization_logic_duplicated_across_call_sites"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag the same value-cleaning or canonicalization logic repeated in several places."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def normalize_text(raw: str) -> str:
+    cleaned = raw.strip().lower()
+    return " ".join(cleaned.split())
+
+
+def format_username(raw: str) -> str:
+    return normalize_text(raw)
+
+
+def format_city(raw: str) -> str:
+    return normalize_text(raw)

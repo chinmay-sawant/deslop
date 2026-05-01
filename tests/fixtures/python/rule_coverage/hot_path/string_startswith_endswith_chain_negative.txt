@@ -1,8 +1,5 @@
-def negative_string_startswith_endswith_chain():
-    rule_id = "string_startswith_endswith_chain"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Repeated startswith(...) or endswith(...) checks that can often be combined into tuple-based calls."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def string_startswith_endswith_chain_negative():
+    name = "report.csv"
+    return name.startswith(("report_", "report.")) or name.endswith((".csv", ".tsv"))

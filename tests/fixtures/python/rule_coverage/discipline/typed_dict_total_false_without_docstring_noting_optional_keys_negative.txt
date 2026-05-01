@@ -1,8 +1,14 @@
-def negative_typed_dict_total_false_without_docstring_noting_optional_keys():
-    rule_id = "typed_dict_total_false_without_docstring_noting_optional_keys"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "TypedDict(total=False) class has no docstring indicating which keys are optional."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import TypedDict
+
+
+class Payload(TypedDict, total=False):
+    """Optional keys: id and status."""
+
+    id: int
+    status: str
+
+
+def typed_dict_total_false_without_docstring_noting_optional_keys_negative(payload: Payload) -> int:
+    return payload.get("id", 0)

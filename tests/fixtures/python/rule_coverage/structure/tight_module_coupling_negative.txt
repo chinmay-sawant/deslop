@@ -1,8 +1,16 @@
-def negative_tight_module_coupling():
-    rule_id = "tight_module_coupling"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Modules that depend on a large number of repository-local Python modules."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import Protocol
+
+
+class Notifier(Protocol):
+    def send(self, email: str, body: str) -> str:
+        ...
+
+
+class SignupServiceNegative:
+    def __init__(self, notifier: Notifier) -> None:
+        self.notifier = notifier
+
+    def send_welcome(self, email: str) -> str:
+        return self.notifier.send(email, "welcome")

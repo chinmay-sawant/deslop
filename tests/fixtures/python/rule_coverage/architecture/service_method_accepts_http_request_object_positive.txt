@@ -1,8 +1,5 @@
-def positive_service_method_accepts_http_request_object():
-    rule_id = "service_method_accepts_http_request_object"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Service-layer method parameter list includes an HTTP request type from Flask, Django, or FastAPI."
-    return rule_id, family, severity, status, intent, description
+class UserService:
+    def register(self, request: Request):
+        # Violation: service method accepts a transport-specific Request object
+        email = request.json().get("email")
+        return self.repo.save(email)

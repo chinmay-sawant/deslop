@@ -1,8 +1,4 @@
-def positive_mixed_naming_conventions():
-    rule_id = "mixed_naming_conventions"
-    family = "ai_smells"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "File mixes snake_case and camelCase function naming conventions."
-    return rule_id, family, severity, status, intent, description
+def build_report(user_id: int) -> dict:
+    totalCount = 3
+    item_list = ["a", "b", "c"]
+    return {"user_id": user_id, "totalCount": totalCount, "item_list": item_list}

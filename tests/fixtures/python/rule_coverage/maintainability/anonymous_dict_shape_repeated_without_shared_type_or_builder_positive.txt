@@ -1,8 +1,6 @@
-def positive_anonymous_dict_shape_repeated_without_shared_type_or_builder():
-    rule_id = "anonymous_dict_shape_repeated_without_shared_type_or_builder"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag repeated ad hoc dict payload shapes with no shared type or builder."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def anonymous_dict_shape_repeated_without_shared_type_or_builder_positive():
+    user = {"id": 7, "name": "Ari", "active": True}
+    approver = {"id": 8, "name": "Bo", "active": False}
+    return [user, approver]

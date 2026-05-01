@@ -1,8 +1,8 @@
-def positive_repeated_normalization_of_same_string_in_loop():
-    rule_id = "repeated_normalization_of_same_string_in_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag repeated .strip(), .lower(), .casefold(), or similar normalization on the same value inside a loop."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_normalization_of_same_string_in_loop_positive():
+    raw_name = "  Alice Example  "
+    prefixes = []
+    for size in (2, 3, 4):
+        prefixes.append(raw_name.strip().casefold()[:size])
+    return prefixes

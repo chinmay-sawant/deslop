@@ -1,8 +1,7 @@
-def negative_list_membership_in_loop():
-    rule_id = "list_membership_in_loop"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Repeated membership checks against obviously list-like containers inside loops."
-    return rule_id, family, severity, status, intent, description
+def filter_ids(ids: list[int], blocked: list[int]) -> list[int]:
+    blocked_set = set(blocked)
+    kept: list[int] = []
+    for item in ids:
+        if item not in blocked_set:
+            kept.append(item)
+    return kept

@@ -1,8 +1,17 @@
-def positive_auth_extraction_duplicated_across_views():
-    rule_id = "auth_extraction_duplicated_across_views"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Multiple view functions repeat identical auth or principal-extraction logic instead of sharing via middleware or dependency."
-    return rule_id, family, severity, status, intent, description
+from flask import request
+
+@app.route("/profile")
+def profile():
+    # Duplicated auth logic
+    auth_header = request.headers.get("Authorization")
+    token = auth_header.split(" ")[1]
+    user = decode_jwt(token)
+    return f"Hello {user['name']}"
+
+@app.route("/settings")
+def settings():
+    # Duplicated auth logic again
+    auth_header = request.headers.get("Authorization")
+    token = auth_header.split(" ")[1]
+    user = decode_jwt(token)
+    return "Settings page"

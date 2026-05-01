@@ -1,8 +1,7 @@
-def negative_deserialization_from_external_or_user_controlled_source_with_pickle():
-    rule_id = "deserialization_from_external_or_user_controlled_source_with_pickle"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "pickle.loads or pickle.load called on data from an external or user-controlled source."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import json
+
+
+def read_profile(raw_payload: str) -> dict[str, object]:
+    return json.loads(raw_payload)

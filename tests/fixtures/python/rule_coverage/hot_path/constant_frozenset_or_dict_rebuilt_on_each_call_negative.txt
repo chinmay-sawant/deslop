@@ -1,8 +1,4 @@
-def negative_constant_frozenset_or_dict_rebuilt_on_each_call():
-    rule_id = "constant_frozenset_or_dict_rebuilt_on_each_call"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag frequent call paths that reconstruct constant lookup tables each invocation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def constant_frozenset_or_dict_rebuilt_on_each_call_negative():
+    return "json" in ALLOWED_FORMATS

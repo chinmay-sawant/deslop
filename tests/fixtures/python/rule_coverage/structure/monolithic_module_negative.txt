@@ -1,8 +1,6 @@
-def negative_monolithic_module():
-    rule_id = "monolithic_module"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Non-__init__.py modules that are unusually large and combine many imports with orchestration-heavy behavior."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def parse(raw: str) -> dict[str, str]:
+    key, value = raw.split("=", 1)
+    return {key: value}

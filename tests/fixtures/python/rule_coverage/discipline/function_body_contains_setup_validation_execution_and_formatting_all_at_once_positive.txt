@@ -1,8 +1,10 @@
-def positive_function_body_contains_setup_validation_execution_and_formatting_all_at_once():
-    rule_id = "function_body_contains_setup_validation_execution_and_formatting_all_at_once"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag functions that pack too many lifecycle phases into one body."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def function_body_contains_setup_validation_execution_and_formatting_all_at_once_positive(raw: str) -> str:
+    config = {"prefix": "ID"}
+    if not raw:
+        raise ValueError("raw is required")
+    cleaned = raw.strip().upper()
+    result = f"{config['prefix']}-{cleaned}"
+    return f"[{result}]"

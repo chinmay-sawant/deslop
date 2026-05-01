@@ -1,8 +1,8 @@
-def negative_model_eval_mode_missing():
-    rule_id = "model_eval_mode_missing"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Torch-style inference paths run model(...) without obvious eval() or inference mode setup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import torch
+
+
+def predict(model: torch.nn.Module, batch: torch.Tensor) -> torch.Tensor:
+    model.eval()
+    return model(batch)

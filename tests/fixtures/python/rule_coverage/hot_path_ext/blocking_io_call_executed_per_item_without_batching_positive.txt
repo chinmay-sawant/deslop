@@ -1,8 +1,10 @@
-def positive_blocking_io_call_executed_per_item_without_batching():
-    rule_id = "blocking_io_call_executed_per_item_without_batching"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag per-item blocking I/O where batching or grouping is possible."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def blocking_io_call_executed_per_item_without_batching_positive():
+    import time
+    item_ids = [101, 102, 103]
+    results = []
+    for item_id in item_ids:
+        time.sleep(0.01)
+        results.append({"id": item_id, "status": "ok"})
+    return results

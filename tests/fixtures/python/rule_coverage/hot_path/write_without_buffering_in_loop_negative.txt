@@ -1,8 +1,8 @@
-def negative_write_without_buffering_in_loop():
-    rule_id = "write_without_buffering_in_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Repeated writes inside loops with no visible buffering or batching."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def write_without_buffering_in_loop_negative():
+    path = "events.log"
+    lines = [event + "\n" for event in ("open", "save", "close")]
+    with open(path, "a", encoding="utf-8") as handle:
+        handle.writelines(lines)
+    return path

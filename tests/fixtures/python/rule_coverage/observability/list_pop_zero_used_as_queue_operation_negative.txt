@@ -1,8 +1,11 @@
-def negative_list_pop_zero_used_as_queue_operation():
-    rule_id = "list_pop_zero_used_as_queue_operation"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "list.pop(0) or list.insert(0, ...) used as a FIFO queue; use collections.deque.popleft()."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from collections import deque
+
+
+def list_pop_zero_used_as_queue_operation_negative(items: list[str]) -> list[str]:
+    queue = deque(items)
+    drained: list[str] = []
+    while queue:
+        drained.append(queue.popleft())
+    return drained

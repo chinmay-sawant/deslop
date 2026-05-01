@@ -1,8 +1,10 @@
-def negative_partial_update_mutates_input_before_validation_succeeds():
-    rule_id = "partial_update_mutates_input_before_validation_succeeds"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag update helpers that mutate caller data before all validation passes."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def partial_update_mutates_input_before_validation_succeeds_negative(user: dict[str, object], patch: dict[str, object]) -> dict[str, object]:
+    candidate = dict(user)
+    candidate.update(patch)
+    age = candidate.get("age")
+    if not isinstance(age, int) or age < 0:
+        raise ValueError("invalid age")
+    return candidate

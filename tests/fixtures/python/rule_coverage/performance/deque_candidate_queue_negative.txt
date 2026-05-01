@@ -1,8 +1,9 @@
-def negative_deque_candidate_queue():
-    rule_id = "deque_candidate_queue"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Queue-style list operations like pop(0) or insert(0, ...) that may want collections.deque."
-    return rule_id, family, severity, status, intent, description
+from collections import deque
+
+
+def process_fifo(items: list[int]) -> list[int]:
+    queue = deque(items)
+    seen: list[int] = []
+    while queue:
+        seen.append(queue.popleft())
+    return seen

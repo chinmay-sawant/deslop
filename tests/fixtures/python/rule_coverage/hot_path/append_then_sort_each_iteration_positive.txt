@@ -1,8 +1,8 @@
-def positive_append_then_sort_each_iteration():
-    rule_id = "append_then_sort_each_iteration"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "A collection is appended to and then sorted on each iteration instead of sorting once after accumulation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def append_then_sort_each_iteration_positive():
+    scores = []
+    for value in [7, 3, 9, 1]:
+        scores.append(value)
+        scores.sort()
+    return scores

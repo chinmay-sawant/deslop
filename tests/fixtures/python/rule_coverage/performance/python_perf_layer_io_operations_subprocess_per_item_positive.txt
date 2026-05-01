@@ -1,8 +1,11 @@
-def positive_python_perf_layer_io_operations_subprocess_per_item():
-    rule_id = "python_perf_layer_io_operations_subprocess_per_item"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: I/O operations. Flag subprocess launches inside item loops where batching or a long-lived worker should be considered."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import subprocess
+
+
+def python_perf_layer_io_operations_subprocess_per_item_positive(values):
+    output = []
+    for value in values:
+        line = subprocess.run(["echo", str(value)], capture_output=True, text=True, check=True)
+        output.append(line.stdout.strip())
+    return output

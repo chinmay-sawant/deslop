@@ -1,8 +1,7 @@
-def negative_urlparse_in_loop_on_invariant_base():
-    rule_id = "urlparse_in_loop_on_invariant_base"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "urlparse() or urlsplit() is repeated inside loops for invariant base values."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def urlparse_in_loop_on_invariant_base_negative():
+    from urllib.parse import urlparse
+    paths = ["/a", "/b", "/c"]
+    parsed = urlparse("https://api.example.com/root")
+    return [parsed.netloc for _ in paths]

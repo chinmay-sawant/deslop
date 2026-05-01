@@ -1,8 +1,10 @@
-def positive_model_loaded_per_request():
-    rule_id = "model_loaded_per_request"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Models are loaded on request paths instead of once during application startup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def load_model() -> str:
+    return "model_v1"
+
+
+def handle_request(text: str) -> str:
+    model = load_model()
+    return f"{model}:{text}"

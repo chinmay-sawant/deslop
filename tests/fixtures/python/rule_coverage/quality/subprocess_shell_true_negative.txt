@@ -1,8 +1,7 @@
-def negative_subprocess_shell_true():
-    rule_id = "subprocess_shell_true"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Subprocess boundaries that enable shell=True."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import subprocess
+
+
+def subprocess_shell_true_negative(path: str) -> None:
+    subprocess.run(["ls", path], shell=False, check=True)

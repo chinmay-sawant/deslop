@@ -1,8 +1,10 @@
-def negative_duplicate_items_silently_dropped_without_contract_signal():
-    rule_id = "duplicate_items_silently_dropped_without_contract_signal"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag code that deduplicates caller data without making that behavior explicit."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def duplicate_items_silently_dropped_without_contract_signal_negative(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    for item in items:
+        if item in seen:
+            raise ValueError(f"duplicate item: {item}")
+        seen.add(item)
+    return items

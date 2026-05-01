@@ -1,8 +1,5 @@
-def positive_python_public_api_any_contract():
-    rule_id = "python_public_api_any_contract"
-    family = "packaging"
-    severity = "warning"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Public Python APIs that expose Any in parameter or return contracts."
-    return rule_id, family, severity, status, intent, description
+from typing import Any
+
+
+def serialize(payload: dict[str, Any]) -> Any:
+    return payload.get("value")

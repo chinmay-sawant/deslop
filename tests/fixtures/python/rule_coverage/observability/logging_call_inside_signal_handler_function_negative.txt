@@ -1,8 +1,9 @@
-def negative_logging_call_inside_signal_handler_function():
-    rule_id = "logging_call_inside_signal_handler_function"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "logging call inside a signal handler; logging uses locks and is not async-signal-safe."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+STOP_REQUESTED = False
+
+
+def logging_call_inside_signal_handler_function_negative(signum: int, frame: object) -> None:
+    del signum, frame
+    global STOP_REQUESTED
+    STOP_REQUESTED = True

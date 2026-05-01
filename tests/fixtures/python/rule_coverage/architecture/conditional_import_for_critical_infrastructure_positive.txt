@@ -1,0 +1,9 @@
+try:
+    import redis
+except ImportError:
+    # Violation: conditional import for a critical piece of infrastructure
+    redis = None
+
+def save_session(session):
+    if redis:
+        redis.set(session.id, session.data)

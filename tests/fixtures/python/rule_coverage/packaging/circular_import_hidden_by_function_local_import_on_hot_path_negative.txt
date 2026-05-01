@@ -1,8 +1,7 @@
-def negative_circular_import_hidden_by_function_local_import_on_hot_path():
-    rule_id = "circular_import_hidden_by_function_local_import_on_hot_path"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag circular import workarounds that push imports into frequent code paths."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from mypkg.interfaces import serialize_event
+
+
+def circular_import_hidden_by_function_local_import_on_hot_path_negative() -> str:
+    return serialize_event("event")

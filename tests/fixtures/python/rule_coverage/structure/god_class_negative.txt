@@ -1,8 +1,12 @@
-def negative_god_class():
-    rule_id = "god_class"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Python classes that concentrate unusually high method count, public surface area, and mutable instance state."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class OrderService:
+    def parse_order(self, raw: str) -> dict[str, str]:
+        key, value = raw.split("=", 1)
+        return {key: value}
+
+
+class NotificationService:
+    def send_email(self, email: str) -> str:
+        return f"sent:{email}"

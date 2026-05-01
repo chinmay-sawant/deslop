@@ -1,8 +1,7 @@
-def negative_incremental_list_or_tuple_concatenation_in_accumulation_loop():
-    rule_id = "incremental_list_or_tuple_concatenation_in_accumulation_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag accumulation loops that repeatedly concatenate instead of appending and joining once."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def incremental_list_or_tuple_concatenation_in_accumulation_loop_negative():
+    values = []
+    for n in [1, 2, 3, 4]:
+        values.append(n * 10)
+    return values

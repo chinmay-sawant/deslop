@@ -1,8 +1,9 @@
-def positive_health_probe_executes_full_dependency_workflow():
-    rule_id = "health_probe_executes_full_dependency_workflow"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag health checks that run the full production path instead of a cheap signal."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def run_dependency_workflow() -> str:
+    return "workflow completed"
+
+
+def health_probe_executes_full_dependency_workflow_positive() -> str:
+    return run_dependency_workflow()

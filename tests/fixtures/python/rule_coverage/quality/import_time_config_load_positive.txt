@@ -1,8 +1,5 @@
-def positive_import_time_config_load():
-    rule_id = "import_time_config_load"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Module-scope configuration or secret loading that runs during import instead of an explicit startup path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import os
+
+CONFIG = {"region": os.getenv("REGION", "us-east-1")}

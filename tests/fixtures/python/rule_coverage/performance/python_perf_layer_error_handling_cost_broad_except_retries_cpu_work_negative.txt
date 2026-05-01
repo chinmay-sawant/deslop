@@ -1,8 +1,5 @@
-def negative_python_perf_layer_error_handling_cost_broad_except_retries_cpu_work():
-    rule_id = "python_perf_layer_error_handling_cost_broad_except_retries_cpu_work"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Error handling cost. Flag broad except retry loops that repeat CPU-heavy work instead of isolating the failing call."
-    return rule_id, family, severity, status, intent, description
+def read_value(client) -> str:
+    try:
+        return client.fetch()
+    except TimeoutError:
+        return "retry"

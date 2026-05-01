@@ -1,8 +1,5 @@
-def positive_print_metrics_instead_of_logging():
-    rule_id = "print_metrics_instead_of_logging"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Training or evaluation code prints metrics directly instead of using logging or experiment tracking."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def report_metric(name: str, value: float) -> None:
+    print(f"{name}={value}")

@@ -1,8 +1,7 @@
-def negative_exception_swallowed():
-    rule_id = "exception_swallowed"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Broad exception handlers like except: or except Exception: that immediately suppress the error with pass, continue, break, or return."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def exception_swallowed_negative(raw_value: str):
+    try:
+        return int(raw_value)
+    except ValueError as exc:
+        raise ValueError(f"invalid integer: {raw_value}") from exc

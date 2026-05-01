@@ -1,8 +1,11 @@
-def negative_flask_no_streaming_for_large_response():
-    rule_id = "flask_no_streaming_for_large_response"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flask views build large in-memory responses where generator or streaming responses would fit better."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def flask_no_streaming_for_large_response_negative():
+    def stream_rows():
+        for i in range(5000):
+            yield f"row-{i}\n"
+
+    def download():
+        return Response(stream_rows(), mimetype="text/plain")
+
+    return download

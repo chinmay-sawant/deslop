@@ -1,8 +1,9 @@
-def negative_initializer_requires_half_built_instance_state():
-    rule_id = "initializer_requires_half_built_instance_state"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag methods that depend on object fields being patched in after construction before the object becomes usable."
-    return rule_id, family, severity, status, intent, description
+class DatabaseConnector:
+    def __init__(self, url):
+        # Correct: attributes are set before any logic runs
+        self.url = url
+        self.connected = False
+        self.setup()
+
+    def setup(self):
+        print(f"Connecting to {self.url}")

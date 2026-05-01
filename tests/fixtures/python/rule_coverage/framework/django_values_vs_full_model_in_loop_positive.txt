@@ -1,8 +1,7 @@
-def positive_django_values_vs_full_model_in_loop():
-    rule_id = "django_values_vs_full_model_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Django loops hydrate full model instances where values(), values_list(), or only() would likely be cheaper."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_values_vs_full_model_in_loop_positive():
+    names = []
+    for row in Product.objects.filter(is_live=True):
+        names.append((row.id, row.name))
+    return names

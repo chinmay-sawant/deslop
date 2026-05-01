@@ -1,8 +1,5 @@
-def negative_command_or_task_mutates_shared_process_state_directly():
-    rule_id = "command_or_task_mutates_shared_process_state_directly"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag command handlers or task functions that directly rewrite module-level caches or registries used elsewhere."
-    return rule_id, family, severity, status, intent, description
+@app.task
+def process_task(item):
+    # Correct: task updates a persistent store
+    db.results.add(item)
+    db.commit()

@@ -1,8 +1,7 @@
-def positive_overloaded_dispatch_without_typing_overload_decorator():
-    rule_id = "overloaded_dispatch_without_typing_overload_decorator"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Function branches on isinstance to dispatch overloads but does not use @typing.overload decorators."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def overloaded_dispatch_without_typing_overload_decorator_positive(value: int | str) -> int:
+    if isinstance(value, int):
+        return value
+    return int(value)

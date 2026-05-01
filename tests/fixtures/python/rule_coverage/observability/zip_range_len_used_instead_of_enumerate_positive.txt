@@ -1,8 +1,8 @@
-def positive_zip_range_len_used_instead_of_enumerate():
-    rule_id = "zip_range_len_used_instead_of_enumerate"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "zip(range(len(x)), x) pattern used; replace with enumerate(x)."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def zip_range_len_used_instead_of_enumerate_positive(items: list[str]) -> list[str]:
+    out: list[str] = []
+    for index, value in zip(range(len(items)), items):
+        out.append(f"{index}:{value}")
+    return out

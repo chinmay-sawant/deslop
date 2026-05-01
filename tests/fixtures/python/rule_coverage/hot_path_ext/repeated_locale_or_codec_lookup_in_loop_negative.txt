@@ -1,8 +1,7 @@
-def negative_repeated_locale_or_codec_lookup_in_loop():
-    rule_id = "repeated_locale_or_codec_lookup_in_loop"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Locale or codec lookups repeat inside loops instead of being cached once."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_locale_or_codec_lookup_in_loop_negative():
+    import codecs
+    payloads = ["ok", "go", "up"]
+    codec = codecs.lookup("utf-8")
+    return [codec.encode(text)[0] for text in payloads]

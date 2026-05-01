@@ -1,8 +1,6 @@
-def negative_blocking_sync_io_in_async():
-    rule_id = "blocking_sync_io_in_async"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Synchronous network, subprocess, sleep, or file I/O calls made from async def functions."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+
+async def fetch_user(user_id: int) -> dict[str, object]:
+    await asyncio.sleep(0.01)
+    return {"id": user_id, "name": "async-user"}

@@ -1,8 +1,7 @@
-def negative_exception_raised_and_caught_for_control_flow_within_same_function():
-    rule_id = "exception_raised_and_caught_for_control_flow_within_same_function"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Exception raised and immediately caught within the same function as an alternative to a conditional return."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def exception_raised_and_caught_for_control_flow_within_same_function_negative(value: str) -> int:
+    if not value.isdigit():
+        raise ValueError("value must contain only digits")
+    return int(value)

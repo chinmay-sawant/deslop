@@ -1,8 +1,5 @@
-def positive_sorted_full_collection_to_extract_top_n_elements():
-    rule_id = "sorted_full_collection_to_extract_top_n_elements"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "sorted() called on a full collection just to slice the first N elements; use heapq.nsmallest/nlargest."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def sorted_full_collection_to_extract_top_n_elements_positive(scores: list[int], n: int) -> list[int]:
+    return sorted(scores, reverse=True)[:n]

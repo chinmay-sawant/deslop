@@ -1,8 +1,13 @@
-def positive_project_exception_class_not_inheriting_shared_base():
-    rule_id = "project_exception_class_not_inheriting_shared_base"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Custom exception class defined without inheriting from the project-wide base exception class."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class ProjectError(Exception):
+    pass
+
+
+class PaymentFailure(Exception):
+    pass
+
+
+def project_exception_class_not_inheriting_shared_base_positive() -> type[Exception]:
+    return PaymentFailure

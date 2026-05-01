@@ -1,8 +1,7 @@
-def positive_observability_context_extracted_manually_at_many_call_sites():
-    rule_id = "observability_context_extracted_manually_at_many_call_sites"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag repeated manual extraction of the same tracing or logging context."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def observability_context_extracted_manually_at_many_call_sites_positive(context: dict[str, str]) -> tuple[str, str]:
+    trace = context.get("trace_id", "missing")
+    correlation = context.get("correlation_id", "missing")
+    return trace, correlation

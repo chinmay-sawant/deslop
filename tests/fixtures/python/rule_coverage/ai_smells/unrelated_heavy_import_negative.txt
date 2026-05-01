@@ -1,8 +1,2 @@
-def negative_unrelated_heavy_import():
-    rule_id = "unrelated_heavy_import"
-    family = "ai_smells"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Heavy ecosystem imports with little local evidence of real need."
-    return rule_id, family, severity, status, intent, description
+def calculate_average(numbers):
+    return sum(numbers) / len(numbers)

@@ -1,8 +1,10 @@
-def negative_compression_hashing_or_encoding_performed_before_cheap_reject_checks():
-    rule_id = "compression_hashing_or_encoding_performed_before_cheap_reject_checks"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag expensive transforms performed before simple guard checks that could skip the work."
-    return rule_id, family, severity, status, intent, description
+import hashlib
+
+
+def accept(payload: bytes) -> bool:
+    if not payload.startswith(b"MSG:"):
+        return False
+    if len(payload) < 8:
+        return False
+    digest = hashlib.sha256(payload).hexdigest()
+    return len(digest) == 64

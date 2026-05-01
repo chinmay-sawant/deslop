@@ -1,8 +1,5 @@
-def negative_persistent_model_field_encodes_transport_concern():
-    rule_id = "persistent_model_field_encodes_transport_concern"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "SQLAlchemy or Django ORM model carries a field that encodes HTTP or transport metadata such as status codes."
-    return rule_id, family, severity, status, intent, description
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    # Correct: persistent model contains only domain data
+    email = Column(String)

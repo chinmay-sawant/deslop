@@ -1,8 +1,9 @@
-def negative_python_perf_layer_caching_cached_value_immediately_deserialized():
-    rule_id = "python_perf_layer_caching_cached_value_immediately_deserialized"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Caching. Flag caches storing serialized data only to deserialize before every use."
-    return rule_id, family, severity, status, intent, description
+CACHE: dict[str, dict[str, object]] = {}
+
+
+def get_settings(account: str) -> dict[str, object]:
+    cached = CACHE.get(account)
+    if cached is None:
+        cached = {"plan": "pro", "account": account}
+        CACHE[account] = cached
+    return cached

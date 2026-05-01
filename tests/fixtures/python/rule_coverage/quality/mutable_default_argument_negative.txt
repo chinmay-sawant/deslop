@@ -1,8 +1,7 @@
-def negative_mutable_default_argument():
-    rule_id = "mutable_default_argument"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Function parameters that use mutable defaults such as [], {}, or set() directly in the signature."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def mutable_default_argument_negative(item: str, bucket: list[str] | None = None) -> list[str]:
+    values = [] if bucket is None else list(bucket)
+    values.append(item)
+    return values

@@ -1,8 +1,7 @@
-def negative_cache_object_exists_without_size_or_eviction_policy_documentation():
-    rule_id = "cache_object_exists_without_size_or_eviction_policy_documentation"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag caches that exist as long-lived process state with no documented retention policy."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from functools import lru_cache
+
+@lru_cache(maxsize=128)
+def cache_object_exists_without_size_or_eviction_policy_documentation_negative(user_id: int):
+    return {"id": user_id, "name": f"user-{user_id}"}

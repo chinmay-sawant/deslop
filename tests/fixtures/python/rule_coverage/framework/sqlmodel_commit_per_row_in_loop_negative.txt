@@ -1,8 +1,7 @@
-def negative_sqlmodel_commit_per_row_in_loop():
-    rule_id = "sqlmodel_commit_per_row_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "SQLModel sessions commit inside loops instead of applying one transaction after batched updates."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sqlmodel_commit_per_row_in_loop_negative():
+    with Session(engine) as session:
+        for title in ["a", "b", "c"]:
+            session.add(Task(title=title))
+        session.commit()

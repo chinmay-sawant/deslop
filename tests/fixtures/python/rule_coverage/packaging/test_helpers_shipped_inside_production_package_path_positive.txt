@@ -1,8 +1,5 @@
-def positive_test_helpers_shipped_inside_production_package_path():
-    rule_id = "test_helpers_shipped_inside_production_package_path"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag test-only helpers living under the production import path."
-    return rule_id, family, severity, status, intent, description
+from app.tests.helpers import build_fake_user
+
+
+def make_user() -> dict[str, str]:
+    return build_fake_user("prod-user")

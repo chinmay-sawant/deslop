@@ -1,8 +1,12 @@
-def positive_god_function():
-    rule_id = "god_function"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Very large Python functions with high control-flow and call-surface concentration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def god_function_positive(raw: str, email: str) -> str:
+    key, value = raw.split("=", 1)
+    order = {key: value}
+    if "id" not in order:
+        raise ValueError("missing id")
+    saved = f"saved:{order}"
+    rendered = f"<div>{saved}</div>"
+    sent = f"sent:{email}"
+    return f"{rendered}:{sent}"

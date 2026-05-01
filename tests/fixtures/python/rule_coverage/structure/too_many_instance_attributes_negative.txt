@@ -1,8 +1,15 @@
-def negative_too_many_instance_attributes():
-    rule_id = "too_many_instance_attributes"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Classes that assign an unusually large number of instance attributes across their methods."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass
+class ReportConfig:
+    title: str
+    author: str
+    locale: str
+
+
+class ReportBuilderNegative:
+    def __init__(self, config: ReportConfig) -> None:
+        self.config = config

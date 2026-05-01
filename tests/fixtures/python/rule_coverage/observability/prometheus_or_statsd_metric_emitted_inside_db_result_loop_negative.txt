@@ -1,8 +1,9 @@
-def negative_prometheus_or_statsd_metric_emitted_inside_db_result_loop():
-    rule_id = "prometheus_or_statsd_metric_emitted_inside_db_result_loop"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Prometheus counter or statsd metric emitted on every DB row in a result loop instead of once after."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def emit(metric: str, value: int) -> tuple[str, int]:
+    return metric, value
+
+
+def prometheus_or_statsd_metric_emitted_inside_db_result_loop_negative(rows: list[dict[str, object]]) -> tuple[str, int]:
+    return emit("db.rows_seen", len(rows))

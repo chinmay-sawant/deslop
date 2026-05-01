@@ -1,8 +1,7 @@
-def negative_callable_annotation_without_parameter_types():
-    rule_id = "callable_annotation_without_parameter_types"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Callable annotation used without explicit parameter types, losing type information downstream."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import Callable
+
+
+def apply_discount(rule: Callable[[int], int], amount: int) -> int:
+    return rule(amount)

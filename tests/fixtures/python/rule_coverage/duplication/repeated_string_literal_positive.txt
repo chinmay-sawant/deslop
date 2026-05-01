@@ -1,8 +1,5 @@
-def positive_repeated_string_literal():
-    rule_id = "repeated_string_literal"
-    family = "duplication"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Project repeats the same long string literal multiple times in one file."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def repeated_string_literal_positive() -> str:
+    return "state_error:" + "state_error:" + "state_error:"

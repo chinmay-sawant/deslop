@@ -1,8 +1,14 @@
-def positive_deeply_nested_try_except_beyond_two_levels():
-    rule_id = "deeply_nested_try_except_beyond_two_levels"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "try/except blocks nested more than two levels deep, obscuring error propagation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def parse_payload(payload: str) -> int:
+    try:
+        try:
+            try:
+                return int(payload.strip())
+            except ValueError:
+                return -1
+        except Exception:
+            return -2
+    except Exception:
+        return -3

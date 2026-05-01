@@ -1,8 +1,5 @@
-def negative_redundant_return_none():
-    rule_id = "redundant_return_none"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Explicit return None in simple code paths where Python would already return None implicitly."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def cache_user(user_id: int, cache: dict[int, str], name: str) -> None:
+    cache[user_id] = name

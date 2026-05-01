@@ -1,8 +1,9 @@
-def negative_celery_task_reads_env_per_invocation():
-    rule_id = "celery_task_reads_env_per_invocation"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Celery task bodies repeatedly read environment configuration instead of using startup-time bootstrap."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import os
+
+BROKER_URL = os.getenv("BROKER_URL", "amqp://guest")
+
+
+def celery_task_reads_env_per_invocation_negative() -> str:
+    return BROKER_URL

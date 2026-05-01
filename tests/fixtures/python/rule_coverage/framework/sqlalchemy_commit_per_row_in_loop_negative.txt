@@ -1,8 +1,7 @@
-def negative_sqlalchemy_commit_per_row_in_loop():
-    rule_id = "sqlalchemy_commit_per_row_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "SQLAlchemy sessions commit inside loops instead of batching changes and committing once."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sqlalchemy_commit_per_row_in_loop_negative():
+    session = Session()
+    for email in ["a@x.com", "b@x.com", "c@x.com"]:
+        session.add(User(email=email))
+    session.commit()

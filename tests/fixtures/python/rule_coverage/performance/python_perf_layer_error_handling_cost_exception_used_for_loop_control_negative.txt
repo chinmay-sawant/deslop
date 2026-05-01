@@ -1,8 +1,6 @@
-def negative_python_perf_layer_error_handling_cost_exception_used_for_loop_control():
-    rule_id = "python_perf_layer_error_handling_cost_exception_used_for_loop_control"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Error handling cost. Flag exceptions used for ordinary loop control in hot paths."
-    return rule_id, family, severity, status, intent, description
+def flatten(rows: list[list[int]]) -> list[int]:
+    out: list[int] = []
+    for row in rows:
+        for value in row:
+            out.append(value)
+    return out

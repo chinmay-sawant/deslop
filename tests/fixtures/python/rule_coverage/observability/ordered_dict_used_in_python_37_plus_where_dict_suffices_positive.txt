@@ -1,8 +1,10 @@
-def positive_ordered_dict_used_in_python_37_plus_where_dict_suffices():
-    rule_id = "ordered_dict_used_in_python_37_plus_where_dict_suffices"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "OrderedDict used in Python 3.7+ code where a plain dict preserves insertion order."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from collections import OrderedDict
+
+
+def ordered_dict_used_in_python_37_plus_where_dict_suffices_positive(keys: list[str]) -> OrderedDict[str, int]:
+    out: OrderedDict[str, int] = OrderedDict()
+    for index, key in enumerate(keys):
+        out[key] = index
+    return out

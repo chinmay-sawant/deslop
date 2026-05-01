@@ -1,8 +1,12 @@
-def positive_prometheus_or_statsd_metric_emitted_inside_db_result_loop():
-    rule_id = "prometheus_or_statsd_metric_emitted_inside_db_result_loop"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Prometheus counter or statsd metric emitted on every DB row in a result loop instead of once after."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def emit(metric: str, value: int) -> tuple[str, int]:
+    return metric, value
+
+
+def prometheus_or_statsd_metric_emitted_inside_db_result_loop_positive(rows: list[dict[str, object]]) -> list[tuple[str, int]]:
+    emitted: list[tuple[str, int]] = []
+    for _row in rows:
+        emitted.append(emit("db.row_seen", 1))
+    return emitted

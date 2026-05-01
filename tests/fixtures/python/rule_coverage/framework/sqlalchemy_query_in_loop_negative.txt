@@ -1,8 +1,6 @@
-def negative_sqlalchemy_query_in_loop():
-    rule_id = "sqlalchemy_query_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "SQLAlchemy code issues queries inside loops instead of batching or prefetching."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sqlalchemy_query_in_loop_negative():
+    ids = [11, 12, 13]
+    with Session(engine) as session:
+        return session.query(User).filter(User.id.in_(ids)).all()

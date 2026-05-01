@@ -1,8 +1,2 @@
-def negative_view_or_handler_constructs_orm_query_directly():
-    rule_id = "view_or_handler_constructs_orm_query_directly"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "View or route handler builds an ORM query rather than delegating to a repository or service."
-    return rule_id, family, severity, status, intent, description
+def list_orders_view(request: dict, order_repository) -> list:
+    return order_repository.list_by_account(request["account_id"])

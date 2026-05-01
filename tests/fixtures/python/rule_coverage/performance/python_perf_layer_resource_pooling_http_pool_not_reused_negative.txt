@@ -1,8 +1,13 @@
-def negative_python_perf_layer_resource_pooling_http_pool_not_reused():
-    rule_id = "python_perf_layer_resource_pooling_http_pool_not_reused"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Resource pooling. Flag HTTP connection pools that are recreated rather than shared per upstream."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from urllib.request import build_opener
+
+HTTP_OPENER = build_opener()
+
+
+def python_perf_layer_resource_pooling_http_pool_not_reused_negative(urls):
+    codes = []
+    for url in urls:
+        with HTTP_OPENER.open(url) as response:
+            codes.append(response.status)
+    return codes

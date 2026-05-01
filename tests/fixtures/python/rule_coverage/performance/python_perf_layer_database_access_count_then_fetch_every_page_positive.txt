@@ -1,8 +1,11 @@
-def positive_python_perf_layer_database_access_count_then_fetch_every_page():
-    rule_id = "python_perf_layer_database_access_count_then_fetch_every_page"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Database access. Flag count queries paired with every paginated fetch without product need or caching."
-    return rule_id, family, severity, status, intent, description
+def export_all(cursor, page_size: int) -> list[tuple[int, str]]:
+    cursor.execute("SELECT COUNT(*) FROM users")
+    total = cursor.fetchone()[0]
+    rows: list[tuple[int, str]] = []
+    for offset in range(0, total, page_size):
+        cursor.execute(
+            "SELECT id, name FROM users ORDER BY id LIMIT %s OFFSET %s",
+            (page_size, offset),
+        )
+        rows.extend(cursor.fetchall())
+    return rows

@@ -1,8 +1,12 @@
-def positive_python_perf_layer_hot_path_optimization_schema_parsed_inside_handler():
-    rule_id = "python_perf_layer_hot_path_optimization_schema_parsed_inside_handler"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Hot path optimization. Flag schemas, templates, or expressions parsed per request instead of precompiled once."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import json
+
+
+def python_perf_layer_hot_path_optimization_schema_parsed_inside_handler_positive(records, schema_text):
+    valid = 0
+    for record in records:
+        schema = json.loads(schema_text)
+        if set(schema["required"]).issubset(record):
+            valid += 1
+    return valid

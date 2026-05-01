@@ -1,8 +1,7 @@
-def positive_hardcoded_api_key_in_source():
-    rule_id = "hardcoded_api_key_in_source"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Hardcoded model-provider API keys or secret-like tokens appear in source."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+API_KEY = "sk-live-really-secret"
+
+
+def auth_header() -> dict[str, str]:
+    return {"Authorization": f"Bearer {API_KEY}"}

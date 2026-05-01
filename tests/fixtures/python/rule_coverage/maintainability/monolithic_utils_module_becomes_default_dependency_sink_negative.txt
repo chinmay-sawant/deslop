@@ -1,8 +1,5 @@
-def negative_monolithic_utils_module_becomes_default_dependency_sink():
-    rule_id = "monolithic_utils_module_becomes_default_dependency_sink"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag utility modules that attract unrelated dependencies and spread coupling."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def normalize_username(name: str) -> str:
+    return name.strip().lower()

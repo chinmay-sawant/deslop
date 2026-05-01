@@ -1,8 +1,17 @@
-def negative_auth_extraction_duplicated_across_views():
-    rule_id = "auth_extraction_duplicated_across_views"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Multiple view functions repeat identical auth or principal-extraction logic instead of sharing via middleware or dependency."
-    return rule_id, family, severity, status, intent, description
+from functools import wraps
+from flask import request
+
+def require_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        # Centralized auth logic
+        auth_header = request.headers.get("Authorization")
+        token = auth_header.split(" ")[1]
+        kwargs['user'] = decode_jwt(token)
+        return f(*args, **kwargs)
+    return decorated
+
+@app.route("/profile")
+@require_auth
+def profile(user):
+    return f"Hello {user['name']}"

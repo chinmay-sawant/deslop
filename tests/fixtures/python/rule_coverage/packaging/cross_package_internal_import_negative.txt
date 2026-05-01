@@ -1,8 +1,7 @@
-def negative_cross_package_internal_import():
-    rule_id = "cross_package_internal_import"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Local Python packages reaching into another package's internal or private modules."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from billing.api import calculate_tax
+
+
+def cross_package_internal_import_negative(amount: int) -> int:
+    return calculate_tax(amount)

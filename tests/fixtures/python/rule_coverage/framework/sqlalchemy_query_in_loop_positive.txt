@@ -1,8 +1,9 @@
-def positive_sqlalchemy_query_in_loop():
-    rule_id = "sqlalchemy_query_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "SQLAlchemy code issues queries inside loops instead of batching or prefetching."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sqlalchemy_query_in_loop_positive():
+    ids = [11, 12, 13]
+    with Session(engine) as session:
+        rows = []
+        for row_id in ids:
+            rows.append(session.query(User).filter(User.id == row_id).first())
+    return rows

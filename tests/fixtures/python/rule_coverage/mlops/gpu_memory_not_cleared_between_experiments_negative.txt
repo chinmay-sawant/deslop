@@ -1,8 +1,11 @@
-def negative_gpu_memory_not_cleared_between_experiments():
-    rule_id = "gpu_memory_not_cleared_between_experiments"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "GPU-backed experiment flows show no visible memory or session cleanup between runs."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import torch
+
+
+def run_experiments(experiments: list[int], model: torch.nn.Module) -> None:
+    for seed in experiments:
+        try:
+            _ = model(torch.tensor([seed], dtype=torch.float32, device="cuda"))
+        finally:
+            torch.cuda.empty_cache()

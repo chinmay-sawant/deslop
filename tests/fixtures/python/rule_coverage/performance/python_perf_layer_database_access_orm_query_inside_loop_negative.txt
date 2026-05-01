@@ -1,8 +1,2 @@
-def negative_python_perf_layer_database_access_orm_query_inside_loop():
-    rule_id = "python_perf_layer_database_access_orm_query_inside_loop"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Database access. Flag ORM queries inside loops where select_related, prefetch_related, or bulk queries can collapse round trips."
-    return rule_id, family, severity, status, intent, description
+def load_orders(session, order_ids: list[int]) -> list[object]:
+    return session.query("Order").filter(("id", "in", order_ids)).all()

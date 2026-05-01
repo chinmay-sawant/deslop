@@ -1,8 +1,7 @@
-def negative_binary_or_multipart_response_missing_explicit_content_type():
-    rule_id = "binary_or_multipart_response_missing_explicit_content_type"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Binary or streaming response returned without an explicit Content-Type header."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def download_report() -> tuple[bytes, dict[str, str]]:
+    body = b"PDF-DATA"
+    headers = {"Content-Type": "application/pdf"}
+    return body, headers

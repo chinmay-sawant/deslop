@@ -1,8 +1,5 @@
-def negative_pydantic_model_dump_then_json_dumps():
-    rule_id = "pydantic_model_dump_then_json_dumps"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Pydantic v2 code serializes model_dump() output through json.dumps(...) instead of using model_dump_json()."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def pydantic_model_dump_then_json_dumps_negative():
+    event = EventModel(id=3, kind="deploy")
+    return event.model_dump_json()

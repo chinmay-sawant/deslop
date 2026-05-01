@@ -1,8 +1,11 @@
-def positive_sorted_list_maintained_with_insert_instead_of_bisect_insort():
-    rule_id = "sorted_list_maintained_with_insert_instead_of_bisect_insort"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Sorted list maintained by appending then calling .sort(); use bisect.insort() instead."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def sorted_list_maintained_with_insert_instead_of_bisect_insort_positive(values: list[int]) -> list[int]:
+    ordered: list[int] = []
+    for value in values:
+        index = 0
+        while index < len(ordered) and ordered[index] < value:
+            index += 1
+        ordered.insert(index, value)
+    return ordered

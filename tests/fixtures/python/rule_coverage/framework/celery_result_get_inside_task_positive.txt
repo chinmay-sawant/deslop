@@ -1,8 +1,16 @@
-def positive_celery_result_get_inside_task():
-    rule_id = "celery_result_get_inside_task"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Celery tasks synchronously wait on AsyncResult.get(...) instead of handing work off asynchronously."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Result:
+    def get(self) -> int:
+        return 5
+
+
+class Task:
+    def delay(self, value: int) -> Result:
+        return Result()
+
+
+def celery_result_get_inside_task_positive(value: int) -> int:
+    task = Task()
+    return task.delay(value).get()

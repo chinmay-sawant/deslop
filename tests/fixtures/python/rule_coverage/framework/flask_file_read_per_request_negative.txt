@@ -1,8 +1,9 @@
-def negative_flask_file_read_per_request():
-    rule_id = "flask_file_read_per_request"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flask views read files directly on request paths instead of using cached or static responses."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def flask_file_read_per_request_negative():
+    banner_text = "welcome"
+
+    def handler():
+        return banner_text
+
+    return handler

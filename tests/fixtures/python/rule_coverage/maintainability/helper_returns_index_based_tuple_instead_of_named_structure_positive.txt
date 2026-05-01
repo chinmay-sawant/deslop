@@ -1,8 +1,5 @@
-def positive_helper_returns_index_based_tuple_instead_of_named_structure():
-    rule_id = "helper_returns_index_based_tuple_instead_of_named_structure"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag helper returns that require callers to remember tuple positions by convention."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def helper_returns_index_based_tuple_instead_of_named_structure_positive():
+    row = ("alice", "admin", True)
+    return row[0], row[1], row[2]

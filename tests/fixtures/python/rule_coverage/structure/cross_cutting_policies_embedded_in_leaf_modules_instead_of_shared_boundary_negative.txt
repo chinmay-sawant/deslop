@@ -1,8 +1,16 @@
-def negative_cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary():
-    rule_id = "cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag retries, normalization, or policy checks embedded in leaf modules instead of one shared boundary."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Policy:
+    def can_send_email(self, role: str) -> bool:
+        return role == "admin"
+
+
+class InvoiceEmailSender:
+    def __init__(self, policy: Policy) -> None:
+        self.policy = policy
+
+    def send(self, role: str, body: str) -> str:
+        if not self.policy.can_send_email(role):
+            raise PermissionError("admin only")
+        return f"sent:{body}"

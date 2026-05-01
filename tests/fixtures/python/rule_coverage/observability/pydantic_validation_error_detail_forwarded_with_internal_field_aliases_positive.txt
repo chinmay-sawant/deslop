@@ -1,8 +1,5 @@
-def positive_pydantic_validation_error_detail_forwarded_with_internal_field_aliases():
-    rule_id = "pydantic_validation_error_detail_forwarded_with_internal_field_aliases"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Raw Pydantic .errors() detail forwarded to the API client, potentially exposing internal field aliases."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def pydantic_validation_error_detail_forwarded_with_internal_field_aliases_positive() -> dict[str, object]:
+    return {"error": [{"loc": ["internal_user_id"], "msg": "field required"}]}

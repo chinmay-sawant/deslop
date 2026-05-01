@@ -1,8 +1,7 @@
-def positive_command_or_task_mutates_shared_process_state_directly():
-    rule_id = "command_or_task_mutates_shared_process_state_directly"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag command handlers or task functions that directly rewrite module-level caches or registries used elsewhere."
-    return rule_id, family, severity, status, intent, description
+# global state
+shared_results = []
+
+@app.task
+def process_task(item):
+    # Violation: task mutates shared process state directly
+    shared_results.append(item)

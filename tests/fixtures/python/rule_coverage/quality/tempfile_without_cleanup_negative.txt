@@ -1,8 +1,12 @@
-def negative_tempfile_without_cleanup():
-    rule_id = "tempfile_without_cleanup"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Temporary files or directories created without a visible cleanup or context-manager ownership path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import os
+import tempfile
+
+
+def tempfile_without_cleanup_negative(data: str) -> str:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        path = os.path.join(temp_dir, "payload.txt")
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(data)
+        return path

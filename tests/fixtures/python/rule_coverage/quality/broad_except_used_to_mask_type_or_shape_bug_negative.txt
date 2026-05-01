@@ -1,8 +1,10 @@
-def negative_broad_except_used_to_mask_type_or_shape_bug():
-    rule_id = "broad_except_used_to_mask_type_or_shape_bug"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag broad exception handling that conceals structural bugs in the input or code."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def broad_except_used_to_mask_type_or_shape_bug_negative(payload: dict[str, object]) -> int:
+    if "count" not in payload:
+        raise KeyError("count is required")
+    value = payload["count"]
+    if not isinstance(value, int):
+        raise TypeError("count must be an int")
+    return value + 1

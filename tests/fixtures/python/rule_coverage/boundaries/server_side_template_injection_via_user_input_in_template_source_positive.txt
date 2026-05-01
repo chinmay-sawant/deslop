@@ -1,8 +1,7 @@
-def positive_server_side_template_injection_via_user_input_in_template_source():
-    rule_id = "server_side_template_injection_via_user_input_in_template_source"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "User-supplied data used as the template source string for Jinja2 or Mako, enabling SSTI."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from jinja2 import Template
+
+
+def render_message(user_template: str, context: dict[str, object]) -> str:
+    return Template(user_template).render(context)

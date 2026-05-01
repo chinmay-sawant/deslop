@@ -1,8 +1,5 @@
-def positive_function_local_import_executed_in_frequent_path():
-    rule_id = "function_local_import_executed_in_frequent_path"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag hot call paths that perform imports inside the function body."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def function_local_import_executed_in_frequent_path_positive():
+    import hashlib
+    return hashlib.sha256(b"payload").hexdigest()

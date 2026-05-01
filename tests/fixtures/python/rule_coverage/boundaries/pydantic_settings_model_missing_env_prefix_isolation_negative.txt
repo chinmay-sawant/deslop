@@ -1,8 +1,8 @@
-def negative_pydantic_settings_model_missing_env_prefix_isolation():
-    rule_id = "pydantic_settings_model_missing_env_prefix_isolation"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Pydantic BaseSettings model does not define env_prefix, mixing its env vars with system environment."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="PAYMENTS_")
+    db_url: str

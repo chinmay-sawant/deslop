@@ -1,8 +1,9 @@
-def negative_condition_tree_nests_past_two_business_decision_levels():
-    rule_id = "condition_tree_nests_past_two_business_decision_levels"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag functions with deeply nested business condition trees that would be clearer as smaller helpers or dispatch tables."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def shipping_fee(country: str, member: bool, subtotal: float) -> int:
+    if country != "US":
+        return 15
+    if subtotal > 100:
+        return 0 if member else 5
+    return 3 if member else 8

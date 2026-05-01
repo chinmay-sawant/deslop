@@ -1,8 +1,13 @@
-def negative_python_perf_layer_network_calls_retry_without_backoff_or_jitter():
-    rule_id = "python_perf_layer_network_calls_retry_without_backoff_or_jitter"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Network calls. Flag network retries without backoff and jitter, which amplifies latency and load."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import random
+import time
+
+
+def python_perf_layer_network_calls_retry_without_backoff_or_jitter_negative(send):
+    for attempt in range(5):
+        if send():
+            return True
+        delay = (2 ** attempt) * 0.01 + random.uniform(0.0, 0.005)
+        time.sleep(delay)
+    return False

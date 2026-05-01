@@ -1,8 +1,9 @@
-def positive_repeated_open_same_file_in_function():
-    rule_id = "repeated_open_same_file_in_function"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "The same file appears to be opened multiple times within one function."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_open_same_file_in_function_positive():
+    path = "settings.ini"
+    with open(path, "r", encoding="utf-8") as handle:
+        header = handle.readline()
+    with open(path, "r", encoding="utf-8") as handle:
+        full_text = handle.read()
+    return header, full_text

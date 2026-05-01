@@ -1,8 +1,10 @@
-def negative_orm_model_mixes_domain_logic_and_persistence_mapping():
-    rule_id = "orm_model_mixes_domain_logic_and_persistence_mapping"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "ORM model class contains domain business logic methods alongside column mapping, coupling persistence and domain concerns."
-    return rule_id, family, severity, status, intent, description
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    score = Column(Integer)
+
+# Logic is in a separate domain service or pure domain object
+def get_credit_limit(user_score: int):
+    if user_score > 700:
+        return 5000
+    return 1000

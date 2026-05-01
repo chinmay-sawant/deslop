@@ -1,8 +1,7 @@
-def positive_asyncio_get_event_loop_at_module_scope():
-    rule_id = "asyncio_get_event_loop_at_module_scope"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "asyncio.get_event_loop() or get_running_loop() called at module import scope outside any function."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+# Dangerous: getting the event loop at module scope
+loop = asyncio.get_event_loop()
+
+async def start_app():
+    await loop.create_server(...)

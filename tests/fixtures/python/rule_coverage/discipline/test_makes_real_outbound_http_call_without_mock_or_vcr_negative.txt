@@ -1,8 +1,9 @@
-def negative_test_makes_real_outbound_http_call_without_mock_or_vcr():
-    rule_id = "test_makes_real_outbound_http_call_without_mock_or_vcr"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Test makes a real outbound HTTP request without mocking or a VCR cassette."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from unittest.mock import Mock, patch
+
+
+def test_makes_real_outbound_http_call_without_mock_or_vcr_negative() -> int:
+    fake_response = Mock(status=200)
+    with patch("urllib.request.urlopen", return_value=fake_response):
+        return fake_response.status

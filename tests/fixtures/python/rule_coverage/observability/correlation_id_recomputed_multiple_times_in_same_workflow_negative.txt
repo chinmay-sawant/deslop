@@ -1,8 +1,8 @@
-def negative_correlation_id_recomputed_multiple_times_in_same_workflow():
-    rule_id = "correlation_id_recomputed_multiple_times_in_same_workflow"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag code that regenerates correlation IDs instead of propagating one value."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import uuid
+
+
+def correlation_id_recomputed_multiple_times_in_same_workflow_negative() -> list[str]:
+    correlation_id = str(uuid.uuid4())
+    return [correlation_id, correlation_id, correlation_id]

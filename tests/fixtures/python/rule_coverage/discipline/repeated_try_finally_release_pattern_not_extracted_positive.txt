@@ -1,8 +1,28 @@
-def positive_repeated_try_finally_release_pattern_not_extracted():
-    rule_id = "repeated_try_finally_release_pattern_not_extracted"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag repeated manual release patterns that should live behind one helper or context manager."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Lock:
+    def __init__(self) -> None:
+        self.held = False
+
+    def acquire(self) -> None:
+        self.held = True
+
+    def release(self) -> None:
+        self.held = False
+
+
+def _task_a(lock: Lock) -> str:
+    lock.acquire()
+    try:
+        return "a"
+    finally:
+        lock.release()
+
+
+def repeated_try_finally_release_pattern_not_extracted_positive(lock: Lock) -> str:
+    lock.acquire()
+    try:
+        return "b"
+    finally:
+        lock.release()

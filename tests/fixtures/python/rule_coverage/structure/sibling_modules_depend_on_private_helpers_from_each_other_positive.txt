@@ -1,8 +1,7 @@
-def positive_sibling_modules_depend_on_private_helpers_from_each_other():
-    rule_id = "sibling_modules_depend_on_private_helpers_from_each_other"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag sibling modules that reach into each other's private helpers instead of using a shared boundary."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from billing import _normalize_card
+
+
+def sibling_modules_depend_on_private_helpers_from_each_other_positive(number: str) -> str:
+    return _normalize_card(number)

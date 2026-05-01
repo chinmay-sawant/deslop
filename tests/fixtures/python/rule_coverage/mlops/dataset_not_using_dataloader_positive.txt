@@ -1,8 +1,8 @@
-def positive_dataset_not_using_dataloader():
-    rule_id = "dataset_not_using_dataloader"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Manual dataset batching loops that bypass torch.utils.data.DataLoader."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def train(dataset: list[list[float]]) -> int:
+    seen = 0
+    for sample in dataset:
+        seen += len(sample)
+    return seen

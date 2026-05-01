@@ -1,8 +1,11 @@
-def negative_db_connection_pool_size_exceeds_server_max_connections():
-    rule_id = "db_connection_pool_size_exceeds_server_max_connections"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Database connection pool max_overflow or pool_size configured above the database server's max_connections."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+SERVER_MAX_CONNECTIONS = 50
+
+
+def choose_pool_size(workers: int) -> int:
+    requested = workers * 4
+    return min(requested, SERVER_MAX_CONNECTIONS - 5)
+
+
+POOL_SIZE = choose_pool_size(8)

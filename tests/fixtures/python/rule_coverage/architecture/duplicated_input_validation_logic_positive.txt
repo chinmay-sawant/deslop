@@ -1,0 +1,10 @@
+def create_user(email):
+    if "@" not in email:
+        raise ValueError("Invalid email")
+    # logic...
+
+def update_user(email):
+    if "@" not in email:
+        # Violation: duplicated input validation logic
+        raise ValueError("Invalid email")
+    # logic...

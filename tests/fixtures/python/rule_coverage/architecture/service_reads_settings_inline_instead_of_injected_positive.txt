@@ -1,8 +1,8 @@
-def positive_service_reads_settings_inline_instead_of_injected():
-    rule_id = "service_reads_settings_inline_instead_of_injected"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Service reads configuration from os.getenv or settings module inline rather than receiving it via injection."
-    return rule_id, family, severity, status, intent, description
+from my_app.settings import config
+
+class CacheService:
+    def get_client(self):
+        # Violation: service reading settings inline instead of using injection
+        host = config.REDIS_HOST
+        port = config.REDIS_PORT
+        return Redis(host=host, port=port)

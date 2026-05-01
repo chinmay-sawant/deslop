@@ -1,8 +1,7 @@
-def negative_broad_exception_handler():
-    rule_id = "broad_exception_handler"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Broad except Exception: style handlers that still obscure failure shape even when not fully swallowed."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def broad_exception_handler_negative(raw: str):
+    try:
+        return int(raw)
+    except ValueError:
+        return 0

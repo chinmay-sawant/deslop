@@ -1,8 +1,6 @@
-def positive_readlines_then_iterate():
-    rule_id = "readlines_then_iterate"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "readlines() materializes the whole file before line-by-line iteration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def readlines_then_iterate_positive():
+    with open("users.txt", "r", encoding="utf-8") as fh:
+        lines = fh.readlines()
+    return [line.strip() for line in lines]

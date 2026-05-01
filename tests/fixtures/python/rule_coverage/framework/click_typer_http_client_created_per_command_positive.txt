@@ -1,8 +1,11 @@
-def positive_click_typer_http_client_created_per_command():
-    rule_id = "click_typer_http_client_created_per_command"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "click or typer commands allocate HTTP clients inside command bodies instead of reusing a shared client factory."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class HttpClient:
+    def get(self, route: str) -> str:
+        return f"GET {route}"
+
+
+def click_typer_http_client_created_per_command_positive() -> str:
+    client = HttpClient()
+    return client.get("/health")

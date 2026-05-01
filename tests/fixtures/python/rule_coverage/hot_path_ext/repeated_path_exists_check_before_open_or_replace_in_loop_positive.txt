@@ -1,8 +1,11 @@
-def positive_repeated_path_exists_check_before_open_or_replace_in_loop():
-    rule_id = "repeated_path_exists_check_before_open_or_replace_in_loop"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag loops that perform a separate existence check before every file operation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_path_exists_check_before_open_or_replace_in_loop_positive():
+    from pathlib import Path
+    names = ["a.tmp", "b.tmp"]
+    archived = []
+    for name in names:
+        path = Path(name)
+        if path.exists():
+            archived.append(path.with_suffix(".bak"))
+    return archived

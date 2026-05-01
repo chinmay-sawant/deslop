@@ -1,8 +1,5 @@
-def negative_side_effect_comprehension():
-    rule_id = "side_effect_comprehension"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "List, set, or dicit comprehensions used as standalone statements where the result is discarded."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def square_values(values: list[int]) -> list[int]:
+    return [v * v for v in values]

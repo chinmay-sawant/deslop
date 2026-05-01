@@ -1,8 +1,7 @@
-def positive_quadratic_string_building_via_plus_equals():
-    rule_id = "quadratic_string_building_via_plus_equals"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag loops that grow large strings with repeated +=."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def quadratic_string_building_via_plus_equals_positive(tokens):
+    built = ""
+    for token in tokens:
+        built += token + ","
+    return built

@@ -1,8 +1,7 @@
-def negative_python_perf_layer_async_concurrency_lock_held_during_await_or_io():
-    rule_id = "python_perf_layer_async_concurrency_lock_held_during_await_or_io"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Async and concurrency. Flag locks held while awaiting, doing network I/O, or touching disk."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+
+async def update_shared(lock: asyncio.Lock, store: dict[str, str]) -> None:
+    await asyncio.sleep(0.02)
+    async with lock:
+        store["status"] = "done"

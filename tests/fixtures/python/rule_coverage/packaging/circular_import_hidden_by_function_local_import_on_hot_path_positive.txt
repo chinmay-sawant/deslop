@@ -1,8 +1,7 @@
-def positive_circular_import_hidden_by_function_local_import_on_hot_path():
-    rule_id = "circular_import_hidden_by_function_local_import_on_hot_path"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag circular import workarounds that push imports into frequent code paths."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def circular_import_hidden_by_function_local_import_on_hot_path_positive() -> str:
+    from mypkg.adapters import serializer
+
+    return serializer.serialize("event")

@@ -1,8 +1,11 @@
-def positive_base_class_exists_only_to_share_data_fields_not_behavior():
-    rule_id = "base_class_exists_only_to_share_data_fields_not_behavior"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag base classes that provide only data containers with no meaningful shared behavior."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class BaseRecord:
+    def __init__(self, record_id: str, created_by: str) -> None:
+        self.record_id = record_id
+        self.created_by = created_by
+
+
+class OrderRecord(BaseRecord):
+    pass

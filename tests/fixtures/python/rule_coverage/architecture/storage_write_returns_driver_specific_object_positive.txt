@@ -1,8 +1,9 @@
-def positive_storage_write_returns_driver_specific_object():
-    rule_id = "storage_write_returns_driver_specific_object"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag write helpers that return raw driver, session, or cursor objects instead of stable application data."
-    return rule_id, family, severity, status, intent, description
+import boto3
+
+class S3Storage:
+    def save(self, key, data):
+        s3 = boto3.resource('s3')
+        obj = s3.Object('my-bucket', key)
+        obj.put(Body=data)
+        # Violation: storage write returns a driver-specific object (boto3.s3.Object)
+        return obj

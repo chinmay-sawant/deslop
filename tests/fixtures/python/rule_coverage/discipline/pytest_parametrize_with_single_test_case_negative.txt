@@ -1,8 +1,6 @@
-def negative_pytest_parametrize_with_single_test_case():
-    rule_id = "pytest_parametrize_with_single_test_case"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "@pytest.mark.parametrize applied with only one parameter set; use a plain test function instead."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def pytest_parametrize_with_single_test_case_negative() -> None:
+    value = 1
+    assert value == 1

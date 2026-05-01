@@ -1,8 +1,7 @@
-def positive_monolithic_common_package_becomes_transitive_dependency_for_most_modules():
-    rule_id = "monolithic_common_package_becomes_transitive_dependency_for_most_modules"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag package designs where one vague common package becomes a hidden dependency hub."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from common import everything
+
+
+def monolithic_common_package_becomes_transitive_dependency_for_most_modules_positive(user_id: str) -> str:
+    return everything.slugify(user_id)

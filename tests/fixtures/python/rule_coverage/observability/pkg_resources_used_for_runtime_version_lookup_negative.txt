@@ -1,8 +1,7 @@
-def negative_pkg_resources_used_for_runtime_version_lookup():
-    rule_id = "pkg_resources_used_for_runtime_version_lookup"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "pkg_resources.get_distribution used at runtime; use importlib.metadata.version() instead."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from importlib.metadata import version
+
+
+def pkg_resources_used_for_runtime_version_lookup_negative() -> str:
+    return version("pip")

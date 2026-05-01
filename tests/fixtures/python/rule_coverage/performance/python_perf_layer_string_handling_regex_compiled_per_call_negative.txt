@@ -1,8 +1,9 @@
-def negative_python_perf_layer_string_handling_regex_compiled_per_call():
-    rule_id = "python_perf_layer_string_handling_regex_compiled_per_call"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: String handling. Flag re.compile calls in repeated functions, handlers, or loops instead of module-level compiled patterns."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import re
+
+TICKET_PATTERN = re.compile(r"^[A-Z]{3}-\d+$")
+
+
+def python_perf_layer_string_handling_regex_compiled_per_call_negative(lines):
+    return [bool(TICKET_PATTERN.match(line)) for line in lines]

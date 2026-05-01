@@ -1,8 +1,6 @@
-def negative_json_loads_same_payload_multiple_times():
-    rule_id = "json_loads_same_payload_multiple_times"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "The same JSON payload is decoded multiple times inside one function instead of caching the parsed value."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def json_loads_same_payload_multiple_times_negative():
+    raw = '{"enabled": true, "name": "api"}'
+    payload = json.loads(raw)
+    return payload["enabled"], payload["name"]

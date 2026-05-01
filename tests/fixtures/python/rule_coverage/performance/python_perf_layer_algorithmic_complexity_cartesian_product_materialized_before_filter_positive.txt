@@ -1,8 +1,3 @@
-def positive_python_perf_layer_algorithmic_complexity_cartesian_product_materialized_before_filter():
-    rule_id = "python_perf_layer_algorithmic_complexity_cartesian_product_materialized_before_filter"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Algorithmic complexity. Flag itertools product or nested loops materialized before cheap filters narrow the pairs."
-    return rule_id, family, severity, status, intent, description
+def find_matches(left: list[int], right: list[int]) -> list[tuple[int, int]]:
+    pairs = [(a, b) for a in left for b in right]
+    return [pair for pair in pairs if pair[0] == pair[1]]

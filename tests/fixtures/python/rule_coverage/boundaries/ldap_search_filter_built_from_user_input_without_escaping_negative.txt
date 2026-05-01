@@ -1,8 +1,9 @@
-def negative_ldap_search_filter_built_from_user_input_without_escaping():
-    rule_id = "ldap_search_filter_built_from_user_input_without_escaping"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "LDAP search filter string built from user-controlled input without ldap3 or python-ldap escaping."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def escape_ldap(value: str) -> str:
+    return value.replace("\\", r"\5c").replace("(", r"\28").replace(")", r"\29").replace("*", r"\2a")
+
+
+def build_filter(username: str) -> str:
+    return f"(uid={escape_ldap(username)})"

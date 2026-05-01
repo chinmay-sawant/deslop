@@ -1,8 +1,6 @@
-def positive_handler_or_view_builds_raw_sql():
-    rule_id = "handler_or_view_builds_raw_sql"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Route handler or view constructs a raw SQL string instead of delegating to a repository layer."
-    return rule_id, family, severity, status, intent, description
+@app.get("/search")
+def search(q: str):
+    # Violation: view/handler building raw SQL instead of using a repository
+    query = f"SELECT * FROM products WHERE name LIKE '%{q}%' AND is_active = 1"
+    results = db.execute(query)
+    return results

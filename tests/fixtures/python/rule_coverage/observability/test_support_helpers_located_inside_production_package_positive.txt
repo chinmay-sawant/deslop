@@ -1,8 +1,5 @@
-def positive_test_support_helpers_located_inside_production_package():
-    rule_id = "test_support_helpers_located_inside_production_package"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Test helper or factory file with _test_helpers.py or _factories.py suffix is inside the production package."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def fake_user_for_tests() -> dict[str, str]:
+    return {"id": "test-user", "role": "admin"}

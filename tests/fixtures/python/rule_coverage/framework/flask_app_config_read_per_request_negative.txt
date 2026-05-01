@@ -1,8 +1,10 @@
-def negative_flask_app_config_read_per_request():
-    rule_id = "flask_app_config_read_per_request"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flask views repeatedly read app.config on request paths instead of consuming bootstrapped settings."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def flask_app_config_read_per_request_negative():
+    timeout = 3
+    retries = 2
+
+    def handler():
+        return timeout + retries
+
+    return handler

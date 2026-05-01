@@ -1,8 +1,7 @@
-def negative_cross_file_repeated_literal():
-    rule_id = "cross_file_repeated_literal"
-    family = "duplication"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Project repeats the same long string literal across multiple files."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+VALIDATION_ERROR = "user-facing-validation-failed"
+
+
+def cross_file_repeated_literal_negative() -> list[str]:
+    return [VALIDATION_ERROR, VALIDATION_ERROR, VALIDATION_ERROR]

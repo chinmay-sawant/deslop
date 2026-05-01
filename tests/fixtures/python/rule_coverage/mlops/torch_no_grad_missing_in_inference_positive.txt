@@ -1,8 +1,8 @@
-def positive_torch_no_grad_missing_in_inference():
-    rule_id = "torch_no_grad_missing_in_inference"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Torch inference paths show no visible no_grad() or inference_mode() guard."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import torch
+
+
+def infer(model: torch.nn.Module, inputs: torch.Tensor) -> torch.Tensor:
+    model.eval()
+    return model(inputs)

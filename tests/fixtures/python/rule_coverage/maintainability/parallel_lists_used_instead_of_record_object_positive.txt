@@ -1,8 +1,7 @@
-def positive_parallel_lists_used_instead_of_record_object():
-    rule_id = "parallel_lists_used_instead_of_record_object"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag code that keeps related values synchronized across multiple lists instead of using one record type."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def build_contacts() -> tuple[list[str], list[str]]:
+    names = ["Ana", "Bo"]
+    phones = ["111", "222"]
+    return names, phones

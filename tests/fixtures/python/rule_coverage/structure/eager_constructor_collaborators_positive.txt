@@ -1,8 +1,20 @@
-def positive_eager_constructor_collaborators():
-    rule_id = "eager_constructor_collaborators"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Constructors that instantiate several collaborators eagerly inside __init__."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Database:
+    pass
+
+
+class Cache:
+    pass
+
+
+class Mailer:
+    pass
+
+
+class CheckoutServicePositive:
+    def __init__(self) -> None:
+        self.db = Database()
+        self.cache = Cache()
+        self.mailer = Mailer()

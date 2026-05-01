@@ -1,8 +1,7 @@
-def positive_fastapi_dependency_creates_client_per_request():
-    rule_id = "fastapi_dependency_creates_client_per_request"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "FastAPI dependencies construct HTTP clients per request instead of using app lifespan or shared setup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def fastapi_dependency_creates_client_per_request_positive():
+    def get_client():
+        return httpx.Client(base_url="https://api.internal")
+
+    return get_client

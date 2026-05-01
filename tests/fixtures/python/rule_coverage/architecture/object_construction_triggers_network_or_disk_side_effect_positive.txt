@@ -1,8 +1,4 @@
-def positive_object_construction_triggers_network_or_disk_side_effect():
-    rule_id = "object_construction_triggers_network_or_disk_side_effect"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag constructors that perform expensive I/O instead of separating configuration from execution."
-    return rule_id, family, severity, status, intent, description
+class ConfigLoader:
+    def __init__(self, url):
+        # Violation: object construction triggers network side effect
+        self.config = requests.get(url).json()

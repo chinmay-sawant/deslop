@@ -1,8 +1,12 @@
-def negative_function_body_contains_setup_validation_execution_and_formatting_all_at_once():
-    rule_id = "function_body_contains_setup_validation_execution_and_formatting_all_at_once"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag functions that pack too many lifecycle phases into one body."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def _validate_token(raw: str) -> str:
+    if not raw:
+        raise ValueError("raw is required")
+    return raw
+
+
+def function_body_contains_setup_validation_execution_and_formatting_all_at_once_negative(raw: str) -> str:
+    token = _validate_token(raw).strip().upper()
+    return f"[ID-{token}]"

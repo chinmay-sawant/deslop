@@ -1,8 +1,7 @@
-def negative_lambda_or_closure_allocated_per_item_when_static_helper_suffices():
-    rule_id = "lambda_or_closure_allocated_per_item_when_static_helper_suffices"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag per-item closure allocation in hot loops when a stable helper would work."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def lambda_or_closure_allocated_per_item_when_static_helper_suffices_negative():
+    results = []
+    for n in [1, 2, 3]:
+        results.append(add_offset(10, n))
+    return results

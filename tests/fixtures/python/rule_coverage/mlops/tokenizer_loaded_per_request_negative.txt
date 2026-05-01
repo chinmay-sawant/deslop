@@ -1,8 +1,12 @@
-def negative_tokenizer_loaded_per_request():
-    rule_id = "tokenizer_loaded_per_request"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Tokenizers are loaded on request paths instead of once during application startup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def load_tokenizer() -> str:
+    return "tok-v1"
+
+
+TOKENIZER = load_tokenizer()
+
+
+def tokenize(text: str) -> str:
+    return f"{TOKENIZER}:{text}"

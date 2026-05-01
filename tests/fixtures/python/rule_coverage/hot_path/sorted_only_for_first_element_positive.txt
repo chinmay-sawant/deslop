@@ -1,8 +1,5 @@
-def positive_sorted_only_for_first_element():
-    rule_id = "sorted_only_for_first_element"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "A sequence is fully sorted even though only the first or smallest element is used."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sorted_only_for_first_element_positive():
+    scores = [11, 2, 7, 5]
+    return sorted(scores)[0]

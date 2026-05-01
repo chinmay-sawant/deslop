@@ -1,8 +1,9 @@
-def negative_membership_test_against_list_or_tuple_literal_inside_loop():
-    rule_id = "membership_test_against_list_or_tuple_literal_inside_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag repeated membership tests against small linear containers in a hot path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def membership_test_against_list_or_tuple_literal_inside_loop_negative():
+    vowel_set = {"a", "e", "i", "o", "u"}
+    vowels = 0
+    for ch in "performance":
+        if ch in vowel_set:
+            vowels += 1
+    return vowels

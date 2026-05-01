@@ -1,8 +1,17 @@
-def positive_unittest_test_class_duplicates_setup_without_base_class():
-    rule_id = "unittest_test_class_duplicates_setup_without_base_class"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Multiple unittest.TestCase subclasses in the same file duplicate setUp logic without extracting a base class."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import unittest
+
+
+class TestUsers(unittest.TestCase):
+    def setUp(self) -> None:
+        self.base_url = "https://service.local"
+
+
+class TestOrders(unittest.TestCase):
+    def setUp(self) -> None:
+        self.base_url = "https://service.local"
+
+
+def unittest_test_class_duplicates_setup_without_base_class_positive() -> int:
+    return len(TestUsers.__mro__) + len(TestOrders.__mro__)

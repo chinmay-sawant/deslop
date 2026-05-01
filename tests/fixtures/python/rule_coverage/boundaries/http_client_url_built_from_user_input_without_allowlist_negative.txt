@@ -1,8 +1,9 @@
-def negative_http_client_url_built_from_user_input_without_allowlist():
-    rule_id = "http_client_url_built_from_user_input_without_allowlist"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "HTTP client URL constructed from user-controlled input without an allowlist or URL validation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+ALLOWED_HOSTS = {"api.example.com", "backup.example.com"}
+
+
+def build_partner_url(host: str, path: str) -> str:
+    if host not in ALLOWED_HOSTS:
+        raise ValueError("unknown host")
+    return f"https://{host}/{path.lstrip('/')}"

@@ -1,8 +1,5 @@
-def positive_init_file_re_exports_private_module_symbols():
-    rule_id = "init_file_re_exports_private_module_symbols"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "__init__.py re-exports a symbol with a leading underscore, leaking private implementation details."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from mypkg._internal import SecretEncoder
+
+__all__ = ["SecretEncoder"]

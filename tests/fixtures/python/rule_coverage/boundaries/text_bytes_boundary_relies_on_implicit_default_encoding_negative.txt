@@ -1,8 +1,6 @@
-def negative_text_bytes_boundary_relies_on_implicit_default_encoding():
-    rule_id = "text_bytes_boundary_relies_on_implicit_default_encoding"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag code that crosses text and bytes boundaries without an explicit encoding contract."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def read_message(path: str) -> str:
+    with open(path, "r", encoding="utf-8") as handle:
+        return handle.read()

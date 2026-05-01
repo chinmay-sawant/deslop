@@ -1,8 +1,8 @@
-def positive_unclosed_tempfile_or_tmp_directory_from_tempfile_module():
-    rule_id = "unclosed_tempfile_or_tmp_directory_from_tempfile_module"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "tempfile.NamedTemporaryFile or TemporaryDirectory created without delete=False or a context manager."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import tempfile
+
+
+def staging_path() -> str:
+    tmpdir = tempfile.TemporaryDirectory()
+    return tmpdir.name

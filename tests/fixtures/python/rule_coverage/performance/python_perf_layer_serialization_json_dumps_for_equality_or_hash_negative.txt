@@ -1,8 +1,4 @@
-def negative_python_perf_layer_serialization_json_dumps_for_equality_or_hash():
-    rule_id = "python_perf_layer_serialization_json_dumps_for_equality_or_hash"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Serialization and deserialization. Flag json.dumps used only for equality checks, hashing, or dedup keys."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def python_perf_layer_serialization_json_dumps_for_equality_or_hash_negative(left, right):
+    return tuple(sorted(left.items())) == tuple(sorted(right.items()))

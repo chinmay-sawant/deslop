@@ -1,8 +1,9 @@
-def positive_fastapi_response_model_without_orm_mode():
-    rule_id = "fastapi_response_model_without_orm_mode"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "FastAPI response models use ORM conversion paths without visible ORM compatibility configuration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def fastapi_response_model_without_orm_mode_positive():
+    class UserOut(BaseModel):
+        id: int
+        email: str
+
+    orm_user = ORMUser(1, "a@example.com")
+    return UserOut.model_validate(orm_user)

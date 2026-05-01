@@ -1,8 +1,9 @@
-def positive_exception_swallowed_before_sentry_or_error_tracker_capture():
-    rule_id = "exception_swallowed_before_sentry_or_error_tracker_capture"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Exception re-wrapped before capture_exception, causing Sentry or similar to lose the original traceback."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def exception_swallowed_before_sentry_or_error_tracker_capture_positive(record: dict[str, str]) -> bool:
+    try:
+        int(record["attempt"])
+    except Exception:
+        return False
+    return True

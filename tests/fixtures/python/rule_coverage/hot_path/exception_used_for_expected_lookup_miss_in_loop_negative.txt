@@ -1,8 +1,7 @@
-def negative_exception_used_for_expected_lookup_miss_in_loop():
-    rule_id = "exception_used_for_expected_lookup_miss_in_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag loops that rely on exceptions for common cache or dict misses."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def exception_used_for_expected_lookup_miss_in_loop_negative():
+    counts = {}
+    for key in ["a", "b", "a", "c"]:
+        counts[key] = counts.get(key, 0) + 1
+    return counts

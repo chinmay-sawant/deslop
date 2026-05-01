@@ -1,8 +1,9 @@
-def positive_duplicate_transformation_pipeline():
-    rule_id = "duplicate_transformation_pipeline"
-    family = "duplication"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Repository repeats the same data transformation pipeline stages across multiple functions."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def _to_code_one(raw: str) -> str:
+    return raw.strip().lower().replace(" ", "_")
+
+
+def duplicate_transformation_pipeline_positive(raw: str) -> str:
+    return raw.strip().lower().replace(" ", "_")

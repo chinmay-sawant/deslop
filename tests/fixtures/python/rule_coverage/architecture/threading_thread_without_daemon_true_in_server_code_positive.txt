@@ -1,8 +1,7 @@
-def positive_threading_thread_without_daemon_true_in_server_code():
-    rule_id = "threading_thread_without_daemon_true_in_server_code"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "threading.Thread created in server-side code without daemon=True, which can block graceful shutdown."
-    return rule_id, family, severity, status, intent, description
+import threading
+
+
+def start_worker(target) -> threading.Thread:
+    thread = threading.Thread(target=target)
+    thread.start()
+    return thread

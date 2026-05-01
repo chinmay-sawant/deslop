@@ -1,8 +1,14 @@
-def negative_recursive_walk_over_untrusted_input_lacks_depth_limit():
-    rule_id = "recursive_walk_over_untrusted_input_lacks_depth_limit"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag recursion over caller-provided structures with no depth guard."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def recursive_walk_over_untrusted_input_lacks_depth_limit_negative(
+    node: dict[str, object], *, depth: int = 0, max_depth: int = 10
+) -> int:
+    if depth > max_depth:
+        raise ValueError("depth limit exceeded")
+    child = node.get("child")
+    if isinstance(child, dict):
+        return 1 + recursive_walk_over_untrusted_input_lacks_depth_limit_negative(
+            child, depth=depth + 1, max_depth=max_depth
+        )
+    return 1

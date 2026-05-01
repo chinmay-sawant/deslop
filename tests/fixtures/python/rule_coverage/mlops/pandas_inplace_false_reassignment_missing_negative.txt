@@ -1,8 +1,8 @@
-def negative_pandas_inplace_false_reassignment_missing():
-    rule_id = "pandas_inplace_false_reassignment_missing"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "DataFrame-transform methods are called without reassignment or inplace=True, silently discarding results."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pandas as pd
+
+
+def clean(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.drop(columns=["temp"], inplace=False)
+    return df

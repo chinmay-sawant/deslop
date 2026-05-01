@@ -1,8 +1,9 @@
-def negative_model_to_device_in_loop():
-    rule_id = "model_to_device_in_loop"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Models or tensors are moved to a device repeatedly inside loops."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import torch
+
+
+def infer_many(model: torch.nn.Module, batches: list[torch.Tensor], device: str) -> None:
+    model.to(device)
+    for batch in batches:
+        _ = model(batch.to(device))

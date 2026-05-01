@@ -1,8 +1,10 @@
-def negative_formatted_log_or_debug_payload_built_for_each_item_without_guard():
-    rule_id = "formatted_log_or_debug_payload_built_for_each_item_without_guard"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag per-item log payload construction without checking whether the level is enabled."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def formatted_log_or_debug_payload_built_for_each_item_without_guard_negative():
+    debug_enabled = False
+    events = [("login", 1), ("logout", 2)]
+    logs = []
+    for action, user_id in events:
+        if debug_enabled:
+            logs.append(f"event={action} user={user_id} trace={action}:{user_id * 100}")
+    return logs

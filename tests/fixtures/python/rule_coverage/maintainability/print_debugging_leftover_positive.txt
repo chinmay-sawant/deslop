@@ -1,8 +1,7 @@
-def positive_print_debugging_leftover():
-    rule_id = "print_debugging_leftover"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "print() calls left in non-test Python functions that do not look like obvious main-entrypoint output."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def calculate_total(prices: list[int]) -> int:
+    total = sum(prices)
+    print("debug total:", total)
+    return total

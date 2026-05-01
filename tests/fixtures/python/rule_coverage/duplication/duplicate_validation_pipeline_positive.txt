@@ -1,8 +1,9 @@
-def positive_duplicate_validation_pipeline():
-    rule_id = "duplicate_validation_pipeline"
-    family = "duplication"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Repeated validation guard pipelines across functions in one file."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def _validate_email_one(email: str) -> bool:
+    return "@" in email and "." in email and len(email) >= 5
+
+
+def duplicate_validation_pipeline_positive(email: str) -> bool:
+    return "@" in email and "." in email and len(email) >= 5

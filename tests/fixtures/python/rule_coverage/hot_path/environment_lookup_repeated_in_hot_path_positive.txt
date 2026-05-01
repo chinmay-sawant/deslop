@@ -1,8 +1,7 @@
-def positive_environment_lookup_repeated_in_hot_path():
-    rule_id = "environment_lookup_repeated_in_hot_path"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag hot functions that repeatedly read environment variables or global config values that do not change."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def environment_lookup_repeated_in_hot_path_positive():
+    labels = []
+    for _ in range(4):
+        labels.append(os.getenv("APP_REGION", "local"))
+    return labels

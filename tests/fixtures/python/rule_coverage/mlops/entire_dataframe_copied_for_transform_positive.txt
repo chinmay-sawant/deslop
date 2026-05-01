@@ -1,8 +1,9 @@
-def positive_entire_dataframe_copied_for_transform():
-    rule_id = "entire_dataframe_copied_for_transform"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Whole DataFrames are copied for transforms that could target a smaller subset or reuse views."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pandas as pd
+
+
+def normalize_age(df: pd.DataFrame) -> pd.DataFrame:
+    cloned = df.copy()
+    cloned["age"] = cloned["age"].fillna(0)
+    return cloned

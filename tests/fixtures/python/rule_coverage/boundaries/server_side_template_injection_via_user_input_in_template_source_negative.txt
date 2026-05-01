@@ -1,8 +1,9 @@
-def negative_server_side_template_injection_via_user_input_in_template_source():
-    rule_id = "server_side_template_injection_via_user_input_in_template_source"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "User-supplied data used as the template source string for Jinja2 or Mako, enabling SSTI."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from jinja2 import Template
+
+SAFE_TEMPLATE = Template("Hello {{ name }}")
+
+
+def render_message(name: str) -> str:
+    return SAFE_TEMPLATE.render({"name": name})

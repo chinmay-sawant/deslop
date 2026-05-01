@@ -1,8 +1,9 @@
-def positive_flask_global_db_connection_per_request():
-    rule_id = "flask_global_db_connection_per_request"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flask views create database connections per request instead of using pooled or app-scoped access."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def flask_global_db_connection_per_request_positive():
+    def handler():
+        conn = psycopg.connect("dbname=main")
+        row = conn.execute("SELECT 1").fetchone()
+        return row[0]
+
+    return handler

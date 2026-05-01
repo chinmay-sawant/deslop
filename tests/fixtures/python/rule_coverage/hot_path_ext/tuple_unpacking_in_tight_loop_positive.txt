@@ -1,8 +1,10 @@
-def positive_tuple_unpacking_in_tight_loop():
-    rule_id = "tuple_unpacking_in_tight_loop"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Tuple unpacking is repeated in tight loops where reducing per-iteration overhead may help."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def tuple_unpacking_in_tight_loop_positive():
+    rows = [{"id": 1, "qty": 2}, {"id": 2, "qty": 3}]
+    pairs = []
+    for row in rows:
+        pair = (row["id"], row["qty"])
+        item_id, qty = pair
+        pairs.append(item_id * qty)
+    return pairs

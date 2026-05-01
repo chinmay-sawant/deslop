@@ -1,8 +1,16 @@
-def negative_long_parameter_list_of_primitives_without_options_object():
-    rule_id = "long_parameter_list_of_primitives_without_options_object"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag functions whose many primitive parameters obscure meaning and encourage call-site mistakes."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class ConnectionOptions:
+    timeout: float
+    retries: int
+    use_ssl: bool
+    verify_cert: bool
+    pool_size: int
+
+
+def long_parameter_list_of_primitives_without_options_object_negative(host: str, port: int, options: ConnectionOptions) -> str:
+    return f"{host}:{port} timeout={options.timeout} retries={options.retries}"

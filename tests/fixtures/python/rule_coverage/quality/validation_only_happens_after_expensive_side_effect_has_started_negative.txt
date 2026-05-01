@@ -1,8 +1,10 @@
-def negative_validation_only_happens_after_expensive_side_effect_has_started():
-    rule_id = "validation_only_happens_after_expensive_side_effect_has_started"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag flows where validation happens only after I/O or irreversible work has begun."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import subprocess
+
+
+def validation_only_happens_after_expensive_side_effect_has_started_negative(job_id: str) -> str:
+    if not job_id.isdigit():
+        raise ValueError("job_id must be digits")
+    subprocess.run(["echo", f"starting:{job_id}"], check=True)
+    return job_id

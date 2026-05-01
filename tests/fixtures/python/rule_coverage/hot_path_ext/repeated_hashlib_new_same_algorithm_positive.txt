@@ -1,8 +1,11 @@
-def positive_repeated_hashlib_new_same_algorithm():
-    rule_id = "repeated_hashlib_new_same_algorithm"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "The same hashing algorithm is repeatedly constructed in a loop or tight path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_hashlib_new_same_algorithm_positive():
+    import hashlib
+    values = ["a", "b", "c"]
+    digests = []
+    for value in values:
+        h = hashlib.new("sha256")
+        h.update(value.encode("utf-8"))
+        digests.append(h.hexdigest())
+    return digests

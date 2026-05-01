@@ -1,8 +1,8 @@
-def positive_pydantic_settings_model_does_not_forbid_extra_fields():
-    rule_id = "pydantic_settings_model_does_not_forbid_extra_fields"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Pydantic Settings model does not set model_config = ConfigDict(extra='forbid'), allowing silent typos."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(extra="allow")
+    region: str

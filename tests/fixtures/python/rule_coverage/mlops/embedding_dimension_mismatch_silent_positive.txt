@@ -1,8 +1,8 @@
-def positive_embedding_dimension_mismatch_silent():
-    rule_id = "embedding_dimension_mismatch_silent"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Embeddings are compared without visible dimension validation before similarity math."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def cosine_like(a: list[float], b: list[float]) -> float:
+    total = 0.0
+    for left, right in zip(a, b):
+        total += left * right
+    return total

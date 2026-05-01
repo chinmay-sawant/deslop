@@ -1,8 +1,6 @@
-def positive_magic_thresholds_duplicated_across_modules():
-    rule_id = "magic_thresholds_duplicated_across_modules"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag repeated numeric thresholds with shared meaning that are copied across modules."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def magic_thresholds_duplicated_across_modules_positive(score: int):
+    is_warning = score >= 70
+    is_critical = score >= 90
+    return is_warning, is_critical

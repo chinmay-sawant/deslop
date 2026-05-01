@@ -1,8 +1,13 @@
-def positive_dataclass_heavy_post_init():
-    rule_id = "dataclass_heavy_post_init"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Dataclass __post_init__ methods that perform I/O, subprocess, network, or heavyweight client setup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass
+class DataclassHeavyPostInitPositive:
+    config_path: str
+    raw: str = ""
+
+    def __post_init__(self) -> None:
+        with open(self.config_path, "r", encoding="utf-8") as handle:
+            self.raw = handle.read()

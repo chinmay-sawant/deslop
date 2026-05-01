@@ -1,8 +1,8 @@
-def positive_string_sentinel_values_duplicated_instead_of_constant_or_enum():
-    rule_id = "string_sentinel_values_duplicated_instead_of_constant_or_enum"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag repeated mode or status strings that should be centralized."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def parse_region(raw: str) -> str:
+    region = raw.strip() or "UNKNOWN"
+    if region == "UNKNOWN":
+        return "UNKNOWN"
+    return region

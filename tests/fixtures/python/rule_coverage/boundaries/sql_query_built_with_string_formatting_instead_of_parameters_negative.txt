@@ -1,8 +1,6 @@
-def negative_sql_query_built_with_string_formatting_instead_of_parameters():
-    rule_id = "sql_query_built_with_string_formatting_instead_of_parameters"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "SQL query string built via f-string or % formatting instead of parameterised query binding."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def find_user(cursor, username: str):
+    query = "SELECT id FROM users WHERE username = ?"
+    return cursor.execute(query, (username,)).fetchone()

@@ -1,8 +1,20 @@
-def negative_eager_constructor_collaborators():
-    rule_id = "eager_constructor_collaborators"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Constructors that instantiate several collaborators eagerly inside __init__."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Database:
+    pass
+
+
+class Cache:
+    pass
+
+
+class Mailer:
+    pass
+
+
+class CheckoutServiceNegative:
+    def __init__(self, db: Database, cache: Cache, mailer: Mailer) -> None:
+        self.db = db
+        self.cache = cache
+        self.mailer = mailer

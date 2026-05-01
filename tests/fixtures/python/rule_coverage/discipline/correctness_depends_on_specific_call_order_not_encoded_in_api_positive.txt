@@ -1,8 +1,15 @@
-def positive_correctness_depends_on_specific_call_order_not_encoded_in_api():
-    rule_id = "correctness_depends_on_specific_call_order_not_encoded_in_api"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag APIs whose safe use depends on an undocumented sequence of method calls."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class QueryBuilder:
+    def __init__(self) -> None:
+        self._parts: list[str] = []
+
+    def select(self, fields: str) -> None:
+        self._parts.append(f"SELECT {fields}")
+
+    def where(self, clause: str) -> None:
+        self._parts.append(f"WHERE {clause}")
+
+    def sql(self) -> str:
+        return " ".join(self._parts)

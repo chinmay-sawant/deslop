@@ -1,8 +1,10 @@
-def positive_integration_test_writes_state_without_cleanup():
-    rule_id = "integration_test_writes_state_without_cleanup"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Integration test creates database rows or files without a teardown or transactional rollback."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import tempfile
+from pathlib import Path
+
+
+def integration_test_writes_state_without_cleanup_positive() -> bool:
+    path = Path(tempfile.gettempdir()) / "worker3_state.txt"
+    path.write_text("state=dirty", encoding="utf-8")
+    return path.exists()

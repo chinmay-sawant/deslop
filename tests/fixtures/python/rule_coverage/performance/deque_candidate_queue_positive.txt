@@ -1,8 +1,6 @@
-def positive_deque_candidate_queue():
-    rule_id = "deque_candidate_queue"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Queue-style list operations like pop(0) or insert(0, ...) that may want collections.deque."
-    return rule_id, family, severity, status, intent, description
+def process_fifo(items: list[int]) -> list[int]:
+    queue = list(items)
+    seen: list[int] = []
+    while queue:
+        seen.append(queue.pop(0))
+    return seen

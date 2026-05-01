@@ -1,8 +1,9 @@
-def positive_functools_lru_cache_applied_to_instance_method():
-    rule_id = "functools_lru_cache_applied_to_instance_method"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "@functools.lru_cache applied to an instance method, holding a reference to self and preventing GC."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from functools import lru_cache
+
+
+class PriceService:
+    @lru_cache(maxsize=32)
+    def quote(self, sku: str) -> int:
+        return len(sku) * 100

@@ -1,8 +1,6 @@
-def negative_file_object_returned_or_stored_without_clear_close_path():
-    rule_id = "file_object_returned_or_stored_without_clear_close_path"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "File object returned from a function or stored in an attribute without a guaranteed close path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def read_audit_log(path: str) -> str:
+    with open(path, "r", encoding="utf-8") as handle:
+        return handle.read()

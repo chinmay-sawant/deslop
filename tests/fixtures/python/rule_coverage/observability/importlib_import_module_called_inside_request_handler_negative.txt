@@ -1,8 +1,9 @@
-def negative_importlib_import_module_called_inside_request_handler():
-    rule_id = "importlib_import_module_called_inside_request_handler"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "importlib.import_module called inside a request handler instead of at application startup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import json
+
+PARSER = json.loads
+
+
+def importlib_import_module_called_inside_request_handler_negative(payload: str) -> object:
+    return PARSER(payload)

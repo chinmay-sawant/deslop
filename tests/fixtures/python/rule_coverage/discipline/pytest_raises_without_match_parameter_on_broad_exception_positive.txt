@@ -1,8 +1,8 @@
-def positive_pytest_raises_without_match_parameter_on_broad_exception():
-    rule_id = "pytest_raises_without_match_parameter_on_broad_exception"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "pytest.raises used with a broad exception type without a match= pattern to verify the message."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pytest
+
+
+def pytest_raises_without_match_parameter_on_broad_exception_positive() -> None:
+    with pytest.raises(Exception):
+        int("x")

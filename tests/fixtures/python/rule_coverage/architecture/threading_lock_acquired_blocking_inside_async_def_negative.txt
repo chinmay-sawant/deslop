@@ -1,8 +1,8 @@
-def negative_threading_lock_acquired_blocking_inside_async_def():
-    rule_id = "threading_lock_acquired_blocking_inside_async_def"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "threading.Lock.acquire() called with blocking=True inside an async function, blocking the event loop thread."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+LOCK = asyncio.Lock()
+
+
+async def update_counter(counter: dict) -> None:
+    async with LOCK:
+        counter["value"] += 1

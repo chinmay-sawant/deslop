@@ -1,8 +1,10 @@
-def positive_magic_value_branching():
-    rule_id = "magic_value_branching"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Repeated branch-shaping numeric or string literals that likely want an explicit constant or policy name."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def magic_value_branching_positive(code: str):
+    if code == "A":
+        return "approved"
+    if code == "R":
+        return "rejected"
+    if code == "H":
+        return "on_hold"
+    return "unknown"

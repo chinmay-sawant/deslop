@@ -1,8 +1,13 @@
-def negative_vector_store_client_created_per_request():
-    rule_id = "vector_store_client_created_per_request"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Vector-store clients created on request paths instead of reused application state."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class VectorStoreClient:
+    def search(self, query: str) -> list[str]:
+        return [query]
+
+
+VECTOR_STORE = VectorStoreClient()
+
+
+def retrieve(query: str) -> list[str]:
+    return VECTOR_STORE.search(query)

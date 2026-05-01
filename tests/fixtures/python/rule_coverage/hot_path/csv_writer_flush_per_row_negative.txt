@@ -1,8 +1,8 @@
-def negative_csv_writer_flush_per_row():
-    rule_id = "csv_writer_flush_per_row"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "csv.Writer flushes on each row instead of buffering a larger batch."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def csv_writer_flush_per_row_negative():
+    with open("out.csv", "w", encoding="utf-8", newline="") as fh:
+        writer = csv.writer(fh)
+        for row in [("a", 1), ("b", 2), ("c", 3)]:
+            writer.writerow(row)
+        fh.flush()

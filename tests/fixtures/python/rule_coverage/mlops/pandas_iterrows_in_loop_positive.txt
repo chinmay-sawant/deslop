@@ -1,8 +1,10 @@
-def positive_pandas_iterrows_in_loop():
-    rule_id = "pandas_iterrows_in_loop"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "iterrows() is used on DataFrames instead of vectorized operations or itertuples()."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pandas as pd
+
+
+def score_sum(df: pd.DataFrame) -> float:
+    total = 0.0
+    for _, row in df.iterrows():
+        total += float(row["score"])
+    return total

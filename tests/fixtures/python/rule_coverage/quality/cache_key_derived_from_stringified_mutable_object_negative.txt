@@ -1,8 +1,5 @@
-def negative_cache_key_derived_from_stringified_mutable_object():
-    rule_id = "cache_key_derived_from_stringified_mutable_object"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag cache keys built from unstable string forms of mutable objects."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def cache_key_derived_from_stringified_mutable_object_negative(filters: dict[str, object]) -> tuple[tuple[str, object], ...]:
+    return tuple(sorted(filters.items()))

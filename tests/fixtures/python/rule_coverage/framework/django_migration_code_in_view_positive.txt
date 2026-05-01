@@ -1,8 +1,8 @@
-def positive_django_migration_code_in_view():
-    rule_id = "django_migration_code_in_view"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Django views or request paths reference schema or migration operations that belong in migrations."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_migration_code_in_view_positive():
+    def maintenance_view(request):
+        call_command("migrate", verbosity=0)
+        return HttpResponse("migrations applied")
+
+    return maintenance_view

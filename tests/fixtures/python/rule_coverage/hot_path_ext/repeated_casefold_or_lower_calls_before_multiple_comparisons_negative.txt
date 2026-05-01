@@ -1,8 +1,6 @@
-def negative_repeated_casefold_or_lower_calls_before_multiple_comparisons():
-    rule_id = "repeated_casefold_or_lower_calls_before_multiple_comparisons"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag code that normalizes the same candidate repeatedly before several comparisons."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_casefold_or_lower_calls_before_multiple_comparisons_negative():
+    role = "Admin "
+    normalized = role.strip().lower()
+    return normalized in {"admin", "owner", "auditor"}

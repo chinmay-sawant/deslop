@@ -1,8 +1,6 @@
-def positive_pyproject_missing_requires_python():
-    rule_id = "pyproject_missing_requires_python"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "pyproject metadata missing an explicit Python runtime requirement."
-    return rule_id, family, severity, status, intent, description
+PYPROJECT = {
+    "project": {
+        "name": "demo-lib",
+        "version": "0.1.0",
+    }
+}

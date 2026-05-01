@@ -1,8 +1,13 @@
-def positive_bidirectional_import_between_feature_modules():
-    rule_id = "bidirectional_import_between_feature_modules"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag feature modules that depend on each other directly."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def load_checkout_total_positive() -> int:
+    from inventory import reserve_stock  # noqa: F401
+
+    return 1
+
+
+def load_inventory_status_positive() -> int:
+    from checkout import compute_total  # noqa: F401
+
+    return 1

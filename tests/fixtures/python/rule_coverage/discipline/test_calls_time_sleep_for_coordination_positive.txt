@@ -1,8 +1,8 @@
-def positive_test_calls_time_sleep_for_coordination():
-    rule_id = "test_calls_time_sleep_for_coordination"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Test calls time.sleep to coordinate with async or threaded code instead of events or monkeypatching."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import time
+
+
+def test_calls_time_sleep_for_coordination_positive() -> None:
+    time.sleep(0.05)
+    assert True

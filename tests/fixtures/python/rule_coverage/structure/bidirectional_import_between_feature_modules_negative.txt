@@ -1,8 +1,12 @@
-def negative_bidirectional_import_between_feature_modules():
-    rule_id = "bidirectional_import_between_feature_modules"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag feature modules that depend on each other directly."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import Protocol
+
+
+class StockGateway(Protocol):
+    def reserve_stock(self, sku: str, qty: int) -> bool:
+        ...
+
+
+def bidirectional_import_between_feature_modules_negative(stock: StockGateway, sku: str) -> bool:
+    return stock.reserve_stock(sku, 1)

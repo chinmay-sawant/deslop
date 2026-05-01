@@ -1,8 +1,16 @@
-def positive_composition_candidate_for_optional_behavior_implemented_as_inheritance():
-    rule_id = "composition_candidate_for_optional_behavior_implemented_as_inheritance"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag optional behavior modeled through inheritance when composition would isolate concerns better."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Fetcher:
+    def fetch(self, key: str) -> str:
+        return f"value:{key}"
+
+
+class CachedFetcher(Fetcher):
+    def __init__(self) -> None:
+        self.cache: dict[str, str] = {}
+
+    def fetch(self, key: str) -> str:
+        if key not in self.cache:
+            self.cache[key] = super().fetch(key)
+        return self.cache[key]

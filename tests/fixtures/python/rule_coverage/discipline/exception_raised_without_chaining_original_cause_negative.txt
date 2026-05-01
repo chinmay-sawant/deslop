@@ -1,8 +1,8 @@
-def negative_exception_raised_without_chaining_original_cause():
-    rule_id = "exception_raised_without_chaining_original_cause"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "New exception raised inside except block without `from e`, discarding the original cause."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def exception_raised_without_chaining_original_cause_negative(raw: str) -> float:
+    try:
+        return float(raw)
+    except ValueError as exc:
+        raise RuntimeError("failed to parse number") from exc

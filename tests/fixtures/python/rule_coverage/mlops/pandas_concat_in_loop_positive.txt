@@ -1,8 +1,10 @@
-def positive_pandas_concat_in_loop():
-    rule_id = "pandas_concat_in_loop"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "DataFrames are concatenated inside loops instead of collected and concatenated once."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pandas as pd
+
+
+def merge_batches(frames: list[pd.DataFrame]) -> pd.DataFrame:
+    merged = pd.DataFrame()
+    for frame in frames:
+        merged = pd.concat([merged, frame], ignore_index=True)
+    return merged

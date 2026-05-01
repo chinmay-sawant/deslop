@@ -1,8 +1,7 @@
-def positive_python_perf_layer_garbage_collection_cleanup_large_list_cleared_but_retained():
-    rule_id = "python_perf_layer_garbage_collection_cleanup_large_list_cleared_but_retained"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Garbage collection and cleanup. Flag long-lived lists cleared after spikes while still retaining oversized capacity-sensitive state."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def python_perf_layer_garbage_collection_cleanup_large_list_cleared_but_retained_positive(values):
+    big = list(values)
+    leaked_alias = big
+    big.clear()
+    return len(leaked_alias)

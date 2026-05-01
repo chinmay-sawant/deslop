@@ -1,8 +1,8 @@
-def positive_response_json_dumps_then_response_object():
-    rule_id = "response_json_dumps_then_response_object"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Handlers manually json.dumps(...) payloads and then wrap them in framework Response objects."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def response_json_dumps_then_response_object_positive():
+    def handler():
+        body = json.dumps({"ok": True, "items": [1, 2]})
+        return Response(body, mimetype="application/json")
+
+    return handler

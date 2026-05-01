@@ -1,8 +1,13 @@
-def negative_click_typer_http_client_created_per_command():
-    rule_id = "click_typer_http_client_created_per_command"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "click or typer commands allocate HTTP clients inside command bodies instead of reusing a shared client factory."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class HttpClient:
+    def get(self, route: str) -> str:
+        return f"GET {route}"
+
+
+CLIENT = HttpClient()
+
+
+def click_typer_http_client_created_per_command_negative() -> str:
+    return CLIENT.get("/health")

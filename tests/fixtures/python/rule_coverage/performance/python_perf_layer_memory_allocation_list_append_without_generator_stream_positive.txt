@@ -1,8 +1,7 @@
-def positive_python_perf_layer_memory_allocation_list_append_without_generator_stream():
-    rule_id = "python_perf_layer_memory_allocation_list_append_without_generator_stream"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Memory allocation. Flag large intermediate lists built only to feed another iterator-compatible consumer."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def python_perf_layer_memory_allocation_list_append_without_generator_stream_positive(values):
+    squares = []
+    for value in values:
+        squares.append(value * value)
+    return sum(squares)

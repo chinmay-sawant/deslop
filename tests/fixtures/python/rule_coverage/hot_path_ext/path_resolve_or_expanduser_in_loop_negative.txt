@@ -1,8 +1,7 @@
-def negative_path_resolve_or_expanduser_in_loop():
-    rule_id = "path_resolve_or_expanduser_in_loop"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Path resolution helpers such as resolve() or expanduser() run inside loops on invariant inputs."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def path_resolve_or_expanduser_in_loop_negative():
+    from pathlib import Path
+    files = ["a.log", "b.log", "c.log"]
+    base = Path("~/logs").expanduser().resolve()
+    return [base / name for name in files]

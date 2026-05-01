@@ -1,8 +1,6 @@
-def positive_python_perf_layer_algorithmic_complexity_nested_membership_scan_without_set():
-    rule_id = "python_perf_layer_algorithmic_complexity_nested_membership_scan_without_set"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Algorithmic complexity. Flag nested membership checks over lists where a set or dict index should be built once."
-    return rule_id, family, severity, status, intent, description
+def join_known(users: list[str], allowed: list[str]) -> list[str]:
+    hits: list[str] = []
+    for user in users:
+        if user in allowed:
+            hits.append(user)
+    return hits

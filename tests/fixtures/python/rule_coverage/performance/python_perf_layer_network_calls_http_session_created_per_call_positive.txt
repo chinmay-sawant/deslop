@@ -1,8 +1,12 @@
-def positive_python_perf_layer_network_calls_http_session_created_per_call():
-    rule_id = "python_perf_layer_network_calls_http_session_created_per_call"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Network calls. Flag requests.Session or client objects created per call instead of reused per upstream."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from urllib.request import build_opener
+
+
+def python_perf_layer_network_calls_http_session_created_per_call_positive(urls):
+    statuses = []
+    for url in urls:
+        opener = build_opener()
+        with opener.open(url) as response:
+            statuses.append(response.status)
+    return statuses

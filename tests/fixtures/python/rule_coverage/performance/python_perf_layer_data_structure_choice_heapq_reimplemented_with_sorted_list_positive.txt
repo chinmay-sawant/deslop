@@ -1,8 +1,4 @@
-def positive_python_perf_layer_data_structure_choice_heapq_reimplemented_with_sorted_list():
-    rule_id = "python_perf_layer_data_structure_choice_heapq_reimplemented_with_sorted_list"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Data structure choice. Flag sorted-list priority queues where heapq avoids repeated full ordering."
-    return rule_id, family, severity, status, intent, description
+def pop_smallest(values: list[int]) -> int:
+    values.append(3)
+    values.sort()
+    return values.pop(0)

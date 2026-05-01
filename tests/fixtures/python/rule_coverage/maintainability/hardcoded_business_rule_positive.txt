@@ -1,8 +1,4 @@
-def positive_hardcoded_business_rule():
-    rule_id = "hardcoded_business_rule"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Hardcoded threshold, rate-limit, or pricing-style literals assigned inside non-test Python functions."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def hardcoded_business_rule_positive(amount: float):
+    return round(amount * 1.0825, 2)

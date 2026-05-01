@@ -1,8 +1,10 @@
-def positive_numpy_vstack_hstack_in_loop():
-    rule_id = "numpy_vstack_hstack_in_loop"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Arrays are repeatedly stacked inside loops instead of collected and stacked once."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import numpy as np
+
+
+def stack_rows(rows: list[np.ndarray]) -> np.ndarray:
+    matrix = np.empty((0, rows[0].shape[0]))
+    for row in rows:
+        matrix = np.vstack([matrix, row])
+    return matrix

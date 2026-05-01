@@ -1,8 +1,11 @@
-def negative_sync_api_accepts_coroutine_object_as_regular_value():
-    rule_id = "sync_api_accepts_coroutine_object_as_regular_value"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag synchronous interfaces that can accidentally receive coroutine objects and treat them as plain values."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import asyncio
+
+store = {}
+
+
+def put_value(name: str, value: object) -> None:
+    if asyncio.iscoroutine(value):
+        raise TypeError("coroutine passed to sync API")
+    store[name] = value

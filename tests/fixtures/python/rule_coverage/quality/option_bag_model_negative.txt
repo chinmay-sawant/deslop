@@ -1,8 +1,14 @@
-def negative_option_bag_model():
-    rule_id = "option_bag_model"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Dataclass or TypedDict models that accumulate many optional fields and boolean switches."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class RenderOptions:
+    theme: str
+    page: str
+    debug: bool = False
+
+
+def option_bag_model_negative(options: RenderOptions) -> str:
+    return f"{options.theme}:{options.page}:{options.debug}"

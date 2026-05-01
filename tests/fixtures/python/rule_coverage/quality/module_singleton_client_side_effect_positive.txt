@@ -1,8 +1,13 @@
-def positive_module_singleton_client_side_effect():
-    rule_id = "module_singleton_client_side_effect"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Eagerly constructed network, database, or cloud clients bound at module scope."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class ApiClient:
+    def __init__(self) -> None:
+        self.connected = False
+
+    def connect(self) -> None:
+        self.connected = True
+
+
+CLIENT = ApiClient()
+CLIENT.connect()

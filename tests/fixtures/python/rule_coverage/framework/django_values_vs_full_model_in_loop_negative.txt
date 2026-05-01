@@ -1,8 +1,5 @@
-def negative_django_values_vs_full_model_in_loop():
-    rule_id = "django_values_vs_full_model_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Django loops hydrate full model instances where values(), values_list(), or only() would likely be cheaper."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_values_vs_full_model_in_loop_negative():
+    rows = Product.objects.filter(is_live=True).values("id", "name")
+    return list(rows)

@@ -1,8 +1,9 @@
-def negative_logger_instance_created_inside_function_body():
-    rule_id = "logger_instance_created_inside_function_body"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag functions that create loggers repeatedly instead of reusing module-level logger references."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import logging
+
+LOGGER = logging.getLogger("worker")
+
+
+def logger_instance_created_inside_function_body_negative(message: str) -> None:
+    LOGGER.info(message)

@@ -1,8 +1,10 @@
-def positive_untracked_asyncio_task():
-    rule_id = "untracked_asyncio_task"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "asyncio.create_task(...) or similar task creation whose handle is discarded immediately."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import asyncio
+
+
+async def untracked_asyncio_task_positive() -> None:
+    async def send_metrics() -> None:
+        await asyncio.sleep(0.01)
+
+    asyncio.create_task(send_metrics())

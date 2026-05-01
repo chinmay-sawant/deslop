@@ -1,8 +1,14 @@
-def positive_method_mutates_state_and_emits_user_facing_representation():
-    rule_id = "method_mutates_state_and_emits_user_facing_representation"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag methods that both change internal state and format user-facing output."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Counter:
+    def __init__(self) -> None:
+        self.value = 0
+
+    def increment_and_render(self) -> str:
+        self.value += 1
+        return f"Count is now {self.value}"
+
+
+def method_mutates_state_and_emits_user_facing_representation_positive() -> str:
+    return Counter().increment_and_render()

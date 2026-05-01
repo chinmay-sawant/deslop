@@ -1,0 +1,11 @@
+# domain/user.py
+class User:
+    def __init__(self, name):
+        self.name = name
+
+# infra/database.py
+from domain.user import User
+
+def save_user(user: User):
+    # logic to save user
+    pass

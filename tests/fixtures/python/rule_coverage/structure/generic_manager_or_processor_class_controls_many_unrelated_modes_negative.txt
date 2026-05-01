@@ -1,8 +1,11 @@
-def negative_generic_manager_or_processor_class_controls_many_unrelated_modes():
-    rule_id = "generic_manager_or_processor_class_controls_many_unrelated_modes"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag vague manager-style classes that centralize unrelated behaviors behind mode flags."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class EmailProcessor:
+    def process(self, payload: str) -> str:
+        return f"email:{payload}"
+
+
+class BillingProcessor:
+    def process(self, payload: str) -> str:
+        return f"bill:{payload}"

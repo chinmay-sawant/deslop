@@ -1,8 +1,8 @@
-def positive_repeated_len_in_loop():
-    rule_id = "repeated_len_in_loop"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Repeated len(...) checks inside loops when the receiver appears unchanged locally."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_len_in_loop_positive(items):
+    last_index_hits = 0
+    for index in range(len(items)):
+        if index == len(items) - 1:
+            last_index_hits += 1
+    return last_index_hits

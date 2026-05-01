@@ -1,8 +1,5 @@
-def positive_obvious_commentary():
-    rule_id = "obvious_commentary"
-    family = "ai_smells"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Comments that narrate obvious implementation steps instead of explaining intent."
-    return rule_id, family, severity, status, intent, description
+def get_user_id(user_obj):
+    # Get the user id from the user object
+    user_id = user_obj.id 
+    # Return the user id
+    return user_id

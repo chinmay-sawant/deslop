@@ -1,8 +1,7 @@
-def negative_django_raw_sql_in_loop():
-    rule_id = "django_raw_sql_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Django request or service code executes raw SQL inside loops instead of batching."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_raw_sql_in_loop_negative():
+    user_ids = [10, 11, 12]
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT id FROM users WHERE id = ANY(%s)", [user_ids])
+        return cursor.fetchall()

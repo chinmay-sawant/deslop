@@ -1,8 +1,12 @@
-def positive_python_perf_layer_lazy_loading_eager_template_compile_for_unused_views():
-    rule_id = "python_perf_layer_lazy_loading_eager_template_compile_for_unused_views"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Lazy loading. Flag compiling templates for disabled or rarely used views during startup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from string import Template
+
+
+def python_perf_layer_lazy_loading_eager_template_compile_for_unused_views_positive(active_view):
+    templates = {
+        "home": Template("Hello ${name}"),
+        "billing": Template("Total: ${amount}"),
+        "admin": Template("Role: ${role}"),
+    }
+    return templates[active_view]

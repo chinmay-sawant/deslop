@@ -1,8 +1,11 @@
-def positive_python_perf_layer_resource_pooling_db_engine_created_per_repository():
-    rule_id = "python_perf_layer_resource_pooling_db_engine_created_per_repository"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Resource pooling. Flag database engine/session factory construction per repository instance."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import sqlite3
+
+
+def python_perf_layer_resource_pooling_db_engine_created_per_repository_positive(paths):
+    total = 0
+    for db_path in paths:
+        with sqlite3.connect(db_path) as conn:
+            total += conn.execute("SELECT 1").fetchone()[0]
+    return total

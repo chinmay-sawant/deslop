@@ -1,8 +1,10 @@
-def positive_branching_on_file_suffix_or_mode_string_scattered_across_codebase():
-    rule_id = "branching_on_file_suffix_or_mode_string_scattered_across_codebase"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag suffix or mode dispatch logic duplicated across distant modules."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def branching_on_file_suffix_or_mode_string_scattered_across_codebase_positive(path: str):
+    if path.endswith(".json"):
+        return "json"
+    if path.endswith(".yaml") or path.endswith(".yml"):
+        return "yaml"
+    if path.endswith(".toml"):
+        return "toml"
+    return "unknown"

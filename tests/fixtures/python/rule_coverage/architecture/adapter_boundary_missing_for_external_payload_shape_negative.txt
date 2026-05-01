@@ -1,8 +1,13 @@
-def negative_adapter_boundary_missing_for_external_payload_shape():
-    rule_id = "adapter_boundary_missing_for_external_payload_shape"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag code that lets raw third-party dicts, tuples, or response objects spread through unrelated modules without normalization."
-    return rule_id, family, severity, status, intent, description
+from pydantic import BaseModel
+
+class UserPayload(BaseModel):
+    id: str
+    email: str
+
+def process_external_webhook(payload: dict):
+    # Mapping to a boundary/adapter model first
+    user = UserPayload(
+        id=payload["data"]["user"]["id"],
+        email=payload["data"]["user"]["email_address"]
+    )
+    # ... business logic uses 'user' model

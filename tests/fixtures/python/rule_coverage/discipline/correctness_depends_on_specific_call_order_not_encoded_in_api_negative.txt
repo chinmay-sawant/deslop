@@ -1,8 +1,5 @@
-def negative_correctness_depends_on_specific_call_order_not_encoded_in_api():
-    rule_id = "correctness_depends_on_specific_call_order_not_encoded_in_api"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag APIs whose safe use depends on an undocumented sequence of method calls."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def build_sql(fields: str, clause: str) -> str:
+    return f"SELECT {fields} WHERE {clause}"

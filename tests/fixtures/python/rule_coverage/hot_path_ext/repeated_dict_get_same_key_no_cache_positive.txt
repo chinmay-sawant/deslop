@@ -1,8 +1,9 @@
-def positive_repeated_dict_get_same_key_no_cache():
-    rule_id = "repeated_dict_get_same_key_no_cache"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "The same dictionary key is fetched repeatedly instead of storing the value in a local binding."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_dict_get_same_key_no_cache_positive():
+    profile = {"name": "Mina", "region": "us-east"}
+    message = []
+    for _ in range(2):
+        message.append(profile.get("region", "unknown").upper())
+        message.append(profile.get("region", "unknown").lower())
+    return message

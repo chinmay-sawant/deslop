@@ -1,8 +1,7 @@
-def negative_warning_issued_instead_of_exception_for_invalid_state():
-    rule_id = "warning_issued_instead_of_exception_for_invalid_state"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "warnings.warn() issued for an invalid state that should raise an exception instead."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def warning_issued_instead_of_exception_for_invalid_state_negative(state: str) -> str:
+    if state not in {"open", "closed"}:
+        raise ValueError(f"invalid state: {state}")
+    return state

@@ -1,8 +1,9 @@
-def negative_mutable_class_attribute_used_as_instance_storage():
-    rule_id = "mutable_class_attribute_used_as_instance_storage"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag class attributes that accidentally store per-instance mutable state."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Basket:
+    def __init__(self) -> None:
+        self.items: list[str] = []
+
+    def add(self, item: str) -> None:
+        self.items.append(item)

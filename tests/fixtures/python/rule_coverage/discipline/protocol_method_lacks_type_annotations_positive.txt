@@ -1,8 +1,12 @@
-def positive_protocol_method_lacks_type_annotations():
-    rule_id = "protocol_method_lacks_type_annotations"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Method in a Protocol class body lacks parameter or return type annotations."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import Protocol
+
+
+class Writer(Protocol):
+    def write(self, payload):
+        ...
+
+
+def protocol_method_lacks_type_annotations_positive() -> type[Protocol]:
+    return Writer

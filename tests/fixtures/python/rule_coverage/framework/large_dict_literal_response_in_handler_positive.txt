@@ -1,8 +1,18 @@
-def positive_large_dict_literal_response_in_handler():
-    rule_id = "large_dict_literal_response_in_handler"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Handlers build large inline dict responses where typed response models would be clearer and cheaper."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def large_dict_literal_response_in_handler_positive():
+    def handler():
+        return {
+            "id": 7,
+            "name": "metrics",
+            "status": "ok",
+            "owner": "ops",
+            "region": "us-east",
+            "priority": "p1",
+            "team": "platform",
+            "version": "2026.04",
+            "rollout": "stable",
+            "notes": "inline giant response body",
+        }
+
+    return handler

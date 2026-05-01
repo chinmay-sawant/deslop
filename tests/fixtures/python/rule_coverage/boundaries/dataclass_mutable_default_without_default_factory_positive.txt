@@ -1,8 +1,6 @@
-def positive_dataclass_mutable_default_without_default_factory():
-    rule_id = "dataclass_mutable_default_without_default_factory"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag dataclass fields that use mutable defaults without default_factory."
-    return rule_id, family, severity, status, intent, description
+from dataclasses import dataclass
+
+
+@dataclass
+class QueueState:
+    pending: list[str] = []

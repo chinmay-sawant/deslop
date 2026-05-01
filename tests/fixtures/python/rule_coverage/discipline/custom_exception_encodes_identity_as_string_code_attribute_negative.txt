@@ -1,8 +1,14 @@
-def negative_custom_exception_encodes_identity_as_string_code_attribute():
-    rule_id = "custom_exception_encodes_identity_as_string_code_attribute"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Custom exception stores its error identity as a plain string code attribute instead of sub-classing."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from enum import Enum
+
+
+class ErrorKind(Enum):
+    PERMISSION = "permission"
+    NOT_FOUND = "not_found"
+
+
+class AppError(Exception):
+    def __init__(self, kind: ErrorKind, message: str) -> None:
+        super().__init__(message)
+        self.kind = kind

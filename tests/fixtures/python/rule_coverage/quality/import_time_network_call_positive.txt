@@ -1,8 +1,5 @@
-def positive_import_time_network_call():
-    rule_id = "import_time_network_call"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Module-scope HTTP or socket calls executed while the module is imported."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import requests
+
+HEALTH = requests.get("https://example.com/health", timeout=2).status_code

@@ -1,8 +1,6 @@
-def positive_mixed_concerns_function():
-    rule_id = "mixed_concerns_function"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Functions that mix HTTP, persistence, and filesystem-style concerns in one body."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def mixed_concerns_function_positive(user_id: str) -> str:
+    row = {"id": user_id, "name": "Ada"}
+    return f"<h1>{row['name']}</h1>"

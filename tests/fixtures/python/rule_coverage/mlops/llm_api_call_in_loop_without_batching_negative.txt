@@ -1,8 +1,10 @@
-def negative_llm_api_call_in_loop_without_batching():
-    rule_id = "llm_api_call_in_loop_without_batching"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "LLM API calls are made inside loops without batching or aggregation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Client:
+    def complete_batch(self, prompts: list[str]) -> list[str]:
+        return [prompt.upper() for prompt in prompts]
+
+
+def classify(prompts: list[str], client: Client) -> list[str]:
+    return client.complete_batch(prompts)

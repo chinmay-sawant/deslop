@@ -1,8 +1,4 @@
-def positive_eval_exec_usage():
-    rule_id = "eval_exec_usage"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Direct eval() or exec() usage in non-test Python code."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def eval_exec_usage_positive(raw_expression: str):
+    return eval(raw_expression)

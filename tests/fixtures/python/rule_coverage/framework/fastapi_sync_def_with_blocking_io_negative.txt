@@ -1,8 +1,9 @@
-def negative_fastapi_sync_def_with_blocking_io():
-    rule_id = "fastapi_sync_def_with_blocking_io"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "FastAPI sync route handlers perform blocking I/O instead of using async routes or executor offload."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def fastapi_sync_def_with_blocking_io_negative():
+    async def route_handler():
+        async with httpx.AsyncClient(timeout=2.0) as client:
+            response = await client.get("https://example.com/data")
+        return response.text
+
+    return route_handler

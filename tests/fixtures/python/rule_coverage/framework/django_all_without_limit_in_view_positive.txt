@@ -1,8 +1,14 @@
-def positive_django_all_without_limit_in_view():
-    rule_id = "django_all_without_limit_in_view"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Django views call .all() without visible pagination, slicing, or limiting."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Manager:
+    def all(self) -> list[int]:
+        return list(range(1000))
+
+
+class Entry:
+    objects = Manager()
+
+
+def django_all_without_limit_in_view_positive() -> list[int]:
+    return Entry.objects.all()

@@ -1,8 +1,11 @@
-def negative_generator_consumed_twice_without_recreation():
-    rule_id = "generator_consumed_twice_without_recreation"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Same generator object iterated a second time after it has already been exhausted."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def numbers():
+    yield from (1, 2, 3)
+
+
+def summarize() -> tuple[int, int]:
+    first_total = sum(numbers())
+    second_total = sum(numbers())
+    return first_total, second_total

@@ -1,8 +1,10 @@
-def positive_background_task_exception_unobserved():
-    rule_id = "background_task_exception_unobserved"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Background task bindings with no obvious await, callback, supervisor, or observation path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import asyncio
+
+
+async def background_task_exception_unobserved_positive() -> None:
+    async def fail_later() -> None:
+        raise RuntimeError("boom")
+
+    asyncio.create_task(fail_later())

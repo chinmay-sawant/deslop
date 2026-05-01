@@ -1,8 +1,8 @@
-def positive_test_skipped_with_no_reason_string():
-    rule_id = "test_skipped_with_no_reason_string"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "@pytest.mark.skip used without a reason= string explaining why the test is disabled."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pytest
+
+
+@pytest.mark.skip()
+def test_skipped_with_no_reason_string_positive() -> None:
+    assert True

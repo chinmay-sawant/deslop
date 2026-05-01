@@ -1,8 +1,19 @@
-def positive_django_create_single_in_loop():
-    rule_id = "django_create_single_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Django code creates one model at a time inside loops instead of using bulk_create()."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Manager:
+    def __init__(self) -> None:
+        self.created: list[dict[str, int]] = []
+
+    def create(self, row: dict[str, int]) -> None:
+        self.created.append(row)
+
+
+class Event:
+    objects = Manager()
+
+
+def django_create_single_in_loop_positive(rows: list[dict[str, int]]) -> int:
+    for row in rows:
+        Event.objects.create(row)
+    return len(Event.objects.created)

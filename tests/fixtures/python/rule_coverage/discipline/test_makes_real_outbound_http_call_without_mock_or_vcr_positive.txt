@@ -1,8 +1,8 @@
-def positive_test_makes_real_outbound_http_call_without_mock_or_vcr():
-    rule_id = "test_makes_real_outbound_http_call_without_mock_or_vcr"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Test makes a real outbound HTTP request without mocking or a VCR cassette."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import urllib.request
+
+
+def test_makes_real_outbound_http_call_without_mock_or_vcr_positive() -> int:
+    with urllib.request.urlopen("https://example.com") as response:
+        return response.status

@@ -1,8 +1,2 @@
-def positive_event_loop_path_executes_cpu_bound_transformation_synchronously():
-    rule_id = "event_loop_path_executes_cpu_bound_transformation_synchronously"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag async paths that perform large CPU-bound transforms inline."
-    return rule_id, family, severity, status, intent, description
+async def expensive_score(limit: int) -> int:
+    return sum(i * i for i in range(limit))

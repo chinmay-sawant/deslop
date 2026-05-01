@@ -1,8 +1,9 @@
-def positive_debug_log_serializes_full_large_object_graph():
-    rule_id = "debug_log_serializes_full_large_object_graph"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag debug logging that walks and serializes large object graphs."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
+
+def debug_log_serializes_full_large_object_graph_positive(graph: dict[str, object]) -> None:
+    LOGGER.debug("graph=%s", graph)

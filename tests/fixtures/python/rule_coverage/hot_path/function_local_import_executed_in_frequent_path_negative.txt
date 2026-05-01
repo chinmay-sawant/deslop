@@ -1,8 +1,4 @@
-def negative_function_local_import_executed_in_frequent_path():
-    rule_id = "function_local_import_executed_in_frequent_path"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag hot call paths that perform imports inside the function body."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def function_local_import_executed_in_frequent_path_negative():
+    return hashlib.sha256(b"payload").hexdigest()

@@ -1,8 +1,12 @@
-def negative_shared_mutable_collection_mutated_across_threads_without_lock():
-    rule_id = "shared_mutable_collection_mutated_across_threads_without_lock"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Shared mutable collection such as a list or dict is mutated from multiple threads without a lock."
-    return rule_id, family, severity, status, intent, description
+import threading
+
+shared_data = []
+lock = threading.Lock()
+
+def worker():
+    # Correct: access to shared mutable collection is protected by a lock
+    with lock:
+        shared_data.append(1)
+
+threads = [threading.Thread(target=worker) for _ in range(10)]
+for t in threads: t.start()

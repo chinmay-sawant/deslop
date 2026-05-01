@@ -1,8 +1,11 @@
-def positive_python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path():
-    rule_id = "python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Hot path optimization. Flag inspect/signature/reflection work in hot paths."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import inspect
+
+
+def python_perf_layer_hot_path_optimization_reflection_inspection_in_hot_path_positive(func, rows):
+    count = 0
+    for row in rows:
+        if "debug" in inspect.signature(func).parameters:
+            count += 1
+    return count

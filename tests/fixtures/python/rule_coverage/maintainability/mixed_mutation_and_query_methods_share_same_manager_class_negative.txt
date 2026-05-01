@@ -1,8 +1,17 @@
-def negative_mixed_mutation_and_query_methods_share_same_manager_class():
-    rule_id = "mixed_mutation_and_query_methods_share_same_manager_class"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag manager-style classes that both mutate and answer read-model queries with no boundary."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class UserQueryService:
+    def __init__(self, users: dict[int, str]) -> None:
+        self._users = users
+
+    def find_user(self, user_id: int) -> str | None:
+        return self._users.get(user_id)
+
+
+class UserCommandService:
+    def __init__(self, users: dict[int, str]) -> None:
+        self._users = users
+
+    def save_user(self, user_id: int, name: str) -> None:
+        self._users[user_id] = name

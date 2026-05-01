@@ -1,8 +1,3 @@
-def negative_full_response_or_export_buffered_before_incremental_consumer_use():
-    rule_id = "full_response_or_export_buffered_before_incremental_consumer_use"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag producers that fully buffer large outputs before handing them to a consumer."
-    return rule_id, family, severity, status, intent, description
+def send_chunks(chunks: list[bytes], sink) -> None:
+    for chunk in chunks:
+        sink.write(chunk)

@@ -1,8 +1,9 @@
-def negative_numpy_dtype_mismatch_implicit_cast():
-    rule_id = "numpy_dtype_mismatch_implicit_cast"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Arrays are constructed and immediately cast, implying a missing upfront dtype choice."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import numpy as np
+
+
+def mix_features() -> np.ndarray:
+    int_part = np.array([1, 2, 3], dtype=np.float64)
+    float_part = np.array([0.1, 0.2, 0.3], dtype=np.float64)
+    return np.concatenate([int_part, float_part])

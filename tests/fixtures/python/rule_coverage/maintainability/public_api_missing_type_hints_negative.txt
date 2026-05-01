@@ -1,8 +1,5 @@
-def negative_public_api_missing_type_hints():
-    rule_id = "public_api_missing_type_hints"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Public Python functions that omit complete parameter or return annotations."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def create_invoice(customer_id: str, amount: float) -> dict[str, float | str]:
+    return {"customer_id": customer_id, "amount": amount}

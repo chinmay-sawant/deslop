@@ -1,8 +1,11 @@
-def negative_package_exports_same_symbol_name_from_multiple_submodules_with_different_meanings():
-    rule_id = "package_exports_same_symbol_name_from_multiple_submodules_with_different_meanings"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag packages that reuse one exported name for unrelated implementations."
-    return rule_id, family, severity, status, intent, description
+class ParseResult:
+    def __init__(self, text: str) -> None:
+        self.text = text
+
+
+class PaymentResult:
+    def __init__(self, cents: int) -> None:
+        self.cents = cents
+
+
+__all__ = ["ParseResult", "PaymentResult"]

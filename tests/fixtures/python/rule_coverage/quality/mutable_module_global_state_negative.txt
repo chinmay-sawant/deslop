@@ -1,8 +1,7 @@
-def negative_mutable_module_global_state():
-    rule_id = "mutable_module_global_state"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Mutable module globals updated from multiple functions."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def mutable_module_global_state_negative(key: str, state: dict[str, int]) -> dict[str, int]:
+    next_state = dict(state)
+    next_state[key] = next_state.get(key, 0) + 1
+    return next_state

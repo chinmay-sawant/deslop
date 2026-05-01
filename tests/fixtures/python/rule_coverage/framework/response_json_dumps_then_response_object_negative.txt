@@ -1,8 +1,7 @@
-def negative_response_json_dumps_then_response_object():
-    rule_id = "response_json_dumps_then_response_object"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Handlers manually json.dumps(...) payloads and then wrap them in framework Response objects."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def response_json_dumps_then_response_object_negative():
+    def handler():
+        return JSONResponse({"ok": True, "items": [1, 2]})
+
+    return handler

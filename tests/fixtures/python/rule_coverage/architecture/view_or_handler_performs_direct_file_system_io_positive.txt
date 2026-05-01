@@ -1,8 +1,5 @@
-def positive_view_or_handler_performs_direct_file_system_io():
-    rule_id = "view_or_handler_performs_direct_file_system_io"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Route handler or view calls open(), os.path, or pathlib directly on the request path."
-    return rule_id, family, severity, status, intent, description
+def upload_view(request: dict) -> dict:
+    path = f"/tmp/{request['name']}.txt"
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write(request["content"])
+    return {"saved_to": path}

@@ -1,8 +1,9 @@
-def positive_yaml_load_same_payload_multiple_times():
-    rule_id = "yaml_load_same_payload_multiple_times"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "The same YAML payload is parsed repeatedly within one function."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def yaml_load_same_payload_multiple_times_positive():
+    import yaml
+    payload = "name: sam\nage: 30\n"
+    names = []
+    for _ in range(2):
+        names.append(yaml.safe_load(payload)["name"])
+    return names

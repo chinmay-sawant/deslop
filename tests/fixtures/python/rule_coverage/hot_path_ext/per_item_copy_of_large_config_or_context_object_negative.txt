@@ -1,8 +1,6 @@
-def negative_per_item_copy_of_large_config_or_context_object():
-    rule_id = "per_item_copy_of_large_config_or_context_object"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag loops that copy large config or context structures for each item despite read-mostly behavior."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def per_item_copy_of_large_config_or_context_object_negative():
+    config = {"region": "us", "timeout": 30, "retries": 5, "feature_x": True}
+    jobs = [1, 2, 3]
+    return [{"job_id": job, "config": config} for job in jobs]

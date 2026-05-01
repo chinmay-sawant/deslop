@@ -1,8 +1,16 @@
-def negative_celery_result_get_inside_task():
-    rule_id = "celery_result_get_inside_task"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Celery tasks synchronously wait on AsyncResult.get(...) instead of handing work off asynchronously."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Result:
+    def __init__(self, task_id: str) -> None:
+        self.id = task_id
+
+
+class Task:
+    def delay(self, value: int) -> Result:
+        return Result(task_id=f"job-{value}")
+
+
+def celery_result_get_inside_task_negative(value: int) -> str:
+    task = Task()
+    return task.delay(value).id

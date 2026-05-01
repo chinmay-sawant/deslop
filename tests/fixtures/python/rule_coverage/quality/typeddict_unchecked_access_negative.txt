@@ -1,8 +1,14 @@
-def negative_typeddict_unchecked_access():
-    rule_id = "typeddict_unchecked_access"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Direct indexing of optional TypedDict keys without an obvious guard path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import NotRequired, TypedDict
+
+
+class UserPayload(TypedDict):
+    id: int
+    email: NotRequired[str]
+
+
+def typeddict_unchecked_access_negative(payload: UserPayload) -> str:
+    if "email" not in payload:
+        raise KeyError("email missing")
+    return payload["email"]

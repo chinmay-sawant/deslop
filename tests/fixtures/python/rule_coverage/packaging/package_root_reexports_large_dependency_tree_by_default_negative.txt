@@ -1,8 +1,5 @@
-def negative_package_root_reexports_large_dependency_tree_by_default():
-    rule_id = "package_root_reexports_large_dependency_tree_by_default"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag root packages that re-export many heavy submodules automatically."
-    return rule_id, family, severity, status, intent, description
+def create_client(url: str) -> dict[str, str]:
+    return {"url": url}
+
+
+__all__ = ["create_client"]

@@ -1,8 +1,13 @@
-def positive_python_perf_layer_caching_cache_miss_duplicate_concurrent_work():
-    rule_id = "python_perf_layer_caching_cache_miss_duplicate_concurrent_work"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Caching. Flag async or threaded cache miss paths that recompute the same key concurrently."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+CACHE: dict[str, str] = {}
+
+
+async def get_profile(user_id: str) -> str:
+    cached = CACHE.get(user_id)
+    if cached is not None:
+        return cached
+    await asyncio.sleep(0.02)
+    value = f"profile:{user_id}"
+    CACHE[user_id] = value
+    return value

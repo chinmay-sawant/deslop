@@ -1,8 +1,8 @@
-def positive_python_perf_layer_resource_pooling_large_buffer_pool_without_cap():
-    rule_id = "python_perf_layer_resource_pooling_large_buffer_pool_without_cap"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Resource pooling. Flag reusable buffer pools that keep oversized buffers after traffic spikes."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+BUFFER_POOL = []
+
+
+def python_perf_layer_resource_pooling_large_buffer_pool_without_cap_positive(size):
+    BUFFER_POOL.append(bytearray(size))
+    return len(BUFFER_POOL)

@@ -1,8 +1,11 @@
-def positive_celery_or_rq_task_imports_web_framework_app():
-    rule_id = "celery_or_rq_task_imports_web_framework_app"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Celery or RQ task module imports the Flask app object or FastAPI application at the top level."
-    return rule_id, family, severity, status, intent, description
+from celery import Celery
+# Violation: importing the web framework app into background tasks
+from my_web_app.main import app as flask_app
+
+celery_app = Celery('tasks')
+
+@celery_app.task
+def background_task():
+    with flask_app.app_context():
+        # ... logic
+        pass

@@ -1,8 +1,15 @@
-def negative_llm_response_not_cached_same_input():
-    rule_id = "llm_response_not_cached_same_input"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Repeated LLM calls show no visible caching even when prompt inputs appear likely to repeat."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Client:
+    def complete(self, prompt: str) -> str:
+        return prompt[::-1]
+
+
+_CACHE: dict[str, str] = {}
+
+
+def get_response(prompt: str, client: Client) -> str:
+    if prompt not in _CACHE:
+        _CACHE[prompt] = client.complete(prompt)
+    return _CACHE[prompt]

@@ -1,8 +1,5 @@
-def negative_serialization_then_deserialization_between_adjacent_helpers():
-    rule_id = "serialization_then_deserialization_between_adjacent_helpers"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag neighboring helpers that bounce data through serialized text or bytes without need."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def serialization_then_deserialization_between_adjacent_helpers_negative():
+    payload = {"name": "Ria", "active": True}
+    return payload["name"]

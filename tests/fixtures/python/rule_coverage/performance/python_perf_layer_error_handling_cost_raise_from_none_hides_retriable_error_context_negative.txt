@@ -1,8 +1,5 @@
-def negative_python_perf_layer_error_handling_cost_raise_from_none_hides_retriable_error_context():
-    rule_id = "python_perf_layer_error_handling_cost_raise_from_none_hides_retriable_error_context"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Error handling cost. Flag error translation that drops cause context needed to avoid repeated failed retries."
-    return rule_id, family, severity, status, intent, description
+def get_status(client) -> str:
+    try:
+        return client.check()
+    except TimeoutError as exc:
+        raise RuntimeError("service unavailable") from exc

@@ -1,8 +1,9 @@
-def positive_iterator_argument_consumed_then_reused_later():
-    rule_id = "iterator_argument_consumed_then_reused_later"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag functions that exhaust an iterator and later treat it as if it were reusable data."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+
+def summarize_rows(rows: Iterable[int]) -> tuple[int, int | None]:
+    count = sum(1 for _ in rows)
+    first = next(iter(rows), None)
+    return count, first

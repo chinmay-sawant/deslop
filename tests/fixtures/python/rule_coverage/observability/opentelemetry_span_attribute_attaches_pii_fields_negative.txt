@@ -1,8 +1,15 @@
-def negative_opentelemetry_span_attribute_attaches_pii_fields():
-    rule_id = "opentelemetry_span_attribute_attaches_pii_fields"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "OpenTelemetry span attribute set to a key that likely carries PII such as email, phone, or IP address."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Span:
+    def __init__(self) -> None:
+        self.attrs: dict[str, str] = {}
+
+    def set_attribute(self, key: str, value: str) -> None:
+        self.attrs[key] = value
+
+
+def opentelemetry_span_attribute_attaches_pii_fields_negative(span: Span, email: str) -> dict[str, str]:
+    domain = email.split("@")[-1]
+    span.set_attribute("user.email_domain", domain)
+    return span.attrs

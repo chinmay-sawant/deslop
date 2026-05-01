@@ -1,8 +1,11 @@
-def negative_repeated_stat_or_exists_calls_before_single_followup_operation():
-    rule_id = "repeated_stat_or_exists_calls_before_single_followup_operation"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag paths that perform duplicate filesystem checks before one operation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from pathlib import Path
+
+
+def repeated_stat_or_exists_calls_before_single_followup_operation_negative(path):
+    file_path = Path(path)
+    try:
+        return file_path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return ""

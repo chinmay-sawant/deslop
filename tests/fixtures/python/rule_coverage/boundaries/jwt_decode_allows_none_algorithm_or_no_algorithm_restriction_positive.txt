@@ -1,8 +1,7 @@
-def positive_jwt_decode_allows_none_algorithm_or_no_algorithm_restriction():
-    rule_id = "jwt_decode_allows_none_algorithm_or_no_algorithm_restriction"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "JWT decoded without restricting the allowed algorithm list, permitting the none algorithm bypass."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import jwt
+
+
+def decode_session(token: str, key: str) -> dict[str, object]:
+    return jwt.decode(token, key, options={"verify_signature": False})

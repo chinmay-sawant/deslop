@@ -1,8 +1,5 @@
-def positive_django_queryset_order_by_random():
-    rule_id = "django_queryset_order_by_random"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Django querysets use order_by(\\\"?\\\") or equivalent random ordering on request paths."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_queryset_order_by_random_positive():
+    winner = Coupon.objects.order_by("?").first()
+    return winner

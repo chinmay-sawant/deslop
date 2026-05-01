@@ -1,8 +1,11 @@
-def positive_vector_store_client_created_per_request():
-    rule_id = "vector_store_client_created_per_request"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Vector-store clients created on request paths instead of reused application state."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class VectorStoreClient:
+    def search(self, query: str) -> list[str]:
+        return [query]
+
+
+def retrieve(query: str) -> list[str]:
+    client = VectorStoreClient()
+    return client.search(query)

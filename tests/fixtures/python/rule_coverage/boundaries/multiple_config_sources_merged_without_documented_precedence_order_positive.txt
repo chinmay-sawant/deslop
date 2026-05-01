@@ -1,8 +1,9 @@
-def positive_multiple_config_sources_merged_without_documented_precedence_order():
-    rule_id = "multiple_config_sources_merged_without_documented_precedence_order"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Application merges environment variables, config files, and defaults without explicit precedence documentation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def load_config(file_cfg: dict, env_cfg: dict, cli_cfg: dict) -> dict:
+    merged = {}
+    merged.update(file_cfg)
+    merged.update(cli_cfg)
+    merged.update(env_cfg)
+    return merged

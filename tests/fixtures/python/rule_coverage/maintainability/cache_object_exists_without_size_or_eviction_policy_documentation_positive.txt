@@ -1,8 +1,8 @@
-def positive_cache_object_exists_without_size_or_eviction_policy_documentation():
-    rule_id = "cache_object_exists_without_size_or_eviction_policy_documentation"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag caches that exist as long-lived process state with no documented retention policy."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+_CACHE = {}
+
+def cache_object_exists_without_size_or_eviction_policy_documentation_positive(user_id: int):
+    if user_id not in _CACHE:
+        _CACHE[user_id] = {"id": user_id, "name": f"user-{user_id}"}
+    return _CACHE[user_id]

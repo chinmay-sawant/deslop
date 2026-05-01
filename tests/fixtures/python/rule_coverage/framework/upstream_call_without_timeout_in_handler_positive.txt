@@ -1,8 +1,8 @@
-def positive_upstream_call_without_timeout_in_handler():
-    rule_id = "upstream_call_without_timeout_in_handler"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Request handlers issue upstream HTTP calls without visible timeout configuration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def upstream_call_without_timeout_in_handler_positive():
+    def handler():
+        response = requests.get("https://api.example.com/status")
+        return response.json()
+
+    return handler

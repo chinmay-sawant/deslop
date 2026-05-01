@@ -1,8 +1,6 @@
-def negative_global_state_in_data_pipeline():
-    rule_id = "global_state_in_data_pipeline"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Pipeline-style functions mutate global state, making concurrency and reproducibility brittle."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def process(batch: list[int]) -> int:
+    current_batch = list(batch)
+    return sum(current_batch)

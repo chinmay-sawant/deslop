@@ -1,8 +1,11 @@
-def negative_data_pipeline_no_error_handling():
-    rule_id = "data_pipeline_no_error_handling"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Pipeline-style functions with no visible error handling or recovery path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def parse_scores(rows: list[dict[str, str]]) -> list[int]:
+    scores: list[int] = []
+    for row in rows:
+        try:
+            scores.append(int(row["score"]))
+        except (KeyError, ValueError):
+            continue
+    return scores

@@ -1,8 +1,6 @@
-def positive_comment_required_to_explain_opaque_branching_that_code_could_express():
-    rule_id = "comment_required_to_explain_opaque_branching_that_code_could_express"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag code whose control flow stays unclear even with comments because the structure itself is weak."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def comment_required_to_explain_opaque_branching_that_code_could_express_positive(x: int, y: int):
+    if (x * 3 - y * 2) % 5 == 0:
+        return "ok"
+    return "skip"

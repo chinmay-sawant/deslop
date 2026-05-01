@@ -1,8 +1,8 @@
-def negative_exception_logged_and_then_re_raised_redundantly():
-    rule_id = "exception_logged_and_then_re_raised_redundantly"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Exception logged at ERROR level and then re-raised, producing duplicate error log entries."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def commit_changes(unit_of_work) -> None:
+    try:
+        unit_of_work.commit()
+    except Exception:
+        raise

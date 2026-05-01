@@ -1,8 +1,8 @@
-def negative_expensive_work_starts_before_input_validation():
-    rule_id = "expensive_work_starts_before_input_validation"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag functions that begin heavy computation or I/O before validating cheap preconditions."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def expensive_work_starts_before_input_validation_negative(limit: int) -> int:
+    if limit < 0:
+        raise ValueError("limit must be non-negative")
+    values = [n * n for n in range(limit)]
+    return sum(values)

@@ -1,8 +1,8 @@
-def negative_application_config_values_validated_lazily_on_first_use():
-    rule_id = "application_config_values_validated_lazily_on_first_use"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Config values validated inside request handlers rather than at startup, deferring misconfiguration errors."
-    return rule_id, family, severity, status, intent, description
+class AppConfig:
+    def __init__(self, timeout_seconds: int) -> None:
+        if timeout_seconds <= 0:
+            raise ValueError("timeout must be positive")
+        self.timeout_seconds = timeout_seconds
+
+    def get_timeout(self) -> int:
+        return self.timeout_seconds

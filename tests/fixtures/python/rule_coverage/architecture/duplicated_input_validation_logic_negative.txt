@@ -1,0 +1,12 @@
+def validate_email(email):
+    if "@" not in email:
+        raise ValueError("Invalid email")
+
+def create_user(email):
+    validate_email(email)
+    # logic...
+
+def update_user(email):
+    # Correct: validation logic is centralized/reused
+    validate_email(email)
+    # logic...

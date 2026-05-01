@@ -1,8 +1,9 @@
-def positive_large_slice_copy_created_each_iteration_for_sliding_window():
-    rule_id = "large_slice_copy_created_each_iteration_for_sliding_window"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag windowed algorithms that copy large slices every step instead of tracking indexes."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def large_slice_copy_created_each_iteration_for_sliding_window_positive():
+    values = list(range(120))
+    totals = []
+    for i in range(0, 70, 10):
+        window = values[i:i + 40]
+        totals.append(sum(window))
+    return totals

@@ -1,8 +1,10 @@
-def positive_tokenizer_encode_in_loop_without_cache():
-    rule_id = "tokenizer_encode_in_loop_without_cache"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Tokenizer encode calls repeated inside loops without caching or batching signals."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Tokenizer:
+    def encode(self, text: str) -> list[int]:
+        return [ord(ch) for ch in text]
+
+
+def encode_texts(tokenizer: Tokenizer, texts: list[str]) -> list[list[int]]:
+    return [tokenizer.encode(text) for text in texts]

@@ -1,8 +1,13 @@
-def positive_class_mixes_factory_parsing_persistence_and_presentation_roles():
-    rule_id = "class_mixes_factory_parsing_persistence_and_presentation_roles"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag classes that combine unrelated lifecycle roles."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class OrderManager:
+    def parse(self, raw: str) -> dict[str, str]:
+        key, value = raw.split("=", 1)
+        return {key: value}
+
+    def save(self, order: dict[str, str]) -> str:
+        return f"saved:{order}"
+
+    def render(self, order: dict[str, str]) -> str:
+        return f"<li>{order}</li>"

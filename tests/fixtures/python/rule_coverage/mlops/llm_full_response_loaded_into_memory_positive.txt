@@ -1,8 +1,7 @@
-def positive_llm_full_response_loaded_into_memory():
-    rule_id = "llm_full_response_loaded_into_memory"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Large LLM responses are loaded fully into memory instead of streamed or incrementally consumed."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+
+def collect_response(chunks: Iterable[str]) -> str:
+    return "".join(chunks)

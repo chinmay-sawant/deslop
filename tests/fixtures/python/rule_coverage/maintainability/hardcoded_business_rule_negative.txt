@@ -1,8 +1,4 @@
-def negative_hardcoded_business_rule():
-    rule_id = "hardcoded_business_rule"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Hardcoded threshold, rate-limit, or pricing-style literals assigned inside non-test Python functions."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def hardcoded_business_rule_negative(amount: float, tax_rate: float):
+    return round(amount * (1 + tax_rate), 2)

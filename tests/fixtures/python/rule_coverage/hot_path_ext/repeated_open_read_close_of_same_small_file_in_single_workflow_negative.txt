@@ -1,8 +1,7 @@
-def negative_repeated_open_read_close_of_same_small_file_in_single_workflow():
-    rule_id = "repeated_open_read_close_of_same_small_file_in_single_workflow"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag workflows that reopen the same file many times instead of caching its contents or handle."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_open_read_close_of_same_small_file_in_single_workflow_negative():
+    path = "meta.txt"
+    with open(path, "r", encoding="utf-8") as handle:
+        value = handle.read().strip()
+    return value == value

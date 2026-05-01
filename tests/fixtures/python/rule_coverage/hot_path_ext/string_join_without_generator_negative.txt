@@ -1,8 +1,5 @@
-def negative_string_join_without_generator():
-    rule_id = "string_join_without_generator"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "String joins that materialize an unnecessary list comprehension instead of using a generator or direct iterable."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def string_join_without_generator_negative():
+    values = [1, 2, 3]
+    return ",".join(str(value) for value in values)

@@ -1,8 +1,8 @@
-def negative_readlines_then_iterate():
-    rule_id = "readlines_then_iterate"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "readlines() materializes the whole file before line-by-line iteration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def readlines_then_iterate_negative():
+    clean = []
+    with open("users.txt", "r", encoding="utf-8") as fh:
+        for line in fh:
+            clean.append(line.strip())
+    return clean

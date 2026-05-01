@@ -1,8 +1,16 @@
-def positive_linear_search_helper_called_from_nested_loops():
-    rule_id = "linear_search_helper_called_from_nested_loops"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag nested loops that call helpers performing linear scans on each iteration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def linear_search_helper_called_from_nested_loops_positive():
+    catalog = [{"id": 1, "price": 3}, {"id": 2, "price": 5}, {"id": 3, "price": 8}]
+    cart = [[1, 3], [2, 1], [3, 2]]
+
+    def find_price(item_id: int) -> int:
+        for row in catalog:
+            if row["id"] == item_id:
+                return row["price"]
+        return 0
+
+    total = 0
+    for item_id, qty in cart:
+        total += find_price(item_id) * qty
+    return total

@@ -1,8 +1,7 @@
-def positive_entrypoint_builds_dependency_graph_inside_hot_function():
-    rule_id = "entrypoint_builds_dependency_graph_inside_hot_function"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag request, batch, or loop entrypoints that reconstruct clients, caches, or providers on each call instead of wiring them once."
-    return rule_id, family, severity, status, intent, description
+@app.get("/users/{id}")
+def get_user(id: int):
+    # Violation: building the entire dependency graph inside a hot function (request handler)
+    container = DependencyContainer()
+    container.wire(modules=[__name__])
+    user_service = container.user_service()
+    return user_service.get_user(id)

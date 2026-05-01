@@ -1,8 +1,4 @@
-def positive_eager_full_file_or_stream_read_when_incremental_iteration_suffices():
-    rule_id = "eager_full_file_or_stream_read_when_incremental_iteration_suffices"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag code that reads whole files or streams into memory before simple sequential processing."
-    return rule_id, family, severity, status, intent, description
+def count_errors(path: str) -> int:
+    with open(path, "r", encoding="utf-8") as handle:
+        lines = handle.readlines()
+    return sum(1 for line in lines if "ERROR" in line)

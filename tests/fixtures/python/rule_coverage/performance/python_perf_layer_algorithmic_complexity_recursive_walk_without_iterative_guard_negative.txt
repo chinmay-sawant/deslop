@@ -1,8 +1,13 @@
-def negative_python_perf_layer_algorithmic_complexity_recursive_walk_without_iterative_guard():
-    rule_id = "python_perf_layer_algorithmic_complexity_recursive_walk_without_iterative_guard"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Algorithmic complexity. Flag recursive traversals over untrusted depth without iterative fallback or visited tracking."
-    return rule_id, family, severity, status, intent, description
+def walk(root: dict[str, object]) -> int:
+    stack = [root]
+    seen: set[int] = set()
+    total = 0
+    while stack:
+        node = stack.pop()
+        marker = id(node)
+        if marker in seen:
+            continue
+        seen.add(marker)
+        total += 1
+        stack.extend(node.get("children", []))
+    return total

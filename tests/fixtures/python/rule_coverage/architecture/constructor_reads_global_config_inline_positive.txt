@@ -1,8 +1,7 @@
-def positive_constructor_reads_global_config_inline():
-    rule_id = "constructor_reads_global_config_inline"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag classes whose constructors pull environment variables or global config directly instead of receiving normalized dependencies."
-    return rule_id, family, severity, status, intent, description
+from my_app.config import settings
+
+class PaymentService:
+    def __init__(self):
+        # Violation: constructor reads global config inline
+        self.api_key = settings.STRIPE_API_KEY
+        self.timeout = settings.DEFAULT_TIMEOUT

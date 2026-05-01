@@ -1,8 +1,9 @@
-def positive_subprocess_or_shell_call_inside_record_processing_loop():
-    rule_id = "subprocess_or_shell_call_inside_record_processing_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag per-record subprocess work that should be batched or hoisted."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def subprocess_or_shell_call_inside_record_processing_loop_positive():
+    import subprocess
+    records = ["alice", "bob", "carol"]
+    output = []
+    for item in records:
+        output.append(subprocess.check_output(["echo", item], text=True).strip())
+    return output

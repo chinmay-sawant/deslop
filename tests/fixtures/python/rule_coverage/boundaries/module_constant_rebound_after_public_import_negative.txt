@@ -1,8 +1,7 @@
-def negative_module_constant_rebound_after_public_import():
-    rule_id = "module_constant_rebound_after_public_import"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag modules that expose apparent constants and later rebind them during normal runtime flow."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+API_VERSION = "v1"
+
+
+def resolve_endpoint(resource: str) -> str:
+    return f"/{API_VERSION}/{resource}"

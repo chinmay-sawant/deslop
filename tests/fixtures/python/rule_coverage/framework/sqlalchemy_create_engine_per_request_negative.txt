@@ -1,8 +1,10 @@
-def negative_sqlalchemy_create_engine_per_request():
-    rule_id = "sqlalchemy_create_engine_per_request"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "SQLAlchemy engines are created on request or handler paths instead of being process-scoped."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sqlalchemy_create_engine_per_request_negative():
+    engine = create_engine("sqlite:///app.db")
+
+    def handler():
+        with Session(engine) as session:
+            return session.query(Account).count()
+
+    return handler

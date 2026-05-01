@@ -1,8 +1,8 @@
-def positive_pandas_apply_with_simple_vectorizable_op():
-    rule_id = "pandas_apply_with_simple_vectorizable_op"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Simple DataFrame transforms are routed through apply(lambda) instead of vectorized operations."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pandas as pd
+
+
+def double_column(df: pd.DataFrame) -> pd.DataFrame:
+    df["x2"] = df["x"].apply(lambda value: value * 2)
+    return df

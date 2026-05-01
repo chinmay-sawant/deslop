@@ -1,8 +1,10 @@
-def positive_training_loop_without_zero_grad():
-    rule_id = "training_loop_without_zero_grad"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "optimizer.step() appears without an obvious zero_grad() reset."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import Any
+
+
+def train_one_epoch(model: Any, optimizer: Any, batches: list[Any]) -> None:
+    for batch in batches:
+        loss = model(batch)
+        loss.backward()
+        optimizer.step()

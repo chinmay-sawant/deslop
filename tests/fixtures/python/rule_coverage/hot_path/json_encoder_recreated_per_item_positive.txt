@@ -1,8 +1,8 @@
-def positive_json_encoder_recreated_per_item():
-    rule_id = "json_encoder_recreated_per_item"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "A JSON encoder object is recreated per item instead of being reused for the stream."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def json_encoder_recreated_per_item_positive():
+    out = []
+    for row in [{"id": 1}, {"id": 2}, {"id": 3}]:
+        encoder = json.JSONEncoder()
+        out.append(encoder.encode(row))
+    return out

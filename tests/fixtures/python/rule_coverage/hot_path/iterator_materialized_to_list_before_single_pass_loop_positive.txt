@@ -1,8 +1,8 @@
-def positive_iterator_materialized_to_list_before_single_pass_loop():
-    rule_id = "iterator_materialized_to_list_before_single_pass_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag iterators converted to lists in hot paths when only one pass is needed."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def iterator_materialized_to_list_before_single_pass_loop_positive():
+    rows = list(generate_rows())
+    total = 0
+    for row in rows:
+        total += row
+    return total

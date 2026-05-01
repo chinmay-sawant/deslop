@@ -1,8 +1,7 @@
-def positive_filter_and_map_results_materialized_to_list_at_each_step():
-    rule_id = "filter_and_map_results_materialized_to_list_at_each_step"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "list(filter(...)) followed by list(map(...)), materializing intermediate collections; use a generator pipeline."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def filter_and_map_results_materialized_to_list_at_each_step_positive(values: list[int]) -> list[int]:
+    evens = list(filter(lambda value: value % 2 == 0, values))
+    doubled = list(map(lambda value: value * 2, evens))
+    return doubled

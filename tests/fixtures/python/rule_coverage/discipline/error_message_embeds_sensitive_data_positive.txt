@@ -1,8 +1,6 @@
-def positive_error_message_embeds_sensitive_data():
-    rule_id = "error_message_embeds_sensitive_data"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Exception message or error response string interpolated with credentials, keys, or PII."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def require_token(token: str) -> None:
+    if len(token) < 10:
+        raise ValueError(f"invalid token: {token}")

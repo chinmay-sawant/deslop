@@ -1,8 +1,9 @@
-def negative_wandb_mlflow_log_in_tight_loop():
-    rule_id = "wandb_mlflow_log_in_tight_loop"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "wandb or mlflow metrics are logged in inner loops instead of batched or reported at coarser boundaries."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import Any
+
+
+def train_and_log(metrics: list[float], tracker: Any) -> None:
+    for step, metric in enumerate(metrics):
+        if step % 10 == 0:
+            tracker.log({"step": step, "loss": metric})

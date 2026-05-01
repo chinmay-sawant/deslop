@@ -1,8 +1,8 @@
-def negative_python_perf_layer_caching_cache_key_uses_json_dumps_in_hot_path():
-    rule_id = "python_perf_layer_caching_cache_key_uses_json_dumps_in_hot_path"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Caching. Flag cache keys built with json.dumps in hot paths when tuple or stable string keys would work."
-    return rule_id, family, severity, status, intent, description
+_CACHE: dict[tuple[int, str], int] = {}
+
+
+def score_user(user_id: int, region: str) -> int:
+    key = (user_id, region)
+    if key not in _CACHE:
+        _CACHE[key] = user_id + len(region)
+    return _CACHE[key]

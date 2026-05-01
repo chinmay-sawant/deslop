@@ -1,8 +1,8 @@
-def negative_flask_request_body_parsed_multiple_times():
-    rule_id = "flask_request_body_parsed_multiple_times"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flask request handlers parse the same request body multiple times."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def flask_request_body_parsed_multiple_times_negative():
+    def handler():
+        body = request.get_json()
+        return f"{body['kind']}:{body['value']}"
+
+    return handler

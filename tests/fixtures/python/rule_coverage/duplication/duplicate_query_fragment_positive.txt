@@ -1,8 +1,11 @@
-def positive_duplicate_query_fragment():
-    rule_id = "duplicate_query_fragment"
-    family = "duplication"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Repository repeats the same SQL-like query fragment across multiple files."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def _active_users_query() -> str:
+    return "SELECT id FROM users WHERE active = 1 AND deleted = 0"
+
+
+def duplicate_query_fragment_positive() -> tuple[str, str]:
+    one = "SELECT id FROM users WHERE active = 1 AND deleted = 0 ORDER BY id DESC"
+    two = "SELECT id FROM users WHERE active = 1 AND deleted = 0 ORDER BY id ASC"
+    return one, two

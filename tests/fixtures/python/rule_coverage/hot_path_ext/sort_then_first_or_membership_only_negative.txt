@@ -1,8 +1,7 @@
-def negative_sort_then_first_or_membership_only():
-    rule_id = "sort_then_first_or_membership_only"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "A collection is sorted even though only the first element or a membership-style check is needed."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sort_then_first_or_membership_only_negative():
+    names = ["zoe", "amy", "li"]
+    first_alpha = min(names)
+    contains_amy = "amy" in names
+    return first_alpha, contains_amy

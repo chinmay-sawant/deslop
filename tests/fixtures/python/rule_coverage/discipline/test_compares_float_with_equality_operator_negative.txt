@@ -1,8 +1,5 @@
-def negative_test_compares_float_with_equality_operator():
-    rule_id = "test_compares_float_with_equality_operator"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Test uses == to compare floating-point values instead of pytest.approx or math.isclose."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def test_compares_float_with_equality_operator_negative() -> None:
+    assert abs((0.1 + 0.2) - 0.3) < 1e-9

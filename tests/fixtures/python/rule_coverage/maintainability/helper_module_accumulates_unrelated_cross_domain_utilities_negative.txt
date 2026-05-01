@@ -1,8 +1,5 @@
-def negative_helper_module_accumulates_unrelated_cross_domain_utilities():
-    rule_id = "helper_module_accumulates_unrelated_cross_domain_utilities"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag helper modules that mix string, filesystem, caching, parsing, and process logic in one place."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def helper_module_accumulates_unrelated_cross_domain_utilities_negative(email: str):
+    _, domain = email.split("@", 1)
+    return {"email_domain": domain}

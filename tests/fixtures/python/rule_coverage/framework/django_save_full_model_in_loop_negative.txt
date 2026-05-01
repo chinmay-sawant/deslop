@@ -1,8 +1,5 @@
-def negative_django_save_full_model_in_loop():
-    rule_id = "django_save_full_model_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Django code saves full model instances in loops without update_fields or bulk updates."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_save_full_model_in_loop_negative():
+    account_ids = [1, 2, 3]
+    Account.objects.filter(id__in=account_ids).update(status="archived")

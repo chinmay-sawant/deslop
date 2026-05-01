@@ -1,8 +1,8 @@
-def positive_handler_or_view_owns_transaction_lifecycle():
-    rule_id = "handler_or_view_owns_transaction_lifecycle"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Route handler or view manually manages database transaction boundaries (begin/commit/rollback)."
-    return rule_id, family, severity, status, intent, description
+@app.post("/transfer")
+def transfer_funds(amount: float, to_user: str):
+    # Violation: view function manually managing transaction lifecycle
+    with db.session.begin():
+        current_user.balance -= amount
+        target_user = db.get_user(to_user)
+        target_user.balance += amount
+        db.session.commit()

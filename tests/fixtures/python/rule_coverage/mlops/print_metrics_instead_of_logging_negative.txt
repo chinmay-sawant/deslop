@@ -1,8 +1,9 @@
-def negative_print_metrics_instead_of_logging():
-    rule_id = "print_metrics_instead_of_logging"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Training or evaluation code prints metrics directly instead of using logging or experiment tracking."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def report_metric(name: str, value: float) -> None:
+    logger.info("metric %s=%s", name, value)

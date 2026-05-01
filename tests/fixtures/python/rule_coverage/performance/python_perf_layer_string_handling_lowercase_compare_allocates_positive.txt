@@ -1,8 +1,8 @@
-def positive_python_perf_layer_string_handling_lowercase_compare_allocates():
-    rule_id = "python_perf_layer_string_handling_lowercase_compare_allocates"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: String handling. Flag lower()/upper() equality checks where casefold once or normalized keys avoid repeated allocation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def python_perf_layer_string_handling_lowercase_compare_allocates_positive(words, target):
+    matches = 0
+    for word in words:
+        if word.lower() == target.lower():
+            matches += 1
+    return matches

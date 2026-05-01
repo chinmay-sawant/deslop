@@ -1,8 +1,7 @@
-def positive_unsafe_yaml_loader():
-    rule_id = "unsafe_yaml_loader"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "yaml.load(...) or full_load(...) style loaders used where safe loading is more appropriate."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import yaml
+
+
+def unsafe_yaml_loader_positive(raw: str) -> object:
+    return yaml.load(raw, Loader=yaml.Loader)

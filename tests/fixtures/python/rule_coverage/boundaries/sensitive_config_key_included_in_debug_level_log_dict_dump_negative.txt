@@ -1,8 +1,6 @@
-def negative_sensitive_config_key_included_in_debug_level_log_dict_dump():
-    rule_id = "sensitive_config_key_included_in_debug_level_log_dict_dump"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Debug log statement dumps the full config dict including keys that may hold secrets."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def log_config(logger, config: dict[str, str]) -> None:
+    scrubbed = {k: ("***" if "secret" in k.lower() or "password" in k.lower() else v) for k, v in config.items()}
+    logger.debug("config=%s", scrubbed)

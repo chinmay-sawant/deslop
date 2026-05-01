@@ -1,8 +1,7 @@
-def negative_repeated_directory_scan_inside_nested_loop():
-    rule_id = "repeated_directory_scan_inside_nested_loop"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag nested loops that rescan the same directory or file listing."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_directory_scan_inside_nested_loop_negative():
+    import os
+    folders = ["logs", "cache"]
+    directory_sizes = {folder: len(os.listdir(folder)) for folder in folders}
+    return [directory_sizes[folder] for folder in folders for _ in range(2)]

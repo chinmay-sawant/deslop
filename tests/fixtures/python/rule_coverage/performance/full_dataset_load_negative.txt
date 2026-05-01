@@ -1,8 +1,3 @@
-def negative_full_dataset_load():
-    rule_id = "full_dataset_load"
-    family = "performance"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Calls that load an entire payload into memory instead of streaming."
-    return rule_id, family, severity, status, intent, description
+def iter_ids(cursor):
+    for row in cursor:
+        yield row[0]

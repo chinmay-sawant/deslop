@@ -1,8 +1,9 @@
-def positive_response_envelope_shape_inconsistent_across_siblings_in_same_router():
-    rule_id = "response_envelope_shape_inconsistent_across_siblings_in_same_router"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Response envelope shape inconsistent across sibling endpoints in the same router file."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def user_route_negative() -> dict[str, object]:
+    return {"data": {"id": 1}}
+
+
+def order_route_negative() -> dict[str, object]:
+    return {"result": {"id": 10}}

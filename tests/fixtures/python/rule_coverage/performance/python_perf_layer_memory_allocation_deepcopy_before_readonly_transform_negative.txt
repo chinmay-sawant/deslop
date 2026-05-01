@@ -1,8 +1,4 @@
-def negative_python_perf_layer_memory_allocation_deepcopy_before_readonly_transform():
-    rule_id = "python_perf_layer_memory_allocation_deepcopy_before_readonly_transform"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Memory allocation. Flag copy.deepcopy of large objects before operations that only read them."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def python_perf_layer_memory_allocation_deepcopy_before_readonly_transform_negative(data):
+    return [item["id"] for item in data]

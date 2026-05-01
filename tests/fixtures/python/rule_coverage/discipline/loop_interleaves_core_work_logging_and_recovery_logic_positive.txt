@@ -1,8 +1,15 @@
-def positive_loop_interleaves_core_work_logging_and_recovery_logic():
-    rule_id = "loop_interleaves_core_work_logging_and_recovery_logic"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag loops that mix primary business logic, logging, and error recovery in one dense block."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def loop_interleaves_core_work_logging_and_recovery_logic_positive(values: list[str]) -> int:
+    total = 0
+    logs: list[str] = []
+    for raw in values:
+        try:
+            number = int(raw)
+            total += number
+            logs.append(f"processed={number}")
+        except ValueError:
+            logs.append(f"bad={raw}")
+            total += 1
+    return total + len(logs)

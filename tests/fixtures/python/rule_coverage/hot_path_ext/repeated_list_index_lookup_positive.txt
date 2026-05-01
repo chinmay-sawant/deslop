@@ -1,8 +1,6 @@
-def positive_repeated_list_index_lookup():
-    rule_id = "repeated_list_index_lookup"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "The same list index lookup is performed repeatedly instead of caching the accessed value."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_list_index_lookup_positive():
+    values = [10, 20, 30]
+    i = 1
+    return values[i] * values[i] + values[i]

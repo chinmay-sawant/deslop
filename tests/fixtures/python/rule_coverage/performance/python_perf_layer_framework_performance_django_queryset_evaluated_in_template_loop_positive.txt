@@ -1,8 +1,5 @@
-def positive_python_perf_layer_framework_performance_django_queryset_evaluated_in_template_loop():
-    rule_id = "python_perf_layer_framework_performance_django_queryset_evaluated_in_template_loop"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Framework-specific performance. Flag Django QuerySets evaluated repeatedly from templates or per-row template helpers."
-    return rule_id, family, severity, status, intent, description
+def render_rows(template, queryset):
+    html = ""
+    for obj in queryset:
+        html += template.render({"name": obj.name, "orders": obj.orders.count()})
+    return html

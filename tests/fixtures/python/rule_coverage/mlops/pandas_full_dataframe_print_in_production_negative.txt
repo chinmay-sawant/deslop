@@ -1,8 +1,12 @@
-def negative_pandas_full_dataframe_print_in_production():
-    rule_id = "pandas_full_dataframe_print_in_production"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Full DataFrames are printed or displayed in production-oriented code paths."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import logging
+
+import pandas as pd
+
+logger = logging.getLogger(__name__)
+
+
+def audit(df: pd.DataFrame) -> int:
+    logger.info("rows=%d columns=%d", len(df), len(df.columns))
+    return len(df)

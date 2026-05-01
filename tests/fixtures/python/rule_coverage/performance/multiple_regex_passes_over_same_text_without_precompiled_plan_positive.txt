@@ -1,8 +1,7 @@
-def positive_multiple_regex_passes_over_same_text_without_precompiled_plan():
-    rule_id = "multiple_regex_passes_over_same_text_without_precompiled_plan"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag code that re-runs several overlapping regex passes on the same text."
-    return rule_id, family, severity, status, intent, description
+import re
+
+
+def parse_log(line: str) -> bool:
+    has_date = re.search(r"\d{4}-\d{2}-\d{2}", line) is not None
+    has_level = re.search(r"\b(INFO|WARN|ERROR)\b", line) is not None
+    return has_date and has_level

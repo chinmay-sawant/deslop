@@ -1,8 +1,18 @@
-def negative_test_asserts_private_attribute_value_instead_of_behavior():
-    rule_id = "test_asserts_private_attribute_value_instead_of_behavior"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Test asserts the value of a private attribute (_name) instead of observable public behavior."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Cache:
+    def __init__(self) -> None:
+        self._items: list[str] = []
+
+    def store(self, item: str) -> None:
+        self._items.append(item)
+
+    def contains(self, item: str) -> bool:
+        return item in self._items
+
+
+def test_asserts_private_attribute_value_instead_of_behavior_negative() -> None:
+    cache = Cache()
+    cache.store("x")
+    assert cache.contains("x")

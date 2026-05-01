@@ -1,8 +1,7 @@
-def positive_negated_boolean_reassigned_and_inverted_again():
-    rule_id = "negated_boolean_reassigned_and_inverted_again"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag control flow that repeatedly flips boolean state instead of naming the intended condition directly."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def negated_boolean_reassigned_and_inverted_again_positive(is_ready: bool) -> bool:
+    not_ready = not is_ready
+    status = not not_ready
+    return status

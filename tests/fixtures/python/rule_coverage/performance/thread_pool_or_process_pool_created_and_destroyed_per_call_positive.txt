@@ -1,8 +1,8 @@
-def positive_thread_pool_or_process_pool_created_and_destroyed_per_call():
-    rule_id = "thread_pool_or_process_pool_created_and_destroyed_per_call"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag per-call executor allocation for repeatable work."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from concurrent.futures import ThreadPoolExecutor
+
+
+def thread_pool_or_process_pool_created_and_destroyed_per_call_positive(items: list[int]) -> list[int]:
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        return list(pool.map(lambda n: n * n, items))

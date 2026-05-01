@@ -1,8 +1,7 @@
-def positive_builtin_reduction_candidate():
-    rule_id = "builtin_reduction_candidate"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Loop shapes that look like obvious sum, any, or all candidates."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def builtin_reduction_candidate_positive(values):
+    total = 0
+    for value in values:
+        total += value
+    return total

@@ -1,8 +1,5 @@
-def negative_eval_exec_usage():
-    rule_id = "eval_exec_usage"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Direct eval() or exec() usage in non-test Python code."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def eval_exec_usage_negative(raw_literal: str):
+    from ast import literal_eval
+    return literal_eval(raw_literal)

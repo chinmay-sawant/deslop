@@ -1,8 +1,19 @@
-def positive_monolithic_module():
-    rule_id = "monolithic_module"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Non-__init__.py modules that are unusually large and combine many imports with orchestration-heavy behavior."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def parse(raw: str) -> dict[str, str]:
+    key, value = raw.split("=", 1)
+    return {key: value}
+
+
+def validate(data: dict[str, str]) -> None:
+    if "id" not in data:
+        raise ValueError("missing id")
+
+
+def execute(data: dict[str, str]) -> str:
+    return f"done:{data}"
+
+
+def render(result: str) -> str:
+    return f"<p>{result}</p>"

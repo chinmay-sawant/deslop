@@ -1,8 +1,25 @@
-def negative_transaction_block_missing_rollback_on_exception():
-    rule_id = "transaction_block_missing_rollback_on_exception"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Database transaction started manually without a corresponding rollback in an except or finally clause."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Tx:
+    def __init__(self) -> None:
+        self.state = "idle"
+
+    def begin(self) -> None:
+        self.state = "open"
+
+    def commit(self) -> None:
+        self.state = "committed"
+
+    def rollback(self) -> None:
+        self.state = "rolled_back"
+
+
+def transaction_block_missing_rollback_on_exception_negative() -> str:
+    tx = Tx()
+    tx.begin()
+    try:
+        raise RuntimeError("boom")
+    except RuntimeError:
+        tx.rollback()
+    return tx.state

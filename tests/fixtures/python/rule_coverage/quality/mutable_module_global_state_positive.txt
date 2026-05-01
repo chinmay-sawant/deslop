@@ -1,8 +1,8 @@
-def positive_mutable_module_global_state():
-    rule_id = "mutable_module_global_state"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Mutable module globals updated from multiple functions."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+STATE: dict[str, int] = {}
+
+
+def mutable_module_global_state_positive(key: str) -> int:
+    STATE[key] = STATE.get(key, 0) + 1
+    return STATE[key]

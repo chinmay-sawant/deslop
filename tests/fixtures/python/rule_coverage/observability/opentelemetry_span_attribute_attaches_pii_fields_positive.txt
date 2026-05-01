@@ -1,8 +1,14 @@
-def positive_opentelemetry_span_attribute_attaches_pii_fields():
-    rule_id = "opentelemetry_span_attribute_attaches_pii_fields"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "OpenTelemetry span attribute set to a key that likely carries PII such as email, phone, or IP address."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Span:
+    def __init__(self) -> None:
+        self.attrs: dict[str, str] = {}
+
+    def set_attribute(self, key: str, value: str) -> None:
+        self.attrs[key] = value
+
+
+def opentelemetry_span_attribute_attaches_pii_fields_positive(span: Span, email: str) -> dict[str, str]:
+    span.set_attribute("user.email", email)
+    return span.attrs

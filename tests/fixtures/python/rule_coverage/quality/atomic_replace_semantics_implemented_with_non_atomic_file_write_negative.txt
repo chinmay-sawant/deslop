@@ -1,8 +1,10 @@
-def negative_atomic_replace_semantics_implemented_with_non_atomic_file_write():
-    rule_id = "atomic_replace_semantics_implemented_with_non_atomic_file_write"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag code that intends atomic replacement but uses non-atomic file writes."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import os
+
+
+def atomic_replace_semantics_implemented_with_non_atomic_file_write_negative(path: str, data: str) -> None:
+    temp_path = f"{path}.tmp"
+    with open(temp_path, "w", encoding="utf-8") as handle:
+        handle.write(data)
+    os.replace(temp_path, path)

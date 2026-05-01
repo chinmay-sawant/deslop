@@ -1,8 +1,2 @@
-def negative_generator_materialized_to_tuple_or_list_only_for_len_or_truthiness():
-    rule_id = "generator_materialized_to_tuple_or_list_only_for_len_or_truthiness"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag iterator pipelines that materialize only to test truthiness or size."
-    return rule_id, family, severity, status, intent, description
+def has_even(values: list[int]) -> bool:
+    return any(v % 2 == 0 for v in values)

@@ -1,8 +1,5 @@
-def positive_metric_or_span_labels_use_high_cardinality_raw_inputs():
-    rule_id = "metric_or_span_labels_use_high_cardinality_raw_inputs"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag labels or attributes built from raw IDs, paths, or user-provided values."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def metric_or_span_labels_use_high_cardinality_raw_inputs_positive(email: str, order_id: str) -> dict[str, str]:
+    return {"email": email, "order_id": order_id}

@@ -1,8 +1,8 @@
-def positive_pandas_chain_assignment_warning():
-    rule_id = "pandas_chain_assignment_warning"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Chained DataFrame assignment patterns risk SettingWithCopy-style behavior."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pandas as pd
+
+
+def mark_adults(df: pd.DataFrame) -> pd.DataFrame:
+    df[df["age"] >= 18]["is_adult"] = True
+    return df

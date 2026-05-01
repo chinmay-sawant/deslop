@@ -1,8 +1,9 @@
-def positive_gzip_open_per_chunk():
-    rule_id = "gzip_open_per_chunk"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "gzip open/create calls are repeated per chunk instead of per stream."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def gzip_open_per_chunk_positive():
+    import gzip
+    chunks = ["a", "b", "c"]
+    for chunk in chunks:
+        with gzip.open("data.gz", "at", encoding="utf-8") as stream:
+            stream.write(chunk)
+    return len(chunks)

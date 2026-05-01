@@ -1,8 +1,12 @@
-def positive_pandas_copy_in_loop():
-    rule_id = "pandas_copy_in_loop"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "DataFrames are copied inside loops, amplifying memory churn."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pandas as pd
+
+
+def scale_many(df: pd.DataFrame, multipliers: list[float]) -> list[pd.DataFrame]:
+    results: list[pd.DataFrame] = []
+    for multiplier in multipliers:
+        clone = df.copy()
+        clone["score"] = clone["score"] * multiplier
+        results.append(clone)
+    return results

@@ -1,8 +1,9 @@
-def negative_large_dict_literal_response_in_handler():
-    rule_id = "large_dict_literal_response_in_handler"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Handlers build large inline dict responses where typed response models would be clearer and cheaper."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def large_dict_literal_response_in_handler_negative():
+    STATUS_PAYLOAD = build_status_payload()
+
+    def handler():
+        return STATUS_PAYLOAD
+
+    return handler

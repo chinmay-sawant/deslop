@@ -1,8 +1,7 @@
-def negative_context_manager_yields_global_mutable_resource():
-    rule_id = "context_manager_yields_global_mutable_resource"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag context managers that expose a shared global mutable resource while implying call-local ownership."
-    return rule_id, family, severity, status, intent, description
+from contextlib import contextmanager
+
+
+@contextmanager
+def cache_scope():
+    local_cache: dict[str, str] = {}
+    yield local_cache

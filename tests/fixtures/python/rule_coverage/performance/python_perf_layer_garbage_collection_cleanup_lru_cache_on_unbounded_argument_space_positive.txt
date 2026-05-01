@@ -1,8 +1,8 @@
-def positive_python_perf_layer_garbage_collection_cleanup_lru_cache_on_unbounded_argument_space():
-    rule_id = "python_perf_layer_garbage_collection_cleanup_lru_cache_on_unbounded_argument_space"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Garbage collection and cleanup. Flag lru_cache usage without maxsize on functions fed user-controlled or high-cardinality inputs."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from functools import lru_cache
+
+
+@lru_cache(maxsize=None)
+def python_perf_layer_garbage_collection_cleanup_lru_cache_on_unbounded_argument_space_positive(user_id):
+    return f"profile:{user_id}"

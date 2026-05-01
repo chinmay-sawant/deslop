@@ -1,8 +1,9 @@
-def negative_timezone_naive_datetime_accepted_in_public_contract():
-    rule_id = "timezone_naive_datetime_accepted_in_public_contract"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag public contracts that accept datetimes with ambiguous timezone semantics."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from datetime import datetime
+
+
+def timezone_naive_datetime_accepted_in_public_contract_negative(created_at: datetime) -> str:
+    if created_at.tzinfo is None:
+        raise ValueError("timezone-aware datetime required")
+    return created_at.isoformat()

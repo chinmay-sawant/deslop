@@ -1,8 +1,14 @@
-def negative_python_perf_layer_profiling_benchmarking_benchmark_allocations_not_tracked():
-    rule_id = "python_perf_layer_profiling_benchmarking_benchmark_allocations_not_tracked"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Profiling and benchmarking. Flag memory-sensitive benchmarks that omit tracemalloc, memory_profiler, or allocation accounting."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import time
+import tracemalloc
+
+
+def python_perf_layer_profiling_benchmarking_benchmark_allocations_not_tracked_negative(work):
+    tracemalloc.start()
+    start = time.perf_counter()
+    work()
+    duration = time.perf_counter() - start
+    _, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    return duration, peak

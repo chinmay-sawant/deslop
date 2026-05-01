@@ -1,8 +1,14 @@
-def negative_tuple_return_with_three_or_more_positional_fields_in_public_api():
-    rule_id = "tuple_return_with_three_or_more_positional_fields_in_public_api"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag public APIs that return positional tuples too wide to be self-documenting."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass
+class UserProfile:
+    user_id: int
+    name: str
+    role: str
+
+
+def get_user_profile(user_id: int) -> UserProfile:
+    return UserProfile(user_id=user_id, name="Ana", role="admin")

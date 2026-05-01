@@ -1,8 +1,14 @@
-def negative_exception_swallowed_before_sentry_or_error_tracker_capture():
-    rule_id = "exception_swallowed_before_sentry_or_error_tracker_capture"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Exception re-wrapped before capture_exception, causing Sentry or similar to lose the original traceback."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def capture_exception(exc: Exception) -> None:
+    _ = str(exc)
+
+
+def exception_swallowed_before_sentry_or_error_tracker_capture_negative(record: dict[str, str]) -> bool:
+    try:
+        int(record["attempt"])
+    except Exception as exc:
+        capture_exception(exc)
+        return False
+    return True

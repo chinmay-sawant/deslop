@@ -1,8 +1,10 @@
-def positive_token_count_not_checked_before_api_call():
-    rule_id = "token_count_not_checked_before_api_call"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "LLM requests are sent without visible token counting or context-window checks."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Client:
+    def complete(self, prompt: str) -> str:
+        return prompt[:10]
+
+
+def ask(client: Client, prompt: str) -> str:
+    return client.complete(prompt)

@@ -1,8 +1,5 @@
-def positive_sqlalchemy_session_not_closed():
-    rule_id = "sqlalchemy_session_not_closed"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "SQLAlchemy Session objects are created without context-manager or close handling."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sqlalchemy_session_not_closed_positive():
+    session = Session(engine)
+    return session.query(Project).count()

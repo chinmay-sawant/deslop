@@ -1,8 +1,7 @@
-def negative_module_exposes_mutable_singleton_client():
-    rule_id = "module_exposes_mutable_singleton_client"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag modules that export long-lived mutable client instances for direct cross-module mutation."
-    return rule_id, family, severity, status, intent, description
+# Correct: use a factory or dependency injection
+class RedisProvider:
+    def __init__(self, host):
+        self.client = Redis(host=host)
+
+    def get_client(self):
+        return self.client

@@ -1,8 +1,9 @@
-def positive_model_to_device_in_loop():
-    rule_id = "model_to_device_in_loop"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Models or tensors are moved to a device repeatedly inside loops."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import torch
+
+
+def infer_many(model: torch.nn.Module, batches: list[torch.Tensor], device: str) -> None:
+    for batch in batches:
+        model.to(device)
+        _ = model(batch.to(device))

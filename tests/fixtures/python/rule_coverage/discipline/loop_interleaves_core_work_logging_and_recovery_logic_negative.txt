@@ -1,8 +1,15 @@
-def negative_loop_interleaves_core_work_logging_and_recovery_logic():
-    rule_id = "loop_interleaves_core_work_logging_and_recovery_logic"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag loops that mix primary business logic, logging, and error recovery in one dense block."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def _parse_number(raw: str) -> int:
+    return int(raw)
+
+
+def loop_interleaves_core_work_logging_and_recovery_logic_negative(values: list[str]) -> int:
+    total = 0
+    for raw in values:
+        try:
+            total += _parse_number(raw)
+        except ValueError:
+            continue
+    return total

@@ -1,8 +1,12 @@
-def negative_dynamic_plugin_loaded_from_config_without_registry_allowlist():
-    rule_id = "dynamic_plugin_loaded_from_config_without_registry_allowlist"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Plugin loaded via importlib.import_module from config without validating against an allowlist."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import importlib
+
+ALLOWED_PLUGINS = {"plugins.audit", "plugins.metrics"}
+
+
+def dynamic_plugin_loaded_from_config_without_registry_allowlist_negative(module_name: str) -> object:
+    if module_name not in ALLOWED_PLUGINS:
+        raise ValueError(f"unsupported plugin: {module_name}")
+    module = importlib.import_module(module_name)
+    return module.Plugin()

@@ -1,8 +1,9 @@
-def negative_duplicate_test_utility_logic():
-    rule_id = "duplicate_test_utility_logic"
-    family = "duplication"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Highly similar utility logic shared between test and production code."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def _normalize_user(name: str) -> str:
+    return name.strip().lower()
+
+
+def duplicate_test_utility_logic_negative(name: str) -> str:
+    return _normalize_user(name)

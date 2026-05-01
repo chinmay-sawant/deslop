@@ -1,8 +1,5 @@
-def positive_no_schema_validation_on_external_data():
-    rule_id = "no_schema_validation_on_external_data"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "External JSON or tabular data is parsed without visible schema validation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def parse_payload(payload: dict[str, object]) -> int:
+    return int(payload["age"])

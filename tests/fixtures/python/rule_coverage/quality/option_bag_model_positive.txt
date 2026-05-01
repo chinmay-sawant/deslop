@@ -1,8 +1,8 @@
-def positive_option_bag_model():
-    rule_id = "option_bag_model"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Dataclass or TypedDict models that accumulate many optional fields and boolean switches."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def option_bag_model_positive(options: dict[str, object]) -> str:
+    theme = options.get("theme", "light")
+    page = options.get("page", "home")
+    debug = options.get("debug", False)
+    return f"{theme}:{page}:{debug}"

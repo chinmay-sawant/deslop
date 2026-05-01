@@ -1,8 +1,9 @@
-def negative_middleware_compiles_regex_per_request():
-    rule_id = "middleware_compiles_regex_per_request"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Middleware compiles regex patterns per request instead of precompiling them."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def middleware_compiles_regex_per_request_negative():
+    token_re = re.compile(r"^Bearer [A-Za-z0-9._-]+$")
+
+    def middleware(request):
+        return bool(token_re.match(request.headers.get("authorization", "")))
+
+    return middleware

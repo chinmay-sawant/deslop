@@ -1,8 +1,10 @@
-def positive_validation_rules_duplicated_at_dto_and_domain_layer():
-    rule_id = "validation_rules_duplicated_at_dto_and_domain_layer"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Identical validation constraint is applied at both the DTO/schema layer and the domain entity layer."
-    return rule_id, family, severity, status, intent, description
+def validate_email(value: str) -> None:
+    if "@" not in value:
+        raise ValueError("invalid email")
+
+
+class Account:
+    def __init__(self, email: str) -> None:
+        if "@" not in email:
+            raise ValueError("invalid email")
+        self.email = email

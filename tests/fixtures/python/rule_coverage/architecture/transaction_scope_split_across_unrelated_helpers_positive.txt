@@ -1,8 +1,11 @@
-def positive_transaction_scope_split_across_unrelated_helpers():
-    rule_id = "transaction_scope_split_across_unrelated_helpers"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag flows where begin, commit, and rollback responsibilities are scattered across helpers with no single owner."
-    return rule_id, family, severity, status, intent, description
+def begin_transfer(db) -> None:
+    db.begin()
+
+
+def apply_transfer(db, src: str, dst: str, amount: int) -> None:
+    db.debit(src, amount)
+    db.credit(dst, amount)
+
+
+def finish_transfer(db) -> None:
+    db.commit()

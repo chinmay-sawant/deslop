@@ -1,8 +1,4 @@
-def negative_handler_or_view_builds_raw_sql():
-    rule_id = "handler_or_view_builds_raw_sql"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Route handler or view constructs a raw SQL string instead of delegating to a repository layer."
-    return rule_id, family, severity, status, intent, description
+@app.get("/search")
+def search(q: str, repo: ProductRepository = Depends()):
+    # Correct: view delegates data access to a repository
+    return repo.search_by_name(q)

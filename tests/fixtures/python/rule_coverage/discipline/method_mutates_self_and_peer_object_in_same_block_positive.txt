@@ -1,8 +1,17 @@
-def positive_method_mutates_self_and_peer_object_in_same_block():
-    rule_id = "method_mutates_self_and_peer_object_in_same_block"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag methods that change both local state and a collaborator's state in the same unit of work."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Wallet:
+    def __init__(self, balance: int) -> None:
+        self.balance = balance
+
+    def transfer_to(self, peer: "Wallet", amount: int) -> None:
+        self.balance -= amount
+        peer.balance += amount
+
+
+def method_mutates_self_and_peer_object_in_same_block_positive() -> int:
+    first = Wallet(10)
+    second = Wallet(0)
+    first.transfer_to(second, 3)
+    return second.balance

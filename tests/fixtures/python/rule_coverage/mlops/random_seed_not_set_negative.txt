@@ -1,8 +1,12 @@
-def negative_random_seed_not_set():
-    rule_id = "random_seed_not_set"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Training or evaluation entrypoints use randomness without an obvious seed."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import random
+
+import numpy as np
+
+random.seed(7)
+np.random.seed(7)
+
+
+def sample_pair() -> tuple[int, float]:
+    return random.randint(1, 9), float(np.random.rand())

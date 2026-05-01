@@ -1,8 +1,8 @@
-def negative_large_response_body_fully_buffered_in_memory_before_send():
-    rule_id = "large_response_body_fully_buffered_in_memory_before_send"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Large response body buffered completely in memory before writing; use StreamingResponse."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from collections.abc import Iterator
+
+
+def large_response_body_fully_buffered_in_memory_before_send_negative(chunks: list[str]) -> Iterator[bytes]:
+    for chunk in chunks:
+        yield chunk.encode("utf-8")

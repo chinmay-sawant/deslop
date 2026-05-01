@@ -1,8 +1,7 @@
-def negative_yaml_load_same_payload_multiple_times():
-    rule_id = "yaml_load_same_payload_multiple_times"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "The same YAML payload is parsed repeatedly within one function."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def yaml_load_same_payload_multiple_times_negative():
+    import yaml
+    payload = "name: sam\nage: 30\n"
+    loaded = yaml.safe_load(payload)
+    return [loaded["name"], loaded["name"]]

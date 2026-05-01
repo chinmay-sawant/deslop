@@ -1,8 +1,5 @@
-def negative_dependency_injection_bypassed_via_global_singleton():
-    rule_id = "dependency_injection_bypassed_via_global_singleton"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Function bypasses the DI container and retrieves a collaborator via a global variable or module-level singleton."
-    return rule_id, family, severity, status, intent, description
+def create_user(name, db):
+    # Correct: dependencies are injected as arguments
+    user = User(name=name)
+    db.session.add(user)
+    db.session.commit()

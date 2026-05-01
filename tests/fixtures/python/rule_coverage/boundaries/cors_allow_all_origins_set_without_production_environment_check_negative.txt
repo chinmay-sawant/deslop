@@ -1,8 +1,6 @@
-def negative_cors_allow_all_origins_set_without_production_environment_check():
-    rule_id = "cors_allow_all_origins_set_without_production_environment_check"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "CORS configuration allows all origins (*) without a conditional check for the production environment."
-    return rule_id, family, severity, status, intent, description
+def cors_config(environment: str) -> dict:
+    if environment == "production":
+        origins = ["https://app.example.com"]
+    else:
+        origins = ["*"]
+    return {"allow_origins": origins, "allow_methods": ["GET", "POST"]}

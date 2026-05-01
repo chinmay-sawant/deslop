@@ -1,8 +1,9 @@
-def negative_helper_returns_live_internal_collection_reference():
-    rule_id = "helper_returns_live_internal_collection_reference"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag helpers that hand out direct references to mutable internal lists, dicts, or sets instead of copies or read-only views."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class JobQueue:
+    def __init__(self) -> None:
+        self._jobs = ["daily-report"]
+
+    def jobs(self) -> tuple[str, ...]:
+        return tuple(self._jobs)

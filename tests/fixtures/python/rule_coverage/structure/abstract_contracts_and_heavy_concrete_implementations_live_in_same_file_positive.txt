@@ -1,8 +1,20 @@
-def positive_abstract_contracts_and_heavy_concrete_implementations_live_in_same_file():
-    rule_id = "abstract_contracts_and_heavy_concrete_implementations_live_in_same_file"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag files that mix contracts with large concrete implementations and grow unstable dependencies."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
+
+class Storage(ABC):
+    @abstractmethod
+    def save(self, item: str) -> None:
+        raise NotImplementedError
+
+
+class FileStorage(Storage):
+    def __init__(self, path: str) -> None:
+        with open(path, "a", encoding="utf-8") as handle:
+            handle.write("boot\n")
+        self.path = path
+
+    def save(self, item: str) -> None:
+        with open(self.path, "a", encoding="utf-8") as handle:
+            handle.write(f"{item}\n")

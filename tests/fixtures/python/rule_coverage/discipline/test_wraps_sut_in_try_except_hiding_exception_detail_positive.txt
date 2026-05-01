@@ -1,8 +1,13 @@
-def positive_test_wraps_sut_in_try_except_hiding_exception_detail():
-    rule_id = "test_wraps_sut_in_try_except_hiding_exception_detail"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Test wraps the system-under-test call in try/except, hiding the raised exception from pytest output."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def _run_sut() -> None:
+    raise ValueError("bad payload")
+
+
+def test_wraps_sut_in_try_except_hiding_exception_detail_positive() -> None:
+    try:
+        _run_sut()
+        assert False
+    except Exception:
+        assert False

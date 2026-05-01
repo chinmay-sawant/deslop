@@ -1,8 +1,10 @@
-def positive_untracked_create_task_result_may_hide_exception():
-    rule_id = "untracked_create_task_result_may_hide_exception"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "asyncio.create_task result discarded without storing a reference; exceptions raised in the task are silenced."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+
+async def sync_one(order_id: str) -> None:
+    raise RuntimeError(order_id)
+
+
+async def sync_all(ids: list[str]) -> None:
+    for order_id in ids:
+        asyncio.create_task(sync_one(order_id))

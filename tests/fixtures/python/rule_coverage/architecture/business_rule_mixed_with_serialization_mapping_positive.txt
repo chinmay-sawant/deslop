@@ -1,8 +1,10 @@
-def positive_business_rule_mixed_with_serialization_mapping():
-    rule_id = "business_rule_mixed_with_serialization_mapping"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag functions that both enforce domain rules and convert to wire or storage payloads in the same block."
-    return rule_id, family, severity, status, intent, description
+class Order:
+    def to_json(self):
+        # Violation: mixing business rules (tax calculation) with serialization
+        tax = self.amount * 0.15
+        total = self.amount + tax
+        return {
+            "amount": self.amount,
+            "tax": tax,
+            "total": total
+        }

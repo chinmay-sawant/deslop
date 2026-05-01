@@ -1,8 +1,11 @@
-def positive_feature_flag_checked_via_inline_env_lookup_across_handlers():
-    rule_id = "feature_flag_checked_via_inline_env_lookup_across_handlers"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Feature flag checked via repeated inline os.getenv in multiple handlers instead of a single flag service."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import os
+
+
+def show_beta_dashboard() -> bool:
+    return os.getenv("BETA_DASHBOARD") == "1"
+
+
+def show_beta_checkout() -> bool:
+    return os.getenv("BETA_DASHBOARD") == "1"

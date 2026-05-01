@@ -1,8 +1,6 @@
-def positive_bulk_endpoint_partial_failure_contract_ambiguous():
-    rule_id = "bulk_endpoint_partial_failure_contract_ambiguous"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Bulk endpoint processes items in a loop without a documented all-or-nothing or partial-failure contract."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def bulk_endpoint_partial_failure_contract_ambiguous_positive(items: list[str]) -> dict[str, object]:
+    failed = [item for item in items if item.startswith("bad")]
+    return {"processed": len(items), "errors": failed}

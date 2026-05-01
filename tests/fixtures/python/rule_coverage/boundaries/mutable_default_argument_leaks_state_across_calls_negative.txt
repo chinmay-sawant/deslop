@@ -1,8 +1,7 @@
-def negative_mutable_default_argument_leaks_state_across_calls():
-    rule_id = "mutable_default_argument_leaks_state_across_calls"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag function signatures that use mutable defaults such as [], {}, or set() and allow state sharing between calls."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def collect_tag(tag: str, bucket: list[str] | None = None) -> list[str]:
+    target = [] if bucket is None else bucket
+    target.append(tag)
+    return target

@@ -1,0 +1,11 @@
+def process_data(data, callback):
+    # Violation: deeply nested callback hell
+    fetch_user(data.user_id, lambda user:
+        fetch_posts(user.id, lambda posts:
+            filter_posts(posts, lambda filtered:
+                format_data(filtered, lambda formatted:
+                    callback(formatted)
+                )
+            )
+        )
+    )

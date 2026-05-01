@@ -1,8 +1,9 @@
-def positive_sync_and_async_contracts_mixed_on_same_interface_family():
-    rule_id = "sync_and_async_contracts_mixed_on_same_interface_family"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag interface families that mix sync and async methods without a clear separation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class UserRepoPositive:
+    def get(self, user_id: str) -> dict[str, str]:
+        return {"id": user_id}
+
+    async def aget(self, user_id: str) -> dict[str, str]:
+        return {"id": user_id}

@@ -1,8 +1,8 @@
-def negative_xml_parse_same_payload_multiple_times():
-    rule_id = "xml_parse_same_payload_multiple_times"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "The same XML payload is parsed repeatedly within one function."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def xml_parse_same_payload_multiple_times_negative():
+    import xml.etree.ElementTree as ET
+    payload = "<root><item>1</item></root>"
+    root = ET.fromstring(payload)
+    item = root.findtext("item")
+    return [item, item, item]

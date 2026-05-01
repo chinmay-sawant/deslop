@@ -1,8 +1,6 @@
-def negative_list_copy_in_loop_same_source():
-    rule_id = "list_copy_in_loop_same_source"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "A list is copied on each loop iteration even though the source appears unchanged."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def list_copy_in_loop_same_source_negative():
+    base = [1, 2, 3]
+    frozen = tuple(base)
+    return [frozen for _ in range(4)]

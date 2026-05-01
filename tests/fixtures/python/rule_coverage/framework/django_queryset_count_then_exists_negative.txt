@@ -1,8 +1,7 @@
-def negative_django_queryset_count_then_exists():
-    rule_id = "django_queryset_count_then_exists"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Django querysets use count() for existence checks instead of exists()."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_queryset_count_then_exists_negative():
+    pending = Invoice.objects.filter(state="pending")
+    if pending.exists():
+        return "has work"
+    return "empty"

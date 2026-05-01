@@ -1,8 +1,8 @@
-def negative_insecure_hash_algorithm_used_for_security_sensitive_purpose():
-    rule_id = "insecure_hash_algorithm_used_for_security_sensitive_purpose"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "MD5 or SHA-1 used for password hashing, token generation, or a security-sensitive digest."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import hashlib
+
+
+def password_fingerprint(password: str, salt: bytes) -> str:
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 150000)
+    return digest.hex()

@@ -1,8 +1,15 @@
-def negative_embedding_computed_per_request():
-    rule_id = "embedding_computed_per_request"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Embeddings recomputed on request paths instead of cached or precomputed for stable inputs."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Embedder:
+    def encode(self, text: str) -> tuple[int, int]:
+        return (len(text), sum(ord(ch) for ch in text) % 97)
+
+
+_CACHE: dict[str, tuple[int, int]] = {}
+
+
+def handle_query(embedder: Embedder, query: str) -> tuple[int, int]:
+    if query not in _CACHE:
+        _CACHE[query] = embedder.encode(query)
+    return _CACHE[query]

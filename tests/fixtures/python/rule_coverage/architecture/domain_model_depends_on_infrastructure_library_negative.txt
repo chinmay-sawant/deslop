@@ -1,0 +1,12 @@
+# domain/user.py
+class User:
+    def __init__(self, user_id):
+        self.id = user_id
+
+# infra/storage.py
+import boto3
+
+def upload_user_avatar(user_id, file_path):
+    # Correct: infrastructure concerns isolated from domain
+    s3 = boto3.client('s3')
+    s3.upload_file(file_path, 'my-bucket', f'avatars/{user_id}')

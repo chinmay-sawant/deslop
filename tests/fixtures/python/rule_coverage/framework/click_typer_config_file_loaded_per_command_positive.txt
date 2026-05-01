@@ -1,8 +1,9 @@
-def positive_click_typer_config_file_loaded_per_command():
-    rule_id = "click_typer_config_file_loaded_per_command"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "click or typer commands parse config files on each invocation instead of using shared bootstrap or dependency setup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+
+def click_typer_config_file_loaded_per_command_positive(path: str) -> int:
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    return int(data.get("timeout", 0))

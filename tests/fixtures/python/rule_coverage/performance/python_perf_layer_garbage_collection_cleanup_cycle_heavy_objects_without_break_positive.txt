@@ -1,8 +1,12 @@
-def positive_python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break():
-    rule_id = "python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Garbage collection and cleanup. Flag cyclic object graphs that keep large buffers alive after request or batch completion."
-    return rule_id, family, severity, status, intent, description
+class Node:
+    def __init__(self, payload: bytes) -> None:
+        self.payload = payload
+        self.peer = None
+
+
+def make_cycle() -> tuple[Node, Node]:
+    left = Node(b"x" * 1024)
+    right = Node(b"y" * 1024)
+    left.peer = right
+    right.peer = left
+    return left, right

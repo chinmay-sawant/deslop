@@ -1,8 +1,14 @@
-def positive_langchain_chain_built_per_request():
-    rule_id = "langchain_chain_built_per_request"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "LangChain or LlamaIndex prompt and chain wiring rebuilt on each request path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class FakeChain:
+    def __init__(self, prefix: str) -> None:
+        self.prefix = prefix
+
+    def run(self, question: str) -> str:
+        return f"{self.prefix}: {question}"
+
+
+def answer(question: str) -> str:
+    chain = FakeChain(prefix="assistant")
+    return chain.run(question)

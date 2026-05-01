@@ -1,8 +1,10 @@
-def negative_llm_full_response_loaded_into_memory():
-    rule_id = "llm_full_response_loaded_into_memory"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Large LLM responses are loaded fully into memory instead of streamed or incrementally consumed."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+
+def stream_to_sink(chunks: Iterable[str]) -> int:
+    written = 0
+    for chunk in chunks:
+        written += len(chunk)
+    return written

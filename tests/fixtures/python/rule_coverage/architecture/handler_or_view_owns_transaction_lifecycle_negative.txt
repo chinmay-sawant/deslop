@@ -1,8 +1,4 @@
-def negative_handler_or_view_owns_transaction_lifecycle():
-    rule_id = "handler_or_view_owns_transaction_lifecycle"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Route handler or view manually manages database transaction boundaries (begin/commit/rollback)."
-    return rule_id, family, severity, status, intent, description
+@app.post("/transfer")
+@transactional  # Correct: transaction managed via decorator or service layer
+def transfer_funds(amount: float, to_user: str, service: BankingService = Depends()):
+    service.transfer(current_user.id, to_user, amount)

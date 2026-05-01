@@ -1,8 +1,10 @@
-def negative_python_perf_layer_lazy_loading_eager_import_heavy_optional_dependency():
-    rule_id = "python_perf_layer_lazy_loading_eager_import_heavy_optional_dependency"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Lazy loading. Flag heavy optional dependencies imported at module import time for rarely used features."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import importlib
+
+
+def python_perf_layer_lazy_loading_eager_import_heavy_optional_dependency_negative(enabled):
+    if not enabled:
+        return "feature disabled"
+    optional = importlib.util.find_spec("tomllib")
+    return optional is not None

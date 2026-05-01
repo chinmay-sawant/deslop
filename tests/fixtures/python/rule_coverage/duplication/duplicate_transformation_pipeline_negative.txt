@@ -1,8 +1,9 @@
-def negative_duplicate_transformation_pipeline():
-    rule_id = "duplicate_transformation_pipeline"
-    family = "duplication"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Repository repeats the same data transformation pipeline stages across multiple functions."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def _to_code(raw: str) -> str:
+    return raw.strip().lower().replace(" ", "_")
+
+
+def duplicate_transformation_pipeline_negative(raw: str) -> str:
+    return _to_code(raw)

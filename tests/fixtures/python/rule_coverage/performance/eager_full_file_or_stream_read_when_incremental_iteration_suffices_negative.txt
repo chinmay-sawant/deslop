@@ -1,8 +1,7 @@
-def negative_eager_full_file_or_stream_read_when_incremental_iteration_suffices():
-    rule_id = "eager_full_file_or_stream_read_when_incremental_iteration_suffices"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag code that reads whole files or streams into memory before simple sequential processing."
-    return rule_id, family, severity, status, intent, description
+def count_errors(path: str) -> int:
+    total = 0
+    with open(path, "r", encoding="utf-8") as handle:
+        for line in handle:
+            if "ERROR" in line:
+                total += 1
+    return total

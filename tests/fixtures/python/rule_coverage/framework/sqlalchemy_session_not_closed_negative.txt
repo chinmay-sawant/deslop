@@ -1,8 +1,5 @@
-def negative_sqlalchemy_session_not_closed():
-    rule_id = "sqlalchemy_session_not_closed"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "SQLAlchemy Session objects are created without context-manager or close handling."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sqlalchemy_session_not_closed_negative():
+    with Session(engine) as session:
+        return session.query(Project).count()

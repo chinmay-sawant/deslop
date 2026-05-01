@@ -1,8 +1,3 @@
-def positive_python_perf_layer_garbage_collection_cleanup_file_handle_closed_by_gc():
-    rule_id = "python_perf_layer_garbage_collection_cleanup_file_handle_closed_by_gc"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Garbage collection and cleanup. Flag file or socket resources relying on garbage collection instead of context-managed close."
-    return rule_id, family, severity, status, intent, description
+def read_first_line(path: str) -> str:
+    handle = open(path, "r", encoding="utf-8")
+    return handle.readline().strip()

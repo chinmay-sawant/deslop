@@ -1,8 +1,16 @@
-def negative_public_api_forwards_library_specific_exception_shape():
-    rule_id = "public_api_forwards_library_specific_exception_shape"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag public interfaces that require callers to understand raw exceptions from underlying libraries."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class VendorError(Exception):
+    pass
+
+
+def _vendor_parse(text: str) -> dict[str, str]:
+    raise VendorError(f"vendor failed for: {text}")
+
+
+def parse_document(text: str) -> dict[str, str]:
+    try:
+        return _vendor_parse(text)
+    except VendorError as exc:
+        raise ValueError("document parsing failed") from exc

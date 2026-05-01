@@ -1,8 +1,20 @@
-def negative_method_mutates_self_and_peer_object_in_same_block():
-    rule_id = "method_mutates_self_and_peer_object_in_same_block"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag methods that change both local state and a collaborator's state in the same unit of work."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Wallet:
+    def __init__(self, balance: int) -> None:
+        self.balance = balance
+
+    def debit(self, amount: int) -> None:
+        self.balance -= amount
+
+    def credit(self, amount: int) -> None:
+        self.balance += amount
+
+
+def method_mutates_self_and_peer_object_in_same_block_negative() -> int:
+    source = Wallet(10)
+    target = Wallet(0)
+    source.debit(3)
+    target.credit(3)
+    return target.balance

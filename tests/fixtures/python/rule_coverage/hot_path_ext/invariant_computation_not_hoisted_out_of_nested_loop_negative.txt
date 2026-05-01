@@ -1,8 +1,10 @@
-def negative_invariant_computation_not_hoisted_out_of_nested_loop():
-    rule_id = "invariant_computation_not_hoisted_out_of_nested_loop"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag nested loops that recompute invariant values on every inner iteration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def invariant_computation_not_hoisted_out_of_nested_loop_negative():
+    reference = ["us", "eu", "apac", "us"]
+    distinct_count = len(set(reference))
+    total = 0
+    for outer in range(3):
+        for inner in range(2):
+            total += distinct_count + outer + inner
+    return total

@@ -1,8 +1,9 @@
-def positive_repeated_datetime_parse_inside_loop():
-    rule_id = "repeated_datetime_parse_inside_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag loops that parse timestamps repeatedly when values could be normalized once."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_datetime_parse_inside_loop_positive():
+    raw = "2026-04-01 10:30:00"
+    results = []
+    for _ in range(3):
+        from datetime import datetime
+        results.append(datetime.strptime(raw, "%Y-%m-%d %H:%M:%S"))
+    return results

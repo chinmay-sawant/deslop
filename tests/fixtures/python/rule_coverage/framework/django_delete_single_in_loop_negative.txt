@@ -1,8 +1,5 @@
-def negative_django_delete_single_in_loop():
-    rule_id = "django_delete_single_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Django code deletes individual models inside loops instead of using set-based queryset deletion."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_delete_single_in_loop_negative():
+    stale_ids = [3, 5, 8]
+    Session.objects.filter(id__in=stale_ids).delete()

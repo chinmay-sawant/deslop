@@ -1,8 +1,10 @@
-def negative_toml_or_ini_config_file_parsed_on_request_path():
-    rule_id = "toml_or_ini_config_file_parsed_on_request_path"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "TOML, INI, or YAML config file parsed inside a request handler on every request."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import tomllib
+
+with open("settings.toml", "rb") as fp:
+    CONFIG = tomllib.load(fp)
+
+
+def handle_request() -> str:
+    return CONFIG["mode"]

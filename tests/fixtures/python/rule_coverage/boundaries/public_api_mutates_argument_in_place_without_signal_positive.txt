@@ -1,8 +1,7 @@
-def positive_public_api_mutates_argument_in_place_without_signal():
-    rule_id = "public_api_mutates_argument_in_place_without_signal"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag public APIs that rewrite caller-owned containers or objects without naming or documentation that makes the mutation obvious."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def normalize_tags(tags: list[str]) -> list[str]:
+    for index, tag in enumerate(tags):
+        tags[index] = tag.strip().lower()
+    return tags

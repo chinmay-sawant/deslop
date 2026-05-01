@@ -1,8 +1,2 @@
-def positive_full_collection_sorted_when_partial_order_or_selection_suffices():
-    rule_id = "full_collection_sorted_when_partial_order_or_selection_suffices"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag full sorts used where top-k or one-pass selection would work."
-    return rule_id, family, severity, status, intent, description
+def top_score(scores: list[int]) -> int:
+    return sorted(scores, reverse=True)[0]

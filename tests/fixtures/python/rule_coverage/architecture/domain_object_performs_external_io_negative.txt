@@ -1,8 +1,8 @@
-def negative_domain_object_performs_external_io():
-    rule_id = "domain_object_performs_external_io"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag domain or value-like objects that open files, spawn subprocesses, or call network clients during core operations."
-    return rule_id, family, severity, status, intent, description
+class User:
+    def __init__(self, user_id):
+        self.id = user_id
+        self.events = []
+
+    def notify(self):
+        # Correct: domain object records an event instead of performing IO
+        self.events.append("UserNotified")

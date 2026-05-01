@@ -1,8 +1,6 @@
-def positive_python_perf_layer_async_concurrency_blocking_requests_in_async_route():
-    rule_id = "python_perf_layer_async_concurrency_blocking_requests_in_async_route"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Async and concurrency. Flag requests.* calls inside async routes or coroutines instead of async clients or executor boundaries."
-    return rule_id, family, severity, status, intent, description
+import requests
+
+
+async def route_handler() -> dict[str, object]:
+    response = requests.get("https://api.example.com/health", timeout=2)
+    return {"status": response.status_code}

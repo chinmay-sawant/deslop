@@ -1,8 +1,14 @@
-def negative_deep_inheritance_hierarchy():
-    rule_id = "deep_inheritance_hierarchy"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Repository-local Python class chains with unusually deep inheritance depth."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Engine:
+    def run(self) -> str:
+        return "running"
+
+
+class JobRunner:
+    def __init__(self, engine: Engine) -> None:
+        self.engine = engine
+
+    def execute(self) -> str:
+        return self.engine.run()

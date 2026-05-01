@@ -1,8 +1,11 @@
-def positive_python_perf_layer_caching_cached_value_immediately_deserialized():
-    rule_id = "python_perf_layer_caching_cached_value_immediately_deserialized"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Caching. Flag caches storing serialized data only to deserialize before every use."
-    return rule_id, family, severity, status, intent, description
+import json
+
+CACHE: dict[str, str] = {}
+
+
+def get_settings(account: str) -> dict[str, object]:
+    raw = CACHE.get(account)
+    if raw is None:
+        raw = json.dumps({"plan": "pro", "account": account})
+        CACHE[account] = raw
+    return json.loads(raw)

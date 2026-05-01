@@ -1,8 +1,11 @@
-def negative_object_allocated_in_tight_loop_expected_to_be_pooled():
-    rule_id = "object_allocated_in_tight_loop_expected_to_be_pooled"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Heavyweight object such as HTTPSession or DB connection allocated fresh on every loop iteration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Formatter:
+    def render(self, value: int) -> str:
+        return f"item={value}"
+
+
+def format_items(values: list[int]) -> list[str]:
+    formatter = Formatter()
+    return [formatter.render(value) for value in values]

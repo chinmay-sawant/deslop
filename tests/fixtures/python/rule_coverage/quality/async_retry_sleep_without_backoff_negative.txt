@@ -1,8 +1,9 @@
-def negative_async_retry_sleep_without_backoff():
-    rule_id = "async_retry_sleep_without_backoff"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Retry-style async loops that sleep a fixed interval without visible backoff, jitter, or bounded retry policy."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import asyncio
+
+
+async def async_retry_sleep_without_backoff_negative(attempts: int) -> int:
+    for retry in range(attempts):
+        await asyncio.sleep(0.2 * (2**retry))
+    return attempts

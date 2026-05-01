@@ -1,8 +1,9 @@
-def negative_helper_returns_success_shape_even_when_substeps_partially_fail():
-    rule_id = "helper_returns_success_shape_even_when_substeps_partially_fail"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag helpers that claim success while hiding partial failures."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def helper_returns_success_shape_even_when_substeps_partially_fail_negative() -> dict[str, object]:
+    saved = False
+    indexed = True
+    if not (saved and indexed):
+        return {"ok": False, "error": "partial failure", "saved": saved, "indexed": indexed}
+    return {"ok": True, "saved": saved, "indexed": indexed}

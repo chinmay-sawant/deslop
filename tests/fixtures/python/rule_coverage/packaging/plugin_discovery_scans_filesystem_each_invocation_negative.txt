@@ -1,8 +1,12 @@
-def negative_plugin_discovery_scans_filesystem_each_invocation():
-    rule_id = "plugin_discovery_scans_filesystem_each_invocation"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag plugin or extension discovery that rescans disk on every invocation."
-    return rule_id, family, severity, status, intent, description
+from pathlib import Path
+
+_PLUGIN_CACHE: dict[Path, list[str]] = {}
+
+
+def discover_plugins(root: Path) -> list[str]:
+    cached = _PLUGIN_CACHE.get(root)
+    if cached is not None:
+        return cached
+    names = [p.stem for p in root.glob("*.py")]
+    _PLUGIN_CACHE[root] = names
+    return names

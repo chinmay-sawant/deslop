@@ -1,8 +1,7 @@
-def negative_entrypoint_builds_dependency_graph_inside_hot_function():
-    rule_id = "entrypoint_builds_dependency_graph_inside_hot_function"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag request, batch, or loop entrypoints that reconstruct clients, caches, or providers on each call instead of wiring them once."
-    return rule_id, family, severity, status, intent, description
+# Correct: dependency graph is built once during startup
+container = DependencyContainer()
+container.wire(modules=[__name__])
+
+@app.get("/users/{id}")
+def get_user(id: int, user_service = Depends(Provide[Container.user_service])):
+    return user_service.get_user(id)

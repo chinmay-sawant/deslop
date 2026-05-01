@@ -1,8 +1,5 @@
-def negative_runtime_data_file_assumption_in_implicit_namespace_package():
-    rule_id = "runtime_data_file_assumption_in_implicit_namespace_package"
-    family = "packaging"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag implicit namespace packages that assume local data-file discovery at runtime."
-    return rule_id, family, severity, status, intent, description
+from importlib.resources import files
+
+
+def schema_path() -> str:
+    return str(files("demo_pkg").joinpath("schema.json"))

@@ -1,8 +1,6 @@
-def negative_repeated_normalization_of_same_string_in_loop():
-    rule_id = "repeated_normalization_of_same_string_in_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag repeated .strip(), .lower(), .casefold(), or similar normalization on the same value inside a loop."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_normalization_of_same_string_in_loop_negative():
+    raw_name = "  Alice Example  "
+    normalized = raw_name.strip().casefold()
+    return [normalized[:size] for size in (2, 3, 4)]

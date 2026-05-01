@@ -1,8 +1,10 @@
-def positive_python_perf_layer_caching_cache_key_uses_json_dumps_in_hot_path():
-    rule_id = "python_perf_layer_caching_cache_key_uses_json_dumps_in_hot_path"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Caching. Flag cache keys built with json.dumps in hot paths when tuple or stable string keys would work."
-    return rule_id, family, severity, status, intent, description
+import json
+
+_CACHE: dict[str, int] = {}
+
+
+def score_user(user: dict[str, object]) -> int:
+    key = json.dumps(user, sort_keys=True)
+    if key not in _CACHE:
+        _CACHE[key] = len(key)
+    return _CACHE[key]

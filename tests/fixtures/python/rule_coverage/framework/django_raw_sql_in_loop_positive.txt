@@ -1,8 +1,10 @@
-def positive_django_raw_sql_in_loop():
-    rule_id = "django_raw_sql_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Django request or service code executes raw SQL inside loops instead of batching."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_raw_sql_in_loop_positive():
+    results = []
+    user_ids = [10, 11, 12]
+    with connection.cursor() as cursor:
+        for user_id in user_ids:
+            cursor.execute("SELECT id FROM users WHERE id=%s", [user_id])
+            results.extend(cursor.fetchall())
+    return results

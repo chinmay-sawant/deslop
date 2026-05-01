@@ -1,8 +1,8 @@
-def positive_float_equality_controls_branching_on_computed_values():
-    rule_id = "float_equality_controls_branching_on_computed_values"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag control flow that depends on exact float equality after computation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def float_equality_controls_branching_on_computed_values_positive(values: list[float]) -> str:
+    average = sum(values) / len(values)
+    if average == 0.3:
+        return "target-hit"
+    return "target-miss"

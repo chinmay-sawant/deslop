@@ -1,8 +1,10 @@
-def negative_namedtuple_fields_accessed_by_integer_index():
-    rule_id = "namedtuple_fields_accessed_by_integer_index"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "namedtuple fields accessed by integer index instead of by named attribute."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y"])
+
+
+def namedtuple_fields_accessed_by_integer_index_negative() -> int:
+    point = Point(2, 4)
+    return point.x + point.y

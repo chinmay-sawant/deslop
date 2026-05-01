@@ -1,8 +1,4 @@
-def positive_module_level_side_effect_outside_main_guard():
-    rule_id = "module_level_side_effect_outside_main_guard"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Module-level side effect such as signal.signal or threading.Thread outside an if __name__ guard."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+SIDE_EFFECT_LOG: list[str] = []
+SIDE_EFFECT_LOG.append("connected at import")

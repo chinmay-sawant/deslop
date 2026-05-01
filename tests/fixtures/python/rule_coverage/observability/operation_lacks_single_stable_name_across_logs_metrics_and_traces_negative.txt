@@ -1,8 +1,7 @@
-def negative_operation_lacks_single_stable_name_across_logs_metrics_and_traces():
-    rule_id = "operation_lacks_single_stable_name_across_logs_metrics_and_traces"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag operations that are named inconsistently across observability surfaces."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+OPERATION = "user_fetch"
+
+
+def operation_lacks_single_stable_name_across_logs_metrics_and_traces_negative() -> dict[str, str]:
+    return {"log_op": OPERATION, "metric_op": OPERATION, "trace_op": OPERATION}

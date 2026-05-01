@@ -1,8 +1,3 @@
-def negative_view_or_handler_performs_direct_file_system_io():
-    rule_id = "view_or_handler_performs_direct_file_system_io"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Route handler or view calls open(), os.path, or pathlib directly on the request path."
-    return rule_id, family, severity, status, intent, description
+def upload_view(request: dict, storage_service) -> dict:
+    location = storage_service.save_text(request["name"], request["content"])
+    return {"saved_to": location}

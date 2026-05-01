@@ -1,8 +1,8 @@
-def negative_domain_model_class_imports_http_library():
-    rule_id = "domain_model_class_imports_http_library"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Domain model or entity file imports an HTTP framework module such as Flask, Django, or FastAPI."
-    return rule_id, family, severity, status, intent, description
+# domain/user.py
+class User:
+    def __init__(self, user_id):
+        self.id = user_id
+    
+    # Correct: pure domain model with no external dependencies
+    def get_data(self):
+        return {"id": self.id}

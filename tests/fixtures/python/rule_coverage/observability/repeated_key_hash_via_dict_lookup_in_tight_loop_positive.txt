@@ -1,8 +1,11 @@
-def positive_repeated_key_hash_via_dict_lookup_in_tight_loop():
-    rule_id = "repeated_key_hash_via_dict_lookup_in_tight_loop"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Same dict key looked up repeatedly inside a loop; cache the value in a local variable."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def repeated_key_hash_via_dict_lookup_in_tight_loop_positive(values: list[str]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for value in values:
+        if value in counts:
+            counts[value] = counts[value] + 1
+        else:
+            counts[value] = 1
+    return counts

@@ -1,8 +1,10 @@
-def negative_recursive_traversal_risk():
-    rule_id = "recursive_traversal_risk"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Direct recursion in traversal-style helpers that may be safer as iterative walks for deep inputs."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def recursive_traversal_risk_negative(root):
+    total = 0
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        total += node.value
+        stack.extend(node.children)
+    return total

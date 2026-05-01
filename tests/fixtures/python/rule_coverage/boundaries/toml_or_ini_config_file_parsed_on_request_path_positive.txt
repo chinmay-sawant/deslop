@@ -1,8 +1,9 @@
-def positive_toml_or_ini_config_file_parsed_on_request_path():
-    rule_id = "toml_or_ini_config_file_parsed_on_request_path"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "TOML, INI, or YAML config file parsed inside a request handler on every request."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import tomllib
+
+
+def handle_request() -> str:
+    with open("settings.toml", "rb") as fp:
+        config = tomllib.load(fp)
+    return config["mode"]

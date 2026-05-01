@@ -1,8 +1,8 @@
-def negative_repeated_pure_helper_call_on_same_input_without_local_cache():
-    rule_id = "repeated_pure_helper_call_on_same_input_without_local_cache"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag hot loops that recompute the same pure helper result for identical inputs in one scope."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_pure_helper_call_on_same_input_without_local_cache_negative():
+    def slugify(text: str) -> str:
+        return "-".join(text.lower().split())
+    value = "Product Name"
+    slug = slugify(value)
+    return [f"{slug}:{slug}" for _ in range(3)]

@@ -1,8 +1,5 @@
-def positive_duplicate_items_silently_dropped_without_contract_signal():
-    rule_id = "duplicate_items_silently_dropped_without_contract_signal"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag code that deduplicates caller data without making that behavior explicit."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def duplicate_items_silently_dropped_without_contract_signal_positive(items: list[str]) -> list[str]:
+    return list(set(items))

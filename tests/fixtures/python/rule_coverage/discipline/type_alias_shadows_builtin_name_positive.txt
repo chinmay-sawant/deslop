@@ -1,8 +1,7 @@
-def positive_type_alias_shadows_builtin_name():
-    rule_id = "type_alias_shadows_builtin_name"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Type alias variable assigned a name that shadows a Python builtin such as list, dict, or type."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+list = tuple[int, int]
+
+
+def type_alias_shadows_builtin_name_positive() -> list:
+    return (1, 2)

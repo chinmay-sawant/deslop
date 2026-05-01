@@ -1,8 +1,9 @@
-def positive_list_pop_zero_used_as_queue_operation():
-    rule_id = "list_pop_zero_used_as_queue_operation"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "list.pop(0) or list.insert(0, ...) used as a FIFO queue; use collections.deque.popleft()."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def list_pop_zero_used_as_queue_operation_positive(items: list[str]) -> list[str]:
+    queue = list(items)
+    drained: list[str] = []
+    while queue:
+        drained.append(queue.pop(0))
+    return drained

@@ -1,8 +1,3 @@
-def negative_python_perf_layer_database_access_count_then_fetch_every_page():
-    rule_id = "python_perf_layer_database_access_count_then_fetch_every_page"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Database access. Flag count queries paired with every paginated fetch without product need or caching."
-    return rule_id, family, severity, status, intent, description
+def export_all(cursor, page_size: int) -> list[tuple[int, str]]:
+    cursor.execute("SELECT id, name FROM users ORDER BY id LIMIT %s", (page_size,))
+    return cursor.fetchall()

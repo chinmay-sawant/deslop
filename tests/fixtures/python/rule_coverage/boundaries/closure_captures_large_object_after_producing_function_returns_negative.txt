@@ -1,8 +1,8 @@
-def negative_closure_captures_large_object_after_producing_function_returns():
-    rule_id = "closure_captures_large_object_after_producing_function_returns"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Inner function or lambda captures a large local variable after the producer returns, preventing GC."
-    return rule_id, family, severity, status, intent, description
+def build_reader():
+    payload = b"x" * 1_000_000
+    prefix = payload[:64]
+
+    def read_prefix(size: int) -> bytes:
+        return prefix[:size]
+
+    return read_prefix

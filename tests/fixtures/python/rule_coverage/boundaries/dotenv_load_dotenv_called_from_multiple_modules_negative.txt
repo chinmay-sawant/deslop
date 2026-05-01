@@ -1,8 +1,12 @@
-def negative_dotenv_load_dotenv_called_from_multiple_modules():
-    rule_id = "dotenv_load_dotenv_called_from_multiple_modules"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "dotenv.load_dotenv() called from more than one module, risking silent config override."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dotenv import load_dotenv
+
+_env_loaded = False
+
+
+def init_environment() -> None:
+    global _env_loaded
+    if not _env_loaded:
+        load_dotenv()
+        _env_loaded = True

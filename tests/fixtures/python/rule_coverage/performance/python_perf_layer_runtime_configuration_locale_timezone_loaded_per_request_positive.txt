@@ -1,8 +1,13 @@
-def positive_python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request():
-    rule_id = "python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Build and runtime configuration. Flag locale or timezone data loaded for every request instead of cached process state."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import locale
+from zoneinfo import ZoneInfo
+
+
+def python_perf_layer_runtime_configuration_locale_timezone_loaded_per_request_positive(timestamps):
+    rendered = []
+    for ts in timestamps:
+        _ = locale.getlocale()
+        zone = ZoneInfo("UTC")
+        rendered.append(ts.astimezone(zone).isoformat())
+    return rendered

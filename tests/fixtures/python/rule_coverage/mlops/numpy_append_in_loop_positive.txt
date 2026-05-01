@@ -1,8 +1,10 @@
-def positive_numpy_append_in_loop():
-    rule_id = "numpy_append_in_loop"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "np.append(...) is used inside loops, forcing repeated reallocations."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import numpy as np
+
+
+def build_vector(values: list[float]) -> np.ndarray:
+    result = np.array([], dtype=float)
+    for value in values:
+        result = np.append(result, value)
+    return result

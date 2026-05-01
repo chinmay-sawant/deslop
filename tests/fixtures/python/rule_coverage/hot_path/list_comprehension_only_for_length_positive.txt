@@ -1,8 +1,5 @@
-def positive_list_comprehension_only_for_length():
-    rule_id = "list_comprehension_only_for_length"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "A list comprehension is built only so len(...) can be called on it."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def list_comprehension_only_for_length_positive():
+    values = [5, -4, 2, 0]
+    return len([v for v in values if v > 0])

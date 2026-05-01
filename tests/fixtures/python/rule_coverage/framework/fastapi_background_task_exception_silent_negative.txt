@@ -1,8 +1,10 @@
-def negative_fastapi_background_task_exception_silent():
-    rule_id = "fastapi_background_task_exception_silent"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "FastAPI background task dispatches appear to rely on default exception behavior without visible error handling."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def fastapi_background_task_exception_silent_negative():
+    async def send_email_task(message_id: str):
+        try:
+            await email_client.send(message_id)
+        except Exception as exc:
+            logger.exception("background send failed: %s", exc)
+
+    return send_email_task

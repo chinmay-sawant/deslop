@@ -1,8 +1,9 @@
-def positive_wrapper_function_only_renames_arguments_and_passthroughs_behavior():
-    rule_id = "wrapper_function_only_renames_arguments_and_passthroughs_behavior"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag wrappers that add no policy, safety, or abstraction value."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def fetch_user(user_id: int) -> dict[str, int]:
+    return {"id": user_id}
+
+
+def get_customer(customer_number: int) -> dict[str, int]:
+    return fetch_user(user_id=customer_number)

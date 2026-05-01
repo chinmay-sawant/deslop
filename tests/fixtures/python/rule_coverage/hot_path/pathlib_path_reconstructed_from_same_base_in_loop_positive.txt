@@ -1,8 +1,7 @@
-def positive_pathlib_path_reconstructed_from_same_base_in_loop():
-    rule_id = "pathlib_path_reconstructed_from_same_base_in_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag loops that rebuild the same base Path object every iteration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def pathlib_path_reconstructed_from_same_base_in_loop_positive():
+    targets = []
+    for name in ["a.txt", "b.txt", "c.txt"]:
+        targets.append(Path("/var/data/reports") / name)
+    return targets

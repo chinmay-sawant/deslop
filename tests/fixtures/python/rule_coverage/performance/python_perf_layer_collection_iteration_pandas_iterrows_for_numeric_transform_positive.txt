@@ -1,8 +1,4 @@
-def positive_python_perf_layer_collection_iteration_pandas_iterrows_for_numeric_transform():
-    rule_id = "python_perf_layer_collection_iteration_pandas_iterrows_for_numeric_transform"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Collection iteration. Flag pandas iterrows loops for numeric transformations that can be vectorized or applied in batches."
-    return rule_id, family, severity, status, intent, description
+def add_tax(df):
+    for idx, row in df.iterrows():
+        df.loc[idx, "gross"] = row["net"] * 1.18
+    return df

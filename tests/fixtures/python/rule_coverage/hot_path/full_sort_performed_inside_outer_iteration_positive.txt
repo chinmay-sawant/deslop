@@ -1,8 +1,9 @@
-def positive_full_sort_performed_inside_outer_iteration():
-    rule_id = "full_sort_performed_inside_outer_iteration"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag outer loops that sort a full collection during each iteration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def full_sort_performed_inside_outer_iteration_positive():
+    batches = [[3, 1], [4, 2], [6, 5]]
+    merged = []
+    for batch in batches:
+        merged.extend(batch)
+        merged.sort()
+    return merged

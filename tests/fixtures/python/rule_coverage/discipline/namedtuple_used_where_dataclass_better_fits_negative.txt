@@ -1,8 +1,14 @@
-def negative_namedtuple_used_where_dataclass_better_fits():
-    rule_id = "namedtuple_used_where_dataclass_better_fits"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "collections.namedtuple used for a record that needs default values, mutation, or methods."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class User:
+    id: int
+    email: str
+    active: bool
+
+
+def namedtuple_used_where_dataclass_better_fits_negative() -> User:
+    return User(1, "a@example.com", True)

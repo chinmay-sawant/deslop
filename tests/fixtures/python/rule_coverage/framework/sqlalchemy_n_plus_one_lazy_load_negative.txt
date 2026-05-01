@@ -1,8 +1,6 @@
-def negative_sqlalchemy_n_plus_one_lazy_load():
-    rule_id = "sqlalchemy_n_plus_one_lazy_load"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "SQLAlchemy query shapes suggest lazy-loaded N+1 access with no visible eager loading."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sqlalchemy_n_plus_one_lazy_load_negative():
+    with Session(engine) as session:
+        orders = session.query(Order).options(selectinload(Order.customer)).all()
+        return [order.customer.name for order in orders]

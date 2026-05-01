@@ -1,8 +1,12 @@
-def negative_retry_policy_scattered_across_multiple_callers():
-    rule_id = "retry_policy_scattered_across_multiple_callers"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag repeated retry or backoff loops around the same dependency instead of one owner boundary."
-    return rule_id, family, severity, status, intent, description
+from tenacity import retry, stop_after_attempt
+
+# Correct: centralized retry policy using a decorator
+@retry(stop=stop_after_attempt(3))
+def external_call_wrapper():
+    return external_call()
+
+def caller_one():
+    return external_call_wrapper()
+
+def caller_two():
+    return external_call_wrapper()

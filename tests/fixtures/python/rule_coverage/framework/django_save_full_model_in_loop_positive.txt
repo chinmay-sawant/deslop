@@ -1,8 +1,7 @@
-def positive_django_save_full_model_in_loop():
-    rule_id = "django_save_full_model_in_loop"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Django code saves full model instances in loops without update_fields or bulk updates."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def django_save_full_model_in_loop_positive():
+    for account_id in [1, 2, 3]:
+        account = Account.objects.get(id=account_id)
+        account.status = "archived"
+        account.save()

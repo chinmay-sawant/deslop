@@ -1,8 +1,5 @@
-def negative_python_perf_layer_logging_overhead_log_message_formatted_before_level_check():
-    rule_id = "python_perf_layer_logging_overhead_log_message_formatted_before_level_check"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Logging overhead. Flag f-string or format log messages built before logger level checks can skip them."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def python_perf_layer_logging_overhead_log_message_formatted_before_level_check_negative(logger, user):
+    if logger.isEnabledFor(20):
+        logger.info("user=%s roles=%s", user["id"], ",".join(user["roles"]))

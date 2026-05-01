@@ -1,8 +1,7 @@
-def negative_subprocess_invoked_with_shell_true_and_user_derived_input():
-    rule_id = "subprocess_invoked_with_shell_true_and_user_derived_input"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "subprocess called with shell=True and a command string that includes user-controlled data."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import subprocess
+
+
+def run_user_command(user_value: str) -> str:
+    return subprocess.check_output(["echo", user_value], shell=False, text=True).strip()

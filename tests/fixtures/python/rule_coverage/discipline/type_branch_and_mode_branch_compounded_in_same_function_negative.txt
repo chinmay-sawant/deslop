@@ -1,8 +1,14 @@
-def negative_type_branch_and_mode_branch_compounded_in_same_function():
-    rule_id = "type_branch_and_mode_branch_compounded_in_same_function"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag functions that branch on both runtime type and mode string in the same decision tree."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def _coerce(value: int | str) -> str:
+    if isinstance(value, int):
+        return str(value)
+    return value
+
+
+def type_branch_and_mode_branch_compounded_in_same_function_negative(value: int | str, mode: str) -> str:
+    text = _coerce(value)
+    if mode == "upper":
+        return text.upper()
+    return text

@@ -1,8 +1,9 @@
-def negative_asyncio_get_event_loop_at_module_scope():
-    rule_id = "asyncio_get_event_loop_at_module_scope"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "asyncio.get_event_loop() or get_running_loop() called at module import scope outside any function."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+async def start_app():
+    # Safe: getting the event loop inside an async context or function
+    loop = asyncio.get_running_loop()
+    await loop.create_server(...)
+
+if __name__ == "__main__":
+    asyncio.run(start_app())

@@ -1,8 +1,19 @@
-def positive_god_class():
-    rule_id = "god_class"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Python classes that concentrate unusually high method count, public surface area, and mutable instance state."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class GodClassPositive:
+    def parse_order(self, raw: str) -> dict[str, str]:
+        key, value = raw.split("=", 1)
+        return {key: value}
+
+    def validate_user(self, user_id: str) -> bool:
+        return user_id.isdigit()
+
+    def persist(self, row: dict[str, str]) -> str:
+        return f"saved:{row}"
+
+    def render(self, row: dict[str, str]) -> str:
+        return f"<div>{row}</div>"
+
+    def send_email(self, email: str) -> str:
+        return f"sent:{email}"

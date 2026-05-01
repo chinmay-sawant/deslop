@@ -1,8 +1,7 @@
-def positive_repeated_attribute_chain_lookup_inside_tight_loop():
-    rule_id = "repeated_attribute_chain_lookup_inside_tight_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag tight loops that repeatedly traverse the same attribute chain instead of binding a local reference."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_attribute_chain_lookup_inside_tight_loop_positive():
+    total = 0
+    for order in orders:
+        total += order.customer.profile.score + order.customer.profile.rank
+    return total

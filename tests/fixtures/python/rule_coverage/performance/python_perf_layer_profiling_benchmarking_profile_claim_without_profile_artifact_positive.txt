@@ -1,8 +1,9 @@
-def positive_python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact():
-    rule_id = "python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Profiling and benchmarking. Flag optimization comments or docs without profile, benchmark, or trace evidence."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import time
+
+
+def python_perf_layer_profiling_benchmarking_profile_claim_without_profile_artifact_positive(work):
+    start = time.perf_counter()
+    work()
+    return {"profiled": True, "seconds": time.perf_counter() - start}

@@ -1,8 +1,9 @@
-def positive_global_state_in_data_pipeline():
-    rule_id = "global_state_in_data_pipeline"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Pipeline-style functions mutate global state, making concurrency and reproducibility brittle."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+CURRENT_BATCH: list[int] = []
+
+
+def process(batch: list[int]) -> int:
+    CURRENT_BATCH.clear()
+    CURRENT_BATCH.extend(batch)
+    return sum(CURRENT_BATCH)

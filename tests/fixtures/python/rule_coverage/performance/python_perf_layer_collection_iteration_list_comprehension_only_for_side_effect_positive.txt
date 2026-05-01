@@ -1,8 +1,2 @@
-def positive_python_perf_layer_collection_iteration_list_comprehension_only_for_side_effect():
-    rule_id = "python_perf_layer_collection_iteration_list_comprehension_only_for_side_effect"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Collection iteration. Flag list comprehensions used only for side effects, forcing unnecessary list allocation."
-    return rule_id, family, severity, status, intent, description
+def push_all(values: list[int], sink: list[int]) -> None:
+    [sink.append(v * 2) for v in values]

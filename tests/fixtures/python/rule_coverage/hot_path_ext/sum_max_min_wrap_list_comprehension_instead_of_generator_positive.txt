@@ -1,8 +1,5 @@
-def positive_sum_max_min_wrap_list_comprehension_instead_of_generator():
-    rule_id = "sum_max_min_wrap_list_comprehension_instead_of_generator"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag reductions that build transient lists instead of using generator expressions."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sum_max_min_wrap_list_comprehension_instead_of_generator_positive():
+    values = [1, 2, 3, 4]
+    return sum([value * value for value in values])

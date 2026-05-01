@@ -1,8 +1,14 @@
-def negative_generic_class_used_without_type_parameter_application():
-    rule_id = "generic_class_used_without_type_parameter_application"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Generic class subclassed or instantiated without supplying the required type parameters."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import Generic, TypeVar
+
+T = TypeVar("T")
+
+
+class Box(Generic[T]):
+    def __init__(self, value: T) -> None:
+        self.value = value
+
+
+def generic_class_used_without_type_parameter_application_negative() -> Box[int]:
+    return Box[int](3)

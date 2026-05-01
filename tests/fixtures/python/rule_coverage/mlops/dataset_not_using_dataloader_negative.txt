@@ -1,8 +1,15 @@
-def negative_dataset_not_using_dataloader():
-    rule_id = "dataset_not_using_dataloader"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Manual dataset batching loops that bypass torch.utils.data.DataLoader."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from collections.abc import Iterator
+
+
+def dataloader(dataset: list[list[float]], batch_size: int) -> Iterator[list[list[float]]]:
+    for index in range(0, len(dataset), batch_size):
+        yield dataset[index : index + batch_size]
+
+
+def train(dataset: list[list[float]]) -> int:
+    seen = 0
+    for batch in dataloader(dataset, batch_size=32):
+        seen += len(batch)
+    return seen

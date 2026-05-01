@@ -1,8 +1,12 @@
-def negative_distributed_trace_span_created_without_parent_context_propagation():
-    rule_id = "distributed_trace_span_created_without_parent_context_propagation"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "OpenTelemetry or custom trace span created without extracting the parent context from the incoming request."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Tracer:
+    def start_span(self, name: str, context: dict[str, str] | None = None) -> dict[str, object]:
+        return {"name": name, "context": context}
+
+
+def distributed_trace_span_created_without_parent_context_propagation_negative(
+    tracer: Tracer, parent_context: dict[str, str]
+) -> dict[str, object]:
+    return tracer.start_span("db.query", context=parent_context)

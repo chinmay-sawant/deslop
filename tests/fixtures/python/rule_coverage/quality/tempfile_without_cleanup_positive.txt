@@ -1,8 +1,10 @@
-def positive_tempfile_without_cleanup():
-    rule_id = "tempfile_without_cleanup"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Temporary files or directories created without a visible cleanup or context-manager ownership path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import tempfile
+
+
+def tempfile_without_cleanup_positive(data: str) -> str:
+    handle = tempfile.NamedTemporaryFile(delete=False, mode="w", encoding="utf-8")
+    handle.write(data)
+    handle.close()
+    return handle.name

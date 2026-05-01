@@ -1,8 +1,13 @@
-def negative_protocol_used_in_isinstance_without_runtime_checkable():
-    rule_id = "protocol_used_in_isinstance_without_runtime_checkable"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "typing.Protocol used in isinstance() call without @runtime_checkable decorator."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from typing import Protocol, runtime_checkable
+
+
+@runtime_checkable
+class Runner(Protocol):
+    def run(self) -> None:
+        ...
+
+
+def protocol_used_in_isinstance_without_runtime_checkable_negative(obj: object) -> bool:
+    return isinstance(obj, Runner)

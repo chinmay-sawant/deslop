@@ -1,0 +1,4 @@
+def upgrade():
+    # Violation: migration contains business/data manipulation logic
+    op.execute("UPDATE users SET is_active = True WHERE login_count > 10")
+    op.add_column('users', sa.Column('is_active', sa.Boolean()))

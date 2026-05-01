@@ -1,8 +1,8 @@
-def positive_python_perf_layer_resource_pooling_process_pool_without_shutdown():
-    rule_id = "python_perf_layer_resource_pooling_process_pool_without_shutdown"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Resource pooling. Flag ProcessPoolExecutor ownership without shutdown or bounded queue behavior."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from concurrent.futures import ProcessPoolExecutor
+
+
+def python_perf_layer_resource_pooling_process_pool_without_shutdown_positive(nums):
+    pool = ProcessPoolExecutor(max_workers=2)
+    return list(pool.map(abs, nums))

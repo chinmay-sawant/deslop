@@ -1,8 +1,15 @@
-def negative_background_task_exception_unobserved():
-    rule_id = "background_task_exception_unobserved"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Background task bindings with no obvious await, callback, supervisor, or observation path."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import asyncio
+
+
+async def background_task_exception_unobserved_negative() -> str:
+    async def fail_later() -> None:
+        raise RuntimeError("boom")
+
+    task = asyncio.create_task(fail_later())
+    try:
+        await task
+    except RuntimeError:
+        return "handled"
+    return "ok"

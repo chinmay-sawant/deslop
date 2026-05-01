@@ -1,8 +1,11 @@
-def negative_python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records():
-    rule_id = "python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Data structure choice. Flag dict-of-dicts records in hot loops where dataclass, tuple, or typed containers reduce lookup cost."
-    return rule_id, family, severity, status, intent, description
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class Person:
+    name: str
+    score: int
+
+
+def build_people() -> list[Person]:
+    return [Person("Ana", 12), Person("Ben", 18)]

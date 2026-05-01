@@ -1,8 +1,10 @@
-def positive_urlparse_in_loop_on_invariant_base():
-    rule_id = "urlparse_in_loop_on_invariant_base"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "urlparse() or urlsplit() is repeated inside loops for invariant base values."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def urlparse_in_loop_on_invariant_base_positive():
+    from urllib.parse import urlparse
+    paths = ["/a", "/b", "/c"]
+    hosts = []
+    for _ in paths:
+        parsed = urlparse("https://api.example.com/root")
+        hosts.append(parsed.netloc)
+    return hosts

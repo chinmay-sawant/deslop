@@ -1,8 +1,10 @@
-def negative_retry_loop_catches_broad_base_exception():
-    rule_id = "retry_loop_catches_broad_base_exception"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Retry loop catches Exception or BaseException instead of the specific transient errors that warrant a retry."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def retry_loop_catches_broad_base_exception_negative(fn) -> int:
+    for _ in range(3):
+        try:
+            return fn()
+        except TimeoutError:
+            continue
+    raise TimeoutError("all retries failed")

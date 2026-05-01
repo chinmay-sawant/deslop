@@ -1,8 +1,8 @@
-def positive_cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary():
-    rule_id = "cross_cutting_policies_embedded_in_leaf_modules_instead_of_shared_boundary"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag retries, normalization, or policy checks embedded in leaf modules instead of one shared boundary."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class InvoiceEmailSender:
+    def send(self, role: str, body: str) -> str:
+        if role != "admin":
+            raise PermissionError("admin only")
+        return f"sent:{body}"

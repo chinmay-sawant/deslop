@@ -1,8 +1,16 @@
-def negative_retry_on_rate_limit_without_backoff():
-    rule_id = "retry_on_rate_limit_without_backoff"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Rate-limit retries appear without visible backoff or Retry-After handling."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import time
+
+
+class RateLimitError(Exception):
+    pass
+
+
+def call_with_retry(client: object) -> str:
+    for attempt in range(3):
+        try:
+            return client.call()
+        except RateLimitError:
+            time.sleep(2**attempt)
+    raise RateLimitError("exhausted retries")

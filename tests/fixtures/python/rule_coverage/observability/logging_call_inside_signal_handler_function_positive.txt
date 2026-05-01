@@ -1,8 +1,9 @@
-def positive_logging_call_inside_signal_handler_function():
-    rule_id = "logging_call_inside_signal_handler_function"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "logging call inside a signal handler; logging uses locks and is not async-signal-safe."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
+
+def logging_call_inside_signal_handler_function_positive(signum: int, frame: object) -> None:
+    LOGGER.warning("received signal %s", signum)

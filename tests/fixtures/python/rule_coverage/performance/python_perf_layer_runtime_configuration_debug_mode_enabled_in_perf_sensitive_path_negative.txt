@@ -1,8 +1,10 @@
-def negative_python_perf_layer_runtime_configuration_debug_mode_enabled_in_perf_sensitive_path():
-    rule_id = "python_perf_layer_runtime_configuration_debug_mode_enabled_in_perf_sensitive_path"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Build and runtime configuration. Flag framework debug or reload mode enabled in performance-sensitive runtime config."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def python_perf_layer_runtime_configuration_debug_mode_enabled_in_perf_sensitive_path_negative(values):
+    total = 0
+    debug_enabled = False
+    for value in values:
+        if debug_enabled:
+            _ = {"value": value}
+        total += value
+    return total

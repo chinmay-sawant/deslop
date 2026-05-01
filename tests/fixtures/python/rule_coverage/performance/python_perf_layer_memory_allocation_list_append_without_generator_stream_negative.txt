@@ -1,8 +1,4 @@
-def negative_python_perf_layer_memory_allocation_list_append_without_generator_stream():
-    rule_id = "python_perf_layer_memory_allocation_list_append_without_generator_stream"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Memory allocation. Flag large intermediate lists built only to feed another iterator-compatible consumer."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def python_perf_layer_memory_allocation_list_append_without_generator_stream_negative(values):
+    return sum(value * value for value in values)

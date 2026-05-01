@@ -1,8 +1,10 @@
-def positive_tokenizer_loaded_per_request():
-    rule_id = "tokenizer_loaded_per_request"
-    family = "mlops"
-    severity = "warning"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Tokenizers are loaded on request paths instead of once during application startup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def load_tokenizer() -> str:
+    return "tok-v1"
+
+
+def tokenize(text: str) -> str:
+    tokenizer = load_tokenizer()
+    return f"{tokenizer}:{text}"

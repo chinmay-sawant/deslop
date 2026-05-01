@@ -1,8 +1,5 @@
-def positive_python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records():
-    rule_id = "python_perf_layer_data_structure_choice_dict_of_dicts_for_fixed_records"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Data structure choice. Flag dict-of-dicts records in hot loops where dataclass, tuple, or typed containers reduce lookup cost."
-    return rule_id, family, severity, status, intent, description
+def build_people() -> dict[str, dict[str, object]]:
+    return {
+        "u1": {"name": "Ana", "score": 12},
+        "u2": {"name": "Ben", "score": 18},
+    }

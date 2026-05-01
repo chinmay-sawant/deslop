@@ -1,8 +1,13 @@
-def negative_python_perf_layer_resource_pooling_rate_limiter_created_per_request():
-    rule_id = "python_perf_layer_resource_pooling_rate_limiter_created_per_request"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Resource pooling. Flag rate limiter construction per request instead of per identity or dependency."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+class SharedLimiter:
+    def __init__(self, limit):
+        self.limit = limit
+        self.tokens = limit
+
+
+RATE_LIMITER = SharedLimiter(100)
+
+
+def python_perf_layer_resource_pooling_rate_limiter_created_per_request_negative():
+    return RATE_LIMITER.tokens

@@ -1,8 +1,12 @@
-def negative_metric_emission_occurs_per_item_inside_inner_loop():
-    rule_id = "metric_emission_occurs_per_item_inside_inner_loop"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag inner loops that emit one metric per item instead of aggregating."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def emit(metric: str, value: int) -> tuple[str, int]:
+    return metric, value
+
+
+def metric_emission_occurs_per_item_inside_inner_loop_negative(batches: list[list[int]]) -> list[tuple[str, int]]:
+    out: list[tuple[str, int]] = []
+    for batch in batches:
+        out.append(emit("batch.items_processed", len(batch)))
+    return out

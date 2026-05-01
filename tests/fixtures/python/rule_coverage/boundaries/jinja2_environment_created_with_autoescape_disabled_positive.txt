@@ -1,8 +1,5 @@
-def positive_jinja2_environment_created_with_autoescape_disabled():
-    rule_id = "jinja2_environment_created_with_autoescape_disabled"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Jinja2 Environment created without autoescape=True or with autoescape=False, enabling XSS."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from jinja2 import Environment
+
+template_env = Environment(autoescape=False)

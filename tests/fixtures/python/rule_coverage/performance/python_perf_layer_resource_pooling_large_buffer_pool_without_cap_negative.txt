@@ -1,8 +1,11 @@
-def negative_python_perf_layer_resource_pooling_large_buffer_pool_without_cap():
-    rule_id = "python_perf_layer_resource_pooling_large_buffer_pool_without_cap"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Resource pooling. Flag reusable buffer pools that keep oversized buffers after traffic spikes."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+CAPPED_POOL = []
+POOL_LIMIT = 8
+
+
+def python_perf_layer_resource_pooling_large_buffer_pool_without_cap_negative(size):
+    if len(CAPPED_POOL) >= POOL_LIMIT:
+        CAPPED_POOL.pop(0)
+    CAPPED_POOL.append(bytearray(size))
+    return len(CAPPED_POOL)

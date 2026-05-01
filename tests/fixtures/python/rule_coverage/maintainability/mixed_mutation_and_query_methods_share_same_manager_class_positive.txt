@@ -1,8 +1,12 @@
-def positive_mixed_mutation_and_query_methods_share_same_manager_class():
-    rule_id = "mixed_mutation_and_query_methods_share_same_manager_class"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag manager-style classes that both mutate and answer read-model queries with no boundary."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class UserManager:
+    def __init__(self) -> None:
+        self._users: dict[int, str] = {}
+
+    def save_user(self, user_id: int, name: str) -> None:
+        self._users[user_id] = name
+
+    def find_user(self, user_id: int) -> str | None:
+        return self._users.get(user_id)

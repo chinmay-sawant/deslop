@@ -1,8 +1,7 @@
-def positive_importlib_metadata_version_queried_inside_request_loop():
-    rule_id = "importlib_metadata_version_queried_inside_request_loop"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "importlib.metadata.version() called inside a request handler; cache the result at startup."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from importlib.metadata import version
+
+
+def importlib_metadata_version_queried_inside_request_loop_positive(request_ids: list[str]) -> list[str]:
+    return [f"{request_id}:{version('pip')}" for request_id in request_ids]

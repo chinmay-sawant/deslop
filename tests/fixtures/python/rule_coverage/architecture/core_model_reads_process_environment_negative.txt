@@ -1,8 +1,5 @@
-def negative_core_model_reads_process_environment():
-    rule_id = "core_model_reads_process_environment"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag core classes or pure helper layers that directly access os.environ, os.getenv, or global settings."
-    return rule_id, family, severity, status, intent, description
+class User:
+    def __init__(self, username, debug_mode=False):
+        self.username = username
+        # Correct: configuration injected, not read from env
+        self.debug_mode = debug_mode

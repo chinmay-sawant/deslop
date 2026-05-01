@@ -1,8 +1,7 @@
-def positive_same_dataset_normalized_in_multiple_full_passes():
-    rule_id = "same_dataset_normalized_in_multiple_full_passes"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag code that walks the same dataset several times for normalization steps that can be fused."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def same_dataset_normalized_in_multiple_full_passes_positive(rows):
+    names = [row["name"].strip() for row in rows]
+    lowered = [name.lower() for name in names]
+    cleaned = [name.replace("-", "_") for name in lowered]
+    return cleaned

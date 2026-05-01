@@ -1,8 +1,6 @@
-def negative_repeated_split_or_join_on_invariant_separator_inside_loop():
-    rule_id = "repeated_split_or_join_on_invariant_separator_inside_loop"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag loops that repeatedly rebuild the same separator-driven string operations."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def repeated_split_or_join_on_invariant_separator_inside_loop_negative():
+    text = "red,green,blue"
+    parts = text.split(",")
+    return [list(parts) for _ in range(4)]

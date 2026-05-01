@@ -1,8 +1,14 @@
-def negative_function_returns_multiple_unlabeled_shape_variants():
-    rule_id = "function_returns_multiple_unlabeled_shape_variants"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag functions that return unrelated tuple or dict shapes depending on the path taken."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass
+class ParseResult:
+    kind: str
+    value: str
+
+
+def function_returns_multiple_unlabeled_shape_variants_negative(raw: str) -> ParseResult:
+    kind = "json" if raw.startswith("{") else "text"
+    return ParseResult(kind=kind, value=raw)

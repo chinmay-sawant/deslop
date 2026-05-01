@@ -1,8 +1,9 @@
-def positive_oserror_caught_without_errno_inspection():
-    rule_id = "oserror_caught_without_errno_inspection"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "OSError caught as a broad class without inspecting errno to distinguish ENOENT, EACCES, and others."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def oserror_caught_without_errno_inspection_positive(path: str) -> str:
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            return handle.read()
+    except OSError:
+        return "failed"

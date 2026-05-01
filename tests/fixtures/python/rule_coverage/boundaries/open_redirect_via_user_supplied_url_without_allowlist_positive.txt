@@ -1,8 +1,5 @@
-def positive_open_redirect_via_user_supplied_url_without_allowlist():
-    rule_id = "open_redirect_via_user_supplied_url_without_allowlist"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "HTTP redirect target constructed from user-supplied URL without allowlist validation."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def login_redirect(next_url: str) -> dict[str, str]:
+    return {"status": "302", "Location": next_url}

@@ -1,8 +1,3 @@
-def positive_arbitrary_file_write_via_user_controlled_path():
-    rule_id = "arbitrary_file_write_via_user_controlled_path"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "File write operation uses a path derived from user input without containment check."
-    return rule_id, family, severity, status, intent, description
+def save_upload(path: str, data: str) -> None:
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write(data)

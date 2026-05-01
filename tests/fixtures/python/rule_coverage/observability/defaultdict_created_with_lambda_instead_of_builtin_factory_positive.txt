@@ -1,8 +1,10 @@
-def positive_defaultdict_created_with_lambda_instead_of_builtin_factory():
-    rule_id = "defaultdict_created_with_lambda_instead_of_builtin_factory"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "defaultdict(lambda: []) or similar lambda factory; use defaultdict(list) or defaultdict(int)."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from collections import defaultdict
+
+
+def defaultdict_created_with_lambda_instead_of_builtin_factory_positive(tokens: list[str]) -> dict[str, int]:
+    counts: defaultdict[str, int] = defaultdict(lambda: 0)
+    for token in tokens:
+        counts[token] += 1
+    return dict(counts)

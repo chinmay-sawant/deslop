@@ -1,8 +1,6 @@
-def negative_helper_name_hides_mutation_or_io_side_effect():
-    rule_id = "helper_name_hides_mutation_or_io_side_effect"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag helpers whose names sound pure but actually mutate state or perform I/O."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def helper_name_hides_mutation_or_io_side_effect_negative(cache: dict[str, str], user_id: str) -> str:
+    cache[user_id] = "loaded"
+    return f"persisted:{user_id}"

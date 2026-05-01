@@ -1,8 +1,9 @@
-def positive_same_buffer_or_prefix_reencoded_each_iteration():
-    rule_id = "same_buffer_or_prefix_reencoded_each_iteration"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag loops that re-encode identical prefixes or headers on each iteration."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def same_buffer_or_prefix_reencoded_each_iteration_positive():
+    names = ["a", "b", "c"]
+    packets = []
+    for name in names:
+        prefix = "user:".encode("utf-8")
+        packets.append(prefix + name.encode("utf-8"))
+    return packets

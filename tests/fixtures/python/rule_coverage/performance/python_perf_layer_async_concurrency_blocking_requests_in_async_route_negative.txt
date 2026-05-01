@@ -1,8 +1,6 @@
-def negative_python_perf_layer_async_concurrency_blocking_requests_in_async_route():
-    rule_id = "python_perf_layer_async_concurrency_blocking_requests_in_async_route"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Async and concurrency. Flag requests.* calls inside async routes or coroutines instead of async clients or executor boundaries."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+
+async def route_handler() -> dict[str, object]:
+    await asyncio.sleep(0.01)
+    return {"status": 200}

@@ -1,8 +1,10 @@
-def positive_module_global_registry_mutated_from_import_time_registration():
-    rule_id = "module_global_registry_mutated_from_import_time_registration"
-    family = "structure"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag global registries that are populated by import side effects."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+REGISTRY: dict[str, str] = {}
+
+
+def register(name: str, value: str) -> None:
+    REGISTRY[name] = value
+
+
+register("default", "handler")

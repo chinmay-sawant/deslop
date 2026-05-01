@@ -1,8 +1,9 @@
-def positive_pickle_dumps_in_loop_same_structure():
-    rule_id = "pickle_dumps_in_loop_same_structure"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "pickle.dumps(...) is called repeatedly for the same structural shape in a loop."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def pickle_dumps_in_loop_same_structure_positive():
+    import pickle
+    template = {"kind": "event", "ok": True}
+    blobs = []
+    for _ in range(3):
+        blobs.append(pickle.dumps(template))
+    return blobs

@@ -1,8 +1,3 @@
-def negative_python_perf_layer_database_access_select_all_columns_for_serializer_subset():
-    rule_id = "python_perf_layer_database_access_select_all_columns_for_serializer_subset"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Database access. Flag ORM or SQL queries loading all columns when serializers use a small subset."
-    return rule_id, family, severity, status, intent, description
+def fetch_cards(cursor) -> list[dict[str, object]]:
+    cursor.execute("SELECT id, name FROM cards")
+    return [{"id": row[0], "name": row[1]} for row in cursor.fetchall()]

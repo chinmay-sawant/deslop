@@ -1,8 +1,9 @@
-def negative_gzip_open_per_chunk():
-    rule_id = "gzip_open_per_chunk"
-    family = "hot_path_ext"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "gzip open/create calls are repeated per chunk instead of per stream."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def gzip_open_per_chunk_negative():
+    import gzip
+    chunks = ["a", "b", "c"]
+    with gzip.open("data.gz", "at", encoding="utf-8") as stream:
+        for chunk in chunks:
+            stream.write(chunk)
+    return len(chunks)

@@ -1,8 +1,10 @@
-def positive_python_perf_layer_garbage_collection_cleanup_temporary_directory_not_cleaned_promptly():
-    rule_id = "python_perf_layer_garbage_collection_cleanup_temporary_directory_not_cleaned_promptly"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Garbage collection and cleanup. Flag TemporaryDirectory or temp files held across long workflows after their last use."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import tempfile
+from pathlib import Path
+
+
+def python_perf_layer_garbage_collection_cleanup_temporary_directory_not_cleaned_promptly_positive(payload):
+    temp_dir = Path(tempfile.mkdtemp(prefix="fixture-"))
+    (temp_dir / "payload.txt").write_text(payload, encoding="utf-8")
+    return str(temp_dir)

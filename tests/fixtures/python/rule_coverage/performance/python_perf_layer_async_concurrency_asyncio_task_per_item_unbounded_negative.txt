@@ -1,8 +1,12 @@
-def negative_python_perf_layer_async_concurrency_asyncio_task_per_item_unbounded():
-    rule_id = "python_perf_layer_async_concurrency_asyncio_task_per_item_unbounded"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Async and concurrency. Flag unbounded create_task fanout without a semaphore, queue, or batch limit."
-    return rule_id, family, severity, status, intent, description
+import asyncio
+
+
+async def run_all(items: list[int]) -> list[int]:
+    gate = asyncio.Semaphore(10)
+
+    async def work(x: int) -> int:
+        async with gate:
+            await asyncio.sleep(0.01)
+            return x * 2
+
+    return [await work(item) for item in items]

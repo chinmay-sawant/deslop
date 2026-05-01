@@ -1,8 +1,8 @@
-def negative_test_fixture_calls_datetime_now_without_freezing():
-    rule_id = "test_fixture_calls_datetime_now_without_freezing"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Test fixture or test body calls datetime.now() or datetime.today() without freezegun or similar."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from datetime import datetime
+
+
+def test_fixture_calls_datetime_now_without_freezing_negative() -> None:
+    frozen = datetime(2024, 1, 1, 12, 0, 0)
+    assert frozen.isoformat() == "2024-01-01T12:00:00"

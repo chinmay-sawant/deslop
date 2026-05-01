@@ -1,8 +1,7 @@
-def positive_sentinel_default_value_overlaps_valid_business_value():
-    rule_id = "sentinel_default_value_overlaps_valid_business_value"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag APIs whose sentinel or fallback value can also be a valid domain value."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def schedule_email(delay_minutes: int = 0) -> int:
+    if delay_minutes == 0:
+        return 15
+    return delay_minutes

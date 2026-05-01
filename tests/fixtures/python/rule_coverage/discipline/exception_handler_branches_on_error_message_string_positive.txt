@@ -1,8 +1,11 @@
-def positive_exception_handler_branches_on_error_message_string():
-    rule_id = "exception_handler_branches_on_error_message_string"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Exception handler inspects str(e) or e.message in a condition instead of matching on exception type."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def classify_error(func) -> str:
+    try:
+        func()
+        return "ok"
+    except ValueError as exc:
+        if "timeout" in str(exc).lower():
+            return "retry"
+        return "fail"

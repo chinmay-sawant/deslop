@@ -1,8 +1,4 @@
-def positive_external_input_without_validation():
-    rule_id = "external_input_without_validation"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Request or CLI entry points that trust external input without obvious validation or guard checks."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def external_input_without_validation_positive(user_filename: str):
+    return f"/srv/uploads/{user_filename}"

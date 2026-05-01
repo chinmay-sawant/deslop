@@ -1,8 +1,4 @@
-def positive_enthusiastic_commentary():
-    rule_id = "enthusiastic_commentary"
-    family = "ai_smells"
-    severity = "info"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Unusually enthusiastic or emoji-heavy production comments."
-    return rule_id, family, severity, status, intent, description
+def process_data(data):
+    # This is an ABSOLUTELY INCREDIBLE way to process data efficiently!!!!
+    # You won't BELIEVE how fast this normalization is!!!!
+    return [x.strip().lower() for x in data]

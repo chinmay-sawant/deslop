@@ -1,8 +1,11 @@
-def positive_manual_dict_increment_instead_of_counter_or_defaultdict():
-    rule_id = "manual_dict_increment_instead_of_counter_or_defaultdict"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Frequency counter maintained with manual if-key-in-dict increment; use collections.Counter."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def manual_dict_increment_instead_of_counter_or_defaultdict_positive(events: list[str]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for event in events:
+        if event in counts:
+            counts[event] = counts[event] + 1
+        else:
+            counts[event] = 1
+    return counts

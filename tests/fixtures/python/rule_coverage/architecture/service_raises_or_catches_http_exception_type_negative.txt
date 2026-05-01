@@ -1,8 +1,10 @@
-def negative_service_raises_or_catches_http_exception_type():
-    rule_id = "service_raises_or_catches_http_exception_type"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Service-layer function raises or catches HTTP exception types that belong to the transport layer."
-    return rule_id, family, severity, status, intent, description
+class UserNotFoundError(Exception):
+    pass
+
+class UserService:
+    def get_user(self, id):
+        user = self.repo.get(id)
+        if not user:
+            # Correct: service raises a domain-specific exception
+            raise UserNotFoundError(f"User {id} not found")
+        return user

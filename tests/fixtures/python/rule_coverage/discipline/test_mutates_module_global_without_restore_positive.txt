@@ -1,8 +1,9 @@
-def positive_test_mutates_module_global_without_restore():
-    rule_id = "test_mutates_module_global_without_restore"
-    family = "discipline"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Test mutates a module-level global variable without restoring it in teardown, leaking state."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+FEATURE_ENABLED = False
+
+
+def test_mutates_module_global_without_restore_positive() -> bool:
+    global FEATURE_ENABLED
+    FEATURE_ENABLED = True
+    return FEATURE_ENABLED

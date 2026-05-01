@@ -1,8 +1,5 @@
-def positive_persistent_model_field_encodes_transport_concern():
-    rule_id = "persistent_model_field_encodes_transport_concern"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "SQLAlchemy or Django ORM model carries a field that encodes HTTP or transport metadata such as status codes."
-    return rule_id, family, severity, status, intent, description
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    # Violation: persistent field encoding a transport-specific concern (caching key for API)
+    api_cache_etag = Column(String)

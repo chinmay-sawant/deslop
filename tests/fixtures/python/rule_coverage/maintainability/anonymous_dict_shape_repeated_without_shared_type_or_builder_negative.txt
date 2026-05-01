@@ -1,8 +1,12 @@
-def negative_anonymous_dict_shape_repeated_without_shared_type_or_builder():
-    rule_id = "anonymous_dict_shape_repeated_without_shared_type_or_builder"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag repeated ad hoc dict payload shapes with no shared type or builder."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class PersonState:
+    id: int
+    name: str
+    active: bool
+
+def anonymous_dict_shape_repeated_without_shared_type_or_builder_negative():
+    return [PersonState(7, "Ari", True), PersonState(8, "Bo", False)]

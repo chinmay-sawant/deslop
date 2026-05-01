@@ -1,8 +1,11 @@
-def positive_module_import_starts_runtime_bootstrap():
-    rule_id = "module_import_starts_runtime_bootstrap"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag imports that eagerly start threads, background loops, watchers, or connection attempts at import time."
-    return rule_id, family, severity, status, intent, description
+# Violation: module import starts runtime bootstrap immediately
+import threading
+
+def background_sync():
+    while True:
+        print("Syncing...")
+        time.sleep(60)
+
+# Dangerous: thread starts on module import
+t = threading.Thread(target=background_sync, daemon=True)
+t.start()

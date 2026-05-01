@@ -1,8 +1,11 @@
-def positive_python_perf_layer_network_calls_large_response_downloaded_before_status_check():
-    rule_id = "python_perf_layer_network_calls_large_response_downloaded_before_status_check"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Network calls. Flag response bodies read before checking status, headers, or content length guards."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from urllib.request import urlopen
+
+
+def python_perf_layer_network_calls_large_response_downloaded_before_status_check_positive(url):
+    with urlopen(url) as response:
+        body = response.read()
+        if response.status != 200:
+            return b""
+    return body

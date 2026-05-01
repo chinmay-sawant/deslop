@@ -1,8 +1,5 @@
-def positive_python_perf_layer_algorithmic_complexity_repeated_dataframe_filter_chain():
-    rule_id = "python_perf_layer_algorithmic_complexity_repeated_dataframe_filter_chain"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Algorithmic complexity. Flag repeated pandas filters over the same frame where one boolean mask can combine predicates."
-    return rule_id, family, severity, status, intent, description
+def active_recent(df):
+    df = df[df["active"]]
+    df = df[df["score"] > 50]
+    df = df[df["region"] == "us"]
+    return df

@@ -1,0 +1,12 @@
+# web/schemas.py
+from pydantic import BaseModel
+class UserRegistrationRequest(BaseModel):
+    email: str
+
+# application/handlers.py
+from web.schemas import UserRegistrationRequest
+
+class CreateUserHandler:
+    def handle(self, request: UserRegistrationRequest):
+        # Violation: command handler depends on web layer DTO
+        pass

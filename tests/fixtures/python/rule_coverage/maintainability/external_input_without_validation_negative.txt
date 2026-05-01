@@ -1,8 +1,7 @@
-def negative_external_input_without_validation():
-    rule_id = "external_input_without_validation"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Request or CLI entry points that trust external input without obvious validation or guard checks."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def external_input_without_validation_negative(user_filename: str):
+    import re
+    if not re.fullmatch(r"[a-zA-Z0-9_.-]+", user_filename):
+        raise ValueError("invalid filename")
+    return f"/srv/uploads/{user_filename}"

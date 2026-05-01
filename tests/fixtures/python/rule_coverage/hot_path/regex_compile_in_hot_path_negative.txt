@@ -1,8 +1,8 @@
-def negative_regex_compile_in_hot_path():
-    rule_id = "regex_compile_in_hot_path"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "re.compile(...) or similar regex compilation repeated inside hot code paths."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def regex_compile_in_hot_path_negative():
+    pattern = re.compile(r"id=(\d+)")
+    matches = []
+    for text in ["id=1", "x=na", "id=2"]:
+        matches.append(pattern.findall(text))
+    return matches

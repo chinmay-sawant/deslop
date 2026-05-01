@@ -1,8 +1,2 @@
-def negative_copy_of_mapping_created_only_to_read_values():
-    rule_id = "copy_of_mapping_created_only_to_read_values"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Flag mappings copied defensively even though the next code only reads."
-    return rule_id, family, severity, status, intent, description
+def get_token(config: dict[str, str]) -> str:
+    return config["token"]

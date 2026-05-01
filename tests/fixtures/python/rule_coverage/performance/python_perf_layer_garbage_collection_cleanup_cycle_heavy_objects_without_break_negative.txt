@@ -1,8 +1,9 @@
-def negative_python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break():
-    rule_id = "python_perf_layer_garbage_collection_cleanup_cycle_heavy_objects_without_break"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Garbage collection and cleanup. Flag cyclic object graphs that keep large buffers alive after request or batch completion."
-    return rule_id, family, severity, status, intent, description
+class Node:
+    def __init__(self, payload: bytes) -> None:
+        self.payload = payload
+        self.peer = None
+
+
+def release_pair(left: Node, right: Node) -> None:
+    left.peer = None
+    right.peer = None

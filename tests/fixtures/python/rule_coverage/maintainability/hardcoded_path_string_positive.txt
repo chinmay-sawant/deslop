@@ -1,8 +1,4 @@
-def positive_hardcoded_path_string():
-    rule_id = "hardcoded_path_string"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Hardcoded filesystem path literals assigned inside non-test Python functions."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def hardcoded_path_string_positive():
+    return "/var/app/config/settings.json"

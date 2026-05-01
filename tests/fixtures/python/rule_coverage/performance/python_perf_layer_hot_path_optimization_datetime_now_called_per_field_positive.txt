@@ -1,8 +1,12 @@
-def positive_python_perf_layer_hot_path_optimization_datetime_now_called_per_field():
-    rule_id = "python_perf_layer_hot_path_optimization_datetime_now_called_per_field"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Hot path optimization. Flag repeated datetime.now calls per record when one timestamp can be reused."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from datetime import datetime
+
+
+def python_perf_layer_hot_path_optimization_datetime_now_called_per_field_positive(user_id):
+    return {
+        "id": user_id,
+        "year": datetime.now().year,
+        "month": datetime.now().month,
+        "day": datetime.now().day,
+    }

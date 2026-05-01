@@ -1,8 +1,5 @@
-def negative_mixed_sync_async_module():
-    rule_id = "mixed_sync_async_module"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Modules that expose public sync and async entry points together."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+async def fetch_profile(user_id: int) -> dict[str, int]:
+    return {"id": user_id}

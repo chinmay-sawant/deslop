@@ -1,8 +1,5 @@
-def negative_enumerate_on_range_len():
-    rule_id = "enumerate_on_range_len"
-    family = "hot_path"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "enumerate(range(len(...))) style loops that add indexing ceremony without extra value."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def enumerate_on_range_len_negative():
+    names = ["Ada", "Bob", "Cat"]
+    return [(i, name) for i, name in enumerate(names)]

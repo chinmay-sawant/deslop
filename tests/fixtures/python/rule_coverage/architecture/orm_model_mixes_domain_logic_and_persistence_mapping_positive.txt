@@ -1,8 +1,10 @@
-def positive_orm_model_mixes_domain_logic_and_persistence_mapping():
-    rule_id = "orm_model_mixes_domain_logic_and_persistence_mapping"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "ORM model class contains domain business logic methods alongside column mapping, coupling persistence and domain concerns."
-    return rule_id, family, severity, status, intent, description
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    score = Column(Integer)
+
+    # Violation: ORM model mixing business logic with persistence
+    def calculate_credit_limit(self):
+        if self.score > 700:
+            return 5000
+        return 1000

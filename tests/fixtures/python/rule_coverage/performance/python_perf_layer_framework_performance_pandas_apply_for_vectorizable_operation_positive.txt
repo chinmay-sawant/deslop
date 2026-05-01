@@ -1,8 +1,3 @@
-def positive_python_perf_layer_framework_performance_pandas_apply_for_vectorizable_operation():
-    rule_id = "python_perf_layer_framework_performance_pandas_apply_for_vectorizable_operation"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Layer: Framework-specific performance. Flag pandas apply calls for operations that have vectorized Series/DataFrame equivalents."
-    return rule_id, family, severity, status, intent, description
+def normalize(df):
+    df["pct"] = df.apply(lambda row: row["used"] / row["total"], axis=1)
+    return df

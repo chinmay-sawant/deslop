@@ -1,8 +1,7 @@
-def negative_test_support_helpers_located_inside_production_package():
-    rule_id = "test_support_helpers_located_inside_production_package"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Test helper or factory file with _test_helpers.py or _factories.py suffix is inside the production package."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+from tests.helpers.fixtures import fake_user
+
+
+def test_support_helpers_located_inside_production_package_negative() -> dict[str, str]:
+    return fake_user()

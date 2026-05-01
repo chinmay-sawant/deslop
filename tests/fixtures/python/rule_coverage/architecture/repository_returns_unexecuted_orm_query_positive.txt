@@ -1,8 +1,4 @@
-def positive_repository_returns_unexecuted_orm_query():
-    rule_id = "repository_returns_unexecuted_orm_query"
-    family = "architecture"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Repository method returns a raw ORM query object instead of executing it and returning domain values."
-    return rule_id, family, severity, status, intent, description
+class UserRepository:
+    def get_active_users(self):
+        # Violation: repository returns an unexecuted ORM query
+        return self.session.query(User).filter(User.is_active == True)

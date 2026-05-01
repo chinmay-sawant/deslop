@@ -1,8 +1,9 @@
-def negative_magic_value_branching():
-    rule_id = "magic_value_branching"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Repeated branch-shaping numeric or string literals that likely want an explicit constant or policy name."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+LOW_STOCK_THRESHOLD = 3
+
+
+def stock_state(quantity: int) -> str:
+    if quantity <= LOW_STOCK_THRESHOLD:
+        return "low"
+    return "ok"

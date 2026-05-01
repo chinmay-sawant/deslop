@@ -1,8 +1,13 @@
-def positive_metric_emission_occurs_per_item_inside_inner_loop():
-    rule_id = "metric_emission_occurs_per_item_inside_inner_loop"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag inner loops that emit one metric per item instead of aggregating."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def emit(metric: str, value: int) -> tuple[str, int]:
+    return metric, value
+
+
+def metric_emission_occurs_per_item_inside_inner_loop_positive(batches: list[list[int]]) -> list[tuple[str, int]]:
+    out: list[tuple[str, int]] = []
+    for batch in batches:
+        for _item in batch:
+            out.append(emit("item.processed", 1))
+    return out

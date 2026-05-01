@@ -1,8 +1,2 @@
-def positive_list_materialization_first_element():
-    rule_id = "list_materialization_first_element"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "list(...)[0] style access that materializes a whole list just to read the first element."
-    return rule_id, family, severity, status, intent, description
+def first_even(values: list[int]) -> int:
+    return [v for v in values if v % 2 == 0][0]

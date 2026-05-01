@@ -1,8 +1,9 @@
-def positive_fallback_branch_swallows_invariant_violation_and_returns_plausible_default():
-    rule_id = "fallback_branch_swallows_invariant_violation_and_returns_plausible_default"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag fallback logic that hides broken invariants by returning believable defaults."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def fallback_branch_swallows_invariant_violation_and_returns_plausible_default_positive(total: int, count: int) -> float:
+    try:
+        assert count > 0, "count must be positive"
+        return total / count
+    except AssertionError:
+        return 0.0

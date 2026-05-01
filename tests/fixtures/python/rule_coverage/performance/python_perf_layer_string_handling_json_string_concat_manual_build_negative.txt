@@ -1,8 +1,7 @@
-def negative_python_perf_layer_string_handling_json_string_concat_manual_build():
-    rule_id = "python_perf_layer_string_handling_json_string_concat_manual_build"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: String handling. Flag manual JSON string assembly in loops instead of streaming encoders or structured dumps."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import json
+
+
+def python_perf_layer_string_handling_json_string_concat_manual_build_negative(record):
+    return json.dumps({"id": record["id"], "name": record["name"]}, separators=(",", ":"))

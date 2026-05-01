@@ -1,8 +1,7 @@
-def positive_helper_returns_success_shape_even_when_substeps_partially_fail():
-    rule_id = "helper_returns_success_shape_even_when_substeps_partially_fail"
-    family = "quality"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag helpers that claim success while hiding partial failures."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def helper_returns_success_shape_even_when_substeps_partially_fail_positive() -> dict[str, object]:
+    saved = False
+    indexed = True
+    return {"ok": True, "saved": saved, "indexed": indexed}

@@ -1,8 +1,7 @@
-def negative_pandas_merge_without_validation():
-    rule_id = "pandas_merge_without_validation"
-    family = "mlops"
-    severity = "info"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "DataFrame merges omit validate= safeguards against multiplicative joins."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import pandas as pd
+
+
+def join_users_orders(users: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFrame:
+    return users.merge(orders, on="user_id", validate="one_to_many")

@@ -1,8 +1,9 @@
-def negative_socket_opened_without_context_manager_or_guaranteed_close():
-    rule_id = "socket_opened_without_context_manager_or_guaranteed_close"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "socket.socket opened without a context manager or explicit .close() in a finally block."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+import socket
+
+
+def probe(host: str) -> bytes:
+    with socket.create_connection((host, 80), timeout=2) as client:
+        client.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
+        return client.recv(64)

@@ -1,8 +1,10 @@
-def positive_property_returns_live_internal_cache_object():
-    rule_id = "property_returns_live_internal_cache_object"
-    family = "boundaries"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag properties that expose live mutable cache objects directly to callers."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+class Catalog:
+    def __init__(self) -> None:
+        self._cache = {"books": 12}
+
+    @property
+    def cache(self) -> dict[str, int]:
+        return self._cache

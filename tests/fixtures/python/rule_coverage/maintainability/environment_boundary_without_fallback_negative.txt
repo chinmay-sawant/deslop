@@ -1,8 +1,5 @@
-def negative_environment_boundary_without_fallback():
-    rule_id = "environment_boundary_without_fallback"
-    family = "maintainability"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Environment-variable lookups that omit a default value or explicit failure handler."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def environment_boundary_without_fallback_negative():
+    import os
+    return os.getenv("APP_REGION", "us-east-1")

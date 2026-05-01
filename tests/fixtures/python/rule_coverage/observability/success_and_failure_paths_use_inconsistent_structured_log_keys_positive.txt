@@ -1,8 +1,7 @@
-def positive_success_and_failure_paths_use_inconsistent_structured_log_keys():
-    rule_id = "success_and_failure_paths_use_inconsistent_structured_log_keys"
-    family = "observability"
-    severity = "contextual"
-    status = "stable"
-    intent = "captures the smell described by this rule"
-    description = "Flag logging paths that use different keys for the same concept."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+
+def success_and_failure_paths_use_inconsistent_structured_log_keys_positive(ok: bool) -> dict[str, str]:
+    if ok:
+        return {"op": "invoice.send", "status": "success"}
+    return {"operation_name": "invoice.send", "result": "failure"}

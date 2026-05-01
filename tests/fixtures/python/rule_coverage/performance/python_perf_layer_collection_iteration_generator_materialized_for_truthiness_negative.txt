@@ -1,8 +1,2 @@
-def negative_python_perf_layer_collection_iteration_generator_materialized_for_truthiness():
-    rule_id = "python_perf_layer_collection_iteration_generator_materialized_for_truthiness"
-    family = "performance"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Layer: Collection iteration. Flag list(generator) or tuple(generator) used only for truthiness checks."
-    return rule_id, family, severity, status, intent, description
+def has_positive(values: list[int]) -> bool:
+    return any(v > 0 for v in values)

@@ -1,8 +1,5 @@
-def negative_sqlalchemy_expire_on_commit_default_in_async():
-    rule_id = "sqlalchemy_expire_on_commit_default_in_async"
-    family = "framework"
-    severity = "contextual"
-    status = "stable"
-    intent = "shows the preferred shape that should not trigger this rule"
-    description = "Async SQLAlchemy sessions rely on the default expire_on_commit behavior instead of making the async access pattern explicit."
-    return rule_id, family, severity, status, intent, description
+from __future__ import annotations
+
+def sqlalchemy_expire_on_commit_default_in_async_negative():
+    factory = async_sessionmaker(engine, expire_on_commit=False)
+    return factory
