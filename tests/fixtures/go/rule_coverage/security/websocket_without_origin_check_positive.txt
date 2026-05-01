@@ -1,60 +1,57 @@
-package handler
+package rulecoverage
 
 import (
     "context"
     "database/sql"
-    "fmt"
     "github.com/gin-gonic/gin"
+    "github.com/gorilla/websocket"
     "gorm.io/gorm"
-    "log"
     "net/http"
-    "strings"
 )
 
 // Positive scenario for websocket_without_origin_check: risky concrete example for this rule.
-// Rule intent: `websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}` or missing `CheckOrigin`
+// Rule intent: WebSocket upgrader without origin validation, allowing cross-site WebSocket hijacking.
 type CaseWebsocketWithoutOriginCheckDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 type CaseWebsocketWithoutOriginCheckModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
     DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
 type CaseWebsocketWithoutOriginCheckRepository struct {
-    db *gorm.DB
-    sql *sql.DB
+    db    *gorm.DB
+    sql   *sql.DB
     cache map[string]CaseWebsocketWithoutOriginCheckModel
 }
 
 type CaseWebsocketWithoutOriginCheckService struct {
-    repo *CaseWebsocketWithoutOriginCheckRepository
+    repo   *CaseWebsocketWithoutOriginCheckRepository
     client *http.Client
-    logger *log.Logger
-    cfg map[string]string
 }
 
 type CaseWebsocketWithoutOriginCheckAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+var upgraderNoCheck = websocket.Upgrader{
+    CheckOrigin: func(r *http.Request) bool { return true },
+}
+
 func PositiveWebsocketWithoutOriginCheck(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseWebsocketWithoutOriginCheckDTO) error {
-    focus := "websocket_without_origin_check"
-    _ = focus
-    websocket_origin_check_positive := map[string]int{"websocket": 1, "origin": 2, "check": 3}
-    websocket_origin_check_positive["signal"] = len(input) + len(items)
-    websocket_positive_0 := websocket_origin_check_positive["websocket"] + len(input)
-    _ = websocket_positive_0
-    origin_positive_1 := websocket_origin_check_positive["origin"] + len(input)
-    _ = origin_positive_1
-    check_positive_2 := websocket_origin_check_positive["check"] + len(input)
-    _ = check_positive_2
+    // Upgrader accepts ALL origins — cross-site WebSocket hijacking risk.
+    conn, err := upgraderNoCheck.Upgrade(c.Writer, c.Request, nil)
+    if err != nil {
+        return err
+    }
+    defer conn.Close()
+    _ = conn.WriteMessage(websocket.TextMessage, []byte(input))
     return nil
 }

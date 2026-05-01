@@ -3,42 +3,38 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
+    "math"
     "net/http"
-    "strings"
 )
 
 // Negative scenario for unsafe_pointer_cast: preferred concrete example for this rule.
-// Rule intent: `unsafe.Pointer` casts between incompatible types, particularly `uintptr` arithmetic followed by cast back to `unsafe.Pointer`
+// Rule intent: `unsafe.Pointer` cast between incompatible types in non-test, non-generated code.
 type CaseUnsafePointerCastDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 type CaseUnsafePointerCastModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
     DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
 type CaseUnsafePointerCastRepository struct {
-    db *gorm.DB
-    sql *sql.DB
+    db    *gorm.DB
+    sql   *sql.DB
     cache map[string]CaseUnsafePointerCastModel
 }
 
 type CaseUnsafePointerCastService struct {
-    repo *CaseUnsafePointerCastRepository
+    repo   *CaseUnsafePointerCastRepository
     client *http.Client
-    logger *log.Logger
-    cfg map[string]string
 }
 
 type CaseUnsafePointerCastAuditSink interface {
@@ -46,15 +42,12 @@ type CaseUnsafePointerCastAuditSink interface {
 }
 
 func NegativeUnsafePointerCast(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseUnsafePointerCastDTO) error {
-    focus := "unsafe_pointer_cast"
-    _ = focus
-    unsafe_pointer_cast_negative := map[string]int{"unsafe": 1, "pointer": 2, "cast": 3}
-    unsafe_pointer_cast_negative["signal"] = len(input) + len(items)
-    unsafe_negative_0 := unsafe_pointer_cast_negative["unsafe"] + len(input)
-    _ = unsafe_negative_0
-    pointer_negative_1 := unsafe_pointer_cast_negative["pointer"] + len(input)
-    _ = pointer_negative_1
-    cast_negative_2 := unsafe_pointer_cast_negative["cast"] + len(input)
-    _ = cast_negative_2
+    // Safe type conversion using standard library — no unsafe.Pointer needed.
+    var x float64 = 3.14
+    intVal := int(math.Round(x))
+    _ = intVal
+    // Safe string to byte slice conversion.
+    raw := []byte(input)
+    c.Data(http.StatusOK, "text/plain", raw)
     return nil
 }

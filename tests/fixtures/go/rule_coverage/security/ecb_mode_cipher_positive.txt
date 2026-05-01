@@ -2,43 +2,39 @@ package rulecoverage
 
 import (
     "context"
+    "crypto/aes"
     "database/sql"
-    "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
     "net/http"
-    "strings"
 )
 
 // Positive scenario for ecb_mode_cipher: risky concrete example for this rule.
-// Rule intent: direct use of `cipher.Block.Encrypt` / `cipher.Block.Decrypt` without a block mode wrapper (CBC, CTR, GCM)
+// Rule intent: Direct use of cipher.Block.Encrypt without a stream/block mode, effectively using ECB.
 type CaseEcbModeCipherDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 type CaseEcbModeCipherModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
     DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
 type CaseEcbModeCipherRepository struct {
-    db *gorm.DB
-    sql *sql.DB
+    db    *gorm.DB
+    sql   *sql.DB
     cache map[string]CaseEcbModeCipherModel
 }
 
 type CaseEcbModeCipherService struct {
-    repo *CaseEcbModeCipherRepository
+    repo   *CaseEcbModeCipherRepository
     client *http.Client
-    logger *log.Logger
-    cfg map[string]string
 }
 
 type CaseEcbModeCipherAuditSink interface {
@@ -46,15 +42,16 @@ type CaseEcbModeCipherAuditSink interface {
 }
 
 func PositiveEcbModeCipher(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEcbModeCipherDTO) error {
-    focus := "ecb_mode_cipher"
-    _ = focus
-    ecb_mode_cipher_positive := map[string]int{"ecb": 1, "mode": 2, "cipher": 3}
-    ecb_mode_cipher_positive["signal"] = len(input) + len(items)
-    ecb_positive_0 := ecb_mode_cipher_positive["ecb"] + len(input)
-    _ = ecb_positive_0
-    mode_positive_1 := ecb_mode_cipher_positive["mode"] + len(input)
-    _ = mode_positive_1
-    cipher_positive_2 := ecb_mode_cipher_positive["cipher"] + len(input)
-    _ = cipher_positive_2
+    key := []byte("0123456789abcdef")
+    block, err := aes.NewCipher(key)
+    if err != nil {
+        return err
+    }
+    // Direct block encrypt without mode (effectively ECB) — insecure.
+    plaintext := make([]byte, aes.BlockSize)
+    copy(plaintext, []byte(input))
+    ciphertext := make([]byte, aes.BlockSize)
+    block.Encrypt(ciphertext, plaintext)
+    c.Data(http.StatusOK, "application/octet-stream", ciphertext)
     return nil
 }

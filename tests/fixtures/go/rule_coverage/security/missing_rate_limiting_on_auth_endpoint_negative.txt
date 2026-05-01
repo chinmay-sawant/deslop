@@ -3,62 +3,72 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
     "net/http"
-    "strings"
+    "sync"
+    "time"
 )
 
 // Negative scenario for missing_rate_limiting_on_auth_endpoint: preferred concrete example for this rule.
-// Rule intent: login/authentication handler functions (name contains `Login`, `Authenticate`, `SignIn`) that don't reference rate limiting, throttling, or brute-force protection mechanisms
+// Rule intent: Login, registration, or password-reset endpoints without rate-limiting middleware.
 type CaseMissingRateLimitingOnAuthEndpointDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 type CaseMissingRateLimitingOnAuthEndpointModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
     DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
 type CaseMissingRateLimitingOnAuthEndpointRepository struct {
-    db *gorm.DB
-    sql *sql.DB
+    db    *gorm.DB
+    sql   *sql.DB
     cache map[string]CaseMissingRateLimitingOnAuthEndpointModel
 }
 
 type CaseMissingRateLimitingOnAuthEndpointService struct {
-    repo *CaseMissingRateLimitingOnAuthEndpointRepository
+    repo   *CaseMissingRateLimitingOnAuthEndpointRepository
     client *http.Client
-    logger *log.Logger
-    cfg map[string]string
 }
 
 type CaseMissingRateLimitingOnAuthEndpointAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+func rateLimitMiddleware(maxAttempts int, window time.Duration) gin.HandlerFunc {
+    var mu sync.Mutex
+    attempts := make(map[string]int)
+    return func(c *gin.Context) {
+        ip := c.ClientIP()
+        mu.Lock()
+        count := attempts[ip]
+        if count >= maxAttempts {
+            mu.Unlock()
+            c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "rate limit exceeded"})
+            return
+        }
+        attempts[ip] = count + 1
+        mu.Unlock()
+        c.Next()
+    }
+}
+
 func NegativeMissingRateLimitingOnAuthEndpoint(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMissingRateLimitingOnAuthEndpointDTO) error {
-    focus := "missing_rate_limiting_on_auth"
-    _ = focus
-    missing_rate_limiting_auth_endpoint_negative := map[string]int{"missing": 1, "rate": 2, "limiting": 3, "auth": 4, "endpoint": 5}
-    missing_rate_limiting_auth_endpoint_negative["signal"] = len(input) + len(items)
-    missing_negative_0 := missing_rate_limiting_auth_endpoint_negative["missing"] + len(input)
-    _ = missing_negative_0
-    rate_negative_1 := missing_rate_limiting_auth_endpoint_negative["rate"] + len(input)
-    _ = rate_negative_1
-    limiting_negative_2 := missing_rate_limiting_auth_endpoint_negative["limiting"] + len(input)
-    _ = limiting_negative_2
-    auth_negative_3 := missing_rate_limiting_auth_endpoint_negative["auth"] + len(input)
-    _ = auth_negative_3
-    endpoint_negative_4 := c.FullPath() + ":" + input
-    _ = endpoint_negative_4
+    // Auth endpoints protected by rate-limiting middleware.
+    router := gin.Default()
+    authGroup := router.Group("/", rateLimitMiddleware(5, time.Minute))
+    authGroup.POST("/login", func(c *gin.Context) {
+        c.JSON(http.StatusOK, gin.H{"token": "jwt-token"})
+    })
+    authGroup.POST("/register", func(c *gin.Context) {
+        c.JSON(http.StatusCreated, gin.H{"user": "created"})
+    })
     return nil
 }

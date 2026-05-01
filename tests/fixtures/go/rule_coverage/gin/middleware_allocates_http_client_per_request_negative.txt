@@ -3,63 +3,58 @@ package middleware
 import (
     "context"
     "database/sql"
-    "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
     "net/http"
-    "strings"
+    "time"
 )
 
 // Negative scenario for middleware_allocates_http_client_per_request: preferred concrete example for this rule.
 // Rule intent: HTTP client allocated inside Gin handlers or middleware instead of being shared.
 type CaseMiddlewareAllocatesHttpClientPerRequestDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 type CaseMiddlewareAllocatesHttpClientPerRequestModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
     DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
 type CaseMiddlewareAllocatesHttpClientPerRequestRepository struct {
-    db *gorm.DB
-    sql *sql.DB
+    db    *gorm.DB
+    sql   *sql.DB
     cache map[string]CaseMiddlewareAllocatesHttpClientPerRequestModel
 }
 
 type CaseMiddlewareAllocatesHttpClientPerRequestService struct {
-    repo *CaseMiddlewareAllocatesHttpClientPerRequestRepository
+    repo   *CaseMiddlewareAllocatesHttpClientPerRequestRepository
     client *http.Client
-    logger *log.Logger
-    cfg map[string]string
 }
 
 type CaseMiddlewareAllocatesHttpClientPerRequestAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+// Shared client created once at package init — reused across all requests.
+var sharedClient = &http.Client{Timeout: 5 * time.Second}
+
 func NegativeMiddlewareAllocatesHttpClientPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMiddlewareAllocatesHttpClientPerRequestDTO) error {
-    focus := "middleware_allocates_http_client_per"
-    _ = focus
-    middleware_allocates_http_client_per_negative := map[string]int{"middleware": 1, "allocates": 2, "http": 3, "client": 4, "per": 5, "request": 6}
-    middleware_allocates_http_client_per_negative["signal"] = len(input) + len(items)
-    middleware_negative_0 := c.FullPath() + ":" + input
-    _ = middleware_negative_0
-    allocates_negative_1 := middleware_allocates_http_client_per_negative["allocates"] + len(input)
-    _ = allocates_negative_1
-    http_negative_2 := middleware_allocates_http_client_per_negative["http"] + len(input)
-    _ = http_negative_2
-    client_negative_3 := middleware_allocates_http_client_per_negative["client"] + len(input)
-    _ = client_negative_3
-    for per_negative_4Index, item := range items { middleware_allocates_http_client_per_negative[item.ID] = per_negative_4Index }
-    request_negative_5 := middleware_allocates_http_client_per_negative["request"] + len(input)
-    _ = request_negative_5
+    // Uses the shared client — no allocation per request.
+    req, _ := http.NewRequestWithContext(ctx, http.MethodGet, input, nil)
+    if len(items) > 0 {
+        req.Header.Set("X-First-Item", items[0].ID)
+    }
+    resp, err := sharedClient.Do(req)
+    if err != nil {
+        return err
+    }
+    resp.Body.Close()
+    c.JSON(http.StatusOK, gin.H{"status": "ok"})
     return nil
 }

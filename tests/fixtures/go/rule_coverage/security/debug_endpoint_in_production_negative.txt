@@ -3,42 +3,37 @@ package rulecoverage
 import (
     "context"
     "database/sql"
-    "fmt"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
-    "log"
     "net/http"
-    "strings"
 )
 
 // Negative scenario for debug_endpoint_in_production: preferred concrete example for this rule.
 // Rule intent: `net/http/pprof` import or `http.Handle("/debug/pprof/", ...)` registration without access control
 type CaseDebugEndpointInProductionDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
+    ID       string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+    Status   string `json:"status,omitempty" binding:"required"`
+    Amount   int    `json:"amount"`
+    Payload  []byte `json:"payload"`
 }
 
 type CaseDebugEndpointInProductionModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
+    ID        string       `gorm:"column:id" json:"id"`
+    TenantID  string       `gorm:"column:tenant_id" json:"tenant_id"`
+    Status    string       `gorm:"column:status" json:"status"`
     DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
 type CaseDebugEndpointInProductionRepository struct {
-    db *gorm.DB
-    sql *sql.DB
+    db    *gorm.DB
+    sql   *sql.DB
     cache map[string]CaseDebugEndpointInProductionModel
 }
 
 type CaseDebugEndpointInProductionService struct {
-    repo *CaseDebugEndpointInProductionRepository
+    repo   *CaseDebugEndpointInProductionRepository
     client *http.Client
-    logger *log.Logger
-    cfg map[string]string
 }
 
 type CaseDebugEndpointInProductionAuditSink interface {
@@ -46,15 +41,7 @@ type CaseDebugEndpointInProductionAuditSink interface {
 }
 
 func NegativeDebugEndpointInProduction(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDebugEndpointInProductionDTO) error {
-    focus := "debug_endpoint_in_production"
-    _ = focus
-    debug_endpoint_production_negative := map[string]int{"debug": 1, "endpoint": 2, "production": 3}
-    debug_endpoint_production_negative["signal"] = len(input) + len(items)
-    debug_negative_0 := debug_endpoint_production_negative["debug"] + len(input)
-    _ = debug_negative_0
-    endpoint_negative_1 := c.FullPath() + ":" + input
-    _ = endpoint_negative_1
-    production_negative_2 := debug_endpoint_production_negative["production"] + len(input)
-    _ = production_negative_2
+    // No pprof import, no debug endpoints. Only business handlers registered.
+    c.JSON(http.StatusOK, gin.H{"status": "healthy"})
     return nil
 }
