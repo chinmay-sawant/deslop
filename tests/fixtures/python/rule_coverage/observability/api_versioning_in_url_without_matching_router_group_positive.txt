@@ -1,7 +1,12 @@
-from __future__ import annotations
+from fastapi import FastAPI
 
-ROUTER_PREFIX = "/api"
+app = FastAPI()
 
+# Violation: hardcoding API version prefixes on every single endpoint route
+@app.get("/api/v1/users")
+def get_users():
+    pass
 
-def users_route() -> str:
-    return "/v1/users"
+@app.get("/api/v1/products")
+def get_products():
+    pass

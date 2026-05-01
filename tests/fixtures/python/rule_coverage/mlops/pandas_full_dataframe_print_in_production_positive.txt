@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def audit(df: pd.DataFrame) -> int:
+def handle_data_upload(df):
+    # Violation: printing an entire DataFrame in production pollutes logs and causes massive IO overhead
+    print("Received dataframe:")
     print(df)
-    return len(df)
+    return df.shape

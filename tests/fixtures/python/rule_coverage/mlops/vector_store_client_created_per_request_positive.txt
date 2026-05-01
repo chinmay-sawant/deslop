@@ -1,11 +1,7 @@
-from __future__ import annotations
+from pinecone import Pinecone
 
-
-class VectorStoreClient:
-    def search(self, query: str) -> list[str]:
-        return [query]
-
-
-def retrieve(query: str) -> list[str]:
-    client = VectorStoreClient()
-    return client.search(query)
+def query_vector_db(query_embedding):
+    # Violation: instantiating a vector database client connection inside every request handler
+    pc = Pinecone(api_key="xxx")
+    index = pc.Index("my-index")
+    return index.query(vector=query_embedding, top_k=5)

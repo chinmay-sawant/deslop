@@ -1,12 +1,7 @@
-from __future__ import annotations
+def get_items():
+    yield from [1, 2, 3]
 
-
-def numbers():
-    yield from (1, 2, 3)
-
-
-def summarize() -> tuple[int, int]:
-    stream = numbers()
-    first_total = sum(stream)
-    second_total = sum(stream)
-    return first_total, second_total
+items = get_items()
+# Violation: generator consumed twice without recreation
+first_pass = list(items)
+second_pass = list(items) # This will be empty

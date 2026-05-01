@@ -1,9 +1,5 @@
-from __future__ import annotations
+import requests
 
-
-def fetch_user(user_id: int) -> dict[str, int]:
-    return {"id": user_id}
-
-
-def get_customer(customer_number: int) -> dict[str, int]:
-    return fetch_user(user_id=customer_number)
+# Violation: a wrapper function that only renames arguments and passes them through without adding value
+def fetch_url_data(url_string, timeout_seconds=10):
+    return requests.get(url_string, timeout=timeout_seconds)

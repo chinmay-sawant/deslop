@@ -1,8 +1,8 @@
 from contextlib import contextmanager
 
-GLOBAL_CACHE: dict[str, str] = {}
-
+global_resource = {"state": "ready"}
 
 @contextmanager
-def cache_scope():
-    yield GLOBAL_CACHE
+def use_resource():
+    # Violation: context manager yields a global mutable resource directly
+    yield global_resource

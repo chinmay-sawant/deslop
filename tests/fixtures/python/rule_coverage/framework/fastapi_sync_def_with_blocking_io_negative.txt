@@ -1,9 +1,10 @@
-from __future__ import annotations
+import time
+from fastapi import FastAPI
 
-def fastapi_sync_def_with_blocking_io_negative():
-    async def route_handler():
-        async with httpx.AsyncClient(timeout=2.0) as client:
-            response = await client.get("https://example.com/data")
-        return response.text
+app = FastAPI()
 
-    return route_handler
+@app.get("/compute")
+def compute():
+    # Correct: use 'def' (not 'async def') for blocking IO; FastAPI will run it in a threadpool
+    time.sleep(5)
+    return {"status": "done"}

@@ -1,17 +1,5 @@
-from __future__ import annotations
-
-
-class Wallet:
-    def __init__(self, balance: int) -> None:
-        self.balance = balance
-
-    def transfer_to(self, peer: "Wallet", amount: int) -> None:
+class Account:
+    def transfer(self, other, amount):
+        # Violation: method mutates self and peer object in the same block
         self.balance -= amount
-        peer.balance += amount
-
-
-def method_mutates_self_and_peer_object_in_same_block_positive() -> int:
-    first = Wallet(10)
-    second = Wallet(0)
-    first.transfer_to(second, 3)
-    return second.balance
+        other.balance += amount

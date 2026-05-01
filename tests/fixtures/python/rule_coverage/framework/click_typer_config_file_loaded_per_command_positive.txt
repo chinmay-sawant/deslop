@@ -1,9 +1,14 @@
-from __future__ import annotations
+import click
 
-import json
-from pathlib import Path
+@click.command()
+def sync():
+    # Violation: config file loaded per command invocation
+    with open("config.yaml") as f:
+        config = yaml.safe_load(f)
+    print(f"Syncing {config['endpoint']}")
 
-
-def click_typer_config_file_loaded_per_command_positive(path: str) -> int:
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
-    return int(data.get("timeout", 0))
+@click.command()
+def backup():
+    with open("config.yaml") as f:
+        config = yaml.safe_load(f)
+    print(f"Backing up to {config['storage']}")

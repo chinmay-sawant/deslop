@@ -1,5 +1,9 @@
-from __future__ import annotations
+import os
 
+LATENCY_ALERT_THRESHOLD = int(os.getenv("LATENCY_ALERT_THRESHOLD", "500"))
 
-def should_page(latency_ms: int, slo_threshold_ms: int) -> bool:
-    return latency_ms > slo_threshold_ms
+def process_metrics(latency):
+    # Correct: use configuration or Prometheus/Datadog monitors for thresholds, not application code
+    if latency > LATENCY_ALERT_THRESHOLD:
+        send_alert_to_slack(f"High latency detected: {latency}ms")
+    return latency

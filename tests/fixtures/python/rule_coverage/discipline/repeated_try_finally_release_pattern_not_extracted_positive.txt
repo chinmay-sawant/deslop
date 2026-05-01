@@ -1,28 +1,13 @@
-from __future__ import annotations
-
-
-class Lock:
-    def __init__(self) -> None:
-        self.held = False
-
-    def acquire(self) -> None:
-        self.held = True
-
-    def release(self) -> None:
-        self.held = False
-
-
-def _task_a(lock: Lock) -> str:
-    lock.acquire()
+def sync_data():
+    # Violation: repeated try-finally-release pattern not extracted into a context manager
+    lock1.acquire()
     try:
-        return "a"
+        perform_a()
     finally:
-        lock.release()
+        lock1.release()
 
-
-def repeated_try_finally_release_pattern_not_extracted_positive(lock: Lock) -> str:
-    lock.acquire()
+    lock2.acquire()
     try:
-        return "b"
+        perform_b()
     finally:
-        lock.release()
+        lock2.release()

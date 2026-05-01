@@ -1,9 +1,9 @@
-from __future__ import annotations
+from .models import User
 
-def sqlalchemy_query_in_loop_positive():
-    ids = [11, 12, 13]
-    with Session(engine) as session:
-        rows = []
-        for row_id in ids:
-            rows.append(session.query(User).filter(User.id == row_id).first())
-    return rows
+def fetch_users(session, user_ids):
+    # Violation: executing a separate database query for each item in a loop
+    results = []
+    for user_id in user_ids:
+        user = session.query(User).filter(User.id == user_id).first()
+        results.append(user)
+    return results

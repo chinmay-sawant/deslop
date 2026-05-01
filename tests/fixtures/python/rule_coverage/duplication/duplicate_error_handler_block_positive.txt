@@ -1,15 +1,16 @@
-from __future__ import annotations
-
-
-def _a(raw: str) -> int:
+def create_user():
     try:
-        return int(raw)
-    except ValueError:
-        return -1
+        db.add_user()
+    except Exception as e:
+        # Violation: duplicate error handler block repeated across functions
+        logger.error(f"Operation failed: {e}")
+        db.rollback()
+        raise
 
-
-def duplicate_error_handler_block_positive(raw: str) -> int:
+def delete_user():
     try:
-        return int(raw) * 2
-    except ValueError:
-        return -1
+        db.remove_user()
+    except Exception as e:
+        logger.error(f"Operation failed: {e}")
+        db.rollback()
+        raise

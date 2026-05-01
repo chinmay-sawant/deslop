@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-
-def build_prompt(lines: list[str]) -> str:
-    prompt = ""
-    for line in lines:
-        prompt += f"{line}\n"
-    return prompt
+def build_context(documents):
+    context = "Here is the information:\n"
+    for doc in documents:
+        # Violation: using += to concatenate prompt strings inside a loop is O(N^2) inefficient
+        context += doc.text + "\n"
+    return context

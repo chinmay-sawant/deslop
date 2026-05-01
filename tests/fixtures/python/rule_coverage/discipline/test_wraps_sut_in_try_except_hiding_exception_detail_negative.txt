@@ -1,12 +1,3 @@
-from __future__ import annotations
-
-import pytest
-
-
-def _run_sut() -> None:
-    raise ValueError("bad payload")
-
-
-def test_wraps_sut_in_try_except_hiding_exception_detail_negative() -> None:
-    with pytest.raises(ValueError, match="bad payload"):
-        _run_sut()
+def test_sut_call():
+    # Correct: let the exception bubble up naturally so the full traceback is visible on failure
+    sut.perform_action()

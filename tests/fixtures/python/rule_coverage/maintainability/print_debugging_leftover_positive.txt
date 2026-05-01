@@ -1,7 +1,6 @@
-from __future__ import annotations
-
-
-def calculate_total(prices: list[int]) -> int:
-    total = sum(prices)
-    print("debug total:", total)
+def calculate_pricing(base, tax):
+    # Violation: leaving print statements used for debugging in production code
+    print(f"base: {base}, tax: {tax}")
+    total = base + tax
+    print(f"total: {total}")
     return total

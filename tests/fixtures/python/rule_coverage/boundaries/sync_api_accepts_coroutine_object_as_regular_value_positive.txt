@@ -1,7 +1,9 @@
-from __future__ import annotations
+def process_task(task_coro):
+    # Violation: synchronous API accepts a coroutine object as a regular value without awaiting or managing it
+    print(f"Registering task: {task_coro}")
+    save_to_registry(task_coro)
 
-store = {}
+async def my_task():
+    return "done"
 
-
-def put_value(name: str, value: object) -> None:
-    store[name] = value
+process_task(my_task())

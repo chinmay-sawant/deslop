@@ -1,5 +1,6 @@
-from __future__ import annotations
+from .models import User
 
-def django_n_plus_one_no_select_related_negative():
-    orders = Order.objects.select_related("customer").filter(status="open")
-    return [order.customer.name for order in orders]
+def list_user_bios():
+    # Correct: use select_related to join the profile table and avoid multiple queries
+    for user in User.objects.select_related('profile').all():
+        print(user.profile.bio)

@@ -1,12 +1,17 @@
-from __future__ import annotations
+from functools import wraps
 
+def transactional(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            # Correct: error handling is centralized in a decorator
+            logger.error(f"Operation failed: {e}")
+            db.rollback()
+            raise
+    return wrapper
 
-def _parse_or_default(raw: str) -> int:
-    try:
-        return int(raw)
-    except ValueError:
-        return -1
-
-
-def duplicate_error_handler_block_negative(raw: str) -> int:
-    return _parse_or_default(raw) * 2
+@transactional
+def create_user():
+    db.add_user()

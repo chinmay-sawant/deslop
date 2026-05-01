@@ -1,11 +1,13 @@
-from __future__ import annotations
+import network
 
-import requests
-
-
-class ProfileClientNegative:
-    def __init__(self, user_id: str) -> None:
-        self.user_id = user_id
-
-    def load_profile(self) -> dict[str, object]:
-        return requests.get(f"https://example.com/users/{self.user_id}", timeout=2).json()
+class DataProcessor:
+    # Correct: constructors should only assign state; use classmethods for complex initialization routines
+    def __init__(self, data, model):
+        self.data = data
+        self.model = model
+        
+    @classmethod
+    def create_from_network(cls):
+        data = network.download_massive_dataset()
+        model = train_model(data)
+        return cls(data, model)

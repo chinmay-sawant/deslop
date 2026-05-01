@@ -1,8 +1,5 @@
-from __future__ import annotations
-
-def write_without_buffering_in_loop_negative():
-    path = "events.log"
-    lines = [event + "\n" for event in ("open", "save", "close")]
-    with open(path, "a", encoding="utf-8") as handle:
-        handle.writelines(lines)
-    return path
+def write_data(filepath, records):
+    # Correct: use a buffered file object (the default in open) for efficient IO operations
+    with open(filepath, 'w') as f:
+        for record in records:
+            f.write(record)

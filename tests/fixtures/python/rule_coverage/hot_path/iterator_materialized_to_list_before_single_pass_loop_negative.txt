@@ -1,7 +1,9 @@
-from __future__ import annotations
+def generate_data():
+    yield 1
+    yield 2
+    yield 3
 
-def iterator_materialized_to_list_before_single_pass_loop_negative():
-    total = 0
-    for row in generate_rows():
-        total += row
-    return total
+def process():
+    # Correct: iterate directly over the generator to process items lazily and save memory
+    for x in generate_data():
+        print(x)

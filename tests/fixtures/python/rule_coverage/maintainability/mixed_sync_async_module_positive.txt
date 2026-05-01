@@ -1,9 +1,10 @@
-from __future__ import annotations
+import asyncio
 
+# Violation: mixing synchronous and asynchronous functions in the same module causes confusion and import tangling
+def fetch_data_sync(url):
+    return requests.get(url).json()
 
-def fetch_profile(user_id: int) -> dict[str, int]:
-    return {"id": user_id}
-
-
-async def fetch_profile_async(user_id: int) -> dict[str, int]:
-    return {"id": user_id}
+async def fetch_data_async(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            return await resp.json()

@@ -1,9 +1,10 @@
-from __future__ import annotations
+from pydantic import BaseModel
 
-def fastapi_response_model_without_orm_mode_positive():
-    class UserOut(BaseModel):
-        id: int
-        email: str
+# Violation: response model without orm_mode (or from_attributes) when returning DB objects
+class UserSchema(BaseModel):
+    id: int
+    username: str
 
-    orm_user = ORMUser(1, "a@example.com")
-    return UserOut.model_validate(orm_user)
+@app.get("/user/{id}", response_model=UserSchema)
+def get_user(id: int):
+    return db.query(User).get(id) # Fails because User is not a dict

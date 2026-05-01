@@ -1,7 +1,15 @@
-from __future__ import annotations
-
 import os
+import typer
 
+app = typer.Typer()
 
-def click_typer_env_lookup_per_command_positive() -> str:
-    return os.getenv("APP_REGION", "us-east-1")
+@app.command()
+def deploy():
+    # Violation: environment variable lookup per command invocation
+    env = os.getenv("APP_ENV", "dev")
+    print(f"Deploying to {env}")
+
+@app.command()
+def rollback():
+    env = os.getenv("APP_ENV", "dev")
+    print(f"Rolling back in {env}")

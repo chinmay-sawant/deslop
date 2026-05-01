@@ -1,5 +1,7 @@
-from __future__ import annotations
-
-
-def get_user_profile(user_id: int) -> tuple[int, str, str]:
-    return user_id, "Ana", "admin"
+def get_system_metrics():
+    # Violation: returning an opaque tuple with many fields from a public API is hard to maintain
+    cpu_usage = 45.2
+    mem_usage = 1024
+    disk_free = 500
+    is_healthy = True
+    return (cpu_usage, mem_usage, disk_free, is_healthy)

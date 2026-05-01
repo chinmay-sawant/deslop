@@ -1,11 +1,11 @@
-from __future__ import annotations
-
 from unittest.mock import patch
 
-
-@patch("service.a")
-@patch("service.b")
-@patch("service.c")
-@patch("service.d")
-def test_function_stacks_too_many_mock_patch_decorators_positive(mock_d, mock_c, mock_b, mock_a) -> None:
-    assert all([mock_a, mock_b, mock_c, mock_d])
+# Violation: test function stacks too many mock patch decorators (hard to read/maintain)
+@patch("app.db")
+@patch("app.api")
+@patch("app.cache")
+@patch("app.logger")
+@patch("app.notifier")
+@patch("app.metrics")
+def test_complex_flow(m1, m2, m3, m4, m5, m6):
+    assert True

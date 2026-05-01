@@ -1,8 +1,11 @@
-from __future__ import annotations
-
-
-def repeated_key_hash_via_dict_lookup_in_tight_loop_negative(values: list[str]) -> dict[str, int]:
-    counts: dict[str, int] = {}
-    for value in values:
-        counts[value] = counts.get(value, 0) + 1
-    return counts
+def process_stats(data, state_dict):
+    # Correct: use fast local variables for the tight loop, then update the dictionary once at the end
+    total = state_dict.get("total_processed", 0)
+    bytes_p = state_dict.get("bytes_processed", 0)
+    
+    for item in data:
+        total += 1
+        bytes_p += len(item)
+        
+    state_dict["total_processed"] = total
+    state_dict["bytes_processed"] = bytes_p

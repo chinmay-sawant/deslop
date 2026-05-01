@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-
-def observability_metric_names_use_inconsistent_separators_positive() -> list[str]:
-    return ["http.requests.total", "http_requests_total", "http-requests-total"]
+def run_jobs():
+    # Violation: using inconsistent naming conventions and separators (hyphens, dots, underscores) across metrics
+    statsd.increment("api-requests.total")
+    statsd.increment("db_queries")
+    statsd.increment("cache.miss_count")

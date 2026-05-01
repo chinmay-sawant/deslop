@@ -1,9 +1,6 @@
-from __future__ import annotations
-
 from collections import namedtuple
 
-User = namedtuple("User", ["id", "email", "active"])
+# Violation: namedtuple used where a dataclass better fits (lacks type safety and mutability control)
+User = namedtuple("User", ["id", "name", "email"])
 
-
-def namedtuple_used_where_dataclass_better_fits_positive() -> User:
-    return User(1, "a@example.com", True)
+u = User(1, "Alice", "alice@example.com")

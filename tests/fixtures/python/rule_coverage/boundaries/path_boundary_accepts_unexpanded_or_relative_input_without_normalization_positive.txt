@@ -1,7 +1,5 @@
-from __future__ import annotations
+import os
 
-from pathlib import Path
-
-
-def target_directory(path_text: str) -> Path:
-    return Path(path_text)
+def list_files(user_path):
+    # Violation: path boundary accepts relative or unexpanded input without normalization
+    return os.listdir(user_path)

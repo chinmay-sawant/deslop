@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
-
 @dataclass
-class DataclassMutableDefaultPositive:
-    tags: list[str] = []
+class Inventory:
+    # Violation: using a mutable list as a direct default value shares the same list across all instances
+    items: list = []

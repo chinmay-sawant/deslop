@@ -1,5 +1,5 @@
-from __future__ import annotations
+# __init__.py
+# Violation: implicitly exporting private implementation details in a public package init
+from .core import PublicClass, _internal_helper, _secret_cache
 
-from mypkg._internal import SecretEncoder
-
-__all__ = ["SecretEncoder"]
+__all__ = ["PublicClass", "_internal_helper", "_secret_cache"]

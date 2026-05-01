@@ -1,10 +1,5 @@
-from __future__ import annotations
-
-
-class Embedder:
-    def encode(self, text: str) -> tuple[int, int]:
-        return (len(text), sum(ord(ch) for ch in text) % 97)
-
-
-def handle_query(embedder: Embedder, query: str) -> tuple[int, int]:
-    return embedder.encode(query)
+def find_similar(query_text, documents, embedder):
+    # Violation: recomputing the embedding for the same documents on every request
+    query_emb = embedder.encode(query_text)
+    doc_embs = [embedder.encode(doc) for doc in documents]
+    return cosine_similarity(query_emb, doc_embs)

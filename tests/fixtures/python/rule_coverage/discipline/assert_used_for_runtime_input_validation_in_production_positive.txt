@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-
-def parse_quantity(raw: str) -> int:
-    assert raw.isdigit(), "quantity must be digits"
-    return int(raw)
+def process_payment(amount):
+    # Violation: assert used for runtime input validation (may be optimized away with -O)
+    assert amount > 0
+    return f"Processing ${amount}"

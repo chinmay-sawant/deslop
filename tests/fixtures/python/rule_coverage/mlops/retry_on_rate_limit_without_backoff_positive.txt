@@ -1,14 +1,10 @@
-from __future__ import annotations
+import openai
+from openai.error import RateLimitError
 
-
-class RateLimitError(Exception):
-    pass
-
-
-def call_with_retry(client: object) -> str:
-    for _ in range(3):
+def fetch_completion(prompt):
+    while True:
         try:
-            return client.call()
+            # Violation: retrying immediately on a rate limit error will spam the API and keep you blocked
+            return openai.Completion.create(model="gpt-3.5-turbo", prompt=prompt)
         except RateLimitError:
             continue
-    raise RateLimitError("exhausted retries")

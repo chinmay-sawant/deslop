@@ -1,7 +1,6 @@
-from __future__ import annotations
+# src/feature_a.py
+# Violation: importing everything from a monolithic 'common' package creates tight coupling and circular dependency hell
+from src.common import *
 
-from common import everything
-
-
-def monolithic_common_package_becomes_transitive_dependency_for_most_modules_positive(user_id: str) -> str:
-    return everything.slugify(user_id)
+def do_work():
+    return DatabaseConnection()

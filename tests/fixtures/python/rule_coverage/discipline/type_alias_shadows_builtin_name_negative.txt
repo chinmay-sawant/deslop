@@ -1,7 +1,7 @@
-from __future__ import annotations
+from typing import Union
 
-Coordinate = tuple[int, int]
+# Correct: use a unique name for the type alias
+ItemSelector = Union[int, str]
 
-
-def type_alias_shadows_builtin_name_negative() -> Coordinate:
-    return (1, 2)
+def process(items: ItemSelector):
+    pass

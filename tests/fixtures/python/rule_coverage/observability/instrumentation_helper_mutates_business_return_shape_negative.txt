@@ -1,7 +1,14 @@
-from __future__ import annotations
+import threading
 
+_trace_context = threading.local()
 
-def instrumentation_helper_mutates_business_return_shape_negative(order_id: str) -> tuple[dict[str, str], dict[str, str]]:
-    result = {"order_id": order_id, "status": "ok"}
-    telemetry = {"trace_id": "trace-123"}
-    return result, telemetry
+def measure_time(func):
+    def wrapper(*args, **kwargs):
+        # Correct: use side-channels (like headers, context variables, or globals) to export telemetry
+        _trace_context.current_id = "12345"
+        return func(*args, **kwargs)
+    return wrapper
+
+@measure_time
+def get_user_data():
+    return {"name": "Alice"}

@@ -1,8 +1,3 @@
-from __future__ import annotations
-
-import pandas as pd
-
-
-def normalize_age(df: pd.DataFrame) -> pd.DataFrame:
-    result = df.assign(age=df["age"].fillna(0))
-    return result
+def apply_transformation(df):
+    # Correct: modify the DataFrame in place or use functional assign() for better memory efficiency
+    return df.assign(normalized=df["value"] / 100.0)

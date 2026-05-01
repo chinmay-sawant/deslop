@@ -1,9 +1,9 @@
-from __future__ import annotations
-
 import re
 
-
-def looks_like_token(text: str) -> bool:
-    if len(text) > 128:
+def validate_input(user_input):
+    # Correct: use a simple, non-recursive regex pattern
+    pattern = re.compile(r"^a+$")
+    # Also consider adding a length limit to the input
+    if len(user_input) > 1000:
         return False
-    return bool(re.fullmatch(r"a+", text))
+    return pattern.match(user_input)

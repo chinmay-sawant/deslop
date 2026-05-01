@@ -1,6 +1,7 @@
-from __future__ import annotations
-
+# auth.py
 from dotenv import load_dotenv
+load_dotenv() # Violation: load_dotenv() called multiple times across modules
 
-load_dotenv()
+# database.py
+from dotenv import load_dotenv
 load_dotenv()

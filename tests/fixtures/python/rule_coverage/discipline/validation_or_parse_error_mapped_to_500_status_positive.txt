@@ -1,9 +1,8 @@
-from __future__ import annotations
-
-
-def validation_or_parse_error_mapped_to_500_status_positive(raw: str) -> tuple[int, str]:
+@app.post("/submit")
+def submit():
     try:
-        int(raw)
-    except ValueError:
-        return (500, "internal error")
-    return (200, "ok")
+        data = parse_request(request)
+        validate(data)
+    except (ParseError, ValidationError):
+        # Violation: validation or parse error mapped to 500 status (should be 400)
+        return {"error": "Internal Error"}, 500

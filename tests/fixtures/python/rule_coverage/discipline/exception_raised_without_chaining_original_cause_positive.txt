@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-
-def exception_raised_without_chaining_original_cause_positive(raw: str) -> float:
+def process_data(data):
     try:
-        return float(raw)
-    except ValueError:
-        raise RuntimeError("failed to parse number")
+        validate(data)
+    except KeyError:
+        # Violation: exception raised without chaining the original cause
+        raise ValueError("Invalid data format")

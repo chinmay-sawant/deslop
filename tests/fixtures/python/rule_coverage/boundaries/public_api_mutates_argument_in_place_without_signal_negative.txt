@@ -1,5 +1,8 @@
-from __future__ import annotations
-
-
-def normalize_tags(tags: list[str]) -> list[str]:
-    return [tag.strip().lower() for tag in tags]
+def process_user_list(users):
+    # Correct: public API returns a new list with the modifications
+    processed_users = []
+    for user in users:
+        new_user = user.copy()
+        new_user["processed"] = True
+        processed_users.append(new_user)
+    return processed_users

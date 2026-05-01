@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import torch
 
-
-def run_experiments(experiments: list[int], model: torch.nn.Module) -> None:
-    for seed in experiments:
-        _ = model(torch.tensor([seed], dtype=torch.float32, device="cuda"))
+def run_experiments(configs):
+    for config in configs:
+        model = create_model(config).cuda()
+        train_model(model)
+        # Violation: failing to clear GPU memory between experiments causes OutOfMemory errors

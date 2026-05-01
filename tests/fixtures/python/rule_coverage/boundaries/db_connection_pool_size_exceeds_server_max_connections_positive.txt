@@ -1,3 +1,9 @@
-def build_pool_config() -> dict:
-    server_max_connections = 100
-    return {"pool_size": 400, "server_max_connections": server_max_connections}
+import asyncpg
+
+async def init_db():
+    # Violation: pool size (100) likely exceeds default server max connections
+    return await asyncpg.create_pool(
+        dsn="postgres://user:pass@localhost/db",
+        min_size=20,
+        max_size=100
+    )

@@ -1,6 +1,7 @@
-from __future__ import annotations
+def is_ready_for_shipping(order):
+    return order.status == OrderStatus.PROCESSED and order.payment_cleared and not order.is_backordered
 
-def comment_required_to_explain_opaque_branching_that_code_could_express_negative(balance: int, payment: int):
-    adjusted = balance - payment
-    has_exact_settlement = adjusted == 0
-    return "ok" if has_exact_settlement else "skip"
+def process_order(order):
+    # Correct: encapsulate complex conditions in a well-named helper function
+    if is_ready_for_shipping(order):
+        ship_order(order)

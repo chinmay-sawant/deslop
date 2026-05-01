@@ -1,5 +1,3 @@
-from __future__ import annotations
-
-
-def sort_order_depends_on_non_explicit_mapping_iteration_semantics_positive(mapping: dict[str, int]) -> list[str]:
-    return [f"{key}:{value}" for key, value in mapping.items()]
+def render_configuration(config_dict):
+    # Violation: relying on dictionary iteration order for UI or hash generation creates flaky tests and unstable outputs across python versions
+    return "\n".join([f"{k}={v}" for k, v in config_dict.items()])

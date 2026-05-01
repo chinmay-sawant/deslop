@@ -1,7 +1,12 @@
-from __future__ import annotations
-
-
-def bulk_endpoint_partial_failure_contract_ambiguous_negative(items: list[str]) -> dict[str, object]:
-    failed = [item for item in items if item.startswith("bad")]
-    succeeded = [item for item in items if item not in failed]
-    return {"status": "partial_failure", "succeeded": succeeded, "failed": failed}
+def bulk_create_users(users_data):
+    # Correct: explicitly return successful and failed IDs to provide a clear partial failure contract
+    successful = []
+    failed = []
+    for data in users_data:
+        try:
+            db.create(data)
+            successful.append(data['id'])
+        except Exception as e:
+            failed.append({"id": data['id'], "error": str(e)})
+            
+    return {"successful": successful, "failed": failed}

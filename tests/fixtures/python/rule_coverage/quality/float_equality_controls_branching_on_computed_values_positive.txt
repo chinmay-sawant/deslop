@@ -1,8 +1,5 @@
-from __future__ import annotations
-
-
-def float_equality_controls_branching_on_computed_values_positive(values: list[float]) -> str:
-    average = sum(values) / len(values)
-    if average == 0.3:
-        return "target-hit"
-    return "target-miss"
+def evaluate_threshold(computed_val):
+    # Violation: using exact equality on floating-point numbers fails due to IEEE 754 precision errors
+    if computed_val == 0.3:
+        return "triggered"
+    return "safe"

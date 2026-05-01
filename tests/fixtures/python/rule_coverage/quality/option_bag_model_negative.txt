@@ -1,14 +1,10 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
+@dataclass
+class ConfigOptions:
+    host: str
+    port: int
 
-@dataclass(frozen=True)
-class RenderOptions:
-    theme: str
-    page: str
-    debug: bool = False
-
-
-def option_bag_model_negative(options: RenderOptions) -> str:
-    return f"{options.theme}:{options.page}:{options.debug}"
+def setup():
+    # Correct: use strict dataclasses to enforce shape, type checking, and documentation
+    return ConfigOptions(host="localhost", port=8080)

@@ -1,5 +1,5 @@
-from __future__ import annotations
+# module: src/app/test_helpers.py
 
-
-def fake_user_for_tests() -> dict[str, str]:
-    return {"id": "test-user", "role": "admin"}
+def mock_database_connection():
+    # Violation: placing test/mock code inside the main production package ships dead code to prod
+    return FakeDatabase()

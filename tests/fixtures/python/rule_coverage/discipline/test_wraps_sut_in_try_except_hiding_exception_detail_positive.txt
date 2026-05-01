@@ -1,13 +1,6 @@
-from __future__ import annotations
-
-
-def _run_sut() -> None:
-    raise ValueError("bad payload")
-
-
-def test_wraps_sut_in_try_except_hiding_exception_detail_positive() -> None:
+def test_sut_call():
+    # Violation: test wraps SUT in try-except, hiding the real traceback on failure
     try:
-        _run_sut()
-        assert False
+        sut.perform_action()
     except Exception:
-        assert False
+        pytest.fail("Action failed unexpectedly")

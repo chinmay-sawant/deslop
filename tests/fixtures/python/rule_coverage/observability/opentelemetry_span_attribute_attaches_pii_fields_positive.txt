@@ -1,14 +1,6 @@
-from __future__ import annotations
-
-
-class Span:
-    def __init__(self) -> None:
-        self.attrs: dict[str, str] = {}
-
-    def set_attribute(self, key: str, value: str) -> None:
-        self.attrs[key] = value
-
-
-def opentelemetry_span_attribute_attaches_pii_fields_positive(span: Span, email: str) -> dict[str, str]:
-    span.set_attribute("user.email", email)
-    return span.attrs
+def process_user_signup(user_data):
+    with tracer.start_as_current_span("signup") as span:
+        # Violation: attaching plaintext Personally Identifiable Information (PII) like emails to observability traces
+        span.set_attribute("user_email", user_data["email"])
+        span.set_attribute("phone", user_data["phone"])
+        db.save(user_data)

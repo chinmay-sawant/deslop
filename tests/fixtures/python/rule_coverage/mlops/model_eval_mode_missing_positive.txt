@@ -1,7 +1,7 @@
-from __future__ import annotations
-
 import torch
 
-
-def predict(model: torch.nn.Module, batch: torch.Tensor) -> torch.Tensor:
-    return model(batch)
+def run_inference(model, input_tensor):
+    # Violation: running inference without setting the model to evaluation mode (Dropout/BatchNorm behave incorrectly)
+    with torch.no_grad():
+        output = model(input_tensor)
+    return output

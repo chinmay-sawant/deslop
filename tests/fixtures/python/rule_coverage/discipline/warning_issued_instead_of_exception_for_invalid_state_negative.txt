@@ -1,7 +1,5 @@
-from __future__ import annotations
-
-
-def warning_issued_instead_of_exception_for_invalid_state_negative(state: str) -> str:
-    if state not in {"open", "closed"}:
-        raise ValueError(f"invalid state: {state}")
-    return state
+def process_data(data):
+    if not data:
+        # Correct: raise a specific exception when the application reaches an invalid state
+        raise ValueError("Cannot process empty data")
+    # ...

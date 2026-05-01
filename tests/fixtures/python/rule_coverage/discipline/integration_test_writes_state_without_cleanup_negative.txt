@@ -1,11 +1,7 @@
-from __future__ import annotations
-
-import tempfile
-from pathlib import Path
-
-
-def integration_test_writes_state_without_cleanup_negative() -> bool:
-    with tempfile.TemporaryDirectory() as tmp:
-        path = Path(tmp) / "state.txt"
-        path.write_text("state=clean", encoding="utf-8")
-        return path.exists()
+def test_create_user(db_session):
+    # Correct: use a transaction or explicit cleanup to ensure state is reset
+    user = db_session.create_user(name="test")
+    try:
+        assert user.id is not None
+    finally:
+        db_session.delete(user)

@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-def list_of_keys_materialized_for_membership_check_negative():
-    mapping = {"tenant": "alpha", "region": "us"}
-    return "region" in mapping
+def has_key(mapping, key):
+    # Correct: check membership directly on the dictionary for O(1) performance
+    if key in mapping:
+        return True
+    return False

@@ -1,9 +1,5 @@
-from __future__ import annotations
-
-def filter_then_count_then_iterate_negative():
-    values = [5, -1, 2, 0, 9]
-    doubled = []
-    for value in values:
-        if value > 0:
-            doubled.append(value * 2)
-    return doubled
+def process_positive(numbers):
+    # Correct: filter and process in a single iteration without intermediate allocations
+    for n in numbers:
+        if n > 0:
+            print(n)

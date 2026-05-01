@@ -1,6 +1,6 @@
-from __future__ import annotations
+import json
 
-
-def large_response_body_fully_buffered_in_memory_before_send_positive(chunks: list[str]) -> bytes:
-    body = "".join(chunks)
-    return body.encode("utf-8")
+def get_large_report():
+    # Violation: buffering a massive result set into memory before serializing can trigger OOM kills
+    data = db.query_millions_of_rows()
+    return json.dumps(data)

@@ -1,5 +1,7 @@
-from __future__ import annotations
+import requests
 
-def upstream_response_not_checked_before_decode_positive():
-    response = requests.get("https://api.example.com/user/7", timeout=2.0)
-    return response.json()["name"]
+@app.get("/data")
+def get_external_data():
+    resp = requests.get("https://api.external.com/data", timeout=5)
+    # Violation: response body decoded to JSON without checking for error status codes first
+    return resp.json()

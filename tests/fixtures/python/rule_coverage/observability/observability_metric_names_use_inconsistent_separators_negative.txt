@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-
-def observability_metric_names_use_inconsistent_separators_negative() -> list[str]:
-    return ["http_requests_total", "http_errors_total"]
+def run_jobs():
+    # Correct: standardize on a single metric separator convention (e.g., snake_case) organization-wide
+    statsd.increment("api_requests_total")
+    statsd.increment("db_queries_total")
+    statsd.increment("cache_misses_total")

@@ -1,12 +1,12 @@
-from __future__ import annotations
+class DataClient:
+    def __init__(self):
+        self._connected = False
 
+    def connect(self):
+        self._connected = True
 
-class SessionClient:
-    def __init__(self) -> None:
-        self._token: str | None = None
-
-    def authenticate(self, token: str) -> None:
-        self._token = token
-
-    def fetch_profile(self) -> str:
-        return "profile-for:" + self._token
+    def fetch(self):
+        # Violation: caller must know to call connect() before fetch()
+        if not self._connected:
+            raise RuntimeError("Not connected")
+        return "data"

@@ -1,10 +1,14 @@
-from __future__ import annotations
-
+import json
 import os
+import tempfile
 
-
-def atomic_replace_semantics_implemented_with_non_atomic_file_write_negative(path: str, data: str) -> None:
-    temp_path = f"{path}.tmp"
-    with open(temp_path, "w", encoding="utf-8") as handle:
-        handle.write(data)
-    os.replace(temp_path, path)
+def save_config(data):
+    # Correct: write to a temporary file first, then atomically replace the target using os.replace
+    fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname("config.json"))
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(data, f)
+        os.replace(tmp_path, "config.json")
+    except Exception:
+        os.remove(tmp_path)
+        raise

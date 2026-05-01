@@ -1,14 +1,6 @@
-from __future__ import annotations
+from typing import List
 
-from typing import Generic, TypeVar
-
-T = TypeVar("T")
-
-
-class Box(Generic[T]):
-    def __init__(self, value: T) -> None:
-        self.value = value
-
-
-def generic_class_used_without_type_parameter_application_positive() -> Box:
-    return Box(3)
+# Violation: generic class (List) used without type parameter application
+def process_items(items: List):
+    for item in items:
+        print(item)

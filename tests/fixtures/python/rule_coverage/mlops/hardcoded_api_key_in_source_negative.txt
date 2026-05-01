@@ -1,8 +1,6 @@
-from __future__ import annotations
-
+import openai
 import os
 
-
-def auth_header() -> dict[str, str]:
-    token = os.environ["LLM_API_KEY"]
-    return {"Authorization": f"Bearer {token}"}
+def setup_client():
+    # Correct: load API keys securely from environment variables
+    openai.api_key = os.environ.get("OPENAI_API_KEY")

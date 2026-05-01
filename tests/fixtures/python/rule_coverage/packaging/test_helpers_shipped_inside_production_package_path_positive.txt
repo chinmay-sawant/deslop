@@ -1,5 +1,7 @@
-from app.tests.helpers import build_fake_user
+# module: src/my_app/testing/mocks.py
+class MockDatabase:
+    # Violation: shipping test utilities inside the main src package inflates production deployments
+    pass
 
-
-def make_user() -> dict[str, str]:
-    return build_fake_user("prod-user")
+# module: src/my_app/api.py
+from my_app.testing.mocks import MockDatabase

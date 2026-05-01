@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 from typing import TypeVar
 
-TStr = TypeVar("TStr", bound=str)
+# Correct: TypeVar is bounded to a specific class to provide better type safety
+T = TypeVar("T", bound="BaseUser")
 
-
-def typevar_defined_without_bound_or_constraints_for_narrow_use_negative(value: TStr) -> str:
-    return value.lower()
+def process_user(user: T) -> T:
+    return user

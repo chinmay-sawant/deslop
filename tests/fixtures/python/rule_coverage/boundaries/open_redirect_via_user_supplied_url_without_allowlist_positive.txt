@@ -1,5 +1,7 @@
-from __future__ import annotations
+from flask import redirect, request
 
-
-def login_redirect(next_url: str) -> dict[str, str]:
-    return {"status": "302", "Location": next_url}
+@app.route("/login")
+def login():
+    target = request.args.get("next")
+    # Violation: open redirect via user-supplied URL without an allowlist
+    return redirect(target)

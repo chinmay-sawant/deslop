@@ -1,7 +1,5 @@
-from __future__ import annotations
-
-
-def filter_and_map_results_materialized_to_list_at_each_step_positive(values: list[int]) -> list[int]:
-    evens = list(filter(lambda value: value % 2 == 0, values))
-    doubled = list(map(lambda value: value * 2, evens))
-    return doubled
+def process_data(data):
+    # Violation: materializing full intermediate lists at each step instead of chaining generators
+    filtered_data = list(filter(lambda x: x > 0, data))
+    squared_data = list(map(lambda x: x * x, filtered_data))
+    return squared_data

@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-
-def require_token(token: str) -> None:
-    if len(token) < 10:
-        raise ValueError("invalid token")
+def validate_api_key(key):
+    if len(key) < 32:
+        # Correct: error message describes the problem without leaking sensitive data
+        raise ValueError("Provided API key is invalid or too short")

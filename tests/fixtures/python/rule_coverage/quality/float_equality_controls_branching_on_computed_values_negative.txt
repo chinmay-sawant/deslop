@@ -1,10 +1,7 @@
-from __future__ import annotations
-
 import math
 
-
-def float_equality_controls_branching_on_computed_values_negative(values: list[float]) -> str:
-    average = sum(values) / len(values)
-    if math.isclose(average, 0.3, rel_tol=1e-9):
-        return "target-hit"
-    return "target-miss"
+def evaluate_threshold(computed_val):
+    # Correct: always use math.isclose() when comparing floating-point numbers for logic branching
+    if math.isclose(computed_val, 0.3):
+        return "triggered"
+    return "safe"

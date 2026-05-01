@@ -1,9 +1,6 @@
-from __future__ import annotations
+import mlflow
 
-import logging
-
-logger = logging.getLogger(__name__)
-
-
-def report_metric(name: str, value: float) -> None:
-    logger.info("metric %s=%s", name, value)
+def train_epoch(model, dataloader, epoch_num):
+    loss = run_epoch(model, dataloader)
+    # Correct: log metrics to an experiment tracking system like MLflow or Weights & Biases
+    mlflow.log_metric("train_loss", loss, step=epoch_num)

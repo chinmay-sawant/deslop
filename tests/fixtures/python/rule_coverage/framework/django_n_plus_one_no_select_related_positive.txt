@@ -1,8 +1,6 @@
-from __future__ import annotations
+from .models import User
 
-def django_n_plus_one_no_select_related_positive():
-    orders = Order.objects.filter(status="open")
-    names = []
-    for order in orders:
-        names.append(order.customer.name)
-    return names
+def list_user_bios():
+    # Violation: N+1 query issue - accessing foreign key 'profile' in a loop without select_related
+    for user in User.objects.all():
+        print(user.profile.bio)

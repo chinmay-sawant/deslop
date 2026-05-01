@@ -1,5 +1,8 @@
-from __future__ import annotations
+import random
+from .models import User
 
-def django_queryset_order_by_random_negative():
-    winner = Coupon.objects.order_by("created_at").first()
-    return winner
+def get_random_users():
+    # Correct: use a more efficient way to sample random records (e.g. random ID range)
+    count = User.objects.aggregate(count=Count('id'))['count']
+    random_index = random.randint(0, count - 5)
+    return User.objects.all()[random_index:random_index + 5]

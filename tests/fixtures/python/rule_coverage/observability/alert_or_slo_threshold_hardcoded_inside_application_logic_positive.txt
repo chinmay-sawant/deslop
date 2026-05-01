@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-
-def should_page(latency_ms: int) -> bool:
-    return latency_ms > 250
+def process_metrics(latency):
+    # Violation: hardcoding an alerting threshold directly in the application logic
+    if latency > 500:
+        send_alert_to_slack(f"High latency detected: {latency}ms")
+    return latency

@@ -1,6 +1,7 @@
-from __future__ import annotations
-
-def readlines_then_iterate_positive():
-    with open("users.txt", "r", encoding="utf-8") as fh:
-        lines = fh.readlines()
-    return [line.strip() for line in lines]
+def parse_config(filepath):
+    with open(filepath, "r") as f:
+        # Violation: calling readlines() loads the entire file into a list of strings
+        for line in f.readlines():
+            if line.startswith("#"):
+                continue
+            print(line)

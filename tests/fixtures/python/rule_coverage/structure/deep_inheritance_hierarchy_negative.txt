@@ -1,14 +1,11 @@
-from __future__ import annotations
+# Correct: prefer flat composition over deep inheritance to construct complex entities
+class Button:
+    def __init__(self, action_handler, renderer):
+        self.action_handler = action_handler
+        self.renderer = renderer
 
-
-class Engine:
-    def run(self) -> str:
-        return "running"
-
-
-class JobRunner:
-    def __init__(self, engine: Engine) -> None:
-        self.engine = engine
-
-    def execute(self) -> str:
-        return self.engine.run()
+def create_async_submit_button():
+    return Button(
+        action_handler=AsyncSubmitHandler(),
+        renderer=PrimaryButtonRenderer()
+    )

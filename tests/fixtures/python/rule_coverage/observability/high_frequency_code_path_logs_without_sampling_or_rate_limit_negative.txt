@@ -1,11 +1,8 @@
-from __future__ import annotations
-
 import logging
 
-LOGGER = logging.getLogger(__name__)
-
-
-def high_frequency_code_path_logs_without_sampling_or_rate_limit_negative(request_ids: list[str]) -> None:
-    for index, request_id in enumerate(request_ids, start=1):
-        if index % 100 == 0:
-            LOGGER.info("sampled request_id=%s", request_id)
+def ingest_event_stream(events):
+    for i, event in enumerate(events):
+        process(event)
+        # Correct: sample the logs or output a periodic heartbeat instead
+        if i % 10000 == 0:
+            logging.info(f"Ingestion heartbeat: Processed {i} events so far.")

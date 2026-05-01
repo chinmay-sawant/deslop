@@ -1,10 +1,8 @@
-from __future__ import annotations
+import threading
 
-from threading import Lock
+lock = threading.Lock()
 
-process_lock = Lock()
-
-
-def run_update(task) -> object:
-    with process_lock:
-        return task()
+def process():
+    # Correct: lock acquisition and release are contained within the same scope
+    with lock:
+        perform_task()

@@ -1,9 +1,9 @@
-from __future__ import annotations
+import wandb
 
-from typing import Any
-
-
-def train_and_log(metrics: list[float], tracker: Any) -> None:
-    for step, metric in enumerate(metrics):
-        if step % 10 == 0:
-            tracker.log({"step": step, "loss": metric})
+def train_model(epochs, batches):
+    for epoch in range(epochs):
+        for step, batch in enumerate(batches):
+            loss = compute_loss(batch)
+            # Correct: throttle logging to only fire periodically (e.g., every 100 steps)
+            if step % 100 == 0:
+                wandb.log({"loss": loss, "step": step})

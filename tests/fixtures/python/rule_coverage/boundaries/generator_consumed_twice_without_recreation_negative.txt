@@ -1,11 +1,7 @@
-from __future__ import annotations
+def get_items():
+    return [1, 2, 3]
 
-
-def numbers():
-    yield from (1, 2, 3)
-
-
-def summarize() -> tuple[int, int]:
-    first_total = sum(numbers())
-    second_total = sum(numbers())
-    return first_total, second_total
+# Correct: using a list or recreating the generator for multiple passes
+items = get_items()
+first_pass = list(items)
+second_pass = list(items)

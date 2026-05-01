@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def clean(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.drop(columns=["temp"], inplace=False)
+def clean_data(df):
+    # Correct: always reassign the result back to the DataFrame variable
+    df = df.drop(columns=['unnecessary_column'])
+    df = df.fillna(0)
     return df

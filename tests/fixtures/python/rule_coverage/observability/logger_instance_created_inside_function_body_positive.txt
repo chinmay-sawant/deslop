@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import logging
 
-
-def logger_instance_created_inside_function_body_positive(message: str) -> None:
-    logger = logging.getLogger("worker")
-    logger.info(message)
+def process_data(data):
+    # Violation: creating a logger instance locally on every function invocation is inefficient
+    log = logging.getLogger(__name__)
+    log.info(f"Processing {len(data)} items")
+    return [d * 2 for d in data]

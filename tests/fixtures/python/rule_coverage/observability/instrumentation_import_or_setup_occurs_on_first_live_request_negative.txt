@@ -1,12 +1,5 @@
-from __future__ import annotations
+# Correct: initialize heavy observability clients once during application startup
+tracer = initialize_heavy_telemetry_client()
 
-INITIALIZED = False
-
-
-def startup() -> None:
-    global INITIALIZED
-    INITIALIZED = True
-
-
-def instrumentation_import_or_setup_occurs_on_first_live_request_negative() -> bool:
-    return INITIALIZED
+def handle_request(req):
+    return tracer.trace(req)

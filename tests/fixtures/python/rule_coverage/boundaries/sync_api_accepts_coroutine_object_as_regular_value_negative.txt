@@ -1,11 +1,11 @@
-from __future__ import annotations
-
 import asyncio
 
-store = {}
+async def process_task(task_coro):
+    # Correct: the API is async and properly awaits the coroutine
+    result = await task_coro
+    print(f"Task result: {result}")
 
+async def my_task():
+    return "done"
 
-def put_value(name: str, value: object) -> None:
-    if asyncio.iscoroutine(value):
-        raise TypeError("coroutine passed to sync API")
-    store[name] = value
+asyncio.run(process_task(my_task()))

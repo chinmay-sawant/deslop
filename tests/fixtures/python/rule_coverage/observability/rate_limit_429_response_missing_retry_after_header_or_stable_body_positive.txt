@@ -1,5 +1,5 @@
-from __future__ import annotations
+from fastapi import Response
 
-
-def rate_limit_429_response_missing_retry_after_header_or_stable_body_positive() -> tuple[int, dict[str, str], dict[str, str]]:
-    return 429, {}, {"message": "too many requests right now, try later"}
+def rate_limit_exceeded():
+    # Violation: returning a 429 Too Many Requests without a Retry-After header forces clients to guess
+    return Response(content='{"error": "Too many requests"}', status_code=429)

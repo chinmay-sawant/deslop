@@ -1,12 +1,13 @@
-from __future__ import annotations
-
-
-class UserManager:
-    def __init__(self) -> None:
-        self._users: dict[int, str] = {}
-
-    def save_user(self, user_id: int, name: str) -> None:
-        self._users[user_id] = name
-
-    def find_user(self, user_id: int) -> str | None:
-        return self._users.get(user_id)
+class UserRepository:
+    # Violation: mixing read and write operations in a single monolithic manager class
+    def get_user(self, id):
+        pass
+        
+    def find_active_users(self):
+        pass
+        
+    def create_user(self, data):
+        pass
+        
+    def delete_user(self, id):
+        pass

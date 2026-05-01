@@ -1,8 +1,9 @@
-from __future__ import annotations
+import json
 
-def json_encoder_recreated_per_item_negative():
-    out = []
+def process_records(records):
+    # Correct: instantiate the JSONEncoder once outside the loop and reuse it
     encoder = json.JSONEncoder()
-    for row in [{"id": 1}, {"id": 2}, {"id": 3}]:
-        out.append(encoder.encode(row))
-    return out
+    results = []
+    for record in records:
+        results.append(encoder.encode(record))
+    return results

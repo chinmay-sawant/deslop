@@ -1,11 +1,16 @@
-from __future__ import annotations
+# module_a.py
+def process_data():
+    # Violation: duplicating the same setup/teardown logic manually across modules
+    db.connect()
+    try:
+        db.execute("...")
+    finally:
+        db.disconnect()
 
-
-def load_users(path: str) -> list[str]:
-    with open(path, "r", encoding="utf-8") as handle:
-        return [line.strip() for line in handle]
-
-
-def load_orders(path: str) -> list[str]:
-    with open(path, "r", encoding="utf-8") as handle:
-        return [line.strip() for line in handle]
+# module_b.py
+def process_other():
+    db.connect()
+    try:
+        db.execute("...")
+    finally:
+        db.disconnect()

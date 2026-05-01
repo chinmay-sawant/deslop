@@ -1,16 +1,8 @@
-from __future__ import annotations
+from celery import shared_task
+from .other_tasks import sub_task
 
-
-class Result:
-    def get(self) -> int:
-        return 5
-
-
-class Task:
-    def delay(self, value: int) -> Result:
-        return Result()
-
-
-def celery_result_get_inside_task_positive(value: int) -> int:
-    task = Task()
-    return task.delay(value).get()
+@shared_task
+def parent_task():
+    result = sub_task.delay()
+    # Violation: calling .get() on a result inside a task (potential deadlock/resource exhaustion)
+    return result.get()

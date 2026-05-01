@@ -1,13 +1,8 @@
-from __future__ import annotations
+# Correct: probe for optional dependencies once at the module level
+try:
+    import orjson as json
+except ImportError:
+    import json
 
-import importlib.util
-
-HAS_ORJSON = importlib.util.find_spec("orjson") is not None
-
-
-def optional_library_import_checked_on_hot_code_path_negative(events: list[int]) -> int:
-    total = 0
-    for value in events:
-        if HAS_ORJSON:
-            total += value
-    return total
+def serialize_data(data):
+    return json.dumps(data)

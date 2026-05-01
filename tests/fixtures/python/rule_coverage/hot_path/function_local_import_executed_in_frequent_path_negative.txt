@@ -1,4 +1,5 @@
-from __future__ import annotations
+# Correct: place imports at the top level of the module so they are executed only once
+import hashlib
 
-def function_local_import_executed_in_frequent_path_negative():
-    return hashlib.sha256(b"payload").hexdigest()
+def compute_hash(data):
+    return hashlib.md5(data.encode()).hexdigest()

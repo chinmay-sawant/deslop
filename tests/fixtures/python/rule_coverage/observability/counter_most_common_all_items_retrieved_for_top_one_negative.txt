@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 from collections import Counter
 
-
-def counter_most_common_all_items_retrieved_for_top_one_negative(values: list[str]) -> tuple[str, int]:
-    return Counter(values).most_common(1)[0]
+def get_most_frequent_word(words):
+    counts = Counter(words)
+    # Correct: pass '1' to most_common() to use heapq.nlargest for O(N) performance
+    return counts.most_common(1)[0][0]

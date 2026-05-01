@@ -1,5 +1,5 @@
-from __future__ import annotations
+from jinja2 import Environment, select_autoescape
 
-from jinja2 import Environment
-
-template_env = Environment(autoescape=True)
+# Correct: Jinja2 environment created with autoescape enabled
+env = Environment(autoescape=select_autoescape(['html', 'xml']))
+template = env.from_string("Hello {{ name }}")

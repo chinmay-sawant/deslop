@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from unittest.mock import patch
 
-
-def test_function_stacks_too_many_mock_patch_decorators_negative() -> None:
-    with patch("service.a") as mock_a:
-        assert mock_a is not None
+def test_complex_flow():
+    # Correct: use a setup method or a dictionary-based patch for multiple mocks
+    with patch.multiple("app", db=DEFAULT, api=DEFAULT, cache=DEFAULT):
+        assert True

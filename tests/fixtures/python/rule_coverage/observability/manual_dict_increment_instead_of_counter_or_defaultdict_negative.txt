@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 from collections import Counter
 
-
-def manual_dict_increment_instead_of_counter_or_defaultdict_negative(events: list[str]) -> dict[str, int]:
-    return dict(Counter(events))
+def count_elements(items):
+    # Correct: use collections.Counter() (or defaultdict) for fast, idiomatic C-level counting
+    return Counter(items)

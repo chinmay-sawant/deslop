@@ -1,9 +1,9 @@
-from __future__ import annotations
+import logging
 
-
-def read_count(fetcher, logger) -> int:
+def get_user_count():
     try:
-        return int(fetcher())
-    except Exception as exc:
-        logger.warning("failed to read count: %s", exc)
+        return db.count_users()
+    except Exception as e:
+        # Correct: log the exception before returning a fallback value
+        logging.error(f"Failed to count users: {e}")
         return 0

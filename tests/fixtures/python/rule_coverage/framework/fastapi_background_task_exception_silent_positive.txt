@@ -1,10 +1,12 @@
-from __future__ import annotations
+from fastapi import BackgroundTasks, FastAPI
 
-def fastapi_background_task_exception_silent_positive():
-    async def send_email_task(message_id: str):
-        try:
-            await email_client.send(message_id)
-        except Exception:
-            pass
+app = FastAPI()
 
-    return send_email_task
+def sync_data():
+    # Violation: background task logic lacks error handling (fails silently)
+    perform_risky_sync()
+
+@app.post("/sync")
+def trigger_sync(background_tasks: BackgroundTasks):
+    background_tasks.add_task(sync_data)
+    return {"message": "Started"}

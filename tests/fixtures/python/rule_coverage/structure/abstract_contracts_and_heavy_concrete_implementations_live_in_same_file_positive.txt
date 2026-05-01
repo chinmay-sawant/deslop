@@ -1,20 +1,14 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
+import boto3
 
-
-class Storage(ABC):
+# Violation: mixing clean abstract contracts with heavy, third-party-dependent concrete implementations in the same file
+class IStorageService(ABC):
     @abstractmethod
-    def save(self, item: str) -> None:
-        raise NotImplementedError
+    def save(self, data): pass
 
-
-class FileStorage(Storage):
-    def __init__(self, path: str) -> None:
-        with open(path, "a", encoding="utf-8") as handle:
-            handle.write("boot\n")
-        self.path = path
-
-    def save(self, item: str) -> None:
-        with open(self.path, "a", encoding="utf-8") as handle:
-            handle.write(f"{item}\n")
+class AWSStorageService(IStorageService):
+    def __init__(self):
+        self.s3 = boto3.client('s3')
+        
+    def save(self, data):
+        self.s3.put_object(Bucket="my-bucket", Key="data", Body=data)

@@ -1,7 +1,10 @@
-from __future__ import annotations
+# settings.py
+_DEBUG = False
 
-API_VERSION = "v1"
+def is_debug_enabled():
+    return _DEBUG
 
-
-def resolve_endpoint(resource: str) -> str:
-    return f"/{API_VERSION}/{resource}"
+# Correct: use a function or a property to manage mutable module state
+def set_debug(value: bool):
+    global _DEBUG
+    _DEBUG = value

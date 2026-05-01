@@ -1,10 +1,6 @@
-from __future__ import annotations
-
 import asyncio
 
-
-async def background_task_exception_unobserved_positive() -> None:
-    async def fail_later() -> None:
-        raise RuntimeError("boom")
-
-    asyncio.create_task(fail_later())
+async def handle_request():
+    # Violation: creating a background task without saving a reference or attaching a done callback swallows exceptions
+    asyncio.create_task(background_work())
+    return "OK"

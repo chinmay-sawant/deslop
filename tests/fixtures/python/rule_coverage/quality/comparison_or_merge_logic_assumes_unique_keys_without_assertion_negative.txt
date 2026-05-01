@@ -1,8 +1,8 @@
-from __future__ import annotations
-
-
-def comparison_or_merge_logic_assumes_unique_keys_without_assertion_negative(rows: list[tuple[str, int]]) -> dict[str, int]:
-    keys = [key for key, _ in rows]
-    if len(keys) != len(set(keys)):
-        raise ValueError("duplicate keys are not allowed")
-    return {key: value for key, value in rows}
+def merge_records(records):
+    # Correct: assert or explicitly validate uniqueness assumptions before executing destructive merge operations
+    merged_map = {}
+    for record in records:
+        if record.id in merged_map:
+            raise ValueError(f"Duplicate record ID found: {record.id}")
+        merged_map[record.id] = record
+    return merged_map

@@ -1,9 +1,6 @@
-from __future__ import annotations
+import subprocess
 
-def subprocess_or_shell_call_inside_record_processing_loop_positive():
-    import subprocess
-    records = ["alice", "bob", "carol"]
-    output = []
-    for item in records:
-        output.append(subprocess.check_output(["echo", item], text=True).strip())
-    return output
+def process_images(image_files):
+    for img in image_files:
+        # Violation: executing a subprocess call inside a processing loop (massive OS overhead per item)
+        subprocess.run(["convert", img, "-resize", "800x600", f"resized_{img}"])

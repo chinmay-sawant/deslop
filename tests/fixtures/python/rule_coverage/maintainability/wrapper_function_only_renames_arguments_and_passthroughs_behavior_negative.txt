@@ -1,11 +1,6 @@
-from __future__ import annotations
+import requests
 
-
-def fetch_user(user_id: int) -> dict[str, int]:
-    return {"id": user_id}
-
-
-def get_customer(customer_number: int) -> dict[str, int]:
-    if customer_number <= 0:
-        raise ValueError("customer_number must be positive")
-    return fetch_user(user_id=customer_number)
+# Correct: just call the underlying function directly if the wrapper adds no behavior
+def process():
+    response = requests.get("https://api.example.com/data", timeout=10)
+    return response.json()

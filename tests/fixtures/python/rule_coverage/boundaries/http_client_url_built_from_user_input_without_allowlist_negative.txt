@@ -1,9 +1,10 @@
-from __future__ import annotations
+import requests
 
-ALLOWED_HOSTS = {"api.example.com", "backup.example.com"}
+ALLOWED_DOMAINS = {"trusted.com", "partner.io"}
 
-
-def build_partner_url(host: str, path: str) -> str:
-    if host not in ALLOWED_HOSTS:
-        raise ValueError("unknown host")
-    return f"https://{host}/{path.lstrip('/')}"
+def fetch_external_data(user_domain):
+    # Correct: URL is checked against an allowlist before making a request
+    if user_domain not in ALLOWED_DOMAINS:
+        raise ValueError("Untrusted domain")
+    url = f"https://{user_domain}/metadata"
+    return requests.get(url).json()

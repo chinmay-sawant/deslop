@@ -1,12 +1,9 @@
-from __future__ import annotations
-
 from typing import Protocol
 
+class Drawable(Protocol):
+    def draw(self): ...
 
-class Runner(Protocol):
-    def run(self) -> None:
-        ...
-
-
-def protocol_used_in_isinstance_without_runtime_checkable_positive(obj: object) -> bool:
-    return isinstance(obj, Runner)
+def render(obj):
+    # Violation: protocol used in isinstance without @runtime_checkable
+    if isinstance(obj, Drawable):
+        obj.draw()

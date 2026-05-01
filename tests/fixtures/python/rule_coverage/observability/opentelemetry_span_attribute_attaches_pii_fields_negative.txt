@@ -1,15 +1,6 @@
-from __future__ import annotations
-
-
-class Span:
-    def __init__(self) -> None:
-        self.attrs: dict[str, str] = {}
-
-    def set_attribute(self, key: str, value: str) -> None:
-        self.attrs[key] = value
-
-
-def opentelemetry_span_attribute_attaches_pii_fields_negative(span: Span, email: str) -> dict[str, str]:
-    domain = email.split("@")[-1]
-    span.set_attribute("user.email_domain", domain)
-    return span.attrs
+def process_user_signup(user_data):
+    with tracer.start_as_current_span("signup") as span:
+        # Correct: use opaque identifiers (like UUIDs) to trace requests securely without leaking PII
+        span.set_attribute("user_id", user_data["id"])
+        span.set_attribute("tenant_id", user_data["tenant"])
+        db.save(user_data)

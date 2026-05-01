@@ -1,6 +1,11 @@
-from __future__ import annotations
+import json
+from pydantic import BaseModel
 
-def pydantic_model_validate_after_json_loads_positive():
-    raw = '{"id": 9, "name": "ci"}'
-    data = json.loads(raw)
-    return ProjectModel.model_validate(data)
+class User(BaseModel):
+    id: int
+    name: str
+
+def load_user(json_data: str):
+    # Violation: using json.loads() and then model_validate() manually
+    data = json.loads(json_data)
+    return User.model_validate(data)

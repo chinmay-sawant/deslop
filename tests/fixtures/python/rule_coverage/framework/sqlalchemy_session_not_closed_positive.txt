@@ -1,5 +1,7 @@
-from __future__ import annotations
+from sqlalchemy.orm import Session
 
-def sqlalchemy_session_not_closed_positive():
-    session = Session(engine)
-    return session.query(Project).count()
+def get_user_data():
+    # Violation: SQLAlchemy session manually created but never closed (resource leak)
+    session = Session(bind=engine)
+    user = session.query(User).first()
+    return user.data

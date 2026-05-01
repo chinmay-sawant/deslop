@@ -1,7 +1,10 @@
-from __future__ import annotations
+import structlog
 
+logger = structlog.get_logger()
 
-def success_and_failure_paths_use_inconsistent_structured_log_keys_positive(ok: bool) -> dict[str, str]:
-    if ok:
-        return {"op": "invoice.send", "status": "success"}
-    return {"operation_name": "invoice.send", "result": "failure"}
+def authenticate(user):
+    if user.is_valid():
+        # Violation: using completely different key names for the exact same entity across code paths
+        logger.info("auth_success", user_email=user.email)
+    else:
+        logger.warning("auth_failed", account_id=user.email)

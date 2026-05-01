@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 from functools import lru_cache
 
-
-class PriceService:
+class DataProvider:
     @lru_cache(maxsize=32)
-    def quote(self, sku: str) -> int:
-        return len(sku) * 100
+    def get_data(self, key):
+        # Violation: lru_cache applied to an instance method (memory leak, 'self' is cached)
+        return fetch_from_db(key)

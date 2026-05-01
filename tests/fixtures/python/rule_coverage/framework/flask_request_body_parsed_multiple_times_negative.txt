@@ -1,8 +1,9 @@
-from __future__ import annotations
+from flask import Flask, request
 
-def flask_request_body_parsed_multiple_times_negative():
-    def handler():
-        body = request.get_json()
-        return f"{body['kind']}:{body['value']}"
+app = Flask(__name__)
 
-    return handler
+@app.route("/process", methods=["POST"])
+def process():
+    # Correct: access the parsed JSON data once and reuse it
+    data = request.json
+    return "ok"

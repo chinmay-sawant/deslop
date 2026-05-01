@@ -1,8 +1,9 @@
-from __future__ import annotations
+import re
 
-def regex_compile_in_hot_path_negative():
-    pattern = re.compile(r"id=(\d+)")
-    matches = []
-    for text in ["id=1", "x=na", "id=2"]:
-        matches.append(pattern.findall(text))
-    return matches
+# Correct: compile the regex pattern once at the module level
+MSG_PATTERN = re.compile(r"^[A-Z]{3}-\d{4}$")
+
+def process_messages(messages):
+    for msg in messages:
+        if MSG_PATTERN.match(msg):
+            print("Valid")

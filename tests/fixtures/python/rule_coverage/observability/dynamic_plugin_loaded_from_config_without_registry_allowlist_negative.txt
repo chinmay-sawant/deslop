@@ -1,12 +1,10 @@
-from __future__ import annotations
-
 import importlib
 
-ALLOWED_PLUGINS = {"plugins.audit", "plugins.metrics"}
+ALLOWED_PLUGINS = {"formatter_v1", "formatter_v2", "default_exporter"}
 
-
-def dynamic_plugin_loaded_from_config_without_registry_allowlist_negative(module_name: str) -> object:
-    if module_name not in ALLOWED_PLUGINS:
-        raise ValueError(f"unsupported plugin: {module_name}")
-    module = importlib.import_module(module_name)
-    return module.Plugin()
+def load_user_plugin(config):
+    # Correct: always validate dynamic imports against a strict, hardcoded allowlist
+    plugin_name = config.get("custom_plugin_name")
+    if plugin_name not in ALLOWED_PLUGINS:
+        raise ValueError(f"Plugin {plugin_name} is not allowed.")
+    return importlib.import_module(plugin_name)

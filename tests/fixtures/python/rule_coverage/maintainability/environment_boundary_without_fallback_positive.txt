@@ -1,5 +1,7 @@
-from __future__ import annotations
+import os
 
-def environment_boundary_without_fallback_positive():
-    import os
-    return os.environ["APP_REGION"]
+def get_server_config():
+    # Violation: reading environment variables without providing a fallback or default value
+    host = os.environ["SERVER_HOST"]
+    port = int(os.environ["SERVER_PORT"])
+    return host, port

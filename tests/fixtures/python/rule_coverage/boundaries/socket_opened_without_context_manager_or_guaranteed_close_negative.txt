@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 import socket
 
-
-def probe(host: str) -> bytes:
-    with socket.create_connection((host, 80), timeout=2) as client:
-        client.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
-        return client.recv(64)
+def send_data(message):
+    # Correct: socket managed using a context manager
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect(("localhost", 8000))
+        s.sendall(message.encode())

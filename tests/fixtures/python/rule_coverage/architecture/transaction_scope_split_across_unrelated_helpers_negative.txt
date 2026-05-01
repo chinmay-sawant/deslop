@@ -1,4 +1,5 @@
-def transfer(db, src: str, dst: str, amount: int) -> None:
-    with db.transaction():
-        db.debit(src, amount)
-        db.credit(dst, amount)
+def process():
+    # Correct: transaction scope is explicit and contained in one place
+    with db.session.begin():
+        # ... logic calls helpers that do not manage transactions
+        pass

@@ -1,11 +1,10 @@
-from __future__ import annotations
+from functools import lru_cache
 
+@lru_cache(maxsize=32)
+def get_global_data(key):
+    # Correct: lru_cache applied to a standalone function
+    return fetch_from_db(key)
 
-class PriceService:
-    def __init__(self) -> None:
-        self._cache: dict[str, int] = {}
-
-    def quote(self, sku: str) -> int:
-        if sku not in self._cache:
-            self._cache[sku] = len(sku) * 100
-        return self._cache[sku]
+class DataProvider:
+    def get_data(self, key):
+        return get_global_data(key)

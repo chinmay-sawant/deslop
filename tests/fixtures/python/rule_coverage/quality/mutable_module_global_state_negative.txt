@@ -1,7 +1,10 @@
-from __future__ import annotations
-
-
-def mutable_module_global_state_negative(key: str, state: dict[str, int]) -> dict[str, int]:
-    next_state = dict(state)
-    next_state[key] = next_state.get(key, 0) + 1
-    return next_state
+class SessionManager:
+    # Correct: encapsulate state within classes, allowing dependency injection and multiple test instances
+    def __init__(self):
+        self.active_users = set()
+        
+    def login(self, user_id):
+        self.active_users.add(user_id)
+        
+    def logout(self, user_id):
+        self.active_users.discard(user_id)

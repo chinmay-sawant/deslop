@@ -1,12 +1,8 @@
-from __future__ import annotations
-
 import logging
 
-LOGGER = logging.getLogger(__name__)
-
-
-def logger_error_inside_except_without_exc_info_positive(raw_id: str) -> None:
+def connect_db():
     try:
-        int(raw_id)
-    except ValueError as exc:
-        LOGGER.error("invalid id: %s", exc)
+        db.connect()
+    except Exception as e:
+        # Violation: logging an exception using .error() loses the vital stack trace needed for debugging
+        logging.error(f"Connection failed: {e}")

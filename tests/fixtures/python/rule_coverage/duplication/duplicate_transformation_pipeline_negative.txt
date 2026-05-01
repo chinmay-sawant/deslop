@@ -1,9 +1,9 @@
-from __future__ import annotations
+def normalize_name(name):
+    # Correct: transformation logic is extracted into a single helper function
+    return name.strip().lower().replace("_", " ")
 
+def process_user_data(raw_data):
+    return {"name": normalize_name(raw_data["name"])}
 
-def _to_code(raw: str) -> str:
-    return raw.strip().lower().replace(" ", "_")
-
-
-def duplicate_transformation_pipeline_negative(raw: str) -> str:
-    return _to_code(raw)
+def process_admin_data(raw_data):
+    return {"admin_name": normalize_name(raw_data["full_name"])}

@@ -1,12 +1,15 @@
-from __future__ import annotations
+# module: orders.py
+# Correct: refactor shared logic into an independent core module to enforce strict unidirectional data flow
+from core.models import Order
+from core.events import emit_payment_event
 
-from typing import Protocol
+def place_order():
+    emit_payment_event()
 
 
-class StockGateway(Protocol):
-    def reserve_stock(self, sku: str, qty: int) -> bool:
-        ...
+# module: payments.py
+from core.models import Order
+from core.database import save_status
 
-
-def bidirectional_import_between_feature_modules_negative(stock: StockGateway, sku: str) -> bool:
-    return stock.reserve_stock(sku, 1)
+def process_payment(order_id):
+    save_status(order_id, "PAID")

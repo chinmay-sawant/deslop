@@ -1,9 +1,9 @@
-from __future__ import annotations
+# Correct: large static data is moved to module level to avoid recreation per request
+APP_CONFIG = {
+    "feature_a": {"enabled": True, "timeout": 30, "retries": 3, "buffer": 1024},
+    "feature_b": {"enabled": False, "timeout": 60, "retries": 1, "buffer": 2048},
+}
 
-def large_dict_literal_response_in_handler_negative():
-    STATUS_PAYLOAD = build_status_payload()
-
-    def handler():
-        return STATUS_PAYLOAD
-
-    return handler
+@app.get("/config")
+def get_config():
+    return APP_CONFIG

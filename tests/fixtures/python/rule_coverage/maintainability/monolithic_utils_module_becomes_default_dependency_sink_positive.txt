@@ -1,16 +1,7 @@
-from __future__ import annotations
+# app/main.py
+# Violation: importing from a massive, monolithic utils package that drags in unrelated dependencies
+from app.utils import parse_date, calculate_md5, init_db_connection
 
-import hashlib
-import json
-
-
-def parse_config(raw: str) -> dict[str, object]:
-    return json.loads(raw)
-
-
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
-
-
-def send_email_address(recipient: str) -> str:
-    return f"sent:{recipient}"
+def process():
+    parse_date("2023-01-01")
+    calculate_md5("data")

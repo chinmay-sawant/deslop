@@ -1,19 +1,8 @@
-from __future__ import annotations
-
-
-class GodClassPositive:
-    def parse_order(self, raw: str) -> dict[str, str]:
-        key, value = raw.split("=", 1)
-        return {key: value}
-
-    def validate_user(self, user_id: str) -> bool:
-        return user_id.isdigit()
-
-    def persist(self, row: dict[str, str]) -> str:
-        return f"saved:{row}"
-
-    def render(self, row: dict[str, str]) -> str:
-        return f"<div>{row}</div>"
-
-    def send_email(self, email: str) -> str:
-        return f"sent:{email}"
+# Violation: a "God Class" that attempts to know and do everything in the application
+class ApplicationSystem:
+    def get_db_connection(self): pass
+    def parse_http_request(self): pass
+    def render_html_template(self): pass
+    def calculate_payroll_tax(self): pass
+    def send_sms_notification(self): pass
+    def compress_image(self): pass

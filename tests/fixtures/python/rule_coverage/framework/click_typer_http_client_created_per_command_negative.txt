@@ -1,13 +1,11 @@
-from __future__ import annotations
+import httpx
+import typer
 
+app = typer.Typer()
+# Correct: create a single client instance to be reused across commands
+client = httpx.Client(base_url="https://api.myapp.com")
 
-class HttpClient:
-    def get(self, route: str) -> str:
-        return f"GET {route}"
-
-
-CLIENT = HttpClient()
-
-
-def click_typer_http_client_created_per_command_negative() -> str:
-    return CLIENT.get("/health")
+@app.command()
+def check_status():
+    resp = client.get("/status")
+    print(resp.json())

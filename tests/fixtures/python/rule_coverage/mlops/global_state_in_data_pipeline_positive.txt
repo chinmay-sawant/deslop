@@ -1,9 +1,7 @@
-from __future__ import annotations
+PROCESSED_ITEMS = []
 
-CURRENT_BATCH: list[int] = []
-
-
-def process(batch: list[int]) -> int:
-    CURRENT_BATCH.clear()
-    CURRENT_BATCH.extend(batch)
-    return sum(CURRENT_BATCH)
+def process_batch(batch):
+    # Violation: maintaining a global state variable inside a data processing pipeline
+    global PROCESSED_ITEMS
+    for item in batch:
+        PROCESSED_ITEMS.append(item * 2)

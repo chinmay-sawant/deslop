@@ -1,6 +1,10 @@
-from __future__ import annotations
+import os
 
+DATA_BLOB = None
 
-def import_time_file_io_negative(path: str) -> str:
-    with open(path, "r", encoding="utf-8") as handle:
-        return handle.read()
+def get_data():
+    # Correct: perform heavy file IO inside functions, optionally caching the result
+    global DATA_BLOB
+    if DATA_BLOB is None:
+        DATA_BLOB = open("massive_dataset.csv").read()
+    return DATA_BLOB

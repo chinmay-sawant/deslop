@@ -1,20 +1,11 @@
-from __future__ import annotations
-
-
-class Wallet:
-    def __init__(self, balance: int) -> None:
-        self.balance = balance
-
-    def debit(self, amount: int) -> None:
+class Account:
+    def withdraw(self, amount):
         self.balance -= amount
 
-    def credit(self, amount: int) -> None:
+    def deposit(self, amount):
+        # Correct: mutations are encapsulated within each object's own methods
         self.balance += amount
 
-
-def method_mutates_self_and_peer_object_in_same_block_negative() -> int:
-    source = Wallet(10)
-    target = Wallet(0)
-    source.debit(3)
-    target.credit(3)
-    return target.balance
+def transfer(source, target, amount):
+    source.withdraw(amount)
+    target.deposit(amount)

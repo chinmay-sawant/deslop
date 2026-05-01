@@ -1,11 +1,11 @@
-from __future__ import annotations
+# module: billing.py
+from users import UserDatabase
 
-from notifications import SmtpNotifier
-
-
-class SignupServicePositive:
-    def __init__(self) -> None:
-        self.notifier = SmtpNotifier()
-
-    def send_welcome(self, email: str) -> str:
-        return self.notifier.send(email, "welcome")
+class BillingProcessor:
+    # Violation: tightly coupling a business module to the concrete implementation of another domain
+    def __init__(self):
+        self.db = UserDatabase()
+        
+    def charge_all(self):
+        for user in self.db.get_all_users():
+            print(f"Charging {user.name}")

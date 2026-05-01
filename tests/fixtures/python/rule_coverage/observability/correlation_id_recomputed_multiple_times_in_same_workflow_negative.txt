@@ -1,8 +1,9 @@
-from __future__ import annotations
-
 import uuid
+import logging
 
-
-def correlation_id_recomputed_multiple_times_in_same_workflow_negative() -> list[str]:
-    correlation_id = str(uuid.uuid4())
-    return [correlation_id, correlation_id, correlation_id]
+def process_job(job_data):
+    # Correct: generate a correlation ID once and pass it along (or use contextvars)
+    correlation_id = uuid.uuid4()
+    logging.info(f"[{correlation_id}] Starting job processing")
+    do_work(job_data, correlation_id)
+    logging.info(f"[{correlation_id}] Job finished successfully")

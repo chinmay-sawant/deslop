@@ -1,16 +1,17 @@
-from __future__ import annotations
+# module: billing.py
+from typing import Protocol, List
 
-from typing import Protocol
+class User(Protocol):
+    name: str
 
+class UserRepository(Protocol):
+    def get_all_users(self) -> List[User]: ...
 
-class Notifier(Protocol):
-    def send(self, email: str, body: str) -> str:
-        ...
-
-
-class SignupServiceNegative:
-    def __init__(self, notifier: Notifier) -> None:
-        self.notifier = notifier
-
-    def send_welcome(self, email: str) -> str:
-        return self.notifier.send(email, "welcome")
+class BillingProcessor:
+    # Correct: depend on abstract protocols (interfaces) instead of concrete implementations from other domains
+    def __init__(self, repository: UserRepository):
+        self.repository = repository
+        
+    def charge_all(self):
+        for user in self.repository.get_all_users():
+            print(f"Charging {user.name}")

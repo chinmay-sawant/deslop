@@ -1,11 +1,8 @@
-from __future__ import annotations
+# cli_runner.py
+import click
+from library_core import execute_request
 
-
-def cli_only_dependency_imported_by_library_entry_module_negative() -> object:
-    import click
-
-    @click.command()
-    def main() -> None:
-        pass
-
-    return main
+# Correct: isolate CLI frameworks and heavy dependencies into dedicated entrypoint modules
+@click.command()
+def run():
+    execute_request()

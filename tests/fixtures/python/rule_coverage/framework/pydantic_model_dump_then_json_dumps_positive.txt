@@ -1,6 +1,11 @@
-from __future__ import annotations
+import json
+from pydantic import BaseModel
 
-def pydantic_model_dump_then_json_dumps_positive():
-    event = EventModel(id=3, kind="deploy")
-    payload = event.model_dump()
-    return json.dumps(payload)
+class User(BaseModel):
+    id: int
+    name: str
+
+def serialize_user(user: User):
+    # Violation: using model_dump() and then json.dumps() manually
+    data = user.model_dump()
+    return json.dumps(data)

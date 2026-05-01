@@ -1,5 +1,5 @@
-from __future__ import annotations
+from typing import Optional
 
-
-def optional_parameter_used_without_none_guard_positive(name: str | None = None) -> str:
-    return name.strip().lower()
+def get_username(user: Optional[User]):
+    # Violation: optional parameter used without a None guard
+    return user.name

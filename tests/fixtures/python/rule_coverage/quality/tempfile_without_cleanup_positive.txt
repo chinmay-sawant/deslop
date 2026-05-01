@@ -1,10 +1,11 @@
-from __future__ import annotations
-
 import tempfile
+import os
 
-
-def tempfile_without_cleanup_positive(data: str) -> str:
-    handle = tempfile.NamedTemporaryFile(delete=False, mode="w", encoding="utf-8")
-    handle.write(data)
-    handle.close()
-    return handle.name
+def process_data(data):
+    # Violation: creating temporary files without using a context manager or explicit cleanup leaks inodes and disk space
+    temp = tempfile.NamedTemporaryFile(delete=False)
+    temp.write(data)
+    temp.close()
+    
+    run_external_tool(temp.name)
+    return "Done"

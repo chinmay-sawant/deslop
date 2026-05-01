@@ -1,15 +1,14 @@
-from __future__ import annotations
-
-
-class ReportBuilderPositive:
-    def __init__(self) -> None:
-        self.title = ""
-        self.subtitle = ""
-        self.author = ""
-        self.region = ""
-        self.currency = ""
-        self.locale = ""
-        self.timezone = ""
-        self.theme = ""
-        self.footer = ""
-        self.logo_path = ""
+class ServerConfiguration:
+    # Violation: a class with dozens of instance attributes is usually multiple cohesive concepts hiding as one
+    def __init__(self):
+        self.host = "localhost"
+        self.port = 8080
+        self.use_tls = True
+        self.tls_cert = "cert.pem"
+        self.tls_key = "key.pem"
+        self.db_host = "10.0.0.1"
+        self.db_port = 5432
+        self.db_user = "admin"
+        self.db_pass = "secret"
+        self.timeout = 30
+        self.retries = 3

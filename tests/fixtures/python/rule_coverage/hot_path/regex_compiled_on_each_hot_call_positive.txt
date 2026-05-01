@@ -1,5 +1,5 @@
-from __future__ import annotations
+import re
 
-def regex_compiled_on_each_hot_call_positive():
-    pattern = re.compile(r"\s+")
-    return pattern.sub(" ", "a    b").strip()
+def is_valid_email(email):
+    # Violation: using re.match directly inside a hot function relies on an internal cache that can thrash
+    return bool(re.match(r"[^@]+@[^@]+\.[^@]+", email))

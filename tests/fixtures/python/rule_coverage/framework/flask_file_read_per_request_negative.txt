@@ -1,9 +1,10 @@
-from __future__ import annotations
+from flask import Flask
 
-def flask_file_read_per_request_negative():
-    banner_text = "welcome"
+app = Flask(__name__)
+# Correct: cache static file content at startup or module level
+with open("terms.txt") as f:
+    TERMS_CONTENT = f.read()
 
-    def handler():
-        return banner_text
-
-    return handler
+@app.route("/terms")
+def terms():
+    return TERMS_CONTENT

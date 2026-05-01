@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import pkg_resources
 
-
-def pkg_resources_used_for_runtime_version_lookup_positive() -> str:
-    return pkg_resources.get_distribution("pip").version
+def get_library_version():
+    # Violation: using pkg_resources for runtime version lookups adds hundreds of milliseconds to startup time
+    return pkg_resources.get_distribution("requests").version

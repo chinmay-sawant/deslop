@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import pytest
 
-
-def pytest_raises_without_match_parameter_on_broad_exception_positive() -> None:
-    with pytest.raises(Exception):
-        int("x")
+def test_failure():
+    # Violation: pytest.raises used without 'match' on a broad exception (may catch unrelated errors)
+    with pytest.raises(ValueError):
+        risky_call()

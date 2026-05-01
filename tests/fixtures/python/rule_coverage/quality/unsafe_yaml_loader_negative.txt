@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import yaml
 
-
-def unsafe_yaml_loader_negative(raw: str) -> object:
-    return yaml.safe_load(raw)
+def parse_config(data):
+    # Correct: always use yaml.safe_load() to restrict parsing to standard primitives (dicts, lists, strings, etc.)
+    return yaml.safe_load(data)

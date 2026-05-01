@@ -1,14 +1,14 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
+from datetime import datetime
 
-
-@dataclass(frozen=True)
-class RecordMeta:
-    record_id: str
-    created_by: str
-
+# Correct: use composition (or simple dataclass attributes) to share data fields without inheriting types
+@dataclass
+class AuditMetadata:
+    id: int
+    created_at: datetime
+    updated_at: datetime
 
 @dataclass
-class OrderRecord:
-    meta: RecordMeta
+class Product:
+    metadata: AuditMetadata
+    price: float = 0.0

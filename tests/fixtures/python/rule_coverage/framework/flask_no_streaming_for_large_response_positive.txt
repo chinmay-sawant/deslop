@@ -1,9 +1,9 @@
-from __future__ import annotations
+from flask import Flask, jsonify
 
-def flask_no_streaming_for_large_response_positive():
-    def download():
-        lines = [f"row-{i}\n" for i in range(5000)]
-        payload = "".join(lines)
-        return Response(payload, mimetype="text/plain")
+app = Flask(__name__)
 
-    return download
+@app.route("/export")
+def export():
+    # Violation: fetching a huge dataset and returning it as a single JSON response (high memory)
+    data = db.fetch_all_logs()
+    return jsonify(data)

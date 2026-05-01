@@ -1,6 +1,6 @@
-from __future__ import annotations
+def get_user_data(user_id):
+    # Violation: repeatedly building anonymous dictionaries with the same shape instead of using a class or TypedDict
+    return {"id": user_id, "name": "John", "active": True, "role": "user"}
 
-def anonymous_dict_shape_repeated_without_shared_type_or_builder_positive():
-    user = {"id": 7, "name": "Ari", "active": True}
-    approver = {"id": 8, "name": "Bo", "active": False}
-    return [user, approver]
+def get_admin_data(admin_id):
+    return {"id": admin_id, "name": "Jane", "active": True, "role": "admin"}

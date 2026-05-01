@@ -1,8 +1,6 @@
-from __future__ import annotations
+import subprocess
 
-def subprocess_or_shell_call_inside_record_processing_loop_negative():
-    import subprocess
-    records = ["alice", "bob", "carol"]
-    joined = "\n".join(records)
-    output = subprocess.check_output(["echo", joined], text=True)
-    return output.splitlines()
+def process_images(image_files):
+    # Correct: use batch processing or a single subprocess call with all arguments to minimize OS forks
+    args = ["mogrify", "-resize", "800x600"] + image_files
+    subprocess.run(args)

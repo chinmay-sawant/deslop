@@ -1,4 +1,5 @@
-from __future__ import annotations
+# Correct: define constant collections at the module level for optimal performance
+VALID_TOKENS = frozenset({"ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON"})
 
-def constant_frozenset_or_dict_rebuilt_on_each_call_negative():
-    return "json" in ALLOWED_FORMATS
+def is_valid_token(token):
+    return token in VALID_TOKENS

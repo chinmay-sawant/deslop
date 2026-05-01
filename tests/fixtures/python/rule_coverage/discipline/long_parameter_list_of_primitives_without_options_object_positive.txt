@@ -1,13 +1,3 @@
-from __future__ import annotations
-
-
-def long_parameter_list_of_primitives_without_options_object_positive(
-    host: str,
-    port: int,
-    timeout: float,
-    retries: int,
-    use_ssl: bool,
-    verify_cert: bool,
-    pool_size: int,
-) -> str:
-    return f"{host}:{port} timeout={timeout} retries={retries} ssl={use_ssl} verify={verify_cert} pool={pool_size}"
+def configure_system(host, port, timeout, retry_count, buffer_size, enable_logging, log_level):
+    # Violation: long parameter list of primitives without an options object
+    print(f"Connecting to {host}:{port}")

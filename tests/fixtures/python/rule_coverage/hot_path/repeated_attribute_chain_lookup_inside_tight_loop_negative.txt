@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-def repeated_attribute_chain_lookup_inside_tight_loop_negative():
-    total = 0
-    for order in orders:
-        profile = order.customer.profile
-        total += profile.score + profile.rank
-    return total
+def process_items(config, items):
+    # Correct: extract the deeply nested attribute into a local variable before the loop
+    max_limit = config.settings.thresholds.max_limit
+    for item in items:
+        if item.value > max_limit:
+            print("Exceeded")

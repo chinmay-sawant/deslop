@@ -1,7 +1,8 @@
 from contextlib import contextmanager
 
-
 @contextmanager
-def cache_scope():
-    local_cache: dict[str, str] = {}
-    yield local_cache
+def use_resource():
+    # Correct: context manager yields a new, isolated resource instance
+    resource = {"state": "ready"}
+    yield resource
+    resource["state"] = "closed"

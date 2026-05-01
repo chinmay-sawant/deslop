@@ -1,14 +1,18 @@
-from __future__ import annotations
+import sys
 
+class ConfigurationParser:
+    # Correct: helpers should raise exceptions and let the top-level application root dictate process lifecycle
+    def parse_file(self, filepath):
+        try:
+            return open(filepath).read()
+        except FileNotFoundError as e:
+            raise ValueError(f"Required configuration file missing: {e}")
 
-class TextHelpers:
-    def normalize_name(self, text: str) -> str:
-        return text.strip().lower()
-
-
-class WorkerSupervisor:
-    def start_worker(self) -> str:
-        return "worker-started"
-
-    def stop_worker(self) -> str:
-        return "worker-stopped"
+# In main.py
+def main():
+    try:
+        parser = ConfigurationParser()
+        parser.parse_file("config.ini")
+    except ValueError as e:
+        print(e)
+        sys.exit(1)

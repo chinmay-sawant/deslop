@@ -1,12 +1,9 @@
-from __future__ import annotations
-
-
-def first_line(path: str) -> str:
-    handle = open(path, "r", encoding="utf-8")
+def upload_data(client, data):
+    # Violation: duplicated cleanup paths instead of using a context manager or 'finally'
+    client.connect()
     try:
-        line = handle.readline().strip()
-        handle.close()
-        return line
+        client.upload(data)
+        client.disconnect()
     except Exception:
-        handle.close()
+        client.disconnect()
         raise

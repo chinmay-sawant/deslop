@@ -1,14 +1,10 @@
-from __future__ import annotations
+# Violation: wrapping native primitives in custom classes without adding any new behavior is over-abstraction
+class StringWrapper:
+    def __init__(self, value: str):
+        self._value = value
+        
+    def get_value(self) -> str:
+        return self._value
 
-
-class Repository:
-    def fetch(self, user_id: str) -> str:
-        return f"user:{user_id}"
-
-
-class RepositoryManager:
-    def __init__(self, repo: Repository) -> None:
-        self.repo = repo
-
-    def get_user(self, user_id: str) -> str:
-        return self.repo.fetch(user_id)
+def print_message(msg: StringWrapper):
+    print(msg.get_value())

@@ -1,7 +1,9 @@
-from __future__ import annotations
+def apply_transform(items, transformer):
+    return [transformer(item) for item in items]
 
-def lambda_or_closure_allocated_per_item_when_static_helper_suffices_negative():
-    results = []
-    for n in [1, 2, 3]:
-        results.append(add_offset(10, n))
-    return results
+def _double_value(x):
+    return x * 2
+
+def process_data(data):
+    # Correct: use a pre-defined static helper function to avoid repeated lambda allocations
+    return apply_transform(data, _double_value)

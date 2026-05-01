@@ -1,10 +1,12 @@
-from __future__ import annotations
+# module: registry.py
+PLUGINS = {}
+def register(name):
+    def decorator(cls):
+        # Violation: mutating global state silently at import time via decorators makes execution order implicit and fragile
+        PLUGINS[name] = cls
+        return cls
+    return decorator
 
-REGISTRY: dict[str, str] = {}
-
-
-def register(name: str, value: str) -> None:
-    REGISTRY[name] = value
-
-
-register("default", "handler")
+# module: plugins.py
+@register("fast")
+class FastPlugin: pass

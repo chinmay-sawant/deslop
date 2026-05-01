@@ -1,9 +1,12 @@
-from __future__ import annotations
-
 import asyncio
+import random
 
-
-async def async_retry_sleep_without_backoff_negative(attempts: int) -> int:
-    for retry in range(attempts):
-        await asyncio.sleep(0.2 * (2**retry))
-    return attempts
+async def fetch_with_retry():
+    for attempt in range(5):
+        try:
+            return await make_request()
+        except Exception:
+            # Correct: use exponential backoff with jitter to prevent server overload during retries
+            backoff = (2 ** attempt) + random.uniform(0, 1)
+            await asyncio.sleep(backoff)
+    raise Exception("Failed")

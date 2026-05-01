@@ -1,7 +1,4 @@
-from __future__ import annotations
-
-
-def format_users(users):
-    if isinstance(users, str):
-        users = [users]
-    return [name.strip().title() for name in users]
+def save_all_users(users):
+    # Violation: batch API silently falls back to single-item semantics (N+1 database calls)
+    for user in users:
+        db.save(user)

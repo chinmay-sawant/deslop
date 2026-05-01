@@ -1,5 +1,6 @@
-from __future__ import annotations
-
-
-def order_dependent_set_to_list_conversion_exposed_in_public_result_negative(ids: list[str]) -> list[str]:
-    return sorted(set(ids))
+def get_unique_tags(articles):
+    tags = set()
+    for a in articles:
+        tags.update(a.tags)
+    # Correct: explicitly sort the set when returning it as a list to ensure stable API contracts
+    return sorted(list(tags))

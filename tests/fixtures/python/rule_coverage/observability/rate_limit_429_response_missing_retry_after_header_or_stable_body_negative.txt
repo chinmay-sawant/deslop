@@ -1,7 +1,7 @@
-from __future__ import annotations
+from fastapi import Response
 
-
-def rate_limit_429_response_missing_retry_after_header_or_stable_body_negative() -> tuple[int, dict[str, str], dict[str, str]]:
+def rate_limit_exceeded():
+    # Correct: always provide a Retry-After header and a structured body when rate limiting
     headers = {"Retry-After": "60"}
-    body = {"error": "rate_limited", "retry_after_seconds": "60"}
-    return 429, headers, body
+    body = '{"error": "rate_limit_exceeded", "message": "Try again in 60 seconds"}'
+    return Response(content=body, status_code=429, headers=headers)

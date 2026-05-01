@@ -1,7 +1,12 @@
-from __future__ import annotations
+# module: registry.py
+class PluginRegistry:
+    def __init__(self):
+        self.plugins = {}
+        
+    def register(self, name, cls):
+        self.plugins[name] = cls
 
-
-def module_global_registry_mutated_from_import_time_registration_negative() -> dict[str, str]:
-    registry: dict[str, str] = {}
-    registry["default"] = "handler"
-    return registry
+# Correct: use explicit, runtime registration functions to populate state deterministically
+def initialize_all_plugins(registry):
+    from plugins import FastPlugin
+    registry.register("fast", FastPlugin)

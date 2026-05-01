@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def score_sum(df: pd.DataFrame) -> float:
-    total = 0.0
-    for _, row in df.iterrows():
-        total += float(row["score"])
+def calculate_totals(df):
+    total = 0
+    # Violation: using iterrows() is notoriously slow because it boxes each row into a pandas Series
+    for index, row in df.iterrows():
+        total += row['sales']
     return total

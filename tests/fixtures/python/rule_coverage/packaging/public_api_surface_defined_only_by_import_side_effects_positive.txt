@@ -1,9 +1,7 @@
-registry: dict[str, object] = {}
+# main.py
+# Violation: relying on implicit import side-effects to configure an application is a massive anti-pattern
+import app.plugins.register_all
+import app.config.setup_logging
 
-
-def _register() -> None:
-    registry["reader"] = object()
-    registry["writer"] = object()
-
-
-_register()
+def start():
+    print("Running...")

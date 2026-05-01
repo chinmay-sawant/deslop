@@ -1,9 +1,8 @@
-from __future__ import annotations
-
-
-def string_mode_parameter_replaces_enum_or_literal_contract_positive(mode: str, value: int) -> str:
-    if mode == "hex":
-        return hex(value)
-    if mode == "bin":
-        return bin(value)
-    return str(value)
+# Violation: using an unbounded string parameter for a finite set of options prevents IDE autocomplete and type checking
+def configure_logging(mode: str):
+    if mode == "json":
+        setup_json()
+    elif mode == "text":
+        setup_text()
+    else:
+        raise ValueError("Invalid mode")

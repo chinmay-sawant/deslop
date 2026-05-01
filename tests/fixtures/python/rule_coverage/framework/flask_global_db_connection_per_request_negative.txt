@@ -1,11 +1,14 @@
-from __future__ import annotations
+from flask import Flask, g
 
-def flask_global_db_connection_per_request_negative():
-    pool = ConnectionPool("dbname=main")
+app = Flask(__name__)
 
-    def handler():
-        with pool.connection() as conn:
-            row = conn.execute("SELECT 1").fetchone()
-        return row[0]
+def get_db():
+    # Correct: use 'g' to manage database connections per-request
+    if 'db' not in g:
+        g.db = connect_db()
+    return g.db
 
-    return handler
+@app.teardown_appcontext
+def close_db(e):
+    db = g.pop('db', None)
+    if db: db.close()

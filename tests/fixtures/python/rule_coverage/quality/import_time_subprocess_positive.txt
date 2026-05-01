@@ -1,5 +1,7 @@
-from __future__ import annotations
-
 import subprocess
 
-GIT_HEAD = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+# Violation: shelling out to external processes during import creates extremely fragile, unportable code
+GIT_COMMIT = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()
+
+def get_version():
+    return GIT_COMMIT

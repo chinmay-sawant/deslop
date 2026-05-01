@@ -1,11 +1,12 @@
-from __future__ import annotations
-
 import time
 
-
-def timing_metric_wraps_setup_and_teardown_noise_instead_of_core_operation_positive() -> float:
-    start = time.perf_counter()
-    time.sleep(0.001)  # setup
-    time.sleep(0.002)  # core
-    time.sleep(0.001)  # teardown
-    return time.perf_counter() - start
+def process_data_with_metric():
+    start = time.time()
+    # Violation: measuring setup, DB connections, and teardown noise alongside the core algorithmic operation
+    db = connect()
+    result = run_heavy_algorithm()
+    db.close()
+    
+    latency = time.time() - start
+    statsd.timing("algorithm.duration", latency)
+    return result

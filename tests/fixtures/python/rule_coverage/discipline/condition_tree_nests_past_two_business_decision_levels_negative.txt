@@ -1,9 +1,12 @@
-from __future__ import annotations
-
-
-def shipping_fee(country: str, member: bool, subtotal: float) -> int:
-    if country != "US":
-        return 15
-    if subtotal > 100:
-        return 0 if member else 5
-    return 3 if member else 8
+def calculate_tax(order):
+    # Correct: use early returns to flatten the logic
+    if not order.is_active:
+        return 0
+    
+    if not order.customer.is_premium:
+        return order.amount * 0.1
+        
+    if order.amount > 1000:
+        return order.amount * 0.05
+    
+    return order.amount * 0.08

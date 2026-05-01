@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def mark_adults(df: pd.DataFrame) -> pd.DataFrame:
-    df[df["age"] >= 18]["is_adult"] = True
+def update_active_users(df):
+    # Violation: chained indexing triggers a SettingWithCopyWarning and may fail to update the original DataFrame
+    df[df['status'] == 'active']['is_verified'] = True
     return df

@@ -1,7 +1,7 @@
-from __future__ import annotations
+import json
 
-def json_loads_same_payload_multiple_times_positive():
-    raw = '{"enabled": true, "name": "api"}'
-    enabled = json.loads(raw)["enabled"]
-    name = json.loads(raw)["name"]
-    return enabled, name
+def handle_message(payload):
+    # Violation: parsing the same JSON payload multiple times (expensive CPU operation)
+    if json.loads(payload).get("type") == "update":
+        data = json.loads(payload).get("data")
+        print(data)

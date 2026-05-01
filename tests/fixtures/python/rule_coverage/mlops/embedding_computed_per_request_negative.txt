@@ -1,15 +1,4 @@
-from __future__ import annotations
-
-
-class Embedder:
-    def encode(self, text: str) -> tuple[int, int]:
-        return (len(text), sum(ord(ch) for ch in text) % 97)
-
-
-_CACHE: dict[str, tuple[int, int]] = {}
-
-
-def handle_query(embedder: Embedder, query: str) -> tuple[int, int]:
-    if query not in _CACHE:
-        _CACHE[query] = embedder.encode(query)
-    return _CACHE[query]
+def find_similar(query_text, precomputed_doc_embs, embedder):
+    # Correct: use precomputed embeddings for the document corpus to save inference time
+    query_emb = embedder.encode(query_text)
+    return cosine_similarity(query_emb, precomputed_doc_embs)

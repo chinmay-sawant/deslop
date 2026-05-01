@@ -1,9 +1,10 @@
-from __future__ import annotations
+# utils.py
+def calculate_discount(price):
+    return price * 0.9
 
+# file_a.py
+from .utils import calculate_discount
 
-def _build_slug(value: str) -> str:
-    return value.strip().lower().replace(" ", "-")
-
-
-def cross_file_copy_paste_function_negative(value: str) -> str:
-    return _build_slug(value)
+# file_b.py
+# Correct: shared logic is imported from a single source
+from .utils import calculate_discount

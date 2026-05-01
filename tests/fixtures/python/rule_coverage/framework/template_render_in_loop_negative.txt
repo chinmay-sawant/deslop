@@ -1,4 +1,5 @@
-from __future__ import annotations
+from flask import render_template
 
-def template_render_in_loop_negative():
-    return render_template("orders.html", orders=orders)
+def generate_report(items):
+    # Correct: pass the collection to a template and use a loop inside the template engine
+    return render_template("report.html", items=items)

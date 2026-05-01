@@ -1,18 +1,8 @@
-from __future__ import annotations
-
-def large_dict_literal_response_in_handler_positive():
-    def handler():
-        return {
-            "id": 7,
-            "name": "metrics",
-            "status": "ok",
-            "owner": "ops",
-            "region": "us-east",
-            "priority": "p1",
-            "team": "platform",
-            "version": "2026.04",
-            "rollout": "stable",
-            "notes": "inline giant response body",
-        }
-
-    return handler
+@app.get("/config")
+def get_config():
+    # Violation: large dictionary literal defined inside the handler function
+    return {
+        "feature_a": {"enabled": True, "timeout": 30, "retries": 3, "buffer": 1024},
+        "feature_b": {"enabled": False, "timeout": 60, "retries": 1, "buffer": 2048},
+        # ... many more keys ...
+    }

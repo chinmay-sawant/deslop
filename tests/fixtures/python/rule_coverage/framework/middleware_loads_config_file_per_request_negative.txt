@@ -1,9 +1,10 @@
-from __future__ import annotations
+import json
 
-def middleware_loads_config_file_per_request_negative():
-    rules = {"enabled": True}
+# Correct: load configuration once at module level or during middleware initialization
+with open("middleware_config.json") as f:
+    MIDDLEWARE_CONFIG = json.load(f)
 
-    def middleware(request):
-        return rules.get("enabled", False)
-
-    return middleware
+class ConfigMiddleware:
+    def process_request(self, request):
+        if MIDDLEWARE_CONFIG["maintenance_mode"]:
+            return HttpResponse(status=503)

@@ -1,11 +1,8 @@
-from __future__ import annotations
-
-import importlib.util
-
-
-def optional_library_import_checked_on_hot_code_path_positive(events: list[int]) -> int:
-    total = 0
-    for value in events:
-        if importlib.util.find_spec("orjson") is not None:
-            total += value
-    return total
+def serialize_data(data):
+    # Violation: attempting optional imports inside a high-frequency function call introduces massive try/except overhead
+    try:
+        import orjson
+        return orjson.dumps(data)
+    except ImportError:
+        import json
+        return json.dumps(data)

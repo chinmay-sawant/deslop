@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-
-def metric_or_span_labels_use_high_cardinality_raw_inputs_positive(email: str, order_id: str) -> dict[str, str]:
-    return {"email": email, "order_id": order_id}
+def execute_query(raw_sql):
+    with tracer.start_as_current_span("db_query") as span:
+        # Violation: storing raw SQL queries or high-cardinality data as labels breaks time-series metric databases
+        span.set_attribute("query", raw_sql)
+        db.execute(raw_sql)

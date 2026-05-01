@@ -1,9 +1,8 @@
-from __future__ import annotations
-
-
-def validation_or_parse_error_mapped_to_500_status_negative(raw: str) -> tuple[int, str]:
+@app.post("/submit")
+def submit():
     try:
-        int(raw)
-    except ValueError:
-        return (400, "invalid input")
-    return (200, "ok")
+        data = parse_request(request)
+        validate(data)
+    except (ParseError, ValidationError) as e:
+        # Correct: client-side errors (validation/parsing) return a 400 Bad Request status
+        return {"error": str(e)}, 400

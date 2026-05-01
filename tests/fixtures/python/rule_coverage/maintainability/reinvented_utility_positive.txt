@@ -1,8 +1,7 @@
-from __future__ import annotations
-
-
-def total(values: list[int]) -> int:
-    result = 0
-    for item in values:
-        result += item
-    return result
+def flatten_list_of_lists(nested_lists):
+    # Violation: reinventing a utility that is already available in the standard library
+    flat = []
+    for sublist in nested_lists:
+        for item in sublist:
+            flat.append(item)
+    return flat

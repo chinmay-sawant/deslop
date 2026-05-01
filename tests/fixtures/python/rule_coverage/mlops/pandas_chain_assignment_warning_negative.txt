@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def mark_adults(df: pd.DataFrame) -> pd.DataFrame:
-    df.loc[df["age"] >= 18, "is_adult"] = True
+def update_active_users(df):
+    # Correct: use .loc for safe, explicit assignment that avoids the SettingWithCopy warning
+    df.loc[df['status'] == 'active', 'is_verified'] = True
     return df

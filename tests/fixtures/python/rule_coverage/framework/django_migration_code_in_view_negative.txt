@@ -1,7 +1,5 @@
-from __future__ import annotations
+from django.http import HttpResponse
 
-def django_migration_code_in_view_negative():
-    def maintenance_view(request):
-        return HttpResponse("deploy migrations through CI only")
-
-    return maintenance_view
+def health_check_view(request):
+    # Correct: view handles its own request-response logic; migrations are handled in CI/CD
+    return HttpResponse("System healthy")

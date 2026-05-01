@@ -1,10 +1,9 @@
-from __future__ import annotations
+import httpx
 
-def middleware_creates_http_client_per_request_negative():
-    client = httpx.Client(base_url="https://auth.internal")
+# Correct: reuse a single HTTP client instance across all middleware requests
+analytics_client = httpx.Client(base_url="https://analytics.internal")
 
-    def middleware(request):
-        resp = client.get("/introspect")
-        return resp.status_code
-
-    return middleware
+class AnalyticsMiddleware:
+    def process_response(self, request, response):
+        analytics_client.post("/event", json={"path": request.path})
+        return response

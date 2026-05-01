@@ -1,9 +1,12 @@
-from __future__ import annotations
+# my_package/__init__.py
+# Violation: cramming hundreds of lines of implementation logic into the package root '__init__.py'
+import os
+import sys
 
-from orders import parse_order
-from users import load_user
-from billing import charge_customer
+class MainApplication:
+    def start(self): pass
+    def stop(self): pass
 
-CONFIG = {"debug": True}
-BOOT_MESSAGE = "startup complete"
-__all__ = ["parse_order", "load_user", "charge_customer", "CONFIG", "BOOT_MESSAGE"]
+def utility_function(): pass
+def another_utility(): pass
+def internal_helper(): pass

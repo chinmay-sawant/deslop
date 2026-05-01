@@ -1,12 +1,6 @@
-from __future__ import annotations
-
 from typing import Protocol
 
-
-class Writer(Protocol):
-    def write(self, payload: str) -> int:
+class Reader(Protocol):
+    # Correct: protocol method has full type annotations
+    def read(self, amount: int) -> bytes:
         ...
-
-
-def protocol_method_lacks_type_annotations_negative() -> type[Protocol]:
-    return Writer

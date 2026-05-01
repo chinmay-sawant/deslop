@@ -1,9 +1,7 @@
-from __future__ import annotations
-
-
-def commit_changes(unit_of_work, logger) -> None:
+def process():
     try:
-        unit_of_work.commit()
-    except Exception:
-        logger.exception("commit failed")
-        raise
+        call_service()
+    except Exception as e:
+        # Violation: exception logged and then re-raised redundantly (clutters logs)
+        logger.error(f"Error in process: {e}")
+        raise e

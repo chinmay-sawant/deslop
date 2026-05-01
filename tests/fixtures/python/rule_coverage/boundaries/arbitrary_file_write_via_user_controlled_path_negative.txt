@@ -1,9 +1,7 @@
-from pathlib import Path
+import os
 
-
-def save_upload(name: str, data: str) -> None:
-    root = Path("/srv/uploads").resolve()
-    target = (root / name).resolve()
-    if root not in target.parents and target != root:
-        raise ValueError("invalid upload path")
-    target.write_text(data, encoding="utf-8")
+def save_report(filename, content):
+    # Correct: path sanitized to prevent directory traversal
+    safe_filename = os.path.basename(filename)
+    with open(os.path.join("/tmp/reports/", safe_filename), "w") as f:
+        f.write(content)

@@ -1,6 +1,5 @@
-from __future__ import annotations
-
-
-def read_first_line(path: str) -> str:
-    with open(path, "r", encoding="utf-8") as handle:
-        return handle.readline().strip()
+def read_data(filepath):
+    # Correct: use a context manager to ensure the file is closed automatically
+    with open(filepath, "r") as f:
+        data = f.read()
+    return data

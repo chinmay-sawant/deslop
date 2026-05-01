@@ -1,11 +1,11 @@
-from __future__ import annotations
+from flask import Flask, Response, stream_with_context
 
-def flask_no_streaming_for_large_response_negative():
-    def stream_rows():
-        for i in range(5000):
-            yield f"row-{i}\n"
+app = Flask(__name__)
 
-    def download():
-        return Response(stream_rows(), mimetype="text/plain")
-
-    return download
+@app.route("/export")
+def export():
+    # Correct: use streaming to process and return large datasets incrementally
+    def generate():
+        for row in db.stream_logs():
+            yield json.dumps(row) + "\n"
+    return Response(stream_with_context(generate()), mimetype='application/json')

@@ -1,13 +1,9 @@
-from __future__ import annotations
+import openai
 
-
-class Client:
-    def complete(self, prompt: str) -> str:
-        return prompt.upper()
-
-
-def classify(prompts: list[str], client: Client) -> list[str]:
-    outputs: list[str] = []
+def generate_summaries(prompts):
+    results = []
+    # Violation: making an individual LLM API call per prompt in a loop (slow, unbatched)
     for prompt in prompts:
-        outputs.append(client.complete(prompt))
-    return outputs
+        resp = openai.Completion.create(model="text-davinci-003", prompt=prompt)
+        results.append(resp.choices[0].text)
+    return results

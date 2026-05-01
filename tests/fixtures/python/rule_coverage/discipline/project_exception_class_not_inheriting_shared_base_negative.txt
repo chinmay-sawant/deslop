@@ -1,13 +1,6 @@
-from __future__ import annotations
-
-
-class ProjectError(Exception):
+class ProjectBaseException(Exception):
     pass
 
-
-class PaymentFailure(ProjectError):
+# Correct: exception inherits from the shared project base
+class UserNotFoundError(ProjectBaseException):
     pass
-
-
-def project_exception_class_not_inheriting_shared_base_negative() -> type[Exception]:
-    return PaymentFailure

@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-
-def commit_changes(unit_of_work) -> None:
+def process():
     try:
-        unit_of_work.commit()
+        call_service()
     except Exception:
+        # Correct: either log and handle, or just re-raise
         raise

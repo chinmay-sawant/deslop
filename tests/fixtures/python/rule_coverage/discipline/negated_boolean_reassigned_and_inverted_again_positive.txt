@@ -1,7 +1,6 @@
-from __future__ import annotations
-
-
-def negated_boolean_reassigned_and_inverted_again_positive(is_ready: bool) -> bool:
-    not_ready = not is_ready
-    status = not not_ready
-    return status
+def check_availability(item):
+    is_missing = not item.is_available
+    # Violation: negated boolean reassigned and then inverted again (confusing logic)
+    if not is_missing:
+        return "Available"
+    return "Unavailable"

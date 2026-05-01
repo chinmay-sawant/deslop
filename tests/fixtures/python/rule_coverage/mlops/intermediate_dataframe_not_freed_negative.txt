@@ -1,10 +1,13 @@
-from __future__ import annotations
-
 import pandas as pd
+import gc
 
-
-def summarize(df: pd.DataFrame) -> pd.DataFrame:
-    expanded = df.merge(df, on="id", suffixes=("_l", "_r"))
-    result = expanded.groupby("id").size().reset_index(name="pairs")
-    del expanded
-    return result
+def process_large_data(filepath):
+    df_raw = pd.read_csv(filepath)
+    df_clean = clean_data(df_raw)
+    
+    # Correct: explicitly delete intermediate DataFrames and collect garbage
+    del df_raw
+    gc.collect()
+    
+    df_final = aggregate_data(df_clean)
+    return df_final

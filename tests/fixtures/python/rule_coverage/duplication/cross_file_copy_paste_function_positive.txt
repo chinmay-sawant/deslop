@@ -1,9 +1,8 @@
-from __future__ import annotations
+# file_a.py
+def calculate_discount(price):
+    return price * 0.9
 
-
-def _build_slug_one(value: str) -> str:
-    return value.strip().lower().replace(" ", "-")
-
-
-def cross_file_copy_paste_function_positive(value: str) -> str:
-    return value.strip().lower().replace(" ", "-")
+# file_b.py
+# Violation: cross-file copy-paste of a function logic
+def calculate_discount(price):
+    return price * 0.9

@@ -1,4 +1,7 @@
-from __future__ import annotations
+import os
 
-with open("/tmp/banner.txt", "r", encoding="utf-8") as handle:
-    BANNER = handle.read()
+# Violation: reading heavy files at the top level of a module delays application startup drastically
+DATA_BLOB = open("massive_dataset.csv").read()
+
+def get_data():
+    return DATA_BLOB

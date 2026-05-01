@@ -1,9 +1,5 @@
-from __future__ import annotations
-
-from typing import cast
-
-
-def user_id(value: object) -> int:
-    if not isinstance(value, int):
-        raise TypeError("value must be int")
-    return cast(int, value)
+def process_node(node):
+    # Correct: type narrowing guard precedes any type-specific logic
+    if isinstance(node, UserNode):
+        return node.username
+    raise ValueError("Invalid node type")

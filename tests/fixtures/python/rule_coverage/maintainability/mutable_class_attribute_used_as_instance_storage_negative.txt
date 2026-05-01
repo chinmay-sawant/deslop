@@ -1,9 +1,7 @@
-from __future__ import annotations
-
-
-class Basket:
-    def __init__(self) -> None:
-        self.items: list[str] = []
-
-    def add(self, item: str) -> None:
-        self.items.append(item)
+class Session:
+    def __init__(self):
+        # Correct: initialize mutable objects inside __init__ so each instance has its own copy
+        self.data = {}
+        
+    def set(self, key, value):
+        self.data[key] = value

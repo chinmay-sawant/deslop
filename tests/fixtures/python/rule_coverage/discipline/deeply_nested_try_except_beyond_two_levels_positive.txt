@@ -1,14 +1,14 @@
-from __future__ import annotations
-
-
-def parse_payload(payload: str) -> int:
+def process_file(path):
+    # Violation: deeply nested try-except beyond two levels
     try:
-        try:
+        with open(path) as f:
             try:
-                return int(payload.strip())
-            except ValueError:
-                return -1
-        except Exception:
-            return -2
-    except Exception:
-        return -3
+                data = f.read()
+                try:
+                    return parse(data)
+                except ParseError:
+                    print("Parse fail")
+            except OSError:
+                print("Read fail")
+    except FileNotFoundError:
+        print("Missing file")

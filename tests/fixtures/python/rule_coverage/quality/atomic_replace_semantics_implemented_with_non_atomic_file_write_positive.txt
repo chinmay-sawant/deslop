@@ -1,6 +1,6 @@
-from __future__ import annotations
+import json
 
-
-def atomic_replace_semantics_implemented_with_non_atomic_file_write_positive(path: str, data: str) -> None:
-    with open(path, "w", encoding="utf-8") as handle:
-        handle.write(data)
+def save_config(data):
+    # Violation: writing directly to the target file is non-atomic; a crash mid-write results in a corrupted file
+    with open("config.json", "w") as f:
+        json.dump(data, f)

@@ -1,7 +1,6 @@
-from __future__ import annotations
-
-
-def collect_tag(tag: str, bucket: list[str] | None = None) -> list[str]:
-    target = [] if bucket is None else bucket
-    target.append(tag)
-    return target
+def add_to_history(event, history=None):
+    # Correct: use None as default and initialize inside the function
+    if history is None:
+        history = []
+    history.append(event)
+    return history

@@ -1,7 +1,6 @@
-from __future__ import annotations
+from .models import User
 
-def django_values_vs_full_model_in_loop_positive():
-    names = []
-    for row in Product.objects.filter(is_live=True):
-        names.append((row.id, row.name))
-    return names
+def list_usernames():
+    # Violation: fetching full model instances when only a single field is needed (expensive)
+    for user in User.objects.all():
+        print(user.username)

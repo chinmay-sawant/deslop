@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def load_users(path: str) -> pd.DataFrame:
-    return pd.read_csv(path, dtype={"user_id": "int64", "email": "string"})
+def load_data(filepath):
+    # Correct: explicitly define memory-efficient dtypes when reading CSV files
+    dtypes = {"user_id": "int32", "is_active": "bool", "score": "float32"}
+    return pd.read_csv(filepath, dtype=dtypes)

@@ -1,5 +1,6 @@
-from __future__ import annotations
-
-
-def operation_lacks_single_stable_name_across_logs_metrics_and_traces_positive() -> dict[str, str]:
-    return {"log_op": "fetch_user", "metric_op": "user.fetch", "trace_op": "GetUser"}
+def checkout_cart():
+    # Violation: using completely different identifiers for the exact same logical operation across observability pillars
+    logger.info("Executing user charge")
+    statsd.increment("billing.payment.processed")
+    with tracer.start_as_current_span("cart_checkout_transaction"):
+        pass

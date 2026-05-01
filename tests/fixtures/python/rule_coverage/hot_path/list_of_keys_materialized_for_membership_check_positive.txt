@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-def list_of_keys_materialized_for_membership_check_positive():
-    mapping = {"tenant": "alpha", "region": "us"}
-    return "region" in list(mapping.keys())
+def has_key(mapping, key):
+    # Violation: materializing a list of keys for a membership check (O(N) search and extra memory)
+    if key in list(mapping.keys()):
+        return True
+    return False

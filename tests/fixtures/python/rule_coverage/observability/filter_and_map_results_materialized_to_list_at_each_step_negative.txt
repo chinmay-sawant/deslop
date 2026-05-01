@@ -1,5 +1,3 @@
-from __future__ import annotations
-
-
-def filter_and_map_results_materialized_to_list_at_each_step_negative(values: list[int]) -> list[int]:
-    return [value * 2 for value in values if value % 2 == 0]
+def process_data(data):
+    # Correct: chain iterators and materialize the list exactly once at the end
+    return list(map(lambda x: x * x, filter(lambda x: x > 0, data)))

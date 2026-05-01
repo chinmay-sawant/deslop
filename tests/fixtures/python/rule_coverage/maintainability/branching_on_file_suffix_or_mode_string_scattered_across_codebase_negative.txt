@@ -1,14 +1,15 @@
-from __future__ import annotations
+import pathlib
 
-PARSERS_BY_SUFFIX = {
-    ".json": "json",
-    ".yaml": "yaml",
-    ".yml": "yaml",
-    ".toml": "toml",
+# Correct: use a dispatch registry to map extensions to loader functions
+LOADERS = {
+    ".csv": load_csv,
+    ".json": load_json,
+    ".xml": load_xml,
 }
 
-def branching_on_file_suffix_or_mode_string_scattered_across_codebase_negative(path: str):
-    for suffix, parser in PARSERS_BY_SUFFIX.items():
-        if path.endswith(suffix):
-            return parser
-    return "unknown"
+def load_data(filepath):
+    ext = pathlib.Path(filepath).suffix
+    loader = LOADERS.get(ext)
+    if not loader:
+        raise ValueError(f"Unsupported format: {ext}")
+    return loader(filepath)

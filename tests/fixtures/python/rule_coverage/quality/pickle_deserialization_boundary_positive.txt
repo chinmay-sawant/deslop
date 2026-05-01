@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 import pickle
 
-
-def pickle_deserialization_boundary_positive(payload: bytes) -> object:
-    return pickle.loads(payload)
+def handle_inbound_message(raw_bytes):
+    # Violation: deserializing unauthenticated data using pickle allows arbitrary remote code execution (RCE)
+    payload = pickle.loads(raw_bytes)
+    process(payload)

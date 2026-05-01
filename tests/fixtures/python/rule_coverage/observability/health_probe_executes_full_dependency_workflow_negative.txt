@@ -1,9 +1,3 @@
-from __future__ import annotations
-
-
-def ping_cache() -> bool:
-    return True
-
-
-def health_probe_executes_full_dependency_workflow_negative() -> dict[str, bool]:
-    return {"cache_ok": ping_cache()}
+def liveness_probe():
+    # Correct: return a static 200 OK for liveness; use a separate readiness probe for dependency checks
+    return "alive"

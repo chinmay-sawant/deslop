@@ -1,7 +1,4 @@
-from __future__ import annotations
-
-
-def circular_import_hidden_by_function_local_import_on_hot_path_positive() -> str:
-    from mypkg.adapters import serializer
-
-    return serializer.serialize("event")
+def compute_hot_loop_metric(data):
+    # Violation: using function-local imports inside a hot loop (to avoid circular imports) destroys performance
+    from .heavy_module import calculate_score
+    return calculate_score(data)

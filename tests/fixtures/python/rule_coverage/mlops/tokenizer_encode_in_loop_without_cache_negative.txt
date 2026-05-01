@@ -1,16 +1,3 @@
-from __future__ import annotations
-
-
-class Tokenizer:
-    def encode(self, text: str) -> list[int]:
-        return [ord(ch) for ch in text]
-
-
-def encode_texts(tokenizer: Tokenizer, texts: list[str]) -> list[list[int]]:
-    cache: dict[str, list[int]] = {}
-    encoded: list[list[int]] = []
-    for text in texts:
-        if text not in cache:
-            cache[text] = tokenizer.encode(text)
-        encoded.append(cache[text])
-    return encoded
+def encode_dataset(documents, tokenizer):
+    # Correct: use the tokenizer's batched encode or batch_encode_plus methods for rust-level acceleration
+    return tokenizer.batch_encode_plus(documents)["input_ids"]

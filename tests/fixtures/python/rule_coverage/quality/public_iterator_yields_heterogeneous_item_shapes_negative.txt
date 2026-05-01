@@ -1,8 +1,15 @@
-from __future__ import annotations
+from dataclasses import dataclass
 
-from typing import Iterator
+@dataclass
+class TreeNodeData:
+    name: str
+    is_leaf: bool
+    children_count: int
 
-
-def public_iterator_yields_heterogeneous_item_shapes_negative() -> Iterator[dict[str, object]]:
-    yield {"id": 1, "name": "Ada"}
-    yield {"id": 2, "name": "Grace"}
+def walk_tree(node):
+    # Correct: always yield a uniform, predictable data structure from an iterator
+    yield TreeNodeData(
+        name=node.name,
+        is_leaf=node.is_leaf,
+        children_count=0 if node.is_leaf else len(node.children)
+    )

@@ -1,9 +1,6 @@
-from __future__ import annotations
-
 from jinja2 import Template
 
-SAFE_TEMPLATE = Template("Hello {{ name }}")
-
-
-def render_message(name: str) -> str:
-    return SAFE_TEMPLATE.render({"name": name})
+def render_greeting(user_input):
+    # Correct: user input is passed as a template variable, not part of the template source
+    template_str = "Hello {{ name }}!"
+    return Template(template_str).render(name=user_input)

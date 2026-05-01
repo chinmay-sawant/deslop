@@ -1,10 +1,7 @@
-from __future__ import annotations
-
 import numpy as np
 
-
-def l2_norm(values: np.ndarray) -> float:
-    total = 0.0
-    for value in values:
-        total += float(value * value)
-    return total ** 0.5
+def scale_array(arr):
+    # Violation: iterating over a numpy array using a Python loop completely defeats vectorization
+    for i in range(len(arr)):
+        arr[i] = arr[i] * 2.5
+    return arr

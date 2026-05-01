@@ -1,13 +1,8 @@
-from __future__ import annotations
+import sqlalchemy
 
-
-class VendorError(Exception):
-    pass
-
-
-def _vendor_parse(text: str) -> dict[str, str]:
-    raise VendorError(f"vendor failed for: {text}")
-
-
-def parse_document(text: str) -> dict[str, str]:
-    return _vendor_parse(text)
+@app.errorhandler(500)
+def handle_internal_error(e):
+    # Violation: public API forwards raw library-specific exception details (SQL leak)
+    if isinstance(e, sqlalchemy.exc.SQLAlchemyError):
+        return {"error": str(e)}, 500
+    return {"error": "Internal Server Error"}, 500

@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-
-def parse_region(raw: str) -> str:
-    region = raw.strip() or "UNKNOWN"
-    if region == "UNKNOWN":
-        return "UNKNOWN"
-    return region
+def process_task(task):
+    # Violation: using raw string literals as sentinel values across the codebase
+    if task.status == "PENDING":
+        start_task(task)
+    elif task.status == "IN_PROGRESS":
+        monitor_task(task)

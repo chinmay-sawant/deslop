@@ -1,7 +1,5 @@
-from __future__ import annotations
-
-
-def normalize_tags(tags: list[str]) -> list[str]:
-    for index, tag in enumerate(tags):
-        tags[index] = tag.strip().lower()
-    return tags
+def process_user_list(users):
+    # Violation: public API mutates the input argument in-place without signal
+    for user in users:
+        user["processed"] = True
+    # Caller might not expect their 'users' list to be modified

@@ -1,8 +1,12 @@
-from __future__ import annotations
-
 import copy
 
-
-def materialize_items(template: dict[str, object], count: int) -> list[dict[str, object]]:
-    base = copy.deepcopy(template)
-    return [dict(base) for _ in range(count)]
+def process_large_object(obj):
+    results = []
+    # Correct: deepcopy once outside the loop if the base object doesn't change
+    base_copy = copy.deepcopy(obj)
+    for i in range(100):
+        # Use shallow copy or just update fields if possible
+        item = copy.copy(base_copy)
+        item.id = i
+        results.append(item)
+    return results

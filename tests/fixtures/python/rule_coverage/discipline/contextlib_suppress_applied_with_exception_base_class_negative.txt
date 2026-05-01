@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from contextlib import suppress
 
-
-def remove_path(path_obj) -> None:
+def safe_delete(path):
+    # Correct: suppress only specific, expected exceptions
     with suppress(FileNotFoundError):
-        path_obj.unlink()
+        os.remove(path)

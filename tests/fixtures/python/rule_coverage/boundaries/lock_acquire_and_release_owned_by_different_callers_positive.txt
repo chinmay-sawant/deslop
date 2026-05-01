@@ -1,13 +1,10 @@
-from __future__ import annotations
+import threading
 
-from threading import Lock
+lock = threading.Lock()
 
-process_lock = Lock()
+def start_task():
+    # Violation: lock acquired here and released by a different caller/function
+    lock.acquire()
 
-
-def begin_update() -> None:
-    process_lock.acquire()
-
-
-def finish_update() -> None:
-    process_lock.release()
+def end_task():
+    lock.release()

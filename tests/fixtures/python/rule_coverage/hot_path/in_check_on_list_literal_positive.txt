@@ -1,7 +1,5 @@
-from __future__ import annotations
-
-def in_check_on_list_literal_positive():
-    code = 404
-    if code in [200, 201, 202]:
-        return "ok"
-    return "not-ok"
+def check_value(val):
+    # Violation: using 'in' with a list literal creates a list and does an O(N) linear search
+    if val in ["admin", "root", "superuser"]:
+        return True
+    return False

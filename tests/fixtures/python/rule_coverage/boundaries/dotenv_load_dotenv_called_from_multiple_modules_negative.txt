@@ -1,12 +1,8 @@
-from __future__ import annotations
-
+# main.py
 from dotenv import load_dotenv
+load_dotenv() # Correct: load_dotenv() called once at the app entrypoint
 
-_env_loaded = False
-
-
-def init_environment() -> None:
-    global _env_loaded
-    if not _env_loaded:
-        load_dotenv()
-        _env_loaded = True
+# auth.py
+import os
+def get_key():
+    return os.getenv("API_KEY")

@@ -1,8 +1,7 @@
-from __future__ import annotations
-
+import pytest
 from datetime import datetime
 
-
-def test_fixture_calls_datetime_now_without_freezing_positive() -> None:
-    now = datetime.now()
-    assert now.year >= 2000
+@pytest.fixture
+def current_time():
+    # Violation: test fixture calls datetime.now() without freezing (flaky tests)
+    return datetime.now()

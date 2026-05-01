@@ -1,9 +1,6 @@
-from __future__ import annotations
-
-
-def run_job(job) -> str:
+def risky_operation():
     try:
-        job()
-        return "ok"
+        perform_task()
     except Exception:
-        return "failed"
+        # Correct: catch Exception only, allowing SystemExit to propagate
+        print("A handleable error occurred")

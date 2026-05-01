@@ -1,6 +1,11 @@
-from __future__ import annotations
+# module_a.py
+def process_batch(batch):
+    # Violation: magic numbers/thresholds duplicated across modules
+    if len(batch) > 50:
+        flush(batch)
 
-def magic_thresholds_duplicated_across_modules_positive(score: int):
-    is_warning = score >= 70
-    is_critical = score >= 90
-    return is_warning, is_critical
+# module_b.py
+def enqueue(item, queue):
+    queue.append(item)
+    if len(queue) > 50:
+        flush(queue)

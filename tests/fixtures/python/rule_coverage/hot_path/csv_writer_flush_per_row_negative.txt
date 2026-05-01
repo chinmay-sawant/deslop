@@ -1,8 +1,8 @@
-from __future__ import annotations
+import csv
 
-def csv_writer_flush_per_row_negative():
-    with open("out.csv", "w", encoding="utf-8", newline="") as fh:
-        writer = csv.writer(fh)
-        for row in [("a", 1), ("b", 2), ("c", 3)]:
+def write_data(filename, rows):
+    # Correct: let the operating system handle buffering efficiently; no per-row flush
+    with open(filename, 'w') as f:
+        writer = csv.writer(f)
+        for row in rows:
             writer.writerow(row)
-        fh.flush()

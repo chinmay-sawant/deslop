@@ -1,12 +1,14 @@
-from __future__ import annotations
+from typing import TypedDict
 
-from dataclasses import dataclass
-
-@dataclass(frozen=True)
-class PersonState:
+class UserData(TypedDict):
     id: int
     name: str
     active: bool
+    role: str
 
-def anonymous_dict_shape_repeated_without_shared_type_or_builder_negative():
-    return [PersonState(7, "Ari", True), PersonState(8, "Bo", False)]
+def get_user_data(user_id) -> UserData:
+    # Correct: use a shared TypedDict or dataclass to enforce shape consistency
+    return {"id": user_id, "name": "John", "active": True, "role": "user"}
+
+def get_admin_data(admin_id) -> UserData:
+    return {"id": admin_id, "name": "Jane", "active": True, "role": "admin"}

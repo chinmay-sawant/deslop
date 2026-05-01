@@ -1,13 +1,8 @@
-from __future__ import annotations
+from pinecone import Pinecone
 
+# Correct: create database clients once globally to reuse connection pools
+GLOBAL_PC = Pinecone(api_key="xxx")
+GLOBAL_INDEX = GLOBAL_PC.Index("my-index")
 
-class VectorStoreClient:
-    def search(self, query: str) -> list[str]:
-        return [query]
-
-
-VECTOR_STORE = VectorStoreClient()
-
-
-def retrieve(query: str) -> list[str]:
-    return VECTOR_STORE.search(query)
+def query_vector_db(query_embedding):
+    return GLOBAL_INDEX.query(vector=query_embedding, top_k=5)

@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 from collections import OrderedDict
 
-
-def ordered_dict_used_in_python_37_plus_where_dict_suffices_positive(keys: list[str]) -> OrderedDict[str, int]:
-    out: OrderedDict[str, int] = OrderedDict()
-    for index, key in enumerate(keys):
-        out[key] = index
-    return out
+def create_payload():
+    # Violation: using OrderedDict just to preserve insertion order in modern Python wastes memory and CPU
+    payload = OrderedDict()
+    payload["first"] = 1
+    payload["second"] = 2
+    return payload

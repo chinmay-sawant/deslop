@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 import torch
 
-
-def predict(model: torch.nn.Module, batch: torch.Tensor) -> torch.Tensor:
+def run_inference(model, input_tensor):
+    # Correct: always set model.eval() before running inference
     model.eval()
-    return model(batch)
+    with torch.no_grad():
+        output = model(input_tensor)
+    return output

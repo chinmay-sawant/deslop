@@ -1,9 +1,9 @@
-from __future__ import annotations
+NOT_FOUND = object()
 
-UNSET = object()
-
-
-def schedule_email(delay_minutes: int | object = UNSET) -> int:
-    if delay_minutes is UNSET:
-        return 15
-    return int(delay_minutes)
+def find_user_index(user_list, target_name):
+    # Correct: use a unique object as a sentinel to avoid overlapping with valid values
+    result = NOT_FOUND
+    for i, name in enumerate(user_list):
+        if name == target_name:
+            result = i
+    return result

@@ -1,12 +1,20 @@
-from __future__ import annotations
+import json
+import sqlite3
+import smtplib
 
-
-def god_function_positive(raw: str, email: str) -> str:
-    key, value = raw.split("=", 1)
-    order = {key: value}
-    if "id" not in order:
-        raise ValueError("missing id")
-    saved = f"saved:{order}"
-    rendered = f"<div>{saved}</div>"
-    sent = f"sent:{email}"
-    return f"{rendered}:{sent}"
+# Violation: a massive "God Function" that executes an entire ETL pipeline and business workflow in one block
+def handle_nightly_job():
+    raw_data = open("data.json").read()
+    parsed = json.loads(raw_data)
+    
+    clean_data = []
+    for item in parsed:
+        if item.get("valid"):
+            clean_data.append(item)
+            
+    conn = sqlite3.connect("db.sqlite")
+    for item in clean_data:
+        conn.execute("INSERT ...")
+        
+    server = smtplib.SMTP("localhost")
+    server.sendmail("admin", "admin", "Job Done")

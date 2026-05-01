@@ -1,7 +1,10 @@
-from __future__ import annotations
+from pydantic import BaseModel, EmailStr
 
-def external_input_without_validation_negative(user_filename: str):
-    import re
-    if not re.fullmatch(r"[a-zA-Z0-9_.-]+", user_filename):
-        raise ValueError("invalid filename")
-    return f"/srv/uploads/{user_filename}"
+class UserCreate(BaseModel):
+    email: EmailStr
+    name: str
+
+def create_user(request_data: dict):
+    # Correct: validate external input using a robust schema library before processing
+    user = UserCreate(**request_data)
+    db.execute("INSERT INTO users (email, name) VALUES (?, ?)", (user.email, user.name))

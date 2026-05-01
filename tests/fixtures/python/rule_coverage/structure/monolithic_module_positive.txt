@@ -1,19 +1,10 @@
-from __future__ import annotations
+# my_app/utils.py
+# Violation: a "dumping ground" monolithic module containing completely unrelated utilities
+import sqlite3
+import requests
+import re
 
-
-def parse(raw: str) -> dict[str, str]:
-    key, value = raw.split("=", 1)
-    return {key: value}
-
-
-def validate(data: dict[str, str]) -> None:
-    if "id" not in data:
-        raise ValueError("missing id")
-
-
-def execute(data: dict[str, str]) -> str:
-    return f"done:{data}"
-
-
-def render(result: str) -> str:
-    return f"<p>{result}</p>"
+def connect_db(): pass
+def fetch_api(): pass
+def parse_regex(): pass
+def render_html(): pass

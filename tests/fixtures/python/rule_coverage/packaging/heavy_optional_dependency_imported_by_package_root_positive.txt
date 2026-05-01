@@ -1,7 +1,7 @@
-from __future__ import annotations
-
+# my_package/__init__.py
 import pandas as pd
+import numpy as np
 
-
-def heavy_optional_dependency_imported_by_package_root_positive() -> str:
-    return pd.__name__
+# Violation: importing heavy, optional data science libraries in the package root drastically slows down all imports
+def light_utility():
+    return "fast"

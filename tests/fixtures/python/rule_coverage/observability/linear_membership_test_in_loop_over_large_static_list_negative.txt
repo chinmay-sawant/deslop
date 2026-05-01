@@ -1,11 +1,9 @@
-from __future__ import annotations
+# Correct: convert the list to a set for O(1) constant time membership lookups
+FORBIDDEN_WORDS = {"spam", "buy", "crypto", "click", "free", "viagra"}
 
-DENYLIST = {f"user-{index}" for index in range(5000)}
-
-
-def linear_membership_test_in_loop_over_large_static_list_negative(users: list[str]) -> int:
-    blocked = 0
-    for user in users:
-        if user in DENYLIST:
-            blocked += 1
-    return blocked
+def filter_messages(messages):
+    clean = []
+    for msg in messages:
+        if not any(word in FORBIDDEN_WORDS for word in msg.split()):
+            clean.append(msg)
+    return clean

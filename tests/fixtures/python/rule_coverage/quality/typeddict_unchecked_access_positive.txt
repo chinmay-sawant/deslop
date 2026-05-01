@@ -1,12 +1,9 @@
-from __future__ import annotations
+from typing import TypedDict
 
-from typing import NotRequired, TypedDict
+class PartialConfig(TypedDict, total=False):
+    retries: int
+    timeout: float
 
-
-class UserPayload(TypedDict):
-    id: int
-    email: NotRequired[str]
-
-
-def typeddict_unchecked_access_positive(payload: UserPayload) -> str:
-    return payload["email"]
+def execute(config: PartialConfig):
+    # Violation: accessing a key directly on a TypedDict with total=False will raise a KeyError if missing
+    print(f"Retrying {config['retries']} times")

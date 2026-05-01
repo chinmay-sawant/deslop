@@ -1,3 +1,5 @@
-from importlib.metadata import version
+# my_package/__init__.py
+import importlib.metadata
 
-__version__ = version("example-package")
+# Violation: performing disk IO metadata lookups at the root level slows down every import of this package
+__version__ = importlib.metadata.version("my_package")

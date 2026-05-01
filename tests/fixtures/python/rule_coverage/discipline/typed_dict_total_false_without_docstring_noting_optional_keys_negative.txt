@@ -1,14 +1,9 @@
-from __future__ import annotations
-
 from typing import TypedDict
 
-
-class Payload(TypedDict, total=False):
-    """Optional keys: id and status."""
-
-    id: int
-    status: str
-
-
-def typed_dict_total_false_without_docstring_noting_optional_keys_negative(payload: Payload) -> int:
-    return payload.get("id", 0)
+class UserConfig(TypedDict, total=False):
+    """
+    Configuration for user requests.
+    All keys are optional.
+    """
+    timeout: int
+    retries: int

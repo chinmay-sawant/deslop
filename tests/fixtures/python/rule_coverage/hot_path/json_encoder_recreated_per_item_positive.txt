@@ -1,8 +1,9 @@
-from __future__ import annotations
+import json
 
-def json_encoder_recreated_per_item_positive():
-    out = []
-    for row in [{"id": 1}, {"id": 2}, {"id": 3}]:
+def process_records(records):
+    results = []
+    for record in records:
+        # Violation: JSONEncoder instantiated repeatedly inside a loop
         encoder = json.JSONEncoder()
-        out.append(encoder.encode(row))
-    return out
+        results.append(encoder.encode(record))
+    return results

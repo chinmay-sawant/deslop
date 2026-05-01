@@ -1,10 +1,11 @@
-from __future__ import annotations
+from pydantic import BaseModel, ConfigDict
 
-def fastapi_response_model_without_orm_mode_negative():
-    class UserOut(BaseModel):
-        model_config = {"from_attributes": True}
-        id: int
-        email: str
+class UserSchema(BaseModel):
+    id: int
+    username: str
+    # Correct: enable orm_mode (from_attributes in Pydantic v2) to allow mapping from objects
+    model_config = ConfigDict(from_attributes=True)
 
-    orm_user = ORMUser(1, "a@example.com")
-    return UserOut.model_validate(orm_user)
+@app.get("/user/{id}", response_model=UserSchema)
+def get_user(id: int):
+    return db.query(User).get(id)

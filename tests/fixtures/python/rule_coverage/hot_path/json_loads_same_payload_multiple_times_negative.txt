@@ -1,6 +1,7 @@
-from __future__ import annotations
+import json
 
-def json_loads_same_payload_multiple_times_negative():
-    raw = '{"enabled": true, "name": "api"}'
-    payload = json.loads(raw)
-    return payload["enabled"], payload["name"]
+def handle_message(payload):
+    # Correct: parse the JSON payload once and reuse the resulting dictionary
+    msg = json.loads(payload)
+    if msg.get("type") == "update":
+        print(msg.get("data"))

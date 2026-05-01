@@ -1,11 +1,8 @@
-from __future__ import annotations
-
-
-def manual_dict_increment_instead_of_counter_or_defaultdict_positive(events: list[str]) -> dict[str, int]:
-    counts: dict[str, int] = {}
-    for event in events:
-        if event in counts:
-            counts[event] = counts[event] + 1
-        else:
-            counts[event] = 1
+def count_elements(items):
+    counts = {}
+    for item in items:
+        # Violation: manually checking existence and assigning zero is verbose and slow
+        if item not in counts:
+            counts[item] = 0
+        counts[item] += 1
     return counts

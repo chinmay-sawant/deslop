@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 import re
 
-
-def looks_like_token(text: str) -> bool:
-    return bool(re.match(r"(a+)+$", text))
+def validate_input(user_input):
+    # Violation: regex pattern with catastrophic backtracking applied to unbounded input
+    pattern = re.compile(r"^(a+)+$")
+    return pattern.match(user_input)

@@ -1,5 +1,9 @@
-from __future__ import annotations
+from pydantic import BaseModel
 
-def pydantic_model_validate_after_json_loads_negative():
-    raw = '{"id": 9, "name": "ci"}'
-    return ProjectModel.model_validate_json(raw)
+class User(BaseModel):
+    id: int
+    name: str
+
+def load_user(json_data: str):
+    # Correct: use model_validate_json() for direct validation from a JSON string
+    return User.model_validate_json(json_data)

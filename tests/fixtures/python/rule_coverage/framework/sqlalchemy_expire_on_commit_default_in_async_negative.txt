@@ -1,5 +1,6 @@
-from __future__ import annotations
+from sqlalchemy.ext.asyncio import AsyncSession
 
-def sqlalchemy_expire_on_commit_default_in_async_negative():
-    factory = async_sessionmaker(engine, expire_on_commit=False)
-    return factory
+async def get_session():
+    # Correct: set expire_on_commit=False for AsyncSession to avoid unexpected IO/errors
+    session = AsyncSession(bind=engine, expire_on_commit=False)
+    return session

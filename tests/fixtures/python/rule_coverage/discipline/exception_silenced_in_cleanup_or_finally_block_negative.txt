@@ -1,11 +1,9 @@
-from __future__ import annotations
-
-
-def exception_silenced_in_cleanup_or_finally_block_negative() -> None:
+def process():
     try:
-        raise RuntimeError("work failed")
+        perform_task()
     finally:
+        # Correct: cleanup errors are logged or handled properly
         try:
-            raise OSError("cleanup failed")
-        except OSError as exc:
-            raise RuntimeError("cleanup must not be silenced") from exc
+            cleanup()
+        except Exception as e:
+            logger.error(f"Cleanup failed: {e}")

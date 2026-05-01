@@ -1,10 +1,11 @@
-from __future__ import annotations
-
 import logging
+import time
 
-LOGGER = logging.getLogger(__name__)
-
-
-def retry_loop_logs_without_attempt_count_or_backoff_context_positive() -> None:
+def call_unstable_api():
     for _ in range(3):
-        LOGGER.warning("retrying request")
+        try:
+            return do_api_call()
+        except Exception:
+            # Violation: retry logs without attempt counts or backoff durations are impossible to debug in prod
+            logging.warning("API call failed, retrying...")
+            time.sleep(1)

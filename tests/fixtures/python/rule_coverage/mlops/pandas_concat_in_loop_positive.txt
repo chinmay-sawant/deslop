@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def merge_batches(frames: list[pd.DataFrame]) -> pd.DataFrame:
-    merged = pd.DataFrame()
-    for frame in frames:
-        merged = pd.concat([merged, frame], ignore_index=True)
-    return merged
+def merge_chunks(chunks):
+    master_df = pd.DataFrame()
+    for chunk in chunks:
+        # Violation: using pd.concat in a loop forces a complete copy of the dataframe each iteration
+        master_df = pd.concat([master_df, chunk])
+    return master_df

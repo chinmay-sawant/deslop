@@ -1,10 +1,8 @@
-def validate_email(value: str) -> None:
-    if "@" not in value:
-        raise ValueError("invalid email")
+class UserDTO(BaseModel):
+    name: str = Field(max_length=50) # Duplicated validation
 
-
-class Account:
-    def __init__(self, email: str) -> None:
-        if "@" not in email:
-            raise ValueError("invalid email")
-        self.email = email
+class User:
+    def __init__(self, name):
+        if len(name) > 50: # Violation: validation rules duplicated at DTO and domain layer
+            raise ValueError("Name too long")
+        self.name = name

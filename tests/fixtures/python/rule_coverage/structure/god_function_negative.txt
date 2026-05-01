@@ -1,14 +1,11 @@
-from __future__ import annotations
+# Correct: orchestrate high-level workflows by composing small, testable, single-purpose functions
+def handle_nightly_job():
+    raw_data = extract_data("data.json")
+    clean_data = transform_data(raw_data)
+    load_to_database(clean_data)
+    notify_administrators("Job Done")
 
-
-def parse_order(raw: str) -> dict[str, str]:
-    key, value = raw.split("=", 1)
-    return {key: value}
-
-
-def render_order(order: dict[str, str]) -> str:
-    return f"<div>{order}</div>"
-
-
-def god_function_negative(raw: str) -> str:
-    return render_order(parse_order(raw))
+def extract_data(path): pass
+def transform_data(data): pass
+def load_to_database(data): pass
+def notify_administrators(msg): pass

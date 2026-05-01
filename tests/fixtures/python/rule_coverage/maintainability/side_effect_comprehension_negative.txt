@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-
-def square_values(values: list[int]) -> list[int]:
-    return [v * v for v in values]
+def notify_users(users):
+    # Correct: use a standard for-loop when performing actions with side effects
+    for user in users:
+        if user.is_active:
+            user.send_email()

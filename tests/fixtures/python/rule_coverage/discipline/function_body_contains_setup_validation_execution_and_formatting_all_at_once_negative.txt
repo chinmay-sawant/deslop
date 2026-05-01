@@ -1,12 +1,6 @@
-from __future__ import annotations
-
-
-def _validate_token(raw: str) -> str:
-    if not raw:
-        raise ValueError("raw is required")
-    return raw
-
-
-def function_body_contains_setup_validation_execution_and_formatting_all_at_once_negative(raw: str) -> str:
-    token = _validate_token(raw).strip().upper()
-    return f"[ID-{token}]"
+def handle_request(req):
+    # Correct: logic is decomposed into specific steps/functions
+    validate_request(req)
+    user = fetch_user(req.user_id)
+    formatted_user = format_user_display(user)
+    return formatted_user

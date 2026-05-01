@@ -1,7 +1,5 @@
-from __future__ import annotations
+import datetime
 
-from datetime import datetime
-
-
-def timezone_naive_datetime_accepted_in_public_contract_positive(created_at: datetime) -> str:
-    return created_at.isoformat()
+# Violation: accepting timezone-naive datetimes in a public API creates severe bugs during daylight saving time or global deployments
+def schedule_job(run_at: datetime.datetime):
+    save_to_database(run_at.isoformat())

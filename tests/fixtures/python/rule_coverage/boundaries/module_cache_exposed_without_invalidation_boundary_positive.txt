@@ -1,7 +1,7 @@
-from __future__ import annotations
+# Violation: module-level cache exposed without an invalidation boundary
+_cache = {}
 
-_cache = {"version": 1}
-
-
-def cache() -> dict[str, int]:
-    return _cache
+def get_data(key):
+    if key not in _cache:
+        _cache[key] = fetch_data(key)
+    return _cache[key]

@@ -1,9 +1,6 @@
-from __future__ import annotations
-
 import logging
 
-LOGGER = logging.getLogger(__name__)
-
-
-def warning_or_error_logs_emit_unbounded_payload_text_positive(payload: str) -> None:
-    LOGGER.error("payload=%s", payload)
+def handle_webhook(payload):
+    if not payload.get("valid"):
+        # Violation: dumping unbounded, untrusted request payloads into warning logs risks OOMs and storage exhaustion
+        logging.warning(f"Invalid webhook payload received: {payload}")

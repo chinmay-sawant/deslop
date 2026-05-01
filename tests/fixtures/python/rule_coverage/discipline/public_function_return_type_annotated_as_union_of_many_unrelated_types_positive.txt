@@ -1,11 +1,7 @@
-from __future__ import annotations
+from typing import Union, List
 
-
-def public_function_return_type_annotated_as_union_of_many_unrelated_types_positive(flag: int) -> int | str | dict[str, int] | list[int]:
-    if flag == 0:
-        return 0
-    if flag == 1:
-        return "one"
-    if flag == 2:
-        return {"two": 2}
-    return [flag]
+# Violation: public function return type annotated as a union of many unrelated types
+def get_resource(id: str) -> Union[int, str, List[float], dict, None]:
+    if id == "count": return 1
+    if id == "name": return "resource"
+    return None

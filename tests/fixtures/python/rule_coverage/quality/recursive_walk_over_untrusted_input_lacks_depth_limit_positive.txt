@@ -1,8 +1,7 @@
-from __future__ import annotations
-
-
-def recursive_walk_over_untrusted_input_lacks_depth_limit_positive(node: dict[str, object]) -> int:
-    child = node.get("child")
-    if isinstance(child, dict):
-        return 1 + recursive_walk_over_untrusted_input_lacks_depth_limit_positive(child)
-    return 1
+def parse_json_payload(data):
+    # Violation: recursively traversing untrusted data without a depth limit allows trivial denial-of-service (DoS) via stack overflows
+    for key, value in data.items():
+        if isinstance(value, dict):
+            parse_json_payload(value)
+        else:
+            process_leaf(key, value)

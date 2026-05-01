@@ -1,15 +1,10 @@
-from __future__ import annotations
-
-API_VERSION = "v1"
-
-
-class Payload:
-    def __init__(self, name: str) -> None:
-        self.name = name
-
-
-def _format_name(value: str) -> str:
-    return value.title()
-
-
-DEFAULT_PAYLOAD = Payload(_format_name("alpha"))
+import os
+DEBUG = True
+class User: pass
+def log(m): print(m)
+# Violation: module mixes constants, types, helpers, and execution flow at the top level
+if DEBUG:
+    log("Starting")
+def run():
+    print("Running")
+run()

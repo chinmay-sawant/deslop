@@ -1,5 +1,7 @@
-from __future__ import annotations
+from sqlalchemy.orm import Session
 
-def sqlalchemy_session_not_closed_negative():
-    with Session(engine) as session:
-        return session.query(Project).count()
+def get_user_data():
+    # Correct: use a context manager to ensure the session is always closed
+    with Session(bind=engine) as session:
+        user = session.query(User).first()
+        return user.data

@@ -1,5 +1,5 @@
-from __future__ import annotations
+from .models import User
 
-def django_queryset_len_instead_of_count_negative():
-    active = Device.objects.filter(enabled=True)
-    return active.count()
+def get_count():
+    # Correct: use .count() for efficient database-level counting
+    return User.objects.all().count()

@@ -1,10 +1,10 @@
-from __future__ import annotations
-
-def branching_on_file_suffix_or_mode_string_scattered_across_codebase_positive(path: str):
-    if path.endswith(".json"):
-        return "json"
-    if path.endswith(".yaml") or path.endswith(".yml"):
-        return "yaml"
-    if path.endswith(".toml"):
-        return "toml"
-    return "unknown"
+def load_data(filepath):
+    # Violation: ad-hoc branching on file suffixes rather than using a registry or strategy pattern
+    if filepath.endswith(".csv"):
+        return load_csv(filepath)
+    elif filepath.endswith(".json"):
+        return load_json(filepath)
+    elif filepath.endswith(".xml"):
+        return load_xml(filepath)
+    else:
+        raise ValueError("Unsupported format")

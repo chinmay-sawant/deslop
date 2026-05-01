@@ -1,9 +1,7 @@
-from __future__ import annotations
+class User:
+    def __init__(self):
+        self._roles = ["guest"]
 
-
-class JobQueue:
-    def __init__(self) -> None:
-        self._jobs = ["daily-report"]
-
-    def jobs(self) -> list[str]:
-        return self._jobs
+    def get_roles(self):
+        # Violation: helper returns a live reference to an internal mutable collection
+        return self._roles

@@ -1,9 +1,5 @@
-from __future__ import annotations
-
-
-def emit(metric: str, value: int) -> tuple[str, int]:
-    return metric, value
-
-
-def prometheus_or_statsd_metric_emitted_inside_db_result_loop_negative(rows: list[dict[str, object]]) -> tuple[str, int]:
-    return emit("db.rows_seen", len(rows))
+def process_db_results(rows):
+    for row in rows:
+        do_work(row)
+    # Correct: emit the aggregate metric once outside the data processing loop
+    metrics.increment("rows_processed", len(rows))

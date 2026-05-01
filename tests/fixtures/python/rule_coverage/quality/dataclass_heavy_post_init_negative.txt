@@ -1,12 +1,14 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
-
+from typing import Any
 
 @dataclass
-class DataclassHeavyPostInitNegative:
-    port: int
-
-    def __post_init__(self) -> None:
-        if not (1 <= self.port <= 65535):
-            raise ValueError("invalid port")
+class ServiceClient:
+    api_key: str
+    connection: Any = None
+    
+    @classmethod
+    def create_and_connect(cls, api_key: str):
+        # Correct: use explicit factory classmethods to handle heavy initialization and side-effects
+        client = cls(api_key=api_key)
+        client.connection = establish_network_connection(api_key)
+        return client

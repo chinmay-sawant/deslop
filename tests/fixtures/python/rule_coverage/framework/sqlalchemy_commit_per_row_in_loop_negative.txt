@@ -1,7 +1,7 @@
-from __future__ import annotations
+from sqlalchemy.orm import Session
 
-def sqlalchemy_commit_per_row_in_loop_negative():
-    session = Session()
-    for email in ["a@x.com", "b@x.com", "c@x.com"]:
-        session.add(User(email=email))
+def bulk_insert(session: Session, items):
+    # Correct: add all items to the session and commit once at the end of the loop
+    for item in items:
+        session.add(item)
     session.commit()

@@ -1,10 +1,8 @@
-from __future__ import annotations
+import logging
 
-
-def duplicate_items_silently_dropped_without_contract_signal_negative(items: list[str]) -> list[str]:
-    seen: set[str] = set()
-    for item in items:
-        if item in seen:
-            raise ValueError(f"duplicate item: {item}")
-        seen.add(item)
-    return items
+def process_batch(items):
+    # Correct: emit warnings or raise errors when data is lost during deduplication
+    unique_items = list(set(items))
+    if len(unique_items) != len(items):
+        logging.warning("Duplicate items were detected and dropped during batch processing")
+    return execute_batch(unique_items)

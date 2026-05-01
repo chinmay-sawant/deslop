@@ -1,9 +1,8 @@
-from __future__ import annotations
+import httpx
 
-def middleware_creates_http_client_per_request_positive():
-    def middleware(request):
-        client = httpx.Client(base_url="https://auth.internal")
-        resp = client.get("/introspect")
-        return resp.status_code
-
-    return middleware
+class AnalyticsMiddleware:
+    def process_response(self, request, response):
+        # Violation: creating a new HTTP client instance inside a middleware (high overhead)
+        with httpx.Client() as client:
+            client.post("https://analytics.internal/event", json={"path": request.path})
+        return response

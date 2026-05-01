@@ -1,8 +1,5 @@
-from __future__ import annotations
-
 import requests
 
-
-def default_timeout_missing_on_external_boundary_wrapper_negative(url: str) -> int:
-    response = requests.get(url, timeout=5.0)
-    return response.status_code
+def fetch_external_data(url):
+    # Correct: always provide a strict, aggressive timeout on all external network boundaries
+    return requests.get(url, timeout=5.0).json()

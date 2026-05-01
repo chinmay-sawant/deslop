@@ -1,9 +1,6 @@
-from __future__ import annotations
-
-def full_sort_performed_inside_outer_iteration_positive():
-    batches = [[3, 1], [4, 2], [6, 5]]
-    merged = []
-    for batch in batches:
-        merged.extend(batch)
-        merged.sort()
-    return merged
+def apply_updates(data, updates):
+    for update in updates:
+        data.append(update)
+        # Violation: performing a full sort on the dataset inside every iteration of the loop
+        data.sort()
+    return data

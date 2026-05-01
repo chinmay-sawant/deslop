@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-def sorted_only_for_first_element_positive():
-    scores = [11, 2, 7, 5]
-    return sorted(scores)[0]
+def get_minimum_value(items):
+    if not items:
+        return None
+    # Violation: sorting the entire list just to retrieve the first element (O(N log N) instead of O(N))
+    return sorted(items)[0]

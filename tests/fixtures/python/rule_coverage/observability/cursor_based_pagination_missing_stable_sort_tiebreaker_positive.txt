@@ -1,5 +1,9 @@
-from __future__ import annotations
-
-
-def cursor_based_pagination_missing_stable_sort_tiebreaker_positive(rows: list[dict[str, int]]) -> list[dict[str, int]]:
-    return sorted(rows, key=lambda row: row["updated_at"])
+def fetch_records(last_created_at):
+    # Violation: cursor pagination on a non-unique column without a tiebreaker causes skipped or duplicate records
+    query = """
+        SELECT * FROM records 
+        WHERE created_at > ? 
+        ORDER BY created_at ASC 
+        LIMIT 10
+    """
+    return db.execute(query, (last_created_at,))

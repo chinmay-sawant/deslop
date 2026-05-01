@@ -1,6 +1,8 @@
-from __future__ import annotations
-
-
-def bulk_endpoint_partial_failure_contract_ambiguous_positive(items: list[str]) -> dict[str, object]:
-    failed = [item for item in items if item.startswith("bad")]
-    return {"processed": len(items), "errors": failed}
+def bulk_create_users(users_data):
+    # Violation: ambiguous contract for partial failures. If one fails, the client doesn't know which ones succeeded.
+    for data in users_data:
+        try:
+            db.create(data)
+        except Exception:
+            pass
+    return {"status": "success"}

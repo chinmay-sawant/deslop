@@ -1,11 +1,4 @@
-def main() -> int:
-    return 0
-
-
-PYPROJECT = {
-    "project": {
-        "scripts": {
-            "demo": "demo.cli:main",
-        }
-    }
-}
+# pyproject.toml
+[project.scripts]
+# Correct: properly reference an existing module and entrypoint function
+my_tool = "my_package.cli:run_application"

@@ -1,7 +1,6 @@
-from __future__ import annotations
+# Violation: using a wildcard star import in a production module pollutes the namespace and hides dependencies
+from src.utils.math_helpers import *
+from src.models.user import *
 
-from monitoring.metrics import *
-
-
-def star_import_used_in_non_init_production_module_positive() -> str:
-    return format_counter("jobs_total")
+def calculate():
+    return process_user_data(compute_value(10))

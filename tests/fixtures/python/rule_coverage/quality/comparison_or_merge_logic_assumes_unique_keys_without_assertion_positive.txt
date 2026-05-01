@@ -1,5 +1,6 @@
-from __future__ import annotations
-
-
-def comparison_or_merge_logic_assumes_unique_keys_without_assertion_positive(rows: list[tuple[str, int]]) -> dict[str, int]:
-    return {key: value for key, value in rows}
+def merge_records(records):
+    # Violation: blindly assuming the input list contains unique IDs; duplicates will silently overwrite data
+    merged_map = {}
+    for record in records:
+        merged_map[record.id] = record
+    return merged_map

@@ -1,7 +1,5 @@
-from __future__ import annotations
+# module: my_app/billing/processor.py
 
-from ..sibling.metrics import record_metric
-
-
-def relative_import_crossing_sibling_package_boundary_positive() -> str:
-    return record_metric("jobs.started")
+# Violation: using relative imports to reach across sibling package boundaries creates brittle code
+from ..users.models import UserModel
+from ..users.utils import get_status

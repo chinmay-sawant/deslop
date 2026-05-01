@@ -1,14 +1,11 @@
-from __future__ import annotations
+def normalize_username(username):
+    # Correct: centralize normalization logic into a single reusable helper
+    return username.strip().lower().replace(" ", "_")
 
+def register_user(username):
+    clean_name = normalize_username(username)
+    db.save(clean_name)
 
-def normalize_text(raw: str) -> str:
-    cleaned = raw.strip().lower()
-    return " ".join(cleaned.split())
-
-
-def format_username(raw: str) -> str:
-    return normalize_text(raw)
-
-
-def format_city(raw: str) -> str:
-    return normalize_text(raw)
+def search_user(username):
+    clean_name = normalize_username(username)
+    return db.find(clean_name)

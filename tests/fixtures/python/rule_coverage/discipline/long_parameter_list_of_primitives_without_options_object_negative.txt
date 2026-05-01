@@ -1,16 +1,8 @@
-from __future__ import annotations
+class SystemConfig(BaseModel):
+    host: str
+    port: int
+    timeout: float = 30.0
 
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True)
-class ConnectionOptions:
-    timeout: float
-    retries: int
-    use_ssl: bool
-    verify_cert: bool
-    pool_size: int
-
-
-def long_parameter_list_of_primitives_without_options_object_negative(host: str, port: int, options: ConnectionOptions) -> str:
-    return f"{host}:{port} timeout={options.timeout} retries={options.retries}"
+def configure_system(config: SystemConfig):
+    # Correct: use an options object to group related parameters
+    print(f"Connecting to {config.host}:{config.port}")

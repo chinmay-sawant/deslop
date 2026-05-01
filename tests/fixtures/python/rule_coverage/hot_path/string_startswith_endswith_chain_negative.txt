@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-def string_startswith_endswith_chain_negative():
-    name = "report.csv"
-    return name.startswith(("report_", "report.")) or name.endswith((".csv", ".tsv"))
+def process_path(path):
+    # Correct: pass a tuple of strings to startswith() for a single, optimized C-level check
+    if path.startswith(("/api/v1", "/api/v2", "/admin")):
+        return True
+    return False

@@ -1,5 +1,6 @@
-from __future__ import annotations
-
-
-def has_value(candidate: str | None) -> bool:
-    return candidate is not None
+def process_value(val):
+    # Correct: always use 'is' or 'is not' when comparing to None
+    if val is None:
+        return "Empty"
+    if val is not None:
+        return val * 2

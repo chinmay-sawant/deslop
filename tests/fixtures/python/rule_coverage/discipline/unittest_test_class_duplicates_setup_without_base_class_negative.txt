@@ -1,20 +1,13 @@
-from __future__ import annotations
+from unittest import TestCase
 
-import unittest
+class BaseTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.db = MockDB()
 
-
-class BaseTestCase(unittest.TestCase):
-    def setUp(self) -> None:
-        self.base_url = "https://service.local"
-
-
-class TestUsers(BaseTestCase):
+class TestAuth(BaseTestCase):
+    # Correct: common setup logic is extracted into a shared base class
     pass
 
-
-class TestOrders(BaseTestCase):
+class TestBilling(BaseTestCase):
     pass
-
-
-def unittest_test_class_duplicates_setup_without_base_class_negative() -> int:
-    return len(TestUsers.__mro__) + len(TestOrders.__mro__)

@@ -1,8 +1,12 @@
-from __future__ import annotations
+from fastapi.responses import StreamingResponse
+import json
 
-from collections.abc import Iterator
-
-
-def large_response_body_fully_buffered_in_memory_before_send_negative(chunks: list[str]) -> Iterator[bytes]:
-    for chunk in chunks:
-        yield chunk.encode("utf-8")
+def get_large_report():
+    # Correct: yield rows incrementally via a generator for constant memory usage
+    def generate_json():
+        yield "["
+        for i, row in enumerate(db.stream_millions_of_rows()):
+            if i > 0: yield ","
+            yield json.dumps(row)
+        yield "]"
+    return StreamingResponse(generate_json(), media_type="application/json")

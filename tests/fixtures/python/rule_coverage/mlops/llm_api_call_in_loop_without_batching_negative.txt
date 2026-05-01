@@ -1,10 +1,6 @@
-from __future__ import annotations
+import openai
 
-
-class Client:
-    def complete_batch(self, prompts: list[str]) -> list[str]:
-        return [prompt.upper() for prompt in prompts]
-
-
-def classify(prompts: list[str], client: Client) -> list[str]:
-    return client.complete_batch(prompts)
+def generate_summaries(prompts):
+    # Correct: pass the entire list of prompts in a single batched API call
+    resp = openai.Completion.create(model="text-davinci-003", prompt=prompts)
+    return [choice.text for choice in resp.choices]

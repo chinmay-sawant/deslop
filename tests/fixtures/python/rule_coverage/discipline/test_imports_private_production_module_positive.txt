@@ -1,7 +1,5 @@
-from __future__ import annotations
+# Violation: test imports a private production module/function
+from app._internal.utils import _secret_hash_algorithm
 
-import app._internal_helpers as helpers
-
-
-def test_imports_private_production_module_positive() -> str:
-    return helpers.__name__
+def test_hash():
+    assert _secret_hash_algorithm("data") is not None

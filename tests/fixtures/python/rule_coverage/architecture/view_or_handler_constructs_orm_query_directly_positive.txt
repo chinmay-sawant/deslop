@@ -1,4 +1,5 @@
-def list_orders_view(request: dict, session) -> list:
-    account_id = request["account_id"]
-    query = session.query("Order").filter_by(account_id=account_id)
-    return query.all()
+@app.get("/users/{id}")
+def get_user(id: int):
+    # Violation: view/handler constructing ORM query directly
+    user = session.query(User).filter(User.id == id).one_or_none()
+    return user

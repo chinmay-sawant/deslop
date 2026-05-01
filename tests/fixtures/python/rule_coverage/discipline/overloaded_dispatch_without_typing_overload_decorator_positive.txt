@@ -1,7 +1,7 @@
-from __future__ import annotations
+from typing import Union
 
-
-def overloaded_dispatch_without_typing_overload_decorator_positive(value: int | str) -> int:
-    if isinstance(value, int):
-        return value
-    return int(value)
+# Violation: overloaded dispatch without using the @overload decorator
+def process(val: Union[int, str]):
+    if isinstance(val, int):
+        return val * 2
+    return val.upper()

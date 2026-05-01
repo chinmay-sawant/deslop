@@ -1,3 +1,5 @@
-def upload_view(request: dict, storage_service) -> dict:
-    location = storage_service.save_text(request["name"], request["content"])
-    return {"saved_to": location}
+@app.post("/logs")
+def write_log(message: str, logger: LoggerService = Depends()):
+    # Correct: view delegates IO to a service abstraction
+    logger.log(message)
+    return {"status": "ok"}

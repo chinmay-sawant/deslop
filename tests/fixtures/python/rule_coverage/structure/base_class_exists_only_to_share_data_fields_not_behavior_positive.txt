@@ -1,11 +1,11 @@
-from __future__ import annotations
+# Violation: using inheritance strictly to inherit data fields (not behavior) creates rigid, fragile hierarchies
+class EntityBase:
+    def __init__(self):
+        self.id = None
+        self.created_at = None
+        self.updated_at = None
 
-
-class BaseRecord:
-    def __init__(self, record_id: str, created_by: str) -> None:
-        self.record_id = record_id
-        self.created_by = created_by
-
-
-class OrderRecord(BaseRecord):
-    pass
+class Product(EntityBase):
+    def __init__(self):
+        super().__init__()
+        self.price = 0.0

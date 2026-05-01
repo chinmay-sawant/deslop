@@ -1,10 +1,8 @@
-from __future__ import annotations
+tracer = None
 
-INITIALIZED = False
-
-
-def instrumentation_import_or_setup_occurs_on_first_live_request_positive() -> bool:
-    global INITIALIZED
-    if not INITIALIZED:
-        INITIALIZED = True
-    return INITIALIZED
+def handle_request(req):
+    global tracer
+    # Violation: setting up observability clients on the first live request causes huge latency spikes for that user
+    if tracer is None:
+        tracer = initialize_heavy_telemetry_client()
+    return tracer.trace(req)

@@ -1,12 +1,8 @@
-from __future__ import annotations
-
 import logging
 
-LOGGER = logging.getLogger(__name__)
-
-
-def exception_log_omits_operation_identifier_or_input_summary_positive(payload: dict[str, object]) -> None:
+def process_payment(user_id, amount):
     try:
-        int(payload["order_id"])
-    except Exception:
-        LOGGER.exception("request failed")
+        charge_card(user_id, amount)
+    except Exception as e:
+        # Violation: logging an error without including context variables makes it impossible to reproduce the bug
+        logging.error("Payment failed to process due to an error.")

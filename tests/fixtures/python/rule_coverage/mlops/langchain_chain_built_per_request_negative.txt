@@ -1,16 +1,8 @@
-from __future__ import annotations
+from langchain import LLMChain, PromptTemplate
 
+# Correct: instantiate the chain once at the module level
+_PROMPT = PromptTemplate(template="Translate {text}", input_variables=["text"])
+_CHAIN = LLMChain(llm=my_llm, prompt=_PROMPT)
 
-class FakeChain:
-    def __init__(self, prefix: str) -> None:
-        self.prefix = prefix
-
-    def run(self, question: str) -> str:
-        return f"{self.prefix}: {question}"
-
-
-CHAIN = FakeChain(prefix="assistant")
-
-
-def answer(question: str) -> str:
-    return CHAIN.run(question)
+def handle_request(user_input):
+    return _CHAIN.run(text=user_input)

@@ -1,8 +1,4 @@
-from __future__ import annotations
-
-
-def zip_range_len_used_instead_of_enumerate_positive(items: list[str]) -> list[str]:
-    out: list[str] = []
-    for index, value in zip(range(len(items)), items):
-        out.append(f"{index}:{value}")
-    return out
+def process_list(items):
+    # Violation: using range(len()) combined with indexing is non-idiomatic and slower than enumerate
+    for i in range(len(items)):
+        print(f"Index {i} has value {items[i]}")

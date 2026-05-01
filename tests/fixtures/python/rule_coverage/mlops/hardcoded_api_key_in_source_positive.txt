@@ -1,7 +1,5 @@
-from __future__ import annotations
+import openai
 
-API_KEY = "sk-live-really-secret"
-
-
-def auth_header() -> dict[str, str]:
-    return {"Authorization": f"Bearer {API_KEY}"}
+def setup_client():
+    # Violation: hardcoding an API key directly in the source code
+    openai.api_key = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

@@ -1,11 +1,11 @@
-from __future__ import annotations
+import os
 
-from pathlib import Path
-
-
-def read_user_file(data_root: str, user_path: str) -> str:
-    root = Path(data_root).resolve()
-    full_path = (root / user_path).resolve()
-    if root not in full_path.parents and full_path != root:
-        raise ValueError("path escapes data root")
-    return full_path.read_text(encoding="utf-8")
+def read_user_file(user_input_path):
+    base_dir = "/var/www/uploads"
+    # Correct: path is normalized and checked against a base directory
+    normalized_path = os.path.abspath(os.path.join(base_dir, user_input_path))
+    if not normalized_path.startswith(os.path.abspath(base_dir)):
+        raise PermissionError("Access denied")
+    
+    with open(normalized_path, "r") as f:
+        return f.read()

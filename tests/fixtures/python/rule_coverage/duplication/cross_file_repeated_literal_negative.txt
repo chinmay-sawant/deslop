@@ -1,7 +1,9 @@
-from __future__ import annotations
+# constants.py
+API_V1_PATH = "/api/v1/resource"
 
-VALIDATION_ERROR = "user-facing-validation-failed"
+# api.py
+from .constants import API_V1_PATH
 
-
-def cross_file_repeated_literal_negative() -> list[str]:
-    return [VALIDATION_ERROR, VALIDATION_ERROR, VALIDATION_ERROR]
+# client.py
+# Correct: repeated literal is extracted into a shared constant
+from .constants import API_V1_PATH

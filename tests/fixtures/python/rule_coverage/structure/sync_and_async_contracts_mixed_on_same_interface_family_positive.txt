@@ -1,9 +1,6 @@
-from __future__ import annotations
+class BaseProcessor:
+    def run(self): pass
 
-
-class UserRepoPositive:
-    def get(self, user_id: str) -> dict[str, str]:
-        return {"id": user_id}
-
-    async def aget(self, user_id: str) -> dict[str, str]:
-        return {"id": user_id}
+# Violation: mixing sync and async execution models under the same inheritance tree breaks Liskov Substitution
+class AsyncProcessor(BaseProcessor):
+    async def run(self): pass

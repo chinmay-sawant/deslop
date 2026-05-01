@@ -1,7 +1,9 @@
-from __future__ import annotations
+# module_a.py
+def _private_helper(): pass
 
-from billing import _normalize_card
+# module_b.py
+# Violation: a sibling module reaching across boundaries to import an explicitly private helper function
+from module_a import _private_helper
 
-
-def sibling_modules_depend_on_private_helpers_from_each_other_positive(number: str) -> str:
-    return _normalize_card(number)
+def do_work():
+    _private_helper()

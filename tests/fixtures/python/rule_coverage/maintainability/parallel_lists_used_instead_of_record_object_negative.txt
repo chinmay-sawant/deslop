@@ -1,13 +1,17 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
-
 @dataclass
-class Contact:
+class User:
     name: str
-    phone: str
+    age: int
+    role: str
 
-
-def build_contacts() -> list[Contact]:
-    return [Contact(name="Ana", phone="111"), Contact(name="Bo", phone="222")]
+def process_records():
+    # Correct: use a dataclass or structured object to group related attributes
+    users = [
+        User(name="Alice", age=25, role="admin"),
+        User(name="Bob", age=30, role="user")
+    ]
+    
+    for user in users:
+        print(f"{user.name} ({user.age}): {user.role}")

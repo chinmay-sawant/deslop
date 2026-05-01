@@ -1,14 +1,6 @@
-from __future__ import annotations
+from tasks import process_item
 
-
-class Task:
-    def delay(self, payload: int) -> str:
-        return f"queued:{payload}"
-
-
-def celery_delay_in_loop_without_canvas_positive(items: list[int]) -> list[str]:
-    task = Task()
-    queued: list[str] = []
+def handle_batch(items):
+    # Violation: calling .delay() in a loop without using Celery canvas (group/chord)
     for item in items:
-        queued.append(task.delay(item))
-    return queued
+        process_item.delay(item)

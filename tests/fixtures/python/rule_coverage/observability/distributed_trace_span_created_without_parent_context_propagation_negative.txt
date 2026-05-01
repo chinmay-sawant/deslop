@@ -1,12 +1,10 @@
-from __future__ import annotations
+from opentelemetry import trace
+from opentelemetry.propagate import extract
 
+tracer = trace.get_tracer(__name__)
 
-class Tracer:
-    def start_span(self, name: str, context: dict[str, str] | None = None) -> dict[str, object]:
-        return {"name": name, "context": context}
-
-
-def distributed_trace_span_created_without_parent_context_propagation_negative(
-    tracer: Tracer, parent_context: dict[str, str]
-) -> dict[str, object]:
-    return tracer.start_span("db.query", context=parent_context)
+def background_worker(payload, carrier_context):
+    # Correct: explicitly extract and link the parent context to maintain a contiguous distributed trace
+    ctx = extract(carrier_context)
+    with tracer.start_as_current_span("worker_process", context=ctx):
+        process(payload)

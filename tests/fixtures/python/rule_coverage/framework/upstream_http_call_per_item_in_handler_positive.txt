@@ -1,8 +1,10 @@
-from __future__ import annotations
+import requests
 
-def upstream_http_call_per_item_in_handler_positive():
-    item_ids = [1, 2, 3]
-    rows = []
-    for item_id in item_ids:
-        rows.append(requests.get(f"https://api.example.com/items/{item_id}", timeout=2.0).json())
-    return rows
+@app.get("/details")
+def get_details(ids: List[str]):
+    # Violation: outbound HTTP call per item in a request handler (slow and unscalable)
+    results = []
+    for item_id in ids:
+        resp = requests.get(f"https://api.service/item/{item_id}", timeout=2)
+        results.append(resp.json())
+    return results

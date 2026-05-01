@@ -1,7 +1,10 @@
-from __future__ import annotations
+def measure_time(func):
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        # Violation: wrapping a function and changing its return shape to include telemetry breaks the API contract
+        return {"response": result, "trace_id": "12345"}
+    return wrapper
 
-
-def instrumentation_helper_mutates_business_return_shape_positive(order_id: str) -> dict[str, str]:
-    result = {"order_id": order_id, "status": "ok"}
-    result["trace_id"] = "trace-123"
-    return result
+@measure_time
+def get_user_data():
+    return {"name": "Alice"}

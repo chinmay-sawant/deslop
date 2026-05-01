@@ -1,8 +1,7 @@
-from __future__ import annotations
-
-def append_then_sort_each_iteration_positive():
-    scores = []
-    for value in [7, 3, 9, 1]:
-        scores.append(value)
-        scores.sort()
-    return scores
+def process_stream(items):
+    data = []
+    for item in items:
+        # Violation: appending to a list and then sorting it in every iteration (O(N^2 log N))
+        data.append(item)
+        data.sort()
+    return data

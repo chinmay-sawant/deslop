@@ -1,7 +1,6 @@
-from __future__ import annotations
+def apply_transform(items, transformer):
+    return [transformer(item) for item in items]
 
-def lambda_or_closure_allocated_per_item_when_static_helper_suffices_positive():
-    funcs = []
-    for n in [1, 2, 3]:
-        funcs.append(lambda x, n=n: x + n)
-    return [fn(10) for fn in funcs]
+def process_data(data):
+    # Violation: lambda allocated per item (or per loop iteration) when a static helper would suffice
+    return apply_transform(data, lambda x: x * 2)

@@ -1,9 +1,8 @@
-from __future__ import annotations
+# test_auth.py
+def create_mock_user(name):
+    return {"id": random.randint(1, 100), "name": name, "roles": []}
 
-
-def _normalize_user_one(name: str) -> str:
-    return name.strip().lower()
-
-
-def duplicate_test_utility_logic_positive(name: str) -> str:
-    return name.strip().lower()
+# test_billing.py
+# Violation: duplicate test utility logic repeated across test files
+def create_mock_user(name):
+    return {"id": random.randint(1, 100), "name": name, "roles": []}

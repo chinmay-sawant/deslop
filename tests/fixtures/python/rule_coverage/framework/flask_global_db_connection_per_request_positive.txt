@@ -1,9 +1,9 @@
-from __future__ import annotations
+from flask import Flask
 
-def flask_global_db_connection_per_request_positive():
-    def handler():
-        conn = psycopg.connect("dbname=main")
-        row = conn.execute("SELECT 1").fetchone()
-        return row[0]
+app = Flask(__name__)
+# Violation: database connection created as a module-level global (not thread-safe/fork-safe for requests)
+db = connect_db()
 
-    return handler
+@app.route("/user")
+def get_user():
+    return db.query("SELECT ...")

@@ -1,7 +1,8 @@
-from __future__ import annotations
-
 import os
+from celery import shared_task
 
-
-def celery_task_reads_env_per_invocation_positive() -> str:
-    return os.getenv("BROKER_URL", "amqp://guest")
+@shared_task
+def process_data():
+    # Violation: task reads environment variable per invocation (expensive/inconsistent)
+    api_key = os.getenv("EXTERNAL_API_KEY")
+    return call_api(api_key)

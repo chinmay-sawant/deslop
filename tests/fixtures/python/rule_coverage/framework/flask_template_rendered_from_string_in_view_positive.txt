@@ -1,8 +1,6 @@
-from __future__ import annotations
+from flask import render_template_string
 
-def flask_template_rendered_from_string_in_view_positive():
-    def profile():
-        template = request.args.get("tpl", "Hello {{ user }}")
-        return render_template_string(template, user="Ada")
-
-    return profile
+@app.route("/hello/<name>")
+def hello(name):
+    # Violation: rendering a template from a string in a view (XSS risk/inefficient)
+    return render_template_string(f"<h1>Hello {name}</h1>")

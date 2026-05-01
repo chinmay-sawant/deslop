@@ -1,5 +1,4 @@
-from __future__ import annotations
-
-def function_local_import_executed_in_frequent_path_positive():
+def compute_hash(data):
+    # Violation: importing a module inside a frequently executed function (import overhead)
     import hashlib
-    return hashlib.sha256(b"payload").hexdigest()
+    return hashlib.md5(data.encode()).hexdigest()

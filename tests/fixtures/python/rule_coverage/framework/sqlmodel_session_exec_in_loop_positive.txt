@@ -1,9 +1,7 @@
-from __future__ import annotations
+from sqlmodel import select
 
-def sqlmodel_session_exec_in_loop_positive():
-    ids = [1, 2, 3]
-    with Session(engine) as session:
-        users = []
-        for user_id in ids:
-            users.append(session.exec(select(User).where(User.id == user_id)).one())
-    return users
+def fetch_users(session, user_ids):
+    # Violation: executing session.exec in a loop (multiple round trips)
+    for user_id in user_ids:
+        statement = select(User).where(User.id == user_id)
+        session.exec(statement).first()

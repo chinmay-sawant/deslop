@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import subprocess
 
-
-def run_user_command(user_value: str) -> str:
-    return subprocess.check_output(["echo", user_value], shell=False, text=True).strip()
+def run_user_command(user_input):
+    # Correct: use a list of arguments and shell=False to prevent shell injection
+    subprocess.run(["ls", "-l", user_input], shell=False)

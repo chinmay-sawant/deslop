@@ -1,6 +1,7 @@
-from __future__ import annotations
-
-def repeated_split_or_join_on_invariant_separator_inside_loop_negative():
-    text = "red,green,blue"
-    parts = text.split(",")
-    return [list(parts) for _ in range(4)]
+def format_records(base_parts, records):
+    formatted = []
+    # Correct: compute the invariant prefix once outside the loop
+    prefix = "-".join(base_parts)
+    for record in records:
+        formatted.append(f"{prefix}-{record.id}")
+    return formatted

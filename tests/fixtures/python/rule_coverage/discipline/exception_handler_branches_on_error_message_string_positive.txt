@@ -1,11 +1,5 @@
-from __future__ import annotations
-
-
-def classify_error(func) -> str:
-    try:
-        func()
-        return "ok"
-    except ValueError as exc:
-        if "timeout" in str(exc).lower():
-            return "retry"
-        return "fail"
+def handle_database_error(e):
+    # Violation: exception handler branches on error message string (fragile)
+    if "unique constraint" in str(e).lower():
+        return "Duplicate entry"
+    return "Unknown error"

@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 from typing import Callable
 
-
-def apply_discount(rule: Callable, amount: int) -> int:
-    return rule(amount)
+def execute_callback(cb: Callable):
+    # Violation: Callable annotation without parameter types
+    return cb(1, 2)

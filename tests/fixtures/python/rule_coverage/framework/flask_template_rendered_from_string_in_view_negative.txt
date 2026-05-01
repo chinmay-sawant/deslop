@@ -1,7 +1,6 @@
-from __future__ import annotations
+from flask import render_template
 
-def flask_template_rendered_from_string_in_view_negative():
-    def profile():
-        return render_template("profile.html", user="Ada")
-
-    return profile
+@app.route("/hello/<name>")
+def hello(name):
+    # Correct: use template files for rendering HTML
+    return render_template("hello.html", name=name)

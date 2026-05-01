@@ -1,5 +1,6 @@
-from __future__ import annotations
+from fastapi import Response
 
-
-def download_report() -> bytes:
-    return b"PDF-DATA"
+def download_file():
+    binary_data = b"Some raw binary data..."
+    # Violation: returning raw binary data without specifying an explicit Content-Type
+    return Response(content=binary_data)

@@ -1,9 +1,13 @@
-def validate_email(value: str) -> None:
-    if "@" not in value:
-        raise ValueError("invalid email")
+class UserName(str):
+    def __new__(cls, value):
+        if len(value) > 50:
+            raise ValueError("Name too long")
+        return super().__new__(cls, value)
 
+class UserDTO(BaseModel):
+    name: str # No validation here
 
-class Account:
-    def __init__(self, email: str) -> None:
-        validate_email(email)
-        self.email = email
+class User:
+    def __init__(self, name: UserName):
+        # Correct: validation logic is centralized in a value object or domain model
+        self.name = name

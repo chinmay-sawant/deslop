@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import pytest
 
-
-@pytest.mark.skip()
-def test_skipped_with_no_reason_string_positive() -> None:
-    assert True
+# Violation: test is skipped without providing a reason
+@pytest.mark.skip
+def test_legacy_feature():
+    assert legacy_call() == "ok"

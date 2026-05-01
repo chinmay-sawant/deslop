@@ -1,5 +1,4 @@
-from __future__ import annotations
-
-
-def report_metric(name: str, value: float) -> None:
-    print(f"{name}={value}")
+def train_epoch(model, dataloader):
+    loss = run_epoch(model, dataloader)
+    # Violation: using print for training metrics instead of a proper tracking framework
+    print(f"Epoch finished. Loss: {loss}")

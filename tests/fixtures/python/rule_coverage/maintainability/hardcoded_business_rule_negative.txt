@@ -1,4 +1,8 @@
-from __future__ import annotations
+DISCOUNT_THRESHOLD = 1000
+PREMIUM_DISCOUNT_RATE = 0.15
 
-def hardcoded_business_rule_negative(amount: float, tax_rate: float):
-    return round(amount * (1 + tax_rate), 2)
+def calculate_discount(order):
+    # Correct: extract business rules into configurable constants or settings
+    if order.total > DISCOUNT_THRESHOLD:
+        return order.total * PREMIUM_DISCOUNT_RATE
+    return 0

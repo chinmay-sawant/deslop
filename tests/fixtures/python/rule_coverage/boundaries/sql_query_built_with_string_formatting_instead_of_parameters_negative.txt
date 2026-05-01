@@ -1,6 +1,5 @@
-from __future__ import annotations
-
-
-def find_user(cursor, username: str):
-    query = "SELECT id FROM users WHERE username = ?"
-    return cursor.execute(query, (username,)).fetchone()
+def get_user(db, user_id):
+    cursor = db.cursor()
+    # Correct: use parameterized queries to prevent SQL injection
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    return cursor.fetchone()

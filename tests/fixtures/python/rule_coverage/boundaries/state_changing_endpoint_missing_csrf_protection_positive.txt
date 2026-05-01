@@ -1,5 +1,7 @@
-from __future__ import annotations
-
-
-def update_email(request: dict[str, str], store: dict[str, str]) -> None:
-    store[request["user_id"]] = request["email"]
+@app.route("/update-profile", methods=["POST"])
+def update_profile():
+    # Violation: state-changing endpoint missing CSRF protection
+    user_id = request.form.get("user_id")
+    new_email = request.form.get("email")
+    db.update_user_email(user_id, new_email)
+    return "Profile updated"

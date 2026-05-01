@@ -1,5 +1,9 @@
-from __future__ import annotations
+from typing import Optional
+from models import UserRecord
 
-
-def create_invoice(customer_id: str, amount: float) -> dict[str, float | str]:
-    return {"customer_id": customer_id, "amount": amount}
+def fetch_user_record(user_id: int, include_deleted: bool = False) -> Optional[UserRecord]:
+    # Correct: public API uses type hints to document inputs and outputs clearly
+    record = db.query(user_id)
+    if include_deleted or not record.is_deleted:
+        return record
+    return None

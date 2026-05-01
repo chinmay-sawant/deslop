@@ -1,6 +1,6 @@
-from __future__ import annotations
+import pytest
 
-
-def pytest_parametrize_with_single_test_case_negative() -> None:
-    value = 1
-    assert value == 1
+# Correct: use parametrize for multiple test cases
+@pytest.mark.parametrize("input_val", [10, 20, 30])
+def test_threshold(input_val):
+    assert input_val > 5

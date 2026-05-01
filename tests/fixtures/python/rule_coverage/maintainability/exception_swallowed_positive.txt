@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-def exception_swallowed_positive(raw_value: str):
+def process_item(item):
     try:
-        return int(raw_value)
-    except ValueError:
+        perform_complex_calculation(item)
+    # Violation: swallowing exceptions silently makes debugging extremely difficult
+    except Exception:
         pass
-    return 0

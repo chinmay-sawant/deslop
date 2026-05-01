@@ -1,11 +1,5 @@
-from __future__ import annotations
-
-
-class Formatter:
-    def render(self, value: int) -> str:
-        return f"item={value}"
-
-
-def format_items(values: list[int]) -> list[str]:
-    formatter = Formatter()
-    return [formatter.render(value) for value in values]
+def process_batch(items, pool: ConnectionPool):
+    # Correct: objects are retrieved from a pool
+    for item in items:
+        with pool.get_connection() as conn:
+            conn.query(item)

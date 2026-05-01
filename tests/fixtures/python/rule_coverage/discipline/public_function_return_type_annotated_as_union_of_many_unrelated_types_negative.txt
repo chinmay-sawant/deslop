@@ -1,13 +1,8 @@
-from __future__ import annotations
+class ResourceResponse(BaseModel):
+    value: Any
+    type: str
 
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True)
-class ScoreResult:
-    score: int
-    label: str
-
-
-def public_function_return_type_annotated_as_union_of_many_unrelated_types_negative(flag: int) -> ScoreResult:
-    return ScoreResult(score=flag, label=f"flag-{flag}")
+# Correct: function returns a single, well-defined model
+def get_resource(id: str) -> ResourceResponse:
+    data = fetch_data(id)
+    return ResourceResponse(value=data, type=type(data).__name__)

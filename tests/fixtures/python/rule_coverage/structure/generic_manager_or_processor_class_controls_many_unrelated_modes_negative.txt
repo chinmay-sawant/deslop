@@ -1,11 +1,12 @@
-from __future__ import annotations
+# Correct: create distinct, specialized classes for entirely different processing domains
+class PdfTextExtractor:
+    def process(self, doc):
+        pass
 
+class ImageBlurFilter:
+    def process(self, doc):
+        pass
 
-class EmailProcessor:
-    def process(self, payload: str) -> str:
-        return f"email:{payload}"
-
-
-class BillingProcessor:
-    def process(self, payload: str) -> str:
-        return f"bill:{payload}"
+class JsonToCsvConverter:
+    def process(self, doc):
+        pass

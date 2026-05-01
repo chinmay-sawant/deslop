@@ -1,6 +1,7 @@
-from __future__ import annotations
-
-
-def first_line(path: str) -> str:
-    with open(path, "r", encoding="utf-8") as handle:
-        return handle.readline().strip()
+def upload_data(client, data):
+    # Correct: use 'finally' block for guaranteed cleanup
+    client.connect()
+    try:
+        client.upload(data)
+    finally:
+        client.disconnect()

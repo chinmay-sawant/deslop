@@ -1,4 +1,5 @@
-from __future__ import annotations
-
-def hardcoded_business_rule_positive(amount: float):
-    return round(amount * 1.0825, 2)
+def calculate_discount(order):
+    # Violation: hardcoding business rules (like discount rates or thresholds) directly in the logic
+    if order.total > 1000:
+        return order.total * 0.15
+    return 0

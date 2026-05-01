@@ -1,7 +1,7 @@
-PYPROJECT = {
-    "project": {
-        "name": "demo-lib",
-        "version": "0.1.0",
-        "requires-python": ">=3.11",
-    }
-}
+# pyproject.toml
+[project]
+name = "my_awesome_library"
+version = "1.0.0"
+description = "A great tool"
+# Correct: always declare the supported python version constraint explicitly
+requires-python = ">=3.9"

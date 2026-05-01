@@ -1,11 +1,13 @@
-from __future__ import annotations
-
 import logging
+import time
 
-LOGGER = logging.getLogger(__name__)
-
-
-def retry_loop_logs_without_attempt_count_or_backoff_context_negative() -> None:
-    backoffs = [1, 2, 4]
-    for attempt, delay in enumerate(backoffs, start=1):
-        LOGGER.warning("retry attempt=%s backoff_seconds=%s", attempt, delay)
+def call_unstable_api():
+    max_retries = 3
+    for attempt in range(1, max_retries + 1):
+        try:
+            return do_api_call()
+        except Exception as e:
+            backoff = attempt * 2
+            # Correct: explicitly log attempt numbers, max retries, and backoff durations
+            logging.warning(f"API call failed (Attempt {attempt}/{max_retries}). Retrying in {backoff}s. Error: {e}")
+            time.sleep(backoff)

@@ -1,14 +1,8 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
-
 
 @dataclass(frozen=True)
 class User:
+    # Correct: dataclass provides better type annotations and configuration
     id: int
+    name: str
     email: str
-    active: bool
-
-
-def namedtuple_used_where_dataclass_better_fits_negative() -> User:
-    return User(1, "a@example.com", True)

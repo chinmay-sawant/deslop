@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 from typing import cast
 
-
-def user_id(value: object) -> int:
-    return cast(int, value)
+def process_node(node):
+    # Violation: cast applied without a preceding type narrowing guard (instanceof)
+    user_node = cast(UserNode, node)
+    return user_node.username

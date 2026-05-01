@@ -1,8 +1,8 @@
-from __future__ import annotations
+import wandb
 
-from typing import Any
-
-
-def train_and_log(metrics: list[float], tracker: Any) -> None:
-    for step, metric in enumerate(metrics):
-        tracker.log({"step": step, "loss": metric})
+def train_model(epochs, batches):
+    for epoch in range(epochs):
+        for step, batch in enumerate(batches):
+            loss = compute_loss(batch)
+            # Violation: logging to remote trackers on every single micro-step causes severe network bottlenecks
+            wandb.log({"loss": loss, "step": step})

@@ -1,8 +1,5 @@
-from __future__ import annotations
+from typing import Mapping
 
-from collections.abc import Mapping
-
-
-def inject_default_region(config: Mapping[str, str]) -> Mapping[str, str]:
-    config["region"] = "us-east-1"
-    return config
+def update_config(settings: Mapping):
+    # Violation: function accepts a read-only Mapping protocol but attempts to mutate it
+    settings["updated_at"] = "now"

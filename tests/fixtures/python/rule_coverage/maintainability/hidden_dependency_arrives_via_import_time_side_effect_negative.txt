@@ -1,4 +1,12 @@
-from __future__ import annotations
+# config_loader.py
+import os
+import sys
 
-def hidden_dependency_arrives_via_import_time_side_effect_negative(settings: dict):
-    return settings.get("mode", "dev")
+GLOBAL_CONFIG = None
+
+def init_config():
+    # Correct: encapsulate initialization and side effects in a function to be called explicitly
+    global GLOBAL_CONFIG
+    print("Initializing config...")
+    GLOBAL_CONFIG = load_remote_config(os.environ["CONFIG_URL"])
+    sys.path.append(GLOBAL_CONFIG["plugin_dir"])

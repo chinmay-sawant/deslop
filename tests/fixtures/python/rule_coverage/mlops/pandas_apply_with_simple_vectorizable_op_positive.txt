@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def double_column(df: pd.DataFrame) -> pd.DataFrame:
-    df["x2"] = df["x"].apply(lambda value: value * 2)
+def double_column(df):
+    # Violation: using apply with a lambda for a simple operation that pandas can vectorize
+    df['doubled'] = df['value'].apply(lambda x: x * 2)
     return df

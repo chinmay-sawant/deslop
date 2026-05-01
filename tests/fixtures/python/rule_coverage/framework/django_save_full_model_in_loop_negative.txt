@@ -1,5 +1,5 @@
-from __future__ import annotations
+from .models import User
 
-def django_save_full_model_in_loop_negative():
-    account_ids = [1, 2, 3]
-    Account.objects.filter(id__in=account_ids).update(status="archived")
+def activate_users(user_ids):
+    # Correct: use .update() to perform a bulk update on the database-side
+    User.objects.filter(id__in=user_ids).update(is_active=True)

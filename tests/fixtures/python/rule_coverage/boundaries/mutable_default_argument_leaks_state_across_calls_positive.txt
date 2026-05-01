@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-
-def collect_tag(tag: str, bucket: list[str] = []) -> list[str]:
-    bucket.append(tag)
-    return bucket
+def add_to_history(event, history=[]):
+    # Violation: mutable default argument leaks state across calls
+    history.append(event)
+    return history

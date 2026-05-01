@@ -1,6 +1,8 @@
-from __future__ import annotations
+import redis
 
+r = redis.Redis()
 
-def cache_metrics(client, metrics: dict[str, int]) -> None:
-    for key, value in metrics.items():
-        client.set(key, value)
+def save_items(items):
+    # Violation: redis commands issued individually in a loop instead of using a pipeline
+    for key, value in items.items():
+        r.set(key, value)

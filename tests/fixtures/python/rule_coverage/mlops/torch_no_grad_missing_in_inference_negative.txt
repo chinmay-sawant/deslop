@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 import torch
 
-
-def infer(model: torch.nn.Module, inputs: torch.Tensor) -> torch.Tensor:
+def generate_prediction(model, data):
     model.eval()
+    # Correct: always wrap inference code in torch.no_grad() to save massive amounts of GPU memory
     with torch.no_grad():
-        return model(inputs)
+        output = model(data)
+    return output

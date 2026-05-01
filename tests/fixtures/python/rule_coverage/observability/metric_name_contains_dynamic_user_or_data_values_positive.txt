@@ -1,5 +1,3 @@
-from __future__ import annotations
-
-
-def metric_name_contains_dynamic_user_or_data_values_positive(user_id: str) -> str:
-    return f"login.{user_id}.count"
+def track_login(user_id):
+    # Violation: embedding dynamic user IDs into the metric name destroys observability systems with cardinality explosions
+    statsd.increment(f"login_success_user_{user_id}")

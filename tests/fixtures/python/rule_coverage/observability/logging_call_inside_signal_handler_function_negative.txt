@@ -1,9 +1,17 @@
-from __future__ import annotations
+import logging
+import signal
+import sys
 
-STOP_REQUESTED = False
+_shutdown_requested = False
 
+def sigint_handler(signum, frame):
+    # Correct: set a lightweight flag or global variable; do IO operations safely in the main loop
+    global _shutdown_requested
+    _shutdown_requested = True
 
-def logging_call_inside_signal_handler_function_negative(signum: int, frame: object) -> None:
-    del signum, frame
-    global STOP_REQUESTED
-    STOP_REQUESTED = True
+signal.signal(signal.SIGINT, sigint_handler)
+
+def main_loop():
+    while not _shutdown_requested:
+        pass
+    logging.info("Received SIGINT safely outside signal handler, shutting down...")

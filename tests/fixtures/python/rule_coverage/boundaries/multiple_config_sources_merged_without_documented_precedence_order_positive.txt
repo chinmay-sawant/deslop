@@ -1,9 +1,7 @@
-from __future__ import annotations
-
-
-def load_config(file_cfg: dict, env_cfg: dict, cli_cfg: dict) -> dict:
-    merged = {}
-    merged.update(file_cfg)
-    merged.update(cli_cfg)
-    merged.update(env_cfg)
-    return merged
+def load_config():
+    config = {}
+    # Violation: multiple sources merged without clear precedence or documentation
+    config.update(load_from_yaml("default.yaml"))
+    config.update(load_from_env())
+    config.update(load_from_yaml("overrides.yaml"))
+    return config

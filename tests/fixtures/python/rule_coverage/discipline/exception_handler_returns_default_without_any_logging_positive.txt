@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-
-def read_count(fetcher) -> int:
+def get_user_count():
     try:
-        return int(fetcher())
+        return db.count_users()
     except Exception:
+        # Violation: exception handler returns a default value without any logging or tracking
         return 0

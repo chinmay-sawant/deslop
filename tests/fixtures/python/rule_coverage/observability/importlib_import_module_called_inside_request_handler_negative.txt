@@ -1,9 +1,11 @@
-from __future__ import annotations
+import importlib
 
-import json
+# Correct: load dynamic modules once at startup and cache them in a registry
+PLUGINS = {
+    "auth": importlib.import_module("plugins.auth"),
+    "audit": importlib.import_module("plugins.audit"),
+}
 
-PARSER = json.loads
-
-
-def importlib_import_module_called_inside_request_handler_negative(payload: str) -> object:
-    return PARSER(payload)
+def handle_api_request(plugin_name):
+    plugin = PLUGINS[plugin_name]
+    return plugin.execute()

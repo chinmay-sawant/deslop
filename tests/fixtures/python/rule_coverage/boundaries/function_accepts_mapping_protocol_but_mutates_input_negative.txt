@@ -1,9 +1,5 @@
-from __future__ import annotations
+from typing import Dict
 
-from collections.abc import Mapping
-
-
-def inject_default_region(config: Mapping[str, str]) -> dict[str, str]:
-    output = dict(config)
-    output.setdefault("region", "us-east-1")
-    return output
+def update_config(settings: Dict):
+    # Correct: function explicitly accepts a mutable Dict
+    settings["updated_at"] = "now"

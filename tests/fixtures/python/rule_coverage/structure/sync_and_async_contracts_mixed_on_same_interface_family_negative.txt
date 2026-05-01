@@ -1,13 +1,9 @@
-from __future__ import annotations
+# Correct: cleanly separate synchronous and asynchronous architectural boundaries into distinct interfaces
+class ISyncProcessor:
+    def run(self): pass
 
-from typing import Protocol
+class IAsyncProcessor:
+    async def run_async(self): pass
 
-
-class SyncUserRepo(Protocol):
-    def get(self, user_id: str) -> dict[str, str]:
-        ...
-
-
-class AsyncUserRepo(Protocol):
-    async def get(self, user_id: str) -> dict[str, str]:
-        ...
+class AsyncProcessor(IAsyncProcessor):
+    async def run_async(self): pass

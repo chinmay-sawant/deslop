@@ -1,7 +1,6 @@
-from __future__ import annotations
+import openai
 
-from collections.abc import Iterable
-
-
-def collect_response(chunks: Iterable[str]) -> str:
-    return "".join(chunks)
+def generate_long_document(prompt):
+    # Violation: requesting a massive text generation without using streaming causes long delays and memory spikes
+    resp = openai.Completion.create(model="gpt-4", prompt=prompt, max_tokens=4000)
+    return resp.choices[0].text

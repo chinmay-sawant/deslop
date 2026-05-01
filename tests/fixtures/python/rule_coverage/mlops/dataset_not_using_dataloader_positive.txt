@@ -1,8 +1,9 @@
-from __future__ import annotations
-
-
-def train(dataset: list[list[float]]) -> int:
-    seen = 0
-    for sample in dataset:
-        seen += len(sample)
-    return seen
+def train_model(model, dataset, optimizer):
+    # Violation: manually indexing a dataset in a training loop instead of using a DataLoader
+    for i in range(len(dataset)):
+        inputs, labels = dataset[i]
+        optimizer.zero_grad()
+        outputs = model(inputs.unsqueeze(0))
+        loss = criterion(outputs, labels.unsqueeze(0))
+        loss.backward()
+        optimizer.step()

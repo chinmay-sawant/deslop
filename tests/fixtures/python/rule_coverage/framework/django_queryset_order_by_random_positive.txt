@@ -1,5 +1,5 @@
-from __future__ import annotations
+from .models import User
 
-def django_queryset_order_by_random_positive():
-    winner = Coupon.objects.order_by("?").first()
-    return winner
+def get_random_users():
+    # Violation: using order_by('?') for randomization (extremely slow on large tables)
+    return User.objects.order_by('?')[:5]

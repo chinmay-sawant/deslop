@@ -1,8 +1,7 @@
-from __future__ import annotations
-
-
-def parse_payload(payload: str) -> int:
+def parse_file(path):
+    # Correct: refactored into smaller functions to avoid nesting
     try:
-        return int(payload.strip())
-    except ValueError:
-        return -1
+        data = read_data(path)
+        return parse_data(data)
+    except (FileNotFoundError, OSError, ParseError) as e:
+        handle_error(e)

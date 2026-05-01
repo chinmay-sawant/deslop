@@ -1,8 +1,8 @@
-from __future__ import annotations
+import re
 
-def regex_compile_in_hot_path_positive():
-    matches = []
-    for text in ["id=1", "x=na", "id=2"]:
-        pattern = re.compile(r"id=(\d+)")
-        matches.append(pattern.findall(text))
-    return matches
+def process_messages(messages):
+    for msg in messages:
+        # Violation: compiling a regular expression inside a hot loop or frequently called function
+        pattern = re.compile(r"^[A-Z]{3}-\d{4}$")
+        if pattern.match(msg):
+            print("Valid")

@@ -1,7 +1,9 @@
-from __future__ import annotations
+from flask import redirect, request, url_for
 
-
-def login_redirect(next_url: str) -> dict[str, str]:
-    if not next_url.startswith("/"):
-        raise ValueError("only relative redirects are allowed")
-    return {"status": "302", "Location": next_url}
+@app.route("/login")
+def login():
+    target = request.args.get("next")
+    # Correct: only redirect to internal relative paths or trusted domains
+    if not target or not target.startswith("/"):
+        target = url_for("dashboard")
+    return redirect(target)

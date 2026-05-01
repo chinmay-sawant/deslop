@@ -1,7 +1,7 @@
-from __future__ import annotations
+import requests
 
-def upstream_http_call_per_item_in_handler_negative():
-    item_ids = [1, 2, 3]
-    joined = ",".join(str(x) for x in item_ids)
-    response = requests.get(f"https://api.example.com/items?ids={joined}", timeout=2.0)
-    return response.json()
+@app.get("/details")
+def get_details(ids: List[str]):
+    # Correct: use a batch endpoint for upstream services whenever possible
+    resp = requests.post("https://api.service/batch-get", json={"ids": ids}, timeout=5)
+    return resp.json()

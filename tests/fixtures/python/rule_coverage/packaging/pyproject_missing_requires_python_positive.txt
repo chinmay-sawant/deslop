@@ -1,6 +1,6 @@
-PYPROJECT = {
-    "project": {
-        "name": "demo-lib",
-        "version": "0.1.0",
-    }
-}
+# pyproject.toml
+# Violation: failing to specify required python versions breaks dependency resolvers on incompatible environments
+[project]
+name = "my_awesome_library"
+version = "1.0.0"
+description = "A great tool"

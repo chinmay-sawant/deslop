@@ -1,7 +1,9 @@
-from __future__ import annotations
+# my_package/__init__.py
 
-
-def heavy_optional_dependency_imported_by_package_root_negative() -> str:
+def light_utility():
+    return "fast"
+    
+def data_science_utility():
+    # Correct: use lazy or isolated imports for heavy dependencies so they don't penalize normal users
     import pandas as pd
-
-    return pd.__name__
+    return pd.DataFrame()

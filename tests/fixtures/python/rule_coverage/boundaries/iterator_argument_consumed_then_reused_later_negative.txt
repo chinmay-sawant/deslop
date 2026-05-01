@@ -1,9 +1,8 @@
-from __future__ import annotations
-
-from collections.abc import Iterable
-
-
-def summarize_rows(rows: Iterable[int]) -> tuple[int, int | None]:
-    materialized = list(rows)
-    first = materialized[0] if materialized else None
-    return len(materialized), first
+def validate_and_process(items):
+    # Correct: iterator is converted to a list once to allow multiple passes
+    items_list = list(items)
+    if not items_list:
+        return "Empty"
+    
+    for item in items_list:
+        process(item)

@@ -1,9 +1,7 @@
-from __future__ import annotations
+import json
 
-def repeated_json_dumps_same_object_positive():
-    import json
-    payload = {"user": "sam", "active": True, "score": 7}
-    blobs = []
-    for _ in range(4):
-        blobs.append(json.dumps(payload, sort_keys=True))
-    return blobs
+def broadcast_message(clients, msg):
+    for client in clients:
+        # Violation: calling json.dumps() on the same object inside a loop (wasteful serialization)
+        payload = json.dumps(msg)
+        client.send(payload)

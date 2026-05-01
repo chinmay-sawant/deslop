@@ -1,10 +1,5 @@
-from __future__ import annotations
-
-def repeated_pure_helper_call_on_same_input_without_local_cache_positive():
-    def slugify(text: str) -> str:
-        return "-".join(text.lower().split())
-    value = "Product Name"
-    items = []
-    for _ in range(3):
-        items.append(f"{slugify(value)}:{slugify(value)}")
-    return items
+def analyze_data(data):
+    # Violation: repeatedly calling a pure helper function on the same input without caching the result locally
+    if compute_expensive_metric(data) > 10:
+        print(f"High metric: {compute_expensive_metric(data)}")
+        return compute_expensive_metric(data)

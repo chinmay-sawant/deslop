@@ -1,10 +1,9 @@
 from __future__ import annotations
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pathlib import Path
+    from .models import User
 
-
-def string_forward_reference_in_annotation_not_under_type_checking_guard_negative(path: Path) -> str:
-    return path.as_posix()
+# Correct: use annotations and TYPE_CHECKING to handle forward references safely
+def set_owner(owner: User):
+    print(owner.name)

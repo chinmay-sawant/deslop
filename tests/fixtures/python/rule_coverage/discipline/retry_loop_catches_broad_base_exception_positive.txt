@@ -1,10 +1,12 @@
-from __future__ import annotations
+import time
 
-
-def retry_loop_catches_broad_base_exception_positive(fn) -> int:
-    for _ in range(3):
+def call_with_retry():
+    retries = 3
+    while retries > 0:
         try:
-            return fn()
+            return remote_call()
         except Exception:
-            continue
-    return -1
+            # Violation: retry loop catches broad Exception (may retry on logic errors or SystemExit)
+            retries -= 1
+            time.sleep(1)
+    raise RuntimeError("Failed after retries")

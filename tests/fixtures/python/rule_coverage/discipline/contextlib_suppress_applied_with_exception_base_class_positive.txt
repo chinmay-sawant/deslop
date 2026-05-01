@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from contextlib import suppress
 
-
-def remove_path(path_obj) -> None:
+def safe_delete(path):
+    # Violation: contextlib.suppress applied with Exception base class (swallows everything)
     with suppress(Exception):
-        path_obj.unlink()
+        os.remove(path)

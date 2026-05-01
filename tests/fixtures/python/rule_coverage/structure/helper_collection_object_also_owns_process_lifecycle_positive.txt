@@ -1,12 +1,10 @@
-from __future__ import annotations
+import sys
 
-
-class WorkerHelpers:
-    def normalize_name(self, text: str) -> str:
-        return text.strip().lower()
-
-    def start_worker(self) -> str:
-        return "worker-started"
-
-    def stop_worker(self) -> str:
-        return "worker-stopped"
+class ConfigurationParser:
+    # Violation: a low-level helper object seizing control of the entire application lifecycle (sys.exit)
+    def parse_file(self, filepath):
+        try:
+            return open(filepath).read()
+        except FileNotFoundError:
+            print("Config not found!")
+            sys.exit(1)

@@ -1,8 +1,9 @@
-from __future__ import annotations
-
+import pytest
+from freezegun import freeze_time
 from datetime import datetime
 
-
-def test_fixture_calls_datetime_now_without_freezing_negative() -> None:
-    frozen = datetime(2024, 1, 1, 12, 0, 0)
-    assert frozen.isoformat() == "2024-01-01T12:00:00"
+@pytest.fixture
+def current_time():
+    # Correct: use a library like freezegun to ensure deterministic time in tests
+    with freeze_time("2024-01-01"):
+        return datetime.now()

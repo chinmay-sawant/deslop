@@ -1,17 +1,12 @@
-from __future__ import annotations
+from unittest import TestCase
 
-import unittest
+class TestAuth(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.db = MockDB()
 
-
-class TestUsers(unittest.TestCase):
-    def setUp(self) -> None:
-        self.base_url = "https://service.local"
-
-
-class TestOrders(unittest.TestCase):
-    def setUp(self) -> None:
-        self.base_url = "https://service.local"
-
-
-def unittest_test_class_duplicates_setup_without_base_class_positive() -> int:
-    return len(TestUsers.__mro__) + len(TestOrders.__mro__)
+class TestBilling(TestCase):
+    # Violation: unittest test class duplicates setUp logic instead of using a shared base class
+    def setUp(self):
+        self.client = APIClient()
+        self.db = MockDB()

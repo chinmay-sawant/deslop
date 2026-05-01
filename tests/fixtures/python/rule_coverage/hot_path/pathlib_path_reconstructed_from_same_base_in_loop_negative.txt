@@ -1,8 +1,9 @@
-from __future__ import annotations
+from pathlib import Path
 
-def pathlib_path_reconstructed_from_same_base_in_loop_negative():
-    base = Path("/var/data/reports")
-    targets = []
-    for name in ["a.txt", "b.txt", "c.txt"]:
-        targets.append(base / name)
-    return targets
+def process_files(base_dir, filenames):
+    # Correct: construct the base Path object once outside the loop
+    base_path = Path(base_dir)
+    results = []
+    for filename in filenames:
+        results.append(str(base_path / filename))
+    return results

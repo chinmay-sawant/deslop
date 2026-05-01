@@ -1,7 +1,13 @@
-from __future__ import annotations
+import click
 
-CONFIG = {"timeout": 30}
+@click.group()
+@click.pass_context
+def cli(ctx):
+    # Correct: load config once in the parent group and pass via context
+    with open("config.yaml") as f:
+        ctx.obj = yaml.safe_load(f)
 
-
-def click_typer_config_file_loaded_per_command_negative() -> int:
-    return CONFIG["timeout"]
+@cli.command()
+@click.pass_obj
+def sync(config):
+    print(f"Syncing {config['endpoint']}")

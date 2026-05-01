@@ -1,6 +1,6 @@
-from __future__ import annotations
-
-
-class TokenParser:
-    def parse(self, email: str) -> str:
-        return f"sent:{email}"
+# Violation: naming a class one thing but giving it responsibilities that entirely belong to another domain
+class DataFetcher:
+    def fetch_data(self): pass
+    
+    def delete_all_database_records(self):
+        db.execute("DROP TABLE users")

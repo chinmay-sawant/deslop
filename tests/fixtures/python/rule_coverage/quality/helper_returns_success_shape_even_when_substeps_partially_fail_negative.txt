@@ -1,9 +1,13 @@
-from __future__ import annotations
-
-
-def helper_returns_success_shape_even_when_substeps_partially_fail_negative() -> dict[str, object]:
-    saved = False
-    indexed = True
-    if not (saved and indexed):
-        return {"ok": False, "error": "partial failure", "saved": saved, "indexed": indexed}
-    return {"ok": True, "saved": saved, "indexed": indexed}
+def sync_users(users):
+    failures = []
+    for u in users:
+        try:
+            update_db(u)
+        except Exception:
+            failures.append(u)
+    # Correct: the top-level success boolean must reflect the overall transactional health of the operation
+    return {
+        "success": len(failures) == 0, 
+        "count": len(users),
+        "failed_users": failures
+    }

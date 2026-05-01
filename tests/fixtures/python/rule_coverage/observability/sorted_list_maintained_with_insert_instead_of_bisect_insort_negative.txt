@@ -1,10 +1,5 @@
-from __future__ import annotations
-
 import bisect
 
-
-def sorted_list_maintained_with_insert_instead_of_bisect_insort_negative(values: list[int]) -> list[int]:
-    ordered: list[int] = []
-    for value in values:
-        bisect.insort(ordered, value)
-    return ordered
+def add_to_rankings(rankings_list, new_score):
+    # Correct: use bisect.insort to maintain order efficiently in O(N) time with O(log N) comparisons
+    bisect.insort(rankings_list, new_score)

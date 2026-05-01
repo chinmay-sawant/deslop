@@ -1,8 +1,7 @@
-from __future__ import annotations
-
-def membership_test_against_list_or_tuple_literal_inside_loop_positive():
-    vowels = 0
-    for ch in "performance":
-        if ch in ("a", "e", "i", "o", "u"):
-            vowels += 1
-    return vowels
+def filter_events(events):
+    valid_events = []
+    for event in events:
+        # Violation: membership test against a list or tuple literal inside a loop (rebuilds tuple, O(N) search)
+        if event.type in ("click", "scroll", "keypress", "focus"):
+            valid_events.append(event)
+    return valid_events

@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 import numpy as np
 
-
-def stack_rows(rows: list[np.ndarray]) -> np.ndarray:
-    matrix = np.empty((0, rows[0].shape[0]))
-    for row in rows:
-        matrix = np.vstack([matrix, row])
-    return matrix
+def stack_matrices(matrices):
+    result = matrices[0]
+    for mat in matrices[1:]:
+        # Violation: using np.vstack inside a loop causes quadratic memory copying
+        result = np.vstack([result, mat])
+    return result

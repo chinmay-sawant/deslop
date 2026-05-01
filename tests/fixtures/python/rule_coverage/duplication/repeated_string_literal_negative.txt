@@ -1,7 +1,8 @@
-from __future__ import annotations
+STATUS_PENDING = "PENDING_APPROVAL"
 
-STATE_ERROR = "state_error:"
-
-
-def repeated_string_literal_negative() -> str:
-    return STATE_ERROR + STATE_ERROR + STATE_ERROR
+def process_status(status):
+    # Correct: repeated literal is extracted into a constant
+    if status == STATUS_PENDING:
+        log(f"Status is {STATUS_PENDING}")
+        return f"Waiting for {STATUS_PENDING}"
+    return "Complete"

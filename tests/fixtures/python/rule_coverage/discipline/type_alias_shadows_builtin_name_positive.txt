@@ -1,7 +1,7 @@
-from __future__ import annotations
+from typing import Union, List
 
-list = tuple[int, int]
+# Violation: type alias shadows a builtin name ('List')
+List = Union[int, str]
 
-
-def type_alias_shadows_builtin_name_positive() -> list:
-    return (1, 2)
+def process(items: List):
+    pass

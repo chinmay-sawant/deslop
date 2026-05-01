@@ -1,5 +1,3 @@
-from __future__ import annotations
-
-
-def frozenset_not_used_for_constant_membership_set_rebuilt_per_call_positive(status: str) -> bool:
-    return status in {"queued", "running", "done"}
+def is_valid_status(status):
+    # Violation: allocating a new set object on the heap every single time the function is called
+    return status in {"active", "pending", "suspended"}

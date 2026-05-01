@@ -1,8 +1,10 @@
-from __future__ import annotations
+import json
+from flask import Flask, jsonify
 
-def flask_json_encoder_per_request_positive():
-    def handler():
-        encoder = json.JSONEncoder()
-        return encoder.encode({"ok": True, "source": "api"})
+app = Flask(__name__)
 
-    return handler
+@app.route("/data")
+def get_data():
+    # Violation: custom JSON encoder instantiated inside the request handler
+    encoder = MyCustomEncoder()
+    return Response(encoder.encode({"data": 1}), mimetype='application/json')

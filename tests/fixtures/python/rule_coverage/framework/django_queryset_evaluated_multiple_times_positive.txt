@@ -1,7 +1,8 @@
-from __future__ import annotations
+from .models import User
 
-def django_queryset_evaluated_multiple_times_positive():
-    queryset = Ticket.objects.filter(priority="high")
-    first_pass = list(queryset)
-    second_pass_ids = [ticket.id for ticket in queryset]
-    return len(first_pass), second_pass_ids
+def process_active_users():
+    qs = User.objects.filter(is_active=True)
+    # Violation: queryset evaluated multiple times (once for if, once for loop)
+    if qs:
+        for user in qs:
+            print(user.username)

@@ -1,13 +1,13 @@
-from __future__ import annotations
+# module: orders.py
+# Violation: feature modules circularly importing each other means they are actually one heavily coupled module
+from payments import process_payment
+
+def place_order():
+    process_payment()
 
 
-def load_checkout_total_positive() -> int:
-    from inventory import reserve_stock  # noqa: F401
+# module: payments.py
+from orders import update_order_status
 
-    return 1
-
-
-def load_inventory_status_positive() -> int:
-    from checkout import compute_total  # noqa: F401
-
-    return 1
+def process_payment():
+    update_order_status()

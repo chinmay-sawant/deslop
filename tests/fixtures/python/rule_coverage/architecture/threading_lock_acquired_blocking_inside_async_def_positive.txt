@@ -1,8 +1,11 @@
 import threading
 
-LOCK = threading.Lock()
+lock = threading.Lock()
 
-
-async def update_counter(counter: dict) -> None:
-    with LOCK:
-        counter["value"] += 1
+async def critical_section():
+    # Violation: acquiring a blocking threading.Lock inside an async function
+    lock.acquire()
+    try:
+        await perform_work()
+    finally:
+        lock.release()

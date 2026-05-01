@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-
-def read_message(path: str) -> str:
-    with open(path, "r", encoding="utf-8") as handle:
-        return handle.read()
+def save_text(filename, text):
+    # Correct: explicit encoding is specified
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(text)

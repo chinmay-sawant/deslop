@@ -1,20 +1,11 @@
-from __future__ import annotations
-
-
-class Database:
+class Logger:
     pass
 
-
-class Cache:
+class DatabaseConnection:
     pass
 
-
-class Mailer:
-    pass
-
-
-class CheckoutServicePositive:
-    def __init__(self) -> None:
-        self.db = Database()
-        self.cache = Cache()
-        self.mailer = Mailer()
+class OrderService:
+    # Violation: hardcoding and instantiating collaborators inside the constructor creates tight coupling
+    def __init__(self):
+        self.logger = Logger()
+        self.db = DatabaseConnection()

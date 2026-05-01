@@ -1,16 +1,4 @@
-from __future__ import annotations
-
-
-class VendorError(Exception):
-    pass
-
-
-def _vendor_parse(text: str) -> dict[str, str]:
-    raise VendorError(f"vendor failed for: {text}")
-
-
-def parse_document(text: str) -> dict[str, str]:
-    try:
-        return _vendor_parse(text)
-    except VendorError as exc:
-        raise ValueError("document parsing failed") from exc
+@app.errorhandler(500)
+def handle_internal_error(e):
+    # Correct: public API returns a sanitized error message
+    return {"error": "A database error occurred. Please try again later."}, 500

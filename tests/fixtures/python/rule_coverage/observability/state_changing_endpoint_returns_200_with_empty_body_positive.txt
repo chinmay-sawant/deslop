@@ -1,5 +1,9 @@
-from __future__ import annotations
+from fastapi import FastAPI, Response
 
+app = FastAPI()
 
-def state_changing_endpoint_returns_200_with_empty_body_positive() -> tuple[int, str]:
-    return 200, ""
+@app.post("/jobs/cleanup")
+def trigger_cleanup():
+    execute_cleanup()
+    # Violation: returning 200 OK with an empty body is poor HTTP semantic design
+    return Response(content="", status_code=200)

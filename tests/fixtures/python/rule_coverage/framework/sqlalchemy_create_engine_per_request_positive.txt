@@ -1,9 +1,8 @@
-from __future__ import annotations
+from sqlalchemy import create_engine
 
-def sqlalchemy_create_engine_per_request_positive():
-    def handler():
-        engine = create_engine("sqlite:///app.db")
-        with Session(engine) as session:
-            return session.query(Account).count()
-
-    return handler
+@app.get("/user/{id}")
+def get_user(id: int):
+    # Violation: creating a new SQLAlchemy engine instance per request (very high overhead)
+    engine = create_engine("postgresql://user:pass@localhost/db")
+    with engine.connect() as conn:
+        return conn.execute("SELECT ...").fetchone()

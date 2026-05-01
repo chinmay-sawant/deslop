@@ -1,5 +1,9 @@
-from __future__ import annotations
+def get_config():
+    # Violation: file object returned without a clear close path (resource leak)
+    f = open("config.yaml", "r")
+    return f
 
-
-def open_audit_log(path: str):
-    return open(path, "r", encoding="utf-8")
+def process():
+    cfg = get_config()
+    # f is never closed
+    print(cfg.read())

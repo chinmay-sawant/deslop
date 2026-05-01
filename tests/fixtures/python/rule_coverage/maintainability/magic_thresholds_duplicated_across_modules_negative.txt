@@ -1,9 +1,10 @@
-from __future__ import annotations
+# constants.py
+BATCH_FLUSH_THRESHOLD = 50
 
-WARNING_THRESHOLD = 70
-CRITICAL_THRESHOLD = 90
+# module_a.py
+from constants import BATCH_FLUSH_THRESHOLD
 
-def magic_thresholds_duplicated_across_modules_negative(score: int):
-    is_warning = score >= WARNING_THRESHOLD
-    is_critical = score >= CRITICAL_THRESHOLD
-    return is_warning, is_critical
+def process_batch(batch):
+    # Correct: use a centralized constant for shared thresholds
+    if len(batch) > BATCH_FLUSH_THRESHOLD:
+        flush(batch)

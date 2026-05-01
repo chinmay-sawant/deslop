@@ -1,9 +1,8 @@
-from __future__ import annotations
-
-
-def fallback_branch_swallows_invariant_violation_and_returns_plausible_default_positive(total: int, count: int) -> float:
-    try:
-        assert count > 0, "count must be positive"
-        return total / count
-    except AssertionError:
-        return 0.0
+def calculate_discount(user_status):
+    if user_status == "premium":
+        return 0.20
+    elif user_status == "basic":
+        return 0.05
+    else:
+        # Violation: returning a plausible default instead of failing loud hides critical system invariant violations
+        return 0.00

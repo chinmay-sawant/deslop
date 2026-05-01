@@ -1,7 +1,7 @@
-from __future__ import annotations
+# src/feature_a.py
+# Correct: import precisely what you need from highly cohesive, single-purpose packages
+from src.database.connection import DatabaseConnection
+from src.utils.formatting import format_string
 
-from common.strings import slugify
-
-
-def monolithic_common_package_becomes_transitive_dependency_for_most_modules_negative(user_id: str) -> str:
-    return slugify(user_id)
+def do_work():
+    return DatabaseConnection()

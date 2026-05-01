@@ -1,5 +1,4 @@
-from __future__ import annotations
-
-
-def test_compares_float_with_equality_operator_positive() -> None:
-    assert 0.1 + 0.2 == 0.3
+def test_calculation():
+    result = 1.0 / 3.0
+    # Violation: test compares float with equality operator (precision issues)
+    assert result == 0.3333333333333333

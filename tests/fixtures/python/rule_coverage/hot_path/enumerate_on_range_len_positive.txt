@@ -1,8 +1,5 @@
-from __future__ import annotations
-
-def enumerate_on_range_len_positive():
-    names = ["Ada", "Bob", "Cat"]
-    pairs = []
-    for i, _ in enumerate(range(len(names))):
-        pairs.append((i, names[i]))
-    return pairs
+def process_items(items):
+    # Violation: using range(len()) for indexing instead of enumerate or direct iteration
+    for i in range(len(items)):
+        item = items[i]
+        print(f"Item {i}: {item}")

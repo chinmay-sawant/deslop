@@ -1,13 +1,7 @@
-from __future__ import annotations
-
-
-def generator_close_exception_not_handled_when_cleanup_required_positive():
-    class Resource:
-        def close(self) -> None:
-            raise RuntimeError("close failed")
-
-    resource = Resource()
+def data_generator():
+    resource = acquire_resource()
     try:
-        yield "item"
+        yield "data"
     finally:
-        resource.close()
+        # Violation: exception during generator cleanup (close()) not handled
+        resource.release()

@@ -1,11 +1,12 @@
-from __future__ import annotations
-
-
-def type_branch_and_mode_branch_compounded_in_same_function_positive(value: int | str, mode: str) -> str:
-    if isinstance(value, int):
-        if mode == "hex":
-            return hex(value)
-        return str(value)
-    if mode == "upper":
-        return value.upper()
-    return value
+def handle_event(event_type, mode):
+    # Violation: type branch and mode branch compounded in the same function (high complexity)
+    if event_type == "upload":
+        if mode == "async":
+            process_async_upload()
+        else:
+            process_sync_upload()
+    elif event_type == "delete":
+        if mode == "async":
+            process_async_delete()
+        else:
+            process_sync_delete()

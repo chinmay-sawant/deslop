@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 from typing import Any
 
-
-def public_any_type_leak_positive(payload: dict[str, Any]) -> Any:
-    return payload["value"]
+# Violation: exposing Any in a public API contract completely subverts type checking for consumers
+def parse_generic_payload(payload: str) -> Any:
+    import json
+    return json.loads(payload)

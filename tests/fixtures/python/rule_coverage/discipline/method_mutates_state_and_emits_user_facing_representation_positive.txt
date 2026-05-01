@@ -1,14 +1,5 @@
-from __future__ import annotations
-
-
-class Counter:
-    def __init__(self) -> None:
-        self.value = 0
-
-    def increment_and_render(self) -> str:
-        self.value += 1
-        return f"Count is now {self.value}"
-
-
-def method_mutates_state_and_emits_user_facing_representation_positive() -> str:
-    return Counter().increment_and_render()
+class Status:
+    def mark_complete(self):
+        # Violation: method mutates state and emits a user-facing representation (violates CQS)
+        self.completed = True
+        return f"Task completed at {time.ctime()}"

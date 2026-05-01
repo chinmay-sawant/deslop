@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 import numpy as np
 
-
-def build_vector(values: list[float]) -> np.ndarray:
-    result = np.array([], dtype=float)
-    for value in values:
-        result = np.append(result, value)
-    return result
+def collect_data(stream):
+    arr = np.array([])
+    for value in stream:
+        # Violation: using np.append inside a loop forces a full array copy every iteration (O(N^2))
+        arr = np.append(arr, value)
+    return arr

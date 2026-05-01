@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 from typing import TypedDict
 
+class UserData(TypedDict, total=False):
+    username: str
+    age: int
 
-class User(TypedDict, total=False):
-    name: str
-
-
-def typed_dict_key_access_without_get_or_guard_positive(user: User) -> str:
-    return user["name"].upper()
+def get_age(data: UserData):
+    # Violation: typed dict key access without .get() or a guard, but key is optional (total=False)
+    return data["age"]

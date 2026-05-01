@@ -1,10 +1,7 @@
-from __future__ import annotations
-
 import asyncio
 
-
-async def async_lock_held_across_await_negative(lock: asyncio.Lock) -> None:
+async def fetch_and_update(state, lock):
+    # Correct: perform slow async network IO outside the lock, only locking for the fast state mutation
+    data = await fetch_remote_data()
     async with lock:
-        should_sleep = True
-    if should_sleep:
-        await asyncio.sleep(0.1)
+        state.update(data)

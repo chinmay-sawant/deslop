@@ -1,9 +1,12 @@
-from __future__ import annotations
+# Violation: using garbage-can names like 'Manager' or 'Helper' encourages monolithic, low-cohesion classes
+class UserManager:
+    def authenticate(self): pass
+    def send_welcome_email(self): pass
+    def compute_billing_tier(self): pass
+    def delete_db_record(self): pass
 
-
-class Utils:
-    def charge_card(self, cents: int) -> str:
-        return f"charged:{cents}"
-
-    def send_invoice(self, email: str) -> str:
-        return f"sent:{email}"
+class StringUtils:
+    @staticmethod
+    def parse_url(): pass
+    @staticmethod
+    def hash_password(): pass

@@ -1,11 +1,10 @@
-from __future__ import annotations
-
 import asyncio
 
+background_tasks = set()
 
-async def untracked_asyncio_task_negative() -> None:
-    async def send_metrics() -> None:
-        await asyncio.sleep(0.01)
-
-    task = asyncio.create_task(send_metrics())
-    await task
+async def handle_request():
+    # Correct: retain a strong reference to the task until it completes so the event loop doesn't kill it
+    task = asyncio.create_task(background_work())
+    background_tasks.add(task)
+    task.add_done_callback(background_tasks.discard)
+    return "Started"

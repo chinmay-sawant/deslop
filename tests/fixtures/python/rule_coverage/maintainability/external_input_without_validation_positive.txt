@@ -1,4 +1,3 @@
-from __future__ import annotations
-
-def external_input_without_validation_positive(user_filename: str):
-    return f"/srv/uploads/{user_filename}"
+def create_user(request_data):
+    # Violation: external input is used without any validation or sanitization
+    db.execute(f"INSERT INTO users (email, name) VALUES ('{request_data['email']}', '{request_data['name']}')")

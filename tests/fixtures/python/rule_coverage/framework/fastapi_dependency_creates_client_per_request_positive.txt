@@ -1,7 +1,10 @@
-from __future__ import annotations
+import httpx
+from fastapi import Depends
 
-def fastapi_dependency_creates_client_per_request_positive():
-    def get_client():
-        return httpx.Client(base_url="https://api.internal")
+# Violation: dependency creates a new HTTP client instance per request (inefficient connection pooling)
+def get_client():
+    return httpx.Client()
 
-    return get_client
+@app.get("/data")
+def read_data(client: httpx.Client = Depends(get_client)):
+    return client.get("https://api.example.com").json()

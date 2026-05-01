@@ -1,14 +1,5 @@
-from __future__ import annotations
+class NotFoundError(Exception):
+    # Correct: use distinct exception classes for different error identities
+    pass
 
-from enum import Enum
-
-
-class ErrorKind(Enum):
-    PERMISSION = "permission"
-    NOT_FOUND = "not_found"
-
-
-class AppError(Exception):
-    def __init__(self, kind: ErrorKind, message: str) -> None:
-        super().__init__(message)
-        self.kind = kind
+raise NotFoundError("User not found")

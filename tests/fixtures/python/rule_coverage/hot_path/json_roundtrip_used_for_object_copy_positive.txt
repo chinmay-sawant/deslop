@@ -1,6 +1,7 @@
-from __future__ import annotations
+import json
 
-def json_roundtrip_used_for_object_copy_positive():
-    data = {"service": "billing", "retries": 3}
-    cloned = json.loads(json.dumps(data))
-    return cloned
+def process_state(state):
+    # Violation: using a JSON roundtrip to deep copy an object (extremely slow string conversions)
+    state_copy = json.loads(json.dumps(state))
+    state_copy["processed"] = True
+    return state_copy

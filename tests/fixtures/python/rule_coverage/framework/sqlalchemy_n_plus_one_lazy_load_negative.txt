@@ -1,6 +1,7 @@
-from __future__ import annotations
+from sqlalchemy.orm import joinedload
+from .models import User
 
-def sqlalchemy_n_plus_one_lazy_load_negative():
-    with Session(engine) as session:
-        orders = session.query(Order).options(selectinload(Order.customer)).all()
-        return [order.customer.name for order in orders]
+def list_user_bios(session):
+    # Correct: use joinedload to fetch profiles in the initial query
+    for user in session.query(User).options(joinedload(User.profile)).all():
+        print(user.profile.bio)

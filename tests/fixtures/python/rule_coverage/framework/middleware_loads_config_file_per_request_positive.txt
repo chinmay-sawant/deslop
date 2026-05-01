@@ -1,9 +1,9 @@
-from __future__ import annotations
+import json
 
-def middleware_loads_config_file_per_request_positive():
-    def middleware(request):
-        with open("/etc/service/rules.json", "r", encoding="utf-8") as fh:
-            rules = json.load(fh)
-        return rules.get("enabled", False)
-
-    return middleware
+class ConfigMiddleware:
+    def process_request(self, request):
+        # Violation: loading a configuration file from disk inside a middleware (slows every request)
+        with open("middleware_config.json") as f:
+            config = json.load(f)
+        if config["maintenance_mode"]:
+            return HttpResponse(status=503)

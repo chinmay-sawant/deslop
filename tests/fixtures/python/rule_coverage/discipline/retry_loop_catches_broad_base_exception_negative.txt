@@ -1,10 +1,13 @@
-from __future__ import annotations
+import time
+import requests
 
-
-def retry_loop_catches_broad_base_exception_negative(fn) -> int:
-    for _ in range(3):
+def call_with_retry():
+    retries = 3
+    while retries > 0:
         try:
-            return fn()
-        except TimeoutError:
-            continue
-    raise TimeoutError("all retries failed")
+            return remote_call()
+        except requests.exceptions.RequestException:
+            # Correct: catch only specific exceptions that are suitable for retrying
+            retries -= 1
+            time.sleep(1)
+    raise RuntimeError("Failed after retries")

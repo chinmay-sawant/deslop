@@ -1,7 +1,8 @@
-from __future__ import annotations
-
-
-def build_contacts() -> tuple[list[str], list[str]]:
-    names = ["Ana", "Bo"]
-    phones = ["111", "222"]
-    return names, phones
+def process_records():
+    # Violation: using parallel lists to store properties of the same entities (brittle and prone to desync)
+    names = ["Alice", "Bob"]
+    ages = [25, 30]
+    roles = ["admin", "user"]
+    
+    for i in range(len(names)):
+        print(f"{names[i]} ({ages[i]}): {roles[i]}")

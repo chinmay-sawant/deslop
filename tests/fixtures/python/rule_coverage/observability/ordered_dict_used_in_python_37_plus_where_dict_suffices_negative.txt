@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-
-def ordered_dict_used_in_python_37_plus_where_dict_suffices_negative(keys: list[str]) -> dict[str, int]:
-    out: dict[str, int] = {}
-    for index, key in enumerate(keys):
-        out[key] = index
-    return out
+def create_payload():
+    # Correct: standard dictionaries in Python 3.7+ guarantee insertion order preservation by default
+    payload = {}
+    payload["first"] = 1
+    payload["second"] = 2
+    return payload

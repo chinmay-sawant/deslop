@@ -1,8 +1,5 @@
-from __future__ import annotations
-
-def in_check_on_list_literal_negative():
-    allowed = {200, 201, 202}
-    code = 404
-    if code in allowed:
-        return "ok"
-    return "not-ok"
+def check_value(val):
+    # Correct: use a set literal for O(1) membership testing
+    if val in {"admin", "root", "superuser"}:
+        return True
+    return False

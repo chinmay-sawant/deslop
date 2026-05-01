@@ -1,5 +1,3 @@
-from __future__ import annotations
-
-
-def sorted_full_collection_to_extract_top_n_elements_positive(scores: list[int], n: int) -> list[int]:
-    return sorted(scores, reverse=True)[:n]
+def get_top_scores(scores):
+    # Violation: sorting an entire collection (O(N log N)) just to extract the top K elements
+    return sorted(scores, reverse=True)[:5]

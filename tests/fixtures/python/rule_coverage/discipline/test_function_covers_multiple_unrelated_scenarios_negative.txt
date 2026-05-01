@@ -1,16 +1,10 @@
-from __future__ import annotations
+def test_create_user():
+    user = create_user("alice")
+    assert user.name == "alice"
 
-import pytest
-
-
-def _parse(raw: str) -> int:
-    return int(raw)
-
-
-def test_parses_valid_integer() -> None:
-    assert _parse("1") == 1
-
-
-def test_function_covers_multiple_unrelated_scenarios_negative() -> None:
-    with pytest.raises(ValueError):
-        _parse("x")
+def test_update_user():
+    # Correct: separate tests for distinct scenarios
+    user = create_user("bob")
+    user.email = "bob@example.com"
+    update_user(user)
+    assert get_user(user.id).email == "bob@example.com"

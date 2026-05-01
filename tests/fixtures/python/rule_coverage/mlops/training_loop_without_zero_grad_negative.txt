@@ -1,11 +1,9 @@
-from __future__ import annotations
+import torch
 
-from typing import Any
-
-
-def train_one_epoch(model: Any, optimizer: Any, batches: list[Any]) -> None:
-    for batch in batches:
-        optimizer.zero_grad()
-        loss = model(batch)
-        loss.backward()
-        optimizer.step()
+def train_step(model, inputs, targets, optimizer, criterion):
+    # Correct: always clear old gradients before performing a backward pass
+    optimizer.zero_grad()
+    outputs = model(inputs)
+    loss = criterion(outputs, targets)
+    loss.backward()
+    optimizer.step()

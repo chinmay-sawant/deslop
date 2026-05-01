@@ -1,23 +1,13 @@
-from __future__ import annotations
-
-from typing import overload
-
+from typing import overload, Union
 
 @overload
-def _parse(value: int) -> int:
-    ...
-
+def process(val: int) -> int: ...
 
 @overload
-def _parse(value: str) -> int:
-    ...
+def process(val: str) -> str: ...
 
-
-def _parse(value: int | str) -> int:
-    if isinstance(value, int):
-        return value
-    return int(value)
-
-
-def overloaded_dispatch_without_typing_overload_decorator_negative(value: int | str) -> int:
-    return _parse(value)
+def process(val: Union[int, str]):
+    # Correct: use @overload to provide better type checking for dispatch
+    if isinstance(val, int):
+        return val * 2
+    return val.upper()

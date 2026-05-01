@@ -1,5 +1,10 @@
-from __future__ import annotations
+# my_package/__init__.py
+# Correct: keep __init__.py empty or use it strictly for explicit public API exports
+from .app import MainApplication
+from .utils import utility_function
 
-from orders import parse_order
+__all__ = ["MainApplication", "utility_function"]
 
-__all__ = ["parse_order"]
+# my_package/app.py
+class MainApplication:
+    def start(self): pass

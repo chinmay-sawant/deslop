@@ -1,11 +1,7 @@
-from __future__ import annotations
-
+# library_core.py
 import click
+import requests
 
-
-def cli_only_dependency_imported_by_library_entry_module_positive() -> click.Command:
-    @click.command()
-    def main() -> None:
-        pass
-
-    return main
+# Violation: a core library module imports CLI-specific dependencies, bloating the dependency tree for API-only users
+def execute_request():
+    pass

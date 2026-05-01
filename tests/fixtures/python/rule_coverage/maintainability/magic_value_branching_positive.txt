@@ -1,10 +1,8 @@
-from __future__ import annotations
-
-def magic_value_branching_positive(code: str):
-    if code == "A":
-        return "approved"
-    if code == "R":
-        return "rejected"
-    if code == "H":
-        return "on_hold"
-    return "unknown"
+def process_payment(status_code):
+    # Violation: branching on undocumented magic integers or strings
+    if status_code == 1:
+        complete_payment()
+    elif status_code == 2:
+        refund_payment()
+    elif status_code == 3:
+        fail_payment()

@@ -1,15 +1,8 @@
-from __future__ import annotations
+import openai
+from functools import lru_cache
 
-
-class Client:
-    def complete(self, prompt: str) -> str:
-        return prompt[::-1]
-
-
-_CACHE: dict[str, str] = {}
-
-
-def get_response(prompt: str, client: Client) -> str:
-    if prompt not in _CACHE:
-        _CACHE[prompt] = client.complete(prompt)
-    return _CACHE[prompt]
+# Correct: use an LRU cache (or disk cache like langchain.cache) to save duplicate LLM queries
+@lru_cache(maxsize=1000)
+def get_answer(question):
+    resp = openai.Completion.create(model="gpt-3.5-turbo", prompt=question)
+    return resp.choices[0].text

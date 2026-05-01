@@ -1,8 +1,7 @@
-from __future__ import annotations
-
-def read_then_splitlines_negative():
-    rows = []
-    with open("events.log", "r", encoding="utf-8") as fh:
-        for line in fh:
-            rows.append(line.rstrip("\n"))
-    return rows
+def parse_log(filepath):
+    # Correct: iterate directly over the file object to yield lines one by one efficiently
+    with open(filepath, "r") as f:
+        for line in f:
+            if "ERROR" in line:
+                # Need to strip the trailing newline to match splitlines() behavior
+                print(line.rstrip("\n"))

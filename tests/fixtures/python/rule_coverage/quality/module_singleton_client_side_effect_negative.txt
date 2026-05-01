@@ -1,20 +1,11 @@
-from __future__ import annotations
+import redis
 
+redis_client = None
 
-class ApiClient:
-    def __init__(self) -> None:
-        self.connected = False
+def init_redis():
+    # Correct: encapsulate client connections in an explicit init function to handle retries and lifecycles
+    global redis_client
+    redis_client = redis.Redis(host='localhost', port=6379, db=0)
 
-    def connect(self) -> None:
-        self.connected = True
-
-
-_client: ApiClient | None = None
-
-
-def module_singleton_client_side_effect_negative() -> ApiClient:
-    global _client
-    if _client is None:
-        _client = ApiClient()
-        _client.connect()
-    return _client
+def set_value(k, v):
+    redis_client.set(k, v)

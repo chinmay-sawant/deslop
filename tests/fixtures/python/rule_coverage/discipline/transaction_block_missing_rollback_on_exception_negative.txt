@@ -1,25 +1,9 @@
-from __future__ import annotations
-
-
-class Tx:
-    def __init__(self) -> None:
-        self.state = "idle"
-
-    def begin(self) -> None:
-        self.state = "open"
-
-    def commit(self) -> None:
-        self.state = "committed"
-
-    def rollback(self) -> None:
-        self.state = "rolled_back"
-
-
-def transaction_block_missing_rollback_on_exception_negative() -> str:
-    tx = Tx()
-    tx.begin()
+def save_user(user):
+    # Correct: ensure transaction is rolled back on any error
+    db.begin()
     try:
-        raise RuntimeError("boom")
-    except RuntimeError:
-        tx.rollback()
-    return tx.state
+        db.insert(user)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise

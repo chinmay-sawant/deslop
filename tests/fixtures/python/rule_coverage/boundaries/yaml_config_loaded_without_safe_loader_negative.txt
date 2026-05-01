@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import yaml
 
-
-def read_config(text: str) -> dict[str, object]:
-    return yaml.safe_load(text)
+def load_config(config_stream):
+    # Correct: use safe_load to prevent execution of arbitrary code in YAML
+    return yaml.safe_load(config_stream)

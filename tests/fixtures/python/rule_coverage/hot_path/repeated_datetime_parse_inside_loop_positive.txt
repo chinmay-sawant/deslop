@@ -1,9 +1,9 @@
-from __future__ import annotations
+from datetime import datetime
 
-def repeated_datetime_parse_inside_loop_positive():
-    raw = "2026-04-01 10:30:00"
-    results = []
-    for _ in range(3):
-        from datetime import datetime
-        results.append(datetime.strptime(raw, "%Y-%m-%d %H:%M:%S"))
-    return results
+def parse_events(events):
+    parsed = []
+    for event in events:
+        # Violation: repeated datetime parsing inside a loop using the slow strptime
+        dt = datetime.strptime(event["timestamp"], "%Y-%m-%d %H:%M:%S")
+        parsed.append((dt, event["data"]))
+    return parsed

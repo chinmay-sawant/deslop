@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import yaml
 
-
-def read_config(text: str) -> dict[str, object]:
-    return yaml.load(text, Loader=yaml.Loader)
+def load_config(config_stream):
+    # Violation: YAML config loaded without SafeLoader (RCE risk)
+    return yaml.load(config_stream)

@@ -1,10 +1,8 @@
-from __future__ import annotations
-
-
-def function_body_contains_setup_validation_execution_and_formatting_all_at_once_positive(raw: str) -> str:
-    config = {"prefix": "ID"}
-    if not raw:
-        raise ValueError("raw is required")
-    cleaned = raw.strip().upper()
-    result = f"{config['prefix']}-{cleaned}"
-    return f"[{result}]"
+def handle_request(req):
+    # Violation: function body contains setup, validation, execution, and formatting all at once
+    db_conn = connect_db()
+    if not req.user_id:
+        return "Invalid", 400
+    user = db_conn.query(f"SELECT * FROM users WHERE id={req.user_id}")
+    result = {"name": user.name.upper(), "email": user.email.lower()}
+    return f"User: {result['name']} <{result['email']}>"

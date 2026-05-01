@@ -1,9 +1,7 @@
-from __future__ import annotations
-
-
-def oserror_caught_without_errno_inspection_positive(path: str) -> str:
+def read_config(path):
     try:
-        with open(path, "r", encoding="utf-8") as handle:
-            return handle.read()
+        with open(path) as f:
+            return f.read()
     except OSError:
-        return "failed"
+        # Violation: OSError caught without inspecting errno (may swallow unrelated issues)
+        return "{}"

@@ -1,15 +1,17 @@
-from __future__ import annotations
-
-
-def _parse_number(raw: str) -> int:
-    return int(raw)
-
-
-def loop_interleaves_core_work_logging_and_recovery_logic_negative(values: list[str]) -> int:
-    total = 0
-    for raw in values:
+def process_items(items):
+    for item in items:
+        # Correct: core work is isolated, loop handles high-level orchestration/errors
         try:
-            total += _parse_number(raw)
-        except ValueError:
-            continue
-    return total
+            process_single_item(item)
+        except Exception:
+            handle_item_failure(item)
+
+def process_single_item(item):
+    logging.info(f"Processing {item.id}")
+    result = item.execute()
+    db.save(result)
+
+def handle_item_failure(item):
+    logging.error(f"Failed {item.id}")
+    db.rollback()
+    recovery_queue.put(item)

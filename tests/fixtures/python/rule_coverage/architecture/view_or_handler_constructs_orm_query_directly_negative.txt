@@ -1,2 +1,5 @@
-def list_orders_view(request: dict, order_repository) -> list:
-    return order_repository.list_by_account(request["account_id"])
+@app.get("/users/{id}")
+def get_user(id: int, repo: UserRepository = Depends()):
+    # Correct: view delegates query construction to a repository
+    user = repo.find_by_id(id)
+    return user

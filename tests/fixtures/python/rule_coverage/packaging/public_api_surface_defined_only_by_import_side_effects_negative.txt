@@ -1,9 +1,9 @@
-def reader() -> str:
-    return "reader"
+# main.py
+from app.plugins import initialize_plugins
+from app.config import configure_logging
 
-
-def writer() -> str:
-    return "writer"
-
-
-__all__ = ["reader", "writer"]
+# Correct: use explicit initialization functions to define application state
+def start():
+    configure_logging()
+    initialize_plugins()
+    print("Running...")

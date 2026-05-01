@@ -1,5 +1,6 @@
-from __future__ import annotations
+from .models import User
 
-def django_values_vs_full_model_in_loop_negative():
-    rows = Product.objects.filter(is_live=True).values("id", "name")
-    return list(rows)
+def list_usernames():
+    # Correct: use .values_list() to fetch only the required fields as primitives
+    for username in User.objects.values_list('username', flat=True):
+        print(username)

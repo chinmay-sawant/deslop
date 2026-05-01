@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import time
 
-
-def test_calls_time_sleep_for_coordination_positive() -> None:
-    time.sleep(0.05)
-    assert True
+def test_async_task():
+    task.start()
+    # Violation: test calls time.sleep() for coordination (fragile and slow)
+    time.sleep(2)
+    assert task.is_done()

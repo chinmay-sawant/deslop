@@ -1,9 +1,5 @@
-from __future__ import annotations
-
-
-def list_pop_zero_used_as_queue_operation_positive(items: list[str]) -> list[str]:
-    queue = list(items)
-    drained: list[str] = []
-    while queue:
-        drained.append(queue.pop(0))
-    return drained
+def process_queue(items):
+    while items:
+        # Violation: list.pop(0) is an O(N) operation because it shifts all remaining elements
+        item = items.pop(0)
+        do_work(item)

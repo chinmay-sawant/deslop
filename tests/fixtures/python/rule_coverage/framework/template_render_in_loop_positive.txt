@@ -1,7 +1,8 @@
-from __future__ import annotations
+from flask import render_template_string
 
-def template_render_in_loop_positive():
-    parts = []
-    for order in orders:
-        parts.append(render_template("order_row.html", order=order))
-    return "".join(parts)
+def generate_report(items):
+    html = ""
+    for item in items:
+        # Violation: rendering templates in a loop instead of passing the full list to a single template
+        html += render_template_string("<p>{{ name }}</p>", name=item.name)
+    return html

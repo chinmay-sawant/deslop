@@ -1,13 +1,9 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
-
 @dataclass
-class DataclassHeavyPostInitPositive:
-    config_path: str
-    raw: str = ""
-
-    def __post_init__(self) -> None:
-        with open(self.config_path, "r", encoding="utf-8") as handle:
-            self.raw = handle.read()
+class ServiceClient:
+    api_key: str
+    
+    def __post_init__(self):
+        # Violation: performing heavy network IO or db connections inside a dataclass init blocks instantiation
+        self.connection = establish_network_connection(self.api_key)

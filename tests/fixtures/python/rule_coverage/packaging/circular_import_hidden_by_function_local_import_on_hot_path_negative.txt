@@ -1,7 +1,5 @@
-from __future__ import annotations
+# Correct: refactor the module structure to break the circular dependency, allowing normal top-level imports
+from .core_algorithms import calculate_score
 
-from mypkg.interfaces import serialize_event
-
-
-def circular_import_hidden_by_function_local_import_on_hot_path_negative() -> str:
-    return serialize_event("event")
+def compute_hot_loop_metric(data):
+    return calculate_score(data)

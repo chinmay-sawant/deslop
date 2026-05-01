@@ -1,5 +1,4 @@
-from __future__ import annotations
-
-
-def chain_of_boolean_or_conditions_over_same_value_not_using_in_operator_positive(level: str) -> bool:
-    return level == "debug" or level == "info" or level == "warning"
+def process_event(event_type):
+    # Violation: chaining boolean equality checks on the same variable is verbose and error-prone
+    if event_type == "login" or event_type == "logout" or event_type == "signup":
+        handle_auth_event(event_type)

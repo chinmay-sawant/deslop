@@ -1,5 +1,8 @@
-from __future__ import annotations
+cache = {}
 
-
-def cache_key_derived_from_stringified_mutable_object_positive(filters: dict[str, object]) -> str:
-    return str(filters)
+def get_computed_value(config_dict):
+    # Violation: using str() on a mutable dict creates non-deterministic cache keys and terrible performance
+    cache_key = str(config_dict)
+    if cache_key not in cache:
+        cache[cache_key] = expensive_computation(config_dict)
+    return cache[cache_key]

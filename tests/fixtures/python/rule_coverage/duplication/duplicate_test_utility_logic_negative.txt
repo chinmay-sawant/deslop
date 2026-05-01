@@ -1,9 +1,10 @@
-from __future__ import annotations
+# tests/utils.py
+def create_mock_user(name):
+    return {"id": random.randint(1, 100), "name": name, "roles": []}
 
+# test_auth.py
+from tests.utils import create_mock_user
 
-def _normalize_user(name: str) -> str:
-    return name.strip().lower()
-
-
-def duplicate_test_utility_logic_negative(name: str) -> str:
-    return _normalize_user(name)
+# test_billing.py
+# Correct: test utility logic is centralized in a shared module
+from tests.utils import create_mock_user

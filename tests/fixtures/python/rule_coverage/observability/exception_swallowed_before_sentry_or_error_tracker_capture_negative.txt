@@ -1,14 +1,11 @@
-from __future__ import annotations
+import logging
+import sentry_sdk
 
-
-def capture_exception(exc: Exception) -> None:
-    _ = str(exc)
-
-
-def exception_swallowed_before_sentry_or_error_tracker_capture_negative(record: dict[str, str]) -> bool:
+def process_user(user_data):
     try:
-        int(record["attempt"])
-    except Exception as exc:
-        capture_exception(exc)
+        db.save(user_data)
+    except Exception as e:
+        # Correct: explicitly send the captured exception to your error monitoring service
+        logging.error(f"Save failed: {e}")
+        sentry_sdk.capture_exception(e)
         return False
-    return True

@@ -1,11 +1,11 @@
-from __future__ import annotations
+import httpx
+import typer
 
+app = typer.Typer()
 
-class HttpClient:
-    def get(self, route: str) -> str:
-        return f"GET {route}"
-
-
-def click_typer_http_client_created_per_command_positive() -> str:
-    client = HttpClient()
-    return client.get("/health")
+@app.command()
+def check_status():
+    # Violation: HTTP client created per command invocation
+    with httpx.Client() as client:
+        resp = client.get("https://api.myapp.com/status")
+        print(resp.json())

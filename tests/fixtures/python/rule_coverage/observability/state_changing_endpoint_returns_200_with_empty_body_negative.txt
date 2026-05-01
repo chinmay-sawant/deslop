@@ -1,5 +1,9 @@
-from __future__ import annotations
+from fastapi import FastAPI, Response
 
+app = FastAPI()
 
-def state_changing_endpoint_returns_200_with_empty_body_negative() -> tuple[int, dict[str, str]]:
-    return 200, {"status": "updated"}
+@app.post("/jobs/cleanup")
+def trigger_cleanup():
+    execute_cleanup()
+    # Correct: always return 204 No Content for successful operations that return no data
+    return Response(status_code=204)

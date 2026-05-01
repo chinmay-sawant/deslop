@@ -1,7 +1,4 @@
-from importlib.metadata import version
+# my_package/__init__.py
 
-PACKAGE_NAME = "example-package"
-
-
-def get_version() -> str:
-    return version(PACKAGE_NAME)
+# Correct: hardcode the version string and use CI/CD tools (like bump2version or hatch) to manage it
+__version__ = "1.2.3"

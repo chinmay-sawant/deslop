@@ -1,15 +1,19 @@
-from __future__ import annotations
-
+# core/interfaces.py
 from abc import ABC, abstractmethod
 
-
-class Storage(ABC):
+# Correct: define abstract contracts in lightweight, dependency-free modules
+class IStorageService(ABC):
     @abstractmethod
-    def save(self, item: str) -> None:
-        raise NotImplementedError
+    def save(self, data): pass
 
+# infrastructure/aws.py
+import boto3
+from core.interfaces import IStorageService
 
-def abstract_contracts_and_heavy_concrete_implementations_live_in_same_file_negative(
-    storage: Storage, item: str
-) -> None:
-    storage.save(item)
+# Correct: place heavy concrete implementations in their own isolated modules
+class AWSStorageService(IStorageService):
+    def __init__(self):
+        self.s3 = boto3.client('s3')
+        
+    def save(self, data):
+        self.s3.put_object(Bucket="my-bucket", Key="data", Body=data)

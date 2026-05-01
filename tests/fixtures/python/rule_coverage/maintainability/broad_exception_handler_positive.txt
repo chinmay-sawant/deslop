@@ -1,7 +1,7 @@
-from __future__ import annotations
-
-def broad_exception_handler_positive(raw: str):
+def fetch_data():
     try:
-        return int(raw)
-    except Exception:
-        return 0
+        return make_network_request()
+    # Violation: using a broad exception handler masks unexpected bugs and system exits
+    except Exception as e:
+        print(f"Failed: {e}")
+        return None

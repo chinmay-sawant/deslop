@@ -1,5 +1,4 @@
-from __future__ import annotations
-
-def enumerate_on_range_len_negative():
-    names = ["Ada", "Bob", "Cat"]
-    return [(i, name) for i, name in enumerate(names)]
+def process_items(items):
+    # Correct: use enumerate to get both the index and the item efficiently
+    for i, item in enumerate(items):
+        print(f"Item {i}: {item}")

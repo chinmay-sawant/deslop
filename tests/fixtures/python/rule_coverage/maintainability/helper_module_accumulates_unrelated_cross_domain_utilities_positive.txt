@@ -1,6 +1,11 @@
-from __future__ import annotations
+# utils.py
+import datetime
+import boto3
 
-def helper_module_accumulates_unrelated_cross_domain_utilities_positive(email: str, amount: float):
-    local, domain = email.split("@", 1)
-    invoice_total = round(amount * 1.2, 2)
-    return {"email_domain": domain, "invoice_total": invoice_total, "name": local}
+# Violation: a single helper module accumulating unrelated, cross-domain utilities
+def format_timestamp(ts):
+    return datetime.datetime.fromtimestamp(ts).isoformat()
+
+def upload_to_s3(filepath, bucket):
+    s3 = boto3.client('s3')
+    s3.upload_file(filepath, bucket, filepath)

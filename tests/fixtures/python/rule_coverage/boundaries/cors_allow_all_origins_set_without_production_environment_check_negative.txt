@@ -1,6 +1,8 @@
-def cors_config(environment: str) -> dict:
-    if environment == "production":
-        origins = ["https://app.example.com"]
-    else:
-        origins = ["*"]
-    return {"allow_origins": origins, "allow_methods": ["GET", "POST"]}
+import os
+
+def create_app():
+    app = Flask(__name__)
+    # Correct: "*" origin only allowed in non-production environments
+    origins = "*" if os.getenv("ENV") != "production" else "https://api.myapp.com"
+    CORS(app, origins=origins)
+    return app

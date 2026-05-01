@@ -1,5 +1,5 @@
-from __future__ import annotations
+from .models import User
 
-def django_update_single_in_loop_negative():
-    event_ids = [101, 102, 103]
-    Event.objects.filter(id__in=event_ids).update(processed=True)
+def mark_verified(user_ids):
+    # Correct: update all records in a single database query
+    User.objects.filter(id__in=user_ids).update(verified=True)

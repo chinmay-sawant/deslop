@@ -1,14 +1,6 @@
-from __future__ import annotations
+from typing import List
 
-from typing import Generic, TypeVar
-
-T = TypeVar("T")
-
-
-class Box(Generic[T]):
-    def __init__(self, value: T) -> None:
-        self.value = value
-
-
-def generic_class_used_without_type_parameter_application_negative() -> Box[int]:
-    return Box[int](3)
+# Correct: generic class specifies the internal type
+def process_items(items: List[str]):
+    for item in items:
+        print(item)

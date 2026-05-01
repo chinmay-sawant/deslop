@@ -1,7 +1,6 @@
-from __future__ import annotations
-
-
-def exception_raised_and_caught_for_control_flow_within_same_function_negative(value: str) -> int:
-    if not value.isdigit():
-        raise ValueError("value must contain only digits")
-    return int(value)
+def find_item(items, target):
+    # Correct: use a simple boolean flag or early return for control flow
+    for item in items:
+        if item == target:
+            return True
+    return False

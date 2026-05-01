@@ -1,7 +1,12 @@
-from __future__ import annotations
+from datetime import datetime
 
-def repeated_datetime_parse_inside_loop_negative():
-    from datetime import datetime
-    raw = "2026-04-01 10:30:00"
-    parsed = datetime.strptime(raw, "%Y-%m-%d %H:%M:%S")
-    return [parsed for _ in range(3)]
+def parse_events(events):
+    parsed = []
+    # Correct: cache parsed dates if many duplicate timestamps are expected, or use faster parsing libraries (like ciso8601)
+    date_cache = {}
+    for event in events:
+        ts = event["timestamp"]
+        if ts not in date_cache:
+            date_cache[ts] = datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+        parsed.append((date_cache[ts], event["data"]))
+    return parsed

@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import numpy as np
 
-
-def batch_mean(vector: np.ndarray) -> float:
-    return float(vector.mean())
+def calculate_sum(arr):
+    # Correct: use built-in numpy reduction functions to avoid memory serialization overhead
+    return np.sum(arr)

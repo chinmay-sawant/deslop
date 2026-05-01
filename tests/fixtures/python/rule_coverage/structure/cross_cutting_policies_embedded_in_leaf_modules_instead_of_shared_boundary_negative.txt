@@ -1,16 +1,5 @@
-from __future__ import annotations
-
-
-class Policy:
-    def can_send_email(self, role: str) -> bool:
-        return role == "admin"
-
-
-class InvoiceEmailSender:
-    def __init__(self, policy: Policy) -> None:
-        self.policy = policy
-
-    def send(self, role: str, body: str) -> str:
-        if not self.policy.can_send_email(role):
-            raise PermissionError("admin only")
-        return f"sent:{body}"
+# Correct: enforce cross-cutting policies at the architectural boundary (middleware/decorators), keeping business logic pure
+@require_authorization
+@rate_limit(requests=100)
+def get_user_profile(user_id):
+    return db.query("SELECT * FROM users WHERE id = ?", user_id)

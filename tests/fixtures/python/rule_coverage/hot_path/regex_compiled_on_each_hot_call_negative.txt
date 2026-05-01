@@ -1,4 +1,7 @@
-from __future__ import annotations
+import re
 
-def regex_compiled_on_each_hot_call_negative():
-    return WHITESPACE_RE.sub(" ", "a    b").strip()
+# Correct: explicitly compile the regex once and reuse the compiled object's match method
+EMAIL_RE = re.compile(r"[^@]+@[^@]+\.[^@]+")
+
+def is_valid_email(email):
+    return bool(EMAIL_RE.match(email))

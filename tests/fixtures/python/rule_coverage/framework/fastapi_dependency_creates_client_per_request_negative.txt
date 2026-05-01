@@ -1,9 +1,13 @@
-from __future__ import annotations
+import httpx
+from fastapi import FastAPI
 
-def fastapi_dependency_creates_client_per_request_negative():
-    shared_client = httpx.Client(base_url="https://api.internal")
+app = FastAPI()
+# Correct: create a singleton client instance and reuse it
+client = httpx.Client()
 
-    def get_client():
-        return shared_client
+def get_client():
+    return client
 
-    return get_client
+@app.get("/data")
+def read_data():
+    return client.get("https://api.example.com").json()

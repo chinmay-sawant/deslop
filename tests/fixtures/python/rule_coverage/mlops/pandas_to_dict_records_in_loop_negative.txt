@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def duplicate_records(df: pd.DataFrame, copies: int) -> list[list[dict[str, object]]]:
-    records = df.to_dict("records")
-    return [records for _ in range(copies)]
+def stream_dataframe(df):
+    # Correct: convert the DataFrame to a dictionary once outside the loop
+    records = df.to_dict('records')
+    for i in range(10):
+        process_records(records, i)

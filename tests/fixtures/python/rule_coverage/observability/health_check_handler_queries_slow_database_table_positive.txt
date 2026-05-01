@@ -1,10 +1,4 @@
-from __future__ import annotations
-
-
-class Db:
-    def query(self, sql: str) -> str:
-        return sql
-
-
-def health_check_handler_queries_slow_database_table_positive(db: Db) -> str:
-    return db.query("SELECT COUNT(*) FROM events")
+def health_check():
+    # Violation: querying a massive, slow application table as a health check will cause load balancer timeouts during traffic spikes
+    count = db.execute("SELECT COUNT(*) FROM massive_user_table")
+    return {"status": "ok", "users": count}

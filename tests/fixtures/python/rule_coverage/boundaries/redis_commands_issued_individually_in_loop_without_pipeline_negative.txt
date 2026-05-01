@@ -1,8 +1,10 @@
-from __future__ import annotations
+import redis
 
+r = redis.Redis()
 
-def cache_metrics(client, metrics: dict[str, int]) -> None:
-    pipe = client.pipeline()
-    for key, value in metrics.items():
-        pipe.set(key, value)
-    pipe.execute()
+def save_items(items):
+    # Correct: use a pipeline to batch redis commands for better performance
+    with r.pipeline() as pipe:
+        for key, value in items.items():
+            pipe.set(key, value)
+        pipe.execute()

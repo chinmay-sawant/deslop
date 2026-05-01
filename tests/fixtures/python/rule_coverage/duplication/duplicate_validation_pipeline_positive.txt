@@ -1,9 +1,10 @@
-from __future__ import annotations
+def create_user(data):
+    # Violation: duplicate validation pipeline repeated
+    if not data.get("username"): raise ValueError("Missing username")
+    if len(data["username"]) < 3: raise ValueError("Username too short")
+    db.save_user(data)
 
-
-def _validate_email_one(email: str) -> bool:
-    return "@" in email and "." in email and len(email) >= 5
-
-
-def duplicate_validation_pipeline_positive(email: str) -> bool:
-    return "@" in email and "." in email and len(email) >= 5
+def update_user(data):
+    if not data.get("username"): raise ValueError("Missing username")
+    if len(data["username"]) < 3: raise ValueError("Username too short")
+    db.update_user(data)

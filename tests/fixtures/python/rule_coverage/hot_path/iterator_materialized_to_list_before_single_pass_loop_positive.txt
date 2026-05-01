@@ -1,8 +1,9 @@
-from __future__ import annotations
+def generate_data():
+    yield 1
+    yield 2
+    yield 3
 
-def iterator_materialized_to_list_before_single_pass_loop_positive():
-    rows = list(generate_rows())
-    total = 0
-    for row in rows:
-        total += row
-    return total
+def process():
+    # Violation: materializing an iterator to a list just to iterate over it once (wastes memory)
+    for x in list(generate_data()):
+        print(x)

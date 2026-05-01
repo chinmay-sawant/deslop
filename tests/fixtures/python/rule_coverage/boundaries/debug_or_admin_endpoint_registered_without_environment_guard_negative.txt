@@ -1,11 +1,10 @@
-from __future__ import annotations
-
 import os
+from flask import Flask
 
-routes = {}
+app = Flask(__name__)
 
-
-def register_routes() -> None:
-    routes["/health"] = lambda: "ok"
-    if os.getenv("APP_ENV") == "development":
-        routes["/admin/debug"] = lambda: "debug details"
+# Correct: admin endpoint protected by an environment check
+if os.getenv("ENV") == "development":
+    @app.route("/admin/shell")
+    def interactive_shell():
+        return "Secret Admin Shell"

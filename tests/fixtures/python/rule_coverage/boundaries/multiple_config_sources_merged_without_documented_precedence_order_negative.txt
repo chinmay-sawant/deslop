@@ -1,15 +1,7 @@
-from __future__ import annotations
-
-PRECEDENCE = ("file", "env", "cli")
-
-
-def load_config(file_cfg: dict, env_cfg: dict, cli_cfg: dict) -> dict:
-    merged = {}
-    for source in PRECEDENCE:
-        if source == "file":
-            merged.update(file_cfg)
-        elif source == "env":
-            merged.update(env_cfg)
-        else:
-            merged.update(cli_cfg)
-    return merged
+def load_config():
+    # Correct: explicit precedence (env > overrides > defaults)
+    defaults = load_from_yaml("default.yaml")
+    overrides = load_from_yaml("overrides.yaml")
+    env = load_from_env()
+    
+    return {**defaults, **overrides, **env}

@@ -1,7 +1,15 @@
-from __future__ import annotations
+from fastapi import APIRouter, FastAPI
 
-API_V1_PREFIX = "/api/v1"
+app = FastAPI()
+# Correct: use a centralized router with a prefix to handle API versioning
+v1_router = APIRouter(prefix="/api/v1")
 
+@v1_router.get("/users")
+def get_users():
+    pass
 
-def users_route() -> str:
-    return f"{API_V1_PREFIX}/users"
+@v1_router.get("/products")
+def get_products():
+    pass
+
+app.include_router(v1_router)

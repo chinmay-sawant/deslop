@@ -1,7 +1,7 @@
-from __future__ import annotations
+from .models import User
 
-def django_queryset_count_then_exists_positive():
-    pending = Invoice.objects.filter(state="pending")
-    if pending.count() > 0 and pending.exists():
-        return "has work"
-    return "empty"
+def has_users():
+    # Violation: using .count() > 0 to check for existence (exists() is faster)
+    if User.objects.filter(is_active=True).count() > 0:
+        return True
+    return False

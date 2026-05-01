@@ -1,5 +1,5 @@
-from __future__ import annotations
-
-
-def negated_boolean_reassigned_and_inverted_again_negative(is_ready: bool) -> bool:
-    return is_ready
+def check_availability(item):
+    # Correct: use the boolean directly for clearer logic
+    if item.is_available:
+        return "Available"
+    return "Unavailable"

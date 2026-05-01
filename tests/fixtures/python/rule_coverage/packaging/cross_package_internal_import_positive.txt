@@ -1,7 +1,5 @@
-from __future__ import annotations
+# Violation: reaching into another package to import a protected/private implementation detail
+from shared_auth._internal_hashing import hash_password
 
-from billing._internal.tax import compute_tax
-
-
-def cross_package_internal_import_positive(amount: int) -> int:
-    return compute_tax(amount)
+def register_user(pwd):
+    return hash_password(pwd)

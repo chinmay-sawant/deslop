@@ -1,7 +1,7 @@
-from contextvars import ContextVar
+import contextvars
 
-REQUEST_ID: ContextVar[str] = ContextVar("request_id", default="unknown")
+request_id_var = contextvars.ContextVar('request_id')
 
-
-async def current_request_id() -> str:
-    return REQUEST_ID.get()
+async def get_request_id():
+    # Correct: using contextvars for async-safe local storage
+    return request_id_var.get(None)

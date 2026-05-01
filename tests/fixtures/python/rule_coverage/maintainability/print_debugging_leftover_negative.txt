@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 import logging
 
 logger = logging.getLogger(__name__)
 
-
-def calculate_total(prices: list[int]) -> int:
-    total = sum(prices)
-    logger.debug("calculated_total=%s", total)
+def calculate_pricing(base, tax):
+    # Correct: use the logging module with appropriate severity levels
+    logger.debug("Calculating pricing with base: %s, tax: %s", base, tax)
+    total = base + tax
     return total

@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 from importlib.metadata import version
 
-
-def importlib_metadata_version_queried_inside_request_loop_positive(request_ids: list[str]) -> list[str]:
-    return [f"{request_id}:{version('pip')}" for request_id in request_ids]
+def get_server_info():
+    # Violation: reading package metadata (disk IO) dynamically inside a request handler
+    pkg_version = version("my_package")
+    return {"status": "ok", "version": pkg_version}

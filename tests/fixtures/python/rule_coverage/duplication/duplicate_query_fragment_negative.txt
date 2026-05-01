@@ -1,9 +1,8 @@
-from __future__ import annotations
+ACTIVE_USER_WHERE = "status = 'active' AND deleted = 0"
 
-BASE_QUERY = "SELECT id FROM users WHERE active = 1 AND deleted = 0"
+def get_active_users():
+    # Correct: common query fragment is extracted into a reusable constant
+    return db.query(f"SELECT * FROM users WHERE {ACTIVE_USER_WHERE}")
 
-
-def duplicate_query_fragment_negative() -> tuple[str, str]:
-    one = f"{BASE_QUERY} ORDER BY id DESC"
-    two = f"{BASE_QUERY} ORDER BY id ASC"
-    return one, two
+def count_active_users():
+    return db.query(f"SELECT COUNT(*) FROM users WHERE {ACTIVE_USER_WHERE}")

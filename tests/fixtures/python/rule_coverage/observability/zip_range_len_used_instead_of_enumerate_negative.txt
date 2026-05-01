@@ -1,8 +1,4 @@
-from __future__ import annotations
-
-
-def zip_range_len_used_instead_of_enumerate_negative(items: list[str]) -> list[str]:
-    out: list[str] = []
-    for index, value in enumerate(items):
-        out.append(f"{index}:{value}")
-    return out
+def process_list(items):
+    # Correct: use Python's built-in enumerate for clean, fast indexed iteration
+    for i, value in enumerate(items):
+        print(f"Index {i} has value {value}")

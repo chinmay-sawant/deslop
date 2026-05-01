@@ -1,14 +1,6 @@
-from __future__ import annotations
-
-
-class Formatter:
-    def render(self, value: int) -> str:
-        return f"item={value}"
-
-
-def format_items(values: list[int]) -> list[str]:
-    output = []
-    for value in values:
-        formatter = Formatter()
-        output.append(formatter.render(value))
-    return output
+def process_batch(items):
+    for item in items:
+        # Violation: object allocated in a tight loop instead of being reused or pooled
+        conn = DatabaseConnection()
+        conn.query(item)
+        conn.close()

@@ -1,11 +1,6 @@
-class ParseResult:
-    def __init__(self, text: str) -> None:
-        self.text = text
+# my_package/__init__.py
+# Correct: alias conflicting names to provide a clear, unambiguous public API
+from .database import Client as DatabaseClient
+from .api import Client as ApiClient
 
-
-class PaymentResult:
-    def __init__(self, cents: int) -> None:
-        self.cents = cents
-
-
-__all__ = ["ParseResult", "PaymentResult"]
+__all__ = ["DatabaseClient", "ApiClient"]

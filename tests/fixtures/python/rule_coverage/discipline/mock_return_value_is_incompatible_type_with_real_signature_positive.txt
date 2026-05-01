@@ -1,12 +1,7 @@
-from __future__ import annotations
+def get_user_id(user: User) -> int:
+    return user.id
 
-from unittest.mock import Mock
-
-
-def _read_count() -> int:
-    return 1
-
-
-def mock_return_value_is_incompatible_type_with_real_signature_positive() -> str:
-    mocked = Mock(spec=_read_count, return_value="ten")
-    return mocked()
+# Violation: mock return value is incompatible type (str) with real signature (int)
+with patch("app.get_user_id") as mock:
+    mock.return_value = "123"
+    result = get_user_id(mock)

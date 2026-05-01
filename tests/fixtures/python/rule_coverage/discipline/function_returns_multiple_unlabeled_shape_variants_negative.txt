@@ -1,14 +1,10 @@
-from __future__ import annotations
+class MetadataResult(BaseModel):
+    items: List[Dict]
+    status: str
 
-from dataclasses import dataclass
-
-
-@dataclass
-class ParseResult:
-    kind: str
-    value: str
-
-
-def function_returns_multiple_unlabeled_shape_variants_negative(raw: str) -> ParseResult:
-    kind = "json" if raw.startswith("{") else "text"
-    return ParseResult(kind=kind, value=raw)
+def get_metadata(item_id):
+    # Correct: function returns a consistent, labeled object/model
+    if not item_id:
+        return MetadataResult(items=[], status="missing")
+    data = fetch_data(item_id)
+    return MetadataResult(items=[data], status="ok")

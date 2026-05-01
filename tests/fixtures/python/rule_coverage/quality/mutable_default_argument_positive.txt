@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-
-def mutable_default_argument_positive(item: str, bucket: list[str] = []) -> list[str]:
-    bucket.append(item)
-    return bucket
+# Violation: using a mutable list as a default argument creates a shared reference across all function calls
+def append_to_list(item, target_list=[]):
+    target_list.append(item)
+    return target_list

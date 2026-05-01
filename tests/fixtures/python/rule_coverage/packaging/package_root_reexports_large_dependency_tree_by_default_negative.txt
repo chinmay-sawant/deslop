@@ -1,5 +1,5 @@
-def create_client(url: str) -> dict[str, str]:
-    return {"url": url}
+# my_package/__init__.py
+# Correct: explicitly select only the public interfaces intended for external consumption
+from .complex_submodule import PublicService
 
-
-__all__ = ["create_client"]
+__all__ = ["PublicService"]

@@ -1,8 +1,7 @@
-from __future__ import annotations
-
-def append_then_sort_each_iteration_negative():
-    scores = []
-    for value in [7, 3, 9, 1]:
-        scores.append(value)
-    scores.sort()
-    return scores
+def process_stream(items):
+    data = []
+    for item in items:
+        data.append(item)
+    # Correct: sort the collection once after all items have been added
+    data.sort()
+    return data

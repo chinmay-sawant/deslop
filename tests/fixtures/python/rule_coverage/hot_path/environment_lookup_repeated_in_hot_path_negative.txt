@@ -1,8 +1,8 @@
-from __future__ import annotations
+import os
 
-def environment_lookup_repeated_in_hot_path_negative():
-    region = os.getenv("APP_REGION", "local")
-    labels = []
-    for _ in range(4):
-        labels.append(region)
-    return labels
+# Correct: cache environment variables at the module level for optimal performance
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+
+def log_event(msg):
+    if LOG_LEVEL == "DEBUG":
+        print(f"DEBUG: {msg}")

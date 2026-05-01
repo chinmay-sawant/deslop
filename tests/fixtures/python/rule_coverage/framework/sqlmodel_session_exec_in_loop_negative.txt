@@ -1,7 +1,6 @@
-from __future__ import annotations
+from sqlmodel import select
 
-def sqlmodel_session_exec_in_loop_negative():
-    ids = [1, 2, 3]
-    with Session(engine) as session:
-        stmt = select(User).where(User.id.in_(ids))
-        return session.exec(stmt).all()
+def fetch_users(session, user_ids):
+    # Correct: use the in_ operator to fetch all users in a single exec call
+    statement = select(User).where(User.id.in_(user_ids))
+    return session.exec(statement).all()

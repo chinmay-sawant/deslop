@@ -1,8 +1,9 @@
-from __future__ import annotations
-
-def repeated_open_same_file_in_function_negative():
-    path = "settings.ini"
-    with open(path, "r", encoding="utf-8") as handle:
-        full_text = handle.read()
-    first_line = full_text.splitlines()[0] if full_text else ""
-    return first_line, full_text
+def get_config_values():
+    # Correct: open the file once, read its contents into memory, and process it as needed
+    with open("config.ini", "r") as f:
+        content = f.read()
+    
+    host = parse_host(content)
+    port = parse_port(content)
+        
+    return host, port

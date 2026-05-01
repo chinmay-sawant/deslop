@@ -1,8 +1,10 @@
-from __future__ import annotations
+import json
+from flask import Flask, Response
 
-def response_json_dumps_then_response_object_positive():
-    def handler():
-        body = json.dumps({"ok": True, "items": [1, 2]})
-        return Response(body, mimetype="application/json")
+app = Flask(__name__)
 
-    return handler
+@app.route("/api")
+def api():
+    # Violation: manually calling json.dumps() and then creating a Response object
+    data = {"status": "ok"}
+    return Response(json.dumps(data), mimetype='application/json')

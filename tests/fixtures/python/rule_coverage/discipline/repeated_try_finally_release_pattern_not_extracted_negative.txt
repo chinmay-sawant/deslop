@@ -1,29 +1,16 @@
-from __future__ import annotations
-
 from contextlib import contextmanager
-from typing import Iterator
-
-
-class Lock:
-    def __init__(self) -> None:
-        self.held = False
-
-    def acquire(self) -> None:
-        self.held = True
-
-    def release(self) -> None:
-        self.held = False
-
 
 @contextmanager
-def _holding(lock: Lock) -> Iterator[None]:
+def locked(lock):
     lock.acquire()
     try:
         yield
     finally:
         lock.release()
 
-
-def repeated_try_finally_release_pattern_not_extracted_negative(lock: Lock) -> str:
-    with _holding(lock):
-        return "done"
+def sync_data():
+    # Correct: logic is extracted into a reusable context manager
+    with locked(lock1):
+        perform_a()
+    with locked(lock2):
+        perform_b()

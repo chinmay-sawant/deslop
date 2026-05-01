@@ -1,8 +1,7 @@
-from __future__ import annotations
-
-
-def expensive_work_starts_before_input_validation_negative(limit: int) -> int:
-    if limit < 0:
-        raise ValueError("limit must be non-negative")
-    values = [n * n for n in range(limit)]
-    return sum(values)
+def process_data(data, user_id):
+    # Correct: validate inputs as early as possible
+    if not user_id:
+        raise ValueError("User ID required")
+        
+    result = heavy_computation(data)
+    save_result(user_id, result)

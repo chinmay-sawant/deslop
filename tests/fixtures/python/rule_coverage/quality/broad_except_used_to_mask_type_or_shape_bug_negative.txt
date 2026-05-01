@@ -1,10 +1,7 @@
-from __future__ import annotations
-
-
-def broad_except_used_to_mask_type_or_shape_bug_negative(payload: dict[str, object]) -> int:
-    if "count" not in payload:
-        raise KeyError("count is required")
-    value = payload["count"]
-    if not isinstance(value, int):
-        raise TypeError("count must be an int")
-    return value + 1
+def process_payload(payload):
+    try:
+        # Correct: catch only the specific, expected structural errors, allowing logical bugs to crash loudly
+        value = payload["count"] + 10
+        return value
+    except (KeyError, TypeError):
+        return 0

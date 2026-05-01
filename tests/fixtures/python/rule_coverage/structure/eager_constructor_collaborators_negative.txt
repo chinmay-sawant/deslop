@@ -1,20 +1,11 @@
-from __future__ import annotations
-
-
-class Database:
+class Logger:
     pass
 
-
-class Cache:
+class DatabaseConnection:
     pass
 
-
-class Mailer:
-    pass
-
-
-class CheckoutServiceNegative:
-    def __init__(self, db: Database, cache: Cache, mailer: Mailer) -> None:
+class OrderService:
+    # Correct: inject dependencies from the outside (Inversion of Control) to allow mocking and reuse
+    def __init__(self, logger: Logger, db: DatabaseConnection):
+        self.logger = logger
         self.db = db
-        self.cache = cache
-        self.mailer = mailer

@@ -1,16 +1,12 @@
-from __future__ import annotations
+class Notifier:
+    def notify(self, msg): pass
 
+# Violation: using subclassing to toggle optional behaviors creates a combinatorial explosion of classes
+class EmailNotifier(Notifier):
+    pass
 
-class Fetcher:
-    def fetch(self, key: str) -> str:
-        return f"value:{key}"
+class EncryptedEmailNotifier(EmailNotifier):
+    pass
 
-
-class CachedFetcher(Fetcher):
-    def __init__(self) -> None:
-        self.cache: dict[str, str] = {}
-
-    def fetch(self, key: str) -> str:
-        if key not in self.cache:
-            self.cache[key] = super().fetch(key)
-        return self.cache[key]
+class CompressedEncryptedEmailNotifier(EncryptedEmailNotifier):
+    pass

@@ -1,14 +1,15 @@
-from __future__ import annotations
+from contextlib import contextmanager
 
+@contextmanager
+def db_transaction():
+    # Correct: encapsulate repeated setup/teardown logic in a reusable context manager
+    db.connect()
+    try:
+        yield
+    finally:
+        db.disconnect()
 
-def _read_lines(path: str) -> list[str]:
-    with open(path, "r", encoding="utf-8") as handle:
-        return [line.strip() for line in handle]
-
-
-def load_users(path: str) -> list[str]:
-    return _read_lines(path)
-
-
-def load_orders(path: str) -> list[str]:
-    return _read_lines(path)
+# module_a.py
+def process_data():
+    with db_transaction():
+        db.execute("...")

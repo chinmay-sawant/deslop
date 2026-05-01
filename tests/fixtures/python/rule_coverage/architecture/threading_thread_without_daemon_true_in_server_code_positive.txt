@@ -1,7 +1,9 @@
 import threading
 
+def run_worker():
+    while True:
+        process_queue()
 
-def start_worker(target) -> threading.Thread:
-    thread = threading.Thread(target=target)
-    thread.start()
-    return thread
+# Violation: thread created without daemon=True in server code
+t = threading.Thread(target=run_worker)
+t.start()

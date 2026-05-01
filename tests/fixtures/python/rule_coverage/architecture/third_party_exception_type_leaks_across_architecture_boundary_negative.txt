@@ -1,12 +1,10 @@
-import requests
-
-
-class InventoryUnavailable(Exception):
+class DomainUploadError(Exception):
     pass
 
-
-def fetch_inventory(client, sku: str) -> dict:
-    try:
-        return client.get_inventory(sku)
-    except requests.Timeout as exc:
-        raise InventoryUnavailable("inventory timeout") from exc
+class UserService:
+    def upload_data(self, data):
+        # Correct: third-party exception mapped to a domain exception
+        try:
+            self.s3.put_object(Body=data)
+        except Exception:
+            raise DomainUploadError("Failed to upload data")

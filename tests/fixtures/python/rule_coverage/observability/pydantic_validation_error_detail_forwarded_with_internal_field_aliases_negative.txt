@@ -1,5 +1,16 @@
-from __future__ import annotations
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, ValidationError
 
+app = FastAPI()
 
-def pydantic_validation_error_detail_forwarded_with_internal_field_aliases_negative() -> dict[str, object]:
-    return {"error": [{"field": "user_id", "message": "field required"}]}
+class UserInput(BaseModel):
+    internal_id_alias: str
+
+@app.post("/users")
+def create_user(data: dict):
+    try:
+        user = UserInput(**data)
+    except ValidationError as e:
+        # Correct: map validation errors to a clean, public-facing schema without internal aliases
+        clean_errors = [{"field": err["loc"][0], "msg": err["msg"]} for err in e.errors()]
+        raise HTTPException(status_code=422, detail=clean_errors)

@@ -1,7 +1,5 @@
-from __future__ import annotations
+# module: tests/test_helpers.py
 
-from tests.helpers.fixtures import fake_user
-
-
-def test_support_helpers_located_inside_production_package_negative() -> dict[str, str]:
-    return fake_user()
+def mock_database_connection():
+    # Correct: strictly isolate testing infrastructure outside of the deployable src/ directory
+    return FakeDatabase()

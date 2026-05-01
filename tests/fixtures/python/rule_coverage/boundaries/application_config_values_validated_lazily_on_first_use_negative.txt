@@ -1,8 +1,6 @@
-class AppConfig:
-    def __init__(self, timeout_seconds: int) -> None:
-        if timeout_seconds <= 0:
-            raise ValueError("timeout must be positive")
-        self.timeout_seconds = timeout_seconds
-
-    def get_timeout(self) -> int:
-        return self.timeout_seconds
+class Config:
+    def __init__(self):
+        # Correct: all config values validated eagerly on initialization
+        self.database_url = os.getenv("DATABASE_URL")
+        if not self.database_url:
+            raise ValueError("DATABASE_URL not set")

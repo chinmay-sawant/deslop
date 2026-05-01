@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-
-class Basket:
-    items: list[str] = []
-
-    def add(self, item: str) -> None:
-        self.items.append(item)
+class Session:
+    # Violation: defining a mutable object as a class attribute causes it to be shared across all instances
+    data = {}
+    
+    def set(self, key, value):
+        self.data[key] = value

@@ -1,10 +1,8 @@
-from __future__ import annotations
+def test_a():
+    data = {"id": 1}
+    assert data["id"] == 1
 
-
-def _fresh_state() -> list[str]:
-    return ["created"]
-
-
-def test_depends_on_sibling_test_side_effects_negative() -> None:
-    state = _fresh_state()
-    assert state == ["created"]
+def test_b():
+    # Correct: tests are isolated and don't share mutable state
+    data = {"id": 1}
+    assert data["id"] == 1

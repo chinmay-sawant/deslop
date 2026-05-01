@@ -1,11 +1,4 @@
-import time
-
-
-def blocking_numbers():
-    for value in range(3):
-        time.sleep(0.1)
-        yield value
-
-
-async def stream_numbers():
-    return blocking_numbers()
+async def get_large_dataset():
+    data = [i for i in range(1000000)]
+    # Violation: async API returns a plain iterator which results in blocking iteration
+    return iter(data)

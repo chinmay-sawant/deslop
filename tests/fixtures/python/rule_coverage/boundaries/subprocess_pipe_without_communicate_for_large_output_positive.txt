@@ -1,8 +1,8 @@
-from __future__ import annotations
+from subprocess import Popen, PIPE
 
-import subprocess
-
-
-def capture_lines() -> str:
-    proc = subprocess.Popen(["python", "-c", "print('x' * 10000)"], stdout=subprocess.PIPE, text=True)
-    return proc.stdout.read()
+def get_large_output():
+    # Violation: using PIPE for stdout without communicate() may deadlock if output is large
+    p = Popen(["cat", "large_file.txt"], stdout=PIPE)
+    p.wait()
+    output = p.stdout.read()
+    return output

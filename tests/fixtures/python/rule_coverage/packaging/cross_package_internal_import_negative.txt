@@ -1,7 +1,5 @@
-from __future__ import annotations
+# Correct: only consume the publicly exported API contract from external packages
+from shared_auth import create_secure_hash
 
-from billing.api import calculate_tax
-
-
-def cross_package_internal_import_negative(amount: int) -> int:
-    return calculate_tax(amount)
+def register_user(pwd):
+    return create_secure_hash(pwd)

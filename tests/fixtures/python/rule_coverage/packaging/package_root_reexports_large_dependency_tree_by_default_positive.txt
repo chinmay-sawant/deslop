@@ -1,5 +1,3 @@
-from heavy.analytics import Analyzer
-from heavy.storage import BlobStore
-from heavy.training import Trainer
-
-__all__ = ["Analyzer", "BlobStore", "Trainer"]
+# my_package/__init__.py
+# Violation: using a star import at the package root exposes all internal dependencies and pollutes the namespace
+from .complex_submodule import *

@@ -1,7 +1,7 @@
-from __future__ import annotations
+from typing import Optional
 
-
-def optional_parameter_used_without_none_guard_negative(name: str | None = None) -> str:
-    if name is None:
-        return "guest"
-    return name.strip().lower()
+def get_username(user: Optional[User]):
+    # Correct: check if the optional parameter is None before accessing attributes
+    if user is None:
+        return "Guest"
+    return user.name

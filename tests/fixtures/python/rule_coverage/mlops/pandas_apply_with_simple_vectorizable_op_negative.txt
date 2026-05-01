@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def double_column(df: pd.DataFrame) -> pd.DataFrame:
-    df["x2"] = df["x"] * 2
+def double_column(df):
+    # Correct: use direct vectorized operations on pandas Series objects
+    df['doubled'] = df['value'] * 2
     return df

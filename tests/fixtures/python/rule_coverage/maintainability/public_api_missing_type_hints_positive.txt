@@ -1,5 +1,6 @@
-from __future__ import annotations
-
-
-def create_invoice(customer_id, amount):
-    return {"customer_id": customer_id, "amount": amount}
+def fetch_user_record(user_id, include_deleted):
+    # Violation: public API function lacking type hints, reducing maintainability and IDE support
+    record = db.query(user_id)
+    if include_deleted or not record.is_deleted:
+        return record
+    return None

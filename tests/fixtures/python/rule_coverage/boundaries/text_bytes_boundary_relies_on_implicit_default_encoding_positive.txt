@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-
-def read_message(path: str) -> str:
-    with open(path) as handle:
-        return handle.read()
+def save_text(filename, text):
+    # Violation: text to bytes boundary relies on implicit default encoding (platform dependent)
+    with open(filename, "w") as f:
+        f.write(text)

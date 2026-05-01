@@ -1,6 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
-
-def is_expired(expires_at: datetime) -> bool:
-    now = datetime.utcnow()
-    return now >= expires_at.astimezone(timezone.utc)
+def check_expiry(expiry_date):
+    # Violation: mixing naive and aware datetime values (now() is naive)
+    if datetime.now() > expiry_date:
+        return True
+    return False

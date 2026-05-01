@@ -1,17 +1,14 @@
-from __future__ import annotations
-
-
 class UserQueryService:
-    def __init__(self, users: dict[int, str]) -> None:
-        self._users = users
+    # Correct: apply CQRS to separate query logic from mutation logic
+    def get_user(self, id):
+        pass
+        
+    def find_active_users(self):
+        pass
 
-    def find_user(self, user_id: int) -> str | None:
-        return self._users.get(user_id)
-
-
-class UserCommandService:
-    def __init__(self, users: dict[int, str]) -> None:
-        self._users = users
-
-    def save_user(self, user_id: int, name: str) -> None:
-        self._users[user_id] = name
+class UserMutationService:
+    def create_user(self, data):
+        pass
+        
+    def delete_user(self, id):
+        pass

@@ -1,10 +1,5 @@
-from __future__ import annotations
-
-import tempfile
-from pathlib import Path
-
-
-def integration_test_writes_state_without_cleanup_positive() -> bool:
-    path = Path(tempfile.gettempdir()) / "worker3_state.txt"
-    path.write_text("state=dirty", encoding="utf-8")
-    return path.exists()
+def test_create_user():
+    # Violation: integration test writes state to a shared DB without cleanup
+    user = db.create_user(name="test")
+    assert user.id is not None
+    # If the test fails here, the user record remains in the DB

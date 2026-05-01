@@ -1,7 +1,5 @@
-from __future__ import annotations
+# module: my_app/billing/processor.py
 
-from myapp.sibling.metrics import record_metric
-
-
-def relative_import_crossing_sibling_package_boundary_negative() -> str:
-    return record_metric("jobs.started")
+# Correct: use absolute imports when crossing top-level package or sibling boundaries
+from my_app.users.models import UserModel
+from my_app.users.utils import get_status

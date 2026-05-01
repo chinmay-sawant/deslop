@@ -1,13 +1,10 @@
-from __future__ import annotations
+# auth.py
+def login(user):
+    # Violation: authorization policy (role == "admin") is scattered across multiple unrelated modules
+    if user.role == "admin" and user.is_active:
+        setup_admin_session()
 
-
-def checkout_message(plan: str) -> str:
-    if plan == "premium":
-        return "priority checkout"
-    return "standard checkout"
-
-
-def support_message(plan: str) -> str:
-    if plan == "premium":
-        return "priority support"
-    return "normal support"
+# ui.py
+def render_dashboard(user):
+    if user.role == "admin" and user.is_active:
+        show_admin_panel()

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-
 @dataclass
-class QueueState:
-    pending: list[str] = []
+class UserProfile:
+    # Violation: mutable default (list) without default_factory
+    tags: list = []

@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import pytest
 
-
-@pytest.mark.parametrize("value", [1])
-def pytest_parametrize_with_single_test_case_positive(value: int) -> None:
-    assert value == 1
+# Violation: pytest.parametrize used with only a single test case
+@pytest.mark.parametrize("input_val", [10])
+def test_threshold(input_val):
+    assert input_val > 5

@@ -1,8 +1,7 @@
-from __future__ import annotations
+# settings.py
+DEBUG = False
 
-API_VERSION = "v1"
-
-
-def switch_api_for_test() -> None:
-    global API_VERSION
-    API_VERSION = "v2"
+# Violation: module constant rebound after being publicly imported
+def toggle_debug():
+    global DEBUG
+    DEBUG = True

@@ -1,7 +1,8 @@
-from __future__ import annotations
+def view_profile(request):
+    # Violation: manually extracting header context in every business function creates tight coupling to transport layers
+    trace_id = request.headers.get("X-Trace-Id")
+    logger.info(f"[{trace_id}] Viewing profile")
 
-
-def observability_context_extracted_manually_at_many_call_sites_positive(context: dict[str, str]) -> tuple[str, str]:
-    trace = context.get("trace_id", "missing")
-    correlation = context.get("correlation_id", "missing")
-    return trace, correlation
+def edit_profile(request):
+    trace_id = request.headers.get("X-Trace-Id")
+    logger.info(f"[{trace_id}] Editing profile")

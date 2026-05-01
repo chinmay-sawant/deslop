@@ -1,7 +1,5 @@
-from __future__ import annotations
+import importlib.metadata
 
-from importlib.metadata import version
-
-
-def pkg_resources_used_for_runtime_version_lookup_negative() -> str:
-    return version("pip")
+def get_library_version():
+    # Correct: use the built-in importlib.metadata for lightning-fast package version checks
+    return importlib.metadata.version("requests")

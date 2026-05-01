@@ -1,10 +1,7 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def count_rows(path: str) -> int:
-    total = 0
-    for chunk in pd.read_csv(path, chunksize=10_000):
-        total += len(chunk)
-    return total
+def process_massive_file(filepath):
+    # Correct: use chunksize to process large files incrementally and keep memory footprints low
+    chunks = pd.read_csv(filepath, chunksize=10000)
+    for chunk in chunks:
+        send_to_database_batch(chunk)

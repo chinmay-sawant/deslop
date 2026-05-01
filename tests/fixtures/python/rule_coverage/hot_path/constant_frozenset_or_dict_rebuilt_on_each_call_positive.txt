@@ -1,5 +1,4 @@
-from __future__ import annotations
-
-def constant_frozenset_or_dict_rebuilt_on_each_call_positive():
-    allowed = frozenset({"json", "csv", "yaml"})
-    return "json" in allowed
+def is_valid_token(token):
+    # Violation: constant set or dict literal rebuilt on every function call
+    valid_tokens = {"ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON"}
+    return token in valid_tokens

@@ -1,12 +1,10 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def scale_many(df: pd.DataFrame, multipliers: list[float]) -> list[pd.DataFrame]:
-    results: list[pd.DataFrame] = []
-    for multiplier in multipliers:
-        clone = df.copy()
-        clone["score"] = clone["score"] * multiplier
-        results.append(clone)
+def process_iterations(df, multipliers):
+    results = []
+    for m in multipliers:
+        # Violation: performing a full DataFrame copy inside a loop is extremely memory and CPU intensive
+        df_copy = df.copy()
+        df_copy['value'] = df_copy['value'] * m
+        results.append(df_copy)
     return results

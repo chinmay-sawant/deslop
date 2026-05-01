@@ -1,4 +1,4 @@
-from __future__ import annotations
-
-def hardcoded_path_string_positive():
-    return "/var/app/config/settings.json"
+def read_application_logs():
+    # Violation: hardcoding absolute file paths limits portability across environments
+    with open("/var/log/myapp/application.log", "r") as f:
+        return f.readlines()

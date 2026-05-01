@@ -1,5 +1,3 @@
-from __future__ import annotations
-
-
-def cache_user(user_id: int, cache: dict[int, str], name: str) -> None:
-    cache[user_id] = name
+def send_notification(user, message):
+    # Correct: Python functions implicitly return None, so no explicit return is needed here
+    print(f"Sending {message} to {user}")

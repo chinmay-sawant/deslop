@@ -1,7 +1,8 @@
-from __future__ import annotations
+# config_loader.py
+import os
+import sys
 
-SETTINGS = {"mode": "dev"}
-
-def hidden_dependency_arrives_via_import_time_side_effect_positive():
-    import bootstrap_runtime_settings  # expected to mutate SETTINGS at import time
-    return SETTINGS.get("mode", "dev")
+# Violation: performing heavy/stateful operations at import time (side effects)
+print("Initializing config...")
+GLOBAL_CONFIG = load_remote_config(os.environ["CONFIG_URL"])
+sys.path.append(GLOBAL_CONFIG["plugin_dir"])

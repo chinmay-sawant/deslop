@@ -1,7 +1,6 @@
-from __future__ import annotations
-
-
-def export_report(rows: list[str], full: bool = False) -> str:
-    if full:
-        return "|".join(sorted(rows)).upper()
-    return ",".join(rows)
+def process_order(order, is_refund):
+    # Violation: boolean flag parameter controls unrelated behaviors
+    if is_refund:
+        issue_refund(order)
+    else:
+        ship_order(order)

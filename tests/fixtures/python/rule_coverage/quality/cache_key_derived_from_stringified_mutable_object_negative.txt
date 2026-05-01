@@ -1,5 +1,8 @@
-from __future__ import annotations
+cache = {}
 
-
-def cache_key_derived_from_stringified_mutable_object_negative(filters: dict[str, object]) -> tuple[tuple[str, object], ...]:
-    return tuple(sorted(filters.items()))
+def get_computed_value(config_dict):
+    # Correct: serialize mutable dictionaries to immutable, hashable structures like frozensets or tuples for caching
+    cache_key = frozenset(config_dict.items())
+    if cache_key not in cache:
+        cache[cache_key] = expensive_computation(config_dict)
+    return cache[cache_key]

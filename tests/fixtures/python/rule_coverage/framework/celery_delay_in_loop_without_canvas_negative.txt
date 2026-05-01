@@ -1,16 +1,7 @@
-from __future__ import annotations
+from celery import group
+from tasks import process_item
 
-
-class Task:
-    def s(self, payload: int) -> str:
-        return f"sig:{payload}"
-
-
-def _group(signatures: list[str]) -> list[str]:
-    return signatures
-
-
-def celery_delay_in_loop_without_canvas_negative(items: list[int]) -> list[str]:
-    task = Task()
-    signatures = [task.s(item) for item in items]
-    return _group(signatures)
+def handle_batch(items):
+    # Correct: use a group to batch tasks together efficiently
+    job = group(process_item.s(item) for item in items)
+    job.apply_async()

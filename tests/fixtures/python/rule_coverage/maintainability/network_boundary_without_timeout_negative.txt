@@ -1,8 +1,8 @@
-from __future__ import annotations
+import socket
 
-import urllib.request
-
-
-def fetch_bytes(url: str, timeout_seconds: float = 2.0) -> bytes:
-    with urllib.request.urlopen(url, timeout=timeout_seconds) as response:
-        return response.read()
+def connect_to_server(host, port):
+    # Correct: always set a timeout before initiating a network connection
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(5.0)
+    s.connect((host, port))
+    return s

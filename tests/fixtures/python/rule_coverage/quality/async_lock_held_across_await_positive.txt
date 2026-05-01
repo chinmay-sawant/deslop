@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import asyncio
 
-
-async def async_lock_held_across_await_positive(lock: asyncio.Lock) -> None:
+async def fetch_and_update(state, lock):
+    # Violation: holding an async lock while awaiting network IO causes massive contention and deadlocks
     async with lock:
-        await asyncio.sleep(0.1)
+        data = await fetch_remote_data()
+        state.update(data)

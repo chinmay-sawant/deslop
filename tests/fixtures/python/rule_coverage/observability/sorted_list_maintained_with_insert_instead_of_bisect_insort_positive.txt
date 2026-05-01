@@ -1,11 +1,4 @@
-from __future__ import annotations
-
-
-def sorted_list_maintained_with_insert_instead_of_bisect_insort_positive(values: list[int]) -> list[int]:
-    ordered: list[int] = []
-    for value in values:
-        index = 0
-        while index < len(ordered) and ordered[index] < value:
-            index += 1
-        ordered.insert(index, value)
-    return ordered
+def add_to_rankings(rankings_list, new_score):
+    # Violation: maintaining a sorted list by appending and re-sorting the whole thing is O(N log N)
+    rankings_list.append(new_score)
+    rankings_list.sort()

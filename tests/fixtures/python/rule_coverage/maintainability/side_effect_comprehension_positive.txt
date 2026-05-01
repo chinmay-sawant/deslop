@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-
-def square_values(values: list[int]) -> list[int]:
-    squared: list[int] = []
-    [squared.append(v * v) for v in values]
-    return squared
+def notify_users(users):
+    # Violation: using a list comprehension solely for its side effects (creates an unused list in memory)
+    [user.send_email() for user in users if user.is_active]

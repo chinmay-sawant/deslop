@@ -1,13 +1,12 @@
-from __future__ import annotations
+import copy
 
-
-class SharedCacheStoreNegative:
-    def __init__(self, read_cache: dict[str, str], write_buffer: dict[str, str]) -> None:
-        self.read_cache = read_cache
-        self.write_buffer = write_buffer
-
-    def read(self, key: str) -> str:
-        return self.read_cache.get(key, "")
-
-    def stage_write(self, key: str, value: str) -> None:
-        self.write_buffer[key] = value
+class SystemCache:
+    # Correct: strictly separate read/write boundaries by returning deep copies to prevent external mutation
+    def __init__(self):
+        self._store = {}
+        
+    def get_data(self):
+        return copy.deepcopy(self._store)
+        
+    def update_data(self, key, val):
+        self._store[key] = val

@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-
-def parse_scores(rows: list[dict[str, str]]) -> list[int]:
-    scores: list[int] = []
-    for row in rows:
-        scores.append(int(row["score"]))
-    return scores
+def process_data(records):
+    results = []
+    for record in records:
+        # Violation: data pipeline lacks error handling; a single malformed record will crash the whole pipeline
+        results.append(complex_transform(record))
+    return results

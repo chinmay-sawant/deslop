@@ -1,10 +1,5 @@
-from __future__ import annotations
-
-
-def validate_email(value: str) -> bool:
-    return "@" in value and "." in value
-
-
-def test_re_implements_production_validation_logic_positive() -> bool:
-    email = "a@example.com"
-    return "@" in email and "." in email
+def test_user_validation():
+    # Violation: test re-implements production validation logic (DRY violation)
+    user_id = "abc"
+    if not user_id.isalnum():
+        pytest.fail("Validation failed")

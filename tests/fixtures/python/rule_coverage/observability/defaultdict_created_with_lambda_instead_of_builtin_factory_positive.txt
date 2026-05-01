@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 from collections import defaultdict
 
-
-def defaultdict_created_with_lambda_instead_of_builtin_factory_positive(tokens: list[str]) -> dict[str, int]:
-    counts: defaultdict[str, int] = defaultdict(lambda: 0)
-    for token in tokens:
-        counts[token] += 1
-    return dict(counts)
+def group_items(items):
+    # Violation: using a lambda where the built-in type object itself would work perfectly
+    grouped = defaultdict(lambda: [])
+    for item in items:
+        grouped[item.type].append(item)
+    return grouped

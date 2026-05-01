@@ -1,9 +1,10 @@
-from __future__ import annotations
+import responses
 
-from unittest.mock import Mock, patch
-
-
-def test_makes_real_outbound_http_call_without_mock_or_vcr_negative() -> int:
-    fake_response = Mock(status=200)
-    with patch("urllib.request.urlopen", return_value=fake_response):
-        return fake_response.status
+@responses.activate
+def test_fetch_prices():
+    # Correct: outbound HTTP calls are mocked to ensure test reliability
+    responses.add(responses.GET, "https://api.coinbase.com/v2/prices/BTC-USD/spot",
+                  json={"data": {"amount": "50000"}}, status=200)
+    
+    resp = requests.get("https://api.coinbase.com/v2/prices/BTC-USD/spot")
+    assert resp.json()["data"]["amount"] == "50000"

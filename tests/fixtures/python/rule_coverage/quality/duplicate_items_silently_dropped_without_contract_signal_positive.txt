@@ -1,5 +1,4 @@
-from __future__ import annotations
-
-
-def duplicate_items_silently_dropped_without_contract_signal_positive(items: list[str]) -> list[str]:
-    return list(set(items))
+def process_batch(items):
+    # Violation: silently dropping duplicate items masks upstream bugs and destroys data integrity
+    unique_items = list(set(items))
+    return execute_batch(unique_items)

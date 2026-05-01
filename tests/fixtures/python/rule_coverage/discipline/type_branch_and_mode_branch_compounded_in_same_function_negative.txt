@@ -1,14 +1,13 @@
-from __future__ import annotations
+def handle_event(event_type, mode):
+    # Correct: use a dispatch table or split into specific handlers to reduce complexity
+    handlers = {
+        "upload": upload_handler,
+        "delete": delete_handler
+    }
+    handler = handlers.get(event_type)
+    if handler:
+        handler(mode)
 
-
-def _coerce(value: int | str) -> str:
-    if isinstance(value, int):
-        return str(value)
-    return value
-
-
-def type_branch_and_mode_branch_compounded_in_same_function_negative(value: int | str, mode: str) -> str:
-    text = _coerce(value)
-    if mode == "upper":
-        return text.upper()
-    return text
+def upload_handler(mode):
+    if mode == "async": ...
+    else: ...

@@ -1,7 +1,6 @@
-from __future__ import annotations
-
-def exception_used_for_expected_lookup_miss_in_loop_negative():
-    counts = {}
-    for key in ["a", "b", "a", "c"]:
-        counts[key] = counts.get(key, 0) + 1
-    return counts
+def map_values(keys, mapping):
+    results = []
+    for key in keys:
+        # Correct: use .get() for handling potential missing keys more efficiently in a loop
+        results.append(mapping.get(key))
+    return results

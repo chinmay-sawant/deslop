@@ -1,9 +1,10 @@
-from __future__ import annotations
+from typing import Optional
 
+class User:
+    pass
 
-def public_api_returns_none_or_value_without_explicit_optional_contract_negative(name: str) -> str | None:
-    directory = {"admin": "found", "owner": "found"}
-    normalized = name.strip().lower()
-    if normalized in directory:
-        return directory[normalized]
-    return None
+# Correct: use Optional[T] or T | None to force consumers to handle the null case explicitly
+def find_user(user_id: int) -> Optional[User]:
+    if user_id <= 0:
+        return None
+    return User()

@@ -1,13 +1,11 @@
-from __future__ import annotations
-
 import errno
 
-
-def oserror_caught_without_errno_inspection_negative(path: str) -> str:
+def read_config(path):
     try:
-        with open(path, "r", encoding="utf-8") as handle:
-            return handle.read()
-    except OSError as exc:
-        if exc.errno == errno.ENOENT:
-            return "missing"
+        with open(path) as f:
+            return f.read()
+    except OSError as e:
+        # Correct: inspect errno to handle specific file-not-found cases
+        if e.errno == errno.ENOENT:
+            return "{}"
         raise

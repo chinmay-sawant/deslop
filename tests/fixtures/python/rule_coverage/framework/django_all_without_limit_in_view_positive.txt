@@ -1,14 +1,7 @@
-from __future__ import annotations
+from django.shortcuts import render
+from .models import User
 
-
-class Manager:
-    def all(self) -> list[int]:
-        return list(range(1000))
-
-
-class Entry:
-    objects = Manager()
-
-
-def django_all_without_limit_in_view_positive() -> list[int]:
-    return Entry.objects.all()
+def user_list_view(request):
+    # Violation: calling .all() without a limit in a view (can lead to OOM/slow responses)
+    users = User.objects.all()
+    return render(request, 'users.html', {'users': users})

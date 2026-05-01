@@ -1,12 +1,15 @@
-from __future__ import annotations
+DEBUG = True
 
-API_VERSION = "v1"
+class User:
+    pass
 
+def log(message):
+    print(message)
 
-class Payload:
-    def __init__(self, name: str) -> None:
-        self.name = name
+def main():
+    # Correct: constants, types, and helpers are defined first; execution is encapsulated
+    if DEBUG:
+        log("Starting")
 
-
-def module_mixes_constants_types_helpers_and_execution_flow_negative(name: str) -> Payload:
-    return Payload(name.title())
+if __name__ == "__main__":
+    main()

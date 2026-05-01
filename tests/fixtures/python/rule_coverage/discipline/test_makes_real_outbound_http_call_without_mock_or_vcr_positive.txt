@@ -1,8 +1,6 @@
-from __future__ import annotations
+import requests
 
-import urllib.request
-
-
-def test_makes_real_outbound_http_call_without_mock_or_vcr_positive() -> int:
-    with urllib.request.urlopen("https://example.com") as response:
-        return response.status
+def test_fetch_prices():
+    # Violation: test makes a real outbound HTTP call without mocking
+    resp = requests.get("https://api.coinbase.com/v2/prices/BTC-USD/spot")
+    assert resp.status_code == 200

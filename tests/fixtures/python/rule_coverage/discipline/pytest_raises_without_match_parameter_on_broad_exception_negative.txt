@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import pytest
 
-
-def pytest_raises_without_match_parameter_on_broad_exception_negative() -> None:
-    with pytest.raises(ValueError, match="invalid literal"):
-        int("x")
+def test_failure():
+    # Correct: use 'match' to ensure the expected specific error message is raised
+    with pytest.raises(ValueError, match="invalid user id"):
+        risky_call()

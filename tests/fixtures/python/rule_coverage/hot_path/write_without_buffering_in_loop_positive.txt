@@ -1,8 +1,6 @@
-from __future__ import annotations
+import os
 
-def write_without_buffering_in_loop_positive():
-    path = "events.log"
-    for event in ("open", "save", "close"):
-        with open(path, "a", encoding="utf-8") as handle:
-            handle.write(event + "\n")
-    return path
+def write_data(fd, records):
+    for record in records:
+        # Violation: writing to a file descriptor inside a loop without user-space buffering
+        os.write(fd, record.encode('utf-8'))

@@ -1,8 +1,8 @@
 import asyncio
 
-LOCK = asyncio.Lock()
+async_lock = asyncio.Lock()
 
-
-async def update_counter(counter: dict) -> None:
-    async with LOCK:
-        counter["value"] += 1
+async def critical_section():
+    # Correct: using an async-compatible lock
+    async with async_lock:
+        await perform_work()

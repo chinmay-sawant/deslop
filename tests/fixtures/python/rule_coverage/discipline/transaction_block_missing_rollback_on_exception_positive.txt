@@ -1,24 +1,8 @@
-from __future__ import annotations
-
-
-class Tx:
-    def __init__(self) -> None:
-        self.state = "idle"
-
-    def begin(self) -> None:
-        self.state = "open"
-
-    def commit(self) -> None:
-        self.state = "committed"
-
-    def rollback(self) -> None:
-        self.state = "rolled_back"
-
-
-def transaction_block_missing_rollback_on_exception_positive() -> str:
-    tx = Tx()
-    tx.begin()
+def save_user(user):
+    # Violation: transaction block missing rollback on exception (database remains in inconsistent state)
+    db.begin()
     try:
-        raise RuntimeError("boom")
-    except RuntimeError:
-        return tx.state
+        db.insert(user)
+        db.commit()
+    except Exception:
+        print("Save failed")

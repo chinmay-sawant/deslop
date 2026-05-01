@@ -1,14 +1,17 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
-
 @dataclass
-class UserProfile:
-    user_id: int
-    name: str
-    role: str
+class SystemMetrics:
+    cpu_usage: float
+    mem_usage: int
+    disk_free: int
+    is_healthy: bool
 
-
-def get_user_profile(user_id: int) -> UserProfile:
-    return UserProfile(user_id=user_id, name="Ana", role="admin")
+def get_system_metrics() -> SystemMetrics:
+    # Correct: return a named structure for public APIs exposing multiple fields
+    return SystemMetrics(
+        cpu_usage=45.2,
+        mem_usage=1024,
+        disk_free=500,
+        is_healthy=True
+    )

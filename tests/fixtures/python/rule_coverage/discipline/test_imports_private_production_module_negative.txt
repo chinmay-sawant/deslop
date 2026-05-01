@@ -1,7 +1,5 @@
-from __future__ import annotations
+# Correct: test uses the public API of the production module
+from app.crypto import hash_data
 
-import app.api as api
-
-
-def test_imports_private_production_module_negative() -> str:
-    return api.__name__
+def test_hash():
+    assert hash_data("data") is not None

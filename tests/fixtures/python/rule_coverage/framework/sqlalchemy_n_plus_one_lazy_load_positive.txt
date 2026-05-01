@@ -1,6 +1,6 @@
-from __future__ import annotations
+from .models import User
 
-def sqlalchemy_n_plus_one_lazy_load_positive():
-    with Session(engine) as session:
-        orders = session.query(Order).all()
-        return [order.customer.name for order in orders]
+def list_user_bios(session):
+    # Violation: N+1 lazy loading - profile is fetched individually for each user in the loop
+    for user in session.query(User).all():
+        print(user.profile.bio)

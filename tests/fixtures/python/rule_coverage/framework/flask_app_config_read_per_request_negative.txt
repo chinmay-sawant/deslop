@@ -1,10 +1,11 @@
-from __future__ import annotations
+import json
+from flask import Flask
 
-def flask_app_config_read_per_request_negative():
-    timeout = 3
-    retries = 2
+app = Flask(__name__)
+# Correct: load config once into app.config at startup
+with open("app_config.json") as f:
+    app.config.update(json.load(f))
 
-    def handler():
-        return timeout + retries
-
-    return handler
+@app.route("/settings")
+def get_settings():
+    return app.config["API_SETTINGS"]

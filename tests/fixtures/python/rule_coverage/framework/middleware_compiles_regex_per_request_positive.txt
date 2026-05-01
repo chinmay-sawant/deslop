@@ -1,8 +1,9 @@
-from __future__ import annotations
+import re
 
-def middleware_compiles_regex_per_request_positive():
-    def middleware(request):
-        token_re = re.compile(r"^Bearer [A-Za-z0-9._-]+$")
-        return bool(token_re.match(request.headers.get("authorization", "")))
-
-    return middleware
+class AuthMiddleware:
+    def process_request(self, request):
+        # Violation: compiling a regex pattern inside a middleware method called per request
+        pattern = re.compile(r"^/api/v[1-2]/public/.*")
+        if pattern.match(request.path):
+            return None
+        return check_auth(request)

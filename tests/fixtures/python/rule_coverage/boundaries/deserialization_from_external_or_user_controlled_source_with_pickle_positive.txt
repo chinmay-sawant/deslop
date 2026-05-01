@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import pickle
 
-
-def read_profile(raw_payload: bytes) -> object:
-    return pickle.loads(raw_payload)
+def load_user_data(serialized_data):
+    # Violation: deserialization with pickle from user-controlled source (highly insecure)
+    return pickle.loads(serialized_data)

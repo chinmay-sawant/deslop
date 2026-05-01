@@ -1,11 +1,10 @@
-from __future__ import annotations
+_cache = {}
 
-_cache = {"version": 1}
+def get_data(key):
+    if key not in _cache:
+        _cache[key] = fetch_data(key)
+    return _cache[key]
 
-
-def read_cache() -> dict[str, int]:
-    return dict(_cache)
-
-
-def clear_cache() -> None:
+# Correct: provides a way to invalidate/clear the cache
+def clear_cache():
     _cache.clear()

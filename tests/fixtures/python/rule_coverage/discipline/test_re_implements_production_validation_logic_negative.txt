@@ -1,9 +1,6 @@
-from __future__ import annotations
+from app.validators import validate_user_id
 
-
-def validate_email(value: str) -> bool:
-    return "@" in value and "." in value
-
-
-def test_re_implements_production_validation_logic_negative() -> bool:
-    return validate_email("a@example.com")
+def test_user_validation():
+    # Correct: call the actual production validation logic
+    with pytest.raises(ValueError):
+        validate_user_id("!!!")

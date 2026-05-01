@@ -1,11 +1,6 @@
 import asyncio
-import time
 
-
-def blocking_lookup() -> str:
-    time.sleep(1)
-    return "ok"
-
-
-async def handler() -> str:
-    return await asyncio.to_thread(blocking_lookup)
+async def process_data():
+    # Correct: running a synchronous blocking function in a separate thread
+    await asyncio.to_thread(time.sleep, 5)
+    return "Done"

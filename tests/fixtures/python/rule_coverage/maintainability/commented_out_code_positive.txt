@@ -1,7 +1,5 @@
-from __future__ import annotations
-
-def commented_out_code_positive():
-    count = 3
-    # count = count + 1
-    # print("legacy side effect")
-    return count
+def calculate_tax(amount):
+    # Violation: leaving commented-out code in the codebase (causes confusion and clutter)
+    # old_tax = amount * 0.15
+    # return old_tax
+    return amount * 0.20

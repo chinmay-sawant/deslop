@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-def repeated_pure_helper_call_on_same_input_without_local_cache_negative():
-    def slugify(text: str) -> str:
-        return "-".join(text.lower().split())
-    value = "Product Name"
-    slug = slugify(value)
-    return [f"{slug}:{slug}" for _ in range(3)]
+def analyze_data(data):
+    # Correct: cache the result of the pure helper function in a local variable
+    metric = compute_expensive_metric(data)
+    if metric > 10:
+        print(f"High metric: {metric}")
+        return metric

@@ -1,16 +1,12 @@
-from __future__ import annotations
-
-
-class LayerA:
-    def transform(self, text: str) -> str:
-        return LayerB().transform(text)
-
-
-class LayerB:
-    def transform(self, text: str) -> str:
-        return LayerC().transform(text)
-
-
-class LayerC:
-    def transform(self, text: str) -> str:
-        return text.strip().lower()
+# Violation: passing a trivial operation through five abstraction layers makes the codebase impossible to trace
+def view_handler():
+    return Controller().dispatch()
+    
+class Controller:
+    def dispatch(self): return Service().execute()
+    
+class Service:
+    def execute(self): return Repo().get()
+    
+class Repo:
+    def get(self): return "ok"

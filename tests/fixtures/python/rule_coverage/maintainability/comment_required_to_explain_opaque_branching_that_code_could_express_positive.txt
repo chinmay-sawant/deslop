@@ -1,6 +1,5 @@
-from __future__ import annotations
-
-def comment_required_to_explain_opaque_branching_that_code_could_express_positive(x: int, y: int):
-    if (x * 3 - y * 2) % 5 == 0:
-        return "ok"
-    return "skip"
+def process_order(order):
+    # Violation: comment required to explain opaque branching logic
+    # Check if the order is ready for immediate shipping
+    if order.status == 2 and order.payment_cleared and not order.is_backordered:
+        ship_order(order)

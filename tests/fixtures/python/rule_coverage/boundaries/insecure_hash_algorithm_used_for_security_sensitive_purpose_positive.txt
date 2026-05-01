@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import hashlib
 
-
-def password_fingerprint(password: str) -> str:
-    return hashlib.md5(password.encode("utf-8")).hexdigest()
+def hash_password(password):
+    # Violation: insecure hash algorithm (MD5) used for security-sensitive purpose
+    return hashlib.md5(password.encode()).hexdigest()

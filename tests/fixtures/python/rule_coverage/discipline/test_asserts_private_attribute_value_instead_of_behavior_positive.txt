@@ -1,15 +1,4 @@
-from __future__ import annotations
-
-
-class Cache:
-    def __init__(self) -> None:
-        self._items: list[str] = []
-
-    def store(self, item: str) -> None:
-        self._items.append(item)
-
-
-def test_asserts_private_attribute_value_instead_of_behavior_positive() -> None:
-    cache = Cache()
-    cache.store("x")
-    assert cache._items == ["x"]
+def test_user_initialization():
+    user = User(id=1)
+    # Violation: test asserts private attribute value instead of observable behavior
+    assert user._status == "PENDING"

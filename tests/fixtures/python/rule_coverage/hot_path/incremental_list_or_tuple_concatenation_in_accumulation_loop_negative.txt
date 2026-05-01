@@ -1,7 +1,6 @@
-from __future__ import annotations
-
-def incremental_list_or_tuple_concatenation_in_accumulation_loop_negative():
-    values = []
-    for n in [1, 2, 3, 4]:
-        values.append(n * 10)
-    return values
+def build_sequence(items):
+    result = []
+    for item in items:
+        # Correct: use .append() to mutate the list in place efficiently in O(1) amortized time
+        result.append(item * 2)
+    return result

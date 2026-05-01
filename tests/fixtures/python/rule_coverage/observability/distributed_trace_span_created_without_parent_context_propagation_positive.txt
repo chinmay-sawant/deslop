@@ -1,10 +1,8 @@
-from __future__ import annotations
+from opentelemetry import trace
 
+tracer = trace.get_tracer(__name__)
 
-class Tracer:
-    def start_span(self, name: str, context: dict[str, str] | None = None) -> dict[str, object]:
-        return {"name": name, "context": context}
-
-
-def distributed_trace_span_created_without_parent_context_propagation_positive(tracer: Tracer) -> dict[str, object]:
-    return tracer.start_span("db.query")
+def background_worker(payload):
+    # Violation: creating a new trace span in an asynchronous worker without linking to the parent context
+    with tracer.start_as_current_span("worker_process"):
+        process(payload)

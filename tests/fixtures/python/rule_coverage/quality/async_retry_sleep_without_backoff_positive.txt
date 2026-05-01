@@ -1,9 +1,10 @@
-from __future__ import annotations
-
 import asyncio
 
-
-async def async_retry_sleep_without_backoff_positive(attempts: int) -> int:
-    for _ in range(attempts):
-        await asyncio.sleep(1)
-    return attempts
+async def fetch_with_retry():
+    for _ in range(5):
+        try:
+            return await make_request()
+        except Exception:
+            # Violation: retrying network calls without exponential backoff causes thundering herd problems
+            await asyncio.sleep(1)
+    raise Exception("Failed")

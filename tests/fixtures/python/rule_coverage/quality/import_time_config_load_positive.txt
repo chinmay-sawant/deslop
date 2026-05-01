@@ -1,5 +1,8 @@
-from __future__ import annotations
+import json
 
-import os
+# Violation: performing disk IO and config loading at module import time makes tests impossible to mock
+with open("/etc/config.json") as f:
+    SYSTEM_CONFIG = json.load(f)
 
-CONFIG = {"region": os.getenv("REGION", "us-east-1")}
+def get_config():
+    return SYSTEM_CONFIG

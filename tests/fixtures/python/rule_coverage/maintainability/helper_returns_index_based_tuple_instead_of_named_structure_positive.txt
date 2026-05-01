@@ -1,5 +1,4 @@
-from __future__ import annotations
-
-def helper_returns_index_based_tuple_instead_of_named_structure_positive():
-    row = ("alice", "admin", True)
-    return row[0], row[1], row[2]
+def parse_user_record(line):
+    # Violation: returning an opaque, index-based tuple instead of a named structure
+    parts = line.split(",")
+    return (int(parts[0]), parts[1], parts[2] == "True")

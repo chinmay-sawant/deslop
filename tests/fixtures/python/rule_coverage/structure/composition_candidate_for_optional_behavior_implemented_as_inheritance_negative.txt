@@ -1,19 +1,11 @@
-from __future__ import annotations
-
-
-class Cache:
-    def __init__(self) -> None:
-        self.data: dict[str, str] = {}
-
-
-class Fetcher:
-    def __init__(self, cache: Cache | None = None) -> None:
-        self.cache = cache
-
-    def fetch(self, key: str) -> str:
-        if self.cache and key in self.cache.data:
-            return self.cache.data[key]
-        value = f"value:{key}"
-        if self.cache:
-            self.cache.data[key] = value
-        return value
+# Correct: use composition and dependency injection to mix and match optional behaviors dynamically at runtime
+class Notifier:
+    def __init__(self, transport, encryptor=None, compressor=None):
+        self.transport = transport
+        self.encryptor = encryptor
+        self.compressor = compressor
+        
+    def notify(self, msg):
+        if self.compressor: msg = self.compressor.compress(msg)
+        if self.encryptor: msg = self.encryptor.encrypt(msg)
+        self.transport.send(msg)

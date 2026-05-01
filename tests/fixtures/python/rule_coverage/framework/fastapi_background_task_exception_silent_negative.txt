@@ -1,10 +1,16 @@
-from __future__ import annotations
+from fastapi import BackgroundTasks, FastAPI
+import logging
 
-def fastapi_background_task_exception_silent_negative():
-    async def send_email_task(message_id: str):
-        try:
-            await email_client.send(message_id)
-        except Exception as exc:
-            logger.exception("background send failed: %s", exc)
+app = FastAPI()
 
-    return send_email_task
+def sync_data():
+    # Correct: background tasks wrap logic in try-except to ensure errors are logged
+    try:
+        perform_risky_sync()
+    except Exception as e:
+        logging.error(f"Background sync failed: {e}")
+
+@app.post("/sync")
+def trigger_sync(background_tasks: BackgroundTasks):
+    background_tasks.add_task(sync_data)
+    return {"message": "Started"}

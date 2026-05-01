@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 import warnings
 
-
-def warning_issued_instead_of_exception_for_invalid_state_positive(state: str) -> str:
-    if state not in {"open", "closed"}:
-        warnings.warn("invalid state")
-        return "warned"
-    return state
+def process_data(data):
+    if not data:
+        # Violation: warning issued instead of an exception for an invalid/impossible state
+        warnings.warn("Processing empty data")
+        return
+    # ... logic continues and likely fails later

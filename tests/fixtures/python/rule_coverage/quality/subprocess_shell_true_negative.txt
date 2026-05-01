@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import subprocess
 
-
-def subprocess_shell_true_negative(path: str) -> None:
-    subprocess.run(["ls", path], shell=False, check=True)
+def list_files(directory_name):
+    # Correct: pass arguments as a list with shell=False (the default) to bypass the shell entirely
+    subprocess.run(["ls", "-l", directory_name], check=True)

@@ -1,11 +1,8 @@
-from __future__ import annotations
-
 from collections import deque
 
-
-def list_pop_zero_used_as_queue_operation_negative(items: list[str]) -> list[str]:
+def process_queue(items):
+    # Correct: use a deque which provides O(1) performance for popping from the left side
     queue = deque(items)
-    drained: list[str] = []
     while queue:
-        drained.append(queue.popleft())
-    return drained
+        item = queue.popleft()
+        do_work(item)

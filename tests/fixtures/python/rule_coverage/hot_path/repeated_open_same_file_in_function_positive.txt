@@ -1,9 +1,9 @@
-from __future__ import annotations
-
-def repeated_open_same_file_in_function_positive():
-    path = "settings.ini"
-    with open(path, "r", encoding="utf-8") as handle:
-        header = handle.readline()
-    with open(path, "r", encoding="utf-8") as handle:
-        full_text = handle.read()
-    return header, full_text
+def get_config_values():
+    # Violation: repeatedly opening and closing the same file in a single function (IO bottleneck)
+    with open("config.ini", "r") as f:
+        host = parse_host(f.read())
+    
+    with open("config.ini", "r") as f:
+        port = parse_port(f.read())
+        
+    return host, port

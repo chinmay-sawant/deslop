@@ -1,14 +1,10 @@
-from __future__ import annotations
-
-
-def recursive_walk_over_untrusted_input_lacks_depth_limit_negative(
-    node: dict[str, object], *, depth: int = 0, max_depth: int = 10
-) -> int:
-    if depth > max_depth:
-        raise ValueError("depth limit exceeded")
-    child = node.get("child")
-    if isinstance(child, dict):
-        return 1 + recursive_walk_over_untrusted_input_lacks_depth_limit_negative(
-            child, depth=depth + 1, max_depth=max_depth
-        )
-    return 1
+def parse_json_payload(data, depth=0):
+    # Correct: strictly enforce a maximum recursion depth when processing arbitrary or untrusted nested structures
+    if depth > 100:
+        raise ValueError("Payload exceeds maximum permitted nesting depth of 100")
+        
+    for key, value in data.items():
+        if isinstance(value, dict):
+            parse_json_payload(value, depth + 1)
+        else:
+            process_leaf(key, value)

@@ -1,10 +1,14 @@
-from __future__ import annotations
+import structlog
+from contextvars import ContextVar
 
+logger = structlog.get_logger()
+trace_id_ctx = ContextVar("trace_id")
 
-def structured_log_record_missing_trace_or_correlation_id_negative(order_id: str) -> dict[str, str]:
-    return {
-        "event": "order_processed",
-        "order_id": order_id,
-        "trace_id": "trace-123",
-        "correlation_id": "corr-123",
-    }
+def process_event(event_data):
+    # Correct: explicitly bind or pass trace_ids to structured loggers for distributed tracing
+    logger.info(
+        "event_processed",
+        type=event_data["type"],
+        status="success",
+        trace_id=trace_id_ctx.get("unknown")
+    )

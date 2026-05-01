@@ -1,6 +1,5 @@
-from __future__ import annotations
+import logging
 
-
-def log_config(logger, config: dict[str, str]) -> None:
-    scrubbed = {k: ("***" if "secret" in k.lower() or "password" in k.lower() else v) for k, v in config.items()}
-    logger.debug("config=%s", scrubbed)
+def log_config(settings: AppSettings):
+    # Correct: sensitive keys are excluded from the log dump
+    logging.debug(f"Current settings: {settings.model_dump(exclude={'api_key', 'db_pass'})}")

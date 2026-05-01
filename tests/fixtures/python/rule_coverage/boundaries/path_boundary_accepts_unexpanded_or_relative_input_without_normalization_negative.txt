@@ -1,12 +1,6 @@
-from __future__ import annotations
+import os
 
-from pathlib import Path
-
-ROOT = Path("/srv/app-data").resolve()
-
-
-def target_directory(path_text: str) -> Path:
-    resolved = Path(path_text).expanduser().resolve()
-    if ROOT not in resolved.parents and resolved != ROOT:
-        raise ValueError("path outside root")
-    return resolved
+def list_files(user_path):
+    # Correct: path is expanded and normalized to an absolute path
+    safe_path = os.path.abspath(os.path.expanduser(user_path))
+    return os.listdir(safe_path)

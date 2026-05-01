@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from collections import Counter
 
-
-def counter_most_common_all_items_retrieved_for_top_one_positive(values: list[str]) -> tuple[str, int]:
-    pairs = Counter(values).most_common()
-    return pairs[0]
+def get_most_frequent_word(words):
+    counts = Counter(words)
+    # Violation: retrieving all elements just to index the first one is inefficient (O(N log N) sort)
+    return counts.most_common()[0][0]

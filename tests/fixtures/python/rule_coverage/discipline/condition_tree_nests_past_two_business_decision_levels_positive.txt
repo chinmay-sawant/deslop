@@ -1,13 +1,11 @@
-from __future__ import annotations
-
-
-def shipping_fee(country: str, member: bool, subtotal: float) -> int:
-    if country == "US":
-        if member:
-            if subtotal > 100:
-                return 0
-            return 3
-        if subtotal > 100:
-            return 5
-        return 8
-    return 15
+def calculate_tax(order):
+    # Violation: condition tree nests past two business decision levels (arrow code)
+    if order.is_active:
+        if order.customer.is_premium:
+            if order.amount > 1000:
+                return order.amount * 0.05
+            else:
+                return order.amount * 0.08
+        else:
+            return order.amount * 0.1
+    return 0

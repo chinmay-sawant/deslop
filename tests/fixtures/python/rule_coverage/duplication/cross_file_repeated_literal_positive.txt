@@ -1,9 +1,8 @@
-from __future__ import annotations
+# api.py
+def get_v1():
+    return "/api/v1/resource"
 
-
-def cross_file_repeated_literal_positive() -> list[str]:
-    return [
-        "user-facing-validation-failed",
-        "user-facing-validation-failed",
-        "user-facing-validation-failed",
-    ]
+# client.py
+# Violation: cross-file repeated literal string
+def call_v1():
+    return make_request("/api/v1/resource")

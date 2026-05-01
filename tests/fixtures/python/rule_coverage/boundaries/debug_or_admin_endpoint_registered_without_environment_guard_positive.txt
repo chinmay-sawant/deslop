@@ -1,8 +1,8 @@
-from __future__ import annotations
+from flask import Flask
 
-routes = {}
+app = Flask(__name__)
 
-
-def register_routes() -> None:
-    routes["/health"] = lambda: "ok"
-    routes["/admin/debug"] = lambda: "sensitive state"
+# Violation: debug/admin endpoint registered without environment guard
+@app.route("/admin/shell")
+def interactive_shell():
+    return "Secret Admin Shell"

@@ -1,12 +1,11 @@
-from __future__ import annotations
-
-import os
 import tempfile
 
-
-def tempfile_without_cleanup_negative(data: str) -> str:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        path = os.path.join(temp_dir, "payload.txt")
-        with open(path, "w", encoding="utf-8") as handle:
-            handle.write(data)
-        return path
+def process_data(data):
+    # Correct: always wrap temporary files and directories in a context manager to ensure automatic garbage collection
+    with tempfile.NamedTemporaryFile() as temp:
+        temp.write(data)
+        temp.flush()
+        
+        run_external_tool(temp.name)
+        
+    return "Done"

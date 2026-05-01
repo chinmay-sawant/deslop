@@ -1,8 +1,8 @@
-from __future__ import annotations
+# Violation: relying on global mutable state makes the code thread-unsafe and impossible to test reliably
+ACTIVE_USERS = set()
 
-STATE: dict[str, int] = {}
+def login_user(user_id):
+    ACTIVE_USERS.add(user_id)
 
-
-def mutable_module_global_state_positive(key: str) -> int:
-    STATE[key] = STATE.get(key, 0) + 1
-    return STATE[key]
+def logout_user(user_id):
+    ACTIVE_USERS.discard(user_id)

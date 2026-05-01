@@ -1,15 +1,7 @@
-from __future__ import annotations
+import sqlalchemy
 
-
-class TimeoutError(ValueError):
-    pass
-
-
-def classify_error(func) -> str:
-    try:
-        func()
-        return "ok"
-    except TimeoutError:
-        return "retry"
-    except ValueError:
-        return "fail"
+def handle_database_error(e):
+    # Correct: use specific exception types or error codes provided by the library
+    if isinstance(e, sqlalchemy.exc.IntegrityError):
+        return "Duplicate entry"
+    return "Unknown error"

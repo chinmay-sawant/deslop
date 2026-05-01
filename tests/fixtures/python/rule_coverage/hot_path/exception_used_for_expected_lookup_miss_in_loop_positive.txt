@@ -1,10 +1,9 @@
-from __future__ import annotations
-
-def exception_used_for_expected_lookup_miss_in_loop_positive():
-    counts = {}
-    for key in ["a", "b", "a", "c"]:
+def map_values(keys, mapping):
+    results = []
+    for key in keys:
+        # Violation: using try-except for an expected/common lookup miss in a loop (slow)
         try:
-            counts[key] += 1
+            results.append(mapping[key])
         except KeyError:
-            counts[key] = 1
-    return counts
+            results.append(None)
+    return results

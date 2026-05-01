@@ -1,7 +1,8 @@
-from __future__ import annotations
+from sqlmodel import Session
 
-def sqlmodel_commit_per_row_in_loop_negative():
+def save_items(engine, items):
+    # Correct: add all items to the session and commit once at the end
     with Session(engine) as session:
-        for title in ["a", "b", "c"]:
-            session.add(Task(title=title))
+        for item in items:
+            session.add(item)
         session.commit()

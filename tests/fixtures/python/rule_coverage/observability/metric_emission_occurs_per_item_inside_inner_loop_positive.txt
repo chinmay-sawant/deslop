@@ -1,13 +1,5 @@
-from __future__ import annotations
-
-
-def emit(metric: str, value: int) -> tuple[str, int]:
-    return metric, value
-
-
-def metric_emission_occurs_per_item_inside_inner_loop_positive(batches: list[list[int]]) -> list[tuple[str, int]]:
-    out: list[tuple[str, int]] = []
-    for batch in batches:
-        for _item in batch:
-            out.append(emit("item.processed", 1))
-    return out
+def process_batch(records):
+    for record in records:
+        do_work(record)
+        # Violation: firing metric emissions per item in a hot loop kills network/IO performance
+        statsd.increment("records_processed")

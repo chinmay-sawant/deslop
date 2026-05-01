@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 
-
 @dataclass
-class DataclassMutableDefaultNegative:
-    tags: list[str] = field(default_factory=list)
+class Inventory:
+    # Correct: use field(default_factory=...) to instantiate a new mutable collection for each instance
+    items: list = field(default_factory=list)

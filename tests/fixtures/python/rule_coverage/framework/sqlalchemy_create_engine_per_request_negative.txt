@@ -1,10 +1,9 @@
-from __future__ import annotations
+from sqlalchemy import create_engine
 
-def sqlalchemy_create_engine_per_request_negative():
-    engine = create_engine("sqlite:///app.db")
+# Correct: create the engine once at module level and reuse it
+engine = create_engine("postgresql://user:pass@localhost/db")
 
-    def handler():
-        with Session(engine) as session:
-            return session.query(Account).count()
-
-    return handler
+@app.get("/user/{id}")
+def get_user(id: int):
+    with engine.connect() as conn:
+        return conn.execute("SELECT ...").fetchone()

@@ -1,12 +1,6 @@
-class ParseResult:
-    def __init__(self, text: str) -> None:
-        self.text = text
+# my_package/__init__.py
+# Violation: exporting two different classes with the exact same name causes the second to silently overwrite the first
+from .database import Client
+from .api import Client
 
-
-class PaymentResult:
-    def __init__(self, cents: int) -> None:
-        self.cents = cents
-
-
-Result = ParseResult
-Result = PaymentResult
+__all__ = ["Client"]

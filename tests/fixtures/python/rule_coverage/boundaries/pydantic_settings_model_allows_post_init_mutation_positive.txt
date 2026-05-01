@@ -1,11 +1,6 @@
-from __future__ import annotations
-
 from pydantic_settings import BaseSettings
 
-
-class Settings(BaseSettings):
+class AppSettings(BaseSettings):
     api_key: str
-
-
-def rotate_key(settings: Settings) -> None:
-    settings.api_key = "new-value"
+    # Violation: pydantic settings model allows post-init mutation
+    model_config = {"frozen": False}

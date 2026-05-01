@@ -1,5 +1,6 @@
-from __future__ import annotations
+from typing import Dict, Union
 
-
-def public_any_type_leak_negative(payload: dict[str, int]) -> int:
-    return payload["value"]
+# Correct: always define exact structural shapes for data crossing public API boundaries
+def parse_generic_payload(payload: str) -> Dict[str, Union[str, int, float]]:
+    import json
+    return json.loads(payload)

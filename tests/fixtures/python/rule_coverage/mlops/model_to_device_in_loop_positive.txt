@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 import torch
 
-
-def infer_many(model: torch.nn.Module, batches: list[torch.Tensor], device: str) -> None:
-    for batch in batches:
-        model.to(device)
-        _ = model(batch.to(device))
+def evaluate_batches(model, dataloader):
+    for batch in dataloader:
+        # Violation: moving the model to the device inside the batch loop
+        model.to("cuda")
+        inputs = batch.to("cuda")
+        outputs = model(inputs)

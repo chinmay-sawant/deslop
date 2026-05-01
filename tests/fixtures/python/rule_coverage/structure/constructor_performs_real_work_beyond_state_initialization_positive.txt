@@ -1,9 +1,10 @@
-from __future__ import annotations
+import network
 
-import requests
-
-
-class ProfileClientPositive:
-    def __init__(self, user_id: str) -> None:
-        self.user_id = user_id
-        self.profile = requests.get(f"https://example.com/users/{user_id}", timeout=2).json()
+class DataProcessor:
+    # Violation: doing real work (IO, heavy computation) in a constructor makes the class untestable and rigid
+    def __init__(self):
+        self.data = network.download_massive_dataset()
+        self.model = self._train_model()
+        
+    def _train_model(self):
+        pass

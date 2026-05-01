@@ -1,12 +1,9 @@
-from __future__ import annotations
-
-
-class OrderService:
-    def parse_order(self, raw: str) -> dict[str, str]:
-        key, value = raw.split("=", 1)
-        return {key: value}
-
+# Correct: decompose God Classes into highly cohesive, domain-specific services
+class PayrollCalculator:
+    def calculate_tax(self): pass
 
 class NotificationService:
-    def send_email(self, email: str) -> str:
-        return f"sent:{email}"
+    def send_sms(self): pass
+
+class ImageProcessor:
+    def compress(self): pass

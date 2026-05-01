@@ -1,10 +1,8 @@
-from __future__ import annotations
-
-import subprocess
-
-
-def validation_only_happens_after_expensive_side_effect_has_started_negative(job_id: str) -> str:
-    if not job_id.isdigit():
-        raise ValueError("job_id must be digits")
-    subprocess.run(["echo", f"starting:{job_id}"], check=True)
-    return job_id
+def provision_server(config):
+    # Correct: validate 100% of the input upfront before initiating any slow or expensive side effects
+    if not config.get("server_name"):
+        raise ValueError("Missing server_name")
+        
+    client = connect_to_aws()
+    instance = client.launch_instance()
+    instance.set_name(config["server_name"])

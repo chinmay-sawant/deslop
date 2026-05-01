@@ -1,5 +1,5 @@
-from __future__ import annotations
+# __init__.py
+# Correct: restrict the public API surface exclusively to intended public interfaces
+from .core import PublicClass
 
-from mypkg.api import EventEncoder
-
-__all__ = ["EventEncoder"]
+__all__ = ["PublicClass"]

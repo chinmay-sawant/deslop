@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 from importlib.metadata import version
 
-PIP_VERSION = version("pip")
+# Correct: read package metadata once and store it as a module-level constant
+PACKAGE_VERSION = version("my_package")
 
-
-def importlib_metadata_version_queried_inside_request_loop_negative(request_ids: list[str]) -> list[str]:
-    return [f"{request_id}:{PIP_VERSION}" for request_id in request_ids]
+def get_server_info():
+    return {"status": "ok", "version": PACKAGE_VERSION}

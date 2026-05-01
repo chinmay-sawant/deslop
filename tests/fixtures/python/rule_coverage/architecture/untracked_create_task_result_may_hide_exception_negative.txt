@@ -1,11 +1,9 @@
 import asyncio
 
+background_tasks = set()
 
-async def sync_one(order_id: str) -> None:
-    if order_id == "bad":
-        raise RuntimeError(order_id)
-
-
-async def sync_all(ids: list[str]) -> None:
-    tasks = [asyncio.create_task(sync_one(order_id)) for order_id in ids]
-    await asyncio.gather(*tasks, return_exceptions=False)
+async def process():
+    # Correct: background task is tracked and result can be checked
+    task = asyncio.create_task(background_work())
+    background_tasks.add(task)
+    task.add_done_callback(background_tasks.discard)

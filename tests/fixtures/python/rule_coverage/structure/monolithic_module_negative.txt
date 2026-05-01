@@ -1,6 +1,10 @@
-from __future__ import annotations
+# my_app/database.py
+def connect_db(): pass
 
+# my_app/network.py
+def fetch_api(): pass
 
-def parse(raw: str) -> dict[str, str]:
-    key, value = raw.split("=", 1)
-    return {key: value}
+# my_app/parsing.py
+def parse_regex(): pass
+
+# Correct: break apart "utils.py" into heavily focused, domain-specific modules

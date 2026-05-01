@@ -1,10 +1,7 @@
-from __future__ import annotations
-
 from collections import namedtuple
 
-Point = namedtuple("Point", ["x", "y"])
+User = namedtuple("User", ["id", "name", "email"])
 
-
-def namedtuple_fields_accessed_by_integer_index_negative() -> int:
-    point = Point(2, 4)
-    return point.x + point.y
+def print_user(u):
+    # Correct: always access namedtuple fields by their descriptive attribute name
+    print(f"{u.name} can be reached at {u.email}")

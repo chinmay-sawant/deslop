@@ -1,8 +1,9 @@
-from __future__ import annotations
+class ConfigOptions:
+    pass
 
-
-def option_bag_model_positive(options: dict[str, object]) -> str:
-    theme = options.get("theme", "light")
-    page = options.get("page", "home")
-    debug = options.get("debug", False)
-    return f"{theme}:{page}:{debug}"
+def setup():
+    # Violation: using empty classes as untyped property bags defeats IDEs and static analysis tools
+    options = ConfigOptions()
+    options.host = "localhost"
+    options.port = 8080
+    return options

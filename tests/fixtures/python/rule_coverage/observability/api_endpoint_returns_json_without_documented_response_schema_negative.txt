@@ -1,12 +1,14 @@
-from __future__ import annotations
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-from typing import TypedDict
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    role: str
 
+app = FastAPI()
 
-class HealthResponse(TypedDict):
-    status: str
-    uptime_seconds: int
-
-
-def get_health() -> HealthResponse:
-    return {"status": "ok", "uptime_seconds": 42}
+@app.get("/users/{user_id}", response_model=UserResponse)
+def get_user(user_id: int):
+    # Correct: return a Pydantic model so the schema is correctly documented in OpenAPI
+    return UserResponse(id=user_id, name="Alice", role="admin")

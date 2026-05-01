@@ -1,5 +1,6 @@
-def upload_view(request: dict) -> dict:
-    path = f"/tmp/{request['name']}.txt"
-    with open(path, "w", encoding="utf-8") as handle:
-        handle.write(request["content"])
-    return {"saved_to": path}
+@app.post("/logs")
+def write_log(message: str):
+    # Violation: view function performs direct file system IO
+    with open("app_logs.txt", "a") as f:
+        f.write(message + "\n")
+    return {"status": "ok"}

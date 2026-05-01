@@ -1,5 +1,5 @@
-from __future__ import annotations
+from .models import User
 
-def django_delete_single_in_loop_negative():
-    stale_ids = [3, 5, 8]
-    Session.objects.filter(id__in=stale_ids).delete()
+def cleanup_inactive_users(user_ids):
+    # Correct: use filter and delete() to remove multiple objects efficiently
+    User.objects.filter(id__in=user_ids).delete()

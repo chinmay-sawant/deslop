@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import subprocess
 
-
-def import_time_subprocess_negative() -> str:
-    return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+def get_version():
+    # Correct: execute subprocesses within functions, or better yet, read from a pre-built static file
+    return subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()

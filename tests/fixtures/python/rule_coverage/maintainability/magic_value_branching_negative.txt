@@ -1,9 +1,15 @@
-from __future__ import annotations
+from enum import Enum
 
-LOW_STOCK_THRESHOLD = 3
+class PaymentStatus(Enum):
+    SUCCESS = 1
+    REFUNDED = 2
+    FAILED = 3
 
-
-def stock_state(quantity: int) -> str:
-    if quantity <= LOW_STOCK_THRESHOLD:
-        return "low"
-    return "ok"
+def process_payment(status: PaymentStatus):
+    # Correct: use Enums for clearly named branching values
+    if status == PaymentStatus.SUCCESS:
+        complete_payment()
+    elif status == PaymentStatus.REFUNDED:
+        refund_payment()
+    elif status == PaymentStatus.FAILED:
+        fail_payment()

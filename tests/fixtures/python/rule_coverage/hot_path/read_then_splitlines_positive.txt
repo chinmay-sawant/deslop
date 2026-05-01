@@ -1,6 +1,7 @@
-from __future__ import annotations
-
-def read_then_splitlines_positive():
-    with open("events.log", "r", encoding="utf-8") as fh:
-        lines = fh.read().splitlines()
-    return [line for line in lines if line]
+def parse_log(filepath):
+    with open(filepath, "r") as f:
+        # Violation: using read().splitlines() loads the entire file into memory and splits it at once
+        lines = f.read().splitlines()
+        for line in lines:
+            if "ERROR" in line:
+                print(line)

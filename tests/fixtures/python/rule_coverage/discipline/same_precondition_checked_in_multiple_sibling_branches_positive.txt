@@ -1,13 +1,6 @@
-from __future__ import annotations
-
-
-def same_precondition_checked_in_multiple_sibling_branches_positive(user: dict[str, str] | None, mode: str) -> str:
-    if mode == "brief":
-        if user is None:
-            raise ValueError("user required")
-        return user["name"]
-    if mode == "full":
-        if user is None:
-            raise ValueError("user required")
-        return f"{user['name']}<{user['email']}>"
-    return "unknown"
+def process_node(node):
+    # Violation: same precondition checked in multiple sibling branches
+    if node.is_active and node.type == "user":
+        return process_user(node)
+    elif node.is_active and node.type == "admin":
+        return process_admin(node)

@@ -1,10 +1,6 @@
 import asyncio
 
-
-async def sync_one(order_id: str) -> None:
-    raise RuntimeError(order_id)
-
-
-async def sync_all(ids: list[str]) -> None:
-    for order_id in ids:
-        asyncio.create_task(sync_one(order_id))
+async def process():
+    # Violation: untracked create_task result may hide exceptions
+    asyncio.create_task(background_work())
+    print("Background work started")

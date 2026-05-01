@@ -1,12 +1,10 @@
-from __future__ import annotations
-
-
-class SharedCacheStorePositive:
-    def __init__(self) -> None:
-        self.cache: dict[str, str] = {}
-
-    def read(self, key: str) -> str:
-        return self.cache.get(key, "")
-
-    def write(self, key: str, value: str) -> None:
-        self.cache[key] = value
+class SystemCache:
+    # Violation: read and write boundaries freely mutating the exact same internal collection state
+    def __init__(self):
+        self._store = {}
+        
+    def get_data(self):
+        return self._store
+        
+    def update_data(self, key, val):
+        self._store[key] = val

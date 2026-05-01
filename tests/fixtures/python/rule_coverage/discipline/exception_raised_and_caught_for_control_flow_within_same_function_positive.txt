@@ -1,8 +1,9 @@
-from __future__ import annotations
-
-
-def exception_raised_and_caught_for_control_flow_within_same_function_positive(value: str) -> int:
+def find_item(items, target):
+    # Violation: exception raised and caught for control flow within the same function
     try:
-        return int(value)
-    except ValueError:
-        return 0
+        for item in items:
+            if item == target:
+                raise FoundException()
+    except FoundException:
+        return True
+    return False

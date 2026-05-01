@@ -1,12 +1,6 @@
-from __future__ import annotations
-
 from typing import TypedDict
 
-
-class Payload(TypedDict, total=False):
-    id: int
-    status: str
-
-
-def typed_dict_total_false_without_docstring_noting_optional_keys_positive(payload: Payload) -> int:
-    return payload.get("id", 0)
+# Violation: TypedDict with total=False but missing a docstring explaining which keys are optional
+class UserConfig(TypedDict, total=False):
+    timeout: int
+    retries: int

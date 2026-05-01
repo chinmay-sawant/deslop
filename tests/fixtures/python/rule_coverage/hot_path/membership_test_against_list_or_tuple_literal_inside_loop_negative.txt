@@ -1,9 +1,9 @@
-from __future__ import annotations
+# Correct: define a constant set outside the loop for O(1) membership testing
+VALID_EVENT_TYPES = {"click", "scroll", "keypress", "focus"}
 
-def membership_test_against_list_or_tuple_literal_inside_loop_negative():
-    vowel_set = {"a", "e", "i", "o", "u"}
-    vowels = 0
-    for ch in "performance":
-        if ch in vowel_set:
-            vowels += 1
-    return vowels
+def filter_events(events):
+    valid_events = []
+    for event in events:
+        if event.type in VALID_EVENT_TYPES:
+            valid_events.append(event)
+    return valid_events

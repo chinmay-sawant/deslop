@@ -1,5 +1,6 @@
-def build_multipliers() -> list:
+def create_callbacks():
     callbacks = []
-    for factor in range(3):
-        callbacks.append(lambda value: value * factor)
+    for i in range(5):
+        # Violation: closure captures loop variable 'i' without binding, all callables will use the final value
+        callbacks.append(lambda: i)
     return callbacks

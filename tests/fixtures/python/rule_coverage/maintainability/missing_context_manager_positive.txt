@@ -1,6 +1,6 @@
-from __future__ import annotations
-
-
-def read_first_line(path: str) -> str:
-    handle = open(path, "r", encoding="utf-8")
-    return handle.readline().strip()
+def read_data(filepath):
+    # Violation: missing context manager (with statement) can lead to unclosed resources
+    f = open(filepath, "r")
+    data = f.read()
+    f.close()
+    return data

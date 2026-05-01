@@ -1,9 +1,11 @@
-from __future__ import annotations
+import json
+from flask import Flask, request
 
-def flask_request_body_parsed_multiple_times_positive():
-    def handler():
-        kind = request.get_json()["kind"]
-        value = request.get_json()["value"]
-        return f"{kind}:{value}"
+app = Flask(__name__)
 
-    return handler
+@app.route("/process", methods=["POST"])
+def process():
+    # Violation: request body parsed multiple times (once by .json, once by loads(data))
+    data1 = request.json
+    data2 = json.loads(request.data)
+    return "ok"

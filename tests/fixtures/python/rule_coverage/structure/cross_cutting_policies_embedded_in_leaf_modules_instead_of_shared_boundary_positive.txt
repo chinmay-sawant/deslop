@@ -1,8 +1,8 @@
-from __future__ import annotations
-
-
-class InvoiceEmailSender:
-    def send(self, role: str, body: str) -> str:
-        if role != "admin":
-            raise PermissionError("admin only")
-        return f"sent:{body}"
+def get_user_profile(user_id, request):
+    # Violation: embedding cross-cutting concerns (auth, rate-limiting) deep inside business logic leaf nodes
+    if not request.headers.get("Authorization"):
+        raise Exception("Unauthorized")
+    if rate_limit_exceeded(request.ip):
+        raise Exception("Too many requests")
+        
+    return db.query("SELECT * FROM users WHERE id = ?", user_id)

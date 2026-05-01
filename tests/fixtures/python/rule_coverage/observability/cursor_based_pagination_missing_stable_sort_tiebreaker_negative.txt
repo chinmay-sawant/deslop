@@ -1,5 +1,9 @@
-from __future__ import annotations
-
-
-def cursor_based_pagination_missing_stable_sort_tiebreaker_negative(rows: list[dict[str, int]]) -> list[dict[str, int]]:
-    return sorted(rows, key=lambda row: (row["updated_at"], row["id"]))
+def fetch_records(last_created_at, last_id):
+    # Correct: always include a unique, sequential ID column as a tiebreaker in the ORDER BY clause
+    query = """
+        SELECT * FROM records 
+        WHERE (created_at, id) > (?, ?) 
+        ORDER BY created_at ASC, id ASC 
+        LIMIT 10
+    """
+    return db.execute(query, (last_created_at, last_id))

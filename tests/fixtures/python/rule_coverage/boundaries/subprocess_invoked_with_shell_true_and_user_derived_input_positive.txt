@@ -1,8 +1,5 @@
-from __future__ import annotations
-
 import subprocess
 
-
-def run_user_command(user_value: str) -> str:
-    cmd = f"echo {user_value}"
-    return subprocess.check_output(cmd, shell=True, text=True).strip()
+def run_user_command(user_input):
+    # Violation: subprocess invoked with shell=True and user-derived input (RCE risk)
+    subprocess.run(f"ls -l {user_input}", shell=True)

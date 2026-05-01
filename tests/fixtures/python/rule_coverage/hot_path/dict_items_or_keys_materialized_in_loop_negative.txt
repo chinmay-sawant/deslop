@@ -1,8 +1,5 @@
-from __future__ import annotations
-
-def dict_items_or_keys_materialized_in_loop_negative():
-    payload = {"a": 1, "b": 2, "c": 3}
-    total = 0
-    for key in payload:
-        total += payload[key]
-    return total
+def count_keys(data):
+    # Correct: iterate directly over the dictionary to avoid creating a temporary list of keys
+    for key in data:
+        if key.startswith("internal_"):
+            print(f"Found: {key}")

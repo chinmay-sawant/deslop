@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import pandas as pd
 
-
-def merge_batches(frames: list[pd.DataFrame]) -> pd.DataFrame:
-    return pd.concat(frames, ignore_index=True)
+def merge_chunks(chunks):
+    # Correct: gather all chunks into a list and call pd.concat exactly once
+    return pd.concat(chunks, ignore_index=True)

@@ -1,7 +1,8 @@
-from __future__ import annotations
+from .models import User
 
-def django_queryset_evaluated_multiple_times_negative():
-    queryset = Ticket.objects.filter(priority="high")
-    rows = list(queryset)
-    row_ids = [ticket.id for ticket in rows]
-    return len(rows), row_ids
+def process_active_users():
+    # Correct: convert to a list to evaluate the queryset once and reuse the results
+    users = list(User.objects.filter(is_active=True))
+    if users:
+        for user in users:
+            print(user.username)

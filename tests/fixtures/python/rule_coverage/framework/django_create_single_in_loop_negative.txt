@@ -1,6 +1,9 @@
-from __future__ import annotations
+from .models import User
 
-def django_create_single_in_loop_negative():
-    rows = [{"email": "a@example.com"}, {"email": "b@example.com"}]
-    users = [User(email=row["email"]) for row in rows]
+def import_users(user_data):
+    # Correct: use bulk_create to insert multiple objects in a single query
+    users = [
+        User(username=data["username"], email=data["email"])
+        for data in user_data
+    ]
     User.objects.bulk_create(users)

@@ -1,8 +1,6 @@
-from __future__ import annotations
-
-def filter_then_count_then_iterate_positive():
-    values = [5, -1, 2, 0, 9]
-    positives = [v for v in values if v > 0]
+def process_positive(numbers):
+    # Violation: iterating over a collection, filtering it into a list, counting, and then iterating again
+    positives = [n for n in numbers if n > 0]
     if len(positives) > 0:
-        return [v * 2 for v in positives]
-    return []
+        for p in positives:
+            print(p)

@@ -1,10 +1,7 @@
-from __future__ import annotations
-
 from collections import namedtuple
 
-Point = namedtuple("Point", ["x", "y"])
+User = namedtuple("User", ["id", "name", "email"])
 
-
-def namedtuple_fields_accessed_by_integer_index_positive() -> int:
-    point = Point(2, 4)
-    return point[0] + point[1]
+def print_user(u):
+    # Violation: using integer indexes to access namedtuple fields defeats their entire purpose of readability
+    print(f"{u[1]} can be reached at {u[2]}")

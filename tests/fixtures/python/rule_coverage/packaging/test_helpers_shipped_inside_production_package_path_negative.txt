@@ -1,2 +1,7 @@
-def build_user(name: str) -> dict[str, str]:
-    return {"name": name, "source": "production"}
+# module: tests/helpers/mocks.py
+class MockDatabase:
+    # Correct: place all test utilities and mocks strictly in the tests/ directory
+    pass
+
+# module: tests/test_api.py
+from tests.helpers.mocks import MockDatabase

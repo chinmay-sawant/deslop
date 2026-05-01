@@ -1,7 +1,6 @@
-from __future__ import annotations
-
-
-def mutable_default_argument_negative(item: str, bucket: list[str] | None = None) -> list[str]:
-    values = [] if bucket is None else list(bucket)
-    values.append(item)
-    return values
+# Correct: use None as a sentinel and instantiate a fresh mutable collection inside the function body
+def append_to_list(item, target_list=None):
+    if target_list is None:
+        target_list = []
+    target_list.append(item)
+    return target_list

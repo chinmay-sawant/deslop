@@ -1,7 +1,6 @@
-from __future__ import annotations
-
-
-def metric_or_span_labels_use_high_cardinality_raw_inputs_negative(email: str, order_id: str) -> dict[str, str]:
-    domain = email.split("@")[-1]
-    bucket = "long" if len(order_id) > 10 else "short"
-    return {"email_domain": domain, "order_bucket": bucket}
+def execute_query(raw_sql):
+    with tracer.start_as_current_span("db_query") as span:
+        # Correct: extract stable, low-cardinality categories to use as metric labels
+        query_type = raw_sql.split()[0].upper()
+        span.set_attribute("query_type", query_type)
+        db.execute(raw_sql)

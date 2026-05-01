@@ -1,10 +1,7 @@
+import asyncio
 import time
 
-
-def blocking_lookup() -> str:
-    time.sleep(1)
-    return "ok"
-
-
-async def handler() -> str:
-    return blocking_lookup()
+async def process_data():
+    # Violation: calling a synchronous blocking function from async without an executor
+    time.sleep(5)
+    return "Done"
