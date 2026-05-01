@@ -263,8 +263,9 @@ fn normalized_fixture_shape(fixture: &str) -> String {
                 }
             }
             '`' => {
-                normalized_literals.push_str("`TAG`");
+                normalized_literals.push('`');
                 for inner in chars.by_ref() {
+                    normalized_literals.push(inner);
                     if inner == '`' {
                         break;
                     }
