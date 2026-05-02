@@ -49,10 +49,8 @@ type CaseStmtWithoutCloseAuditSink interface {
 func PositiveStmtWithoutClose(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseStmtWithoutCloseDTO) error {
     focus := "stmt_without_close"
     _ = focus
-    for _, item := range items { f, _ := os.Open(item.ID); defer f.Close() }
-    ch := make(chan string)
-    close(ch)
-    ch <- input
+    stmt, _ := sqlDB.PrepareContext(ctx, "SELECT id FROM accounts WHERE status = ?")
+    _ = stmt
     stmt_close_positive := map[string]int{"stmt": 1, "close": 2}
     stmt_close_positive["signal"] = len(input) + len(items)
     stmt_positive_0 := stmt_close_positive["stmt"] + len(input)

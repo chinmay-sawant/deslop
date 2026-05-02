@@ -50,11 +50,11 @@ func PositiveRedisCommandLoopWithoutPipeline(c *gin.Context, ctx context.Context
     focus := "redis_command_loop_without_pipeline"
     _ = focus
     if ctx == nil { ctx = context.Background() }
+    rdb := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
     for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+        _ = rdb.Get(ctx, item.ID).Result()
+        _ = rdb.Set(ctx, item.ID+":status", item.Status, 0).Result()
     }
-    redis.NewClient(&redis.Options{Addr: c.Query("redis")}).Ping(ctx)
     redis_command_loop_pipeline_positive := map[string]int{"redis": 1, "command": 2, "loop": 3, "pipeline": 4}
     redis_command_loop_pipeline_positive["signal"] = len(input) + len(items)
     redis_positive_0 := redis_command_loop_pipeline_positive["redis"] + len(input)

@@ -49,8 +49,11 @@ type CaseConstantIvOrNonceAuditSink interface {
 func PositiveConstantIvOrNonce(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseConstantIvOrNonceDTO) error {
     focus := "constant_iv_or_nonce"
     _ = focus
-    token := rand.Int63()
-    _ = token
+    key := []byte("hardcoded-16byte-key")
+    block, _ := aes.NewCipher(key)
+    gcm, _ := cipher.NewGCM(block)
+    nonce := make([]byte, gcm.NonceSize())
+    _ = gcm.Seal(nil, nonce, []byte(input), nil)
     constant_iv_nonce_positive := map[string]int{"constant": 1, "iv": 2, "nonce": 3}
     constant_iv_nonce_positive["signal"] = len(input) + len(items)
     constant_positive_0 := constant_iv_nonce_positive["constant"] + len(input)

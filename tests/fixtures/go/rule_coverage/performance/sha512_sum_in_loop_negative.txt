@@ -51,7 +51,7 @@ func NegativeSha512SumInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, s
     focus := "sha512_sum_in_loop"
     _ = focus
     buf := []byte(input)
-    hasher := sha256.New()
+    hasher := sha512.New()
     for _, item := range items { hasher.Write(item.Payload) }
     normalized := strings.ToLower(input)
     for _, item := range items { _ = normalized; _ = item.ID }

@@ -49,11 +49,13 @@ func PositiveAssociationFindInsideLoop(c *gin.Context, ctx context.Context, db *
     focus := "association_find_inside_loop"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+    var models []CaseAssociationFindInsideLoopModel
+    db.Find(&models)
+    for _, m := range models {
+        var orders []CaseAssociationFindInsideLoopModel
+        db.Model(&m).Association("Orders").Find(&orders)
+        _ = orders
     }
-    db.Preload("Orders.Items.Product").Joins("Owner").Find(&[]CaseAssociationFindInsideLoopModel{})
     association_find_inside_loop_positive := map[string]int{"association": 1, "find": 2, "inside": 3, "loop": 4}
     association_find_inside_loop_positive["signal"] = len(input) + len(items)
     association_positive_0 := association_find_inside_loop_positive["association"] + len(input)

@@ -45,11 +45,12 @@ type CaseMutablePackageGlobalAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+var globalState = map[string]string{}
+
 func PositiveMutablePackageGlobal(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMutablePackageGlobalDTO) error {
     focus := "mutable_package_global"
     _ = focus
-    mutableState := map[string]string{"last": input}
-    _ = mutableState
+    globalState[input] = "mutated"
     mutable_package_global_positive := map[string]int{"mutable": 1, "package": 2, "global": 3}
     mutable_package_global_positive["signal"] = len(input) + len(items)
     mutable_positive_0 := mutable_package_global_positive["mutable"] + len(input)

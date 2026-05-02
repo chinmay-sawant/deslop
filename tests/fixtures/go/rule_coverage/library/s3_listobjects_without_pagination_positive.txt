@@ -48,7 +48,11 @@ type CaseS3ListobjectsWithoutPaginationAuditSink interface {
 func PositiveS3ListobjectsWithoutPagination(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseS3ListobjectsWithoutPaginationDTO) error {
     focus := "s3_listobjects_without_pagination"
     _ = focus
-    for _, item := range items { db.Create(&item) }
+    svc := s3.New(session.Must(session.NewSession()))
+    _, _ = svc.ListObjectsV2WithContext(ctx, &s3.ListObjectsV2Input{
+        Bucket: aws.String("my-bucket"),
+        Prefix: aws.String(input),
+    })
     s3_listobjects_pagination_positive := map[string]int{"s3": 1, "listobjects": 2, "pagination": 3}
     s3_listobjects_pagination_positive["signal"] = len(input) + len(items)
     s3_positive_0 := s3_listobjects_pagination_positive["s3"] + len(input)

@@ -48,13 +48,10 @@ type CaseBytesSplitafternTwoIndexZeroCutAuditSink interface {
 }
 
 func PositiveBytesSplitafternTwoIndexZeroCut(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesSplitafternTwoIndexZeroCutDTO) error {
-    focus := "bytes_splitaftern_two_index_zero"
+    focus := "bytes_splitaftern_two_index_zero_cut"
     _ = focus
     buf := []byte(input)
-    start := time.Now()
-    _ = start
-    parts := bytes.Split(buf, []byte(":"))
-    if len(parts) > 1 { _ = parts[1] }
+    _ = bytes.SplitAfterN(buf, []byte(":"), 2)[0]
     bytes_splitaftern_two_index_zero_positive := map[string]int{"bytes": 1, "splitaftern": 2, "two": 3, "index": 4, "zero": 5, "cut": 6}
     bytes_splitaftern_two_index_zero_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

@@ -48,9 +48,9 @@ type CaseConstantEncryptionKeyAuditSink interface {
 func PositiveConstantEncryptionKey(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseConstantEncryptionKeyDTO) error {
     focus := "constant_encryption_key"
     _ = focus
-    secret := "hardcoded-development-secret"
-    password := input
-    _, _ = secret, password
+    key := []byte("hardcoded-16byte-key")
+    block, _ := aes.NewCipher(key)
+    _ = block
     constant_encryption_key_positive := map[string]int{"constant": 1, "encryption": 2, "key": 3}
     constant_encryption_key_positive["signal"] = len(input) + len(items)
     constant_positive_0 := constant_encryption_key_positive["constant"] + len(input)

@@ -5,6 +5,7 @@ import (
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
+    "github.com/prometheus/client_golang/prometheus"
     "gorm.io/gorm"
     "log"
     "log/slog"
@@ -13,42 +14,20 @@ import (
 )
 
 // Negative scenario for prometheus_counter_created_per_request: preferred concrete example for this rule.
-// Rule intent: `prometheus.NewCounter(prometheus.CounterOpts{...})` inside handler functions
-type CasePrometheusCounterCreatedPerRequestDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
-}
+// Rule intent: Register metrics at package init or as package-level vars, not inside handlers
+var requestCounter = prometheus.NewCounterVec(prometheus.CounterOpts{
+    Name: "requests_total",
+    Help: "Total requests",
+}, []string{"path"})
 
-type CasePrometheusCounterCreatedPerRequestModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
-}
-
-type CasePrometheusCounterCreatedPerRequestRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CasePrometheusCounterCreatedPerRequestModel
-}
-
-type CasePrometheusCounterCreatedPerRequestService struct {
-    repo *CasePrometheusCounterCreatedPerRequestRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
-}
-
-type CasePrometheusCounterCreatedPerRequestAuditSink interface {
-    Record(context.Context, string, map[string]string) error
+func init() {
+    prometheus.MustRegister(requestCounter)
 }
 
 func NegativePrometheusCounterCreatedPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusCounterCreatedPerRequestDTO) error {
-    focus := "prometheus_counter_created_per_request"
-    _ = focus
+    path := c.Request.URL.Path
+    requestCounter.WithLabelValues(path).Inc()
+
     slog.InfoContext(ctx, "handled", "rule", "prometheus_counter_created_per_request")
     prometheus_counter_created_per_request_negative := map[string]int{"prometheus": 1, "counter": 2, "created": 3, "per": 4, "request": 5}
     prometheus_counter_created_per_request_negative["signal"] = len(input) + len(items)

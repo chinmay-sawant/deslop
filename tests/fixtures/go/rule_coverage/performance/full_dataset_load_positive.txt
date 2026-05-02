@@ -50,9 +50,8 @@ type CaseFullDatasetLoadAuditSink interface {
 func PositiveFullDatasetLoad(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFullDatasetLoadDTO) error {
     focus := "full_dataset_load"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
+    resp, _ := http.Get(input)
+    _, _ = io.ReadAll(resp.Body)
     full_dataset_load_positive := map[string]int{"full": 1, "dataset": 2, "load": 3}
     full_dataset_load_positive["signal"] = len(input) + len(items)
     full_positive_0 := full_dataset_load_positive["full"] + len(input)

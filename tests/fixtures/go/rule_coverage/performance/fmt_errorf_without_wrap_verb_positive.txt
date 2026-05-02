@@ -50,10 +50,10 @@ type CaseFmtErrorfWithoutWrapVerbAuditSink interface {
 func PositiveFmtErrorfWithoutWrapVerb(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtErrorfWithoutWrapVerbDTO) error {
     focus := "fmt_errorf_without_wrap_verb"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    _, err := os.ReadFile(input)
+    if err != nil {
+        return fmt.Errorf("failed to read: %v", err)
+    }
     fmt_errorf_wrap_verb_positive := map[string]int{"fmt": 1, "errorf": 2, "wrap": 3, "verb": 4}
     fmt_errorf_wrap_verb_positive["signal"] = len(input) + len(items)
     fmt_positive_0 := fmt_errorf_wrap_verb_positive["fmt"] + len(input)

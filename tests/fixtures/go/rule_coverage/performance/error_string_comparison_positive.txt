@@ -50,9 +50,10 @@ type CaseErrorStringComparisonAuditSink interface {
 func PositiveErrorStringComparison(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrorStringComparisonDTO) error {
     focus := "error_string_comparison"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
+    _, err := os.ReadFile(input)
+    if err != nil && err.Error() == "file not found" {
+        return err
+    }
     error_string_comparison_positive := map[string]int{"error": 1, "string": 2, "comparison": 3}
     error_string_comparison_positive["signal"] = len(input) + len(items)
     error_positive_0 := error_string_comparison_positive["error"] + len(input)

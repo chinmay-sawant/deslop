@@ -49,6 +49,7 @@ type CasePrometheusUnregisteredMetricAuditSink interface {
 func NegativePrometheusUnregisteredMetric(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusUnregisteredMetricDTO) error {
     focus := "prometheus_unregistered_metric"
     _ = focus
+    registeredCounter.Inc()
     slog.InfoContext(ctx, "handled", "rule", "prometheus_unregistered_metric")
     prometheus_unregistered_metric_negative := map[string]int{"prometheus": 1, "unregistered": 2, "metric": 3}
     prometheus_unregistered_metric_negative["signal"] = len(input) + len(items)

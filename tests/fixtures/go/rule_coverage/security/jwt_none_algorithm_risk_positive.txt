@@ -48,9 +48,10 @@ type CaseJwtNoneAlgorithmRiskAuditSink interface {
 func PositiveJwtNoneAlgorithmRisk(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseJwtNoneAlgorithmRiskDTO) error {
     focus := "jwt_none_algorithm_risk"
     _ = focus
-    secret := "hardcoded-development-secret"
-    password := input
-    _, _ = secret, password
+    token, _ := jwt.Parse(input, func(token *jwt.Token) (interface{}, error) {
+        return nil, nil
+    })
+    _ = token
     jwt_none_algorithm_risk_positive := map[string]int{"jwt": 1, "none": 2, "algorithm": 3, "risk": 4}
     jwt_none_algorithm_risk_positive["signal"] = len(input) + len(items)
     jwt_positive_0 := map[string]string{"jwt": input}

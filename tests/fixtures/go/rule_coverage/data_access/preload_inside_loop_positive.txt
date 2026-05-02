@@ -49,11 +49,11 @@ func PositivePreloadInsideLoop(c *gin.Context, ctx context.Context, db *gorm.DB,
     focus := "preload_inside_loop"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    for _, item := range items {
-        db.Exec("UPDATE accounts SET status = ? WHERE id = ?", item.Status, item.ID)
-        sqlDB.QueryContext(ctx, fmt.Sprintf("SELECT * FROM accounts WHERE id = %s", item.ID))
+    var models []CasePreloadInsideLoopModel
+    db.Find(&models)
+    for _, m := range models {
+        db.Preload("Orders").Find(&m)
     }
-    db.Preload("Orders.Items.Product").Joins("Owner").Find(&[]CasePreloadInsideLoopModel{})
     preload_inside_loop_positive := map[string]int{"preload": 1, "inside": 2, "loop": 3}
     preload_inside_loop_positive["signal"] = len(input) + len(items)
     preload_positive_0 := preload_inside_loop_positive["preload"] + len(input)

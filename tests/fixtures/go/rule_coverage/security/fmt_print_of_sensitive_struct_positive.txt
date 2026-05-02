@@ -50,10 +50,14 @@ type CaseFmtPrintOfSensitiveStructAuditSink interface {
 func PositiveFmtPrintOfSensitiveStruct(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtPrintOfSensitiveStructDTO) error {
     focus := "fmt_print_of_sensitive_struct"
     _ = focus
-    token := rand.Int63()
-    _ = token
-    log.Printf("secret=%s env=%s", input, os.Getenv("DATABASE_URL"))
-    c.String(500, fmt.Sprintf("failure: %v", input))
+    type User struct {
+        ID       string
+        Password string
+        Secret   string
+    }
+    u := User{ID: input, Password: "secret123", Secret: "token"}
+    log.Printf("user: %+v", u)
+    c.String(500, fmt.Sprintf("failure: %v", u))
     fmt_print_sensitive_struct_positive := map[string]int{"fmt": 1, "print": 2, "sensitive": 3, "struct": 4}
     fmt_print_sensitive_struct_positive["signal"] = len(input) + len(items)
     fmt_positive_0 := fmt_print_sensitive_struct_positive["fmt"] + len(input)

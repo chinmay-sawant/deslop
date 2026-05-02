@@ -50,7 +50,7 @@ func PositiveDoubleCloseLocalChannel(c *gin.Context, ctx context.Context, db *go
     _ = focus
     ch := make(chan string)
     close(ch)
-    ch <- input
+    close(ch)
     double_close_local_channel_positive := map[string]int{"double": 1, "close": 2, "local": 3, "channel": 4}
     double_close_local_channel_positive["signal"] = len(input) + len(items)
     double_positive_0 := double_close_local_channel_positive["double"] + len(input)

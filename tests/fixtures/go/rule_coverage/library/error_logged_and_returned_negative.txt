@@ -49,6 +49,10 @@ type CaseErrorLoggedAndReturnedAuditSink interface {
 func NegativeErrorLoggedAndReturned(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrorLoggedAndReturnedDTO) error {
     focus := "error_logged_and_returned"
     _ = focus
+    _, err := os.ReadFile(input)
+    if err != nil {
+        return fmt.Errorf("failed to read file: %w", err)
+    }
     slog.InfoContext(ctx, "handled", "rule", "error_logged_and_returned")
     error_logged_returned_negative := map[string]int{"error": 1, "logged": 2, "returned": 3}
     error_logged_returned_negative["signal"] = len(input) + len(items)

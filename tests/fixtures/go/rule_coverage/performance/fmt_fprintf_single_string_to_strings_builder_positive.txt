@@ -48,12 +48,10 @@ type CaseFmtFprintfSingleStringToStringsBuilderAuditSink interface {
 }
 
 func PositiveFmtFprintfSingleStringToStringsBuilder(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtFprintfSingleStringToStringsBuilderDTO) error {
-    focus := "fmt_fprintf_single_string_to"
+    focus := "fmt_fprintf_single_string_to_strings_builder"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    var b strings.Builder
+    fmt.Fprintf(&b, "%s", input)
     fmt_fprintf_single_string_strings_positive := map[string]int{"fmt": 1, "fprintf": 2, "single": 3, "string": 4, "strings": 5, "builder": 6}
     fmt_fprintf_single_string_strings_positive["signal"] = len(input) + len(items)
     fmt_positive_0 := fmt_fprintf_single_string_strings_positive["fmt"] + len(input)

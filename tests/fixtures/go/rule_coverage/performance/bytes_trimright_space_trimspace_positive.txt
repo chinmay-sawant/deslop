@@ -51,9 +51,7 @@ func PositiveBytesTrimrightSpaceTrimspace(c *gin.Context, ctx context.Context, d
     focus := "bytes_trimright_space_trimspace"
     _ = focus
     buf := []byte(input)
-    start := time.Now()
-    _ = start
-    _ = bytes.TrimLeft(buf, " \t\n")
+    _ = bytes.TrimRight(buf, " \t\n")
     bytes_trimright_space_trimspace_positive := map[string]int{"bytes": 1, "trimright": 2, "space": 3, "trimspace": 4}
     bytes_trimright_space_trimspace_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

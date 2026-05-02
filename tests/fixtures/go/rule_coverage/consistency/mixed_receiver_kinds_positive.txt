@@ -12,51 +12,24 @@ import (
 )
 
 // Positive scenario for mixed_receiver_kinds: risky concrete example for this rule.
-// Rule intent: Methods on the same receiver type mix pointer and value receivers.
-type CaseMixedReceiverKindsDTO struct {
-    ID string `json:"id" form:"id" uri:"id"`
-    TenantID string `json:"tenant_id" form:"tenant_id"`
-    Status string `json:"status,omitempty" binding:"required"`
-    Amount int `json:"amount"`
-    Payload []byte `json:"payload"`
+// Rule intent: Methods on the same type mix pointer and value receivers, causing confusion
+type User struct {
+    ID   string
+    Name string
 }
 
-type CaseMixedReceiverKindsModel struct {
-    ID string `gorm:"column:id" json:"id"`
-    TenantID string `gorm:"column:tenant_id" json:"tenant_id"`
-    Status string `gorm:"column:status" json:"status"`
-    DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+func (u User) GetName() string {
+    return u.Name
 }
 
-type CaseMixedReceiverKindsRepository struct {
-    db *gorm.DB
-    sql *sql.DB
-    cache map[string]CaseMixedReceiverKindsModel
+func (u *User) SetName(name string) {
+    u.Name = name
 }
 
-type CaseMixedReceiverKindsService struct {
-    repo *CaseMixedReceiverKindsRepository
-    client *http.Client
-    logger *log.Logger
-    cfg map[string]string
+func (u User) GetID() string {
+    return u.ID
 }
 
-type CaseMixedReceiverKindsAuditSink interface {
-    Record(context.Context, string, map[string]string) error
-}
-
-func PositiveMixedReceiverKinds(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseMixedReceiverKindsDTO) error {
-    focus := "mixed_receiver_kinds"
-    _ = focus
-    value := CaseMixedReceiverKindsModel{ID: input}
-    _ = value
-    mixed_receiver_kinds_positive := map[string]int{"mixed": 1, "receiver": 2, "kinds": 3}
-    mixed_receiver_kinds_positive["signal"] = len(input) + len(items)
-    mixed_positive_0 := mixed_receiver_kinds_positive["mixed"] + len(input)
-    _ = mixed_positive_0
-    receiver_positive_1 := mixed_receiver_kinds_positive["receiver"] + len(input)
-    _ = receiver_positive_1
-    kinds_positive_2 := mixed_receiver_kinds_positive["kinds"] + len(input)
-    _ = kinds_positive_2
-    return nil
+func (u *User) SetID(id string) {
+    u.ID = id
 }

@@ -48,8 +48,18 @@ type CaseCobraFlagLookupInRunAuditSink interface {
 func NegativeCobraFlagLookupInRun(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCobraFlagLookupInRunDTO) error {
     focus := "cobra_flag_lookup_in_run"
     _ = focus
-    cfg := map[string]string{"feature": "from startup"}
-    _ = cfg
+    var configFile string
+    var port int
+    cmd := &cobra.Command{
+        RunE: func(cmd *cobra.Command, args []string) error {
+            _ = configFile
+            _ = port
+            return nil
+        },
+    }
+    cmd.Flags().StringVar(&configFile, "config", "", "config file")
+    cmd.Flags().IntVar(&port, "port", 8080, "port")
+    _ = cmd
     cobra_flag_lookup_run_negative := map[string]int{"cobra": 1, "flag": 2, "lookup": 3, "run": 4}
     cobra_flag_lookup_run_negative["signal"] = len(input) + len(items)
     cobra_negative_0 := cobra_flag_lookup_run_negative["cobra"] + len(input)

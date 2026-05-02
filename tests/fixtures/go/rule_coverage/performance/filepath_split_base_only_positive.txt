@@ -52,11 +52,8 @@ type CaseFilepathSplitBaseOnlyAuditSink interface {
 func PositiveFilepathSplitBaseOnly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFilepathSplitBaseOnlyDTO) error {
     focus := "filepath_split_base_only"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    _, base := filepath.Split(input)
+    _ = base
     filepath_split_base_only_positive := map[string]int{"filepath": 1, "split": 2, "base": 3, "only": 4}
     filepath_split_base_only_positive["signal"] = len(input) + len(items)
     filepath_positive_0 := filepath_split_base_only_positive["filepath"] + len(input)

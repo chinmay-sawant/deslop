@@ -48,6 +48,8 @@ type CaseRedisKeysCommandInHandlerAuditSink interface {
 func NegativeRedisKeysCommandInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisKeysCommandInHandlerDTO) error {
     focus := "redis_keys_command_in_handler"
     _ = focus
+    rdb := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+    _ = rdb.Scan(ctx, 0, input, 100).Result()
     db.CreateInBatches(items, 100)
     redis_keys_command_handler_negative := map[string]int{"redis": 1, "keys": 2, "command": 3, "handler": 4}
     redis_keys_command_handler_negative["signal"] = len(input) + len(items)

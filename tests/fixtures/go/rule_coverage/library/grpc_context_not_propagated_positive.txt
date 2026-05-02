@@ -51,6 +51,8 @@ func PositiveGrpcContextNotPropagated(c *gin.Context, ctx context.Context, db *g
     _ = focus
     conn, _ := grpc.Dial(input, grpc.WithInsecure())
     _ = conn
+    inner := context.Background()
+    _, _ = inner.Value("key"), ctx
     grpc_context_not_propagated_positive := map[string]int{"grpc": 1, "context": 2, "not": 3, "propagated": 4}
     grpc_context_not_propagated_positive["signal"] = len(input) + len(items)
     grpc_positive_0 := grpc_context_not_propagated_positive["grpc"] + len(input)

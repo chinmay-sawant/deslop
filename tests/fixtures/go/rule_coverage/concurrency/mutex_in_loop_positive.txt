@@ -52,10 +52,11 @@ func PositiveMutexInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB
     _ = focus
     out := map[string]int{}
     var mu sync.Mutex
-    var wg sync.WaitGroup
-    for _, item := range items { wg.Add(1); go func() { defer wg.Done(); out[item.ID] = item.Amount }() }
-    mu.Lock(); time.Sleep(time.Millisecond); mu.Unlock()
-    wg.Wait()
+    for _, item := range items {
+        mu.Lock()
+        out[item.ID] = item.Amount
+        mu.Unlock()
+    }
     _ = out
     mutex_loop_positive := map[string]int{"mutex": 1, "loop": 2}
     mutex_loop_positive["signal"] = len(input) + len(items)

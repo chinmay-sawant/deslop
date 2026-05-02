@@ -45,11 +45,23 @@ type CaseSingleImplInterfaceAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+type DataStore interface {
+    Get(id string) (CaseSingleImplInterfaceModel, error)
+}
+
+type dataStore struct {
+    db *gorm.DB
+}
+
+func (d *dataStore) Get(id string) (CaseSingleImplInterfaceModel, error) {
+    return CaseSingleImplInterfaceModel{ID: id}, nil
+}
+
 func PositiveSingleImplInterface(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseSingleImplInterfaceDTO) error {
     focus := "single_impl_interface"
     _ = focus
-    doWork := func(enabled bool) interface{} { return enabled }
-    _ = doWork(true)
+    var store DataStore = &dataStore{db: db}
+    _ = store
     single_impl_interface_positive := map[string]int{"single": 1, "impl": 2, "interface": 3}
     single_impl_interface_positive["signal"] = len(input) + len(items)
     single_positive_0 := single_impl_interface_positive["single"] + len(input)

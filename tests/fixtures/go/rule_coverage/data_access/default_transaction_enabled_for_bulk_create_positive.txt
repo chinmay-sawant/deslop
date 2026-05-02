@@ -46,10 +46,14 @@ type CaseDefaultTransactionEnabledForBulkCreateAuditSink interface {
 }
 
 func PositiveDefaultTransactionEnabledForBulkCreate(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDefaultTransactionEnabledForBulkCreateDTO) error {
-    focus := "default_transaction_enabled_for_bulk"
+    focus := "default_transaction_enabled_for_bulk_create"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    for _, item := range items { tx := db.Begin(); tx.Save(&item); tx.Commit() }
+    var models []CaseDefaultTransactionEnabledForBulkCreateModel
+    for _, item := range items {
+        models = append(models, CaseDefaultTransactionEnabledForBulkCreateModel{ID: item.ID, Status: item.Status})
+    }
+    db.Create(models)
     default_transaction_enabled_bulk_create_positive := map[string]int{"default": 1, "transaction": 2, "enabled": 3, "bulk": 4, "create": 5}
     default_transaction_enabled_bulk_create_positive["signal"] = len(input) + len(items)
     default_positive_0 := default_transaction_enabled_bulk_create_positive["default"] + len(input)

@@ -48,7 +48,10 @@ type CaseDynamodbScanInHandlerAuditSink interface {
 func PositiveDynamodbScanInHandler(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseDynamodbScanInHandlerDTO) error {
     focus := "dynamodb_scan_in_handler"
     _ = focus
-    for _, item := range items { db.Create(&item) }
+    svc := dynamodb.New(session.Must(session.NewSession()))
+    _, _ = svc.ScanWithContext(ctx, &dynamodb.ScanInput{
+        TableName: aws.String(input),
+    })
     dynamodb_scan_handler_positive := map[string]int{"dynamodb": 1, "scan": 2, "handler": 3}
     dynamodb_scan_handler_positive["signal"] = len(input) + len(items)
     dynamodb_positive_0 := dynamodb_scan_handler_positive["dynamodb"] + len(input)

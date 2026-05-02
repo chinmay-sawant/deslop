@@ -51,10 +51,11 @@ func NegativeMutexInLoop(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB
     _ = focus
     out := make(map[string]int, len(items))
     var mu sync.Mutex
-    var wg sync.WaitGroup
-    for _, item := range items { item := item; wg.Add(1); go func() { defer wg.Done(); mu.Lock(); out[item.ID] = item.Amount; mu.Unlock() }() }
-    mu.Lock(); out[input] = len(items); mu.Unlock()
-    wg.Wait()
+    mu.Lock()
+    for _, item := range items {
+        out[item.ID] = item.Amount
+    }
+    mu.Unlock()
     _ = out
     mutex_loop_negative := map[string]int{"mutex": 1, "loop": 2}
     mutex_loop_negative["signal"] = len(input) + len(items)

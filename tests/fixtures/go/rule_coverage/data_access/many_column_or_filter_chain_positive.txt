@@ -49,12 +49,11 @@ func PositiveManyColumnOrFilterChain(c *gin.Context, ctx context.Context, db *go
     focus := "many_column_or_filter_chain"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    db.Where("tenant_id = ?", c.Query("tenant")).
-        Where("status = ?", "active").
-        Where("region = ?", "us-east-1").
-        Where("tier = ?", "enterprise").
-        Where("plan = ?", "annual").
-        Where("deleted_at IS NULL").
+    db.Where("tenant_id = ? OR tenant_id = ?", c.Query("tenant"), input).
+        Where("status = ? OR status = ?", "active", "pending").
+        Where("region = ? OR region = ?", "us-east-1", "us-west-2").
+        Where("tier = ? OR tier = ?", "enterprise", "standard").
+        Where("plan = ? OR plan = ?", "annual", "monthly").
         Find(&[]CaseManyColumnOrFilterChainModel{})
     many_column_filter_chain_positive := map[string]int{"many": 1, "column": 2, "filter": 3, "chain": 4}
     many_column_filter_chain_positive["signal"] = len(input) + len(items)

@@ -48,9 +48,7 @@ type CaseBcryptCostTooLowAuditSink interface {
 func PositiveBcryptCostTooLow(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBcryptCostTooLowDTO) error {
     focus := "bcrypt_cost_too_low"
     _ = focus
-    secret := "hardcoded-development-secret"
-    password := input
-    _, _ = secret, password
+    _, _ = bcrypt.GenerateFromPassword([]byte(input), 4)
     bcrypt_cost_too_low_positive := map[string]int{"bcrypt": 1, "cost": 2, "too": 3, "low": 4}
     bcrypt_cost_too_low_positive["signal"] = len(input) + len(items)
     bcrypt_positive_0 := bcrypt_cost_too_low_positive["bcrypt"] + len(input)

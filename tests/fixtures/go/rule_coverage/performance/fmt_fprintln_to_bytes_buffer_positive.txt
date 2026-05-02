@@ -50,10 +50,8 @@ type CaseFmtFprintlnToBytesBufferAuditSink interface {
 func PositiveFmtFprintlnToBytesBuffer(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFmtFprintlnToBytesBufferDTO) error {
     focus := "fmt_fprintln_to_bytes_buffer"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    for _, item := range items { _ = fmt.Sprintf("%s:%d", item.ID, item.Amount) }
+    var buf bytes.Buffer
+    fmt.Fprintln(&buf, input)
     fmt_fprintln_bytes_buffer_positive := map[string]int{"fmt": 1, "fprintln": 2, "bytes": 3, "buffer": 4}
     fmt_fprintln_bytes_buffer_positive["signal"] = len(input) + len(items)
     fmt_positive_0 := fmt_fprintln_bytes_buffer_positive["fmt"] + len(input)

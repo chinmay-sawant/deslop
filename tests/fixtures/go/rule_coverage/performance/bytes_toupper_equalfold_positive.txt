@@ -50,9 +50,9 @@ type CaseBytesToupperEqualfoldAuditSink interface {
 func PositiveBytesToupperEqualfold(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesToupperEqualfoldDTO) error {
     focus := "bytes_toupper_equalfold"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
+    a := []byte(input)
+    b := []byte("test")
+    _ = bytes.Equal(bytes.ToUpper(a), bytes.ToUpper(b))
     bytes_toupper_equalfold_positive := map[string]int{"bytes": 1, "toupper": 2, "equalfold": 3}
     bytes_toupper_equalfold_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

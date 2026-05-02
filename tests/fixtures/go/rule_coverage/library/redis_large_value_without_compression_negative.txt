@@ -48,6 +48,10 @@ type CaseRedisLargeValueWithoutCompressionAuditSink interface {
 func NegativeRedisLargeValueWithoutCompression(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisLargeValueWithoutCompressionDTO) error {
     focus := "redis_large_value_without_compression"
     _ = focus
+    rdb := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+    payload, _ := json.Marshal(items)
+    compressed := snappy.Encode(nil, payload)
+    _ = rdb.Set(ctx, "cache:key", compressed, time.Hour).Result()
     db.CreateInBatches(items, 100)
     redis_large_value_compression_negative := map[string]int{"redis": 1, "large": 2, "value": 3, "compression": 4}
     redis_large_value_compression_negative["signal"] = len(input) + len(items)

@@ -1,4 +1,4 @@
-package alpha
+package alpha_v1
 
 // Positive scenario for inconsistent_package_name: risky concrete example for this rule.
 // Rule intent: Directories that mix base Go package names after ignoring the _test suffix.

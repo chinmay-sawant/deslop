@@ -5,6 +5,7 @@ import (
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
+    "github.com/prometheus/client_golang/prometheus"
     "gorm.io/gorm"
     "log"
     "net/http"
@@ -13,6 +14,20 @@ import (
 
 // Positive scenario for prometheus_high_cardinality_labels: risky concrete example for this rule.
 // Rule intent: `counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources
+var httpRequestDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+    Name:    "http_request_duration_seconds",
+    Help:    "HTTP request duration",
+}, []string{"path", "user_id", "method"})
+
+var httpRequestCount = prometheus.NewCounterVec(prometheus.CounterOpts{
+    Name: "http_requests_total",
+    Help: "Total HTTP requests",
+}, []string{"user_id", "session_id"})
+
+func init() {
+    prometheus.MustRegister(httpRequestDuration, httpRequestCount)
+}
+
 type CasePrometheusHighCardinalityLabelsDTO struct {
     ID string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
@@ -46,10 +61,14 @@ type CasePrometheusHighCardinalityLabelsAuditSink interface {
 }
 
 func PositivePrometheusHighCardinalityLabels(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusHighCardinalityLabelsDTO) error {
-    focus := "prometheus_high_cardinality_labels"
-    _ = focus
-    msg := fmt.Sprintf("rule=%s input=%s", "prometheus_high_cardinality_labels", input)
-    log.Print(msg)
+    path := c.Request.URL.Path
+    userID := c.GetHeader("X-User-ID")
+    sessionID := c.GetHeader("X-Session-ID")
+    method := c.Request.Method
+
+    httpRequestDuration.WithLabelValues(path, userID, method).Observe(0.1)
+    httpRequestCount.WithLabelValues(userID, sessionID).Inc()
+
     prometheus_high_cardinality_labels_positive := map[string]int{"prometheus": 1, "high": 2, "cardinality": 3, "labels": 4}
     prometheus_high_cardinality_labels_positive["signal"] = len(input) + len(items)
     prometheus_positive_0 := prometheus_high_cardinality_labels_positive["prometheus"] + len(input)

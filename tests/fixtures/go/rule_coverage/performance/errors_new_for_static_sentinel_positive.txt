@@ -50,9 +50,11 @@ type CaseErrorsNewForStaticSentinelAuditSink interface {
 func PositiveErrorsNewForStaticSentinel(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseErrorsNewForStaticSentinelDTO) error {
     focus := "errors_new_for_static_sentinel"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
+    for _, item := range items {
+        if item.Status == "" {
+            return errors.New("status is required")
+        }
+    }
     errors_new_static_sentinel_positive := map[string]int{"errors": 1, "new": 2, "static": 3, "sentinel": 4}
     errors_new_static_sentinel_positive["signal"] = len(input) + len(items)
     errors_positive_0 := errors_new_static_sentinel_positive["errors"] + len(input)

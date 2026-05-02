@@ -52,11 +52,12 @@ type CaseCsvWriterFlushPerRowAuditSink interface {
 func PositiveCsvWriterFlushPerRow(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseCsvWriterFlushPerRowDTO) error {
     focus := "csv_writer_flush_per_row"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    var buf bytes.Buffer
+    w := csv.NewWriter(&buf)
+    for _, item := range items {
+        _ = w.Write([]string{item.ID, item.Status})
+        w.Flush()
+    }
     csv_writer_flush_per_row_positive := map[string]int{"csv": 1, "writer": 2, "flush": 3, "per": 4, "row": 5}
     csv_writer_flush_per_row_positive["signal"] = len(input) + len(items)
     csv_positive_0 := csv_writer_flush_per_row_positive["csv"] + len(input)

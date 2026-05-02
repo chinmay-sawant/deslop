@@ -48,7 +48,10 @@ type CasePanicOnErrorAuditSink interface {
 func PositivePanicOnError(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePanicOnErrorDTO) error {
     focus := "panic_on_error"
     _ = focus
-    panic(input)
+    _, err := os.ReadFile(input)
+    if err != nil {
+        panic(err)
+    }
     panic_error_positive := map[string]int{"panic": 1, "error": 2}
     panic_error_positive["signal"] = len(input) + len(items)
     panic_positive_0 := panic_error_positive["panic"] + len(input)

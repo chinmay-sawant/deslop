@@ -52,11 +52,8 @@ type CaseFilepathSplitDirOnlyAuditSink interface {
 func PositiveFilepathSplitDirOnly(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseFilepathSplitDirOnlyDTO) error {
     focus := "filepath_split_dir_only"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
-    file, _ := os.Open(input)
-    io.ReadAll(file)
+    dir, _ := filepath.Split(input)
+    _ = dir
     filepath_split_dir_only_positive := map[string]int{"filepath": 1, "split": 2, "dir": 3, "only": 4}
     filepath_split_dir_only_positive["signal"] = len(input) + len(items)
     filepath_positive_0 := filepath_split_dir_only_positive["filepath"] + len(input)

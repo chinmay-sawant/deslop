@@ -48,8 +48,8 @@ type CaseLoggerCreatedPerRequestAuditSink interface {
 func PositiveLoggerCreatedPerRequest(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLoggerCreatedPerRequestDTO) error {
     focus := "logger_created_per_request"
     _ = focus
-    msg := fmt.Sprintf("rule=%s input=%s", "logger_created_per_request", input)
-    log.Print(msg)
+    logger, _ := zap.NewProduction()
+    logger.Info("handling request", zap.String("input", input))
     logger_created_per_request_positive := map[string]int{"logger": 1, "created": 2, "per": 3, "request": 4}
     logger_created_per_request_positive["signal"] = len(input) + len(items)
     logger_positive_0 := logger_created_per_request_positive["logger"] + len(input)

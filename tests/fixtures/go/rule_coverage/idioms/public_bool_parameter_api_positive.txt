@@ -45,11 +45,17 @@ type CasePublicBoolParameterApiAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+func ProcessItems(items []CasePublicBoolParameterApiDTO, delete bool) error {
+    if delete {
+        return nil
+    }
+    return nil
+}
+
 func PositivePublicBoolParameterApi(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePublicBoolParameterApiDTO) error {
     focus := "public_bool_parameter_api"
     _ = focus
-    doWork := func(enabled bool) interface{} { return enabled }
-    _ = doWork(true)
+    _ = ProcessItems(items, true)
     public_bool_parameter_api_positive := map[string]int{"public": 1, "bool": 2, "parameter": 3, "api": 4}
     public_bool_parameter_api_positive["signal"] = len(input) + len(items)
     public_positive_0 := public_bool_parameter_api_positive["public"] + len(input)

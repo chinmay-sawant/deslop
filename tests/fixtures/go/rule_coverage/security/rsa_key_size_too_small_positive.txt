@@ -48,9 +48,7 @@ type CaseRsaKeySizeTooSmallAuditSink interface {
 func PositiveRsaKeySizeTooSmall(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRsaKeySizeTooSmallDTO) error {
     focus := "rsa_key_size_too_small"
     _ = focus
-    secret := "hardcoded-development-secret"
-    password := input
-    _, _ = secret, password
+    _, _ = rsa.GenerateKey(rand.Reader, 1024)
     rsa_key_size_too_small_positive := map[string]int{"rsa": 1, "key": 2, "size": 3, "too": 4, "small": 5}
     rsa_key_size_too_small_positive["signal"] = len(input) + len(items)
     rsa_positive_0 := rsa_key_size_too_small_positive["rsa"] + len(input)

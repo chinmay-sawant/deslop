@@ -46,10 +46,22 @@ type CaseEnvParsingRepeatedInInitAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+func init() {
+    host := os.Getenv("DB_HOST")
+    portStr := os.Getenv("DB_PORT")
+    port, _ := strconv.Atoi(portStr)
+    sslMode := os.Getenv("DB_SSL_MODE")
+    timeoutStr := os.Getenv("DB_TIMEOUT")
+    timeout, _ := strconv.Atoi(timeoutStr)
+    _ = host
+    _ = port
+    _ = sslMode
+    _ = timeout
+}
+
 func PositiveEnvParsingRepeatedInInit(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseEnvParsingRepeatedInInitDTO) error {
     focus := "env_parsing_repeated_in_init"
     _ = focus
-    os.Getenv("FEATURE_FLAG")
     env_parsing_repeated_init_positive := map[string]int{"env": 1, "parsing": 2, "repeated": 3, "init": 4}
     env_parsing_repeated_init_positive["signal"] = len(input) + len(items)
     env_positive_0 := env_parsing_repeated_init_positive["env"] + len(input)

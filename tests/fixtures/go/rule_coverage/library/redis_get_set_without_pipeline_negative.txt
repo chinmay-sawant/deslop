@@ -48,6 +48,11 @@ type CaseRedisGetSetWithoutPipelineAuditSink interface {
 func NegativeRedisGetSetWithoutPipeline(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisGetSetWithoutPipelineDTO) error {
     focus := "redis_get_set_without_pipeline"
     _ = focus
+    pipe := sharedRedisClient.Pipeline()
+    _ = pipe.Get(ctx, "key1")
+    _ = pipe.Get(ctx, "key2")
+    _ = pipe.Set(ctx, "key3", "val", 0)
+    _, _ = pipe.Exec(ctx)
     db.CreateInBatches(items, 100)
     redis_get_set_pipeline_negative := map[string]int{"redis": 1, "get": 2, "set": 3, "pipeline": 4}
     redis_get_set_pipeline_negative["signal"] = len(input) + len(items)

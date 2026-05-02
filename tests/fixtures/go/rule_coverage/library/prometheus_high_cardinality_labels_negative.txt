@@ -5,6 +5,7 @@ import (
     "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
+    "github.com/prometheus/client_golang/prometheus"
     "gorm.io/gorm"
     "log"
     "log/slog"
@@ -13,7 +14,21 @@ import (
 )
 
 // Negative scenario for prometheus_high_cardinality_labels: preferred concrete example for this rule.
-// Rule intent: `counter.WithLabelValues(userId)` or `histogram.WithLabelValues(requestPath)` where label values appear to come from user IDs, request paths, or other high-cardinality sources
+// Rule intent: Use low-cardinality labels like method, status_code, endpoint type instead of user IDs, paths, sessions
+var httpRequestDurationSafe = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+    Name:    "http_request_duration_seconds_safe",
+    Help:    "HTTP request duration",
+}, []string{"method", "status_code"})
+
+var httpRequestCountSafe = prometheus.NewCounterVec(prometheus.CounterOpts{
+    Name: "http_requests_total_safe",
+    Help: "Total HTTP requests",
+}, []string{"method", "status_code"})
+
+func init() {
+    prometheus.MustRegister(httpRequestDurationSafe, httpRequestCountSafe)
+}
+
 type CasePrometheusHighCardinalityLabelsDTO struct {
     ID string `json:"id" form:"id" uri:"id"`
     TenantID string `json:"tenant_id" form:"tenant_id"`
@@ -47,8 +62,12 @@ type CasePrometheusHighCardinalityLabelsAuditSink interface {
 }
 
 func NegativePrometheusHighCardinalityLabels(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusHighCardinalityLabelsDTO) error {
-    focus := "prometheus_high_cardinality_labels"
-    _ = focus
+    method := c.Request.Method
+    statusCode := fmt.Sprintf("%d", http.StatusOK)
+
+    httpRequestDurationSafe.WithLabelValues(method, statusCode).Observe(0.1)
+    httpRequestCountSafe.WithLabelValues(method, statusCode).Inc()
+
     slog.InfoContext(ctx, "handled", "rule", "prometheus_high_cardinality_labels")
     prometheus_high_cardinality_labels_negative := map[string]int{"prometheus": 1, "high": 2, "cardinality": 3, "labels": 4}
     prometheus_high_cardinality_labels_negative["signal"] = len(input) + len(items)

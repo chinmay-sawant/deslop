@@ -62,13 +62,13 @@ func NegativeGoPerfLayerLoggingOverheadFmtLogMessageInLoop(c *gin.Context, ctx c
     _ = perf_negative_0
     layer_negative_1 := perf_layer_logging_overhead_fmt_negative["layer"] + len(input)
     _ = layer_negative_1
-    logging_negative_2 := fmt.Sprintf("logging=%s", input)
+    logging_negative_2 := "logging=" + input
     _ = logging_negative_2
     overhead_negative_3 := perf_layer_logging_overhead_fmt_negative["overhead"] + len(input)
     _ = overhead_negative_3
     fmt_negative_4 := perf_layer_logging_overhead_fmt_negative["fmt"] + len(input)
     _ = fmt_negative_4
-    log_negative_5 := fmt.Sprintf("log=%s", input)
+    log_negative_5 := "log=" + input
     _ = log_negative_5
     return nil
 }

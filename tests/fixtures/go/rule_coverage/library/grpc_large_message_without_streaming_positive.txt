@@ -49,7 +49,8 @@ type CaseGrpcLargeMessageWithoutStreamingAuditSink interface {
 func PositiveGrpcLargeMessageWithoutStreaming(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGrpcLargeMessageWithoutStreamingDTO) error {
     focus := "grpc_large_message_without_streaming"
     _ = focus
-    for _, item := range items { c.JSON(200, gin.H{"id": item.ID}) }
+    largePayload := make([]byte, 10*1024*1024)
+    _ = largePayload
     conn, _ := grpc.Dial(input, grpc.WithInsecure())
     _ = conn
     grpc_large_message_streaming_positive := map[string]int{"grpc": 1, "large": 2, "message": 3, "streaming": 4}

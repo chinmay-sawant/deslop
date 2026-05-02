@@ -48,8 +48,12 @@ type CasePrometheusUnregisteredMetricAuditSink interface {
 func PositivePrometheusUnregisteredMetric(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePrometheusUnregisteredMetricDTO) error {
     focus := "prometheus_unregistered_metric"
     _ = focus
-    msg := fmt.Sprintf("rule=%s input=%s", "prometheus_unregistered_metric", input)
-    log.Print(msg)
+    counter := prometheus.NewCounter(prometheus.CounterOpts{
+        Name: "unregistered_requests_total",
+        Help: "Total requests",
+    })
+    counter.Inc()
+    _ = counter
     prometheus_unregistered_metric_positive := map[string]int{"prometheus": 1, "unregistered": 2, "metric": 3}
     prometheus_unregistered_metric_positive["signal"] = len(input) + len(items)
     prometheus_positive_0 := prometheus_unregistered_metric_positive["prometheus"] + len(input)

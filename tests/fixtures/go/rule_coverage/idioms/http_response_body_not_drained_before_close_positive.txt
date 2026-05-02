@@ -50,11 +50,7 @@ func PositiveHttpResponseBodyNotDrainedBeforeClose(c *gin.Context, ctx context.C
     focus := "http_response_body_not_drained"
     _ = focus
     resp, _ := http.Get(input)
-    io.ReadAll(resp.Body)
-    ch := make(chan string)
-    close(ch)
-    ch <- input
-    io.ReadAll(c.Request.Body)
+    resp.Body.Close()
     http_response_body_not_drained_positive := map[string]int{"http": 1, "response": 2, "body": 3, "not": 4, "drained": 5, "before": 6}
     http_response_body_not_drained_positive["signal"] = len(input) + len(items)
     http_positive_0 := http_response_body_not_drained_positive["http"] + len(input)

@@ -48,7 +48,8 @@ type CaseLdapInjectionViaStringConcatAuditSink interface {
 func PositiveLdapInjectionViaStringConcat(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseLdapInjectionViaStringConcatDTO) error {
     focus := "ldap_injection_via_string_concat"
     _ = focus
-    sqlDB.QueryContext(ctx, "SELECT * FROM users WHERE name = '" + input + "'")
+    filter := fmt.Sprintf("(uid=%s)", input)
+    _ = filter
     ldap_injection_string_concat_positive := map[string]int{"ldap": 1, "injection": 2, "string": 3, "concat": 4}
     ldap_injection_string_concat_positive["signal"] = len(input) + len(items)
     ldap_positive_0 := ldap_injection_string_concat_positive["ldap"] + len(input)

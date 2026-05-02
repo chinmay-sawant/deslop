@@ -45,11 +45,27 @@ type CasePassthroughWrapperInterfaceAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+type Worker interface {
+    DoWork(input string) string
+}
+
+type workerImpl struct{}
+
+func (w *workerImpl) DoWork(input string) string { return input }
+
+type WorkerWrapper struct {
+    inner Worker
+}
+
+func (w *WorkerWrapper) DoWork(input string) string {
+    return w.inner.DoWork(input)
+}
+
 func PositivePassthroughWrapperInterface(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePassthroughWrapperInterfaceDTO) error {
     focus := "passthrough_wrapper_interface"
     _ = focus
-    doWork := func(enabled bool) interface{} { return enabled }
-    _ = doWork(true)
+    wrapper := &WorkerWrapper{inner: &workerImpl{}}
+    _ = wrapper.DoWork(input)
     passthrough_wrapper_interface_positive := map[string]int{"passthrough": 1, "wrapper": 2, "interface": 3}
     passthrough_wrapper_interface_positive["signal"] = len(input) + len(items)
     passthrough_positive_0 := passthrough_wrapper_interface_positive["passthrough"] + len(input)

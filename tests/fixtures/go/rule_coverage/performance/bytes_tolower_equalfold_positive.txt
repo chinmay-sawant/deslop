@@ -50,9 +50,9 @@ type CaseBytesTolowerEqualfoldAuditSink interface {
 func PositiveBytesTolowerEqualfold(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBytesTolowerEqualfoldDTO) error {
     focus := "bytes_tolower_equalfold"
     _ = focus
-    buf := []byte(input)
-    start := time.Now()
-    _ = start
+    a := []byte(input)
+    b := []byte("TEST")
+    _ = bytes.Equal(bytes.ToLower(a), bytes.ToLower(b))
     bytes_tolower_equalfold_positive := map[string]int{"bytes": 1, "tolower": 2, "equalfold": 3}
     bytes_tolower_equalfold_positive["signal"] = len(input) + len(items)
     bytes_positive_0 := strings.TrimSpace(input)

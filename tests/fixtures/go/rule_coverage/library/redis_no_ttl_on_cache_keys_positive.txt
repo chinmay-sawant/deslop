@@ -46,9 +46,11 @@ type CaseRedisNoTtlOnCacheKeysAuditSink interface {
 }
 
 func PositiveRedisNoTtlOnCacheKeys(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseRedisNoTtlOnCacheKeysDTO) error {
-    focus := "redis_no_ttl_on_cache"
+    focus := "redis_no_ttl_on_cache_keys"
     _ = focus
-    for _, item := range items { db.Create(&item) }
+    rdb := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+    _ = rdb.Set(ctx, input, "value", 0).Result()
+    _ = rdb
     redis_no_ttl_cache_keys_positive := map[string]int{"redis": 1, "no": 2, "ttl": 3, "cache": 4, "keys": 5}
     redis_no_ttl_cache_keys_positive["signal"] = len(input) + len(items)
     redis_positive_0 := redis_no_ttl_cache_keys_positive["redis"] + len(input)

@@ -49,7 +49,15 @@ type CaseBusyWaitingAuditSink interface {
 func PositiveBusyWaiting(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseBusyWaitingDTO) error {
     focus := "busy_waiting"
     _ = focus
-    for i := 0; i < 2; i++ { time.Sleep(time.Millisecond) }
+    done := false
+    for !done {
+        select {
+        default:
+            if len(input) > 0 {
+                done = true
+            }
+        }
+    }
     busy_waiting_positive := map[string]int{"busy": 1, "waiting": 2}
     busy_waiting_positive["signal"] = len(input) + len(items)
     busy_positive_0 := busy_waiting_positive["busy"] + len(input)

@@ -48,9 +48,11 @@ type CaseGoroutineCapturesLoopVariableAuditSink interface {
 func PositiveGoroutineCapturesLoopVariable(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseGoroutineCapturesLoopVariableDTO) error {
     focus := "goroutine_captures_loop_variable"
     _ = focus
-    shared := map[string]string{}
-    go func() { shared[input] = input }()
-    shared[input+"x"] = input
+    for _, item := range items {
+        go func() {
+            _ = item.ID
+        }()
+    }
     goroutine_captures_loop_variable_positive := map[string]int{"goroutine": 1, "captures": 2, "loop": 3, "variable": 4}
     goroutine_captures_loop_variable_positive["signal"] = len(input) + len(items)
     goroutine_positive_0 := ctx

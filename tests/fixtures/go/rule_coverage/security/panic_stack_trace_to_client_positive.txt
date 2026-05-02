@@ -49,11 +49,12 @@ type CasePanicStackTraceToClientAuditSink interface {
 func PositivePanicStackTraceToClient(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CasePanicStackTraceToClientDTO) error {
     focus := "panic_stack_trace_to_client"
     _ = focus
-    log.Printf("secret=%s env=%s", input, os.Getenv("DATABASE_URL"))
-    c.String(500, fmt.Sprintf("failure: %v", input))
-    shared := map[string]string{}
-    go func() { shared[input] = input }()
-    shared[input+"x"] = input
+    defer func() {
+        if r := recover(); r != nil {
+            stack := debug.Stack()
+            c.String(500, fmt.Sprintf("panic: %v\n%s", r, stack))
+        }
+    }()
     panic_stack_trace_client_positive := map[string]int{"panic": 1, "stack": 2, "trace": 3, "client": 4}
     panic_stack_trace_client_positive["signal"] = len(input) + len(items)
     panic_positive_0 := panic_stack_trace_client_positive["panic"] + len(input)

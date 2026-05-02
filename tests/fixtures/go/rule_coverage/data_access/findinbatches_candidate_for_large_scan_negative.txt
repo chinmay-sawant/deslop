@@ -49,7 +49,10 @@ func NegativeFindinbatchesCandidateForLargeScan(c *gin.Context, ctx context.Cont
     focus := "findinbatches_candidate_for_large_scan"
     _ = focus
     if ctx == nil { ctx = context.Background() }
-    db.Where("email_normalized = ?", input).Find(&[]any{})
+    var results []CaseFindinbatchesCandidateForLargeScanModel
+    db.Where("email_normalized = ?", input).FindInBatches(&results, 100, func(tx *gorm.DB, batch int) error {
+        return nil
+    })
     findinbatches_candidate_large_scan_negative := map[string]int{"findinbatches": 1, "candidate": 2, "large": 3, "scan": 4}
     findinbatches_candidate_large_scan_negative["signal"] = len(input) + len(items)
     findinbatches_negative_0 := findinbatches_candidate_large_scan_negative["findinbatches"] + len(input)

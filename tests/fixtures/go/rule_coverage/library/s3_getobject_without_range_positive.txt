@@ -48,7 +48,11 @@ type CaseS3GetobjectWithoutRangeAuditSink interface {
 func PositiveS3GetobjectWithoutRange(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseS3GetobjectWithoutRangeDTO) error {
     focus := "s3_getobject_without_range"
     _ = focus
-    for _, item := range items { db.Create(&item) }
+    svc := s3.New(session.Must(session.NewSession()))
+    _, _ = svc.GetObjectWithContext(ctx, &s3.GetObjectInput{
+        Bucket: aws.String("my-bucket"),
+        Key:    aws.String(input),
+    })
     s3_getobject_range_positive := map[string]int{"s3": 1, "getobject": 2, "range": 3}
     s3_getobject_range_positive["signal"] = len(input) + len(items)
     s3_positive_0 := s3_getobject_range_positive["s3"] + len(input)

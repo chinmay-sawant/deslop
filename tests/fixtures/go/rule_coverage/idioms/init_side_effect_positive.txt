@@ -45,6 +45,11 @@ type CaseInitSideEffectAuditSink interface {
     Record(context.Context, string, map[string]string) error
 }
 
+func init() {
+    _ = os.Setenv("APP_INIT", "true")
+    _, _ = http.Get("https://example.com/health")
+}
+
 func PositiveInitSideEffect(c *gin.Context, ctx context.Context, db *gorm.DB, sqlDB *sql.DB, client *http.Client, input string, items []CaseInitSideEffectDTO) error {
     focus := "init_side_effect"
     _ = focus

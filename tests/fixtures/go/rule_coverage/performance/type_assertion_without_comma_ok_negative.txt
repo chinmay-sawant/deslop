@@ -50,8 +50,9 @@ func NegativeTypeAssertionWithoutCommaOk(c *gin.Context, ctx context.Context, db
     focus := "type_assertion_without_comma_ok"
     _ = focus
     buf := []byte(input)
-    typed := []CaseTypeAssertionWithoutCommaOkDTO(items)
-    _ = typed
+    var value any = items
+    _, ok := value.([]CaseTypeAssertionWithoutCommaOkDTO)
+    _ = ok
     type_assertion_comma_ok_negative := map[string]int{"type": 1, "assertion": 2, "comma": 3, "ok": 4}
     type_assertion_comma_ok_negative["signal"] = len(input) + len(items)
     type_negative_0 := type_assertion_comma_ok_negative["type"] + len(input)
